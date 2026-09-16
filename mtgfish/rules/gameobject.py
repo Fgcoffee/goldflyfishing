@@ -51,6 +51,12 @@ class GameObject:
     kind: ObjectKind = ObjectKind.CARD
     owner: PlayerId = NO_PLAYER
     controller: PlayerId = NO_PLAYER
+    #: CR 109.4: who would control this absent any control-changing effect -
+    #: the player who put it onto the battlefield, which is not always the
+    #: owner. Layer 2 recomputes ``controller`` from this every time the board
+    #: is evaluated, so control *returns* when Act of Treason wears off
+    #: instead of the theft being permanent.
+    base_controller: PlayerId = NO_PLAYER
     zone: Zone = Zone.LIBRARY
 
     #: The printed card this object came from, and which face is up. Tokens and

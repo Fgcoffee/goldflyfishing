@@ -181,6 +181,13 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     game.spells_cast_last_turn = game.spells_cast_this_turn
     game.spells_cast_this_turn = 0
 
+    # "Until your next turn" ends as that turn begins, before any of it
+    # happens - so a creature lent out until your next turn comes back before
+    # you untap, not after.
+    from .durations import expire_at_start_of_turn
+
+    expire_at_start_of_turn(game)
+
     game.log.record(
         game, f"--- Turn {game.turn}: {player.name} ---", kind="turn", player=player.id
     )
@@ -345,10 +352,32 @@ def _untap_step(game: Game) -> None:
             game.emit(Event(EventKind.PHASED_OUT, object_id=obj.id, player=active))
     game.invalidate_characteristics()
 
-    # CR 502.2: the active player untaps their permanents, all at once.
+    # CR 502.2: the active player untaps their permanents, all at once - but
+    # only the ones allowed to untap. Untapping everything unconditionally is
+    # why "doesn't untap during its controller's untap step" did nothing at
+    # all: the parser read the prohibition, the restriction system held it,
+    # and the one place that had to ask never did.
+    #
+    # Both acts are consulted. UNTAP_DURING_UNTAP_STEP is the wording on
+    # Sleep and the tap-down auras; a plain UNTAP prohibition is how exert and
+    # "this creature can't untap" are modelled, and neither should let a
+    # permanent untap here.
+    from .restrictions import Act, prohibited
+
     for obj in list(game.permanents(active)):
-        if obj.tapped:
-            obj.tapped = False
+        if not obj.tapped:
+            continue
+        blocked = prohibited(game, Act.UNTAP_DURING_UNTAP_STEP, obj=obj) or prohibited(
+            game, Act.UNTAP, obj=obj
+        )
+        if blocked is not None:
+            game.log.record(
+                game,
+                f"{game.characteristics(obj).name} does not untap ({blocked})",
+                kind="restriction",
+            )
+            continue
+        obj.tapped = False
     game.emit(Event(EventKind.UNTAP_STEP, player=active))
 
     # CR 302.6: everything the active player controls has now been controlled
@@ -389,8 +418,12 @@ def _combat_damage(game: Game) -> None:
 
 def _end_of_combat(game: Game) -> None:
     from .combat import end_combat
+    from .durations import expire_at_end_of_combat
 
     end_combat(game)
+    # CR 511.3: "until end of combat" effects end here, at the same moment
+    # creatures are removed from combat - not at cleanup with the rest.
+    expire_at_end_of_combat(game)
 
 
 # ---------------------------------------------------------------------------
@@ -450,18 +483,14 @@ def _discard_to_hand_size(game: Game) -> None:
 
 def _clear_damage_and_expire_effects(game: Game) -> None:
     """CR 514.2: damage wears off and until-end-of-turn effects end, together."""
-    from .enums import Duration
+    from .durations import expire_at_cleanup
 
     for obj in game.permanents():
         obj.damage = 0
         obj.dealt_deathtouch_damage = False
         obj.regeneration_shields = 0
 
-    for effect in game.continuous_effects:
-        if effect.duration == int(Duration.END_OF_TURN):
-            effect.expired = True
-
-    game.continuous_effects = [e for e in game.continuous_effects if not e.expired]
+    expire_at_cleanup(game)
     game.invalidate_characteristics()
 
 

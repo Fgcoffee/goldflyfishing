@@ -121,6 +121,14 @@ class Restriction:
     #: creatures with power 2 or less" constrains the *other* participant.
     counterpart: ObjectFilter | None = None
     text: str = ""
+    #: ``rules.enums.Duration``, for a prohibition registered by a resolved
+    #: spell rather than regenerated from a static ability. Held as an int to
+    #: keep this module from importing the enum, and only consulted for
+    #: standing entries - one rebuilt from a permanent ends when the permanent
+    #: does and needs no duration of its own.
+    duration: int = 0
+    #: The turn the prohibition started on; see ``ContinuousEffect``.
+    created_turn: int = 0
 
     def __str__(self) -> str:
         return self.text or f"can't {self.act.name.lower().replace('_', ' ')}"
@@ -396,6 +404,10 @@ def register_standing_permission(game: Game, permission: Restriction) -> Restric
     Used by resolved spells with a duration - "you may cast spells this turn
     as though they had flash" - which persist independently of any source.
     """
+    from dataclasses import replace
+
+    if not permission.created_turn:
+        permission = replace(permission, created_turn=game.turn)
     game.standing_permissions.append(permission)
     game.permissions_epoch = -1
     return permission
@@ -407,6 +419,10 @@ def register_standing(game: Game, restriction: Restriction) -> Restriction:
     Used by resolved spells with a duration ("creatures can't attack this
     turn"), which persist independently of any source (CR 611.2b).
     """
+    from dataclasses import replace
+
+    if not restriction.created_turn:
+        restriction = replace(restriction, created_turn=game.turn)
     game.standing_restrictions.append(restriction)
     game.restrictions_cache = None
     return restriction

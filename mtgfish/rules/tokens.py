@@ -133,6 +133,37 @@ def build_token_card(game: Game, spec: TokenSpec, source: ObjectId) -> Synthetic
     return SyntheticCard(name=name, faces=(face,), abilities=abilities)
 
 
+def _replaced_count(
+    game: Game, controller: PlayerId, count: int, source: ObjectId
+) -> int:
+    """How many tokens are actually created, after replacement (CR 614.1c).
+
+    Doubling Season, Parallel Lives and Anointed Procession all replace the
+    *token-creation event* - "if an effect would create one or more tokens,
+    it creates twice that many instead" - so the count has to be run past the
+    replacement system before any token exists. The engine parsed these into
+    MODIFY_TOKENS replacements and registered them correctly; nothing ever
+    asked, because the only TOKEN_CREATED event was emitted once per token
+    *after* it was made, when changing the number no longer means anything.
+
+    Two doublers give four times as many rather than three, because each
+    replacement applies once (CR 614.5) and each doubles what the last one
+    left.
+    """
+    prospective = game.replace(
+        Event(
+            EventKind.TOKEN_CREATED,
+            player=controller,
+            source=source,
+            amount=count,
+        )
+    )
+    # Replaced out of existence entirely: the tokens are simply never created.
+    if prospective is None:
+        return 0
+    return prospective.amount
+
+
 def create_tokens(
     game: Game,
     spec: TokenSpec,
@@ -150,6 +181,13 @@ def create_tokens(
     from .gameobject import ObjectKind
     from .restrictions import Act, prohibited
 
+    if count <= 0:
+        return []
+
+    # Replacements apply to the number asked for, before any token exists.
+    # A doubler raises it; "creates no tokens instead" takes it to zero, and
+    # then there is nothing left to build a card for.
+    count = _replaced_count(game, controller, count, source)
     if count <= 0:
         return []
 

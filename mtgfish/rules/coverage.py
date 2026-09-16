@@ -131,7 +131,7 @@ COVERAGE: dict[str, Entry] = _entries(
             "608": ("rules/stack.py", "resolution, and 608.2b fizzling"),
             "609": ("rules/resolve.py", ""),
             "610": ("rules/resolve.py", ""),
-            "611": ("rules/layers.py", "continuous effects and durations"),
+            "611": ("rules/durations.py", "continuous effects and when they end"),
             "613": ("rules/layers.py", "all layers, sublayers, and 613.8 dependency"),
             "603.7": ("rules/triggers.py", "delayed triggered abilities"),
             "603.8": ("rules/triggers.py", "state triggers, with re-arming"),
