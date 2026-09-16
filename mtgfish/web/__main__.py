@@ -27,7 +27,11 @@ import urllib.request
 
 
 def _parse(argv: list[str] | None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(prog="python -m mtgfish.web", description=__doc__.split("\n")[0])
+    # No ``prog``: argparse takes it from ``sys.argv[0]``, which both entry
+    # points set to however the user actually started this - "mtgfish web" or
+    # "python -m mtgfish.web". Hardcoding one of them tells half the users to
+    # run a command they did not type.
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--host", default=os.environ.get("MTGFISH_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))
     parser.add_argument(
@@ -50,9 +54,17 @@ def serve(args: argparse.Namespace) -> int:
 
     database = seed_card_database(report=print)
     if not database.exists():
+        # Name the command that builds it the same way they started this one,
+        # rather than telling someone who typed "mtgfish web" to go and run a
+        # python -m line they have no reason to expect works.
+        fetch = (
+            "mtgfish fetch"
+            if sys.argv[0].startswith("mtgfish ")
+            else "python -m mtgfish.tools.fetch_scryfall"
+        )
         print(
             f"No card database at {database}.\n"
-            "Build it with:  python -m mtgfish.tools.fetch_scryfall\n"
+            f"Build it with:  {fetch}\n"
             "or point MTGFISH_DATA_DIR at a directory holding cards.sqlite.",
             file=sys.stderr,
         )
@@ -191,4 +203,5 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
+    sys.argv[0] = "python -m mtgfish.web"
     raise SystemExit(main())
