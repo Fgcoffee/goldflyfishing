@@ -16,12 +16,51 @@ from ..rules.card_types import chapter_ability
 from ..rules.effects import Effect, EffectKind
 from ..rules.enums import Timing, Zone
 from ..rules.keywords import lookup as keyword_lookup
+from ..rules.query import ALWAYS
 from .clauses import parse_effects
 from .errors import ParseFailure
 from .normalize import normalize
 from .split import Line, LineKind, split_abilities
 from .tokens import Stream
 from .triggers import parse_trigger
+
+
+def understood(ability: Ability) -> bool:
+    """Whether an ability will actually do what its card says.
+
+    Three ways it can fail, and only the first used to be checked:
+
+    * the ability itself is unreadable;
+    * one of its effects is ``UNPARSED`` - a keyword whose builder produced a
+      placeholder, say, which leaves no ``ParseFailure`` behind because the
+      tokens were all consumed and only the behaviour is missing;
+    * a **condition** guarding it is unreadable. An ``UNPARSED`` condition
+      never holds, so the ability is inert - safe, and silent. Ward is the
+      example that matters: ``Ward {2}`` builds a triggered ability that
+      counters the spell "if the cost was not paid", the cost half is not
+      read, and the whole keyword parses into something that never fires.
+      Counted as understood, a Ward creature looked completely read while
+      warding nothing.
+
+    All three are the same question - will the engine do what the card says -
+    and the answer belongs in one place, because the coverage report, the deck
+    view and the UI all ask it separately.
+    """
+    if ability.unparsed:
+        return False
+    for condition in (ability.static_condition, ability.activation_condition):
+        if condition is not None and condition.is_unparsed:
+            return False
+    trigger = ability.trigger
+    if trigger is not None:
+        gate = getattr(trigger, "intervening_if", None)
+        if gate is not None and gate.is_unparsed:
+            return False
+    for effect in ability.effects:
+        for node in effect.walk():
+            if node.is_unparsed or node.condition.is_unparsed:
+                return False
+    return True
 
 
 @dataclass(slots=True)
@@ -38,16 +77,7 @@ class ParsedFace:
     @property
     def understood(self) -> int:
         """Abilities that will actually do what the card says."""
-        return sum(
-            1
-            for ability in self.abilities
-            if not ability.unparsed
-            and not any(
-                node.is_unparsed
-                for effect in ability.effects
-                for node in effect.walk()
-            )
-        )
+        return sum(1 for ability in self.abilities if understood(ability))
 
     @property
     def fully_parsed(self) -> bool:
@@ -61,12 +91,7 @@ class ParsedFace:
         """
         if not self.abilities or self.failures:
             return False
-        return not any(
-            node.is_unparsed
-            for ability in self.abilities
-            for effect in ability.effects
-            for node in effect.walk()
-        )
+        return all(understood(ability) for ability in self.abilities)
 
 
 @dataclass(slots=True)
@@ -352,12 +377,25 @@ def _activated(line: Line, result: ParsedFace) -> list[Ability]:
         if loyalty or _sorcery_only(effect_text)
         else Timing.INSTANT
     )
+    activation = _activation_condition(effect_text)
+    if not activation.understood:
+        # CR 602.5b: the restriction is part of the ability. An ability read
+        # without the sentence limiting it is a different, better ability, so
+        # the whole thing fails and the report names the phrase.
+        result.failures.append(
+            ParseFailure(
+                line.text,
+                f"unreadable activation restriction: {activation.condition}",
+                rule="activation-restriction",
+            )
+        )
+        return [Ability.unreadable(line.text)]
+
     effects = _modal_effects(line, stream, result) if line.modes else parse_effects(stream)
 
     def build(body) -> Ability:
         # Which zones the ability works in depends on the effects as well as
-        # the cost, so it is known only once the body is read - and the
-        # activation restriction is judged against it.
+        # the cost, so it is known only once the body is read.
         zones = _zones_paid_from(cost, body)
         return Ability(
             AbilityKind.ACTIVATED,
@@ -368,9 +406,9 @@ def _activated(line: Line, result: ParsedFace) -> list[Ability]:
             # "+1: Add {R}{R}" uses the stack and can be responded to.
             is_mana_ability=not loyalty and _is_mana_ability(body),
             is_loyalty_ability=loyalty,
-            once_each_turn=loyalty,
+            once_each_turn=loyalty or activation.once_each_turn,
             functions_in=zones,
-            activation_condition=_activation_condition(effect_text, zones),
+            activation_condition=activation.condition,
             text=line.text,
         )
 
@@ -453,21 +491,38 @@ _ONLY_RE = re.compile(r"activate (?:this ability )?only ([^.]*)", re.IGNORECASE)
 _TIMING_ONLY = frozenset({"as a sorcery", "any time you could cast a sorcery"})
 
 
-def _activation_condition(effect_text: str, zones: frozenset[Zone]):
+@dataclass(frozen=True, slots=True)
+class _Activation:
+    """What an "Activate only ..." sentence said, once read.
+
+    ``understood`` is the load-bearing field. An activation restriction the
+    grammar cannot model is not a detail to skip: it is the sentence that says
+    how often, and how early, the card may be used.
+    """
+
+    condition: object
+    once_each_turn: bool = False
+    understood: bool = True
+
+
+def _activation_condition(effect_text: str) -> _Activation:
     """CR 602.5b: "Activate only ..." is part of the ability, not advice.
 
-    Two are modelled: the sorcery-speed one, which is the ability's timing,
-    and "only during your upkeep", which becomes a condition checked every
-    time the ability would be offered.
+    Four shapes are modelled. The sorcery-speed one is the ability's timing
+    and is read off the line elsewhere; "only during your upkeep" and "only
+    during your turn" become conditions checked whenever the ability would be
+    offered; "only once each turn" becomes the limit the engine already keeps
+    for loyalty abilities; and "only if <condition>" goes through the ordinary
+    condition grammar.
 
-    The rest - "only if you control a legendary creature", "only during your
-    turn", "only once each turn" - are not modelled yet. For an ability in a
-    graveyard the condition is left unreadable, which is never true, so the
-    ability is not offered at all: those are the cards this change newly
-    reaches, and offering Gutterbones every turn regardless of what its text
-    demands is worse than leaving it where it was. An ability on the
-    battlefield keeps the older behaviour of ignoring what it cannot read,
-    because changing that reaches cards this one does not.
+    Anything left is reported as not understood, and the caller fails the
+    whole ability. Previously an unreadable restriction was *ignored* on the
+    battlefield - the ability was offered every time priority came round,
+    whatever the card demanded, which makes a once-a-turn engine into an
+    arbitrarily repeatable one. That is the direction of error this parser is
+    built to refuse: the cost of failing is a card that does nothing and says
+    so in the coverage report, and the cost of ignoring is a simulation that
+    is quietly faster than the deck.
     """
     from ..rules.enums import Step
     from ..rules.query import (
@@ -479,32 +534,71 @@ def _activation_condition(effect_text: str, zones: frozenset[Zone]):
         PlayerScope,
     )
 
+    from .clauses import parse_condition_text
+
     match = _ONLY_RE.search(effect_text)
     if match is None:
-        return ALWAYS
+        return _Activation(ALWAYS)
 
     restriction = match.group(1).strip()
-    condition = ALWAYS
-    modelled = True
-    for part in re.split(r"\band only\b", restriction.lower()):
-        part = part.strip().strip(",").strip()
-        if not part or part in _TIMING_ONLY:
-            continue
-        if part == "during your upkeep":
-            condition = Condition(
-                kind=ConditionKind.IS_STEP,
-                players=PlayerFilter(PlayerScope.YOU),
-                constraint=NumericConstraint.exactly(int(Step.UPKEEP)),
-                text="only during your upkeep",
-            )
-        else:
-            modelled = False
+    conditions: list[object] = []
+    once_each_turn = False
+    understood = True
 
-    if not modelled and zones == GRAVEYARD_ONLY:
-        return Condition(
-            kind=ConditionKind.UNPARSED, text="activate only " + restriction
+    for part in re.split(r"\band only\b", restriction, flags=re.IGNORECASE):
+        # Compared in lower case, but *parsed* in the case it was printed: the
+        # subtype registry knows "Forest" and not "forest", so lowercasing
+        # before the condition grammar ran failed every "only if you control
+        # a <type>" there is.
+        part = part.strip().strip(",").strip()
+        lowered = part.lower()
+        if not part or lowered in _TIMING_ONLY:
+            continue
+        if lowered == "during your upkeep":
+            conditions.append(
+                Condition(
+                    kind=ConditionKind.IS_STEP,
+                    players=PlayerFilter(PlayerScope.YOU),
+                    constraint=NumericConstraint.exactly(int(Step.UPKEEP)),
+                    text="only during your upkeep",
+                )
+            )
+        elif lowered in ("during your turn", "on your turn"):
+            conditions.append(
+                Condition(
+                    kind=ConditionKind.IS_YOUR_TURN, text="only during your turn"
+                )
+            )
+        elif lowered == "once each turn":
+            once_each_turn = True
+        elif lowered.startswith("if "):
+            stream = Stream.of(part[3:])
+            parsed = parse_condition_text(stream)
+            if parsed is None or not stream.done:
+                understood = False
+            else:
+                conditions.append(parsed)
+        else:
+            understood = False
+
+    if not understood:
+        return _Activation(
+            Condition(kind=ConditionKind.UNPARSED, text="activate only " + restriction),
+            once_each_turn=once_each_turn,
+            understood=False,
         )
-    return condition
+    if not conditions:
+        return _Activation(ALWAYS, once_each_turn=once_each_turn)
+    if len(conditions) == 1:
+        return _Activation(conditions[0], once_each_turn=once_each_turn)
+    return _Activation(
+        Condition(
+            kind=ConditionKind.AND,
+            operands=tuple(conditions),
+            text="activate only " + restriction,
+        ),
+        once_each_turn=once_each_turn,
+    )
 
 
 def _sorcery_only(text: str) -> bool:
@@ -624,24 +718,62 @@ def _plain(line: Line, result: ParsedFace, *, is_permanent: bool) -> list[Abilit
     stream = Stream.of(line.text)
     effects = parse_effects(stream)
     kind = AbilityKind.STATIC if is_permanent else AbilityKind.SPELL
-    return [
-        _finish(
-            line.text,
-            stream,
-            effects,
-            result,
-            rule="plain",
-            build=lambda body: Ability(
-                kind,
-                effects=tuple(body),
-                is_characteristic_defining=_is_cda(body),
-                # CR 604.3: a CDA functions in every zone, not just on the
-                # battlefield. Tarmogoyf has to be 0/1 in a graveyard.
-                functions_in=frozenset(Zone) if _is_cda(body) else BATTLEFIELD_ONLY,
-                text=line.text,
-            ),
+
+    def build_plain(body) -> Ability:
+        gate = ALWAYS
+        if kind is AbilityKind.STATIC:
+            gate, body = _lift_static_condition(body)
+        return Ability(
+            kind,
+            effects=tuple(body),
+            static_condition=gate,
+            is_characteristic_defining=_is_cda(body),
+            # CR 604.3: a CDA functions in every zone, not just on the
+            # battlefield. Tarmogoyf has to be 0/1 in a graveyard.
+            functions_in=frozenset(Zone) if _is_cda(body) else BATTLEFIELD_ONLY,
+            text=line.text,
         )
+
+    return [
+        _finish(line.text, stream, effects, result, rule="plain", build=build_plain)
     ]
+
+
+def _lift_static_condition(body):
+    '''Move a whole-ability condition off the effect and onto the ability.
+
+    "Creatures you control get +1/+1 as long as you control a Forest" parses
+    to a CONDITIONAL wrapping a MODIFY_PT. That is the right shape for a
+    resolving spell and the wrong one for a static ability: the layer system
+    gathers continuous effects by walking SEQUENCEs and never looks inside a
+    CONDITIONAL, so *both* halves were dropped and the anthem did nothing -
+    while parsing cleanly, which is the worst way to be wrong.
+
+    ``Ability.static_condition`` is the mechanism the engine already has for
+    exactly this (``layers._static_condition_holds``), and it is re-checked
+    every time characteristics are recomputed, which is what a continuously
+    checked condition needs. So the condition is lifted and the continuous
+    effects come back to the top level where the layer system can see them.
+
+    Only for a condition wrapping continuous effects, and only with no
+    "otherwise" branch: a static ability that does one thing or else another
+    is not a gate, and a CONDITIONAL around a one-shot effect is not one
+    either.
+    '''
+    from ..rules.effects import CONTINUOUS_KINDS
+
+    if len(body) != 1:
+        return ALWAYS, body
+    node = body[0]
+    if node.kind is not EffectKind.CONDITIONAL or node.otherwise:
+        return ALWAYS, body
+    if node.condition.is_always or node.condition.is_unparsed:
+        return ALWAYS, body
+    if not node.children:
+        return ALWAYS, body
+    if not all(child.kind in CONTINUOUS_KINDS for child in node.children):
+        return ALWAYS, body
+    return node.condition, list(node.children)
 
 
 def _alternative_cost_line(text: str):

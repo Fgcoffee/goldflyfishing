@@ -222,13 +222,13 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
             _for_each_tail,
             _unless_tail,
             _as_long_as_tail,
+            _during_tail,
             _if_tail,
             _delayed_tail,
         ):
             changed = modifier(stream, effects[-1])
             if changed is not None:
                 effects[-1] = changed
-        _timing_tail(stream)
         _under_control(stream)
     if not effects:
         return None
@@ -364,25 +364,59 @@ def _delayed_tail(stream: Stream, effect: Effect) -> Effect | None:
     )
 
 
-def _timing_tail(stream: Stream) -> bool:
-    """"during each other player's untap step" and relatives.
+def _during_tail(stream: Stream, effect: Effect) -> Effect | None:
+    """A trailing "during your turn" / "during each opponent's turn".
 
-    Says *when* an effect applies. Consumed rather than modelled: the engine
-    has no schedule for a continuous effect that only applies in someone
-    else's step, and failing the whole ability loses the untap as well as the
-    timing.
+    This used to be a consume-and-forget: anything after "during", up to eight
+    tokens of it, was swallowed so the sentence would complete. That is not a
+    neutral simplification. "Creatures you control get +1/+1 during your turn"
+    came out as an unconditional anthem - a strictly better card than the one
+    printed, on the axis a goldfishing tool exists to measure.
+
+    So the two phrasings the engine can actually ask about become a condition,
+    and every other "during ..." declines. Seedborn Muse's "during each other
+    player's untap step" is the shape that declines: the engine has no
+    schedule for a continuous effect confined to someone else's step, and an
+    ability that says so and does nothing is honest where a permanent untap
+    would not be.
     """
+    from ..rules.query import Condition, ConditionKind
+
     mark = stream.mark()
+    stream.skip_punct(",")
     if not stream.accept("during"):
-        return False
-    steps = 0
-    while not stream.done and stream.peek().text not in (".", ";"):
-        stream.next()
-        steps += 1
-        if steps > 8:
-            stream.reset(mark)
-            return False
-    return steps > 0
+        stream.reset(mark)
+        return None
+
+    yours = Condition(kind=ConditionKind.IS_YOUR_TURN, text="during your turn")
+    if stream.accept_phrase("your turn") or stream.accept_phrase(
+        "each of your turns"
+    ):
+        condition = yours
+    elif (
+        stream.accept_phrase("an opponent's turn")
+        or stream.accept_phrase("each opponent's turn")
+        or stream.accept_phrase("your opponents' turns")
+        or stream.accept_phrase("each other player's turn")
+    ):
+        condition = Condition(
+            kind=ConditionKind.NOT,
+            operands=(yours,),
+            text="during an opponent's turn",
+        )
+    else:
+        stream.reset(mark)
+        return None
+
+    return Effect(
+        EffectKind.CONDITIONAL,
+        condition=condition,
+        children=(effect,),
+        # Checked continuously, exactly as a trailing "as long as" is: the
+        # turn changes under a continuous effect that outlives it.
+        duration=Duration.WHILE_SOURCE_PERSISTS,
+        text=condition.text,
+    )
 
 
 def _for_each_tail(stream: Stream, effect: Effect) -> Effect | None:
@@ -1074,6 +1108,44 @@ def _add_counters(stream: Stream) -> Effect | None:
     )
 
 
+@clause("remove-counters")
+def _remove_counters(stream: Stream) -> Effect | None:
+    """"Remove a +1/+1 counter from target creature."
+
+    The mirror of ``_add_counters``, and it simply did not exist: putting a
+    counter on something parsed and taking one off did not, although
+    ``REMOVE_COUNTERS`` has had an executor all along. Every -1/-1 counter
+    payoff, every vanishing and suspend rider written out in full, and every
+    "remove a charge counter" engine failed on a sentence whose twin the
+    grammar already read.
+
+    "Remove all X counters" is deliberately not read: the executor takes a
+    count, and the count of counters actually there is a question about the
+    game state rather than about the card.
+    """
+    if not stream.accept("remove", "removes"):
+        return None
+    amount = parse_value(stream)
+    if amount is None:
+        return None
+    counter = _counter_word(stream)
+    if counter is None:
+        return None
+    if not stream.accept("from"):
+        return None
+    targets, targeted = parse_target(stream)
+    if targets is None:
+        return None
+    return Effect(
+        EffectKind.REMOVE_COUNTERS,
+        targets=targets,
+        counter_type=counter,
+        amount=amount,
+        is_targeted=targeted,
+        text="remove counters",
+    )
+
+
 @clause("pump")
 def _pump(stream: Stream) -> Effect | None:
     """"Target creature gets +2/+2 until end of turn."."""
@@ -1508,17 +1580,33 @@ def _create_token(stream: Stream) -> Effect | None:
         return None
 
     keywords, abilities = _token_abilities(stream)
+    # "... token with flying" is read by the *noun* reader, which takes
+    # "with flying" as a constraint and puts it in ``has_keyword``. Nothing
+    # then carried it to the token, so every token printed with an ability -
+    # every Spirit with flying, every Angel, every deathtouch Snake - was
+    # created vanilla, and the sentence parsed perfectly while doing it.
+    keywords = tuple(dict.fromkeys(keywords + tuple(spec.has_keyword)))
     # "a token that's a copy of target creature you control, *except the
     # token has flying and it isn't legendary*". The becomes-a-copy clause
     # read this tail and the token-copy clause did not, so the two halves of
     # one construct disagreed.
     _copy_exceptions(stream)
 
+    types = _token_types(spec)
+    if types is None:
+        return None
+    if types & CardType.CREATURE and power is None:
+        # A creature token whose power and toughness the sentence never gave.
+        # Defaulted to 0/0 it is created and then dies to state-based actions
+        # before anything can use it, which is a card that does nothing
+        # wearing the costume of one that does.
+        return None
+
     return Effect(
         EffectKind.CREATE_TOKEN,
         token=TokenSpec(
             name=spec.subtypes_all[0] if spec.subtypes_all else "Token",
-            types=spec.types_all or CardType.CREATURE,
+            types=types,
             subtypes=spec.subtypes_all,
             colors=spec.colors_any,
             power=power or Value.of(0),
@@ -1530,6 +1618,34 @@ def _create_token(stream: Stream) -> Effect | None:
         amount=amount,
         text="create token",
     )
+
+
+def _token_types(spec: ObjectFilter) -> CardType | None:
+    """The card types of a token whose sentence may not have named any.
+
+    "Create a Treasure token" says no card type at all, and defaulting to
+    creature made a **0/0 creature** named Treasure that died to state-based
+    actions the instant it arrived - for one of the most-played effects in the
+    format. The subtype registry already knows what a Treasure is, so it is
+    asked rather than guessed at.
+
+    ``None`` means the sentence did not say and nothing can tell, which fails
+    the ability. A token of the wrong card type is not a near miss: it is a
+    permanent that dies immediately, or one that never dies at all.
+    """
+    from ..rules.typeline import active_registry
+
+    if spec.types_all:
+        return spec.types_all
+    if len(spec.subtypes_all) != 1:
+        return None
+    types = active_registry().types_for(spec.subtypes_all[0])
+    # More than one card type means the word alone does not decide - a bare
+    # subtype that is both a creature type and an artifact type could be
+    # either, and the sentence has to say.
+    if types is CardType.NONE or types.bit_count() != 1:
+        return None
+    return types
 
 
 def _token_abilities(stream: Stream) -> tuple[tuple[str, ...], tuple]:
@@ -2353,7 +2469,18 @@ def _starts_an_act(stream: Stream) -> bool:
 
 @clause("doesnt-untap")
 def _doesnt_untap(stream: Stream) -> Effect | None:
-    """"Enchanted creature doesn't untap during its controller's untap step."."""
+    """"Enchanted creature doesn't untap during its controller's untap step."
+
+    The permanent form only. "Doesn't untap during its controller's *next*
+    untap step" is a different card - one turn of freeze rather than a lock -
+    and there is no ``Duration`` that ends at a particular player's next untap
+    step, so it cannot be told apart from the permanent form once built.
+
+    It used to be told apart by nobody: the "next" was left on the stream and
+    swallowed by a rule that ate any trailing "during ...", so every Frost
+    Breath and every Sleep in the format tapped a board down *permanently*.
+    Declining is the version of this the coverage report can see.
+    """
     from ..rules.restrictions import Act, Restriction
 
     subject, _ = parse_target(stream)
@@ -2363,8 +2490,12 @@ def _doesnt_untap(stream: Stream) -> Effect | None:
         return None
     if not stream.accept("untap"):
         return None
-    stream.accept_phrase("during its controller's untap step")
-    stream.accept_phrase("during your untap step")
+    if not (
+        stream.accept_phrase("during its controller's untap step")
+        or stream.accept_phrase("during your untap step")
+        or stream.accept_phrase("during their untap step")
+    ) and stream.at("during"):
+        return None
     return Effect(
         EffectKind.RESTRICTION,
         targets=subject,
@@ -2700,6 +2831,8 @@ _SEARCH_STEPS: tuple[tuple[str, "Zone | None"], ...] = (
     ("shuffle your library", None),
     ("shuffle their library", None),
     ("shuffle", None),
+    # Not a zone of its own, but not nothing either: ``_search_tail`` reads
+    # the word off any step it appears in and hands it to the effect.
     ("tapped", None),
     # Steps a search takes on the way that are not about where the card ends
     # up. Each of them failed a whole tutor: Demonic Consultation, Vampiric
@@ -2714,14 +2847,21 @@ _SEARCH_STEPS: tuple[tuple[str, "Zone | None"], ...] = (
 )
 
 
-def _search_tail(stream: Stream) -> Zone:
-    """Where a search puts what it finds.
+def _search_tail(stream: Stream) -> tuple[Zone, bool]:
+    """Where a search puts what it finds, and whether it arrives tapped.
 
     Defaults to the hand (CR 701.19c: a search with no stated destination
     reveals nothing and the card stays where the effect says - hand is the
     overwhelmingly common templating).
+
+    "Tapped" used to be in the step list as a word to swallow, which made
+    Rampant Growth, Cultivate, Farseek and the rest of the format's ramp put
+    their land in *untapped*. Every one of those decks came out a turn faster
+    than it plays, which is the one measurement a goldfishing tool exists to
+    make.
     """
     destination = Zone.HAND
+    tapped = False
     while True:
         before = stream.mark()
         stream.skip_punct(",")
@@ -2732,10 +2872,12 @@ def _search_tail(stream: Stream) -> Zone:
             if stream.accept_phrase(phrase):
                 if zone is not None:
                     destination = zone
+                if "tapped" in phrase:
+                    tapped = True
                 break
         else:
             stream.reset(before)
-            return destination
+            return destination, tapped
 
 
 @clause("search")
@@ -2753,7 +2895,7 @@ def _search(stream: Stream) -> Effect | None:
     if spec is None:
         return None
 
-    destination = _search_tail(stream)
+    destination, tapped = _search_tail(stream)
 
     return Effect(
         EffectKind.SEARCH_LIBRARY,
@@ -2761,6 +2903,9 @@ def _search(stream: Stream) -> Effect | None:
         targets=spec,
         zone=destination,
         amount=Value.of(1),
+        # Carried the same way every other put-onto-the-battlefield carries
+        # it, so the executor has one thing to look for (CR 614.1c).
+        keywords=("tapped",) if tapped and destination is Zone.BATTLEFIELD else (),
         text="search library",
     )
 
@@ -3915,15 +4060,27 @@ def _costs_less(stream: Stream) -> Effect | None:
     )
 
 
+#: The engine's own spelling of the attack requirement, checked by
+#: ``combat._must_attack``. A string rather than an ``Act`` because a
+#: requirement is not a prohibition and the two live in different mechanisms.
+ATTACKS_IF_ABLE = "Attacks each combat if able"
+
+
 @clause("attacks-if-able")
 def _attacks_if_able(stream: Stream) -> Effect | None:
     """"This creature attacks each combat if able." - a requirement (CR 508.1d).
 
-    Requirements are not restrictions: the declaration must maximise how many
-    are satisfied, but a requirement never makes an illegal attack legal.
-    """
-    from ..rules.restrictions import Act, Restriction
+    Requirements are not restrictions, and this clause used to emit one: an
+    ``Act.ATTACK`` prohibition, which is the *opposite* card. A creature that
+    must attack every combat became a creature that could never attack, and
+    nothing downstream could tell, because a well-formed restriction is
+    exactly what a "can't attack" card produces.
 
+    ``Restriction`` has no requirement flag and should not grow one - CR 508.1d
+    makes requirements a separate step of the declaration, which combat.py
+    already implements by looking for this keyword on the attacker. So the
+    grammar asks for the thing the engine already enforces.
+    """
     targets, _ = parse_target(stream)
     if targets is None:
         return None
@@ -3934,19 +4091,54 @@ def _attacks_if_able(stream: Stream) -> Effect | None:
     if not stream.accept_phrase("if able"):
         return None
     return Effect(
-        EffectKind.RESTRICTION,
+        EffectKind.GRANT_ABILITY,
         targets=targets,
-        restrictions=(
-            Restriction(
-                act=Act.ATTACK,
-                subject=targets,
-                counterpart=None,
-                text="attacks each combat if able",
-            ),
-        ),
+        keywords=(ATTACKS_IF_ABLE,),
         duration=Duration.PERMANENT,
         text="attacks each combat if able",
     )
+
+
+def _complement(spec: ObjectFilter) -> ObjectFilter | None:
+    """"creatures with flying" -> "creatures without flying", or ``None``.
+
+    ``Restriction.counterpart`` forbids the act when the other participant
+    *matches* it, so a permission - "can block only X" - has to be written as
+    the prohibition "can't block anything that is not X". That needs the
+    complement of the filter, and ``ObjectFilter`` can only express the
+    complement of one constraint at a time: there is no general negation, and
+    inventing one by hand is how "can block only creatures with flying" became
+    "can't block creatures with flying", which is the same card upside down.
+
+    So exactly one constraint is inverted and everything else declines. The
+    creature type itself is dropped first rather than inverted: the counterpart
+    of a block is always an attacking creature, so "creature" narrows nothing.
+    """
+    from ..rules.enums import CardType as _CardType
+
+    reduced = replace(spec, types_all=spec.types_all & ~_CardType.CREATURE)
+    blank = ObjectFilter(zones=reduced.zones)
+
+    for field, inverse in (
+        ("has_keyword", "lacks_keyword"),
+        ("subtypes_any", "subtypes_none"),
+        ("subtypes_all", "subtypes_none"),
+        ("named", "not_named"),
+        ("types_all", "types_none"),
+        ("types_any", "types_none"),
+        ("colors_all", "colors_none"),
+        ("colors_any", "colors_none"),
+    ):
+        value = getattr(reduced, field)
+        if not value:
+            continue
+        # Every *other* constraint has to be at its default, or the complement
+        # would quietly widen: "only green creatures you control" is not
+        # "anything that is not green".
+        if reduced != replace(blank, **{field: value}):
+            return None
+        return replace(blank, **{inverse: value})
+    return None
 
 
 @clause("can-block-only")
@@ -3954,7 +4146,12 @@ def _can_block_only(stream: Stream) -> Effect | None:
     """"This creature can block only creatures with flying."
 
     A restriction on what it may block, so everything *else* becomes illegal -
-    the inverse of how it reads.
+    the inverse of how it reads, and the inversion has to be done to the
+    filter rather than assumed by the reader. See ``_complement``: where the
+    engine cannot express the complement, this declines and the ability fails
+    to parse, which leaves the creature blocking freely. That is a worse
+    blocker than the card prints and a better one than the inverted reading
+    gave, and unlike the inverted reading it is visible in the coverage report.
     """
     from ..rules.restrictions import Act, Restriction
 
@@ -3970,6 +4167,9 @@ def _can_block_only(stream: Stream) -> Effect | None:
     allowed = parse_object_filter(stream)
     if allowed is None:
         return None
+    forbidden = _complement(allowed)
+    if forbidden is None:
+        return None
     return Effect(
         EffectKind.RESTRICTION,
         targets=targets,
@@ -3977,8 +4177,8 @@ def _can_block_only(stream: Stream) -> Effect | None:
             Restriction(
                 act=Act.BLOCK,
                 subject=targets,
-                counterpart=allowed,
-                text="can block only ...",
+                counterpart=forbidden,
+                text="can't block anything it isn't allowed to block",
             ),
         ),
         duration=Duration.PERMANENT,
@@ -6158,12 +6358,14 @@ def _prevent_damage(stream: Stream) -> Effect | None:
             return None
 
     # "combat damage" is narrower than "damage", and Fog effects are written
-    # both ways. The distinction is not modelled on the prevention shield, so
-    # the word is consumed; over-preventing a non-combat source is wrong, but
-    # so is failing the whole ability, and the shield is the closer reading.
-    stream.accept("combat")
+    # both ways. The word used to be consumed and forgotten, which turned every
+    # Fog into a blanket that also stopped a Lightning Bolt. The shield already
+    # chooses which events it watches, so the narrowing is carried on the
+    # effect and read by ``_do_prevent_damage``.
+    combat_only = bool(stream.accept("combat"))
     if not stream.accept("damage"):
         return None
+    marker = ("combat",) if combat_only else ()
     stream.accept_phrase("that would be dealt")
     # "that would be dealt *to and dealt by* that creature" - the shield runs
     # both ways round one object. Read before the recipient because that is
@@ -6182,6 +6384,7 @@ def _prevent_damage(stream: Stream) -> Effect | None:
             EffectKind.PREVENT_DAMAGE,
             amount=amount,
             duration=duration,
+            keywords=marker,
             text="prevent damage",
         )
 
@@ -6211,6 +6414,7 @@ def _prevent_damage(stream: Stream) -> Effect | None:
         amount=amount,
         duration=duration,
         is_targeted=targeted,
+        keywords=marker,
         text="prevent damage",
     )
 
@@ -6288,36 +6492,30 @@ def _stamp(effect: Effect, duration: Duration) -> Effect:
 def _timing_qualifier(stream: Stream) -> Effect | None:
     """"Activate only as a sorcery.", "Activate only if you control a Forest."
 
-    A restriction on when the ability may be activated. It is consumed here so
-    that the sentence completes; the timing itself is read off the line by the
-    compiler, which is where the ability's ``timing`` is set.
+    Consumed whole, to the end of its sentence, and deliberately *not*
+    interpreted here. What the restriction means is ``compile``'s to decide,
+    because it is a property of the ability rather than an effect the ability
+    produces - it changes the ability's timing, its once-per-turn limit or its
+    activation condition, none of which a clause can reach.
+
+    Reading it in two places is what made "Activate only as a sorcery and only
+    if you control a Goblin" fail: this clause recognised the first half, left
+    the second, and the ability died on a conjunction. One reader, one answer,
+    and ``compile._activation_condition`` fails the ability when that answer
+    is "not understood".
     """
+    mark = stream.mark()
     if not stream.accept("activate"):
         return None
+    stream.accept_phrase("this ability")
     if not stream.accept("only"):
+        stream.reset(mark)
         return None
-    if stream.accept_phrase("as a sorcery"):
-        return Effect(EffectKind.NOTHING, text="activate only as a sorcery")
-    if stream.accept_phrase("any time you could cast a sorcery"):
-        return Effect(EffectKind.NOTHING, text="activate only as a sorcery")
-    if stream.accept_phrase("during your turn"):
-        return Effect(EffectKind.NOTHING, text="activate only during your turn")
-    if stream.accept_phrase("once each turn"):
-        return Effect(EffectKind.NOTHING, text="activate only once each turn")
-    if stream.accept("if"):
-        if _condition(stream) is None:
-            return None
-        return Effect(EffectKind.NOTHING, text="activate only if ...")
-
-    # "only during your turn, before attackers are declared" and relatives.
-    # The timing is read off the line by the compiler; this tail narrows
-    # *when*, never *what*, so consuming it to the end of the sentence loses
-    # no behaviour.
-    if stream.accept("during", "any", "before", "after", "once"):
-        while not stream.done and stream.peek().text not in (".", ";"):
-            stream.next()
-        return Effect(EffectKind.NOTHING, text="activate only at some time")
-    return None
+    while not stream.done and stream.peek().text not in (".", ";"):
+        stream.next()
+    if stream.mark() == mark:
+        return None
+    return Effect(EffectKind.NOTHING, text="activate only ...")
 
 
 # "Spend this mana only to cast creature spells" (CR 106.6b) is deliberately
@@ -7155,8 +7353,21 @@ def _replacement(stream: Stream) -> Effect | None:
 
 
 def _replacement_effect(inner) -> Effect:
+    """A replacement whose event half was consumed but not identified.
+
+    Marked ``UNPARSED`` on purpose. The engine registers a replacement only
+    when it carries a ``ReplacementKind`` (see ``replacement._static``, which
+    skips a kind of zero), so this effect has never done anything - but as a
+    ``REPLACEMENT`` node it counted as *understood*, and a card whose whole
+    text is "if X would happen, do Y instead" was scored as fully read while
+    being inert.
+
+    That is the one outcome the coverage report exists to prevent: it looks
+    like coverage. The behaviour is unchanged; what changes is that the card
+    now says so, and lands in the work queue with the phrase that beat it.
+    """
     return Effect(
-        EffectKind.REPLACEMENT,
+        EffectKind.UNPARSED,
         children=tuple(inner),
         duration=Duration.PERMANENT,
         text="if ... would ..., ... instead",

@@ -61,12 +61,18 @@ def test_leftover_tokens_fail_the_whole_ability(card_db):
     assert result.failures[0].reason == "not fully consumed"
 
 
-def test_the_parser_can_only_emit_opcodes_the_engine_runs():
+def test_the_parser_can_only_emit_opcodes_the_engine_runs(subtype_registry):
     """No invention.
 
     Every clause is exercised against text it should match, and every opcode
     that comes out has to have an executor. A grammar rule that wants an effect
     the engine lacks is a bug in the grammar, not a licence to approximate.
+
+    This is a property of the grammar and the engine, not of any card pool, so
+    it must hold on a fresh clone with no card database. The one sample that
+    names a creature type gets it from ``subtype_registry`` rather than from
+    real cards - see that fixture for why requesting ``card_db`` here would be
+    the wrong trade.
     """
     samples = [
         "Draw a card.",
@@ -107,6 +113,41 @@ def test_the_parser_can_only_emit_opcodes_the_engine_runs():
         if kind is not EffectKind.UNPARSED and kind not in EXECUTORS
     )
     assert not unrunnable, f"parser emits opcodes the engine cannot run: {unrunnable}"
+
+
+def test_no_two_opcodes_share_a_number():
+    """The other half of "no invention": one opcode, one meaning.
+
+    ``EffectKind`` is an ``IntEnum``, so two members given the same number are
+    not two opcodes - the second becomes an alias of the first. Two pairs had
+    collided, and the damage was invisible from either side: the executor
+    table silently kept one entry per number, so a parsed CHOOSE_QUALITY ("as
+    this enters, choose a creature type") was dispatched to the reflexive
+    trigger executor, and ``EffectKind.BECOME_SOLVED is EffectKind.EXTRA_TRIGGER``
+    came out true for every ``is`` check in the engine.
+
+    The parser emitting one opcode and the engine running another defeats the
+    whole point of a fixed instruction set, and nothing else in the suite can
+    see it happen.
+    """
+    numbers: dict[int, str] = {}
+    collisions = []
+    for member in EffectKind:
+        # Aliases do not appear in iteration, so canonical names are compared
+        # against __members__, which does include them.
+        numbers[int(member)] = member.name
+    for name, member in EffectKind.__members__.items():
+        if numbers[int(member)] != name:
+            collisions.append(f"{name} == {numbers[int(member)]} ({int(member)})")
+    assert not collisions, f"opcodes sharing a number: {collisions}"
+
+
+def test_every_opcode_the_engine_runs_has_its_own_executor():
+    """A follow-on from the above: the table is keyed by the enum, so a
+    collision there silently dropped one of the two executors."""
+    from mtgfish.rules.resolve import EXECUTORS
+
+    assert len(EXECUTORS) == len({int(kind) for kind in EXECUTORS})
 
 
 def test_no_clause_is_registered_twice():

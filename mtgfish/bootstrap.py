@@ -31,6 +31,55 @@ def bundled_root() -> Path | None:
     return None
 
 
+def pool_is_stale(target: Path) -> bool:
+    """Whether the dumps in the cache describe a newer pool than this database.
+
+    The dumps are in the repository and the database is not, so refreshing the
+    pool is a commit that changes a file nobody's machine has rebuilt from yet.
+    Answered by the dump filename the database recorded when it was built:
+    Scryfall stamps each one with its publication time, so a mismatch means
+    exactly "built from a different dump than the one sitting here".
+    """
+    import sqlite3
+
+    from .data.scryfall import ScryfallClient
+
+    newest = ScryfallClient(offline=True).cached_bulk("oracle_cards")
+    if newest is None:
+        return False  # Nothing to rebuild from; what is there is what there is.
+    try:
+        conn = sqlite3.connect(f"file:{target}?mode=ro", uri=True)
+        try:
+            row = conn.execute(
+                "SELECT value FROM meta WHERE key = 'oracle_file'"
+            ).fetchone()
+        finally:
+            conn.close()
+    except sqlite3.Error:
+        return True  # Unreadable or half-written: rebuilding is the answer.
+    return not row or row[0] != newest.name
+
+
+def build_from_dumps(*, report=None) -> Path | None:
+    """Build the card database from the dumps in the cache, offline.
+
+    Returns None when there are no dumps to build from - a packaged build, or
+    a checkout whose cache was cleared - so the caller can report a missing
+    pool rather than failing later with no cards at all.
+    """
+    from .data.scryfall import ScryfallClient
+    from .paths import scryfall_cache
+
+    client = ScryfallClient(offline=True)
+    if client.cached_bulk("oracle_cards") is None:
+        return None
+    if report is not None:
+        report(f"Building the card database from {scryfall_cache()} (first run only)...")
+    from .data.db import build_database
+
+    return build_database(client=client, progress=report)
+
+
 def seed_card_database(*, report=None) -> Path:
     """Make sure a card database exists, and return where it is.
 
@@ -40,11 +89,30 @@ def seed_card_database(*, report=None) -> Path:
     """
     target = card_db_path()
     if target.exists() and target.stat().st_size > 0:
-        return target
+        if not pool_is_stale(target):
+            return target
+        # Refreshed dumps: rebuild so everyone working from this checkout is
+        # measuring the same card pool. Not fatal if it cannot be done now -
+        # on Windows the file cannot be replaced while a server holds it open -
+        # because yesterday's pool beats no pool at all.
+        try:
+            return build_from_dumps(report=report) or target
+        except OSError as exc:
+            if report is not None:
+                report(
+                    f"The card pool has been refreshed but {target} is in use "
+                    f"({exc.__class__.__name__}); keeping the existing one. "
+                    "Rebuild with: python -m mtgfish.tools.fetch_scryfall --offline"
+                )
+            return target
 
     bundle = bundled_root()
     if bundle is None:
-        return target  # Development: the cache directory is the source of truth.
+        # A clone carries Scryfall's dumps but not the 95 MB database built
+        # from them, so build it here rather than making every user - and
+        # every agent working in the repository - know to run a command first.
+        # It takes a few seconds and needs no network.
+        return build_from_dumps(report=report) or target
 
     source = bundle / "cards.sqlite"
     if not source.exists():

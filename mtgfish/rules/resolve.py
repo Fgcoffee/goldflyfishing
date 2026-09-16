@@ -1214,8 +1214,16 @@ def _do_search_library(resolution: Resolution, effect: Effect) -> None:
             if len(found) >= wanted:
                 break
 
+        # "Search your library for a basic land card, put it onto the
+        # battlefield *tapped*" (CR 614.1c). Every ramp spell in the format
+        # says it, and a land that arrives untapped is a full turn of mana the
+        # deck does not have.
+        tapped = "tapped" in effect.keywords and destination is Zone.BATTLEFIELD
         for obj in found:
-            game.move_object(obj, destination, to_player=player_id)
+            moved = game.move_object(obj, destination, to_player=player_id)
+            if tapped and moved.zone is Zone.BATTLEFIELD:
+                # A replacement effect may have sent it somewhere else.
+                moved.tapped = True
         game.emit(
             Event(EventKind.SEARCHED_LIBRARY, player=player_id, amount=len(found))
         )
@@ -1481,15 +1489,28 @@ def _do_exchange_life(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_prevent_damage(resolution: Resolution, effect: Effect) -> None:
-    """CR 615: register a prevention shield rather than acting immediately."""
+    """CR 615: register a prevention shield rather than acting immediately.
+
+    Two narrowings the shield has always been able to express and was never
+    given. "Prevent all *combat* damage" is a Fog and not a blanket, so it
+    watches only the combat event; and "damage that would be dealt *to you*"
+    names a player, which a shield with no subject and no players applies to
+    everyone - a one-sided Fog that quietly protected the whole table.
+    """
     from .replacement import ReplacementEffect, ReplacementKind, register
+
+    if "combat" in effect.keywords:
+        watched = frozenset({EventKind.COMBAT_DAMAGE_DEALT})
+    else:
+        watched = frozenset({EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT})
 
     register(
         resolution.game,
         ReplacementEffect(
             kind=ReplacementKind.PREVENT_DAMAGE,
-            event_kinds=frozenset({EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT}),
+            event_kinds=watched,
             subject=effect.targets,
+            players=effect.players,
             source=resolution.source,
             controller=resolution.controller,
             amount=_amount(resolution, effect),
@@ -1918,7 +1939,6 @@ EXECUTORS: dict[EffectKind, Executor] = {
     # Present here because an opcode with no entry is an opcode the parser is
     # not allowed to emit.
     EffectKind.EXTRA_TRIGGER: _do_nothing,
-    EffectKind.CHOOSE_QUALITY: _do_choose_quality,
     EffectKind.CHOOSE_QUALITY: _do_choose_quality,
     EffectKind.BECOME_SOLVED: _do_become_solved,
     EffectKind.FLIP_PERMANENT: _do_flip_permanent,
