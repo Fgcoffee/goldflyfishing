@@ -37,12 +37,16 @@ pip install PySide6                   # only for the desktop window
 pip install pytest                    # only to run the tests
 ```
 
-Then build the card database once. It downloads Scryfall's bulk data and
-writes about 100 MB into `cache/`:
+Then build the card database once. Scryfall's published dumps are already in
+`cache/scryfall`, so this needs no network and takes a few seconds:
 
 ```bash
-python -m mtgfish.tools.fetch_scryfall
+python -m mtgfish.tools.fetch_scryfall --offline
 ```
+
+Drop `--offline` to pull the current dumps from Scryfall instead, which is how
+you refresh the pool when new sets are released. Either way it writes about
+100 MB to `cache/cards.sqlite`, which is derived data and stays out of git.
 
 ### Run it
 
@@ -70,6 +74,15 @@ same set of entry points with shorter names - `mtgfish web --reload`, `mtgfish
 simulate deck.txt --games 1000`, `mtgfish fetch`. Run `mtgfish` with no
 arguments for the list. The `python -m` forms above keep working either way,
 and are the ones to use when working in a clone.
+
+## What is in the repository
+
+The card pool comes as Scryfall's own dumps - oracle cards, rulings, tagger
+tags and the type catalogs, about 35 MB in `cache/scryfall` - plus the
+Comprehensive Rules text. The 95 MB SQLite snapshot built from them is not
+committed: it is derived, rebuilt whole each time, and a copy per refresh would
+live in the history for ever. `bench/results` holds the cost-benchmark output,
+so a change can be measured against the numbers it is meant to improve.
 
 ## How it is put together
 

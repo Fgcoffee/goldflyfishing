@@ -425,6 +425,13 @@ def _prune(card: dict) -> dict:
     return out
 
 
+def _bulk(client: ScryfallClient, kind: str, index: dict, offline: bool) -> Path | None:
+    """The dump for ``kind``: downloaded, or the newest already in the cache."""
+    if offline:
+        return client.cached_bulk(kind)
+    return client.fetch_bulk(kind, index=index)
+
+
 def build_database(
     path: Path | None = None,
     client: ScryfallClient | None = None,
@@ -446,11 +453,24 @@ def build_database(
         if progress is not None:
             progress(message)
 
-    report("Fetching Scryfall bulk index")
-    index = client.bulk_index()
+    # Offline builds the snapshot from whatever dumps are already in the cache.
+    # The dumps are in the repository and the database is not - it is 95 MB of
+    # derived data - so a fresh clone with no network can still get a card pool.
+    offline = bool(getattr(client, "offline", False))
+    if offline:
+        report("Offline: building from the cached Scryfall dumps")
+        index: dict = {}
+    else:
+        report("Fetching Scryfall bulk index")
+        index = client.bulk_index()
 
-    report("Downloading oracle cards")
-    oracle_path = client.fetch_bulk("oracle_cards", index=index)
+    report("Reading oracle cards" if offline else "Downloading oracle cards")
+    oracle_path = _bulk(client, "oracle_cards", index, offline)
+    if oracle_path is None:
+        raise FileNotFoundError(
+            f"no cached oracle_cards dump in {client.cache_dir}. Run without "
+            "--offline once to download it."
+        )
     oracle_hash = file_hash(oracle_path)
 
     report("Fetching catalogs")
@@ -542,9 +562,11 @@ def build_database(
             name_rows,
         )
 
-        if include_rulings:
-            report("Downloading rulings")
-            rulings_path = client.fetch_bulk("rulings", index=index)
+        rulings_path = _bulk(client, "rulings", index, offline) if include_rulings else None
+        if include_rulings and rulings_path is None:
+            report("No cached rulings dump; skipping")
+        if rulings_path is not None:
+            report("Reading rulings" if offline else "Downloading rulings")
             conn.executemany(
                 "INSERT INTO rulings(oracle_id, published_at, comment) VALUES (?, ?, ?)",
                 (
@@ -555,9 +577,11 @@ def build_database(
             )
 
         if include_tags:
-            report("Downloading oracle tags")
+            report("Reading oracle tags" if offline else "Downloading oracle tags")
             try:
-                tags_path = client.fetch_bulk("oracle_tags", index=index)
+                tags_path = _bulk(client, "oracle_tags", index, offline)
+                if tags_path is None:
+                    raise FileNotFoundError("no cached oracle_tags dump")
                 conn.executemany(
                     "INSERT OR IGNORE INTO oracle_tags(oracle_id, tag) VALUES (?, ?)",
                     _iter_tag_rows(tags_path),

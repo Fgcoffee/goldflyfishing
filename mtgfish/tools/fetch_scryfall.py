@@ -5,6 +5,10 @@
 Downloads Scryfall's oracle-card, rulings, and tagger dumps, then writes a
 pruned SQLite snapshot. Safe to re-run: bulk files are cached on Scryfall's own
 ``updated_at``, so nothing is re-downloaded until the pool actually changes.
+
+``--offline`` builds from the dumps already in ``cache/scryfall`` and never
+touches the network. Those dumps are in the repository; the 95 MB database
+they produce is not.
 """
 
 from __future__ import annotations
@@ -24,12 +28,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-rulings", action="store_true", help="skip the rulings dump")
     parser.add_argument("--no-tags", action="store_true", help="skip the tagger dump")
     parser.add_argument("--output", type=str, default=None, help="database path")
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="build from the dumps already in the cache, without the network",
+    )
     args = parser.parse_args(argv)
 
     started = time.monotonic()
     path = build_database(
         path=Path(args.output) if args.output else None,
-        client=ScryfallClient(),
+        client=ScryfallClient(offline=args.offline),
         include_rulings=not args.no_rulings,
         include_tags=not args.no_tags,
         progress=lambda msg: print(f"  {msg}", flush=True),
