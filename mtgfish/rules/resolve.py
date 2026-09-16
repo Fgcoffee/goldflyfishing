@@ -418,6 +418,10 @@ def _do_restriction(resolution: Resolution, effect: Effect) -> None:
     Registered standing rather than regenerated, because it outlives its
     source: "creatures can't attack this turn" keeps applying after the
     enchantment that said it has gone.
+
+    It does not outlive its *duration*, though. Dropping ``effect.duration``
+    here is what made every "this turn" prohibition permanent - one Falter
+    and those creatures could never block again.
     """
     from .restrictions import Restriction, register_standing
 
@@ -432,6 +436,8 @@ def _do_restriction(resolution: Resolution, effect: Effect) -> None:
                 controller=resolution.controller,
                 counterpart=restriction.counterpart,
                 text=restriction.text or effect.text,
+                duration=effect.duration,
+                created_turn=resolution.game.turn,
             ),
         )
 
@@ -1085,6 +1091,7 @@ def _register_continuous(resolution: Resolution, effect: Effect) -> None:
             timestamp=game.ids.timestamp(),
             layer=int(layer_for(resolved_effect)),
             duration=effect.duration or int(Duration.PERMANENT),
+            created_turn=game.turn,
         )
     )
     game.invalidate_characteristics()
@@ -1459,6 +1466,13 @@ def _do_exchange_control(resolution: Resolution, effect: Effect) -> None:
         return  # CR 701.10c: if either cannot be exchanged, nothing happens.
     first, second = objects
     first.controller, second.controller = second.controller, first.controller
+    # The exchange has no duration (CR 701.10a), so it moves the *base* too.
+    # Swapping only the current controller would last until the next time the
+    # board was computed, when layer 2 handed both permanents straight back.
+    first.base_controller, second.base_controller = (
+        second.base_controller,
+        first.base_controller,
+    )
     first.summoning_sick = second.summoning_sick = True
     resolution.game.invalidate_characteristics()
     for obj in objects:
