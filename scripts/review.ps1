@@ -16,7 +16,7 @@
 #>
 [CmdletBinding()]
 param(
-    [Parameter(Position = 0)][ValidateSet('list', 'diff', 'test', 'run', 'merge', 'clean')][string]$Command = 'list',
+    [Parameter(Position = 0)][ValidateSet('all', 'list', 'diff', 'test', 'run', 'merge', 'clean')][string]$Command = 'list',
     [Parameter(Position = 1)][string]$Branch,
     [int]$Port = 8010,
     [switch]$Full,      # test: the whole suite, parser included (~10 minutes)
@@ -28,6 +28,9 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $reviewRoot = Join-Path (Split-Path -Parent $repo) 'mtgfish-review'
 $dataDir = Join-Path $repo 'cache'
+# How to type this script again, in whatever way the user just typed it.
+$script = if ($PSCommandPath -and (Get-Location).Path -eq $repo) { '.\scripts
+eview.ps1' } else { $PSCommandPath }
 
 function Say($text, $colour = 'Cyan') { if (-not $Quiet) { Write-Host $text -ForegroundColor $colour } }
 
@@ -83,8 +86,90 @@ function Get-Worktree([string]$name) {
 }
 
 Invoke-Git -C $repo fetch origin --prune --quiet | Out-Null
+# Pull-request heads, so "everything" includes PRs raised from branches this
+# clone has never seen - including forks, which have no branch here at all.
+Invoke-Git -C $repo fetch origin --quiet '+refs/pull/*/head:refs/remotes/origin/pr/*' | Out-Null
+
+function Get-Candidates {
+    $seen = @{}
+    $out = @()
+    foreach ($ref in @('refs/remotes/origin/pr', 'refs/remotes/origin/claude')) {
+        foreach ($row in @(Invoke-Git -C $repo for-each-ref --sort=-committerdate `
+                    --format='%(refname:short)|%(contents:subject)' $ref)) {
+            $parts = "$row" -split '\|', 2
+            $name = ($parts[0]).Trim() -replace '^origin/', ''
+            $ahead = "$(Invoke-Git -C $repo rev-list --count "origin/main..origin/$name" | Select-Object -First 1)".Trim()
+            # Nothing ahead of main is already merged, or stale. Either way
+            # there is nothing left to judge.
+            if ($ahead -eq '0') { continue }
+            $sha = "$(Invoke-Git -C $repo rev-parse "origin/$name" | Select-Object -First 1)".Trim()
+            if ($seen.ContainsKey($sha)) { continue }   # a PR and its branch are one thing
+            $seen[$sha] = $true
+            $out += [pscustomobject]@{ Name = $name; Subject = $parts[1]; Ahead = $ahead }
+        }
+    }
+    return $out
+}
 
 switch ($Command) {
+    'all' {
+        $candidates = Get-Candidates
+        if (-not $candidates) { Say "Nothing to review - no branch or PR is ahead of main." 'Green'; break }
+        Say ("Reviewing {0}: each one merged with main, then tested." -f $candidates.Count)
+        $results = @()
+        foreach ($candidate in $candidates) {
+            Write-Host ""
+            Say ("=== {0}  ({1} commit(s) ahead)" -f $candidate.Name, $candidate.Ahead)
+            Write-Host ("    {0}" -f $candidate.Subject) -ForegroundColor DarkGray
+            $started = Get-Date
+            $verdict = 'passed'
+            $detail = ''
+            try {
+                $path = Get-Worktree $candidate.Name
+            } catch {
+                $results += [pscustomobject]@{ Name = $candidate.Name; Verdict = 'conflicts with main'; Detail = ''; Seconds = 0 }
+                Say "    conflicts with main - not tested" 'Yellow'
+                continue
+            }
+            $target = if ($Full) { @('tests') } else { @('tests/rules', 'tests/sim', 'tests/ui', 'tests/web', 'tests/data') }
+            $env:MTGFISH_DATA_DIR = $dataDir
+            $env:PYTHONPATH = $path
+            Push-Location $path
+            try {
+                $previous = $ErrorActionPreference
+                $ErrorActionPreference = 'Continue'
+                $output = & python -m pytest @target -q -p no:cacheprovider 2>&1 | ForEach-Object { "$_" }
+                $code = $LASTEXITCODE
+                $ErrorActionPreference = $previous
+            } finally { Pop-Location }
+            $summary = ($output | Select-String -Pattern '^\d+ (passed|failed)|failed,|passed,' | Select-Object -Last 1)
+            if ($code -ne 0) {
+                $verdict = 'FAILED'
+                $failures = @($output | Select-String -Pattern '^FAILED ' | ForEach-Object { ($_ -split ' ')[1] })
+                $detail = ($failures | Select-Object -First 4) -join ', '
+                Say ("    {0}" -f "$summary".Trim()) 'Red'
+                foreach ($failure in $failures | Select-Object -First 6) { Write-Host "      $failure" -ForegroundColor Red }
+            } else {
+                Say ("    {0}" -f "$summary".Trim()) 'Green'
+            }
+            $results += [pscustomobject]@{
+                Name = $candidate.Name; Verdict = $verdict; Detail = $detail
+                Seconds = [int]((Get-Date) - $started).TotalSeconds
+            }
+        }
+        Write-Host ""
+        Say "Summary"
+        foreach ($result in $results) {
+            $colour = if ($result.Verdict -eq 'passed') { 'Green' } else { 'Red' }
+            Write-Host ("  {0,-42} {1,-20} {2,4}s  {3}" -f $result.Name, $result.Verdict, $result.Seconds, $result.Detail) -ForegroundColor $colour
+        }
+        $good = @($results | Where-Object { $_.Verdict -eq 'passed' })
+        if ($good) {
+            Say ("`nReady to land: {0}" -f (($good.Name) -join ', '))
+            Say ("  {0} merge <branch>   (or merge its PR on GitHub)" -f $script)
+        }
+    }
+
     'list' {
         Say "Branches waiting for review (newest first):"
         $rows = @(Invoke-Git -C $repo for-each-ref --sort=-committerdate `
