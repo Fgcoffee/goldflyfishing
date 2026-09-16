@@ -63,6 +63,14 @@ python -m mtgfish.tools.cost deck.txt --mirror   # what a run costs in time and 
 A decklist is a text file, or an Archidekt URL. Most export formats are
 understood, with or without quantities, set codes or categories.
 
+### Installed rather than run from a clone
+
+`pip install .` also puts a single `mtgfish` command on the path, which is the
+same set of entry points with shorter names - `mtgfish web --reload`, `mtgfish
+simulate deck.txt --games 1000`, `mtgfish fetch`. Run `mtgfish` with no
+arguments for the list. The `python -m` forms above keep working either way,
+and are the ones to use when working in a clone.
+
 ## How it is put together
 
 | | |

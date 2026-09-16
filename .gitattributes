@@ -1,0 +1,23 @@
+# The desktop build is made on Windows and the web app is deployed on Linux,
+# so the same files are edited from both. Without this, whichever side commits
+# next rewrites every line of a file it did not otherwise change, and a real
+# one-line fix arrives as a 400-line diff nobody can review.
+#
+# `text=auto` stores LF in the repository and checks out whatever the platform
+# uses, so nothing about editing on Windows changes.
+* text=auto
+
+# Executed by a shell, which will not accept CRLF in a shebang.
+*.sh text eol=lf
+
+# Read by the container, where CRLF in a RUN line is a syntax error.
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+
+# Not text, whatever the heuristic decides: the card database is sqlite, and
+# a normalised byte in it is a corrupted one.
+*.sqlite binary
+*.parquet binary
+*.png binary
+*.jpg binary
+*.ico binary
