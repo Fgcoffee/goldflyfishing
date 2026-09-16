@@ -461,3 +461,52 @@ def test_a_cost_reduction_is_not_rendered_as_an_increase():
     made, _ = abilities_of("Affinity for artifacts")
     said = explain_ability(made[0])
     assert "-1 times" in said
+
+
+# ---------------------------------------------------------------------------
+# A static ability's condition belongs to the ability
+# ---------------------------------------------------------------------------
+
+
+def test_a_static_condition_is_lifted_onto_the_ability(subtype_registry):
+    """Where the condition sits decides whether it is checked at all.
+
+    A CONDITIONAL is the right shape for a resolving spell and the wrong one
+    for a static ability: ``layers._continuous_parts`` walks SEQUENCEs and not
+    CONDITIONALs, so an anthem wrapped in one was dropped whole. The engine's
+    own mechanism for this is ``Ability.static_condition``, re-checked every
+    time characteristics are recomputed.
+    """
+    made, failures = abilities_of(
+        "Creatures you control get +1/+1 as long as you control a Goblin."
+    )
+    assert not failures
+    ability = made[0]
+    assert not ability.static_condition.is_always
+    assert [effect.kind for effect in ability.effects] == [EffectKind.MODIFY_PT]
+
+
+def test_both_orders_of_the_same_sentence_agree(subtype_registry):
+    """Oracle text puts the condition on either side and means the same card."""
+    leading, _ = abilities_of(
+        "As long as you control a Goblin, creatures you control get +1/+1."
+    )
+    trailing, _ = abilities_of(
+        "Creatures you control get +1/+1 as long as you control a Goblin."
+    )
+    assert str(leading[0].static_condition) == str(trailing[0].static_condition)
+    assert leading[0].effects[0].kind is trailing[0].effects[0].kind
+
+
+def test_an_unconditional_static_ability_gains_no_condition():
+    made, _ = abilities_of("Creatures you control get +1/+1.")
+    assert made[0].static_condition.is_always
+
+
+def test_a_spell_keeps_its_conditional_shape(subtype_registry):
+    """Only static abilities are lifted. A spell resolves once, and its
+    CONDITIONAL is exactly the right opcode for that."""
+    made, _ = abilities_of(
+        "If you control a Goblin, draw a card.", is_permanent=False
+    )
+    assert made[0].effects[0].kind is EffectKind.CONDITIONAL

@@ -16,6 +16,7 @@ from ..rules.card_types import chapter_ability
 from ..rules.effects import Effect, EffectKind
 from ..rules.enums import Timing, Zone
 from ..rules.keywords import lookup as keyword_lookup
+from ..rules.query import ALWAYS
 from .clauses import parse_effects
 from .errors import ParseFailure
 from .normalize import normalize
@@ -717,24 +718,62 @@ def _plain(line: Line, result: ParsedFace, *, is_permanent: bool) -> list[Abilit
     stream = Stream.of(line.text)
     effects = parse_effects(stream)
     kind = AbilityKind.STATIC if is_permanent else AbilityKind.SPELL
-    return [
-        _finish(
-            line.text,
-            stream,
-            effects,
-            result,
-            rule="plain",
-            build=lambda body: Ability(
-                kind,
-                effects=tuple(body),
-                is_characteristic_defining=_is_cda(body),
-                # CR 604.3: a CDA functions in every zone, not just on the
-                # battlefield. Tarmogoyf has to be 0/1 in a graveyard.
-                functions_in=frozenset(Zone) if _is_cda(body) else BATTLEFIELD_ONLY,
-                text=line.text,
-            ),
+
+    def build_plain(body) -> Ability:
+        gate = ALWAYS
+        if kind is AbilityKind.STATIC:
+            gate, body = _lift_static_condition(body)
+        return Ability(
+            kind,
+            effects=tuple(body),
+            static_condition=gate,
+            is_characteristic_defining=_is_cda(body),
+            # CR 604.3: a CDA functions in every zone, not just on the
+            # battlefield. Tarmogoyf has to be 0/1 in a graveyard.
+            functions_in=frozenset(Zone) if _is_cda(body) else BATTLEFIELD_ONLY,
+            text=line.text,
         )
+
+    return [
+        _finish(line.text, stream, effects, result, rule="plain", build=build_plain)
     ]
+
+
+def _lift_static_condition(body):
+    '''Move a whole-ability condition off the effect and onto the ability.
+
+    "Creatures you control get +1/+1 as long as you control a Forest" parses
+    to a CONDITIONAL wrapping a MODIFY_PT. That is the right shape for a
+    resolving spell and the wrong one for a static ability: the layer system
+    gathers continuous effects by walking SEQUENCEs and never looks inside a
+    CONDITIONAL, so *both* halves were dropped and the anthem did nothing -
+    while parsing cleanly, which is the worst way to be wrong.
+
+    ``Ability.static_condition`` is the mechanism the engine already has for
+    exactly this (``layers._static_condition_holds``), and it is re-checked
+    every time characteristics are recomputed, which is what a continuously
+    checked condition needs. So the condition is lifted and the continuous
+    effects come back to the top level where the layer system can see them.
+
+    Only for a condition wrapping continuous effects, and only with no
+    "otherwise" branch: a static ability that does one thing or else another
+    is not a gate, and a CONDITIONAL around a one-shot effect is not one
+    either.
+    '''
+    from ..rules.effects import CONTINUOUS_KINDS
+
+    if len(body) != 1:
+        return ALWAYS, body
+    node = body[0]
+    if node.kind is not EffectKind.CONDITIONAL or node.otherwise:
+        return ALWAYS, body
+    if node.condition.is_always or node.condition.is_unparsed:
+        return ALWAYS, body
+    if not node.children:
+        return ALWAYS, body
+    if not all(child.kind in CONTINUOUS_KINDS for child in node.children):
+        return ALWAYS, body
+    return node.condition, list(node.children)
 
 
 def _alternative_cost_line(text: str):

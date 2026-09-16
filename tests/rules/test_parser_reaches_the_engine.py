@@ -164,3 +164,111 @@ def test_a_shield_over_a_player_is_not_a_shield_over_everyone(game):
     "damage that would be dealt to you" protected the opponents too."""
     shield = _shield(game, "Prevent all damage that would be dealt to you this turn.")
     assert shield.players is not None
+
+
+# ---------------------------------------------------------------------------
+# A conditional static ability applies at all, and only when it should
+# ---------------------------------------------------------------------------
+
+
+def a_permanent(name: str, text: str, type_line: str, power=None, toughness=None):
+    face = FaceDef(
+        name=name,
+        mana_cost=ManaCost.parse("{2}"),
+        has_mana_cost=True,
+        type_line=TypeLine.parse(type_line),
+        oracle_text=text,
+        power=power,
+        toughness=toughness,
+    )
+    return CardDef(
+        oracle_id=name.lower(),
+        name=name,
+        layout=Layout.NORMAL,
+        faces=(face,),
+        mana_value=2,
+        color_identity=Color.NONE,
+        commander_legal=True,
+    )
+
+
+@pytest.fixture
+def two_players() -> Game:
+    """A game with two players and the parser supplying abilities."""
+    from mtgfish.parser.compile import OracleAbilities
+
+    game = Game()
+    game.players.extend([Player(PlayerId(0)), Player(PlayerId(1))])
+    game.turn_order.extend([PlayerId(0), PlayerId(1)])
+    game.ability_provider = OracleAbilities()
+    game.active_player = PlayerId(0)
+    return game
+
+
+def test_an_anthem_gated_on_your_turn_applies_on_your_turn(two_players):
+    """The layer system gathers continuous effects by walking SEQUENCEs and
+    never looks inside a CONDITIONAL, so an anthem wrapped in one was dropped
+    entirely - "as long as" and "during your turn" alike did nothing at all.
+
+    Lifting the condition onto ``Ability.static_condition`` puts it where
+    ``layers._static_condition_holds`` already checks it.
+    """
+    game = two_players
+    game.create_object(
+        a_permanent(
+            "Anthem", "Creatures you control get +1/+1 during your turn.", "Enchantment"
+        ),
+        PlayerId(0),
+        Zone.BATTLEFIELD,
+    )
+    bear = game.create_object(
+        a_permanent("Bear", "", "Creature - Bear", "2", "2"),
+        PlayerId(0),
+        Zone.BATTLEFIELD,
+    )
+    game.invalidate_characteristics()
+
+    chars = game.characteristics(bear)
+    assert (chars.power, chars.toughness) == (3, 3)
+
+
+def test_the_same_anthem_stops_applying_off_your_turn(two_players):
+    """The other half. A condition that is never checked and one that is
+    always true look identical from a single board."""
+    game = two_players
+    game.create_object(
+        a_permanent(
+            "Anthem", "Creatures you control get +1/+1 during your turn.", "Enchantment"
+        ),
+        PlayerId(0),
+        Zone.BATTLEFIELD,
+    )
+    bear = game.create_object(
+        a_permanent("Bear", "", "Creature - Bear", "2", "2"),
+        PlayerId(0),
+        Zone.BATTLEFIELD,
+    )
+    game.active_player = PlayerId(1)
+    game.invalidate_characteristics()
+
+    chars = game.characteristics(bear)
+    assert (chars.power, chars.toughness) == (2, 2)
+
+
+def test_an_unconditional_anthem_is_untouched(two_players):
+    game = two_players
+    game.create_object(
+        a_permanent("Anthem", "Creatures you control get +1/+1.", "Enchantment"),
+        PlayerId(0),
+        Zone.BATTLEFIELD,
+    )
+    bear = game.create_object(
+        a_permanent("Bear", "", "Creature - Bear", "2", "2"),
+        PlayerId(0),
+        Zone.BATTLEFIELD,
+    )
+    game.active_player = PlayerId(1)
+    game.invalidate_characteristics()
+
+    chars = game.characteristics(bear)
+    assert (chars.power, chars.toughness) == (3, 3)
