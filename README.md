@@ -1,0 +1,132 @@
+# MTG Commander Goldfisher
+
+A Magic: The Gathering Commander (EDH) simulator. It reads real cards from
+their oracle text, plays four-player games under the Comprehensive Rules, and
+answers the questions a deckbuilder actually asks: how fast does this deck
+start, how often does the commander land, which cards are pulling their weight,
+and is this swap worth a slot.
+
+It runs as a desktop application or as a web app. Both are the same front end
+over the same Python bridge.
+
+## What it does
+
+* **Goldfishes a deck** over thousands of games and reports win rate, stall
+  rate, the mana and development curve, and when the commander lands.
+* **Replays any datapoint.** Click a point on a chart and that exact game is
+  played again, with a full log. Nothing is stored; the seed rebuilds it.
+* **Shows what the engine actually understood.** The Deck tab marks every card
+  by how much of its text the parser read: yellow for partly read, red for
+  unread. A deck can be perfectly legal and still be measured as a deck with
+  ten blanks in it, and that number is on screen before you trust any other.
+* **Compares cards on the same seed** in the swap lab. Two ordinary runs cannot
+  answer "is this card worth a slot" - the gap between two decks differing by
+  one card is usually smaller than the gap between two runs of the same deck.
+  Every variant here plays the same seeds against the same opponents.
+* **Lets you drive a board by hand** in the sandbox, to see whether a card that
+  did nothing was an unread ability or a rules bug. Those need different fixes.
+* **Imports from Archidekt** by link, or by signing in to list your own decks.
+
+## Getting started
+
+Python 3.12 or newer.
+
+```bash
+pip install -r requirements-web.txt   # the engine, simulator and web app
+pip install PySide6                   # only for the desktop window
+pip install pytest                    # only to run the tests
+```
+
+Then build the card database once. It downloads Scryfall's bulk data and
+writes about 100 MB into `cache/`:
+
+```bash
+python -m mtgfish.tools.fetch_scryfall
+```
+
+### Run it
+
+```bash
+python -m mtgfish.ui                  # the desktop window
+python -m mtgfish.web --reload        # the web app on http://127.0.0.1:8000
+```
+
+### Without a window
+
+```bash
+python -m mtgfish.tools.simulate deck.txt --games 1000
+python -m mtgfish.tools.swap deck.txt --swap "Sol Ring=Mana Crypt" --games 2000
+python -m mtgfish.tools.parse_report --card "Lightning Bolt"
+python -m mtgfish.tools.cost deck.txt --mirror   # what a run costs in time and memory
+```
+
+A decklist is a text file, or an Archidekt URL. Most export formats are
+understood, with or without quantities, set codes or categories.
+
+## How it is put together
+
+| | |
+|---|---|
+| `rules/` | The Comprehensive Rules, implemented. Knows nothing about oracle text, bots or statistics. Every legality check lives here. |
+| `parser/` | Oracle text to an effect IR made only of opcodes the rules layer already runs. It cannot express an effect the engine lacks, which is what makes a mis-parse inert rather than corrupting. |
+| `data/` | The Scryfall card snapshot, and deck import. |
+| `ai/` | Decision making. Enumerates its options *from the engine*, so it can never drift from the real rules. |
+| `sim/` | Reproducible parallel runs, statistics, replay, the swap lab. |
+| `ui/` | The shared front end, the bridge it talks to, and the sandbox. |
+| `web/` | The same bridge over HTTP, with server-sent events. No Qt required. |
+
+Two rules govern the parser, and previous attempts at this died by breaking
+them. **Full consumption**: if any token of an ability is left over, the whole
+ability is unparsed and never fires - an ability 90% understood is 100%
+dangerous, because the missing 10% is the clause that made the card worth
+playing. **No invention**: the parser may only emit opcodes the engine executes.
+
+## Determinism
+
+A seed determines a game completely. Game 4,712 is the same game whether the
+run was 5,000 games or 50,000, and whether it ran on one core or twenty. That
+is what makes replay possible without storing anything, and every run records
+its engine version and card-pool hash so a replay can refuse to reconstruct a
+game it would no longer reproduce faithfully.
+
+Games that cannot end are handled rather than left to spin. A repeating cycle
+is detected and shortcut to its result (CR 732.2a); a mandatory loop nothing
+can break is a draw (CR 104.4b); anything else that runs away is stopped and
+reported as a bug in a card, not folded into the stall rate where it would look
+like a property of the deck.
+
+## Tests
+
+```bash
+python -m pytest            # 1,131 tests
+python -m pytest tests/rules
+```
+
+Tests that need real cards skip rather than fail when the card database has not
+been built, so a fresh clone can still run the pure-rules suite.
+
+## More
+
+* [BUILD.md](BUILD.md) - packaging the desktop application, and the war stories
+  behind how it is packaged.
+* [DEPLOY.md](DEPLOY.md) - running the web app, in a container or behind a
+  proxy, and what to settle before it is public.
+* [docs/parser-gaps.md](docs/parser-gaps.md) - what the parser cannot read yet.
+
+## Known limitations
+
+* **Not every card is understood.** Coverage is measured over the real card
+  pool and reported per deck rather than claimed. Blood Moon, for one, is not
+  read at all.
+* **Modal spells** need a legal target for every mode, not just the chosen
+  ones, so some are ruled uncastable when they are not.
+* **Log in and Manage subscription are placeholders** in the web app; they
+  send nothing.
+* **Card verdicts are global.** Marking a card inert in the sandbox affects
+  every simulation, including other users of a shared deployment.
+
+## Credits
+
+Card data and images come from [Scryfall](https://scryfall.com). Magic: The
+Gathering is © Wizards of the Coast. This project is unaffiliated with Wizards
+of the Coast, Scryfall or Archidekt.
