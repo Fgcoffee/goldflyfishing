@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTG Commander Goldfisher</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 29 16 16 30 3 16z' fill='%23e8b04a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header id="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 29 16 16 30 3 16z"/><path class="logo-inner" d="M16 9 23 16 16 23 9 16z"/></svg>
+    <span>Goldfisher</span>
+  </div>
+
+  <nav id="tabs" aria-label="Screens">
+    <button data-tab="setup" class="active">Decks</button>
+    <button data-tab="deck">Deck</button>
+    <button data-tab="results">Results</button>
+    <button data-tab="lab">Swap lab</button>
+    <button data-tab="replay">Replay</button>
+    <button data-tab="sandbox">Sandbox</button>
+  </nav>
+
+  <div class="top-actions">
+    <div id="themeswitch" class="seg" role="radiogroup" aria-label="Theme">
+      <button data-theme-choice="dark" role="radio" title="Dark - navy">Dark</button>
+      <button data-theme-choice="light" role="radio" title="Light">Light</button>
+      <button data-theme-choice="deck" role="radio" title="Colours of the deck you are goldfishing">Deck</button>
+    </div>
+    <button id="btn-subscription" class="ghost">Manage subscription</button>
+    <button id="btn-login" class="primary">Log in / Register</button>
+  </div>
+</header>
+
+<div id="statusbar">
+  <span id="connection" class="dot" title="connected"></span>
+  <span id="status"></span>
+  <div id="progress"><div id="progressfill"></div></div>
+  <button id="stoprun" class="ghost small" hidden title="Stop the simulation in progress">Stop run</button>
+</div>
+
+<div id="updatebanner" hidden>
+  <span>A newer version of the app is available.</span>
+  <button id="updatereload" class="primary small">Reload now</button>
+  <button id="updatedismiss" class="ghost small">Later</button>
+</div>
+
+<main>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="setup" class="tab active">
+  <div class="tabhead">
+    <div>
+      <h1>Decks</h1>
+      <p class="hint">
+        Paste a decklist, or an Archidekt URL, into the first slot. Empty opponent
+        slots are filled with copies of your deck &mdash; a four-player table
+        against two opponents is a different format with different maths.
+      </p>
+    </div>
+    <button id="setupimport" class="ghost">Import from Archidekt</button>
+  </div>
+  <div id="deckslots"></div>
+  <div class="panel runbar">
+    <label>Games <input id="games" type="number" value="1000" min="1" max="100000"></label>
+    <label>Seed <input id="seed" type="number" value="0"></label>
+    <span class="spacer"></span>
+    <button id="opendeck" class="ghost">View deck</button>
+    <button id="run" class="primary">Simulate</button>
+  </div>
+  <pre id="deckreport"></pre>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="deck" class="tab">
+  <div id="deckhero" class="hero">
+    <div class="hero-art"></div>
+    <div class="hero-body">
+      <div class="hero-kicker" id="deckkicker">Your deck</div>
+      <h1 id="deckname">No deck loaded</h1>
+      <div id="deckcommanders" class="hero-sub"></div>
+      <div id="deckchips" class="chips"></div>
+    </div>
+  </div>
+
+  <div class="deck-toolbar">
+    <div class="addcard">
+      <input id="addcard" type="search" placeholder="Add a card by name..." autocomplete="off">
+      <ul id="addresults" class="dropdown" hidden></ul>
+    </div>
+    <div id="deckfilter" class="seg" role="radiogroup" aria-label="Show">
+      <button data-filter="all" class="active">All</button>
+      <button data-filter="attention">Needs attention</button>
+      <button data-filter="partial"><i class="sw warn"></i>Partial</button>
+      <button data-filter="blank"><i class="sw bad"></i>Unread</button>
+    </div>
+    <label class="compact">Group
+      <select id="deckgroup">
+        <option value="type">Card type</option>
+        <option value="mv">Mana value</option>
+        <option value="status">Parse quality</option>
+      </select>
+    </label>
+    <div id="deckmode" class="seg" role="radiogroup" aria-label="View">
+      <button data-mode="grid" class="active">Cards</button>
+      <button data-mode="list">List</button>
+    </div>
+    <span class="spacer"></span>
+    <button id="deckimport" class="ghost">Import from Archidekt</button>
+  </div>
+
+  <div id="deckempty" class="empty">
+    <h2>Nothing to show yet</h2>
+    <p>Paste a decklist or an Archidekt link on the <a href="#" data-goto="setup">Decks</a> screen,
+      or import one straight from Archidekt.</p>
+    <button class="primary" data-open-import>Import from Archidekt</button>
+  </div>
+  <div id="deckissues"></div>
+  <div id="deckgrid"></div>
+
+  <div id="deckstats" class="dock">
+    <button id="dockToggle" class="dock-toggle" aria-expanded="true">Deck stats</button>
+    <div class="dock-body">
+      <div class="dock-panel">
+        <h3>Mana curve <span id="avgmv" class="dim"></span></h3>
+        <div id="curve" class="curve"></div>
+      </div>
+      <div class="dock-panel">
+        <h3>Colour pips <span class="dim">costs vs land sources</span></h3>
+        <div id="pips" class="pips"></div>
+      </div>
+      <div class="dock-panel">
+        <h3>Card types</h3>
+        <div id="types" class="types"></div>
+      </div>
+      <div class="dock-panel">
+        <h3>Parse quality</h3>
+        <div id="quality" class="quality"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="results" class="tab">
+  <h1>Results</h1>
+  <div id="headline" class="cards"></div>
+  <p class="hint">Click any point on a chart to replay a game that produced it.</p>
+  <div class="charts">
+    <div id="chart-curve"></div>
+    <div id="chart-commander"></div>
+    <div id="chart-impact"></div>
+    <div id="chart-removal"></div>
+  </div>
+  <h2>Inert cards</h2>
+  <p class="hint">
+    Cards the parser could not read. They did nothing all run, so every number
+    above understates them.
+  </p>
+  <pre id="inert"></pre>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="lab" class="tab">
+  <h1>Swap lab</h1>
+  <p class="hint">
+    Try cards out against each other on <em>the same seed</em>. Two ordinary
+    runs cannot answer &ldquo;is this card worth a slot&rdquo;: the gap between
+    two decks differing by one card is usually smaller than the gap between two
+    runs of the same deck, so the noise wins. Every variant here plays the same
+    seed against the same opponents, which takes that noise out of the answer.
+  </p>
+
+  <div class="row">
+    <button id="labload">Load cards from your deck</button>
+    <label class="toggle">
+      <input id="labcombine" type="checkbox" checked>
+      Apply all swaps together
+    </label>
+    <span id="labmodehint" class="hint"></span>
+  </div>
+
+  <div id="labslots"></div>
+  <div class="row">
+    <button id="labadd">Add a card to swap</button>
+    <span id="labplan" class="hint"></span>
+  </div>
+
+  <div class="row">
+    <button id="labrun" class="primary">Run the comparison</button>
+  </div>
+
+  <div id="labresults"></div>
+  <pre id="labproblems"></pre>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="replay" class="tab">
+  <h1>Replay</h1>
+  <div class="row">
+    <label>Game <input id="replayindex" type="number" value="0" min="0"></label>
+    <button id="loadreplay">Load</button>
+    <span id="replayinfo"></span>
+  </div>
+  <div class="split">
+    <div id="replayturns" class="sidebar"></div>
+    <pre id="replaylog"></pre>
+  </div>
+  <h2>Final board</h2>
+  <pre id="replayboard"></pre>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="sandbox" class="tab">
+  <h1>Sandbox</h1>
+  <p class="hint">
+    Put cards where you want them and play them in whatever order you like.
+    The opponent does nothing, so anything that happens is your card or the
+    rules. Inspect a card first to see what the parser made of it &mdash; a
+    card that does nothing is either an unread ability or a rules bug, and
+    those need different fixes.
+  </p>
+
+  <div class="sandbox-grid">
+    <div class="panel">
+      <h2>Find a card</h2>
+      <input id="cardsearch" type="text" placeholder="type at least two letters" autocomplete="off">
+      <ul id="searchresults"></ul>
+      <div class="row">
+        <select id="putzone">
+          <option value="battlefield">battlefield</option>
+          <option value="hand">hand</option>
+          <option value="graveyard">graveyard</option>
+          <option value="exile">exile</option>
+          <option value="library">library</option>
+          <option value="command">command zone</option>
+        </select>
+        <select id="putplayer">
+          <option value="0">You</option>
+          <option value="1">Opponent</option>
+        </select>
+        <button id="putcard">Put into play</button>
+      </div>
+      <div id="cardinfo"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Board</h2>
+      <div class="row">
+        <button id="sb-reset">Reset</button>
+        <button id="sb-mana">+10 mana</button>
+        <button id="sb-settle">Settle</button>
+        <button id="sb-resolve">Resolve top</button>
+        <button id="sb-advance">Next step</button>
+        <button id="sb-turn">Next turn</button>
+      </div>
+      <div id="sb-phase" class="phase"></div>
+      <div id="sb-board"></div>
+      <h3>Stack</h3>
+      <div id="sb-stack" class="stack"></div>
+    </div>
+
+    <div class="panel">
+      <h2>What you can do</h2>
+      <div id="sb-actions"></div>
+      <div id="sb-targets"></div>
+      <h3>Log</h3>
+      <pre id="sb-log"></pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer id="footer">
+  Card images and symbols courtesy of <a href="https://scryfall.com" target="_blank" rel="noopener">Scryfall</a>.
+  Magic: The Gathering is &trade; &amp; &copy; Wizards of the Coast. This app is not affiliated with Wizards of the Coast, Scryfall or Archidekt.
+</footer>
+
+<!-- ------------------------------------------------------------ drawer -->
+<aside id="carddrawer" class="drawer" hidden aria-label="Card details">
+  <button class="drawer-close" data-close-drawer aria-label="Close">&times;</button>
+  <div class="drawer-body">
+    <div class="drawer-image">
+      <img id="drawerimg" alt="">
+      <button id="drawerflip" class="ghost small" hidden>Show other face</button>
+    </div>
+    <div class="drawer-info">
+      <h2 id="drawername"></h2>
+      <div id="drawertype" class="dim"></div>
+      <div id="drawerstatus"></div>
+      <div id="draweractions" class="row"></div>
+      <div id="drawerreading"></div>
+    </div>
+  </div>
+</aside>
+<div id="scrim" hidden data-close-drawer></div>
+
+<!-- ------------------------------------------------------------ dialogs -->
+<dialog id="dlg-auth" class="modal">
+  <form method="dialog" class="modal-inner" id="authform">
+    <button class="modal-close" value="cancel" aria-label="Close">&times;</button>
+    <div class="seg modal-tabs" role="tablist">
+      <button type="button" data-auth="login" class="active">Log in</button>
+      <button type="button" data-auth="register">Register</button>
+    </div>
+    <h2 id="authtitle">Welcome back</h2>
+    <div class="placeholder-note">Accounts are coming soon. This form is a preview and does not send anything yet.</div>
+    <label class="stack-label" data-auth-only="register">Display name <input type="text" autocomplete="nickname" disabled></label>
+    <label class="stack-label">Email <input type="email" autocomplete="email" disabled></label>
+    <label class="stack-label">Password <input type="password" autocomplete="current-password" disabled></label>
+    <div class="modal-actions">
+      <button class="primary" value="cancel" id="authsubmit">Coming soon</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-sub" class="modal">
+  <form method="dialog" class="modal-inner wide">
+    <button class="modal-close" value="cancel" aria-label="Close">&times;</button>
+    <h2>Manage subscription</h2>
+    <div class="placeholder-note">Subscriptions are not available yet. Nothing here can be purchased or changed.</div>
+    <div class="plans">
+      <div class="plan current">
+        <div class="plan-name">Free</div>
+        <div class="plan-tag">Your current plan</div>
+        <ul><li>Goldfish your decks</li><li>Deck view with parse quality</li><li>Archidekt import</li></ul>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Pro</div>
+        <div class="plan-tag">Coming soon</div>
+        <ul><li>Larger simulation runs</li><li>Saved decks and results</li><li>Priority queue</li></ul>
+        <button type="button" disabled>Upgrade</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-archidekt" class="modal">
+  <div class="modal-inner wide">
+    <button class="modal-close" data-close-dialog aria-label="Close">&times;</button>
+    <h2>Import from Archidekt</h2>
+
+    <div class="import-grid">
+      <div class="import-col">
+        <h3>From a link</h3>
+        <form id="ark-linkform" class="row">
+          <input id="ark-link" type="text" placeholder="https://archidekt.com/decks/1234567" autocomplete="off">
+          <button class="primary">Import</button>
+        </form>
+
+        <div id="ark-account" data-requires="archidekt_login">
+          <h3>Your Archidekt account</h3>
+          <div id="ark-signedin" hidden>
+            Signed in as <strong id="ark-user"></strong>
+            <button id="ark-logout" class="ghost small">Sign out</button>
+          </div>
+          <form id="ark-loginform">
+            <label class="stack-label">Username or email <input id="ark-username" type="text" autocomplete="username"></label>
+            <label class="stack-label">Password <input id="ark-password" type="password" autocomplete="current-password"></label>
+            <div class="row"><button class="primary">Sign in to Archidekt</button></div>
+            <p class="hint small">
+              Your password goes straight to Archidekt to sign you in and is never stored.
+              Signing in lets you see your private and unlisted decks.
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <div class="import-col" data-requires="archidekt_decks">
+        <h3>Browse decks</h3>
+        <form id="ark-browseform" class="row">
+          <input id="ark-owner" type="text" placeholder="Archidekt username" autocomplete="off">
+          <button>Show decks</button>
+        </form>
+        <label class="compact">Import into
+          <select id="ark-target">
+            <option value="0">Your deck</option>
+            <option value="1">Opponent 2</option>
+            <option value="2">Opponent 3</option>
+            <option value="3">Opponent 4</option>
+          </select>
+        </label>
+        <div id="ark-decks" class="decklist-picker"></div>
+      </div>
+    </div>
+    <div id="ark-message" class="hint"></div>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="plotly.min.js"></script>
+<script src="transport.js"></script>
+<script src="app.js"></script>
+<script src="deck.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

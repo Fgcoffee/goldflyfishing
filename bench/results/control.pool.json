@@ -1,0 +1,30 @@
+{
+  "label": "control",
+  "decks": [
+    "control",
+    "control",
+    "control",
+    "control"
+  ],
+  "mode": "pool",
+  "run_seed": 1,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "python": "3.13.9",
+    "logical_cpus": 24,
+    "physical_cpus": 12,
+    "ram_gb": 31.6,
+    "thread_time_resolution_s": 1e-07
+  },
+  "pool": {
+    "games": 1000,
+    "workers": 23,
+    "wall_s": 116.32146110001486,
+    "cpu_s": 2486.0,
+    "processes_seen": 24,
+    "rss_peak_total_mb": 1536.21875,
+    "stalls": 188,
+    "runaways": 0
+  }
+}

@@ -1,0 +1,71 @@
+1 Goblin Lackey
+1 Goblin Guide
+1 Legion Warboss
+1 Goblin Warchief
+1 Goblin Chieftain
+1 Goblin King
+1 Goblin Matron
+1 Goblin Recruiter
+1 Skirk Prospector
+1 Mogg War Marshal
+1 Goblin Instigator
+1 Beetleback Chief
+1 Siege-Gang Commander
+1 Goblin Rabblemaster
+1 Muxus, Goblin Grandee
+1 Pashalik Mons
+1 Goblin Ringleader
+1 Goblin Piledriver
+1 Goblin Sharpshooter
+1 Krenko, Tin Street Kingpin
+1 Battle Cry Goblin
+1 Conspicuous Snoop
+1 Goblin Chainwhirler
+1 Frenzied Goblin
+1 Hellrider
+1 Purphoros, God of the Forge
+1 Mogg Fanatic
+1 Goblin Bushwhacker
+1 Reckless Bushwhacker
+1 Goblin Heelcutter
+1 Boggart Harbinger
+1 Warren Instigator
+1 Moggcatcher
+1 Goblin Motivator
+1 Goblin Cratermaker
+1 Ogre Battledriver
+1 Legion Loyalty
+1 Goblin Bombardment
+1 Shared Animosity
+1 Coat of Arms
+1 Impact Tremors
+1 Goblin War Drums
+1 Throne of the God-Pharaoh
+1 Hordeling Outburst
+1 Krenko's Command
+1 Dragon Fodder
+1 Tempt with Vengeance
+1 Lightning Bolt
+1 Chaos Warp
+1 Blasphemous Act
+1 Vandalblast
+1 Jeska's Will
+1 Embercleave
+1 Skullclamp
+1 Lightning Greaves
+1 Swiftfoot Boots
+1 Sol Ring
+1 Arcane Signet
+1 Mind Stone
+1 Fire Diamond
+1 Thought Vessel
+1 Castle Embereth
+1 Cavern of Souls
+1 Hanweir Battlements
+1 Ancient Tomb
+1 Rogue's Passage
+1 Command Tower
+32 Mountain
+
+// Commander
+1 Krenko, Mob Boss

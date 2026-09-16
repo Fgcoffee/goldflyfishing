@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mtgfish"
+version = "0.1.0"
+description = "Magic: The Gathering Commander simulator and goldfisher"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.32",
+    "numpy>=2.0",
+    "pyarrow>=17",
+    "pandas>=2.2",
+    "PySide6>=6.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-xdist>=3.5"]
+train = ["torch>=2.4"]
+
+[project.scripts]
+mtgfish = "mtgfish.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["mtgfish*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The board-state harness lives with the rules tests but is used by the parser
+# tests too, which is the point: parsed cards are checked on the same boards as
+# hand-written ones.
+pythonpath = ["tests/rules"]
+python_files = ["test_*.py"]
+filterwarnings = ["error::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

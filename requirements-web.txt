@@ -1,0 +1,6 @@
+# What the web server needs. Everything in pyproject.toml except PySide6,
+# which only the desktop window uses.
+requests>=2.32
+numpy>=2.0
+pyarrow>=17
+pandas>=2.2

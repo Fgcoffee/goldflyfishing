@@ -1,0 +1,26 @@
+# Serves the app from the working folder, restarting when the Python changes.
+#
+#   docker compose up
+#
+# The source is mounted rather than copied, so edits to mtgfish/ are live: web
+# files immediately (open pages offer a reload), Python after the supervisor
+# restarts the server - which it holds off doing while a simulation runs.
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MTGFISH_RELOAD: "1"
+      MTGFISH_MAX_RUNS: "1"
+    volumes:
+      - ./mtgfish:/app/mtgfish:ro
+      - ./cache:/data
+      - verdicts:/home/app/.mtgfish
+    # The simulator shares data between worker processes through /dev/shm,
+    # and Docker's 64 MB default is not enough for a large run.
+    shm_size: "1gb"
+    restart: unless-stopped
+
+volumes:
+  verdicts:

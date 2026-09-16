@@ -1,0 +1,627 @@
+"""A board you can drive by hand, to check the parser and the rules.
+
+This is the debugging surface for the two things that can silently be wrong:
+what the parser made of a card, and what the engine does with it. Everything
+here is headless and returns plain dictionaries, so the whole thing is
+testable without a window - a GUI whose logic cannot be tested is a GUI whose
+logic is not tested.
+
+The opponent does nothing on purpose. A sandbox where the other player fights
+back is a game, not an instrument: you cannot tell whether your card behaved
+oddly or whether the opponent interfered.
+
+Nothing here bypasses the rules. Cards are *put* into zones directly, which is
+how you set up a position, but playing them goes through ``cast_spell`` and
+``activate_ability`` like anything else - so if the engine would refuse, the
+sandbox refuses, and the reason comes back as text.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+from ..data.db import CardDatabase
+from ..parser import parse_card
+from ..parser.compile import OracleAbilities
+from ..parser.explain import explain_ability
+from ..parser.verdicts import Verdict, VerdictStore
+from ..rules.enums import Phase, Step, Zone
+from ..rules.game import Game
+from ..rules.gameobject import GameObject
+from ..rules.casting import _candidates_for
+from ..rules.ids import ObjectId, PlayerId, is_player_target, target_player
+from ..rules.log import GameLog
+from ..rules.player import Player
+from ..rules.priority import Action, ActionKind
+
+#: Where a card can be dropped when setting up a position.
+PLACEABLE = {
+    "battlefield": Zone.BATTLEFIELD,
+    "hand": Zone.HAND,
+    "graveyard": Zone.GRAVEYARD,
+    "exile": Zone.EXILE,
+    "library": Zone.LIBRARY,
+    "command": Zone.COMMAND,
+}
+
+
+class PassiveOpponent:
+    """Does nothing, ever.
+
+    Not a weak bot - a deliberately inert one. In a sandbox you are testing
+    one card at a time, and an opponent that blocks or removes things makes it
+    impossible to tell your card's behaviour from the opponent's.
+    """
+
+    def choose_action(self, game, player, legal):
+        from ..rules.priority import PASS
+
+        return PASS
+
+    def choose_optional(self, game, player, effect):
+        return False
+
+    def choose_discard(self, game, player):
+        hand = game.player(player).hand
+        return hand[-1] if hand else ObjectId(0)
+
+    def order_triggers(self, game, player, triggers):
+        return triggers
+
+    def choose_targets(self, game, player, source, candidates):
+        return tuple((group[0],) if group else () for group in candidates)
+
+    def declare_attackers(self, game, player, candidates):
+        return {}
+
+    def declare_blockers(self, game, player, combat, available):
+        return {}
+
+
+@dataclass(slots=True)
+class Sandbox:
+    """One hand-driven game, plus the queries the UI needs to describe it."""
+
+    db: CardDatabase
+    game: Game = field(init=False)
+    provider: OracleAbilities = field(init=False)
+    #: Human judgements on parses. Shared with the engine's ability provider,
+    #: so a card marked inert here stops working here *and* in a real run.
+    verdicts: VerdictStore | None = None
+    #: Which player the operator is driving. The other seat is inert.
+    hero: PlayerId = PlayerId(0)
+
+    def __post_init__(self) -> None:
+        if self.verdicts is None:
+            self.verdicts = VerdictStore()
+        self.provider = OracleAbilities(verdicts=self.verdicts)
+        self.db.registry()
+        self.reset()
+
+    # -- lifecycle ----------------------------------------------------------
+
+    def reset(self) -> dict:
+        """Start over with two empty boards.
+
+        Built directly rather than through ``new_game`` because there are no
+        decks: a sandbox position is assembled card by card, and shuffling a
+        library the operator never specified would only add noise.
+        """
+        import random
+
+        game = Game(rng=random.Random(0), log=GameLog(enabled=True))
+        game.ability_provider = self.provider
+        for index, name in enumerate(("You", "Opponent")):
+            game.players.append(Player(id=PlayerId(index), name=name))
+        game.turn_order = [PlayerId(0), PlayerId(1)]
+        game.active_player = PlayerId(0)
+        game.priority_player = PlayerId(0)
+        game.turn = 1
+        game.phase = Phase.PRECOMBAT_MAIN
+        game.step = Step.MAIN
+        game.agents[PlayerId(1)] = PassiveOpponent()
+
+        for player in game.players:
+            player.life = 40
+            player.max_lands = 99  # A sandbox is not a game; land drops are noise.
+
+        self.game = game
+        return self.state()
+
+    # -- card lookup --------------------------------------------------------
+
+    def search(self, text: str, limit: int = 25) -> list[dict]:
+        """Find cards by name."""
+        if not text or len(text) < 2:
+            return []
+        out = []
+        # ``suggest`` returns names; the card itself is a second lookup. Worth
+        # it here because the operator picks from a list and wants to see the
+        # cost and type line before choosing.
+        for name in self.db.suggest(text, limit=limit):
+            card = self.db.lookup(name)
+            if card is None or not card.faces:
+                continue
+            face = card.faces[0]
+            out.append(
+                {
+                    "name": card.name,
+                    "mana_cost": str(face.mana_cost),
+                    "type_line": str(face.type_line),
+                }
+            )
+        return out
+
+    def inspect(self, name: str) -> dict:
+        """What the parser made of a card, and what it could not read.
+
+        This is the whole reason the sandbox exists. A card that does nothing
+        on the battlefield is either a rules bug or an unread ability, and
+        those need completely different fixes - so the answer is shown before
+        the card is ever played.
+        """
+        card = self.db.lookup(name)
+        if card is None:
+            return {"error": f"no card named {name!r}"}
+
+        parsed = parse_card(card)
+        faces = []
+        for index, face in enumerate(card.faces):
+            result = parsed.faces[index] if index < len(parsed.faces) else None
+            faces.append(
+                {
+                    "name": face.name,
+                    "mana_cost": str(face.mana_cost),
+                    "type_line": str(face.type_line),
+                    "oracle_text": face.oracle_text,
+                    "abilities": [
+                        {
+                            "kind": ability.kind.name,
+                            "text": ability.text or str(ability),
+                            # What the engine will actually do, rebuilt from
+                            # the opcodes. Read this against the oracle text
+                            # above it: that comparison is the review.
+                            "understood": explain_ability(ability),
+                            "unparsed": ability.unparsed,
+                            "keyword": ability.keyword,
+                            "effects": [
+                                node.kind.name
+                                for effect in ability.effects
+                                for node in effect.walk()
+                            ],
+                        }
+                        for ability in (result.abilities if result else ())
+                    ],
+                    "failures": [
+                        {
+                            "reason": failure.reason,
+                            "stopped_at": failure.stopped_at,
+                            "remaining": " ".join(failure.remaining[:12]),
+                            "text": failure.text,
+                        }
+                        for failure in (result.failures if result else ())
+                    ],
+                }
+            )
+        verdict, current = self.verdicts.status(card.name, parsed)
+        review = self.verdicts.review_for(card.name)
+        return {
+            "name": card.name,
+            "fully_parsed": parsed.fully_parsed,
+            "faces": faces,
+            "verdict": verdict.value,
+            # False when the grammar has changed this card since the verdict
+            # was given, so an old approval never silently vouches for new
+            # behaviour.
+            "verdict_current": current,
+            "note": review.note if review else "",
+            "suppressed": self.verdicts.is_suppressed(card.name),
+        }
+
+    # -- reviewing ----------------------------------------------------------
+
+    def judge(self, name: str, verdict: str, note: str = "") -> dict:
+        """Record what a person made of this card's parse.
+
+        ``inert`` is the one that changes behaviour: the card's abilities stop
+        being served to the engine, here and in a real run, exactly as if the
+        grammar had failed. A parse that is confidently wrong does more damage
+        to a simulation than one that is visibly absent.
+        """
+        card = self.db.lookup(name)
+        if card is None:
+            return {"error": f"no card named {name!r}"}
+        try:
+            choice = Verdict(verdict)
+        except ValueError:
+            return {"error": f"unknown verdict {verdict!r}"}
+
+        if choice is Verdict.UNREVIEWED:
+            self.verdicts.clear(card.name)
+        else:
+            self.verdicts.record(card.name, choice, parse_card(card), note)
+
+        # The provider caches abilities per card, so a verdict that suppresses
+        # one has to evict it or the old abilities keep being served.
+        self.provider.clear()
+        self.game.invalidate_characteristics()
+        return self.inspect(card.name)
+
+    def review_summary(self) -> dict:
+        """How much of the pool a person has actually vouched for."""
+        return self.verdicts.counts()
+
+    # -- building a position ------------------------------------------------
+
+    def put(self, name: str, zone: str = "battlefield", player: int = 0) -> dict:
+        """Place a card into a zone, ready to be used.
+
+        A permanent placed on the battlefield is not summoning-sick: the
+        operator is setting up a position, not playing a turn, and having to
+        pass three turns before a creature can attack makes the instrument
+        tedious without making it more truthful.
+        """
+        card = self.db.lookup(name)
+        if card is None:
+            return {"error": f"no card named {name!r}"}
+        target = PLACEABLE.get(zone)
+        if target is None:
+            return {"error": f"cannot place into {zone!r}"}
+
+        obj = self.game.create_object(card, PlayerId(player), target)
+        if target is Zone.BATTLEFIELD:
+            obj.summoning_sick = False
+            obj.entered_battlefield_turn = self.game.turn
+            # Placing a permanent skips move_object, and with it CR 614.1c.
+            # Without this a tapland placed here enters untapped while the
+            # same land *played* enters tapped - and an instrument that
+            # disagrees with the engine it is meant to be testing is worse
+            # than no instrument.
+            from ..rules.events import Event, EventKind
+            from ..rules.replacement import apply_self_entry_replacements
+
+            apply_self_entry_replacements(self.game, obj)
+            # Placing a permanent skips move_object, so nothing announced that
+            # it entered and no enters-the-battlefield trigger fired. An
+            # instrument that silently drops ETB triggers would report a card
+            # as doing nothing when the engine would have worked.
+            self.game.emit(
+                Event(
+                    EventKind.ENTERS_BATTLEFIELD,
+                    object_id=obj.id,
+                    player=obj.controller,
+                )
+            )
+        self.game.invalidate_characteristics()
+        return self.state(message=f"put {card.name} into {zone}")
+
+    def give_mana(self, amount: int = 10, player: int = 0) -> dict:
+        """Fill a pool, so casting can be tested without building a mana base.
+
+        One of each colour plus colourless, which covers every cost without
+        the operator having to think about it. Pools still empty at end of
+        step (CR 500.4), so this is a convenience for the current window, not
+        a permanent state.
+        """
+        from ..rules.enums import Color
+        from ..rules.mana import ManaKind
+
+        pool = self.game.player(PlayerId(player)).mana_pool
+        for color in (
+            Color.NONE,
+            Color.WHITE,
+            Color.BLUE,
+            Color.BLACK,
+            Color.RED,
+            Color.GREEN,
+        ):
+            pool.add(ManaKind(color), amount)
+        return self.state(message=f"added {amount} of each colour")
+
+    def set_life(self, life: int, player: int = 0) -> dict:
+        self.game.player(PlayerId(player)).life = life
+        return self.state(message=f"life set to {life}")
+
+    # -- playing ------------------------------------------------------------
+
+    def legal(self, player: int = 0) -> list[dict]:
+        """Everything this player could do right now, as the engine sees it.
+
+        Read from ``legality.legal_actions`` rather than assembled here, so
+        the sandbox cannot offer something the engine would refuse - and if it
+        offers nothing, that is the answer to "why can't I cast this?".
+        """
+        from ..rules.legality import legal_actions
+
+        out = []
+        for index, action in enumerate(legal_actions(self.game, PlayerId(player))):
+            if action.kind is ActionKind.PASS:
+                continue
+            obj = self.game.objects.get(action.source)
+            out.append(
+                {
+                    "index": index,
+                    "kind": action.kind.name,
+                    "source": int(action.source),
+                    "name": self._name(obj) if obj else "",
+                    "ability_index": action.ability_index,
+                    "description": self._describe_action(action, obj),
+                }
+            )
+        return out
+
+    def targets_for(self, index: int, player: int = 0) -> list[dict]:
+        """What an action could legally target, so the operator can choose.
+
+        Grouped per targeting effect, in announcement order (CR 601.2c), which
+        is the order ``perform`` expects them back in. Without this the sandbox
+        would pick for you, and picking the first legal candidate means a
+        Lightning Bolt kills your own creature - which is a real thing that
+        happened the first time this was run.
+        """
+        from ..rules.legality import legal_actions
+
+        actions = legal_actions(self.game, PlayerId(player))
+        if not 0 <= index < len(actions):
+            return []
+        action = actions[index]
+        obj = self.game.objects.get(action.source)
+        if obj is None:
+            return []
+
+        groups = []
+        for effect in self._targeting_effects(obj, action):
+            # The engine's own candidate builder, not a second implementation.
+            # A sandbox that computed legal targets differently from the rules
+            # would be an instrument that disagrees with the thing it measures.
+            candidates = _candidates_for(self.game, obj, effect, PlayerId(player))
+            groups.append(
+                {
+                    "description": effect.text or effect.kind.name.lower(),
+                    "optional": bool(effect.targets and effect.targets.up_to),
+                    "candidates": [
+                        self._candidate(target) for target in candidates
+                    ],
+                }
+            )
+        return groups
+
+    def _candidate(self, target: int) -> dict:
+        """One choosable target, object or player (CR 115.4)."""
+        if is_player_target(target):
+            who = self.game.player(target_player(target))
+            return {
+                "id": int(target),
+                "name": f"{who.name} (player)",
+                "controller": int(who.id),
+                "is_player": True,
+            }
+        obj = self.game.objects.get(ObjectId(target))
+        return {
+            "id": int(target),
+            "name": self._name(obj),
+            "controller": int(obj.controller) if obj else -1,
+            "is_player": False,
+        }
+
+    def _targeting_effects(self, obj: GameObject, action: Action) -> list:
+        from ..rules.abilities import AbilityKind
+
+        chars = self.game.characteristics(obj)
+        if action.kind is ActionKind.ACTIVATE_ABILITY or (
+            action.kind is ActionKind.ACTIVATE_MANA_ABILITY
+        ):
+            if not 0 <= action.ability_index < len(chars.abilities):
+                return []
+            abilities = [chars.abilities[action.ability_index]]
+        else:
+            abilities = [a for a in chars.abilities if a.kind is AbilityKind.SPELL]
+
+        return [
+            node
+            for ability in abilities
+            for effect in ability.effects
+            for node in effect.walk()
+            # Player-only targets ("target player draws two cards") carry no
+            # object filter; the engine's candidate builder handles both.
+            if node.is_targeted and (node.targets is not None or node.players is not None)
+        ]
+
+    def perform(
+        self, index: int, player: int = 0, targets: list | None = None
+    ) -> dict:
+        """Take one of the legal actions, by its index in ``legal``.
+
+        ``targets`` is one list of object ids per targeting effect, in the
+        order ``targets_for`` returned them. Left out, the engine chooses -
+        which is fine for an ability with one legal target and wrong for
+        anything else.
+        """
+        from ..rules.legality import legal_actions
+        from ..rules.priority import _perform
+
+        actions = legal_actions(self.game, PlayerId(player))
+        if not 0 <= index < len(actions):
+            return self.state(error="no such action")
+
+        action = actions[index]
+        if targets:
+            from dataclasses import replace
+
+            action = replace(
+                action,
+                targets=tuple(tuple(int(oid) for oid in group) for group in targets),
+            )
+        before = len(self.game.log.entries)
+        ok = _perform(self.game, PlayerId(player), action)
+        if not ok:
+            reason = self._last_log(before, kinds=("illegal", "rewind"))
+            return self.state(error=reason or "the engine refused that action")
+        return self.state(message=f"did {action}")
+
+    def resolve_top(self) -> dict:
+        """Resolve the top of the stack, as passing priority would."""
+        from ..rules.priority import settle
+        from ..rules.stack import resolve_top
+
+        if not self.game.stack:
+            settle(self.game)
+            if not self.game.stack:
+                return self.state(message="nothing on the stack")
+        resolve_top(self.game)
+        settle(self.game)
+        return self.state(message="resolved the top of the stack")
+
+    def settle(self) -> dict:
+        """Run state-based actions and put waiting triggers on the stack."""
+        from ..rules.priority import settle
+
+        settle(self.game)
+        return self.state(message="state-based actions and triggers settled")
+
+    def advance(self) -> dict:
+        """Move to the next step, running its turn-based actions.
+
+        Steps rather than whole turns, because the interesting bugs live in
+        the boundaries - an upkeep trigger that fires twice, a creature that
+        untaps when it should not.
+        """
+        from ..rules.turn import TURN_SEQUENCE, _end_of_step_actions, take_turn
+
+        sequence = list(TURN_SEQUENCE)
+        current = (self.game.phase, self.game.step)
+        try:
+            position = sequence.index(current)
+        except ValueError:
+            position = len(sequence) - 1
+
+        # Leaving a step ends it, and some things happen only then: combat is
+        # over as the end of combat step ends (CR 511.3), not as it begins.
+        _end_of_step_actions(self.game, self.game.step)
+
+        if position + 1 >= len(sequence):
+            take_turn(self.game)
+            self.game.active_player = self.game.next_player(self.game.active_player)
+            return self.state(message=f"turn {self.game.turn}")
+
+        phase, step = sequence[position + 1]
+        self.game.phase = phase
+        self.game.step = step
+        from ..rules.priority import settle
+        from ..rules.turn import _turn_based_actions, TurnOptions
+
+        _turn_based_actions(self.game, step, TurnOptions())
+        settle(self.game)
+        return self.state(message=f"{phase.name.lower()} / {step.name.lower()}")
+
+    def next_turn(self) -> dict:
+        """Run a whole turn for the active player."""
+        from ..rules.turn import take_turn
+
+        take_turn(self.game)
+        self.game.active_player = self.game.next_player(self.game.active_player)
+        self.game.phase = Phase.PRECOMBAT_MAIN
+        self.game.step = Step.MAIN
+        return self.state(message=f"turn {self.game.turn} ended")
+
+    # -- describing ---------------------------------------------------------
+
+    def state(self, *, message: str = "", error: str = "") -> dict:
+        """The whole visible position, as plain data."""
+        game = self.game
+        return {
+            "turn": game.turn,
+            "phase": game.phase.name,
+            "step": game.step.name,
+            "active_player": int(game.active_player),
+            "message": message,
+            "error": error,
+            "players": [self._player(player) for player in game.players],
+            "stack": [
+                self._object(game.objects[object_id])
+                for object_id in game.stack
+                if object_id in game.objects
+            ],
+            "log": [
+                {"kind": entry.kind, "text": entry.text, "turn": entry.turn}
+                for entry in game.log.entries[-120:]
+            ],
+        }
+
+    def _player(self, player: Player) -> dict:
+        game = self.game
+        return {
+            "id": int(player.id),
+            "name": player.name,
+            "life": player.life,
+            "mana": player.mana_pool.total,
+            "battlefield": [
+                self._object(game.objects[oid])
+                for oid in game.battlefield
+                if oid in game.objects
+                and game.objects[oid].controller == player.id
+            ],
+            "hand": [
+                self._object(game.objects[oid])
+                for oid in player.hand
+                if oid in game.objects
+            ],
+            "graveyard": [
+                self._object(game.objects[oid])
+                for oid in player.graveyard
+                if oid in game.objects
+            ],
+        }
+
+    def _object(self, obj: GameObject) -> dict:
+        chars = self.game.characteristics(obj)
+        return {
+            "id": int(obj.id),
+            "name": self._name(obj),
+            "type_line": str(chars.type_line),
+            "power": chars.power,
+            "toughness": chars.toughness,
+            "tapped": obj.tapped,
+            "damage": obj.damage,
+            "counters": dict(obj.counters),
+            "summoning_sick": obj.summoning_sick,
+            "keywords": sorted(k for k in chars.keywords if k),
+            "abilities": [
+                {"text": a.text or str(a), "unparsed": a.unparsed}
+                for a in chars.abilities
+            ],
+            "unreadable": any(a.unparsed for a in chars.abilities),
+        }
+
+    def _name(self, obj: GameObject | None) -> str:
+        if obj is None:
+            return ""
+        try:
+            name = self.game.characteristics(obj).name
+        except Exception:  # noqa: BLE001 - a gone object still needs a label
+            name = ""
+        if name:
+            return name
+        card = getattr(obj, "card", None)
+        return getattr(card, "name", "") or f"#{obj.id}"
+
+    def _describe_action(self, action: Action, obj: GameObject | None) -> str:
+        name = self._name(obj)
+        if action.kind is ActionKind.PLAY_LAND:
+            return f"play {name}"
+        if action.kind is ActionKind.CAST_SPELL:
+            return f"cast {name}"
+        if action.kind is ActionKind.SPECIAL:
+            return f"special action on {name}"
+        if obj is not None and 0 <= action.ability_index < len(
+            self.game.characteristics(obj).abilities
+        ):
+            ability = self.game.characteristics(obj).abilities[action.ability_index]
+            return f"{name}: {ability.text or ability.kind.name}"
+        return f"{action.kind.name.lower()} {name}"
+
+    def _last_log(self, since: int, *, kinds: tuple[str, ...]) -> str:
+        for entry in reversed(self.game.log.entries[since:]):
+            if entry.kind in kinds:
+                return entry.text
+        return ""

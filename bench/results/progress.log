@@ -1,0 +1,267 @@
+start Tue Sep 15 13:51:00 GMTST 2026
+== aggro: 67 spells/nonbasics + 32 basics, commander Krenko, Mob Boss
+   missing: none | duplicates: none
+   fully inert (5): Goblin Recruiter, Krenko, Tin Street Kingpin, Shared Animosity, Coat of Arms, Tempt with Vengeance
+   partly parsed (11): Goblin Guide, Legion Warboss, Muxus, Goblin Grandee, Battle Cry Goblin, Conspicuous Snoop, Goblin Chainwhirler, Hellrider, Purphoros, God of the Forge, Goblin Bushwhacker, Reckless Bushwhacker, Hanweir Battlements
+== combo: 63 spells/nonbasics + 36 basics, commander Vito, Thorn of the Dusk Rose
+   missing: none | duplicates: none
+   fully inert (1): Scheming Symmetry
+   partly parsed (5): Bolas's Citadel, Beseech the Mirror, Cabal Ritual, Mana Crypt, Nim Deathmantle
+== control: 62 spells/nonbasics + 37 basics, commander Dragonlord Ojutai
+   missing: none | duplicates: none
+   fully inert (4): Hallowed Burial, Settle the Wreckage, Fact or Fiction, Approach of the Second Sun
+   partly parsed (7): Arcane Denial, Detention Sphere, Teferi, Hero of Dominaria, Narset, Parter of Veils, Jace, the Mind Sculptor, Elspeth, Sun's Champion, Celestial Colonnade
+== stax: 77 spells/nonbasics + 22 basics, commander Grand Arbiter Augustin IV
+   missing: none | duplicates: none
+   fully inert (0): none
+   partly parsed (9): Archon of Emeria, Aven Mindcensor, Tsabo's Web, Tangle Wire, Linvala, Keeper of Silence, Hushbringer, Stasis, Mana Crypt, Teferi, Time Raveler
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\tools\cost.py", line 521, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\tools\cost.py", line 513, in main
+    startup = measure_games(config, indices, memory=args.memory, out=out)
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\tools\cost.py", line 288, in measure_games
+    finished = run_game(game, TurnOptions(max_rounds=config.max_rounds))
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\turn.py", line 74, in run_game
+    take_turn(game, options)
+    ~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\turn.py", line 197, in take_turn
+    _run_step(game, phase, step, options)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\turn.py", line 249, in _run_step
+    run_priority(game)
+    ~~~~~~~~~~~~^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\priority.py", line 236, in run_priority
+    resolve_top(game)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\stack.py", line 49, in resolve_top
+    _resolve_ability(game, obj)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\stack.py", line 95, in _resolve_ability
+    execute(resolution, ability.effects)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\resolve.py", line 66, in execute
+    execute_one(resolution, effect)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\resolve.py", line 122, in execute_one
+    executor(resolution, effect)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\resolve.py", line 287, in _do_optional
+    execute(resolution, effect.children)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\resolve.py", line 66, in execute
+    execute_one(resolution, effect)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\resolve.py", line 122, in execute_one
+    executor(resolution, effect)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\resolve.py", line 1103, in _do_pay_cost
+    if can_pay_cost(game, player_id, cost) and pay_cost(game, player_id, cost):
+                                               ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\casting.py", line 1162, in pay_cost
+    _tap_for_mana(game, player_id, mana_cost, None)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\casting.py", line 760, in _tap_for_mana
+    _pay_activation(game, obj, ability)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stanp\Documents\MTG fishing\mtgfish\rules\casting.py", line 1300, in _pay_activation
+    raise CastError("cannot pay the mana cost")
+mtgfish.rules.casting.CastError: cannot pay the mana cost
+timing done Tue Sep 15 13:55:37 GMTST 2026
+start Tue Sep 15 14:02:02 GMTST 2026
+timing done (control stax mixed) Tue Sep 15 14:06:27 GMTST 2026
+memory done (aggro combo control stax mixed) Tue Sep 15 14:15:40 GMTST 2026
+{
+  "label": "aggro",
+  "decks": [
+    "aggro",
+    "aggro",
+    "aggro",
+    "aggro"
+  ],
+  "mode": "pool",
+  "run_seed": 1,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "python": "3.13.9",
+    "logical_cpus": 24,
+    "physical_cpus": 12,
+    "ram_gb": 31.6,
+    "thread_time_resolution_s": 1e-07
+  },
+  "pool": {
+    "games": 1000,
+    "workers": 23,
+    "wall_s": 52.12163160002092,
+    "cpu_s": 1067.546875,
+    "processes_seen": 24,
+    "rss_peak_total_mb": 1510.19921875,
+    "stalls": 0,
+    "runaways": 0
+  }
+}
+pool aggro done Tue Sep 15 14:16:33 GMTST 2026
+{
+  "label": "combo",
+  "decks": [
+    "combo",
+    "combo",
+    "combo",
+    "combo"
+  ],
+  "mode": "pool",
+  "run_seed": 1,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "python": "3.13.9",
+    "logical_cpus": 24,
+    "physical_cpus": 12,
+    "ram_gb": 31.6,
+    "thread_time_resolution_s": 1e-07
+  },
+  "pool": {
+    "games": 1000,
+    "workers": 23,
+    "wall_s": 86.07999339996604,
+    "cpu_s": 1694.90625,
+    "processes_seen": 24,
+    "rss_peak_total_mb": 1528.30078125,
+    "stalls": 19,
+    "runaways": 0
+  }
+}
+pool combo done Tue Sep 15 14:18:00 GMTST 2026
+{
+  "label": "control",
+  "decks": [
+    "control",
+    "control",
+    "control",
+    "control"
+  ],
+  "mode": "pool",
+  "run_seed": 1,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "python": "3.13.9",
+    "logical_cpus": 24,
+    "physical_cpus": 12,
+    "ram_gb": 31.6,
+    "thread_time_resolution_s": 1e-07
+  },
+  "pool": {
+    "games": 1000,
+    "workers": 23,
+    "wall_s": 116.32146110001486,
+    "cpu_s": 2486.0,
+    "processes_seen": 24,
+    "rss_peak_total_mb": 1536.21875,
+    "stalls": 188,
+    "runaways": 0
+  }
+}
+pool control done Tue Sep 15 14:19:56 GMTST 2026
+{
+  "label": "stax",
+  "decks": [
+    "stax",
+    "stax",
+    "stax",
+    "stax"
+  ],
+  "mode": "pool",
+  "run_seed": 1,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "python": "3.13.9",
+    "logical_cpus": 24,
+    "physical_cpus": 12,
+    "ram_gb": 31.6,
+    "thread_time_resolution_s": 1e-07
+  },
+  "pool": {
+    "games": 1000,
+    "workers": 23,
+    "wall_s": 112.16559550003149,
+    "cpu_s": 2383.671875,
+    "processes_seen": 24,
+    "rss_peak_total_mb": 1522.59765625,
+    "stalls": 147,
+    "runaways": 0
+  }
+}
+pool stax done Tue Sep 15 14:21:49 GMTST 2026
+{
+  "label": "mixed",
+  "decks": [
+    "aggro",
+    "combo",
+    "control",
+    "stax"
+  ],
+  "mode": "pool",
+  "run_seed": 1,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "python": "3.13.9",
+    "logical_cpus": 24,
+    "physical_cpus": 12,
+    "ram_gb": 31.6,
+    "thread_time_resolution_s": 1e-07
+  },
+  "pool": {
+    "games": 1000,
+    "workers": 23,
+    "wall_s": 81.1579456999898,
+    "cpu_s": 1748.65625,
+    "processes_seen": 24,
+    "rss_peak_total_mb": 1546.02734375,
+    "stalls": 70,
+    "runaways": 0
+  }
+}
+pool mixed done Tue Sep 15 14:23:10 GMTST 2026
+all done Tue Sep 15 14:23:10 GMTST 2026
+start Tue Sep 15 14:23:23 GMTST 2026
+timing done () Tue Sep 15 14:23:23 GMTST 2026
+memory done () Tue Sep 15 14:23:23 GMTST 2026
+{
+  "label": "aggro",
+  "decks": [
+    "aggro",
+    "aggro",
+    "aggro",
+    "aggro"
+  ],
+  "mode": "pool",
+  "run_seed": 1,
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "python": "3.13.9",
+    "logical_cpus": 24,
+    "physical_cpus": 12,
+    "ram_gb": 31.6,
+    "thread_time_resolution_s": 1e-07
+  },
+  "pool": {
+    "games": 1000,
+    "workers": 23,
+    "wall_s": 48.139527400024235,
+    "cpu_s": 1046.0625,
+    "processes_seen": 24,
+    "rss_peak_total_mb": 1510.78125,
+    "stalls": 0,
+    "runaways": 0
+  }
+}
+pool aggro done Tue Sep 15 14:24:12 GMTST 2026
+all done Tue Sep 15 14:24:12 GMTST 2026
