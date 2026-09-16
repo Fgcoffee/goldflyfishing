@@ -43,6 +43,12 @@ def card_db() -> CardDatabase:
 #: parser can read a type line naming a creature type, not which types exist.
 TEST_CREATURE_TYPES = ("Soldier", "Goblin", "Elf", "Beast", "Zombie", "Time Lord")
 
+#: Artifact types, for the same reason and one more: "create a Treasure token"
+#: names no card *type* at all, so the parser has to ask the registry what a
+#: Treasure is. Without these it can only answer "I don't know", which is the
+#: right answer to give and the wrong one to write a test against.
+TEST_ARTIFACT_TYPES = ("Treasure", "Clue", "Food", "Equipment")
+
 
 @pytest.fixture
 def subtype_registry() -> SubtypeRegistry:
@@ -60,6 +66,7 @@ def subtype_registry() -> SubtypeRegistry:
     previous = active_registry()
     registry = SubtypeRegistry()
     registry.register(CardType.CREATURE, TEST_CREATURE_TYPES)
+    registry.register(CardType.ARTIFACT, TEST_ARTIFACT_TYPES)
     install_registry(registry)
     try:
         yield registry

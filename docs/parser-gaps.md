@@ -135,6 +135,115 @@ Both would have shown up in a simulation only as mana that was slightly too
 good — exactly the class of error a goldfishing tool exists to measure and
 therefore must not have.
 
+## Read wrongly, not unread
+
+Everything above is about text the parser could not read. This section is about
+text it read **incorrectly**, which is a different and worse problem: an
+unparsed ability is inert and shows up in the table above, while a mis-parsed
+one runs, looks like coverage, and moves the numbers.
+
+None of these appeared in any failure count, because every one of them
+consumed its sentence completely and produced a well-formed opcode with a real
+executor. They were found by reading the round-trip beside the card.
+
+### Six that were the opposite of the card
+
+- **"Attacks each combat if able"** was emitted as an `Act.ATTACK`
+  *prohibition* - the data for "can't attack". A creature that must attack
+  every combat became one that could never attack. CR 508.1d makes
+  requirements a separate step of the declaration, and `combat._must_attack`
+  already enforces it by keyword; the grammar now asks for that keyword.
+- **"Can block only creatures with flying"** forbade blocking exactly the
+  creatures it is allowed to block. `Restriction.counterpart` forbids on a
+  *match*, so a permission has to be written as the complement, and
+  `ObjectFilter` has no general negation. One constraint is inverted where it
+  can be; anything else fails to parse.
+- **A trailing "during ..."** was swallowed by a rule that consumed up to eight
+  tokens after the word, so "Creatures you control get +1/+1 during your turn"
+  became an unconditional anthem.
+- **"Doesn't untap during its controller's *next* untap step"** fell into that
+  same swallow and came out as the permanent form: every Sleep and Frost
+  Breath in the format tapped a board down for the rest of the game.
+- **An unreadable "Activate only ..."** was ignored outright on the
+  battlefield. Four shapes are modelled now - once each turn, during your
+  turn, during your upkeep, and "only if `<condition>`" through the ordinary
+  condition grammar - and anything else fails the whole ability.
+- **"Prevent all *combat* damage"** dropped the word, so every Fog also blanked
+  a Lightning Bolt; and a shield naming a player narrowed nothing, so a
+  one-sided Fog protected the whole table. The shield could always express
+  both - it registers its own event kinds and has a `players` field.
+
+### Three that were silently doing nothing
+
+- **Two `EffectKind` members shared a number**, twice over. `IntEnum` makes the
+  second an alias, so the executor table kept one entry per *number* and a
+  parsed `CHOOSE_QUALITY` was dispatched to the reflexive-trigger executor.
+  Guarded now by `test_no_two_opcodes_share_a_number`, which nothing else in
+  the suite could have caught.
+- **A conditional static ability was dropped whole.** "Gets +1/+1 as long as
+  you control a Forest" parses to a CONDITIONAL wrapping a MODIFY_PT, and
+  `layers._continuous_parts` walks SEQUENCEs but not CONDITIONALs - so the
+  anthem did not apply at all. The condition is lifted onto
+  `Ability.static_condition`, which the layer system already checks.
+- **`_do_search_library` ignored how the card said the land arrives.** "Put it
+  onto the battlefield tapped" had `tapped` in the step list purely to be
+  swallowed, so every Rampant Growth produced an untapped land: a full turn of
+  mana no deck has.
+
+### And tokens, which were a different card twice over
+
+"Create a 1/1 white Soldier creature token with flying" - the noun reader takes
+"with flying" as a filter constraint and files it under `has_keyword`, and
+nothing carried it to the `TokenSpec`. Every token printed with an ability was
+created vanilla.
+
+"Create a Treasure token" names no card type at all, and the default was
+creature, so it made a **0/0 creature** that dies to state-based actions on
+arrival - one of the most-played effects in the format producing nothing. The
+subtype registry knows what a Treasure is and is asked; where it cannot answer
+with one card type, the ability fails.
+
+## Counted as understood while inert
+
+A third category, between the two above: the ability parses, the opcodes are
+well formed, and nothing anywhere executes them. These are safe - they do
+nothing rather than the wrong thing - but they were being counted as coverage,
+which is the one outcome the report exists to prevent.
+
+`ParsedFace.understood` now also rejects an ability whose *condition* could not
+be read, which is how a keyword can be inert without leaving a failure behind.
+Eight keyword builders are in that state; **Ward** is the one that matters, and
+it is worth stating plainly: every Ward creature in the format currently wards
+nothing. `keyword_impl._ward` builds the trigger and marks the "unless that
+player pays" half `UNPARSED` because the engine has no ward payment. The shape
+that would fix it exists - `UNLESS_PAYS`, which Rhystic Study already uses -
+and needs a player scope meaning "whoever controls the targeting spell".
+
+### Engine gaps this work found and did not close
+
+Each was reproduced on a board, not inferred from reading:
+
+- **The attack tax does nothing.** Propaganda parses to
+  `UNLESS_PAYS(RESTRICTION(can't attack))`, and `restrictions._active` gathers
+  only top-level effects whose kind is `RESTRICTION` - so a static
+  `UNLESS_PAYS` is skipped entirely and no restriction is ever registered. With
+  Propaganda on the battlefield, `prohibited(ATTACK)` returns `None`.
+  Separately, the restriction says "can't attack" rather than "can't attack
+  *you*": `Act.ATTACK_PLAYER` is declared and never used, and `combat.py` only
+  ever asks `prohibited(game, Act.ATTACK, obj=obj)` with no defender. Both
+  halves need the engine before the parser can say anything truer.
+- **A replacement created by a resolving spell is never registered.** "If a
+  creature would die this turn, exile it instead" registers a continuous
+  effect, and the replacement layer reads only static abilities. Such a
+  replacement is marked `UNPARSED` by the parser now, which matches what it
+  does.
+- **Requirements have no home.** `Restriction` models prohibitions only, so
+  "attacks each combat if able" had to be routed through a keyword. "Blocks
+  each combat if able" and "must be blocked if able" have no such keyword and
+  do not parse.
+- **No duration ends at a player's next untap step**, which is why the "next"
+  form of "doesn't untap" declines rather than being read as the permanent one.
+
 ## The lesson worth keeping
 
 Most of the above came from the same place: rendering the parsed IR **back into

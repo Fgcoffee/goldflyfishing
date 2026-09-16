@@ -135,7 +135,10 @@ class Restriction:
         "can't can't be regenerated".
         """
         text = self.text or self.act.name.lower().replace("_", " ")
-        for prefix in ("can't ", "cannot ", "may not "):
+        # "doesn't untap during its controller's untap step" is written as a
+        # negation too, and left alone it came back out as "can't doesn't
+        # untap ..." - noise in the one place a reviewer is reading closely.
+        for prefix in ("can't ", "cannot ", "may not ", "doesn't ", "does not "):
             if text.lower().startswith(prefix):
                 return text[len(prefix) :]
         return text

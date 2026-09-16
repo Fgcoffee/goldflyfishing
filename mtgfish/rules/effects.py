@@ -24,6 +24,15 @@ class EffectKind(IntEnum):
     """One-shot and continuous effect opcodes.
 
     Numbered in blocks by area so new members slot in without renumbering.
+
+    Every number must be **unique**. Two members sharing one are not two
+    opcodes: ``IntEnum`` folds the second into an alias of the first, so
+    ``EffectKind.BECOME_SOLVED is EffectKind.EXTRA_TRIGGER`` came out true,
+    the executor table silently kept one entry for both, and a parsed
+    "As this enters, choose a creature type" was dispatched to the reflexive
+    trigger executor - the parser emitting one opcode and the engine running
+    another, which is the one thing the opcode contract exists to prevent.
+    ``test_no_two_opcodes_share_a_number`` guards it.
     """
 
     # -- control flow -------------------------------------------------------
@@ -173,7 +182,7 @@ class EffectKind(IntEnum):
     #: recorded nothing at all, so no later sentence could refer back to it.
     CHOOSE_QUALITY = 214
     #: A Case becomes solved (CR 719.3b).
-    BECOME_SOLVED = 211
+    BECOME_SOLVED = 218
     #: CR 710: flip a permanent to its bottom half.
     FLIP_PERMANENT = 212
     #: CR 603.7: set up an ability that fires later. The condition lives in
@@ -181,7 +190,7 @@ class EffectKind(IntEnum):
     DELAYED_TRIGGER = 213
     #: CR 603.9: "when you do, ..." - a reflexive trigger, created and
     #: triggered during a resolution rather than watching the event stream.
-    REFLEXIVE_TRIGGER = 214
+    REFLEXIVE_TRIGGER = 219
     #: CR 723.1: control another player's next turn (Mindslaver).
     CONTROL_PLAYER = 215
     #: CR 727.1: restart the game (Karn Liberated).
@@ -237,8 +246,23 @@ class TokenSpec:
     copy_of: ObjectFilter | None = None
 
     def __str__(self) -> str:
-        subtypes = " ".join(self.subtypes)
-        return f"{self.power}/{self.toughness} {subtypes}".strip() or self.name
+        """What this token is, for the round-trip explainer.
+
+        Power and toughness only when it is a creature: a Treasure rendered as
+        "0/0 Treasure" reads like a creature token that dies on arrival, which
+        is the bug this spelling used to be hiding rather than reporting. The
+        keywords are named for the same reason - a token created with flying
+        and one created without look identical without them.
+        """
+        parts = []
+        if self.types & CardType.CREATURE:
+            parts.append(f"{self.power}/{self.toughness}")
+        parts.append(" ".join(self.subtypes) or self.name)
+        if self.keywords:
+            parts.append("with " + ", ".join(self.keywords))
+        if self.abilities:
+            parts.append(f"with {len(self.abilities)} written ability/ies")
+        return " ".join(part for part in parts if part).strip() or self.name
 
 
 @dataclass(frozen=True, slots=True)

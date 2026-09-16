@@ -43,6 +43,11 @@ def explain_ability(ability: Ability) -> str:
             parts.append("(sorcery speed only)")
         if ability.once_each_turn:
             parts.append("(once each turn)")
+        if not ability.activation_condition.is_always:
+            # CR 602.5b. Without this the round-trip said a restricted ability
+            # could be activated whenever you liked, which is exactly the
+            # reading the restriction exists to forbid.
+            parts.append(f"(only if {ability.activation_condition})")
         if ability.is_mana_ability:
             parts.append("(mana ability - does not use the stack)")
         return f"{' '.join(parts)}: {body}."
@@ -52,7 +57,12 @@ def explain_ability(ability: Ability) -> str:
             return f"Has {ability.keyword}."
         if not body:
             return f"Has {ability.keyword or 'no effect'}."
-        return f"Continuously: {body}."
+        gate = (
+            f" (while {ability.static_condition})"
+            if not ability.static_condition.is_always
+            else ""
+        )
+        return f"Continuously{gate}: {body}."
 
     return f"{body[:1].upper()}{body[1:]}." if body else "(nothing)."
 
@@ -199,7 +209,7 @@ def _effect(effect: Effect) -> str:
     if kind in _PLAYER_VERBS:
         return f"{who} {_PLAYER_VERBS[kind].replace('{n}', amount)}"
     if kind in _OBJECT_VERBS:
-        return f"{_OBJECT_VERBS[kind]} {objects}"
+        return _object_verb(effect, objects)
 
     one_shot = _one_shot(effect, who, amount, objects)
     if one_shot is not None:
@@ -217,6 +227,25 @@ def _effect(effect: Effect) -> str:
     # An opcode with an executor but no phrasing here. Named rather than
     # guessed at, so a missing case reads as missing instead of plausible.
     return f"[{kind.name.lower()}]" + (f" {objects}" if effect.targets else "")
+
+
+#: Verbs whose actor is the player named on the effect rather than the
+#: ability's controller: "each opponent sacrifices a creature" is done by the
+#: opponents, and rendering it as a bare "sacrifice" hid which of the two
+#: readings the parser had chosen - the difference between a board wipe for
+#: the table and one for yourself.
+_PLAYER_ACTED_VERBS = {
+    EffectKind.SACRIFICE: "sacrifices",
+    EffectKind.REVEAL: "reveals",
+}
+
+
+def _object_verb(effect: Effect, objects: str) -> str:
+    """"<verb> <the objects>", with the actor and the count when they are said."""
+    verb = _OBJECT_VERBS[effect.kind]
+    if effect.players is not None and effect.kind in _PLAYER_ACTED_VERBS:
+        return f"{_players(effect.players)} {_PLAYER_ACTED_VERBS[effect.kind]} {objects}"
+    return f"{verb} {objects}"
 
 
 def _control_flow(effect: Effect) -> str | None:
@@ -254,9 +283,20 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
     if kind is EffectKind.DAMAGE:
         return f"deal {amount} damage to {objects}"
     if kind is EffectKind.PREVENT_DAMAGE:
-        return f"prevent {amount} damage to {objects}"
+        # -1 is the "all" sentinel the executor reads; printing it as a number
+        # made a Fog read like a card that heals one damage.
+        how_much = "all" if effect.amount.constant < 0 else amount
+        what = "combat damage" if "combat" in effect.keywords else "damage"
+        if effect.targets is None and effect.players is None:
+            return f"prevent {how_much} {what}"
+        return f"prevent {how_much} {what} to {objects}"
     if kind is EffectKind.SEARCH_LIBRARY:
-        return f"{who} searches their library for {_filter(effect.targets)}"
+        where = f" and puts it into {_zone(effect.zone)}" if effect.zone else ""
+        tapped = " tapped" if "tapped" in effect.keywords else ""
+        return (
+            f"{who} searches their library for {_filter(effect.targets)}"
+            f"{where}{tapped}"
+        )
     if kind is EffectKind.MOVE_ZONE:
         origin = f"from {_zone(effect.from_zone)} " if effect.from_zone else ""
         return f"move {objects} {origin}to {_zone(effect.zone)}"
@@ -384,13 +424,27 @@ def _players(players: PlayerFilter | None) -> str:
 
 
 def _objects(effect: Effect) -> str:
+    """What the effect acts on, objects or players.
+
+    An effect with no object filter is not automatically about its own source.
+    "This creature deals 3 damage to each opponent" puts its recipients in
+    ``players``, and rendering that as "this permanent" told a reviewer the
+    card burned itself - a false alarm on a correct parse, which costs exactly
+    as much trust as a missed one.
+    """
     if effect.targets is None:
+        if effect.players is not None:
+            return _players(effect.players)
         return "this permanent"
     if effect.is_targeted:
         # "target" already says how many; the filter's own quantity word would
         # produce "target all creature".
-        return f"target {effect.targets.describe(quantified=False)}"
-    return _filter(effect.targets)
+        described = f"target {effect.targets.describe(quantified=False)}"
+    else:
+        described = _filter(effect.targets)
+    if effect.players is not None and effect.targets.includes_players:
+        return f"{described} or {_players(effect.players)}"
+    return described
 
 
 def _filter(spec: ObjectFilter | None) -> str:
