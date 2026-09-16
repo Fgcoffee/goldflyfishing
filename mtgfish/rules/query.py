@@ -233,6 +233,16 @@ class Value:
         }.get(self.kind)
         operands = [str(o) for o in self.operands]
         if joiner is not None:
+            # ``constant`` is part of the arithmetic for these kinds - a
+            # multiplier for PRODUCT and an addend for SUM - and leaving it out
+            # made Affinity's "-1 times the number of artifacts you control"
+            # print as "the number of artifacts you control", so a correct cost
+            # *reduction* read as an increase. A round-trip that accuses a
+            # working card is as expensive as one that clears a broken one.
+            if self.kind is ValueKind.PRODUCT and self.constant not in (0, 1):
+                operands = [str(self.constant), *operands]
+            elif self.kind is ValueKind.SUM and self.constant:
+                operands = [*operands, str(self.constant)]
             return joiner.join(operands)
         if self.kind is ValueKind.HALF_ROUNDED_UP:
             return f"half of {operands[0] if operands else '?'}, rounded up"
@@ -746,6 +756,24 @@ class Condition:
     @property
     def is_always(self) -> bool:
         return self.kind is ConditionKind.ALWAYS
+
+    @property
+    def is_unparsed(self) -> bool:
+        """Whether any part of this condition was left unread.
+
+        An ``UNPARSED`` condition never holds, so the effect it guards never
+        happens - which is the safe direction, and exactly why it needs
+        reporting. An ability gated by a condition nobody could read does
+        nothing at all, and without this it was counted as understood: Ward
+        creatures parsed perfectly and never warded anything.
+
+        Recursive, because ``NOT``, ``AND`` and ``OR`` carry their operands
+        underneath and an unreadable one buried in a conjunction is as inert
+        as an unreadable one on top.
+        """
+        if self.kind is ConditionKind.UNPARSED:
+            return True
+        return any(operand.is_unparsed for operand in self.operands)
 
     def __str__(self) -> str:
         """Describe the condition from its fields, never from ``text``.

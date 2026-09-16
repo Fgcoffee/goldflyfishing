@@ -24,6 +24,44 @@ from .tokens import Stream
 from .triggers import parse_trigger
 
 
+def understood(ability: Ability) -> bool:
+    """Whether an ability will actually do what its card says.
+
+    Three ways it can fail, and only the first used to be checked:
+
+    * the ability itself is unreadable;
+    * one of its effects is ``UNPARSED`` - a keyword whose builder produced a
+      placeholder, say, which leaves no ``ParseFailure`` behind because the
+      tokens were all consumed and only the behaviour is missing;
+    * a **condition** guarding it is unreadable. An ``UNPARSED`` condition
+      never holds, so the ability is inert - safe, and silent. Ward is the
+      example that matters: ``Ward {2}`` builds a triggered ability that
+      counters the spell "if the cost was not paid", the cost half is not
+      read, and the whole keyword parses into something that never fires.
+      Counted as understood, a Ward creature looked completely read while
+      warding nothing.
+
+    All three are the same question - will the engine do what the card says -
+    and the answer belongs in one place, because the coverage report, the deck
+    view and the UI all ask it separately.
+    """
+    if ability.unparsed:
+        return False
+    for condition in (ability.static_condition, ability.activation_condition):
+        if condition is not None and condition.is_unparsed:
+            return False
+    trigger = ability.trigger
+    if trigger is not None:
+        gate = getattr(trigger, "intervening_if", None)
+        if gate is not None and gate.is_unparsed:
+            return False
+    for effect in ability.effects:
+        for node in effect.walk():
+            if node.is_unparsed or node.condition.is_unparsed:
+                return False
+    return True
+
+
 @dataclass(slots=True)
 class ParsedFace:
     """One card face's abilities, with everything that failed."""
@@ -38,16 +76,7 @@ class ParsedFace:
     @property
     def understood(self) -> int:
         """Abilities that will actually do what the card says."""
-        return sum(
-            1
-            for ability in self.abilities
-            if not ability.unparsed
-            and not any(
-                node.is_unparsed
-                for effect in ability.effects
-                for node in effect.walk()
-            )
-        )
+        return sum(1 for ability in self.abilities if understood(ability))
 
     @property
     def fully_parsed(self) -> bool:
@@ -61,12 +90,7 @@ class ParsedFace:
         """
         if not self.abilities or self.failures:
             return False
-        return not any(
-            node.is_unparsed
-            for ability in self.abilities
-            for effect in ability.effects
-            for node in effect.walk()
-        )
+        return all(understood(ability) for ability in self.abilities)
 
 
 @dataclass(slots=True)

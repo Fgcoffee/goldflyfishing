@@ -406,3 +406,58 @@ def test_the_round_trip_does_not_print_a_treasure_as_a_creature(subtype_registry
     said = explain_ability(made[0])
     assert "0/0" not in said
     assert "Treasure" in said
+
+
+# ---------------------------------------------------------------------------
+# An ability nothing can trigger is not coverage either
+# ---------------------------------------------------------------------------
+
+
+def test_an_ability_gated_by_an_unreadable_condition_is_not_understood():
+    """Ward. ``keyword_impl`` builds the trigger and marks the "unless that
+    player pays" half ``UNPARSED``, which is the honest thing for it to do -
+    the condition never holds and the ability never fires.
+
+    What was not honest was the score: only effects were checked for
+    unreadability, so a Ward creature was counted as completely read while
+    warding nothing at all. The engine gap is real and stays; it is now
+    visible.
+    """
+    from mtgfish.parser.compile import understood
+
+    made, failures = abilities_of("Ward {2}")
+    assert not failures, "the keyword itself reads fine - that is the point"
+    assert made and not any(understood(ability) for ability in made)
+
+
+def test_a_readable_keyword_is_still_understood():
+    """The check must not simply fail everything with a condition on it."""
+    from mtgfish.parser.compile import understood
+
+    made, _ = abilities_of("Flying")
+    assert all(understood(ability) for ability in made)
+
+
+def test_an_unreadable_condition_buried_in_a_conjunction_still_counts():
+    """NOT, AND and OR carry their operands underneath, and an unreadable one
+    inside a conjunction is exactly as inert as one on top."""
+    from mtgfish.rules.query import Condition, ConditionKind
+
+    buried = Condition(
+        kind=ConditionKind.AND,
+        operands=(
+            Condition(kind=ConditionKind.IS_YOUR_TURN),
+            Condition(kind=ConditionKind.UNPARSED),
+        ),
+    )
+    assert buried.is_unparsed
+    assert not Condition(kind=ConditionKind.IS_YOUR_TURN).is_unparsed
+
+
+def test_a_cost_reduction_is_not_rendered_as_an_increase():
+    """Affinity is a PRODUCT of -1 and a count, and Value.__str__ dropped the
+    -1 - so a correct cost *reduction* read as a tax. The round-trip accusing
+    a working card costs as much as it missing a broken one."""
+    made, _ = abilities_of("Affinity for artifacts")
+    said = explain_ability(made[0])
+    assert "-1 times" in said
