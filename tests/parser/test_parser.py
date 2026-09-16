@@ -61,12 +61,18 @@ def test_leftover_tokens_fail_the_whole_ability(card_db):
     assert result.failures[0].reason == "not fully consumed"
 
 
-def test_the_parser_can_only_emit_opcodes_the_engine_runs():
+def test_the_parser_can_only_emit_opcodes_the_engine_runs(subtype_registry):
     """No invention.
 
     Every clause is exercised against text it should match, and every opcode
     that comes out has to have an executor. A grammar rule that wants an effect
     the engine lacks is a bug in the grammar, not a licence to approximate.
+
+    This is a property of the grammar and the engine, not of any card pool, so
+    it must hold on a fresh clone with no card database. The one sample that
+    names a creature type gets it from ``subtype_registry`` rather than from
+    real cards - see that fixture for why requesting ``card_db`` here would be
+    the wrong trade.
     """
     samples = [
         "Draw a card.",
