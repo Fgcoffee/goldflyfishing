@@ -17,6 +17,7 @@ dist/
 cache/*
 !cache/scryfall/
 !cache/comprehensive_rules.txt
+!cache/pool.json
 *.sqlite
 *.sqlite-journal
 *.jsonl

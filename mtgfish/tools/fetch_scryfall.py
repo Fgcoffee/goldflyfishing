@@ -23,6 +23,29 @@ from ..data.db import CardDatabase, build_database
 from ..data.scryfall import ScryfallClient
 
 
+def write_fingerprint(db: CardDatabase) -> Path:
+    """Record which pool this is, next to the dumps it came from.
+
+    Committed, unlike the database. Every agent builds their own copy from the
+    same dumps, and this is what proves the copies agree: a test compares the
+    built database against it, so a stale or half-built pool fails loudly
+    instead of quietly changing everyone's numbers.
+    """
+    from ..paths import data_root
+
+    fingerprint = {
+        "oracle_file": db.meta("oracle_file", "") or "",
+        "oracle_hash": db.content_hash,
+        "schema_version": db.meta("schema_version", "") or "",
+        "cards": db.card_count,
+        "rulings": db._conn.execute("SELECT COUNT(*) FROM rulings").fetchone()[0],
+        "oracle_tags": db._conn.execute("SELECT COUNT(*) FROM oracle_tags").fetchone()[0],
+    }
+    path = data_root() / "pool.json"
+    path.write_text(json.dumps(fingerprint, indent=2) + chr(10), encoding="utf8")
+    return path
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-rulings", action="store_true", help="skip the rulings dump")
@@ -46,6 +69,7 @@ def main(argv: list[str] | None = None) -> int:
     elapsed = time.monotonic() - started
 
     with CardDatabase(path) as db:
+        write_fingerprint(db)
         legal = sum(1 for _ in db.iter_cards(commander_legal_only=True))
         print(f"\n{db.card_count} cards ({legal} Commander-legal) in {elapsed:.1f}s")
         print(f"snapshot hash: {db.content_hash[:16]}")

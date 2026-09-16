@@ -14,13 +14,24 @@ from mtgfish.rules.typeline import SubtypeRegistry, active_registry, install_reg
 def card_db() -> CardDatabase:
     """The local card snapshot.
 
-    Tests that need real cards skip rather than fail when the database has not
-    been built, so a fresh clone can still run the pure-rules suite. Build it
-    with ``python -m mtgfish.tools.fetch_scryfall``.
+    Built from the dumps in the repository if it is not there yet, which takes
+    a few seconds and needs no network - so a fresh clone runs the whole suite
+    rather than skipping every test that needs a real card. Only a checkout
+    with no dumps either skips.
     """
+    from mtgfish.bootstrap import build_from_dumps, pool_is_stale
+
     path = card_db_path()
-    if not path.exists():
-        pytest.skip(f"card database not built ({path}); run mtgfish.tools.fetch_scryfall")
+    if not path.exists() or pool_is_stale(path):
+        try:
+            built = build_from_dumps(report=lambda message: print(f"  {message}", flush=True))
+        except OSError as exc:  # in use by a running server, on Windows
+            if not path.exists():
+                pytest.skip(f"cannot build the card database: {exc}")
+            built = None
+        if built is None and not path.exists():
+            pytest.skip(f"no card database ({path}) and no Scryfall dumps to build one from")
+        path = built or path
     db = CardDatabase(path)
     db.registry()  # Install the subtype registry process-wide.
     yield db

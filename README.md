@@ -84,6 +84,13 @@ committed: it is derived, rebuilt whole each time, and a copy per refresh would
 live in the history for ever. `bench/results` holds the cost-benchmark output,
 so a change can be measured against the numbers it is meant to improve.
 
+You do not have to build the database yourself. Anything that needs cards -
+the desktop app, the web server, the test suite - builds it from those dumps
+the first time, and rebuilds it when a commit brings newer ones. Every build
+of the same dumps produces the same pool, and `cache/pool.json` records which
+pool that is, so a machine quietly running a month-old card list is a test
+failure rather than a mystery in the numbers.
+
 ## How it is put together
 
 | | |
