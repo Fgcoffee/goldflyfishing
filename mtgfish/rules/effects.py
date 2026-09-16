@@ -246,8 +246,23 @@ class TokenSpec:
     copy_of: ObjectFilter | None = None
 
     def __str__(self) -> str:
-        subtypes = " ".join(self.subtypes)
-        return f"{self.power}/{self.toughness} {subtypes}".strip() or self.name
+        """What this token is, for the round-trip explainer.
+
+        Power and toughness only when it is a creature: a Treasure rendered as
+        "0/0 Treasure" reads like a creature token that dies on arrival, which
+        is the bug this spelling used to be hiding rather than reporting. The
+        keywords are named for the same reason - a token created with flying
+        and one created without look identical without them.
+        """
+        parts = []
+        if self.types & CardType.CREATURE:
+            parts.append(f"{self.power}/{self.toughness}")
+        parts.append(" ".join(self.subtypes) or self.name)
+        if self.keywords:
+            parts.append("with " + ", ".join(self.keywords))
+        if self.abilities:
+            parts.append(f"with {len(self.abilities)} written ability/ies")
+        return " ".join(part for part in parts if part).strip() or self.name
 
 
 @dataclass(frozen=True, slots=True)

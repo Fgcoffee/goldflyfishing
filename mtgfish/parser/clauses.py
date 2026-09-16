@@ -1580,17 +1580,33 @@ def _create_token(stream: Stream) -> Effect | None:
         return None
 
     keywords, abilities = _token_abilities(stream)
+    # "... token with flying" is read by the *noun* reader, which takes
+    # "with flying" as a constraint and puts it in ``has_keyword``. Nothing
+    # then carried it to the token, so every token printed with an ability -
+    # every Spirit with flying, every Angel, every deathtouch Snake - was
+    # created vanilla, and the sentence parsed perfectly while doing it.
+    keywords = tuple(dict.fromkeys(keywords + tuple(spec.has_keyword)))
     # "a token that's a copy of target creature you control, *except the
     # token has flying and it isn't legendary*". The becomes-a-copy clause
     # read this tail and the token-copy clause did not, so the two halves of
     # one construct disagreed.
     _copy_exceptions(stream)
 
+    types = _token_types(spec)
+    if types is None:
+        return None
+    if types & CardType.CREATURE and power is None:
+        # A creature token whose power and toughness the sentence never gave.
+        # Defaulted to 0/0 it is created and then dies to state-based actions
+        # before anything can use it, which is a card that does nothing
+        # wearing the costume of one that does.
+        return None
+
     return Effect(
         EffectKind.CREATE_TOKEN,
         token=TokenSpec(
             name=spec.subtypes_all[0] if spec.subtypes_all else "Token",
-            types=spec.types_all or CardType.CREATURE,
+            types=types,
             subtypes=spec.subtypes_all,
             colors=spec.colors_any,
             power=power or Value.of(0),
@@ -1602,6 +1618,34 @@ def _create_token(stream: Stream) -> Effect | None:
         amount=amount,
         text="create token",
     )
+
+
+def _token_types(spec: ObjectFilter) -> CardType | None:
+    """The card types of a token whose sentence may not have named any.
+
+    "Create a Treasure token" says no card type at all, and defaulting to
+    creature made a **0/0 creature** named Treasure that died to state-based
+    actions the instant it arrived - for one of the most-played effects in the
+    format. The subtype registry already knows what a Treasure is, so it is
+    asked rather than guessed at.
+
+    ``None`` means the sentence did not say and nothing can tell, which fails
+    the ability. A token of the wrong card type is not a near miss: it is a
+    permanent that dies immediately, or one that never dies at all.
+    """
+    from ..rules.typeline import active_registry
+
+    if spec.types_all:
+        return spec.types_all
+    if len(spec.subtypes_all) != 1:
+        return None
+    types = active_registry().types_for(spec.subtypes_all[0])
+    # More than one card type means the word alone does not decide - a bare
+    # subtype that is both a creature type and an artifact type could be
+    # either, and the sentence has to say.
+    if types is CardType.NONE or types.bit_count() != 1:
+        return None
+    return types
 
 
 def _token_abilities(stream: Stream) -> tuple[tuple[str, ...], tuple]:

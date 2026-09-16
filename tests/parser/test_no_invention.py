@@ -355,3 +355,54 @@ def test_the_round_trip_does_not_print_the_all_damage_sentinel_as_a_number():
     said = explain_ability(made[0])
     assert "-1" not in said
     assert "all combat damage" in said
+
+
+# ---------------------------------------------------------------------------
+# A token is what the sentence says it is
+# ---------------------------------------------------------------------------
+
+
+def test_a_token_keeps_the_ability_it_was_printed_with(subtype_registry):
+    """"Create a 1/1 white Soldier creature token with flying."
+
+    The noun reader takes "with flying" as a constraint and files it under
+    ``has_keyword``; nothing carried it across to the token, so every token
+    printed with an ability was created vanilla - and the sentence was fully
+    consumed while it happened, so nothing downstream could tell.
+    """
+    found = nodes("Create a 1/1 white Soldier creature token with flying.")
+    token = next(n for n in found if n.kind is EffectKind.CREATE_TOKEN).token
+    assert token.keywords == ("flying",)
+
+
+def test_several_token_keywords_all_survive(subtype_registry):
+    found = nodes(
+        "Create a 1/1 white Soldier creature token with vigilance and lifelink."
+    )
+    token = next(n for n in found if n.kind is EffectKind.CREATE_TOKEN).token
+    assert set(token.keywords) == {"vigilance", "lifelink"}
+
+
+def test_an_artifact_token_is_not_a_zero_zero_creature(subtype_registry):
+    """"Create a Treasure token" names no card type, and creature was the
+    default. A 0/0 creature dies to state-based actions the moment it arrives,
+    so one of the most-played effects in the format made nothing at all."""
+    from mtgfish.rules.enums import CardType
+
+    found = nodes("Create a Treasure token.")
+    token = next(n for n in found if n.kind is EffectKind.CREATE_TOKEN).token
+    assert token.types & CardType.ARTIFACT
+    assert not token.types & CardType.CREATURE
+
+
+def test_a_creature_token_with_no_stated_size_is_not_invented(subtype_registry):
+    """The same 0/0 from the other direction. If the sentence does not say how
+    big the creature is, the parser does not decide for it."""
+    assert effects_of("Create a Soldier creature token.") is None
+
+
+def test_the_round_trip_does_not_print_a_treasure_as_a_creature(subtype_registry):
+    made, _ = abilities_of("Create a Treasure token.", is_permanent=False)
+    said = explain_ability(made[0])
+    assert "0/0" not in said
+    assert "Treasure" in said
