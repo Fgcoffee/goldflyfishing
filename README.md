@@ -75,6 +75,28 @@ simulate deck.txt --games 1000`, `mtgfish fetch`. Run `mtgfish` with no
 arguments for the list. The `python -m` forms above keep working either way,
 and are the ones to use when working in a clone.
 
+## Reviewing someone else's branch
+
+Agents push branches named `claude/...`. `scripts/review.ps1` tries one without
+touching your own checkout: it copies the branch into its own directory beside
+the repository, merges `main` into that copy - a branch that was fine when it
+was written can still break against what `main` has learned since - and runs
+the tests there. The card database is shared rather than rebuilt per branch.
+
+```powershell
+.\scriptseview.ps1 list                    # what is waiting, and how far ahead
+.\scriptseview.ps1 diff  <branch>          # what it changes, against main
+.\scriptseview.ps1 test  <branch>          # the suites, on branch merged with main
+.\scriptseview.ps1 run   <branch> -Port 8010   # open the web app on it
+.\scriptseview.ps1 merge <branch>          # fast-forward main when you are happy
+.\scriptseview.ps1 clean                   # remove the review copies
+```
+
+`test` skips the slow parser suite; add `-Full` for everything. `-AsIs` tests
+the branch without merging `main`, which is what to use when you want to see
+what the agent saw. A branch that conflicts with `main` is reported as such
+rather than tested, because the merge is the thing that would land.
+
 ## What is in the repository
 
 The card pool comes as Scryfall's own dumps - oracle cards, rulings, tagger
