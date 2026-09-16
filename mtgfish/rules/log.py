@@ -27,12 +27,18 @@ class LogEntry:
     turn: int
     phase: Phase
     step: Step
+    #: Whose entry this is - the player who cast, drew, lost. Often nobody.
     player: PlayerId
     kind: str
     text: str
     #: Nesting depth: a triggered ability resolving inside another resolution
     #: reads much better indented.
     depth: int = 0
+    #: Whose *turn* it was, which is not the same as ``player``: an opponent
+    #: who draws during your turn is an entry with their id on your turn. A
+    #: replay cannot label a turn without it, and it cannot be recovered
+    #: afterwards from ``player`` alone, so it is captured here.
+    active_player: PlayerId = NO_PLAYER
 
     def __str__(self) -> str:
         indent = "  " * self.depth
@@ -72,6 +78,7 @@ class GameLog:
                 kind=kind,
                 text=text,
                 depth=self.depth,
+                active_player=game.active_player,
             )
         )
 

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import traceback
+from dataclasses import asdict
 from pathlib import Path
 
 import threading
@@ -23,6 +24,7 @@ from .qtcompat import QObject, Signal, Slot
 
 from ..data.db import CardDatabase
 from ..sim import RunConfig, replay_game, run, summarize
+from ..sim.replay import DETAIL_LEVELS, KEY_KINDS, NOISE_KINDS
 from ..sim.stats import render
 from .sandbox import Sandbox
 
@@ -127,10 +129,28 @@ class Bridge(QObject):
     def sandbox_review_summary(self) -> str:
         return _json(self.sandbox.review_summary())
 
-    @Slot(str, str, int, result=str)
+    @Slot(str, str, int, int, result=str)
     @_guard
-    def sandbox_put(self, name: str, zone: str, player: int) -> str:
-        return _json(self.sandbox.put(name, zone, player))
+    def sandbox_put(self, name: str, zone: str, player: int, count: int = 1) -> str:
+        return _json(self.sandbox.put(name, zone, player, count))
+
+    @Slot(str, bool, result=str)
+    @_guard
+    def sandbox_set_rule(self, name: str, on: bool) -> str:
+        """Switch one of the bench's suspended rules on or off.
+
+        The sandbox does not enforce the rules that end a session - nobody
+        loses, an empty library is harmless, mana keeps - because an
+        instrument that kills you on the first draw step measures nothing.
+        Each one can be put back, because the rule itself is sometimes what
+        is being tested.
+        """
+        return _json(self.sandbox.set_rule(name, bool(on)))
+
+    @Slot(str, result=str)
+    @_guard
+    def sandbox_set_rules(self, values: str) -> str:
+        return _json(self.sandbox.set_rules(json.loads(values) if values else {}))
 
     @Slot(int, result=str)
     @_guard
@@ -690,8 +710,19 @@ class Bridge(QObject):
                 "seed": view.seed,
                 "turns": view.turns,
                 "winner": view.winner,
-                "turn_starts": {str(k): v for k, v in view.turn_starts.items()},
+                "outcome": view.outcome,
                 "final_board": view.final_board,
+                "detail_levels": list(DETAIL_LEVELS),
+                "key_kinds": sorted(KEY_KINDS),
+                "noise_kinds": sorted(NOISE_KINDS),
+                "seats": [asdict(seat) for seat in view.seats],
+                # The page's table of contents. Each entry is one player's
+                # turn, numbered the way that player would number it, with the
+                # frame range it covers - so "jump to their turn four" is a
+                # slice rather than a search.
+                "turns_taken": [
+                    dict(asdict(turn), label=turn.label) for turn in view.turn_list
+                ],
                 "frames": [
                     {
                         "turn": f.turn,
@@ -701,6 +732,8 @@ class Bridge(QObject):
                         "kind": f.kind,
                         "text": f.text,
                         "depth": f.depth,
+                        "active_player": f.active_player,
+                        "player_turn": f.player_turn,
                     }
                     for f in view.frames
                 ],

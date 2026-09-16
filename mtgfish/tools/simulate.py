@@ -18,7 +18,7 @@ import time
 from pathlib import Path
 
 from ..data.db import CardDatabase
-from ..sim import RunConfig, render, replay_game, run, summarize, verify
+from ..sim import DETAIL_LEVELS, RunConfig, render, replay_game, run, shown_at, summarize, verify
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -33,6 +33,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=0, help="0 picks a sane default")
     parser.add_argument(
         "--replay", type=int, help="after the run, print this game turn by turn"
+    )
+    parser.add_argument(
+        "--replay-detail",
+        choices=DETAIL_LEVELS,
+        default="normal",
+        help="how much of the replay to print: the key moments, everything "
+        "deliberately logged (the default), or the raw event stream too",
     )
     parser.add_argument(
         "--out",
@@ -85,7 +92,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if args.replay is not None:
-        _print_replay(config, args.replay)
+        _print_replay(config, args.replay, args.replay_detail)
     return 0
 
 
@@ -206,22 +213,40 @@ def _inert_cards(db: CardDatabase, decklist: str) -> list[str]:
     return sorted(set(inert))
 
 
-def _print_replay(config: RunConfig, index: int) -> None:
+def _print_replay(config: RunConfig, index: int, detail: str = "normal") -> None:
+    """Print one game the way a person reads one: by whose turn it was.
+
+    Headed by the *seat's own* turn number, because the engine's counter is
+    global - a four-player game's fourth round is turn thirteen, and nobody
+    means that by "turn four".
+    """
     view = replay_game(config, index)
     print()
     print(f"--- replay of game {index} (seed {view.seed}) ---")
-    print(f"{view.turns} turns, winner: {view.winner}")
-    print()
+    for seat in view.seats:
+        line = f"  {seat.name}{' (the deck being measured)' if seat.is_hero else ''}"
+        line += f": {seat.turns_taken} turns"
+        if seat.won:
+            line += ", won"
+        elif seat.loss_reason:
+            line += f", out on turn {seat.left_on_turn} ({seat.loss_reason.lower()})"
+        print(line)
+    print(f"{view.turns} player-turns. {view.outcome}")
 
-    current = -1
-    for frame in view.frames:
-        if frame.turn != current:
-            current = frame.turn
-            print(f"\n== Turn {current} ==")
-        if frame.kind in ("event", "info"):
-            continue
-        indent = "  " * (frame.depth + 1)
-        print(f"{indent}[{frame.step.lower()}] {frame.text}")
+    for turn in view.turn_list:
+        print()
+        where = "" if turn.is_setup else f" (game turn {turn.turn})"
+        print(f"== {turn.label}{where} ==")
+        for frame in view.frames[turn.start : turn.end]:
+            if frame.kind == "turn" or not shown_at(frame.kind, detail):
+                continue
+            indent = "  " * (frame.depth + 1)
+            print(f"{indent}[{frame.step.lower()}] {frame.text}")
+        if turn.life is not None:
+            print(
+                f"  -- end of turn: {turn.life} life, {turn.lands} lands, "
+                f"{turn.cards_in_hand} in hand, {turn.permanents} permanents"
+            )
 
     print()
     print(view.final_board)

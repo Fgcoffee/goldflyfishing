@@ -496,11 +496,99 @@ pre:empty { display: none; }
 
 /* -- replay --------------------------------------------------------------- */
 
+/* A replay is read, not skimmed past. The colour of a seat is carried from the
+   header through the sidebar to every turn heading, because in a four-player
+   game "whose turn was this" is the question the eye asks first and the one a
+   flat log never answers. */
+
 .sidebar { background: var(--panel); border: 1px solid var(--line);
-           border-radius: 10px; padding: 6px; max-height: 520px; overflow: auto; }
+           border-radius: 10px; padding: 6px; max-height: 620px; overflow: auto; }
 .sidebar button { display: block; width: 100%; text-align: left;
                   border: none; background: none; padding: 4px 8px; }
 .sidebar button:hover { background: var(--raised); }
+
+#replaysearch { flex: 1; min-width: 180px; }
+
+.replay-header { margin: 10px 0 14px; }
+.replay-summary { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.replay-outcome { font-size: 15px; color: var(--text); }
+.replay-seats { display: grid; gap: 8px; margin-top: 10px;
+                grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.replay-seats .seat {
+  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--seat, var(--accent));
+  border-radius: 8px; padding: 8px 10px;
+}
+.replay-seats .seat.won { border-color: var(--accent); background: var(--accent-soft); }
+.replay-seats .seatname { display: block; font-size: 13px; }
+.replay-seats .seatfate { display: block; color: var(--dim); font-size: 11px; margin-top: 2px; }
+
+/* Four seats, four hues, defined once and used by the header, the sidebar and
+   every turn heading. Read through ``var(--seat, var(--accent))`` at every use
+   site, so a fifth seat - or an entry with no seat at all - falls back to the
+   accent rather than to nothing. */
+.seat-0 { --seat: var(--accent); }
+.seat-1 { --seat: #6aa9f0; }
+.seat-2 { --seat: #7fcf9b; }
+.seat-3 { --seat: #d98ae0; }
+.seat--1 { --seat: var(--dim); }
+
+.replay-split { grid-template-columns: 280px 1fr; }
+
+#replayturns .turnrow {
+  border-left: 3px solid var(--seat, var(--accent)); border-radius: 0 6px 6px 0;
+  padding: 6px 8px; margin-bottom: 3px; cursor: pointer; line-height: 1.35;
+}
+#replayturns .turnrow.chosen { background: var(--raised); }
+#replayturns .turnlabel { display: block; font-size: 12px; color: var(--text); }
+#replayturns .turnglobal, #replayturns .turndid {
+  display: block; color: var(--dim); font-size: 11px;
+}
+
+.replay-log {
+  background: var(--code); border: 1px solid var(--line); border-radius: 8px;
+  max-height: 620px; overflow: auto; padding: 6px;
+  font: 12px/1.6 ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+.replay-log .turnblock { margin-bottom: 10px; }
+.replay-log .turnhead {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--panel-2); border-left: 3px solid var(--seat, var(--accent));
+  border-radius: 0 6px 6px 0; padding: 5px 10px;
+  display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap;
+}
+.replay-log .turnhead .turnlabel { color: var(--text); font-size: 12px; }
+.replay-log .turnhead .turnglobal { color: var(--dim); font-size: 11px; }
+.replay-log .stephead {
+  color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+  margin: 6px 0 2px 12px;
+}
+.replay-log .line { display: flex; gap: 8px; align-items: baseline; padding-right: 8px; }
+.replay-log .line:hover { background: var(--raised); }
+.replay-log .linekind {
+  flex: 0 0 74px; color: var(--dim); font-size: 10px; text-align: right;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.replay-log .linetext { color: var(--text); white-space: pre-wrap; }
+.replay-log .turnfoot {
+  color: var(--dim); font-size: 11px; margin: 4px 0 0 12px;
+  border-top: 1px dashed var(--line-soft); padding-top: 4px;
+}
+.replay-log .empty-note { color: var(--dim); padding: 16px; }
+.replay-log .line.dim .linetext { color: var(--dim); }
+
+/* What sort of line it is, in the colours the rest of the app already uses for
+   good, bad and worth-noticing. Everything unclassified stays plain: the point
+   of the detail control is that nothing is hidden, not that everything shouts. */
+.replay-log .kind-cast .linetext,
+.replay-log .kind-land .linetext { color: var(--accent); }
+.replay-log .kind-combat .linetext { color: var(--warn); }
+.replay-log .kind-loss .linetext,
+.replay-log .kind-runaway .linetext,
+.replay-log .kind-illegal .linetext { color: var(--bad); }
+.replay-log .kind-commander .linetext,
+.replay-log .kind-solved .linetext { color: var(--good); }
+.replay-log .kind-event .linetext,
+.replay-log .kind-sba .linetext { color: var(--dim); }
 
 /* -- sandbox -------------------------------------------------------------- */
 
@@ -531,6 +619,31 @@ pre:empty { display: none; }
 .perm .kw { color: var(--accent); font-size: 11px; margin-left: 6px; }
 
 .stack .perm { border-color: var(--accent); }
+
+.zone .zonename.lost { color: var(--bad); }
+
+/* The bench's suspended rules. Checked means switched *off*, which is what the
+   heading above the panel says, and each one carries the reason it exists -
+   a checkbox called "players cannot lose" with no explanation reads as a
+   cheat rather than as the reason the instrument works at all. */
+.benchrules { display: grid; gap: 4px; margin-top: 6px; }
+.benchrule {
+  display: flex; gap: 8px; align-items: flex-start; cursor: pointer;
+  border: 1px solid var(--line-soft); border-radius: 8px; padding: 6px 8px;
+}
+.benchrule:hover { background: var(--raised); }
+.benchrule.off { border-color: var(--line); background: var(--panel-2); }
+.benchrule input { margin-top: 2px; }
+.benchtext { display: block; }
+.benchname { display: block; font-size: 12px; color: var(--text); }
+.benchwhy { display: block; font-size: 11px; color: var(--dim); line-height: 1.4; }
+
+/* Louder than a log line: the board has stopped responding and the reason is
+   not a bug. */
+.banner {
+  border: 1px solid var(--accent); background: var(--accent-soft);
+  border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 12px;
+}
 
 #sb-actions button { display: block; width: 100%; text-align: left; margin-bottom: 4px; }
 #sb-targets { margin-top: 8px; }
@@ -658,7 +771,7 @@ pre:empty { display: none; }
   #topbar { padding: 0 12px; gap: 6px; }
   .top-actions { margin-left: 0; width: 100%; flex-wrap: wrap; }
   #deckslots, .charts, .import-grid, .plans { grid-template-columns: 1fr; }
-  .split { grid-template-columns: 1fr; }
+  .split, .replay-split { grid-template-columns: 1fr; }
   .tab { padding: 16px 16px 60px; }
   .dock { margin: 22px -16px -60px; }
   .dock-body { grid-template-columns: 1fr; padding: 10px 16px; }

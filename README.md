@@ -14,7 +14,10 @@ over the same Python bridge.
 * **Goldfishes a deck** over thousands of games and reports win rate, stall
   rate, the mana and development curve, and when the commander lands.
 * **Replays any datapoint.** Click a point on a chart and that exact game is
-  played again, with a full log. Nothing is stored; the seed rebuilds it.
+  played again, with a full log. Nothing is stored; the seed rebuilds it. Turns
+  are numbered the way the player who took them would number them, not by the
+  engine's global counter - a four-player game's fourth round is its thirteenth
+  turn, and nobody means that by "turn four".
 * **Shows what the engine actually understood.** The Deck tab marks every card
   by how much of its text the parser read: yellow for partly read, red for
   unread. A deck can be perfectly legal and still be measured as a deck with
@@ -25,6 +28,10 @@ over the same Python bridge.
   Every variant here plays the same seeds against the same opponents.
 * **Lets you drive a board by hand** in the sandbox, to see whether a card that
   did nothing was an unread ability or a rules bug. Those need different fixes.
+  The sandbox is a bench rather than a game, so the rules that end games are
+  switched off by default - nobody loses, a library you never built is not
+  fatal, mana keeps across steps - and each one is a named switch you can put
+  back when the rule itself is what you are testing.
 * **Imports from Archidekt** by link, or by signing in to list your own decks.
 
 ## Getting started
@@ -75,7 +82,7 @@ and are the ones to use when working in a clone.
 
 | | |
 |---|---|
-| `rules/` | The Comprehensive Rules, implemented. Knows nothing about oracle text, bots or statistics. Every legality check lives here. |
+| `rules/` | The Comprehensive Rules, implemented. Knows nothing about oracle text, bots or statistics. Every legality check lives here. The one exception is `relaxations.py`, a default-empty set of rules an instrument may suspend; a simulated game never constructs anything but `STRICT`. |
 | `parser/` | Oracle text to an effect IR made only of opcodes the rules layer already runs. It cannot express an effect the engine lacks, which is what makes a mis-parse inert rather than corrupting. |
 | `data/` | The Scryfall card snapshot, and deck import. |
 | `ai/` | Decision making. Enumerates its options *from the engine*, so it can never drift from the real rules. |
@@ -106,7 +113,7 @@ like a property of the deck.
 ## Tests
 
 ```bash
-python -m pytest            # 1,131 tests
+python -m pytest            # 1,187 tests
 python -m pytest tests/rules
 ```
 

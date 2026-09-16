@@ -16,16 +16,27 @@ one.
 from __future__ import annotations
 
 from .records import GameRecord, RemovalEvent, TurnSnapshot, WinReason
-from .replay import ReplayFrame, ReplayView, replay_game
+from .replay import (
+    DETAIL_LEVELS,
+    ReplayFrame,
+    ReplaySeat,
+    ReplayTurn,
+    ReplayView,
+    replay_game,
+    shown_at,
+)
 from .runner import RunConfig, RunResult, replay, run, verify
 from .stats import CardImpact, Report, RemovalTarget, TurnSeries, render, summarize
 
 __all__ = [
+    "DETAIL_LEVELS",
     "CardImpact",
     "GameRecord",
     "RemovalEvent",
     "RemovalTarget",
     "ReplayFrame",
+    "ReplaySeat",
+    "ReplayTurn",
     "ReplayView",
     "Report",
     "RunConfig",
@@ -37,6 +48,7 @@ __all__ = [
     "replay",
     "replay_game",
     "run",
+    "shown_at",
     "summarize",
     "verify",
 ]

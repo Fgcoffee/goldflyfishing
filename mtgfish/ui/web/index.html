@@ -200,15 +200,32 @@
 <!-- ------------------------------------------------------------------ -->
 <section id="replay" class="tab">
   <h1>Replay</h1>
+  <p class="hint">
+    One game, played again from its seed. Turns are numbered the way the player
+    who took them would number them &mdash; the engine counts every player&rsquo;s
+    turn, so a four-player game&rsquo;s fourth round is its thirteenth turn, and
+    nobody means that by &ldquo;turn four&rdquo;.
+  </p>
+
   <div class="row">
     <label>Game <input id="replayindex" type="number" value="0" min="0"></label>
-    <button id="loadreplay">Load</button>
-    <span id="replayinfo"></span>
+    <button id="loadreplay" class="primary">Load</button>
+    <span class="spacer"></span>
+    <div id="replaydetail" class="seg" role="radiogroup" aria-label="How much to show">
+      <button data-detail="key" title="Only what was played and what it did">Key moments</button>
+      <button data-detail="normal" class="active" title="Everything the engine deliberately logged">Full log</button>
+      <button data-detail="everything" title="Including the raw event stream">With events</button>
+    </div>
+    <input id="replaysearch" type="search" placeholder="Filter by text, e.g. a card name" autocomplete="off">
   </div>
-  <div class="split">
+
+  <div id="replayheader" class="replay-header"></div>
+
+  <div class="split replay-split">
     <div id="replayturns" class="sidebar"></div>
-    <pre id="replaylog"></pre>
+    <div id="replaylog" class="replay-log"></div>
   </div>
+
   <h2>Final board</h2>
   <pre id="replayboard"></pre>
 </section>
@@ -242,6 +259,8 @@
           <option value="0">You</option>
           <option value="1">Opponent</option>
         </select>
+        <label class="compact">&times;<input id="putcount" type="number" value="1" min="1" max="250"
+          title="How many copies. Stock a library this way so cards that draw have something to draw."></label>
         <button id="putcard">Put into play</button>
       </div>
       <div id="cardinfo"></div>
@@ -258,6 +277,7 @@
         <button id="sb-turn">Next turn</button>
       </div>
       <div id="sb-phase" class="phase"></div>
+      <div id="sb-over" class="banner" hidden></div>
       <div id="sb-board"></div>
       <h3>Stack</h3>
       <div id="sb-stack" class="stack"></div>
@@ -269,6 +289,15 @@
       <div id="sb-targets"></div>
       <h3>Log</h3>
       <pre id="sb-log"></pre>
+
+      <h3>Rules switched off</h3>
+      <p class="hint small">
+        A bench is not a game. These are off so the session survives long
+        enough to show you something &mdash; a hand-built board has no library,
+        so every draw step would otherwise be fatal. Switch one back on to test
+        the rule itself. Nothing here changes what a card does.
+      </p>
+      <div id="sb-rules" class="benchrules"></div>
     </div>
   </div>
 </section>

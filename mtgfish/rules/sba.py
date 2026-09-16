@@ -200,6 +200,14 @@ def _move_commander_home(game: Game, obj: GameObject) -> None:
 
 
 def _check_players(game: Game, losers: list[tuple[PlayerId, LossReason]]) -> None:
+    # The sandbox switches these four off together (see rules.relaxations).
+    # Returning before the loop, rather than letting each player be collected
+    # and then spared, matters: a spared loser is still a *pending* loser, so
+    # the fixed-point loop above would find work to do on every pass and spin
+    # to its iteration cap at every priority check.
+    if game.relaxations.players_cannot_lose:
+        return
+
     for player in game.players:
         if player.has_lost:
             continue

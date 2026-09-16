@@ -268,6 +268,9 @@ def _end_of_step_actions(game: Game, step: Step) -> None:
 
 
 def _empty_mana_pools(game: Game) -> None:
+    # CR 500.4, unless a bench has suspended it - see rules.relaxations.
+    if game.relaxations.mana_pools_persist:
+        return
     for player in game.players:
         lost = player.mana_pool.clear()
         if lost:
