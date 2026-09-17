@@ -10,15 +10,24 @@ The opponent does nothing on purpose. A sandbox where the other player fights
 back is a game, not an instrument: you cannot tell whether your card behaved
 oddly or whether the opponent interfered.
 
-Nothing here bypasses the rules. Cards are *put* into zones directly, which is
-how you set up a position, but playing them goes through ``cast_spell`` and
-``activate_ability`` like anything else - so if the engine would refuse, the
-sandbox refuses, and the reason comes back as text.
+Nothing here bypasses the rules of *casting and resolving*. Cards are *put*
+into zones directly, which is how you set up a position, but playing them goes
+through ``cast_spell`` and ``activate_ability`` like anything else - so if the
+engine would refuse, the sandbox refuses, and the reason comes back as text.
+
+What is switched off, by default, is the handful of rules that end the session
+rather than tell you anything: the four ways a player loses, the loss for
+drawing from a library a hand-built board does not have, mana pools emptying
+between steps, maximum hand size, the land drop, and summoning sickness. Each
+is an individually named switch (see ``BenchRules``) that can be put back, so
+the sandbox can still be used to test the rule itself. They are off by default
+because the alternative - which is what this was - is an instrument that kills
+you on the first draw step and reports it as a result.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields, replace
 
 from ..data.db import CardDatabase
 from ..parser import parse_card
@@ -31,8 +40,10 @@ from ..rules.gameobject import GameObject
 from ..rules.casting import _candidates_for
 from ..rules.ids import ObjectId, PlayerId, is_player_target, target_player
 from ..rules.log import GameLog
-from ..rules.player import Player
+from ..rules.player import DEFAULT_MAX_HAND_SIZE, Player
 from ..rules.priority import Action, ActionKind
+from ..rules import relaxations
+from ..rules.relaxations import STRICT, Relaxations
 
 #: Where a card can be dropped when setting up a position.
 PLACEABLE = {
@@ -42,6 +53,95 @@ PLACEABLE = {
     "exile": Zone.EXILE,
     "library": Zone.LIBRARY,
     "command": Zone.COMMAND,
+}
+
+
+@dataclass(frozen=True, slots=True)
+class BenchRules:
+    """Which rules the bench has switched off, and what each one costs you.
+
+    Six switches, all on by default, in two groups.
+
+    The first three are *engine* relaxations: the engine itself consults them
+    (see ``rules.relaxations``) because nothing outside the engine can stop a
+    state-based action. The last three are applied here, on the board, because
+    they are nothing more than a player field or a flag - there is no reason
+    to teach the rules layer about them.
+
+    All on by default because every one of them exists to stop the instrument
+    ending before the thing being tested happens. All of them can be put back,
+    because the rule itself is sometimes the thing being tested: to watch a
+    player actually deck, switch the empty-library rule back on.
+    """
+
+    #: CR 704.5a-c, 903.10.
+    players_cannot_lose: bool = True
+    #: CR 704.5b.
+    draws_from_an_empty_library_do_nothing: bool = True
+    #: CR 500.4.
+    mana_pools_persist: bool = True
+    #: CR 402.2 / 514.1: no discarding down to seven in the cleanup step. A
+    #: hand stocked for a test is not a hand that was drawn.
+    no_maximum_hand_size: bool = True
+    #: CR 305.2: any number of lands a turn. Setting up a mana base one land
+    #: drop per turn is not a test of anything.
+    unlimited_land_drops: bool = True
+    #: CR 302.6: creatures can attack and tap the turn they arrive. ``put``
+    #: has always done this for cards placed directly; this extends it to
+    #: creatures actually cast on the bench, which is the more honest test.
+    no_summoning_sickness: bool = True
+
+    def with_field(self, name: str, value: bool) -> BenchRules:
+        if name not in RULE_NAMES:
+            raise KeyError(f"no such bench rule: {name!r}")
+        return replace(self, **{name: bool(value)})
+
+    def as_dict(self) -> dict[str, bool]:
+        return {f.name: getattr(self, f.name) for f in fields(self)}
+
+    @property
+    def relaxations(self) -> Relaxations:
+        """The subset the engine has to be told about."""
+        out = STRICT
+        for name in relaxations.NAMES:
+            out = out.with_field(name, getattr(self, name))
+        return out
+
+
+RULE_NAMES: tuple[str, ...] = tuple(f.name for f in fields(BenchRules))
+
+#: Every rule enforced, as in a game. The bench is also the most convenient way
+#: to build a board in a test - ``put`` a few cards and go - and a test about a
+#: rule this bench suspends has to be able to ask for it back in one line:
+#: ``Sandbox(db=..., rules=STRICT_BENCH)``. Without that, a test of the cleanup
+#: discard or of a loop that kills would be quietly testing the bench instead.
+STRICT_BENCH = BenchRules(**{name: False for name in RULE_NAMES})
+
+# The engine's relaxations are named identically here on purpose, so one switch
+# is one name all the way down. Checked rather than assumed: a relaxation added
+# to the rules layer and not to this dataclass would be a switch the sandbox
+# could never turn off, and the failure would be an AttributeError deep in a
+# board refresh rather than here.
+assert set(relaxations.NAMES) <= set(RULE_NAMES), (
+    f"bench rules are missing an engine relaxation: "
+    f"{sorted(set(relaxations.NAMES) - set(RULE_NAMES))}"
+)
+
+#: One line each, so a checkbox can say what it does. The engine-level ones
+#: describe themselves; the rest are described here.
+RULE_DESCRIPTIONS: dict[str, str] = dict(relaxations.DESCRIPTIONS) | {
+    "no_maximum_hand_size": (
+        "No discarding down to seven in the cleanup step (CR 402.2, 514.1), "
+        "so a hand stocked for a test survives the turn"
+    ),
+    "unlimited_land_drops": (
+        "Any number of lands each turn (CR 305.2), so a mana base can be "
+        "built in one go"
+    ),
+    "no_summoning_sickness": (
+        "Creatures can attack and tap the turn they arrive (CR 302.6), cast "
+        "as well as placed"
+    ),
 }
 
 
@@ -90,6 +190,9 @@ class Sandbox:
     verdicts: VerdictStore | None = None
     #: Which player the operator is driving. The other seat is inert.
     hero: PlayerId = PlayerId(0)
+    #: Which rules this bench has switched off. Survives ``reset``: clearing
+    #: the board is not a reason to start losing to your own draw step again.
+    rules: BenchRules = BenchRules()
 
     def __post_init__(self) -> None:
         if self.verdicts is None:
@@ -123,10 +226,95 @@ class Sandbox:
 
         for player in game.players:
             player.life = 40
-            player.max_lands = 99  # A sandbox is not a game; land drops are noise.
 
         self.game = game
+        self._apply_rules()
         return self.state()
+
+    # -- what is switched off -----------------------------------------------
+
+    def set_rule(self, name: str, on: bool) -> dict:
+        """Switch one bench rule on or off, by name.
+
+        An unknown name is an error rather than a no-op: the caller is a UI
+        sending strings, and a typo that silently did nothing looks exactly
+        like a switch that does not work.
+        """
+        return self.set_rules({name: on})
+
+    def set_rules(self, values: dict) -> dict:
+        """Set several at once, which is what a panel of checkboxes sends."""
+        unknown = [name for name in values if name not in RULE_NAMES]
+        if unknown:
+            return self.state(error=f"no such bench rule: {unknown[0]!r}")
+        was = self.rules
+        rules = self.rules
+        for name, on in values.items():
+            rules = rules.with_field(name, on)
+        self.rules = rules
+        self._restore(was)
+        self._apply_rules()
+
+        changed = [
+            f"{name.replace('_', ' ')} is {'off' if on else 'back on'}"
+            for name, on in values.items()
+            if bool(on) != getattr(was, name)
+        ]
+        return self.state(message="; ".join(changed) or "nothing changed")
+
+    def _restore(self, was: BenchRules) -> None:
+        """Put back the real value of any rule that has just been switched on.
+
+        Separate from ``_apply_rules`` because that one runs before every read
+        and must only ever *relax*. Forcing the strict value on every read
+        would fight the engine: an extra land drop granted by Exploration sets
+        the same field this does, and would be wiped the next time the board
+        was drawn - so the one rule the operator switched back on to test would
+        be the one rule they could not test.
+        """
+        if was.unlimited_land_drops and not self.rules.unlimited_land_drops:
+            for player in self.game.players:
+                player.max_lands = 1
+        if was.no_maximum_hand_size and not self.rules.no_maximum_hand_size:
+            for player in self.game.players:
+                player.max_hand_size = DEFAULT_MAX_HAND_SIZE
+
+    def _apply_rules(self) -> None:
+        """Push the current switches onto the game.
+
+        Called after every change and before every read, because the board-side
+        ones live on state the engine resets - ``max_lands`` goes back to one at
+        the end of every turn, which is why the old sandbox stopped allowing
+        extra land drops after turn one - and because summoning sickness has to
+        be cleared on permanents that did not exist when the switch was set.
+
+        Only ever relaxes. Putting a rule back is ``_restore``'s job, once, at
+        the moment it is switched.
+        """
+        game = self.game
+        game.relaxations = self.rules.relaxations
+
+        for player in game.players:
+            if self.rules.unlimited_land_drops:
+                player.max_lands = max(player.max_lands, 99)
+            if self.rules.no_maximum_hand_size:
+                player.max_hand_size = max(player.max_hand_size, 999)
+
+        if self.rules.no_summoning_sickness:
+            # One way only: a creature that has lost its sickness cannot be
+            # made sick again by switching this back on, because nothing
+            # records when it arrived. Switching it on affects permanents
+            # from then on, which is the useful direction.
+            woken = False
+            for obj in game.permanents():
+                if obj.summoning_sick:
+                    obj.summoning_sick = False
+                    woken = True
+            # Only when something changed: this runs before every read, and
+            # invalidating unconditionally would throw away the whole board's
+            # layer computation on every refresh.
+            if woken:
+                game.invalidate_characteristics()
 
     # -- card lookup --------------------------------------------------------
 
@@ -135,10 +323,13 @@ class Sandbox:
         if not text or len(text) < 2:
             return []
         out = []
-        # ``suggest`` returns names; the card itself is a second lookup. Worth
-        # it here because the operator picks from a list and wants to see the
+        # ``search_names``, not ``suggest``: the latter is the "did you mean"
+        # fuzzy matcher, and by edit distance "Grizzly" is not close enough to
+        # "Grizzly Bears" to be offered - which is a type-ahead that fails on
+        # the thing you are typing. The name is matched here and the card is a
+        # second lookup, because the operator picks from a list and wants the
         # cost and type line before choosing.
-        for name in self.db.suggest(text, limit=limit):
+        for name in self.db.search_names(text, limit=limit):
             card = self.db.lookup(name)
             if card is None or not card.faces:
                 continue
@@ -253,13 +444,25 @@ class Sandbox:
 
     # -- building a position ------------------------------------------------
 
-    def put(self, name: str, zone: str = "battlefield", player: int = 0) -> dict:
+    #: A library is stocked in bulk, so the cap is high enough for a real deck
+    #: and low enough that a stray keystroke cannot build a hundred thousand
+    #: objects and take the session with it.
+    MAX_PUT = 250
+
+    def put(
+        self, name: str, zone: str = "battlefield", player: int = 0, count: int = 1
+    ) -> dict:
         """Place a card into a zone, ready to be used.
 
         A permanent placed on the battlefield is not summoning-sick: the
         operator is setting up a position, not playing a turn, and having to
         pass three turns before a creature can attack makes the instrument
         tedious without making it more truthful.
+
+        ``count`` places several copies at once, which is how a library gets
+        stocked. Drawing from an empty library is harmless on the bench, but
+        harmless is not the same as useful: a card that says "draw three" has
+        nothing to show unless there is something to draw.
         """
         card = self.db.lookup(name)
         if card is None:
@@ -267,8 +470,17 @@ class Sandbox:
         target = PLACEABLE.get(zone)
         if target is None:
             return {"error": f"cannot place into {zone!r}"}
+        count = max(1, min(int(count), self.MAX_PUT))
 
-        obj = self.game.create_object(card, PlayerId(player), target)
+        for _ in range(count):
+            self._put_one(card, target, PlayerId(player))
+        self.game.invalidate_characteristics()
+        self._apply_rules()
+        copies = "" if count == 1 else f" x{count}"
+        return self.state(message=f"put {card.name}{copies} into {zone}")
+
+    def _put_one(self, card, target: Zone, player: PlayerId) -> None:
+        obj = self.game.create_object(card, player, target)
         if target is Zone.BATTLEFIELD:
             obj.summoning_sick = False
             obj.entered_battlefield_turn = self.game.turn
@@ -292,16 +504,14 @@ class Sandbox:
                     player=obj.controller,
                 )
             )
-        self.game.invalidate_characteristics()
-        return self.state(message=f"put {card.name} into {zone}")
 
     def give_mana(self, amount: int = 10, player: int = 0) -> dict:
         """Fill a pool, so casting can be tested without building a mana base.
 
         One of each colour plus colourless, which covers every cost without
-        the operator having to think about it. Pools still empty at end of
-        step (CR 500.4), so this is a convenience for the current window, not
-        a permanent state.
+        the operator having to think about it. With ``mana_pools_persist`` on,
+        which is the default, it stays there across steps; switch that rule
+        back on and CR 500.4 empties it at the end of the step, as in a game.
         """
         from ..rules.enums import Color
         from ..rules.mana import ManaKind
@@ -333,6 +543,7 @@ class Sandbox:
         """
         from ..rules.legality import legal_actions
 
+        self._apply_rules()
         out = []
         for index, action in enumerate(legal_actions(self.game, PlayerId(player))):
             if action.kind is ActionKind.PASS:
@@ -361,6 +572,7 @@ class Sandbox:
         """
         from ..rules.legality import legal_actions
 
+        self._apply_rules()
         actions = legal_actions(self.game, PlayerId(player))
         if not 0 <= index < len(actions):
             return []
@@ -528,6 +740,7 @@ class Sandbox:
 
     def state(self, *, message: str = "", error: str = "") -> dict:
         """The whole visible position, as plain data."""
+        self._apply_rules()
         game = self.game
         return {
             "turn": game.turn,
@@ -536,17 +749,42 @@ class Sandbox:
             "active_player": int(game.active_player),
             "message": message,
             "error": error,
+            # A bench with ``players_cannot_lose`` on can still be ended by a
+            # card that says a player wins, and a board that has stopped
+            # responding for that reason has to say so rather than look broken.
+            "game_over": game.game_over,
+            "winners": [int(p) for p in game.winners],
+            "rules": self.rules.as_dict(),
+            "rule_descriptions": RULE_DESCRIPTIONS,
             "players": [self._player(player) for player in game.players],
             "stack": [
                 self._object(game.objects[object_id])
                 for object_id in game.stack
                 if object_id in game.objects
             ],
-            "log": [
-                {"kind": entry.kind, "text": entry.text, "turn": entry.turn}
-                for entry in game.log.entries[-120:]
-            ],
+            # The last 200 entries *worth reading*. Windowing the raw log
+            # instead showed three lines of use and 197 events: a board that
+            # has run a few turns produces tens of thousands of them, and they
+            # say the same thing as the actions that caused them.
+            "log": self._log_tail(),
         }
+
+    #: How much of the log the board carries back. Enough to cover the last
+    #: few turns, short enough that the payload stays small on every refresh.
+    LOG_TAIL = 200
+
+    def _log_tail(self) -> list[dict]:
+        entries = [e for e in self.game.log.entries if e.kind != "event"]
+        return [
+            {
+                "kind": entry.kind,
+                "text": entry.text,
+                "turn": entry.turn,
+                "step": entry.step.name if entry.step is not None else "",
+                "depth": entry.depth,
+            }
+            for entry in entries[-self.LOG_TAIL :]
+        ]
 
     def _player(self, player: Player) -> dict:
         game = self.game
@@ -555,6 +793,13 @@ class Sandbox:
             "name": player.name,
             "life": player.life,
             "mana": player.mana_pool.total,
+            "poison": player.poison,
+            "library": len(player.library),
+            # With the loss rules switched off a player sits at -7 life
+            # indefinitely, which is the point; the board still has to show it,
+            # or an effect that is working looks like an effect that is not.
+            "has_lost": player.has_lost,
+            "loss_reason": player.loss_reason.name if player.loss_reason else "",
             "battlefield": [
                 self._object(game.objects[oid])
                 for oid in game.battlefield

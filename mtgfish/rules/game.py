@@ -30,6 +30,7 @@ from .gameobject import GameObject, ObjectKind
 from .ids import NO_OBJECT, NO_PLAYER, IdAllocator, ObjectId, PlayerId
 from .log import GameLog
 from .player import Player
+from .relaxations import STRICT, Relaxations
 
 
 class AbilityProvider(Protocol):
@@ -116,6 +117,11 @@ class Game:
     rng: random.Random = field(default_factory=random.Random)
     log: GameLog = field(default_factory=GameLog)
     ability_provider: AbilityProvider = field(default_factory=UnparsedAbilityProvider)
+    #: Rules suspended for this game (see ``rules.relaxations``). Only the
+    #: sandbox ever sets anything here; a simulated game is always ``STRICT``,
+    #: and the default is shared rather than built per game because it is
+    #: frozen and every game's copy would be identical.
+    relaxations: Relaxations = STRICT
 
     # -- turn state ---------------------------------------------------------
     turn: int = 0
@@ -877,12 +883,16 @@ class Game:
         sets a flag, and the loss happens as a state-based action the next time
         one would be checked (CR 704.5b). That delay is observable - a player
         can win before it is checked.
+
+        On a bench with no library behind the board, the flag is not even set
+        - see ``rules.relaxations``.
         """
         player = self.players[player_id]
         drawn: list[GameObject] = []
         for _ in range(count):
             if not player.library:
-                player.attempted_draw_from_empty_library = True
+                if not self.relaxations.draws_from_an_empty_library_do_nothing:
+                    player.attempted_draw_from_empty_library = True
                 break
             obj = self.objects[player.library[0]]
             new_obj = self.move_object(obj, Zone.HAND, to_player=player_id)

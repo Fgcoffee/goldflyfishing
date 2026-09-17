@@ -338,3 +338,194 @@ def test_object_and_player_targets_do_not_collide(box):
         assert target_player(encoded) == player
     assert not is_player_target(1)
     assert not is_player_target(99999)
+
+
+# ---------------------------------------------------------------------------
+# What the bench switches off
+# ---------------------------------------------------------------------------
+#
+# A sandbox is an instrument, not a game, and the rules that end games end
+# sessions before they show anything. Every one of these was a way to be told
+# nothing: a board with no library decked whoever drove it on the first draw
+# step, a life total set low to watch a drain effect ended the session instead
+# of demonstrating it, and mana handed over for a test evaporated at the next
+# step boundary.
+
+
+def test_the_bench_starts_with_the_session_enders_switched_off(box):
+    rules = box.state()["rules"]
+    assert rules["players_cannot_lose"]
+    assert rules["draws_from_an_empty_library_do_nothing"]
+    assert rules["mana_pools_persist"]
+
+
+def test_every_switch_says_what_it_does(box):
+    """A checkbox called "players cannot lose" with nothing beside it reads as
+    a cheat rather than as the reason the instrument works at all."""
+    state = box.state()
+    assert set(state["rule_descriptions"]) == set(state["rules"])
+    assert all(text.strip() for text in state["rule_descriptions"].values())
+
+
+def test_taking_turns_on_an_empty_board_does_not_deck_anybody(box):
+    """The one that made the sandbox useless. A position is assembled card by
+    card, so there is no library, and every draw step was fatal."""
+    for _ in range(6):
+        state = box.next_turn()
+
+    assert not any(player["has_lost"] for player in state["players"])
+    assert not state["game_over"]
+
+
+def test_a_life_total_below_zero_is_shown_rather_than_fatal(box):
+    """Not losing is not the same as not being hit: the life total is the
+    evidence that the effect under test worked."""
+    box.set_life(-6, 0)
+    state = box.advance()
+    assert state["players"][0]["life"] == -6
+    assert not state["players"][0]["has_lost"]
+    assert not state["game_over"]
+
+
+def test_mana_survives_the_next_step(box):
+    """Handing over mana and then advancing a step used to throw it away, so
+    every test of a multi-step sequence had to re-hand it."""
+    box.give_mana(10, 0)
+    before = box.state()["players"][0]["mana"]
+    state = box.advance()
+    assert state["players"][0]["mana"] == before
+
+
+def test_a_creature_cast_on_the_bench_can_act_at_once(box):
+    """``put`` always did this for a card placed directly. A creature actually
+    cast - which is the more honest test - was still summoning-sick."""
+    box.put("Grizzly Bears", "hand", 0)
+    box.give_mana(5, 0)
+    bears = next(a for a in box.legal() if "Grizzly Bears" in a["description"])
+    box.perform(bears["index"])
+    state = box.resolve_top()
+    assert state["players"][0]["battlefield"][0]["summoning_sick"] is False
+
+
+def play_every_land(box) -> int:
+    """Play lands from hand until the engine stops offering them."""
+    played = 0
+    while True:
+        lands = [a for a in box.legal() if a["kind"] == "PLAY_LAND"]
+        if not lands:
+            return played
+        box.perform(lands[0]["index"])
+        played += 1
+
+
+def test_land_drops_stay_unlimited_after_the_first_turn(box):
+    """``max_lands`` is reset to one at the end of every turn, so setting it
+    once at reset stopped working the moment a turn ended."""
+    box.next_turn()
+    box.next_turn()
+    box.put("Forest", "hand", 0, 3)
+    assert play_every_land(box) == 3
+
+
+# -- and every one of them can be put back ----------------------------------
+
+
+def test_a_rule_switched_back_on_is_enforced_again(box):
+    """The rule itself is sometimes the thing being tested: to watch a player
+    actually deck, you have to be able to ask for it."""
+    box.set_rule("players_cannot_lose", False)
+    box.set_rule("draws_from_an_empty_library_do_nothing", False)
+
+    for _ in range(4):
+        state = box.next_turn()
+        if state["game_over"]:
+            break
+
+    assert state["players"][0]["has_lost"]
+    assert state["players"][0]["loss_reason"] == "EMPTY_LIBRARY"
+
+
+def test_switching_a_rule_back_on_restores_the_real_value(box):
+    """CR 305.2 again: one land a turn, as in a game."""
+    box.set_rule("unlimited_land_drops", False)
+    box.put("Forest", "hand", 0, 3)
+    assert play_every_land(box) == 1
+
+
+def test_an_unknown_switch_is_refused_rather_than_ignored(box):
+    """The caller is a UI sending strings. A typo that silently did nothing
+    looks exactly like a switch that does not work."""
+    assert "error" in box.set_rule("players_cannot_win", True)
+    assert "error" in box.set_rules({"nonsense": True})
+    assert box.state()["rules"]["players_cannot_lose"], "nothing should have changed"
+
+
+def test_several_switches_can_be_set_at_once(box):
+    """What a panel of checkboxes sends."""
+    state = box.set_rules(
+        {"players_cannot_lose": False, "mana_pools_persist": False}
+    )
+    assert state["rules"]["players_cannot_lose"] is False
+    assert state["rules"]["mana_pools_persist"] is False
+    assert state["rules"]["no_summoning_sickness"] is True
+
+
+def test_the_switches_survive_a_reset(box):
+    """Clearing the board is not a reason to start losing to your own draw
+    step again."""
+    box.set_rule("players_cannot_lose", False)
+    assert box.reset()["rules"]["players_cannot_lose"] is False
+
+
+# ---------------------------------------------------------------------------
+# Stocking a position
+# ---------------------------------------------------------------------------
+
+
+def test_several_copies_can_be_placed_at_once(box):
+    """Drawing from an empty library is harmless on the bench, but harmless is
+    not useful: "draw three" has nothing to show without a library."""
+    state = box.put("Forest", "library", 0, 12)
+    assert state["players"][0]["library"] == 12
+
+    state = box.next_turn()
+    state = box.next_turn()
+    assert state["players"][0]["library"] < 12, "the draw step should have drawn"
+
+
+def test_a_silly_number_of_copies_is_capped(box):
+    box.put("Forest", "library", 0, 10_000)
+    assert box.state()["players"][0]["library"] == box.MAX_PUT
+
+
+def test_searching_finds_a_card_by_the_start_of_its_name(box):
+    """The type-ahead used the "did you mean" fuzzy matcher, and by edit
+    distance "Grizzly" is not close enough to "Grizzly Bears" to be offered -
+    a type-ahead that fails on the thing you are typing."""
+    assert "Grizzly Bears" in [card["name"] for card in box.search("Grizzly")]
+    assert "Grizzly Bears" in [card["name"] for card in box.search("izzly bea")]
+
+
+# ---------------------------------------------------------------------------
+# What the board says about itself
+# ---------------------------------------------------------------------------
+
+
+def test_the_board_reports_the_library_and_the_game_being_over(box):
+    """A card can still say "you win the game", after which nothing responds.
+    A board stopped for that reason has to say so, or it reads as broken."""
+    state = box.state()
+    assert state["game_over"] is False
+    assert state["winners"] == []
+    assert all("library" in player for player in state["players"])
+
+
+def test_the_log_the_board_carries_back_is_not_all_events(box):
+    """A board a few turns in produces tens of thousands of events; a window of
+    the raw log was three useful lines and 197 of them."""
+    for _ in range(3):
+        box.next_turn()
+    log = box.state()["log"]
+    assert log
+    assert not any(entry["kind"] == "event" for entry in log)
+    assert any(entry["kind"] == "turn" for entry in log)

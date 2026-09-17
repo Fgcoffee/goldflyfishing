@@ -449,6 +449,28 @@ function drawRemoval() {
 
 /* ----------------------------------------------------------------- replay */
 
+/* A replay is one game, played again from its seed, and the only place in the
+ * app where a person reads what the engine actually did. Three things it has
+ * to get right, and used not to:
+ *
+ * Turns are numbered per player. The engine's counter is global - every
+ * player's turn advances it - so a four-player game's fourth round is turn
+ * thirteen. Headings here say "Opponent 2, their turn 4", with the global
+ * number kept alongside for anyone matching against a digest.
+ *
+ * Nothing is dropped silently. This view previously hid two whole kinds of
+ * entry, one of which was `info` - the *default* kind, which carries "all
+ * targets illegal; spell is countered". The one line explaining a game was the
+ * line being thrown away. Now the detail level is a control, it is named, and
+ * only the raw event stream is off by default.
+ *
+ * The shape of a turn is visible before you read it. Each turn in the sidebar
+ * shows whose it was, what was cast and played, and where their life and board
+ * ended up, so a fifty-turn game can be scanned rather than read. */
+
+let replayView = null;
+let replayDetail = "normal";
+
 async function openReplay(index) {
   document.getElementById("replayindex").value = index;
   document.querySelector('nav button[data-tab="replay"]').click();
@@ -457,47 +479,180 @@ async function openReplay(index) {
 
 document.getElementById("loadreplay").addEventListener("click", loadReplay);
 
+document.querySelectorAll("#replaydetail button").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("#replaydetail button")
+      .forEach((b) => b.classList.remove("active"));
+    button.classList.add("active");
+    replayDetail = button.dataset.detail;
+    drawReplayLog();
+  });
+});
+
+// Debounced: redrawing a long game's log on every keystroke is the one thing
+// in this view that is slow enough to feel.
+let replayFilterTimer = null;
+document.getElementById("replaysearch").addEventListener("input", () => {
+  clearTimeout(replayFilterTimer);
+  replayFilterTimer = setTimeout(drawReplayLog, 140);
+});
+
 async function loadReplay() {
   const index = Number(document.getElementById("replayindex").value) || 0;
   setStatus(`replaying game ${index}...`);
   const view = await call("replay", index);
   if (view.error) return;
 
-  document.getElementById("replayinfo").textContent =
-    `seed ${view.seed} · ${view.turns} turns · winner: `
-    + (view.winner === null ? "nobody (stall)" : `P${view.winner}`);
-
-  const turns = document.getElementById("replayturns");
-  turns.innerHTML = "";
-  Object.keys(view.turn_starts).map(Number).sort((a, b) => a - b).forEach((turn) => {
-    const button = el("button", null, `Turn ${turn}`);
-    button.addEventListener("click", () => {
-      const line = document.getElementById(`frame-${view.turn_starts[String(turn)]}`);
-      if (line) line.scrollIntoView({ block: "start" });
-    });
-    turns.appendChild(button);
-  });
-
-  /* Events are dropped: there are tens of thousands of them and they say the
-   * same thing as the actions that caused them. The verbose stream is still
-   * in the log if it is ever needed. */
-  const log = document.getElementById("replaylog");
-  log.innerHTML = "";
-  let currentTurn = -1;
-  view.frames.forEach((frame, position) => {
-    if (frame.turn !== currentTurn) {
-      currentTurn = frame.turn;
-      const header = el("div", null, `\n== Turn ${currentTurn} ==`);
-      header.id = `frame-${position}`;
-      log.appendChild(header);
-    }
-    if (frame.kind === "event" || frame.kind === "info") return;
-    log.appendChild(el("div", null,
-      `${"  ".repeat(frame.depth + 1)}[${frame.step.toLowerCase()}] ${frame.text}`));
-  });
-
+  replayView = view;
+  drawReplayHeader();
+  drawReplayTurns();
+  drawReplayLog();
   document.getElementById("replayboard").textContent = view.final_board;
   setStatus(`game ${index} replayed`);
+}
+
+/* Who was at the table, how many turns each of them took, and how it ended.
+ * Seat numbers alone ("winner: P2") mean nothing without the rest. */
+function drawReplayHeader() {
+  const host = document.getElementById("replayheader");
+  host.innerHTML = "";
+  const view = replayView;
+
+  const summary = el("div", "replay-summary");
+  summary.appendChild(el("span", "replay-outcome", view.outcome || ""));
+  const played = view.turns_taken.filter((t) => !t.is_setup).length;
+  summary.appendChild(el("span", "dim",
+    `seed ${view.seed} · ${view.turns} player-turns`
+    + (played === view.turns ? "" : ` · ${played} logged`)));
+  host.appendChild(summary);
+
+  const seats = el("div", "replay-seats");
+  (view.seats || []).forEach((seat) => {
+    const node = el("div", "seat seat-" + seat.id + (seat.won ? " won" : ""));
+    node.appendChild(el("span", "seatname", seat.name));
+    const fate = seat.won
+      ? "won"
+      : (seat.loss_reason
+        ? `out on turn ${seat.left_on_turn} · ${seat.loss_reason.toLowerCase().replace(/_/g, " ")}`
+        : "still in at the end");
+    node.appendChild(el("span", "seatfate", `${seat.turns_taken} turns · ${fate}`));
+    seats.appendChild(node);
+  });
+  host.appendChild(seats);
+}
+
+/* The table of contents. One row per turn actually taken, labelled by the
+ * player whose turn it was and by their own count of it. */
+function drawReplayTurns() {
+  const host = document.getElementById("replayturns");
+  host.innerHTML = "";
+
+  replayView.turns_taken.forEach((turn, position) => {
+    const row = el("button", "turnrow seat-" + turn.player);
+    row.appendChild(el("span", "turnlabel", turn.label));
+    // Setup is not a turn, so it has no number worth showing.
+    if (!turn.is_setup) {
+      row.appendChild(el("span", "turnglobal", `game turn ${turn.turn}`));
+    }
+
+    const did = [];
+    if (turn.spells_cast) did.push(`${turn.spells_cast} cast`);
+    if (turn.lands_played) did.push(`${turn.lands_played} land${turn.lands_played > 1 ? "s" : ""}`);
+    if (turn.life !== null && turn.life !== undefined) {
+      did.push(`${turn.life} life`);
+      did.push(`${turn.permanents} permanents`);
+    }
+    if (did.length) row.appendChild(el("span", "turndid", did.join(" · ")));
+
+    row.addEventListener("click", () => {
+      document.querySelectorAll("#replayturns .turnrow")
+        .forEach((b) => b.classList.remove("chosen"));
+      row.classList.add("chosen");
+      const header = document.getElementById(`turnhead-${position}`);
+      if (header) header.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+    host.appendChild(row);
+  });
+}
+
+function replayFilter() {
+  return document.getElementById("replaysearch").value.trim().toLowerCase();
+}
+
+/* Kinds the server told us are key or noise, so the page does not keep its own
+ * second copy of that list to drift from. */
+function shownAtDetail(kind) {
+  const view = replayView;
+  if (replayDetail === "everything") return true;
+  if ((view.noise_kinds || []).includes(kind)) return false;
+  if (replayDetail === "key") return (view.key_kinds || []).includes(kind);
+  return true;
+}
+
+function drawReplayLog() {
+  const host = document.getElementById("replaylog");
+  host.innerHTML = "";
+  if (!replayView) return;
+
+  const needle = replayFilter();
+  const frames = replayView.frames;
+  let shown = 0;
+
+  replayView.turns_taken.forEach((turn, position) => {
+    const lines = [];
+    for (let i = turn.start; i < turn.end; i += 1) {
+      const frame = frames[i];
+      // The turn's own banner is already the heading above it; repeating it as
+      // the first line of every turn is pure noise.
+      if (frame.kind === "turn") continue;
+      if (!shownAtDetail(frame.kind)) continue;
+      if (needle && !frame.text.toLowerCase().includes(needle)) continue;
+      lines.push(frame);
+    }
+    // While filtering, a turn where nothing matched is not worth a heading.
+    if (needle && !lines.length) return;
+
+    const block = el("div", "turnblock seat-" + turn.player);
+    const header = el("div", "turnhead");
+    header.id = `turnhead-${position}`;
+    header.appendChild(el("span", "turnlabel", turn.label));
+    if (!turn.is_setup) {
+      header.appendChild(el("span", "turnglobal", `game turn ${turn.turn}`));
+    }
+    block.appendChild(header);
+
+    if (!lines.length) {
+      block.appendChild(el("div", "line dim", "nothing logged at this detail level"));
+    }
+
+    let step = null;
+    lines.forEach((frame) => {
+      if (frame.step !== step) {
+        step = frame.step;
+        block.appendChild(el("div", "stephead", step.toLowerCase().replace(/_/g, " ")));
+      }
+      const line = el("div", `line kind-${frame.kind}`);
+      line.style.paddingLeft = `${12 + frame.depth * 16}px`;
+      line.appendChild(el("span", "linekind", frame.kind));
+      line.appendChild(el("span", "linetext", frame.text));
+      block.appendChild(line);
+      shown += 1;
+    });
+
+    if (turn.life !== null && turn.life !== undefined) {
+      block.appendChild(el("div", "turnfoot",
+        `end of turn: ${turn.life} life · ${turn.lands} lands · `
+        + `${turn.cards_in_hand} in hand · ${turn.permanents} permanents`
+        + ` · ${turn.board_power} power on board`));
+    }
+    host.appendChild(block);
+  });
+
+  if (!shown) {
+    host.appendChild(el("div", "empty-note", needle
+      ? `Nothing in this game matches "${needle}".`
+      : "Nothing to show at this detail level."));
+  }
 }
 
 /* ---------------------------------------------------------------- sandbox */
@@ -634,7 +789,8 @@ document.getElementById("putcard").addEventListener("click", async () => {
   if (!chosenCard) { setStatus("pick a card first", true); return; }
   const zone = document.getElementById("putzone").value;
   const player = Number(document.getElementById("putplayer").value);
-  applyState(await call("sandbox_put", chosenCard, zone, player));
+  const count = Math.max(1, Number(document.getElementById("putcount").value) || 1);
+  applyState(await call("sandbox_put", chosenCard, zone, player, count));
 });
 
 const SANDBOX_BUTTONS = {
@@ -673,12 +829,30 @@ function applyState(state) {
     + ` · active: ${state.players[state.active_player].name}`
     + (state.message ? ` · ${state.message}` : "");
 
+  /* A card can still say "you win the game", and nothing responds after that.
+   * A board that has stopped for that reason has to say so, or it reads as a
+   * sandbox that has broken. */
+  const over = document.getElementById("sb-over");
+  over.hidden = !state.game_over;
+  if (state.game_over) {
+    const who = (state.winners || [])
+      .map((id) => (state.players[id] || {}).name || `P${id}`).join(", ");
+    over.textContent = (who ? `${who} won. ` : "The game has ended. ")
+      + "Nothing else will happen on this board — reset to carry on.";
+  }
+
+  renderBenchRules(state);
+
   const board = document.getElementById("sb-board");
   board.innerHTML = "";
   state.players.forEach((player) => {
     const zone = el("div", "zone");
-    zone.appendChild(el("div", "zonename",
-      `${player.name} — ${player.life} life, ${player.mana} mana in pool`));
+    const out = player.has_lost
+      ? ` — OUT (${player.loss_reason.toLowerCase().replace(/_/g, " ")})` : "";
+    zone.appendChild(el("div", "zonename" + (player.has_lost ? " lost" : ""),
+      `${player.name} — ${player.life} life, ${player.mana} mana in pool, `
+      + `${player.library} in library`
+      + (player.poison ? `, ${player.poison} poison` : "") + out));
     ["battlefield", "hand", "graveyard"].forEach((where) => {
       if (!player[where].length) return;
       const row = el("div");
@@ -694,10 +868,44 @@ function applyState(state) {
   if (!state.stack.length) stack.appendChild(el("div", "zonename", "empty"));
   state.stack.forEach((obj) => stack.appendChild(renderPermanent(obj)));
 
+  // Already windowed to the entries worth reading; the raw event stream is
+  // dropped on the Python side, where the whole log is, rather than here,
+  // where only the tail of it ever arrives.
   document.getElementById("sb-log").textContent =
-    state.log.filter((e) => e.kind !== "event").map((e) => `[${e.kind}] ${e.text}`).join("\n");
+    state.log.map((e) => `${"  ".repeat(e.depth)}[${e.kind}] ${e.text}`).join("\n");
 
   refreshActions();
+}
+
+/* The rules this bench has switched off, as checkboxes.
+ *
+ * Built from what the server says exists rather than from a list here: the
+ * switches are defined next to the code that honours them, and a page holding
+ * its own copy would quietly stop matching. */
+function renderBenchRules(state) {
+  const host = document.getElementById("sb-rules");
+  if (!state.rules) { host.innerHTML = ""; return; }
+  host.innerHTML = "";
+
+  Object.entries(state.rules).forEach(([name, on]) => {
+    const row = el("label", "benchrule" + (on ? " off" : ""));
+    const box = el("input");
+    box.type = "checkbox";
+    // Checked means the rule is *suspended*, which is what the heading above
+    // the panel says these are. Labelling each one by the rule it switches off
+    // and then checking it for "enforced" would invert every reading.
+    box.checked = !!on;
+    box.addEventListener("change", async () => {
+      applyState(await call("sandbox_set_rule", name, box.checked));
+    });
+    row.appendChild(box);
+    const text = el("span", "benchtext");
+    text.appendChild(el("span", "benchname", name.replace(/_/g, " ")));
+    text.appendChild(el("span", "benchwhy",
+      (state.rule_descriptions || {})[name] || ""));
+    row.appendChild(text);
+    host.appendChild(row);
+  });
 }
 
 function renderPermanent(obj) {
