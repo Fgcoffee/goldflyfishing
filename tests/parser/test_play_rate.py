@@ -159,6 +159,10 @@ def test_without_the_tower_the_discard_still_happens(card_db, tmp_path):
     from mtgfish.ui.sandbox import Sandbox
 
     box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))
+    # The bench suspends the maximum hand size, because a hand stocked for a
+    # test is not a hand that was drawn. This test is about the rule itself, so
+    # it asks for it back.
+    box.set_rule("no_maximum_hand_size", False)
     for _ in range(10):
         box.put("Grizzly Bears", "hand", 0)
     _discard_to_hand_size(box.game)

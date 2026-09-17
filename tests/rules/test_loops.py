@@ -40,7 +40,7 @@ from mtgfish.rules.loops import (
 )
 from mtgfish.rules.mana import ManaKind
 from mtgfish.rules.priority import run_priority
-from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
+from mtgfish.ui.sandbox import STRICT_BENCH, PassiveOpponent, Sandbox
 
 ENGINE = ("A", 0, "ACTIVATE_ABILITY", "Some Engine", 0, 0, ())
 TRIGGER = ("R", 0, "Whenever something happens, nothing does.", ())
@@ -49,7 +49,12 @@ TRIGGER = ("R", 0, "Whenever something happens, nothing does.", ())
 @pytest.fixture
 def box(card_db, tmp_path):
     card_db.registry()
-    table = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))
+    # The sandbox is the quickest way to a board, but every rule it normally
+    # suspends is on here: these tests are about a loop that *kills*, and a
+    # bench where nobody can lose would score every one of them as a stall.
+    table = Sandbox(
+        db=card_db, verdicts=VerdictStore(tmp_path / "v.json"), rules=STRICT_BENCH
+    )
     # Both seats inert: a loop of triggers needs no decisions, and a synthetic
     # cycle is driven by the test rather than by a bot.
     table.game.agents[0] = PassiveOpponent()

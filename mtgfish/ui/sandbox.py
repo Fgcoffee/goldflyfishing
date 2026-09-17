@@ -110,6 +110,13 @@ class BenchRules:
 
 RULE_NAMES: tuple[str, ...] = tuple(f.name for f in fields(BenchRules))
 
+#: Every rule enforced, as in a game. The bench is also the most convenient way
+#: to build a board in a test - ``put`` a few cards and go - and a test about a
+#: rule this bench suspends has to be able to ask for it back in one line:
+#: ``Sandbox(db=..., rules=STRICT_BENCH)``. Without that, a test of the cleanup
+#: discard or of a loop that kills would be quietly testing the bench instead.
+STRICT_BENCH = BenchRules(**{name: False for name in RULE_NAMES})
+
 # The engine's relaxations are named identically here on purpose, so one switch
 # is one name all the way down. Checked rather than assumed: a relaxation added
 # to the rules layer and not to this dataclass would be a switch the sandbox
