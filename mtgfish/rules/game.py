@@ -78,6 +78,12 @@ class ContinuousEffect:
     timestamp: int
     layer: int
     duration: int
+    #: The turn this started applying on. "Until your next turn" and "until
+    #: the end of your next turn" cannot be resolved into a turn number when
+    #: the effect is created - an extra turn taken in between changes which
+    #: turn that is - so the turn it began on is recorded and the expiry check
+    #: asks whether the controller has since begun a later one.
+    created_turn: int = 0
     #: The static ability that generated this, when one did. Kept so the layer
     #: system can ask whether that ability still exists after earlier effects in
     #: the same layer have been applied - which is what lets Blood Moon shut
@@ -425,6 +431,7 @@ class Game:
             kind=kind,
             owner=owner,
             controller=owner,
+            base_controller=owner,
             zone=zone,
             card=card,
             face_index=face_index,
@@ -537,6 +544,7 @@ class Game:
             kind=obj.kind,
             owner=owner,
             controller=destination_player if to_zone is Zone.BATTLEFIELD else owner,
+            base_controller=destination_player if to_zone is Zone.BATTLEFIELD else owner,
             zone=to_zone,
             card=obj.card,
             face_index=0 if to_zone is not Zone.BATTLEFIELD else obj.face_index,
@@ -932,6 +940,10 @@ class Game:
         for obj in list(self.permanents()):
             if obj.controller == player_id and obj.owner != player_id:
                 obj.controller = obj.owner
+                # The control-changing effect ends with the player, so the
+                # *base* moves too - otherwise layer 2 hands the permanent
+                # straight back to someone who is no longer in the game.
+                obj.base_controller = obj.owner
                 obj.summoning_sick = True
 
         self.invalidate_characteristics()

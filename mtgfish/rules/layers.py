@@ -34,7 +34,7 @@ from .matching import matches
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 from .enums import CardType, Color, Layer, Zone
 from .gameobject import GameObject
-from .ids import ObjectId, PlayerId
+from .ids import NO_PLAYER, ObjectId, PlayerId
 from .mana import ManaCost
 from .query import ValueKind
 
@@ -771,6 +771,13 @@ def _apply_control(
     Control is not a characteristic (CR 109.3), so it lives on the object
     rather than in Characteristics. It is still resolved here, in timestamp
     order, so that two competing control effects land the right way round.
+
+    Recomputed from ``base_controller`` every time rather than written once
+    and left. Applying only the effects that are currently in force made a
+    control change permanent: Act of Treason's effect expired at cleanup, the
+    effect was dropped from the list, and nothing ever handed the creature
+    back - so a three-mana sorcery read "gain control of target creature"
+    with no duration at all.
     """
     changes: dict[ObjectId, tuple[int, PlayerId]] = {}
     for ce in game.continuous_effects:
@@ -783,12 +790,26 @@ def _apply_control(
             if existing is None or ce.timestamp > existing[0]:
                 changes[object_id] = (ce.timestamp, ce.controller)
 
-    for object_id, (_, controller) in changes.items():
-        obj = by_id[object_id]
-        if obj.controller != controller:
-            obj.controller = controller
-            # CR 302.6: a change of control restarts summoning sickness.
-            obj.summoning_sick = True
+    for object_id, obj in by_id.items():
+        change = changes.get(object_id)
+        if change is not None:
+            controller = change[1]
+        elif obj.zone is Zone.BATTLEFIELD:
+            # No effect in force means the permanent is controlled by whoever
+            # put it onto the battlefield (CR 109.4), which is what reverts
+            # it. Only permanents: CR 613.1b's layer is about them, and a
+            # spell on the stack is controlled by whoever cast it - which is
+            # not always its owner, and is nobody's to hand back.
+            controller = obj.base_controller
+        else:
+            continue
+        if controller == NO_PLAYER or obj.controller == controller:
+            continue
+        obj.controller = controller
+        # CR 302.6: a change of control restarts summoning sickness. Handing a
+        # creature back counts - it has not been controlled continuously since
+        # its new controller's turn began either.
+        obj.summoning_sick = True
 
 
 def _affects_control(
