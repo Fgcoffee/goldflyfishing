@@ -157,6 +157,10 @@ def apply_replacements(game: Game, event: Event) -> Event | None:
     identity, and the set of applicable effects is re-derived after every
     application because applying one can change what the others see
     (CR 616.1).
+
+    CR 616.2 is why the set is re-derived rather than settled once: an effect
+    that did not apply to the original event can become applicable to the
+    event as another effect has modified it, and the two then combine.
     """
     applied: set[int] = set()
     current = event

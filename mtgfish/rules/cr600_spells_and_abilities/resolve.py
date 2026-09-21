@@ -48,6 +48,10 @@ class Resolution:
     #: Index of the next targeting effect, used to line effects up with the
     #: targets chosen for them.
     target_index: int = 0
+    #: CR 605.3b: a mana ability resolves with no stack object at all, so the
+    #: modes chosen for it have nowhere else to travel. Set only when there is
+    #: no stack object to read them off.
+    chosen_modes: tuple[int, ...] = ()
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -351,8 +355,70 @@ def _do_destroy(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_exile(resolution: Resolution, effect: Effect) -> None:
+    """Exile, and for an "until" exile arrange the return (CR 610.3).
+
+    "Exile target creature until this leaves the battlefield" is one one-shot
+    effect now and a second one waiting on the named event. Only the first
+    half existed: the parser read the duration and the executor ignored it, so
+    every Banisher Priest was a Swords to Plowshares.
+    """
+    game = resolution.game
+    until_source_leaves = effect.duration == int(Duration.WHILE_SOURCE_PERSISTS)
+    if until_source_leaves and not _source_is_on_the_battlefield(resolution):
+        # CR 610.3a, 610.3b: the named event has already happened, so nothing
+        # moves at all - the creature is not exiled and then returned, it is
+        # never exiled.
+        return
+
+    returning: list[ObjectId] = []
     for obj in _objects(resolution, effect):
-        actions.exile(resolution.game, obj, source=resolution.source)
+        exiled = actions.exile(game, obj, source=resolution.source)
+        if until_source_leaves and exiled is not None:
+            returning.append(exiled.id)
+    if returning:
+        _return_when_the_source_leaves(resolution, tuple(returning))
+
+
+def _source_is_on_the_battlefield(resolution: Resolution) -> bool:
+    source = resolution.game.objects.get(resolution.source)
+    return source is not None and source.is_permanent
+
+
+def _return_when_the_source_leaves(
+    resolution: Resolution, exiled: tuple[ObjectId, ...]
+) -> None:
+    """The second one-shot effect of an "until" exile (CR 610.3).
+
+    DIVERGENCE. CR 610.3 creates the return as a one-shot effect immediately
+    after the named event, using no stack. It is set up here as a delayed
+    triggered ability (CR 603.7), which is the only "do this later" machinery
+    the engine has, so the return goes on the stack and can be responded to.
+    What returns, when, and to whom is right; the response window is not.
+    """
+    from ..kernel.query import ObjectFilter
+    from .abilities import TriggerCondition
+
+    create_delayed_trigger(
+        resolution,
+        TriggerCondition(
+            event_kinds=frozenset({EventKind.LEAVES_BATTLEFIELD}),
+            # The event is about an object that has already gone, so the
+            # subject is matched against last known information (CR 603.6e).
+            subject=ObjectFilter(specific=(resolution.source,), zones=frozenset()),
+            functions_in=frozenset(Zone),
+            uses_last_known_information=True,
+            text="when the exiling permanent leaves the battlefield",
+        ),
+        (
+            Effect(
+                EffectKind.PUT_ONTO_BATTLEFIELD,
+                targets=ObjectFilter(specific=exiled, zones=frozenset({Zone.EXILE})),
+                # CR 610.3c: under its owner's control.
+                under_owners_control=True,
+                text="return the exiled card to the battlefield",
+            ),
+        ),
+    )
 
 
 def _do_sacrifice(resolution: Resolution, effect: Effect) -> None:
@@ -602,6 +668,15 @@ def _do_control_player(resolution: Resolution, effect: Effect) -> None:
     CR 723.1a: multiple such effects on one player overwrite each other, latest
     wins. CR 723.6 is the limit that matters ethically and mechanically - the
     controller can never make the controlled player concede.
+
+    CR 723.8: only the controlled player is recorded. The controlling player
+    is not displaced by their own effect, so they go on making their own
+    choices as well as the other player's.
+
+    CR 723.4 costs nothing here: every agent is handed the whole Game, so
+    anything the controlled player could see is already visible to whoever is
+    deciding for them. A simulator with hidden zones would have to do work
+    for this rule; this one has none to do.
     """
     game = resolution.game
     for player_id in _players(resolution, effect):
@@ -701,6 +776,9 @@ def create_delayed_trigger(
     "At the beginning of the next end step, sacrifice it" is not an ability of
     any object - it belongs to the effect that created it, and it survives that
     effect's source leaving.
+
+    CR 610.2: creating it is all the one-shot effect does. What it instructs
+    happens later, when the delayed ability triggers and resolves, not here.
     """
     from .abilities import DelayedTrigger
 
@@ -1392,8 +1470,11 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
             # answered in response was put onto the battlefield a second time
             # while the real one sat in exile.
             continue
-        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=resolution.controller)
-        permanent.controller = resolution.controller
+        # CR 610.3c: a card coming back from an "until" exile returns to its
+        # owner, not to whoever exiled it.
+        to = obj.owner if effect.under_owners_control else resolution.controller
+        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to)
+        permanent.controller = to
         if effect.counter_type:
             permanent.add_counters(effect.counter_type, max(1, _amount(resolution, effect)))
         game.invalidate_characteristics()
@@ -1676,7 +1757,12 @@ def _do_choose_mode(resolution: Resolution, effect: Effect) -> None:
     modes are read off the stack object rather than asked for now.
     """
     stack_object = resolution.stack_object
-    chosen = stack_object.chosen_modes if stack_object is not None else ()
+    if stack_object is not None:
+        chosen = stack_object.chosen_modes
+    else:
+        # CR 605.3b: a mana ability never becomes a stack object, so its modes
+        # ride on the resolution itself.
+        chosen = resolution.chosen_modes
     if not chosen:
         # CR 700.2d: a modal spell with no legal modes chosen does nothing.
         return
@@ -1748,7 +1834,9 @@ def _do_change_targets(resolution: Resolution, effect: Effect) -> None:
             continue
         rebuilt: list[tuple[ObjectId, ...]] = []
         changed = False
-        for index, node in enumerate(_targeting_nodes(obj.ability)):
+        for index, node in enumerate(
+            _targeting_nodes(obj.ability, obj.chosen_modes)
+        ):
             current = obj.targets[index] if index < len(obj.targets) else ()
             legal = [
                 candidate.id
@@ -1767,12 +1855,20 @@ def _do_change_targets(resolution: Resolution, effect: Effect) -> None:
             game.log.record(game, f"Targets changed for {obj}", kind="effect")
 
 
-def _targeting_nodes(ability) -> list[Effect]:
+def _targeting_nodes(ability, chosen_modes: tuple[int, ...] = ()) -> list[Effect]:
+    """The target slots an object on the stack actually has.
+
+    CR 700.2c: an unchosen mode's targets were never chosen, so its targeting
+    effects hold no slot. Walking every mode instead lined the object's
+    targets up against another mode's filters and rebuilt slots that do not
+    exist.
+    """
+    from .cr601_casting import targeted_nodes
+
     return [
         node
-        for eff in ability.effects
-        for node in eff.walk()
-        if node.is_targeted and node.targets is not None
+        for node in targeted_nodes(ability.effects, chosen_modes or None)
+        if node.targets is not None
     ]
 
 

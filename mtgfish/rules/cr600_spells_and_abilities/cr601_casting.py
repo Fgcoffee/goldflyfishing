@@ -991,8 +991,15 @@ def _tap_for_mana(
             if not _can_pay_activation(game, obj, ability):
                 continue
             _pay_activation(game, obj, ability)
+            # CR 602.2b: the modes are chosen on activation, even when the
+            # activation is the engine's own during cost payment.
             execute(
-                Resolution(game=game, source=obj.id, controller=player_id),
+                Resolution(
+                    game=game,
+                    source=obj.id,
+                    controller=player_id,
+                    chosen_modes=choose_modes(game, obj, ability.effects, player_id),
+                ),
                 ability.effects,
             )
             break
@@ -1424,9 +1431,16 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     )
 
     if ability.is_mana_ability:
-        # CR 605.3b: resolves immediately, with no chance to respond.
+        # CR 605.3b: resolves immediately, with no chance to respond. There is
+        # no stack object, so the modes chosen above travel on the resolution
+        # instead - otherwise "Add {R} or {G}" chose a mode and added nothing.
         execute(
-            Resolution(game=game, source=source.id, controller=player_id),
+            Resolution(
+                game=game,
+                source=source.id,
+                controller=player_id,
+                chosen_modes=chosen_modes,
+            ),
             ability.effects,
         )
         # CR 605.4: anything that triggered off this mana ability and is itself

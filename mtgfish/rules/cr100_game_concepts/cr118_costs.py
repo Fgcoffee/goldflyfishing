@@ -19,6 +19,7 @@ from enum import IntEnum
 from ..kernel.enums import Zone
 from ..kernel.query import ZERO, ObjectFilter, Value
 from .cr106_mana import ZERO_COST, ManaCost
+from .cr107_numbers import effect_result, is_undeterminable
 
 
 class CostKind(IntEnum):
@@ -43,10 +44,16 @@ class CostKind(IntEnum):
     EXILE_FROM_BATTLEFIELD = 19
 
     PAY_LIFE = 30
+    #: CR 107.14: {E} is one energy counter, paid by removing it from the
+    #: player. Energy is not mana and never enters a mana pool.
     PAY_ENERGY = 31
     REMOVE_COUNTERS = 32
     PUT_COUNTERS = 33
-    LOYALTY = 34  # CR 606: a loyalty cost, may be negative
+    #: CR 107.7: the loyalty symbol in a planeswalker's activation cost. A
+    #: positive symbol puts that many loyalty counters on, a negative one
+    #: removes them, so this is the one cost amount that is signed.
+    #: CR 606 is the ability; this is the symbol.
+    LOYALTY = 34
 
     UNATTACH = 40
     #: Costs the engine understands the shape of but that need a player choice
@@ -125,15 +132,42 @@ EXILE_ZONES = {
 
 
 def required_amount(component: CostComponent, evaluated: int) -> int:
-    """How many objects a cost component actually consumes.
+    """What a cost component actually charges, given its evaluated amount.
+
+    Every non-mana cost passes through here, on the dry run and on the
+    payment alike, which makes it the one place the number rules can be
+    applied to a cost.
 
     Floors a consuming cost at one. See ``CONSUMING_COSTS`` for why: the
     alternative is a free ability, and a free ability is an infinite loop
     rather than a slightly wrong card.
+
+    Everything else is floored at zero, because a cost is the result of a
+    calculation and CR 107.1b does not let one go negative. Paying a negative
+    amount is not a discount, it is the reverse of the cost: an energy cost
+    that evaluated to -3 was charged as ``player.energy -= -3`` and handed the
+    player three energy. A loyalty cost is exempt and stays signed - CR 107.7
+    makes a negative loyalty symbol mean removing counters, which is what a
+    planeswalker's minus ability is.
+
+    Raises rather than returning for an undeterminable amount: CR 903.4f makes
+    such a cost unpayable, and CR 118.6 makes attempting to pay an unpayable
+    cost an illegal action. Returning the number would make the cost free,
+    which is the opposite of what the rule says.
     """
+    if is_undeterminable(evaluated):
+        # Deliberately the same error the rest of cost payment raises, so the
+        # cast or activation is abandoned and rewound (CR 601.2h) and the
+        # legality check that dry-runs the cost simply stops offering it.
+        from ..cr600_spells_and_abilities.cr601_casting import CastError
+
+        reason = getattr(evaluated, "reason", "a number that cannot be determined")
+        raise CastError(f"unpayable cost: it refers to {reason}")
     if component.kind in CONSUMING_COSTS:
         return max(1, evaluated)
-    return evaluated
+    if component.kind is CostKind.LOYALTY:
+        return evaluated
+    return effect_result(evaluated)
 
 
 @dataclass(frozen=True, slots=True)
@@ -281,6 +315,12 @@ class TotalCost:
     #: CR 118.6: an object with no mana cost has an *unpayable* cost, which is
     #: not the same as a cost of zero. Only an alternative cost makes it
     #: castable (CR 118.6a).
+    #:
+    #: This is not the only way a cost is unpayable. A cost whose amount
+    #: cannot be determined - CR 903.4f's commander colour identity with no
+    #: commander - is unpayable too, and is refused by ``required_amount``
+    #: when the amount is evaluated rather than flagged here, because nothing
+    #: at this level has a game to evaluate it against.
     unpayable: bool = False
 
     def add_additional(self, component: CostComponent) -> None:

@@ -757,6 +757,15 @@ def _mandatory_additional(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 
 def _alternative(instance: KeywordInstance, zone: Zone | None) -> tuple[Ability, ...]:
+    """An alternative cost, as a static ability working where the card is.
+
+    CR 604.5: "you may pay [cost] rather than pay this object's mana cost"
+    works while the spell is on the stack, which is where the payment is
+    happening - hence the zone the card is cast from *and* the stack.
+    CR 604.6: that zone is the other half. A static ability of this shape is
+    one of the few that work from a zone the card is merely sitting in, so
+    Flashback reaches a graveyard while an ordinary ability does not.
+    """
     return (
         Ability(
             AbilityKind.STATIC,

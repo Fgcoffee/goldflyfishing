@@ -10,7 +10,8 @@ rather than cosmetic:
 * **Triggered abilities** (CR 113.3c) start with "when", "whenever", or "at",
   and go on the stack the next time a player would receive priority.
 * **Static abilities** (CR 113.3d) simply do something continuously, and never
-  use the stack.
+  use the stack. CR 604.1: they are statements rather than instructions -
+  there is nothing to activate and nothing to trigger.
 
 The field that gets forgotten is ``functions_in`` (CR 113.6). An ability works
 only on the battlefield unless it says otherwise - which is why Flashback works

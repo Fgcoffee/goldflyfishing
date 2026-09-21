@@ -103,13 +103,15 @@ class Player:
     lands_played: int = 0
     max_lands: int = 1
     max_hand_size: int = DEFAULT_MAX_HAND_SIZE
-    #: CR 121.3: how many cards this player has drawn this turn, for effects
-    #: that care, and for the "draws a card" trigger.
+    #: CR 121.1: how many cards this player has drawn this turn, for effects
+    #: that care, and for the "draws a card" trigger. Each one is a separate
+    #: draw (CR 121.2), which is why this is a count and not a flag.
     cards_drawn_this_turn: int = 0
     #: Set when a draw from an empty library is attempted. The loss happens as
     #: a state-based action later (CR 704.5b), not immediately.
     attempted_draw_from_empty_library: bool = False
-    #: CR 118.3a: some effects track life gained or lost this turn.
+    #: CR 119.3: gaining and losing life adjusts the life total, and some
+    #: effects care how much of each happened this turn.
     life_gained_this_turn: int = 0
     life_lost_this_turn: int = 0
 
@@ -169,13 +171,15 @@ class Player:
     def hand_size(self) -> int:
         return len(self.hand)
 
-    # -- life (CR 118) ------------------------------------------------------
+    # -- life (CR 119) ------------------------------------------------------
 
     def gain_life(self, amount: int) -> int:
         """Gain life, returning the amount actually gained.
 
-        A gain of zero or less is not a life gain event at all (CR 118.4),
-        which matters for "whenever you gain life" triggers.
+        CR 119.9: gaining 0 life is not a life gain event, so "whenever you
+        gain life" triggers see nothing. CR 107.1b keeps the other half of the
+        guard honest - a negative gain is not a loss, it is a number the game
+        cannot use, and zero is used instead.
         """
         if amount <= 0:
             return 0
@@ -184,6 +188,7 @@ class Player:
         return amount
 
     def lose_life(self, amount: int) -> int:
+        """Lose life (CR 119.3). CR 107.1b: a negative loss is zero, not a gain."""
         if amount <= 0:
             return 0
         self.life -= amount

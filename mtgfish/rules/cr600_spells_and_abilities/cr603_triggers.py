@@ -218,6 +218,25 @@ def _collect_delayed(
             )
             game.objects[source.id] = source
 
+        if delayed.trigger.subject is not None:
+            # CR 603.7: a delayed ability can name what the event must be
+            # about - "when the permanent that exiled it leaves the
+            # battlefield" is about one permanent and no other. Nothing
+            # checked it, so such a trigger fired on every event of its kind.
+            # Matched against last known information, because the object the
+            # event is about has usually just gone (CR 603.6e).
+            from ..kernel.matching import matches
+
+            subject = _subject_of(game, event)
+            if subject is None or not matches(
+                game,
+                subject,
+                delayed.trigger.subject,
+                controller=delayed.controller,
+                allow_stale=True,
+            ):
+                continue
+
         if delayed.trigger.players is not None and event.player != NO_PLAYER:
             from ..kernel.matching import resolve_players
 
@@ -511,8 +530,24 @@ def resolve_mana_triggers(game: Game) -> int:
             # pool that no player owns.
             resolved += 1
             continue
+        # CR 603.3c: a modal ability's modes are chosen as it would go on the
+        # stack. This one never gets there (CR 605.4), so they are chosen here
+        # and carried on the resolution - there is no stack object to hold them.
+        from .cr601_casting import choose_modes
+
         execute(
-            Resolution(game=game, source=pending.source, controller=controller),
+            Resolution(
+                game=game,
+                source=pending.source,
+                controller=controller,
+                chosen_modes=choose_modes(
+                    game,
+                    game.objects.get(pending.source),
+                    pending.ability.effects,
+                    controller,
+                    source_id=pending.source,
+                ),
+            ),
             pending.ability.effects,
         )
         resolved += 1

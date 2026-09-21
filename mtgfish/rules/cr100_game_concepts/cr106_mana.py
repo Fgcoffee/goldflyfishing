@@ -1,4 +1,4 @@
-"""Mana symbols, costs, pools, and payment (CR 106, 107.4, 202, 601.2f-h).
+"""Mana symbols, costs, pools, and payment (CR 106, CR 107.4, CR 202, CR 601.2f-h).
 
 Three separate concerns live here, in dependency order:
 
@@ -24,6 +24,7 @@ from enum import IntEnum
 from typing import Iterable, Iterator, Protocol
 
 from ..kernel.enums import LETTER_TO_COLOR, Color, color_letters
+from .cr107_numbers import chosen_number
 
 _SYMBOL_RE = re.compile(r"\{([^}]*)\}")
 
@@ -38,14 +39,21 @@ class UnknownManaSymbol(ValueError):
 
 
 class ManaSymbolKind(IntEnum):
-    GENERIC = 0  # {1}, {2}, ...
-    VARIABLE = 1  # {X}, {Y}, {Z}
-    COLORED = 2  # {W}
-    COLORLESS = 3  # {C} - specifically colorless mana, not generic
-    SNOW = 4  # {S} - any mana from a snow source
-    HYBRID = 5  # {W/U}, and {C/W}-style colorless hybrids
-    MONOCOLOR_HYBRID = 6  # {2/W} - two generic or one white
-    PHYREXIAN = 7  # {W/P}, {G/W/P} - a color, or 2 life
+    """Every mana symbol CR 107.4 lists, grouped by how it is paid.
+
+    The rule names the symbols one by one; this names the *kinds*, because the
+    ten hybrid symbols differ only in which two colors they carry and giving
+    each its own case would be thirty branches saying the same thing.
+    """
+
+    GENERIC = 0  # CR 107.4b: {1}, {2}, ... - payable with any type of mana
+    VARIABLE = 1  # CR 107.4b: {X}, {Y}, {Z} - generic once chosen
+    COLORED = 2  # CR 107.4a: {W}, payable only with white mana
+    COLORLESS = 3  # CR 107.4c: {C} - colorless mana, which is not generic
+    SNOW = 4  # {S} - any mana from a snow source (CR 107.4h)
+    HYBRID = 5  # CR 107.4e: {W/U}, and {C/W}-style colorless hybrids
+    MONOCOLOR_HYBRID = 6  # CR 107.4e: {2/W} - two generic or one white
+    PHYREXIAN = 7  # CR 107.4f: {W/P}, {G/W/P} - a color, or 2 life
     HALF = 8  # {H W}, un-set only
     INFINITY = 9  # un-set only
 
@@ -87,7 +95,13 @@ class ManaSymbol:
         return self.kind in (ManaSymbolKind.MONOCOLOR_HYBRID, ManaSymbolKind.PHYREXIAN)
 
     def accepts(self, kind: ManaKind) -> bool:
-        """Whether one unit of ``kind`` can pay this symbol as a mana payment."""
+        """Whether one unit of ``kind`` can pay this symbol as a mana payment.
+
+        This is where CR 107.4a-c and 107.4e are actually enforced: a colored
+        symbol takes only its own color, a hybrid takes either of its halves,
+        {C} takes colorless mana and nothing else, and a generic symbol takes
+        any type at all.
+        """
         k = self.kind
         if k is ManaSymbolKind.COLORED or k is ManaSymbolKind.HYBRID:
             if self.colors is Color.NONE:
@@ -127,8 +141,9 @@ class ManaSymbol:
         if k is ManaSymbolKind.INFINITY:
             return 1_000_000
         if k is ManaSymbolKind.HALF:
-            # Un-set only; those cards never reach a Commander pool. Rounding up
-            # keeps mana_value an int for the whole engine.
+            # Un-set only; those cards never reach a Commander pool. CR 107.1:
+            # the game uses only integers, so rounding up here keeps mana value
+            # an int for the whole engine rather than leaking a fraction.
             return 1
         return 1
 
@@ -244,6 +259,9 @@ class ManaCost:
 
     @classmethod
     def generic(cls, amount: int) -> ManaCost:
+        # CR 107.1b: an amount worked out by an effect never goes below zero,
+        # and CR 107.4d makes zero generic mana {0} - a cost with no symbols
+        # at all, payable with no resources.
         if amount <= 0:
             return cls(())
         return cls((ManaSymbol(ManaSymbolKind.GENERIC, generic=amount, text=f"{{{amount}}}"),))
@@ -366,9 +384,15 @@ class ManaCost:
         return ManaCost(tuple(remaining)).reduced_by(generic_reduction)
 
     def substitute_x(self, x: int) -> ManaCost:
-        """Replace every ``{X}`` with that much generic mana (CR 601.2b then 601.2f)."""
+        """Replace every ``{X}`` with that much generic mana (CR 601.2b then 601.2f).
+
+        CR 107.1b: the value chosen for X is zero or more. A negative choice is
+        not a cost reduction, and an X of zero leaves no symbol behind rather
+        than a ``{0}`` - which is the same cost either way (CR 107.4d).
+        """
         if not self.variable_count:
             return self
+        x = chosen_number(x)
         out: list[ManaSymbol] = []
         for s in self.symbols:
             if s.kind is ManaSymbolKind.VARIABLE:
@@ -406,7 +430,8 @@ def _find_matching(
     return None
 
 
-#: The cost of a spell that costs nothing, distinct from "has no mana cost".
+#: CR 107.4d: {0}, a cost payable with no resources. Distinct from having no
+#: mana cost at all, which CR 118.6 makes *unpayable* rather than free.
 ZERO_COST = ManaCost(())
 
 

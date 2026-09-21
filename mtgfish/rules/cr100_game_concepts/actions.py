@@ -209,13 +209,19 @@ def remove_from_combat(game: Game, obj: GameObject) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Counters (CR 121, 122)
+# Counters (CR 122)
 # ---------------------------------------------------------------------------
 
 
 def add_counters(
     game: Game, obj: GameObject, kind: str, amount: int, *, source: ObjectId = NO_OBJECT
 ) -> int:
+    """Put counters on an object (CR 122.1).
+
+    CR 107.1b: an amount worked out from a calculation that came out negative
+    is zero, not a removal - "put X +1/+1 counters on it" where X went below
+    zero puts none on, it does not take any off.
+    """
     if amount <= 0:
         return 0
 
@@ -274,7 +280,7 @@ def remove_counters(
 
 
 # ---------------------------------------------------------------------------
-# Damage and life (CR 118, 119)
+# Damage and life (CR 119, CR 120)
 # ---------------------------------------------------------------------------
 
 
@@ -329,6 +335,11 @@ def deal_damage(
     counters, and a battle loses defense counters. Nothing is destroyed here -
     lethal damage kills via a state-based action later (CR 704.5g), and that
     delay is observable.
+
+    CR 120.8: a source dealing 0 damage deals no damage at all, so nothing
+    that watches for damage sees anything and no replacement effect has an
+    event to replace. CR 107.1b covers the other half: damage is never
+    negative, so a calculation that went below zero deals none either.
     """
     if amount <= 0:
         return 0
@@ -505,9 +516,10 @@ def _damage_player(
 def gain_life(
     game: Game, player_id: PlayerId, amount: int, *, source: ObjectId = NO_OBJECT
 ) -> int:
-    """Gain life (CR 118.3).
+    """Gain life (CR 119.3).
 
-    CR 118.4: gaining zero life is not a life-gain event and triggers nothing.
+    CR 119.9 and CR 119.10: gaining zero life is not a life-gain event, so it
+    triggers nothing and there is nothing for a replacement effect to replace.
 
     Life gain is replaceable (CR 614), which is the whole of Rain of Gore: "if
     a spell or ability would cause its controller to gain life, that player
@@ -550,6 +562,11 @@ def lose_life(
 
 
 def add_poison(game: Game, player_id: PlayerId, amount: int) -> int:
+    """Give a player poison counters (CR 122.1, 104.3c).
+
+    CR 107.1b: never a negative number, so a calculation that came out below
+    zero gives none rather than taking poison away.
+    """
     if amount <= 0:
         return 0
     game.player(player_id).poison += amount
@@ -662,7 +679,10 @@ def roll_die(game: Game, player_id: PlayerId, sides: int) -> int:
 
 
 def roll_dice(game: Game, player_id: PlayerId, count: int, sides: int) -> list[int]:
-    """Roll several dice, ignoring the lowest results is the caller's business."""
+    """Roll several dice, ignoring the lowest results is the caller's business.
+
+    CR 107.1b: a count that came out negative rolls nothing.
+    """
     return [roll_die(game, player_id, sides) for _ in range(max(0, count))]
 
 

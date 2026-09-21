@@ -38,14 +38,26 @@ class Characteristics:
     #: CR 202.1: some objects have no mana cost at all, which is not the same
     #: as a cost of zero. Lands, and the back faces of transforming cards.
     has_mana_cost: bool = False
-    #: CR 105.2. Normally derived from the mana cost, but a color indicator or
-    #: a layer-5 effect can override it, so it is stored rather than computed.
+    #: CR 105.2. Normally derived from the mana cost, but a color indicator
+    #: (CR 204.2) or a layer-5 effect can override it, so it is stored rather
+    #: than computed.
     colors: Color = Color.NONE
     type_line: TypeLine = TypeLine()
     abilities: tuple[Ability, ...] = ()
+    #: CR 208.1: the two numbers on a creature card, power first. ``None``
+    #: means the object has no value for it - either it is not a creature
+    #: (CR 208.3), or the printed value is a ``*`` whose characteristic-
+    #: defining ability has not been applied (CR 208.2). Where a creature
+    #: reaches a rule with no value, CR 208.5 reads it as 0; the layer system
+    #: does that in ``cr600_spells_and_abilities/cr613_layers.py``.
     power: int | None = None
     toughness: int | None = None
+    #: CR 209.1: a planeswalker card's printed loyalty. It is also the number
+    #: of loyalty counters the planeswalker enters with, which is CR 306.5b's
+    #: job rather than this one's.
     loyalty: int | None = None
+    #: CR 210.1: the same shape for a battle's defense, and CR 310.4b for the
+    #: defense counters it enters with.
     defense: int | None = None
     hand_modifier: int = 0
     life_modifier: int = 0
@@ -178,13 +190,18 @@ def _show(value: int | None) -> str:
 def from_face(face, abilities: tuple[Ability, ...] = ()) -> Characteristics:
     """Build the printed characteristics of a card face (CR 613.2, the copiable base).
 
-    ``power``/``toughness`` come back as None when the printed value is not a
-    plain number (``*``, ``1+*``). That is a signal for a characteristic-defining
-    ability in layer 7a (CR 613.4a), not a value of zero - treating it as zero
-    is how a Tarmogoyf ends up a 0/1.
+    CR 208.1: the first printed number is power and the second is toughness.
+    CR 208.2: some creature cards print a ``*`` instead of a number, and
+    ``power``/``toughness`` come back as None for those. That is a signal for
+    the characteristic-defining ability of CR 208.2a, applied in layer 7a
+    (CR 613.4a) - not a value of zero. Treating it as zero is how a Tarmogoyf
+    ends up a 0/1 with the ability that would have set it never consulted.
 
-    Colors default to those implied by the mana cost (CR 202.2), overridden by a
-    color indicator when one is printed (CR 202.2a).
+    Colors default to those implied by the mana cost (CR 202.2), overridden by
+    a color indicator when one is printed (CR 204.2, CR 202.2e). The indicator
+    is not merged with the cost's colors: CR 204.2 says the object *is* each
+    color the indicator denotes, which for the back face of a transforming
+    card is the whole of its color.
     """
     colors = face.color_indicator if face.color_indicator is not None else face.colors
     return Characteristics(

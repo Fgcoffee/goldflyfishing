@@ -27,8 +27,13 @@ if TYPE_CHECKING:
     from ..kernel.game import Game
 
 
-#: The phase each step belongs to, in order. The first-strike damage step is
-#: absent because it only exists when combat calls for it (CR 510.4).
+#: The phase each step belongs to, in order (CR 500.1). The first-strike damage
+#: step is absent because it only exists when combat calls for it (CR 510.4).
+#:
+#: CR 501.1: the beginning phase is untap, upkeep, draw.
+#: CR 505.1: the two main phases are separated by the combat phase.
+#: CR 506.1: the combat phase has five steps.
+#: CR 512.1: the ending phase is the end step and the cleanup step.
 TURN_SEQUENCE: tuple[tuple[Phase, Step], ...] = (
     (Phase.BEGINNING, Step.UNTAP),
     (Phase.BEGINNING, Step.UPKEEP),
@@ -148,10 +153,33 @@ def _restart(game: Game, options: TurnOptions, depth: int = 0) -> Game:
 
 
 def _next_active_player(game: Game) -> PlayerId:
-    """Whose turn is next, honouring extra turns (CR 500.7)."""
+    """Whose turn is next, honouring extra turns (CR 500.7).
+
+    CR 500.7: the most recently created extra turn is taken first, so the
+    queue is drained from the end rather than the front. It makes no
+    difference while one player is stacking up turns for themselves, and all
+    the difference once two effects hand turns to different players - the
+    engine took them in the order they were created, which is the reverse of
+    what the rule says.
+    """
     if game.extra_turns:
-        return game.extra_turns.pop(0)
+        return game.extra_turns.pop()
     return game.next_player(game.active_player)
+
+
+@dataclass(slots=True)
+class _TurnProgress:
+    """What the turn has got through so far.
+
+    CR 505.1b counts main phases within the current turn, and CR 505.1a reads
+    that count to decide which of them is the precombat main phase. Neither
+    can be answered from ``game.phase`` alone, and the count belongs to one
+    turn rather than to the game, so it is carried down the call chain instead
+    of being stored on the Game.
+    """
+
+    #: How many main phases have begun this turn (CR 505.1b).
+    main_phases: int = 0
 
 
 def take_turn(game: Game, options: TurnOptions | None = None) -> None:
@@ -173,6 +201,11 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     for each in game.players:
         each.begin_turn()
 
+    # CR 502.2: the day/night check is the untap step's second turn-based
+    # action. It is taken here rather than inside ``_untap_step`` only because
+    # it reads the previous turn's spell count and that count is rolled over
+    # below; nothing in the untap step can observe the difference, since no
+    # player receives priority in it (CR 502.4).
     # CR 731.2: the day/night flip reads the *previous* turn's spell count, so
     # it is checked before this turn's counter is reset.
     from ..cr700_additional_rules.cr725_designations import check_day_night_transition
@@ -193,6 +226,7 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     )
     game.emit(Event(EventKind.TURN_BEGAN, player=game.active_player))
 
+    progress = _TurnProgress()
     for phase, step in TURN_SEQUENCE:
         if game.game_over:
             return
@@ -201,8 +235,8 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
             continue
         if int(step) in game.skipped_steps:
             continue
-        _run_step(game, phase, step, options)
-        _run_extras(game, options)
+        _run_step(game, phase, step, options, progress)
+        _run_extras(game, options, progress)
 
     game.emit(Event(EventKind.TURN_ENDED, player=game.active_player))
     # CR 723.1: "control that player during that player's next turn" - the
@@ -213,12 +247,19 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     _end_of_turn_cleanup(game)
 
 
-def _run_extras(game: Game, options: TurnOptions) -> None:
-    """CR 500.8: extra phases and steps happen after the one that made them.
+def _run_extras(
+    game: Game, options: TurnOptions, progress: _TurnProgress | None = None
+) -> None:
+    """CR 500.8, 500.9: extra phases and steps happen after the one that made them.
 
     Drained in a loop rather than a single pass, because an extra phase can
     itself create another - which is how the "take an extra turn" style of
     combo works one rung down.
+
+    CR 500.8 and CR 500.9 both say the most recently created one goes first,
+    so each queue is drained from the end. Drained from the front, "an
+    additional combat phase followed by an additional main phase" came out in
+    the order the two were created rather than the order the card prints.
     """
     guard = 0
     while (game.extra_steps or game.extra_phases) and not game.game_over:
@@ -229,20 +270,29 @@ def _run_extras(game: Game, options: TurnOptions) -> None:
             game.extra_phases.clear()
             return
         if game.extra_steps:
-            step = game.extra_steps.pop(0)
-            _run_step(game, game.phase, step, options)
+            step = game.extra_steps.pop()
+            _run_step(game, game.phase, step, options, progress)
             continue
-        phase = game.extra_phases.pop(0)
+        phase = game.extra_phases.pop()
         for sequence_phase, step in TURN_SEQUENCE:
             if sequence_phase is phase:
-                _run_step(game, phase, step, options)
+                _run_step(game, phase, step, options, progress)
 
 
-def _run_step(game: Game, phase: Phase, step: Step, options: TurnOptions) -> None:
+def _run_step(
+    game: Game,
+    phase: Phase,
+    step: Step,
+    options: TurnOptions,
+    progress: _TurnProgress | None = None,
+) -> None:
     if _skipped_for_want_of_attackers(game, step):
         return
+    phase = _main_phase_kind(phase, step, progress)
     game.phase = phase
     game.step = step
+    # CR 500.6: "at the beginning of" this step or phase triggers now, and
+    # waits for the next time a player would receive priority.
     game.emit(Event(EventKind.STEP_BEGAN, player=game.active_player, amount=int(step)))
 
     _turn_based_actions(game, step, options)
@@ -255,12 +305,43 @@ def _run_step(game: Game, phase: Phase, step: Step, options: TurnOptions) -> Non
         # CR 502.4: no player receives priority during the untap step.
         return
 
+    # Every step but untap and cleanup gives the active player priority once
+    # its turn-based actions are done, and then runs until all players pass in
+    # succession with the stack empty (CR 500.2). One rule says so per step,
+    # and they say the same thing: CR 503.1 for the upkeep step, CR 504.2 for
+    # the draw step, CR 505.6 for a main phase (which has no steps at all, so
+    # CR 505.2 ends the phase itself), CR 507.2 for the beginning of combat,
+    # CR 511.1 for the end of combat, and CR 513.1 for the end step.
     run_priority(game)
     _end_of_step_actions(game, step)
 
-    # Mana pools empty at the end of every step and phase (CR 500.4).
+    # CR 500.5: unspent mana empties as the step or phase ends.
     _empty_mana_pools(game)
     game.emit(Event(EventKind.STEP_ENDED, player=game.active_player, amount=int(step)))
+
+
+def _main_phase_kind(
+    phase: Phase, step: Step, progress: _TurnProgress | None
+) -> Phase:
+    """Which main phase this is (CR 505.1a).
+
+    CR 505.1a: only the turn's *first* main phase is the precombat main phase;
+    every later one is a postcombat main phase, including an extra main phase
+    an effect created after combat and the second main phase of a turn whose
+    combat phase was skipped.
+
+    This is not bookkeeping. The precombat main phase is where CR 505.4 puts a
+    lore counter on every Saga and CR 728 runs the rad-counter procedure, and
+    an extra main phase asked for as ``Phase.PRECOMBAT_MAIN`` - which is what
+    every "additional main phase" effect asks for - ran both of them a second
+    time in the same turn.
+    """
+    if step is not Step.MAIN:
+        return phase
+    if progress is None:
+        return phase
+    progress.main_phases += 1
+    return Phase.PRECOMBAT_MAIN if progress.main_phases == 1 else Phase.POSTCOMBAT_MAIN
 
 
 def _skipped_for_want_of_attackers(game: Game, step: Step) -> bool:
@@ -300,7 +381,9 @@ def _end_of_step_actions(game: Game, step: Step) -> None:
 
 
 def _empty_mana_pools(game: Game) -> None:
-    # CR 500.4, unless a bench has suspended it - see rules.kernel.relaxations.
+    # CR 500.5, unless a bench has suspended it - see rules.kernel.relaxations.
+    # (Not CR 500.4, which is now the rule about effects that last until a step
+    # or phase expiring as it begins.)
     if game.relaxations.mana_pools_persist:
         return
     for player in game.players:
@@ -318,14 +401,29 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
     if step is Step.UNTAP:
         _untap_step(game)
     elif step is Step.MAIN and game.phase is Phase.PRECOMBAT_MAIN:
+        # The only turn-based actions of a main phase, and all three are
+        # limited to the precombat one - which CR 505.1a makes the turn's
+        # first main phase and no other. CR 505.3's Archenemy scheme is
+        # deliberately absent: this is a Commander game.
         # CR 728.1: the rad-counter procedure is a turn-based action at the
         # start of the precombat main phase.
+        # CR 505.4: a lore counter on each Saga the active player controls.
+        # CR 505.5's roll to visit Attractions is missing rather than absent
+        # on principle: Attractions are Commander-legal, but they need the
+        # Attraction deck of CR 717 - a zone built during deck construction -
+        # and the engine has neither that zone nor die rolling. With no
+        # Attraction able to reach the battlefield there is never one to
+        # visit, so the omission is not observable.
         from ..cr300_card_types.cr300_card_types import saga_lore_counters
         from ..cr700_additional_rules.cr725_designations import rad_counter_milling
 
         rad_counter_milling(game, game.active_player)
         saga_lore_counters(game)
     elif step is Step.UPKEEP:
+        # CR 503.1: the upkeep step has no turn-based actions of its own; this
+        # event exists only so that abilities can trigger off the step
+        # beginning (CR 500.6), and the priority that follows is the whole of
+        # the step.
         # CR 503.1a: abilities that trigger "at the beginning of the upkeep"
         # trigger now. Nothing announced the step, so no upkeep trigger - echo,
         # cumulative upkeep, rebound's "at the beginning of your next upkeep" -
@@ -333,9 +431,15 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         # one.
         game.emit(Event(EventKind.UPKEEP, player=game.active_player))
     elif step is Step.END_STEP:
+        # CR 513.1: the end step has no turn-based actions either.
         # CR 513.1a: the same for "at the beginning of the end step", which is
         # when unearth's delayed "exile it" and every "sacrifice it at the
         # beginning of the next end step" are waiting to fire.
+        #
+        # CR 513.2 comes out of emitting it once, here, as the step begins: a
+        # permanent that arrives later in the step, or a delayed ability
+        # created later in it, has missed the event and waits for the next
+        # turn's end step. The step does not back up for them.
         game.emit(Event(EventKind.END_STEP, player=game.active_player))
         # CR 725.2: the monarch draws at the beginning of their end step.
         from ..cr700_additional_rules.cr725_designations import monarch_end_step_draw
@@ -349,6 +453,14 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         _declare_blockers(game)
     elif step is Step.COMBAT_DAMAGE:
         _combat_damage(game)
+    # The beginning of combat step has nothing to do as it begins either.
+    # CR 507.1 would have the active player choose one opponent to be *the*
+    # defending player - but only in a multiplayer game where the opponents do
+    # not all become defending players automatically. Commander uses the
+    # attack multiple players option (CR 903.2, 802.1), under which they all
+    # do, so the turn-based action does not happen and every opponent stays
+    # attackable; cr506_combat._may_be_attacked settles it per attacker.
+    #
     # The end of combat step has nothing to do as it begins. Combat is cleared
     # as it ends (CR 511.3), by ``_end_of_step_actions``.
 
@@ -417,7 +529,11 @@ def _untap_step(game: Game) -> None:
 
 
 def _draw_step(game: Game, options: TurnOptions) -> None:
-    """CR 504.1: the active player draws a card. This is a turn-based action."""
+    """CR 504.1: the active player draws a card. This is a turn-based action.
+
+    CR 504.2 is the rest of the step: the active player then gets priority,
+    which ``_run_step`` does for every step that has one.
+    """
     if options.first_player_skips_first_draw:
         if game.turn == 1 and game.active_player == game.turn_order[0]:
             game.log.record(game, "First player skips their first draw step")

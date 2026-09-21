@@ -117,6 +117,10 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
 
     Computed as a whole rather than per object, because CR 613.6 makes each
     layer depend on the result of the previous one across the entire board.
+
+    CR 610.5: an ability a spell gains as its controller casts it applies from
+    the moment the spell is on the stack, so stack objects are in scope here
+    and not only permanents.
     """
     scope = [game.objects[i] for i in game.battlefield if i in game.objects]
     scope += [game.objects[i] for i in game.stack if i in game.objects]
@@ -138,8 +142,16 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
         # rebuilding the list eight times added nothing but time.
         by_layer = _by_layer(_live_effects(game, state, by_id))
 
+        # CR 613.7a: when an ability is granted, the effect it generates is
+        # stamped with the granting effect's timestamp if that is the later
+        # one. Recorded as layer 6 runs, because that is where the grants
+        # happen and nothing else knows which effect put an ability where.
+        grants: dict[ObjectId, list[tuple[object, int]]] = {}
+
         for layer in LAYER_ORDER:
-            _apply_layer(game, layer, state, by_id, by_layer.get(int(layer), ()))
+            _apply_layer(
+                game, layer, state, by_id, by_layer.get(int(layer), ()), grants
+            )
             if layer is Layer.ABILITY:
                 # CR 613.6 with CR 611.3b: an ability *added* in this layer
                 # generates a continuous effect of its own, and that effect
@@ -152,7 +164,7 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
                 # granted ability that itself grants another would need a
                 # fixed point; that is rarer than this is common, and a
                 # second pass here would double-apply the first grant.
-                by_layer = _by_layer(_live_effects(game, state, by_id))
+                by_layer = _by_layer(_live_effects(game, state, by_id, grants))
     finally:
         game.board_in_progress = previous
 
@@ -165,6 +177,7 @@ def _apply_layer(
     state: dict[ObjectId, Characteristics],
     by_id: dict[ObjectId, GameObject],
     effects=(),
+    grants: dict[ObjectId, list[tuple[object, int]]] | None = None,
 ) -> None:
     """Apply every effect belonging to one layer."""
     if layer is Layer.CONTROL:
@@ -207,10 +220,54 @@ def _apply_layer(
             continue
         # Applicability is settled against the state as it stands now, not as
         # it stood when the layer began.
+        records = grants is not None and ce.effect.kind is EffectKind.GRANT_ABILITY
         for object_id in ordered:
             obj = by_id[object_id]
-            if _affects(game, ce, obj, state[object_id]):
-                state[object_id] = apply_effect(game, obj, state[object_id], ce)
+            if not _affects(game, ce, obj, state[object_id]):
+                continue
+            before = state[object_id]
+            state[object_id] = apply_effect(game, obj, before, ce)
+            if records:
+                _record_grant(grants, object_id, before, state[object_id], ce.timestamp)
+
+
+def _record_grant(
+    grants: dict[ObjectId, list[tuple[object, int]]],
+    object_id: ObjectId,
+    before: Characteristics,
+    after: Characteristics,
+    timestamp: int,
+) -> None:
+    """Note which abilities this grant put on the object, and when.
+
+    CR 613.7a needs the granting effect's timestamp, and only the moment of
+    granting knows it. A grant appends, so the abilities past the end of the
+    previous list are exactly the new ones. The latest grant wins, which is
+    what "whichever is later" asks for when one ability arrives twice.
+    """
+    kept = grants.setdefault(object_id, [])
+    for ability in after.abilities[len(before.abilities) :]:
+        for index, (known, when) in enumerate(kept):
+            if known == ability:
+                if timestamp > when:
+                    kept[index] = (ability, timestamp)
+                break
+        else:
+            kept.append((ability, timestamp))
+
+
+def _granted_timestamp(
+    grants: dict[ObjectId, list[tuple[object, int]]] | None,
+    object_id: ObjectId,
+    ability,
+) -> int:
+    """When this ability was granted to this object, or zero if it was not."""
+    if not grants:
+        return 0
+    for known, when in grants.get(object_id, ()):
+        if known == ability:
+            return when
+    return 0
 
 
 def _still_exists(state: dict[ObjectId, Characteristics], ce: ContinuousEffect) -> bool:
@@ -235,6 +292,7 @@ def _live_effects(
     game: Game,
     state: dict[ObjectId, Characteristics],
     by_id: dict[ObjectId, GameObject],
+    grants: dict[ObjectId, list[tuple[object, int]]] | None = None,
 ) -> list[ContinuousEffect]:
     """Continuous effects currently in existence.
 
@@ -242,6 +300,11 @@ def _live_effects(
     (CR 611.2). Effects from static abilities are regenerated every time from
     the abilities that currently exist (CR 611.3) - persisting them would keep
     a destroyed Glorious Anthem pumping, and would hide Humility entirely.
+
+    CR 604.2: that regeneration is the rule, not an optimisation. A static
+    ability's effect lasts exactly as long as the object stays in the zone
+    where the ability works and still has the ability, which is why the zone
+    is checked here and ``_still_exists`` checks the ability.
     """
     from ..kernel.game import ContinuousEffect
 
@@ -263,13 +326,19 @@ def _live_effects(
                 continue
             if not _static_condition_holds(game, obj, ability):
                 continue
+            # CR 613.7a: the object's timestamp, or the granting effect's,
+            # whichever is later. A printed ability has no grant and keeps
+            # the object's.
+            timestamp = max(
+                obj.timestamp, _granted_timestamp(grants, object_id, ability)
+            )
             for effect in _continuous_parts(ability.effects):
                 out.append(
                     ContinuousEffect(
                         effect=effect,
                         source=obj.id,
                         controller=obj.controller,
-                        timestamp=obj.timestamp,
+                        timestamp=timestamp,
                         layer=int(layer_for(effect)),
                         duration=effect.duration,
                         from_static_ability=True,
@@ -320,6 +389,16 @@ def _affects(
     The two cheap tests come first on purpose: this is called once per effect
     per object per layer per board computation, which is millions of times a
     game, and the expensive half is the filter match at the bottom.
+
+    CR 604.4: the question is asked afresh on every computation and never
+    settled, so an Aura or Equipment moved to another permanent stops
+    modifying the old one and starts modifying the new one. Nothing here
+    targets: a static ability of an attachment modifies what it is on without
+    ever choosing it as a target.
+
+    CR 604.7: ``matches`` is called without ``allow_stale``, so a static
+    ability cannot reach an object's last known information the way a
+    resolving ability can. A creature that has left is simply not affected.
     """
     spec = ce.effect.targets
     if spec is None:

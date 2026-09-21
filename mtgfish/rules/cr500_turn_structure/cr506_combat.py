@@ -54,8 +54,14 @@ class Combat:
     #: attacker -> the planeswalker or battle it is attacking, when it is
     #: attacking one rather than a player directly (CR 508.1a).
     attacking_permanent: dict[ObjectId, ObjectId] = field(default_factory=dict)
-    #: attacker -> its blockers, in the attacker's chosen damage assignment
-    #: order (CR 509.2).
+    #: attacker -> the creatures blocking it, in the order they were declared.
+    #:
+    #: Not a damage assignment order. There is no such thing any more: the
+    #: rule that made the attacker order its blockers was deleted, CR 509.2 is
+    #: now just "the active player gets priority", and CR 510.1c lets the
+    #: controller divide the damage however they like. The order is kept only
+    #: so that the engine's default division (``_lethal_first``) is the same
+    #: one on every replay.
     blockers: dict[ObjectId, list[ObjectId]] = field(default_factory=dict)
     #: blocker -> the attackers it is blocking.
     blocking: dict[ObjectId, list[ObjectId]] = field(default_factory=dict)

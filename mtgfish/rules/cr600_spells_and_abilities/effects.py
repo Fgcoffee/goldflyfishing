@@ -208,6 +208,10 @@ class EffectKind(IntEnum):
 
 #: Effects that create a continuous effect rather than changing the game state
 #: once. These need a Duration and go through the layer system (CR 613).
+#: CR 610.1: every other opcode is a one-shot effect - it does its thing once
+#: and has no duration - which is why the set is listed rather than a flag on
+#: each opcode. Damage, destruction, token creation and zone changes are all
+#: outside it.
 CONTINUOUS_KINDS = frozenset(
     {
         EffectKind.MODIFY_PT,
@@ -305,6 +309,10 @@ class Effect:
     #: doubles; Hardened Scales adds. Both exist, so both are expressible, and
     #: the multiplier applies before the addition.
     multiplier: int = 1
+    #: CR 610.3c: an object returned to the battlefield by the second one-shot
+    #: effect of an "until" exile returns under its owner's control, not under
+    #: the control of whoever is returning it.
+    under_owners_control: bool = False
     #: For ADD_MANA: a "spend this mana only on ..." rider (CR 106.6).
     mana_restriction: object | None = None
     #: For ADD_MANA: the exact symbols produced, e.g. ``("{G}", "{U}")``.
