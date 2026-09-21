@@ -278,6 +278,8 @@ def _attack_is_permitted(game: Game, obj: GameObject, defender: int) -> bool:
     """Restrictions on attacking (CR 508.1d)."""
     if not can_attack(game, obj):
         return False
+    if not _may_be_attacked(game, obj, defender):
+        return False
     chars = game.characteristics(obj)
     if chars.has_keyword("Can't attack"):
         return False
@@ -288,6 +290,31 @@ def _attack_is_permitted(game: Game, obj: GameObject, defender: int) -> bool:
         if others:
             return False
     return True
+
+
+def _may_be_attacked(game: Game, obj: GameObject, defender) -> bool:
+    """Whether the declared defender is something this creature may attack.
+
+    CR 506.2 names what is open to attack: the defending player, planeswalkers
+    they control, and battles they protect. CR 802.1 is what makes "they" a
+    choice rather than the only other player - this game uses the attack
+    multiple players option (CR 903.2), so any opponent will do.
+
+    What none of that permits is attacking yourself, a teammate, or a player
+    who has already left the game (CR 800.4). Nothing stopped an agent naming
+    one, so nothing did.
+    """
+    player, permanent = _resolve_defender(game, defender)
+    if permanent != NO_OBJECT:
+        attacked = game.objects.get(permanent)
+        if attacked is None or not attacked.is_permanent:
+            return False
+        # CR 506.2: only a planeswalker or a battle is attackable in its own
+        # right. Any other permanent is simply not a legal thing to attack.
+        chars = game.characteristics(attacked)
+        if not (chars.has_type(CardType.PLANESWALKER) or chars.has_type(CardType.BATTLE)):
+            return False
+    return player in game.opponents(obj.controller)
 
 
 def _resolve_defender(game: Game, defender) -> tuple[PlayerId, ObjectId]:

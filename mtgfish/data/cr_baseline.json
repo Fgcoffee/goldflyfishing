@@ -631,6 +631,7 @@
     "800.4e": "If combat damage would be assigned to a player who has left the game, that damage isn’t assigned.",
     "800.4k": "If a player who has left the game would begin a turn, that turn doesn’t begin.",
     "800.4m": "When a player leaves the game, any continuous effects with durations that last until that player’s next turn or until a specific point in that turn will last until that turn would have begun. They neither expire immediately nor last indefinitely.",
+    "802.1": "Some multiplayer games allow the active player to attack multiple other players. If this option is used, a player can also choose to attack only one player during a particular combat.",
     "806": "Free-for-All Variant",
     "806.3": "The players are randomly seated around the table.",
     "903": "Commander",
