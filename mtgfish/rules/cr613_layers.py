@@ -25,6 +25,7 @@ interactions.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -161,6 +162,13 @@ def _apply_layer(
     if layer is Layer.FACE_DOWN:
         _apply_face_down(game, state, by_id)
         return
+    if layer is Layer.ABILITY:
+        # CR 613.1f puts keyword counters in this layer, alongside the effects
+        # that add and remove abilities. Applied before them, so an
+        # ability-removing effect later in the layer can still strip what a
+        # counter granted.
+        for object_id, obj in by_id.items():
+            state[object_id] = _apply_keyword_counters(obj, state[object_id])
     if layer is Layer.PT_CDA:
         for object_id, obj in by_id.items():
             state[object_id] = _apply_cda(game, obj, state[object_id])
@@ -855,21 +863,69 @@ def _apply_face_down(
         )
 
 
+#: A counter that modifies power and toughness: "+1/+1", "-2/-1", "+0/+2".
+_PT_COUNTER_RE = re.compile(r"^([+-]\d+)/([+-]\d+)$")
+
+#: CR 122.1b: the keywords a keyword counter can be. A closed list, because a
+#: counter named anything else is an ordinary counter and grants nothing.
+KEYWORD_COUNTERS = frozenset(
+    {
+        "flying", "first strike", "double strike", "deathtouch", "decayed",
+        "exalted", "haste", "hexproof", "indestructible", "lifelink",
+        "menace", "reach", "shadow", "trample", "vigilance",
+    }
+)
+
+
+def _apply_keyword_counters(
+    obj: GameObject, current: Characteristics
+) -> Characteristics:
+    """Layer 6: a keyword counter grants its keyword (CR 613.1f, 122.1b).
+
+    The parser produces these - Spontaneous Flight puts a flying counter on a
+    creature - and nothing read them, so the counter sat on the permanent
+    granting nothing at all.
+    """
+    if not obj.counters:
+        return current
+    granted = tuple(
+        Ability(AbilityKind.STATIC, keyword=name, text=name)
+        for name, count in sorted(obj.counters.items())
+        if count > 0 and name.lower() in KEYWORD_COUNTERS
+    )
+    if not granted:
+        return current
+    return current.replace(abilities=current.abilities + granted)
+
+
 def _apply_counters(obj: GameObject, current: Characteristics) -> Characteristics:
-    """Layer 7d: +1/+1 and -1/-1 counters (CR 613.4d).
+    """Layer 7d: counters that change power and toughness (CR 613.4c, 122.1a).
 
     Applied after every other power/toughness modification, which is why a
     creature set to 1/1 by Humility while carrying three +1/+1 counters is a
     4/4 rather than a 1/1.
+
+    Every "+X/+Y" counter counts, not only +1/+1 and -1/-1. Reading just those
+    two left the rest inert: a +2/+2 counter from Tin-Wing Chimera, a +1/+0
+    from a pump that uses them, a -2/-2 from Ebon Praetor. Only +1/+1 and
+    -1/-1 annihilate in pairs (CR 704.5q), and that stays where it is, in the
+    state-based actions.
     """
-    plus = obj.counters.get("+1/+1", 0)
-    minus = obj.counters.get("-1/-1", 0)
-    if not plus and not minus:
+    if not obj.counters:
         return current
-    delta = plus - minus
+    power = toughness = 0
+    for name, count in obj.counters.items():
+        if count <= 0:
+            continue
+        match = _PT_COUNTER_RE.match(name)
+        if match:
+            power += int(match.group(1)) * count
+            toughness += int(match.group(2)) * count
+    if not power and not toughness:
+        return current
     return current.replace(
-        power=(current.power or 0) + delta,
-        toughness=(current.toughness or 0) + delta,
+        power=(current.power or 0) + power,
+        toughness=(current.toughness or 0) + toughness,
     )
 
 
