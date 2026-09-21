@@ -136,12 +136,23 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
         # CR 613.6 honest - an ability stripped in layer 6 stops producing
         # before its layer 7 effect applies - and it reads the live state, so
         # rebuilding the list eight times added nothing but time.
-        by_layer: dict[int, list] = {}
-        for ce in _live_effects(game, state, by_id):
-            by_layer.setdefault(ce.layer, []).append(ce)
+        by_layer = _by_layer(_live_effects(game, state, by_id))
 
         for layer in LAYER_ORDER:
             _apply_layer(game, layer, state, by_id, by_layer.get(int(layer), ()))
+            if layer is Layer.ABILITY:
+                # CR 613.6 with CR 611.3b: an ability *added* in this layer
+                # generates a continuous effect of its own, and that effect
+                # applies in the layers that follow. The effect list was
+                # harvested once, before any layer ran, from the printed
+                # characteristics - so a granted static ability appeared on
+                # the object and then did nothing at all.
+                #
+                # Re-harvested once, after the abilities are settled. A
+                # granted ability that itself grants another would need a
+                # fixed point; that is rarer than this is common, and a
+                # second pass here would double-apply the first grant.
+                by_layer = _by_layer(_live_effects(game, state, by_id))
     finally:
         game.board_in_progress = previous
 
@@ -210,6 +221,14 @@ def _still_exists(state: dict[ObjectId, Characteristics], ce: ContinuousEffect) 
     if chars is None:
         return False
     return ce.ability in chars.abilities
+
+
+def _by_layer(effects: list) -> dict[int, list]:
+    """Group effects by the layer they apply in."""
+    out: dict[int, list] = {}
+    for ce in effects:
+        out.setdefault(ce.layer, []).append(ce)
+    return out
 
 
 def _live_effects(
