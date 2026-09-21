@@ -371,6 +371,15 @@ def aura_target_effect(chars):
     ``None`` for anything that is not an Aura, or an Aura whose enchant
     ability the parser could not read - those keep the old behaviour rather
     than being made uncastable.
+
+    That covers 1,167 of the 1,222 Commander-legal Auras in the pool. The
+    remaining 55 are "enchant player" - the Curses - where the enchant clause
+    parses with no filter because a player is not an object filter, and four
+    whose enchant ability does not parse at all. Attaching to a *player* needs
+    more than a filter here: ``attached_to`` holds an ObjectId, so there is
+    nowhere to put one. Left alone deliberately rather than half-built, so a
+    Curse behaves as it did before instead of targeting a player and then
+    failing to attach to them.
     """
     from .effects import Effect, EffectKind
 
