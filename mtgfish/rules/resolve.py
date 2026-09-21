@@ -410,13 +410,8 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
     if effect.token is None:
         return
     from .cr111_tokens import create_tokens
-    from .query import ValueKind
 
-    if effect.amount.kind is ValueKind.CONSTANT:
-        count = max(1, effect.amount.constant)
-    else:
-        count = _amount(resolution, effect)
-
+    count = _count(resolution, effect)
     for player_id in _players(resolution, effect):
         create_tokens(
             resolution.game,
@@ -950,7 +945,7 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
     """CR 707.10: a copy on the stack, which was never cast."""
     from .cr707_faces import copy_spell
 
-    count = max(1, _amount(resolution, effect)) if effect.amount.constant else 1
+    count = _count(resolution, effect)
     for original in _objects(resolution, effect):
         for _ in range(count):
             copy_spell(resolution.game, original, resolution.controller)
@@ -1007,6 +1002,23 @@ def _mana_kind(symbol: str, *, snow: bool, restriction=None):
     )
 
 
+def _count(resolution: Resolution, effect: Effect) -> int:
+    """How many, for an effect whose amount is a count rather than a size.
+
+    A literal zero is how "copy it" or "add mana" arrives with no number on
+    it, and means one. Anything that is not a literal is evaluated, so "copy
+    it X times" and "add mana equal to its power" get their real value.
+
+    Guarding on ``effect.amount.constant`` instead reads the *value* a literal
+    carries, not whether the amount is a literal at all - so every X and every
+    "for each" collapsed to one. The same mistake made Secure the Wastes
+    create a single Soldier.
+    """
+    if effect.amount.is_constant:
+        return max(1, effect.amount.constant)
+    return max(0, _amount(resolution, effect))
+
+
 def _amount2(resolution: Resolution, effect: Effect) -> int:
     """The effect's second quantity, evaluated against the game."""
     from .values import evaluate
@@ -1055,7 +1067,7 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
         # "Add one mana of the chosen color" - the colour this permanent
         # recorded as it entered (CR 614.1b). Nothing on the card names it,
         # so it can only be read off the source at resolution.
-        amount = max(1, _amount(resolution, effect)) if effect.amount.constant else 1
+        amount = _count(resolution, effect)
         recorded = getattr(source_obj, "chosen_color", 0) if source_obj else 0
         player.mana_pool.add(
             ManaKind(recorded, snow=snow, restriction=effect.mana_restriction),
@@ -1064,13 +1076,13 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     elif effect.colors:
         # No symbol list: "add N mana of any color", where the color set is
         # the menu and the player picks. Deterministic pick, first color.
-        amount = max(1, _amount(resolution, effect)) if effect.amount.constant else 1
+        amount = _count(resolution, effect)
         chosen = next(iter(effect.colors))
         player.mana_pool.add(
             ManaKind(chosen, snow=snow, restriction=effect.mana_restriction), amount
         )
     else:
-        amount = max(1, _amount(resolution, effect)) if effect.amount.constant else 1
+        amount = _count(resolution, effect)
         player.mana_pool.add(
             ManaKind(snow=snow, restriction=effect.mana_restriction), amount
         )
@@ -1084,6 +1096,18 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
 # ---------------------------------------------------------------------------
 
 
+def _settles_its_set(effect: Effect) -> bool:
+    """Whether CR 611.2c fixes this effect's set of objects when it begins.
+
+    True for anything that modifies characteristics - the layered effects -
+    and for a control change. Everything else modifies the rules of the game
+    and keeps applying to objects that were not there at the time.
+    """
+    from .cr613_layers import EFFECT_LAYERS
+
+    return effect.kind in EFFECT_LAYERS or effect.kind is EffectKind.GAIN_CONTROL
+
+
 def _register_continuous(resolution: Resolution, effect: Effect) -> None:
     """Create a continuous effect from a resolving spell or ability (CR 611.2).
 
@@ -1095,11 +1119,24 @@ def _register_continuous(resolution: Resolution, effect: Effect) -> None:
 
     game = resolution.game
     resolved_effect = effect
-    if effect.is_targeted:
-        # Freeze the chosen targets in, so the effect keeps applying to what it
-        # was pointed at rather than re-matching each time it is evaluated.
+
+    # CR 611.2c: an effect that modifies characteristics or changes control
+    # settles the set of objects it affects when it begins, and that set never
+    # changes afterwards. An effect that does neither modifies the rules of the
+    # game instead, and goes on applying to objects that arrive later.
+    #
+    # Only targeted effects were frozen, so every untargeted mass effect kept
+    # its filter live and re-matched the board on each recomputation: a pump
+    # that read "creatures you control get +2/+2 until end of turn" also
+    # pumped creatures that entered afterwards, followed control changes, and
+    # caught permanents that became creatures later in the turn.
+    if effect.is_targeted or _settles_its_set(effect):
         chosen = tuple(obj.id for obj in _objects(resolution, effect))
         if not chosen:
+            # The set is empty and will stay empty, so the effect does nothing.
+            # It must not be registered with an empty "specific" filter: an
+            # empty tuple is falsy, which ObjectFilter reads as no constraint
+            # at all, and the effect would apply to every object on the board.
             return
         from dataclasses import replace as _replace
 
