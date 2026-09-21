@@ -78,6 +78,7 @@ def _one_pass(game: Game) -> bool:
     _check_ceased(game, to_cease)
     _check_legend_rule(game, legend_choices)
     _check_world_rule(game, to_graveyard)
+    _check_role_rule(game, to_graveyard)
 
     if not any(
         (
@@ -276,8 +277,15 @@ def _check_permanents(
                 to_graveyard.append(obj)
                 continue
 
-        # CR 704.5r / 704.5s: a battle with no defense counters, or with no
-        # protector, goes to its owner's graveyard.
+        # CR 704.5w: "If a non-Siege battle has defense 0, it's put into its
+        # owner's graveyard." CR 704.5v says the same for a Siege battle, but
+        # only if it "isn't the source of an ability that has triggered but
+        # not yet left the stack" - that exception is not implemented here,
+        # the same shape of exception the Saga check below does honour.
+        #
+        # CR 704.5x, the protector rule, is not implemented either: a battle
+        # with no protector and no attackers has its controller choose one,
+        # and only goes to the graveyard when nobody can be chosen.
         if chars.has_type(CardType.BATTLE):
             if obj.counter_count("defense") <= 0:
                 to_graveyard.append(obj)
@@ -295,7 +303,7 @@ def _check_permanents(
             if obj.attached_to and not _attachment_is_legal(game, obj, require_host=False):
                 to_unattach.append(obj)
 
-        # CR 704.5t: a Saga with no lore counters left to add and no chapter
+        # CR 704.5s: a Saga with no lore counters left to add and no chapter
         # ability on the stack is sacrificed.
         if chars.has_subtype("Saga") and _saga_is_finished(game, obj, chars):
             to_sacrifice.append(obj)
@@ -389,6 +397,43 @@ def _resolve_legend_rule(
         if obj is not keep and obj.zone is Zone.BATTLEFIELD:
             game.log.record(game, f"Legend rule: {name} put into graveyard", kind="sba")
             put_into_graveyard(game, obj)
+
+
+def _check_role_rule(game: Game, to_graveyard: list[GameObject]) -> None:
+    """CR 704.5z: one Role per permanent per player.
+
+    "If a permanent has more than one Role controlled by the same player
+    attached to it, each of those Roles except the one with the most recent
+    timestamp is put into its owner's graveyard."
+
+    Per *player*, like the legend rule and unlike the world rule - two
+    opponents can each have a Role on the same creature, and both stay. This
+    was missing entirely, and the engine creates Role tokens (CR 701.54), so
+    a second Role from the same player stacked its grant on top of the first
+    instead of replacing it.
+    """
+    for obj in game.permanents():
+        if len(obj.attachments) < 2:
+            continue
+        by_controller: dict[PlayerId, list[GameObject]] = {}
+        for attached_id in obj.attachments:
+            role = game.objects.get(attached_id)
+            if role is None or role.zone is not Zone.BATTLEFIELD:
+                continue
+            if not game.characteristics(role).has_subtype("Role"):
+                continue
+            by_controller.setdefault(role.controller, []).append(role)
+
+        for group in by_controller.values():
+            if len(group) < 2:
+                continue
+            ordered = sorted(group, key=lambda o: o.timestamp)
+            for older in ordered[:-1]:
+                if older not in to_graveyard:
+                    game.log.record(
+                        game, "Role rule: older Role put into graveyard", kind="sba"
+                    )
+                    to_graveyard.append(older)
 
 
 def _check_world_rule(game: Game, to_graveyard: list[GameObject]) -> None:
