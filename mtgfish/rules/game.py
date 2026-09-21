@@ -239,7 +239,7 @@ class Game:
     #: creates one - so this is deliberately three-valued.
     day_night: bool | None = None
     #: Spells cast during the current turn and the previous one, which is what
-    #: CR 731.3's day/night flip reads.
+    #: CR 731.2's day/night flip reads.
     spells_cast_this_turn: int = 0
     spells_cast_last_turn: int = 0
     #: CR 724: set when an effect ends the turn. The turn loop skips straight
@@ -804,9 +804,9 @@ class Game:
         if self.observer is not None:
             self.observer(self, event)
 
-        # CR 702.183b: speed is a turn-based game rule, not a card ability -
-        # no permanent grants it and nothing goes on the stack, so it is
-        # applied here rather than through the trigger system.
+        # DIVERGENCE. CR 702.179d makes the speed increase an inherent
+        # triggered ability. It has no source, but it is a triggered ability
+        # and belongs on the stack; applying it inline here skips that.
         self._record_this_turn(event)
 
         if event.kind is EventKind.LIFE_LOST:
@@ -825,7 +825,7 @@ class Game:
         history[counted] = history.get(counted, 0) + 1
 
     def _advance_speed(self, event: Event) -> None:
-        """CR 702.183b: each player whose speed is 1-3 and who is the active
+        """CR 702.179d: each player whose speed is 1-3 and who is the active
         player gains speed when an *opponent* loses life on their turn.
 
         At most once each turn, which the player object tracks.

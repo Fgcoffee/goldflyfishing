@@ -169,7 +169,7 @@ def holds(
         )
 
     if kind is ConditionKind.AT_MAX_SPEED:
-        # CR 702.183c. The controller is the player whose speed is asked
+        # CR 702.178a. The controller is the player whose speed is asked
         # about - a "Max speed" ability on your permanent reads your speed,
         # not the active player's.
         if controller == NO_PLAYER:

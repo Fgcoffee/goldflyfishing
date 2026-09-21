@@ -155,7 +155,7 @@ class Value:
     counter_type: str = ""
     #: Which colour a DEVOTION value counts. Several bits means devotion to a
     #: combination, which counts a symbol once if it matches any of them
-    #: (CR 700.5b).
+    #: (CR 700.5).
     colors: Color = Color.NONE
     #: Operands for the arithmetic kinds.
     operands: tuple[Value, ...] = ()
@@ -691,7 +691,7 @@ class ConditionKind(IntEnum):
     CLASS_LEVEL = 9
     #: CR 719.3c: "Solved - ..." functions only while the Case is solved.
     IS_SOLVED = 10
-    #: CR 702.183c: "Max speed - ..." functions only while the ability's
+    #: CR 702.178a: "Max speed - ..." functions only while the ability's
     #: controller is at maximum speed. A condition rather than an ability word,
     #: because unlike Landfall it genuinely gates whether the ability works.
     AT_MAX_SPEED = 16

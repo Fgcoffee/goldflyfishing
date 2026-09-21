@@ -243,7 +243,7 @@ def check_state_triggers(game: Game) -> None:
     """Fire state triggers whose condition has just become true (CR 603.8).
 
     A state trigger watches a *condition*, not an event: "when you control no
-    creatures", "when a player has 0 or less life". CR 603.8b is the subtle
+    creatures", "when a player has 0 or less life". CR 603.8 is the subtle
     part - it triggers once when the condition becomes true and does not
     trigger again until the condition has been false in between. Without that,
     a permanently-true condition would put an ability on the stack every single

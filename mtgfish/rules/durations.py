@@ -103,7 +103,8 @@ def _expire(game: Game, moment: Duration) -> None:
 
 
 def expire_at_end_of_combat(game: Game) -> None:
-    """CR 511.3: "until end of combat" ends as the end of combat step ends."""
+    """CR 511.2: "until end of combat" expires at the end of the combat phase,
+    which CR 511.3 places as the end of combat step ends."""
     _expire(game, Duration.END_OF_COMBAT)
 
 

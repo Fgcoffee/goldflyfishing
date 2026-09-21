@@ -48,7 +48,7 @@ class ActionInstance:
     amount: int = 0
     filter: ObjectFilter | None = None
     players: PlayerFilter | None = None
-    #: CR 701.6b: what the token is. It comes from the sentence around the
+    #: CR 701.7b: what the token is. It comes from the sentence around the
     #: word - "create a 1/1 white Soldier" - so the parser supplies it and the
     #: action only has to place it.
     token: TokenSpec | None = None
@@ -139,7 +139,7 @@ def _direct(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Create")
 def _create(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.6a: "to create a token is to put a token onto the battlefield."
+    """CR 701.7a: "to create a token is to put a token onto the battlefield."
 
     A token with no definition is not a token, so an instance without a spec
     yields an unparsed effect rather than putting a nameless 0/0 into play.
@@ -159,7 +159,9 @@ def _create(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Conjure")
 def _conjure(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.50a: conjure creates a *card*, not a token, in a specified zone.
+    """Conjure creates a *card*, not a token, in a specified zone. It appears
+    nowhere in the Comprehensive Rules - it is digital-only (Alchemy), so
+    there is no rule number to cite.
 
     Digital-only (Alchemy), and Alchemy cards are excluded from the pool by the
     Commander-legality filter - so this is registered to be reported rather
@@ -189,7 +191,7 @@ def _counters(
 
 @register("Bolster")
 def _bolster(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.25: N +1/+1 counters on the creature you control with the least
+    """CR 701.39: N +1/+1 counters on the creature you control with the least
     toughness. "Least toughness" is a choice among ties, so the filter narrows
     to your creatures and the chooser breaks the tie."""
     return _counters(instance, CREATURES_YOU_CONTROL)
@@ -197,7 +199,7 @@ def _bolster(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Support")
 def _support(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.32: a +1/+1 counter on each of up to N *other* target creatures."""
+    """CR 701.41: a +1/+1 counter on each of up to N *other* target creatures."""
     others = ObjectFilter(
         types_all=CardType.CREATURE,
         other_than_source=True,
@@ -218,7 +220,7 @@ def _support(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Amass")
 def _amass(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.44: put N +1/+1 counters on an Army you control, creating a 0/0
+    """CR 701.47: put N +1/+1 counters on an Army you control, creating a 0/0
     Army token first if you have none."""
     army = TokenSpec(
         name="Army",
@@ -249,7 +251,7 @@ def _amass(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Incubate")
 def _incubate(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.48: an Incubator token with N +1/+1 counters on it."""
+    """CR 701.53: an Incubator token with N +1/+1 counters on it."""
     incubator = TokenSpec(
         name="Incubator",
         types=CardType.ARTIFACT,
@@ -295,7 +297,7 @@ _ARTIFACT_TOKENS: dict[str, TokenSpec] = {
 
 @register("Investigate", "Food", "Treasure")
 def _artifact_token(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.24, 701.47: create a named artifact token."""
+    """CR 701.16, 701.47: create a named artifact token."""
     spec = _ARTIFACT_TOKENS[instance.key]
     return (
         Effect(
@@ -310,7 +312,7 @@ def _artifact_token(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Populate")
 def _populate(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.32: copy a creature token you control."""
+    """CR 701.36: copy a creature token you control."""
     tokens = ObjectFilter(
         types_all=CardType.CREATURE,
         controller=ControllerRelation.YOU,
@@ -327,7 +329,7 @@ def _populate(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Manifest", "Manifest dread", "Cloak")
 def _manifest(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.37: put the top card onto the battlefield face down as a 2/2.
+    """CR 701.40: put the top card onto the battlefield face down as a 2/2.
 
     The face-down part is what the engine already models in layer 1b, so this
     is a zone change plus a status change rather than anything new.
@@ -369,7 +371,7 @@ def _search(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Fateseal")
 def _fateseal(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.22: scry, but done to an opponent's library."""
+    """CR 701.29: scry, but done to an opponent's library."""
     return (
         Effect(
             EffectKind.SCRY,
@@ -382,7 +384,7 @@ def _fateseal(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Connive")
 def _connive(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.46: draw N, discard N, then a +1/+1 counter per nonland discarded."""
+    """CR 701.50: draw N, discard N, then a +1/+1 counter per nonland discarded."""
     return (
         Effect(EffectKind.DRAW, players=YOU, amount=_amount(instance)),
         Effect(EffectKind.DISCARD, players=YOU, amount=_amount(instance)),
@@ -403,7 +405,7 @@ def _connive(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Detain", "Suspect", "Exert")
 def _status_action(instance: ActionInstance) -> tuple[Effect, ...]:
-    """Actions that impose an ongoing restriction on a permanent (CR 701.23)."""
+    """Actions that impose an ongoing restriction on a permanent (CR 701.35)."""
     from .restrictions import Act, Restriction
 
     acts = {
@@ -458,7 +460,7 @@ YOUR_GRAVEYARD = ObjectFilter(
 
 @register("Play")
 def _play(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.3: to play a card is to cast it or to play it as a land.
+    """CR 701.18: to play a card is to cast it or to play it as a land.
 
     Which one depends on the card, so this is one opcode and the executor
     decides - a land uses the land drop, anything else is cast and paid for.
@@ -475,7 +477,7 @@ def _play(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Cast")
 def _cast(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.4: to cast a spell is to move it to the stack and follow CR 601.2.
+    """CR 701.5: to cast a spell is to move it to the stack and follow CR 601.2.
 
     "Cast without paying its mana cost" is the common form on cards, so that is
     what this expands to; a cast that pays normally is ``Play``.
@@ -504,7 +506,7 @@ def _activate(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Clash")
 def _clash(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.23a: "each clashing player reveals the top card of their library,
+    """CR 701.30a: "each clashing player reveals the top card of their library,
     then puts it on the top or bottom. A player wins if their card had a higher
     mana value."
     """
@@ -526,7 +528,7 @@ def _clash(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Meld")
 def _meld(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.38a / 713: exile two permanents and return them melded.
+    """CR 701.42a / 713: exile two permanents and return them melded.
 
     Both halves must be on the battlefield and owned by the same player, which
     is a check the transform machinery already makes - so this is a transform
@@ -543,7 +545,7 @@ def _meld(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Endure")
 def _endure(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.59a: "put N +1/+1 counters on this creature, or create an N/N
+    """CR 701.63a: "put N +1/+1 counters on this creature, or create an N/N
     white Spirit creature token."
     """
     spirit = TokenSpec(
@@ -579,7 +581,7 @@ def _endure(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Forage")
 def _forage(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.57a: "exile three cards from your graveyard, or sacrifice a Food."
+    """CR 701.61a: "exile three cards from your graveyard, or sacrifice a Food."
     """
     food = ObjectFilter(
         types_all=CardType.ARTIFACT,
@@ -607,7 +609,7 @@ def _forage(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Collect evidence")
 def _collect_evidence(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.53a: "exile cards with total mana value N or greater from your
+    """CR 701.59a: "exile cards with total mana value N or greater from your
     graveyard."
     """
     return (
@@ -622,7 +624,7 @@ def _collect_evidence(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Time Travel")
 def _time_travel(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.52a: "for each suspended card you own and each permanent you
+    """CR 701.56a: "for each suspended card you own and each permanent you
     control with a time counter, you may add or remove a time counter."
     """
     timed = ObjectFilter(
@@ -656,7 +658,7 @@ def _time_travel(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Venture into the dungeon")
 def _venture(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.47a: enter the first room of a dungeon, or move to the next."""
+    """CR 701.49a: enter the first room of a dungeon, or move to the next."""
     return (
         Effect(
             EffectKind.VENTURE,
@@ -668,7 +670,7 @@ def _venture(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Plot")
 def _plot(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.55a: "exile that card from your hand. You may cast it as a sorcery
+    """CR 702.170a: "exile that card from your hand. You may cast it as a sorcery
     on a later turn without paying its mana cost."
     """
     return (
@@ -683,7 +685,9 @@ def _plot(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Role token")
 def _role_token(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.54: Role tokens are Aura enchantment tokens.
+    """CR 111.10j-r: Role tokens are predefined tokens - colorless Aura Role
+    enchantment tokens with enchant creature. Not a keyword action, so
+    there is no CR 701 entry for them.
 
     Which Role - Cursed, Monster, Royal, Sorcerer, Virtuous, Wicked, Young
     Hero - is card text, and each grants something different, so the token is
@@ -706,7 +710,7 @@ def _role_token(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Double", "Triple")
 def _multiply(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.9 / 701.60: doubling or tripling a quantity.
+    """CR 701.10 / 701.60: doubling or tripling a quantity.
 
     Applied to counters here, which is the common case; doubling life or damage
     is a replacement effect the parser builds directly rather than a keyword
@@ -736,7 +740,7 @@ def _multiply(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Heal")
 def _heal(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.61: to heal is to remove damage marked on a permanent."""
+    """CR 701.69: to heal is to remove damage marked on a permanent."""
     return (
         Effect(
             EffectKind.PREVENT_DAMAGE,
@@ -749,7 +753,7 @@ def _heal(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Behold")
 def _behold(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.58a: "reveal a [quality] card from your hand, or choose one you
+    """CR 701.4a: "reveal a [quality] card from your hand, or choose one you
     control." No cost is paid and nothing moves; it is a check.
     """
     return (
@@ -765,7 +769,7 @@ def _behold(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Harness")
 def _harness(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.63: tap an untapped permanent you control for its harness ability.
+    """CR 701.64: tap an untapped permanent you control for its harness ability.
 
     The permanent taps; what that buys is printed on the card.
     """
@@ -781,7 +785,7 @@ def _harness(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Assemble")
 def _assemble(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.34: assemble a Contraption - Unstable only, and not
+    """CR 701.45: assemble a Contraption - Unstable only, and not
     Commander-legal, so no deck this program simulates can reach it."""
     return (Effect(EffectKind.UNPARSED, text=instance.text or instance.name),)
 

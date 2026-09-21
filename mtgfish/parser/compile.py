@@ -159,7 +159,7 @@ def _parse_line(
 
 
 def _gate_on_max_speed(ability: Ability) -> Ability:
-    """CR 702.183c: the ability functions only while its controller is at
+    """CR 702.178a: the ability functions only while its controller is at
     maximum speed.
 
     A triggered ability takes it as an intervening-if (CR 603.4), which is

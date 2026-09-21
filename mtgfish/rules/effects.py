@@ -151,7 +151,7 @@ class EffectKind(IntEnum):
     VOTE = 196
     VENTURE = 197
     RING_TEMPTS = 198
-    #: CR 702.183a: "Start your engines!" - if the player has no speed, it
+    #: CR 702.179a: "Start your engines!" - if the player has no speed, it
     #: becomes 1.
     START_ENGINES = 199
     #: "You may pay {2}." inside a resolution - an action taken, not a price
@@ -305,7 +305,7 @@ class Effect:
     #: doubles; Hardened Scales adds. Both exist, so both are expressible, and
     #: the multiplier applies before the addition.
     multiplier: int = 1
-    #: For ADD_MANA: a "spend this mana only on ..." rider (CR 106.6b).
+    #: For ADD_MANA: a "spend this mana only on ..." rider (CR 106.6).
     mana_restriction: object | None = None
     #: For ADD_MANA: the exact symbols produced, e.g. ``("{G}", "{U}")``.
     #: A count plus a set of colors cannot express this - "Add {G}{U}" and

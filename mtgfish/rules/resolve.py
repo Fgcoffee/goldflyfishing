@@ -1157,7 +1157,7 @@ def _do_pay_cost(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_start_engines(resolution: Resolution, effect: Effect) -> None:
-    """CR 702.183a: if this player has no speed, their speed becomes 1.
+    """CR 702.179a: if this player has no speed, their speed becomes 1.
 
     Idempotent: several permanents on one board each say this, and the second
     must not disturb a speed that is already running.
@@ -1193,15 +1193,15 @@ def _do_extra_turn(resolution: Resolution, effect: Effect) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Library manipulation (CR 701.19, 701.20, 701.35, 701.42)
+# Library manipulation (CR 701.23, 701.20, 701.35, 701.42)
 # ---------------------------------------------------------------------------
 
 
 def _do_search_library(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.19: search a library for cards matching a description.
+    """CR 701.23: search a library for cards matching a description.
 
     The library is a hidden, *ordered* zone, so a search is followed by a
-    shuffle (CR 701.19d) - otherwise the searcher would learn the order of what
+    shuffle (CR 701.23) - otherwise the searcher would learn the order of what
     they left behind.
     """
     from .matching import matches
@@ -1674,7 +1674,7 @@ def _do_flip_permanent(resolution: Resolution, effect: Effect) -> None:
 def _do_change_targets(resolution: Resolution, effect: Effect) -> None:
     """CR 115.7: change the targets of a spell or ability on the stack.
 
-    Every new target must be legal, and CR 114.6c forbids changing a target to
+    Every new target must be legal, and CR 115.3 forbids changing a target to
     one already chosen for that same instance. A change that cannot be made
     legally simply does not happen - the original target stays.
     """
