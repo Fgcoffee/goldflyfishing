@@ -309,15 +309,19 @@ def _check_permanents(
                 to_graveyard.append(obj)
                 continue
 
-        # CR 704.5w: a non-Siege battle with defense 0 goes to its owner's
-        # graveyard. CR 704.5v says the same for a Siege battle, but spares
-        # one that is still the source of a triggered ability on the stack -
-        # that exception is not implemented here, though the Saga check below
-        # honours the same shape of exception.
+        # CR 704.5w: a battle with defense 0 goes to its owner's graveyard.
+        # CR 704.5v says the same for a Siege battle but spares one that is
+        # still the source of a triggered ability on the stack - the same
+        # shape of exception the Saga check below honours, and for the same
+        # reason: the permanent has to stay around long enough for its own
+        # last trigger to resolve.
         #
-        # CR 704.5x, the protector rule, is not implemented either.
+        # CR 704.5x, the protector rule, needs a protector to check, and
+        # CR 310.9 is not modelled - so it is still not implemented.
         if chars.has_type(CardType.BATTLE):
-            if obj.counter_count("defense") <= 0:
+            if obj.counter_count("defense") <= 0 and not (
+                chars.has_subtype("Siege") and _is_source_on_the_stack(game, obj)
+            ):
                 to_graveyard.append(obj)
                 continue
 
@@ -328,10 +332,21 @@ def _check_permanents(
                 to_graveyard.append(obj)
                 continue
 
-        # CR 704.5n / 704.5p: Equipment and Fortifications merely fall off.
+        # CR 704.5n / 704.5p: everything else merely falls off.
+        #
+        # Equipment and Fortifications fall off a host they may no longer be
+        # on (CR 704.5n). CR 704.5p is broader and was missing entirely: a
+        # battle or a creature that is attached to anything, and any other
+        # permanent that is not an Aura, an Equipment or a Fortification,
+        # becomes unattached whatever it is attached to - there is no legality
+        # question, because no rule ever let it be attached in the first
+        # place. That happens when a permanent stops being an Aura while it is
+        # on something, or an effect turns an Equipment into a creature.
         if chars.has_subtype("Equipment") or chars.has_subtype("Fortification"):
             if obj.attached_to and not _attachment_is_legal(game, obj, require_host=False):
                 to_unattach.append(obj)
+        elif obj.attached_to and not chars.has_subtype("Aura"):
+            to_unattach.append(obj)
 
         # CR 704.5s: a Saga with no lore counters left to add and no chapter
         # ability on the stack is sacrificed.
@@ -383,6 +398,19 @@ def _attachment_is_legal(game: Game, obj: GameObject, *, require_host: bool) -> 
     return True
 
 
+def _is_source_on_the_stack(game: Game, obj: GameObject) -> bool:
+    """Whether something on the stack still names this permanent as its source.
+
+    CR 704.5v and CR 714.4 both spare a permanent whose own triggered ability
+    has triggered but not yet left the stack.
+    """
+    for object_id in game.stack:
+        stack_object = game.objects.get(object_id)
+        if stack_object is not None and stack_object.source == obj.id:
+            return True
+    return False
+
+
 def _saga_is_finished(game: Game, obj: GameObject, chars) -> bool:
     """CR 714.4: final chapter reached, and no chapter ability waiting."""
     final = _final_chapter(chars)
@@ -390,11 +418,7 @@ def _saga_is_finished(game: Game, obj: GameObject, chars) -> bool:
         return False
     if obj.counter_count("lore") < final:
         return False
-    for object_id in game.stack:
-        stack_object = game.objects.get(object_id)
-        if stack_object is not None and stack_object.source == obj.id:
-            return False
-    return True
+    return not _is_source_on_the_stack(game, obj)
 
 
 def _final_chapter(chars) -> int | None:
