@@ -34,7 +34,7 @@ from ..cr100_game_concepts import actions
 from ..kernel.enums import CardType, Step
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_OBJECT, ObjectId, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
@@ -333,9 +333,26 @@ def _resolve_defender(game: Game, defender) -> tuple[PlayerId, ObjectId]:
     if isinstance(defender, AttackPermanent):
         obj = game.objects.get(defender.permanent)
         if obj is not None and obj.is_permanent:
-            return obj.controller, obj.id
+            return defending_player(game, obj), obj.id
         return PlayerId(0), NO_OBJECT
     return PlayerId(int(defender)), NO_OBJECT
+
+
+def defending_player(game: Game, attacked: GameObject) -> PlayerId:
+    """Who defends this permanent (CR 506.2, 310.9d).
+
+    A planeswalker is defended by its controller. A battle is defended by its
+    *protector*, which for a Siege is one of the controller's opponents - so
+    reading the controller here inverted the rule exactly: it forbade
+    attacking the Siege you control, which CR 310.9b singles out as allowed,
+    and permitted attacking the one you protect, which CR 310.9b forbids.
+    """
+    if (
+        game.characteristics(attacked).has_type(CardType.BATTLE)
+        and attacked.protector != NO_PLAYER
+    ):
+        return attacked.protector
+    return attacked.controller
 
 
 @dataclass(frozen=True, slots=True)

@@ -92,7 +92,6 @@ COVERAGE: dict[str, Entry] = _entries(
             "305": ("rules/cr600_spells_and_abilities/cr613_layers.py", "lands, intrinsic mana, 305.7 type-setting"),
             "306": ("rules/cr700_additional_rules/cr704_sba.py", "planeswalkers and loyalty"),
             "307": ("rules/kernel/legality.py", "sorceries and sorcery-speed timing"),
-            "310": ("rules/cr700_additional_rules/cr704_sba.py", "battles and defense counters"),
             # -- 400s -------------------------------------------------------
             "400": ("rules/kernel/game.py", "zones, and 400.7 new-object semantics"),
             "401": ("rules/cr100_game_concepts/player.py", "library"),
@@ -298,6 +297,15 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
         },
         Status.PARTIAL: {
+            "310": (
+                "rules/cr700_additional_rules/cr704_sba.py",
+                (
+                    "battles, defense counters, and the protector (310.9, "
+                    "310.11, 310.12a); 310.12b's intrinsic exile-and-cast-"
+                    "transformed ability is missing - a Siege at zero defense "
+                    "is buried rather than exiled"
+                ),
+            ),
             "201": (
                 "rules/kernel/matching.py",
                 "a name is matched and compared (201.2a-c); 201.3 interchangeable "

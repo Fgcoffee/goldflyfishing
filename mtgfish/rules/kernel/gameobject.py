@@ -95,6 +95,12 @@ class GameObject:
     #: CR 701.38: players this creature has been goaded by. A goaded creature
     #: must attack, and must attack someone other than a player who goaded it.
     goaded_by: set = field(default_factory=set)
+    #: CR 310.9: the player designated as this battle's protector. A
+    #: designation rather than a characteristic - it is not copiable, and a
+    #: zone change drops it because CR 400.7 builds a fresh object that takes
+    #: the default. CR 310.9d: while the battle is attacked, every rule that
+    #: says "defending player" means this player, not the controller.
+    protector: PlayerId = NO_PLAYER
     #: CR 702.26: a permanent with phasing phases out during its controller's
     #: untap step and back in the following one.
     phasing_scheduled: bool = False

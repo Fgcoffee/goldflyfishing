@@ -25,7 +25,7 @@ from ..cr100_game_concepts.player import Player
 from ..cr200_parts_of_a_card.characteristics import Characteristics, from_face
 from ..cr600_spells_and_abilities.abilities import Ability
 from ..cr600_spells_and_abilities.effects import Effect
-from .enums import LossReason, Phase, Step, Zone
+from .enums import CardType, LossReason, Phase, Step, Zone
 from .events import Event, EventKind
 from .gameobject import GameObject, ObjectKind
 from .ids import NO_OBJECT, NO_PLAYER, IdAllocator, ObjectId, PlayerId
@@ -586,6 +586,10 @@ class Game:
             new_obj.summoning_sick = True
             for kind, amount in entering:
                 new_obj.add_counters(kind, amount)
+            # CR 310.9a: as a battle enters, its controller chooses its
+            # protector. Done here, with the entering counters, because both
+            # are things that happen *as* it enters rather than after.
+            self.choose_protector(new_obj)
 
         # The old object is kept, and deliberately keeps its old zone: that is
         # last-known information (CR 603.6e, 608.2g), and a dies-trigger asking
@@ -679,6 +683,47 @@ class Game:
                         data=(previous.id,) if previous else (),
                     )
                 )
+
+    def choose_protector(self, obj: GameObject) -> bool:
+        """Designate a battle's protector (CR 310.9a, 310.11).
+
+        Which players are eligible depends on the battle type (CR 310.12): a
+        Siege must be protected by one of its controller's opponents
+        (CR 310.12a), and a battle with no battle type by its controller and
+        nobody else (CR 310.9a).
+
+        Returns whether a protector could be chosen. When none can be, the
+        caller puts the battle into its owner's graveyard - CR 310.11 makes
+        that a state-based action, and CR 704.5x is where it is taken.
+
+        The choice belongs to the controller, so an agent may make it; there
+        is rarely anything to weigh, so the fallback is the first eligible
+        player in turn order rather than a required hook.
+        """
+        eligible = self.eligible_protectors(obj)
+        if not eligible:
+            obj.protector = NO_PLAYER
+            return False
+        agent = self.agent_for(obj.controller)
+        chooser = getattr(agent, "choose_protector", None)
+        if chooser is not None:
+            picked = chooser(self, obj.controller, obj.id, list(eligible))
+            if picked in eligible:
+                obj.protector = PlayerId(picked)
+                return True
+        obj.protector = eligible[0]
+        return True
+
+    def eligible_protectors(self, obj: GameObject) -> list[PlayerId]:
+        """Who may protect this battle (CR 310.12, 310.12a, 310.9a)."""
+        chars = self.characteristics(obj)
+        if not chars.has_type(CardType.BATTLE):
+            return []
+        if chars.has_subtype("Siege"):
+            # CR 310.12a: an opponent of its controller, and only that.
+            return self.opponents(obj.controller)
+        # CR 310.9a: with no battle type, only the controller.
+        return [obj.controller] if not self.player(obj.controller).has_lost else []
 
     def _may_enter_the_battlefield(self, obj: GameObject) -> bool:
         """CR 304.4, 307.4: only a permanent card can become a permanent.

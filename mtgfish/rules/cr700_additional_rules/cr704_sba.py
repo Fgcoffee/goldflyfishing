@@ -30,7 +30,7 @@ from ..cr100_game_concepts.actions import (
 from ..kernel.enums import CardType, LossReason, Supertype, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject, ObjectKind
-from ..kernel.ids import PlayerId
+from ..kernel.ids import NO_PLAYER, PlayerId
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
@@ -322,15 +322,24 @@ def _check_permanents(
         # shape of exception the Saga check below honours, and for the same
         # reason: the permanent has to stay around long enough for its own
         # last trigger to resolve.
-        #
-        # CR 704.5x, the protector rule, needs a protector to check, and
-        # CR 310.9 is not modelled - so it is still not implemented.
         if chars.has_type(CardType.BATTLE):
             if obj.counter_count("defense") <= 0 and not (
                 chars.has_subtype("Siege") and _is_source_on_the_stack(game, obj)
             ):
                 to_graveyard.append(obj)
                 continue
+            # CR 704.5x and 704.5y: a battle with nobody protecting it, or
+            # one whose protector is no longer eligible, gets a new protector
+            # chosen by its controller - and goes to its owner's graveyard if
+            # nobody can be. 704.5x waits while the battle is under attack,
+            # because a protector chosen mid-combat would change who the
+            # defending player is (CR 310.9d).
+            if not _has_eligible_protector(game, obj) and not _is_being_attacked(
+                game, obj
+            ):
+                if not game.choose_protector(obj):
+                    to_graveyard.append(obj)
+                    continue
 
         # CR 704.5m: an Aura attached to something illegal, or to nothing, is
         # put into its owner's graveyard.
@@ -403,6 +412,26 @@ def _attachment_is_legal(game: Game, obj: GameObject, *, require_host: bool) -> 
     if chars.has_subtype("Fortification") and not host_chars.has_type(CardType.LAND):
         return False
     return True
+
+
+def _has_eligible_protector(game: Game, obj: GameObject) -> bool:
+    """CR 704.5x, 704.5y: whether this battle's protector still stands.
+
+    Both halves at once, because they ask the same question from opposite
+    sides - 704.5x is nobody designated, 704.5y is somebody who may no longer
+    be it - and the answer to both is that the controller chooses again.
+    """
+    if obj.protector == NO_PLAYER:
+        return False
+    return obj.protector in game.eligible_protectors(obj)
+
+
+def _is_being_attacked(game: Game, obj: GameObject) -> bool:
+    """CR 704.5x only acts on a battle no creature is attacking."""
+    combat = getattr(game, "combat", None)
+    if combat is None:
+        return False
+    return obj.id in combat.attacking_permanent.values()
 
 
 def _is_source_on_the_stack(game: Game, obj: GameObject) -> bool:

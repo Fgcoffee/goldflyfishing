@@ -7,9 +7,10 @@ Smuggler's Copter answered "3/3" to anything that asked, and a planeswalker that
 had been attacked down to one loyalty still answered "4".
 
 These check the rules themselves, in
-``mtgfish/rules/cr300_card_types/cr300_characteristics.py``. The two tests
-marked xfail check the engine's answer instead, and stay xfail until the call
-sites outside this package are wired up - see the note on each.
+``mtgfish/rules/cr300_card_types/cr300_characteristics.py``, and the call
+sites that reach them: the layer system for power and toughness, the
+enters-the-battlefield path for loyalty and defense counters, and the filter
+machinery for reading a planeswalker's loyalty off the board.
 """
 
 from __future__ import annotations
