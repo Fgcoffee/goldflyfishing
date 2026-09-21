@@ -113,7 +113,7 @@ def _one_pass(game: Game) -> bool:
         game.log.record(game, f"{obj} ceases to exist", kind="sba")
         game._remove_from_zone(obj)
         if obj.kind is ObjectKind.TOKEN and any(
-            source_id == obj.id for source_id, _, _ in game.pending_triggers
+            pending.source == obj.id for pending in game.pending_triggers
         ):
             # Its own death trigger is still waiting to go on the stack, and
             # needs the token's controller and last-known characteristics

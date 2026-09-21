@@ -661,11 +661,14 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
         effects=effect.children,
         text=effect.text or "when you do",
     )
+    from .triggers import PendingTrigger
+
     game.pending_triggers.append(
-        (
+        PendingTrigger(
             resolution.source,
             ability,
             Event(EventKind.ABILITY_TRIGGERED, object_id=resolution.source),
+            resolution.controller,
         )
     )
 
