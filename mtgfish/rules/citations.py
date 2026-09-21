@@ -44,6 +44,22 @@ CITATION_RE = re.compile(r"\bCR\s+(\d{3}(?:\.\d+[a-z]?)?)")
 BASELINE_PATH = Path(__file__).resolve().parent.parent / "data" / "cr_baseline.json"
 
 
+def normalise(text: str) -> str:
+    """Rule text with typesetting differences flattened out.
+
+    Text extracted from the PDF is not character-identical to WotC's .txt
+    even when the rule is word for word the same: the extractor pads em
+    dashes and leaves a space where a hyphenated word wrapped, so
+    "state-based" comes back as "state- based". Comparing raw strings made
+    the August text and the September PDF differ in 2,491 rules when only
+    four had actually changed - a report that noisy is one nobody reads.
+    """
+    text = text.replace("\u00a0", " ")
+    text = re.sub(r"\s*([\u2014\u2013])\s*", r"\1", text)
+    text = re.sub(r"(\w)-\s+(\w)", r"\1-\2", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
 @lru_cache(maxsize=1)
 def _rules() -> dict[str, Rule]:
     path = default_path()
@@ -238,7 +254,7 @@ def check(citations: list[Citation] | None = None) -> dict:
             continue
         was = baseline.get(number)
         now = text(number)
-        if was is not None and was != now:
+        if was is not None and normalise(was) != normalise(now):
             drifted.append(
                 Drift(number=number, was=was, now=now, citations=tuple(cites))
             )

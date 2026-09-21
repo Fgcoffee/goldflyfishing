@@ -272,6 +272,70 @@ def _short(path: str) -> str:
     return path[path.index(marker) + 1 :] if marker in path else path
 
 
+
+def _cmd_diff(args) -> int:
+    """Compare the shipped rules against another release, and say what it costs.
+
+    This is the question a new rules release actually raises: not "what
+    changed" but "what changed that we rely on". Rules the engine never cites
+    can change freely; the ones it cites come with the file and line that has
+    to be re-read.
+    """
+    from ..data.comprehensive_rules import default_path, parse
+
+    other = Path(args.other)
+    if not other.exists():
+        print(f"No such file: {other}")
+        return 2
+
+    theirs = {r.number: r.text for r in parse(other)}
+    ours = {r.number: r.text for r in parse(default_path())}
+
+    by_rule: dict[str, list] = {}
+    for citation in citations.cited_in_source():
+        by_rule.setdefault(citation.number, []).append(citation)
+
+    added = sorted(set(theirs) - set(ours), key=_sort_key)
+    removed = sorted(set(ours) - set(theirs), key=_sort_key)
+    reworded = sorted(
+        (
+            n
+            for n in set(theirs) & set(ours)
+            if citations.normalise(theirs[n]) != citations.normalise(ours[n])
+        ),
+        key=_sort_key,
+    )
+
+    print(f"\nshipped : {citations.release_line() or default_path().name}")
+    print(f"compared: {other.name}")
+    print(f"\nadded {len(added)}   removed {len(removed)}   reworded {len(reworded)}\n")
+
+    def locations(number):
+        return sorted({f"{_short(c.path)}:{c.line}" for c in by_rule.get(number, [])})
+
+    affected = [n for n in removed + reworded if by_rule.get(n)]
+    if affected:
+        print(f"AFFECTS THE ENGINE - {len(affected)} cited rule(s):\n")
+        for number in affected:
+            state = "REMOVED" if number in set(removed) else "REWORDED"
+            print(f"  CR {number}  [{state}]")
+            if number in theirs and number in ours:
+                print(f"    was: {ours[number][:160]}")
+                print(f"    now: {theirs[number][:160]}")
+            for place in locations(number)[: args.limit]:
+                print(f"      {place}")
+            print()
+    else:
+        print("AFFECTS THE ENGINE - nothing: no rule the engine cites changed.\n")
+
+    if added:
+        print(f"ADDED (nothing cites these yet): {', '.join('CR ' + n for n in added)}")
+    uncited = [n for n in removed + reworded if not by_rule.get(n)]
+    if uncited:
+        print(f"\nCHANGED but uncited: {', '.join('CR ' + n for n in uncited)}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -305,6 +369,11 @@ def main(argv: list[str] | None = None) -> int:
     index.add_argument("--limit", type=int, default=6, help="code locations per rule")
     index.add_argument("--out", default="", help="write to a file instead of stdout")
     index.set_defaults(func=_cmd_index)
+
+    diff = sub.add_parser("diff", help="compare another rules release against the shipped one")
+    diff.add_argument("other", help="a .txt or .pdf of another release")
+    diff.add_argument("--limit", type=int, default=6, help="code locations per rule")
+    diff.set_defaults(func=_cmd_diff)
 
     base = sub.add_parser("baseline", help="record the wording the engine was written against")
     base.add_argument("--write", action="store_true", help="save it")
