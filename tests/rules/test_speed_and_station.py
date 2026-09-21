@@ -26,13 +26,29 @@ def box(card_db, tmp_path):
 
 
 def test_start_your_engines_sets_speed_to_one(box):
-    """It uses the stack like any other enters trigger (CR 603.3b), so the
-    speed is not set until the trigger resolves."""
+    """CR 702.179a / 704.5aa: a static ability, applied as a state-based action.
+
+    It does not use the stack, so the speed is set the moment state-based
+    actions are checked - there is no trigger to wait for and nothing to
+    respond to. This test previously asserted the opposite, because the
+    keyword was modelled as an enters-the-battlefield trigger.
+    """
     assert box.game.player(0).speed == 0
     box.put("Mendicant Core, Guidelight", "battlefield", 0)
     box.settle()
-    assert box.game.player(0).speed == 0, "not until it resolves"
-    box.resolve_top()
+    assert box.game.player(0).speed == 1
+
+
+def test_start_your_engines_applies_however_the_permanent_arrived(box):
+    """A state-based action does not care that nothing entered the battlefield.
+
+    As a trigger this only fired on an enters event, so a permanent that was
+    already there - or one whose controller changed - never started.
+    """
+    box.put("Mendicant Core, Guidelight", "battlefield", 0)
+    box.settle()
+    box.game.player(0).speed = 0          # as if an effect had taken it away
+    box.settle()
     assert box.game.player(0).speed == 1
 
 

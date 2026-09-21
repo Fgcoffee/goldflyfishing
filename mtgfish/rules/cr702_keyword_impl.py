@@ -1538,36 +1538,21 @@ def _fortify(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Start your engines!")
 def _start_your_engines(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.179a: a static ability that starts this player's speed.
+    """CR 702.179a: a static ability, applied as a state-based action.
 
-    Not a triggered ability - it applies as soon as the permanent is anywhere
-    its abilities function, and it is idempotent, so two of them on one board
-    do not stack.
+    "If a player controls a permanent with start your engines! and that player
+    has no speed, their speed becomes 1. This is a state-based action."
+
+    So there is nothing for the ability itself to do: it is a marker the
+    state-based action looks for, and CR 704.5aa in ``cr704_sba`` is what
+    actually starts the engine. Modelling it as an enters-the-battlefield
+    trigger instead put it on the stack, where it could be responded to and
+    countered, and left a permanent that arrived any other way - reanimated,
+    blinked, a token copy, a change of control - never starting at all.
     """
-    # A *triggered* ability, not a static one. A static ability contributes a
-    # continuous effect through the layer system; it never executes a one-shot
-    # opcode, so a START_ENGINES sitting in a static ability would do exactly
-    # nothing - the same trap that made "enters tapped" silently inert.
-    from .abilities import TriggerCondition
-    from .effects import Effect, EffectKind
-    from .events import EventKind
-    from .query import YOU, ObjectFilter
-
     return (
         Ability(
-            AbilityKind.TRIGGERED,
-            effects=(
-                Effect(
-                    EffectKind.START_ENGINES,
-                    players=YOU,
-                    text="start your engines",
-                ),
-            ),
-            trigger=TriggerCondition(
-                event_kinds=frozenset({EventKind.ENTERS_BATTLEFIELD}),
-                subject=ObjectFilter(source_only=True),
-                text="when this enters",
-            ),
+            AbilityKind.STATIC,
             keyword=instance.name,
             text=instance.text or instance.name,
         ),

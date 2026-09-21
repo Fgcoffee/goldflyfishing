@@ -37,7 +37,7 @@ from ..data.comprehensive_rules import Rule, default_path, parse
 #: A citation as the source writes it: "CR 601.2b", "CR 205". The "CR " prefix
 #: is required deliberately - a bare "601.2b" in prose is not a citation, and
 #: matching bare numbers turned version strings and card text into rules.
-CITATION_RE = re.compile(r"\bCR\s+(\d{3}(?:\.\d+[a-z]?)?)")
+CITATION_RE = re.compile(r"\bCR\s+(\d{3}(?:\.\d+[a-z]{0,2})?)")
 
 #: Where the reviewed wording lives. Checked in, because the point is to diff
 #: against it after a rules release replaces the text file.

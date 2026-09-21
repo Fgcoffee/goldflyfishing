@@ -132,9 +132,8 @@ def test_exalted_does_not_trigger_with_two_attackers(board):
     second = board.play("Grizzly Bears", controller=0)
     game.agents[PlayerId(0)] = FixedAgent(attackers={first.id: 1, second.id: 1})
 
-    declare_attackers = __import__(
-        "mtgfish.rules.combat", fromlist=["declare_attackers"]
-    ).declare_attackers
+    from mtgfish.rules.cr506_combat import declare_attackers
+
     declare_attackers(game)
     assert not game.pending_triggers
 

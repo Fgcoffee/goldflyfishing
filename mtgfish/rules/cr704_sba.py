@@ -63,6 +63,7 @@ def _one_pass(game: Game) -> bool:
     counter_annihilation: list[GameObject] = []
     legend_choices: list[tuple[PlayerId, str, list[GameObject]]] = []
     to_sacrifice: list[GameObject] = []
+    speed_starts: list[PlayerId] = []
 
     commander_moves = _check_commander_zone_choice(game)
 
@@ -76,6 +77,7 @@ def _one_pass(game: Game) -> bool:
         to_sacrifice,
     )
     _check_ceased(game, to_cease)
+    _check_speed(game, speed_starts)
     _check_legend_rule(game, legend_choices)
     _check_world_rule(game, to_graveyard)
     _check_role_rule(game, to_graveyard)
@@ -90,10 +92,17 @@ def _one_pass(game: Game) -> bool:
             counter_annihilation,
             legend_choices,
             to_sacrifice,
+            speed_starts,
             commander_moves,
         )
     ):
         return False
+
+    for player_id in speed_starts:
+        if game.player(player_id).start_engines():
+            game.log.record(
+                game, f"{game.player(player_id).name} starts their engines", kind="sba"
+            )
 
     for obj in commander_moves:
         _move_commander_home(game, obj)
@@ -357,6 +366,24 @@ def _check_ceased(game: Game, to_cease: list[GameObject]) -> None:
 # ---------------------------------------------------------------------------
 # Legend and world rules (CR 704.5j, 704.5k)
 # ---------------------------------------------------------------------------
+
+
+def _check_speed(game: Game, speed_starts: list[PlayerId]) -> None:
+    """CR 704.5aa: a player controlling a start your engines! permanent has speed.
+
+    "If a player controls a permanent with start your engines! and that player
+    has no speed, that player's speed becomes 1."
+
+    A state-based action rather than a trigger, so it never uses the stack and
+    applies however the permanent arrived.
+    """
+    for obj in game.permanents():
+        if obj.controller in speed_starts:
+            continue
+        if game.player(obj.controller).speed:
+            continue
+        if game.characteristics(obj).has_keyword("Start your engines!"):
+            speed_starts.append(obj.controller)
 
 
 def _check_legend_rule(
