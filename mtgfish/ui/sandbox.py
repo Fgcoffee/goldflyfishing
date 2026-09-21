@@ -617,27 +617,27 @@ class Sandbox:
         }
 
     def _targeting_effects(self, obj: GameObject, action: Action) -> list:
-        from ..rules.abilities import AbilityKind
+        """The targeting effects of the action, in announcement order.
+
+        Taken from the engine rather than rebuilt here. A second walk of the
+        same effects meant the sandbox quietly disagreed with the rules the
+        moment the engine learned a target the walk did not know about - an
+        Aura's enchant target, which comes from the keyword rather than from a
+        targeting effect (CR 303.4a).
+        """
+        from ..rules.cr601_casting import ability_targeting_effects, targeting_effects
 
         chars = self.game.characteristics(obj)
-        if action.kind is ActionKind.ACTIVATE_ABILITY or (
-            action.kind is ActionKind.ACTIVATE_MANA_ABILITY
-        ):
+        if action.kind in (ActionKind.ACTIVATE_ABILITY, ActionKind.ACTIVATE_MANA_ABILITY):
             if not 0 <= action.ability_index < len(chars.abilities):
                 return []
-            abilities = [chars.abilities[action.ability_index]]
+            nodes = ability_targeting_effects(chars.abilities[action.ability_index])
         else:
-            abilities = [a for a in chars.abilities if a.kind is AbilityKind.SPELL]
+            nodes = targeting_effects(self.game, obj)
 
-        return [
-            node
-            for ability in abilities
-            for effect in ability.effects
-            for node in effect.walk()
-            # Player-only targets ("target player draws two cards") carry no
-            # object filter; the engine's candidate builder handles both.
-            if node.is_targeted and (node.targets is not None or node.players is not None)
-        ]
+        # Player-only targets ("target player draws two cards") carry no
+        # object filter; the engine's candidate builder handles both.
+        return [n for n in nodes if n.targets is not None or n.players is not None]
 
     def perform(
         self, index: int, player: int = 0, targets: list | None = None

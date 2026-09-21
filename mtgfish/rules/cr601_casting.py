@@ -346,7 +346,7 @@ def targeting_effects(game: Game, spell: GameObject) -> list:
     has to walk the effects the same way.
     """
     chars = game.characteristics(spell)
-    return [
+    nodes = [
         node
         for ability in chars.abilities
         if ability.kind is AbilityKind.SPELL
@@ -354,6 +354,37 @@ def targeting_effects(game: Game, spell: GameObject) -> list:
         for node in effect.walk()
         if node.is_targeted
     ]
+    # CR 303.4a: "An Aura spell requires a target, which is defined by its
+    # enchant ability." That target is not written as a targeting effect
+    # anywhere - it comes from the keyword - so nothing offered it, an Aura
+    # was cast with no target at all, and it resolved onto the battlefield
+    # attached to nothing for the state-based actions to bin immediately.
+    enchant = aura_target_effect(chars)
+    if enchant is not None:
+        nodes.insert(0, enchant)
+    return nodes
+
+
+def aura_target_effect(chars):
+    """The synthetic targeting effect an Aura spell gets from Enchant.
+
+    ``None`` for anything that is not an Aura, or an Aura whose enchant
+    ability the parser could not read - those keep the old behaviour rather
+    than being made uncastable.
+    """
+    from .effects import Effect, EffectKind
+
+    if not chars.has_subtype("Aura"):
+        return None
+    for ability in chars.abilities:
+        if ability.keyword.lower() == "enchant" and ability.quality is not None:
+            return Effect(
+                EffectKind.NOTHING,
+                targets=ability.quality,
+                is_targeted=True,
+                text="enchant",
+            )
+    return None
 
 
 def _candidates_for(
@@ -414,6 +445,16 @@ def _ask_for_targets(game: Game, spell: GameObject, player_id: PlayerId) -> tupl
     returns is intersected with what was offered.
     """
     return choose_targets(game, spell, targeting_effects(game, spell), player_id)
+
+
+def ability_targeting_effects(ability: Ability) -> list:
+    """The targeted effect nodes of one activated or triggered ability."""
+    return [
+        node
+        for effect in ability.effects
+        for node in effect.walk()
+        if node.is_targeted
+    ]
 
 
 def ability_targets_available(

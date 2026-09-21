@@ -132,6 +132,7 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # here and so is left with the default.
         permanent.was_cast = True
         _apply_enters_with_counters(game, permanent)
+        _attach_aura_on_entry(game, obj, permanent)
         game.emit(
             Event(EventKind.SPELL_RESOLVED, object_id=permanent.id, player=obj.controller)
         )
@@ -153,6 +154,33 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
     # CR 608.2m: an instant or sorcery goes to its owner's graveyard as the
     # final part of its resolution.
     game.move_object(obj, Zone.GRAVEYARD, to_player=obj.owner)
+
+
+def _attach_aura_on_entry(game: Game, spell: GameObject, permanent: GameObject) -> None:
+    """CR 303.4: "An Aura enters the battlefield attached to an object or player."
+
+    The Aura spell targeted its host at announcement (CR 303.4a), so the host
+    is the target it was cast with. Without this an Aura resolved attached to
+    nothing and CR 704.5m put it straight into the graveyard - every Aura cast
+    from hand was a dead card.
+    """
+    from .cr601_casting import aura_target_effect
+
+    chars = game.characteristics(permanent)
+    if aura_target_effect(chars) is None:
+        return
+    chosen = spell.targets[0] if spell.targets else ()
+    host_id = next((t for t in chosen), None)
+    if host_id is None:
+        return
+    host = game.objects.get(host_id)
+    if host is None or host.zone is not Zone.BATTLEFIELD:
+        # CR 608.2b: the target is gone, so the Aura has nothing to attach to.
+        # It stays on the battlefield for the state-based actions to handle.
+        return
+    from . import actions
+
+    actions.attach(game, permanent, host)
 
 
 def _apply_enters_with_counters(game: Game, permanent: GameObject) -> None:

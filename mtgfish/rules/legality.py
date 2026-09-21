@@ -340,27 +340,27 @@ def _affordable(
 
 def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool:
     """CR 601.2c: a spell needing a target cannot be cast without a legal one."""
+    from .cr601_casting import targeting_effects
     from .matching import find
 
-    chars = game.characteristics(obj)
-    for ability in chars.abilities:
-        if ability.kind is not AbilityKind.SPELL:
+    # The engine's own list, rather than a third walk of the same effects.
+    # An Aura's target comes from its enchant ability instead of a targeting
+    # effect (CR 303.4a), so a walk that only looked at effects offered an
+    # Aura as castable with no creature on the battlefield to enchant.
+    for node in targeting_effects(game, obj):
+        if node.targets is None:
             continue
-        for effect in ability.effects:
-            for node in effect.walk():
-                if not node.is_targeted or node.targets is None:
-                    continue
-                # "Up to N" can legally be cast with none, so an empty board
-                # is no obstacle.
-                if node.targets.up_to:
-                    continue
-                # CR 115.4: a spell that can target a player always has one,
-                # so an empty board never makes it uncastable. Without this,
-                # burn is uncastable on turn one and can never win a game.
-                if node.targets.includes_players:
-                    continue
-                if not find(game, node.targets, source=obj.id, controller=player_id):
-                    return False
+        # "Up to N" can legally be cast with none, so an empty board
+        # is no obstacle.
+        if node.targets.up_to:
+            continue
+        # CR 115.4: a spell that can target a player always has one,
+        # so an empty board never makes it uncastable. Without this,
+        # burn is uncastable on turn one and can never win a game.
+        if node.targets.includes_players:
+            continue
+        if not find(game, node.targets, source=obj.id, controller=player_id):
+            return False
     return True
 
 
