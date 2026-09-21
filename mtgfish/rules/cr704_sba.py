@@ -39,8 +39,16 @@ def check_state_based_actions(game: Game) -> bool:
     Returns whether anything was done, which the priority loop uses to decide
     whether to re-check triggers before handing out priority.
     """
+    from .cr506_combat import check_removal_from_combat
+
     did_anything = False
     for _ in range(MAX_ITERATIONS):
+        # CR 506.4 is not a state-based action - a permanent leaves combat the
+        # instant it dies, changes controller, phases out or stops being a
+        # creature, not when anyone next checks. But this is the moment the
+        # game next looks at the board, and it runs before any player gets
+        # priority, so nothing can observe the combat record in between.
+        check_removal_from_combat(game)
         if not _one_pass(game):
             break
         did_anything = True

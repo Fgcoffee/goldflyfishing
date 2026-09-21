@@ -185,10 +185,27 @@ def detach(game: Game, attachment: GameObject) -> bool:
 
 
 def remove_from_combat(game: Game, obj: GameObject) -> None:
-    """CR 506.4. A permanent removed from combat stops attacking or blocking."""
+    """CR 506.4. A permanent removed from combat stops attacking or blocking.
+
+    Also stops being blocked, and stops being attacked if it was a
+    planeswalker or battle under attack. Whether anyone is still attacking is
+    a condition continuous effects and triggers read, so the board has to be
+    recomputed afterwards - "attacking creatures get +1/+0" stops applying the
+    moment the creature stops attacking.
+    """
     combat = getattr(game, "combat", None)
-    if combat is not None:
-        combat.remove(obj.id)
+    if combat is None:
+        return
+    if not (
+        obj.id in combat.attacking
+        or obj.id in combat.blocking
+        or obj.id in combat.attacking_permanent.values()
+        or obj.id in combat.was_blocked
+    ):
+        return
+    combat.remove(obj.id)
+    game.log.record(game, f"{obj} is removed from combat", kind="combat")
+    game.invalidate_characteristics()
 
 
 # ---------------------------------------------------------------------------

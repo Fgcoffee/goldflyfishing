@@ -239,6 +239,8 @@ def _run_extras(game: Game, options: TurnOptions) -> None:
 
 
 def _run_step(game: Game, phase: Phase, step: Step, options: TurnOptions) -> None:
+    if _skipped_for_want_of_attackers(game, step):
+        return
     game.phase = phase
     game.step = step
     game.emit(Event(EventKind.STEP_BEGAN, player=game.active_player, amount=int(step)))
@@ -259,6 +261,29 @@ def _run_step(game: Game, phase: Phase, step: Step, options: TurnOptions) -> Non
     # Mana pools empty at the end of every step and phase (CR 500.4).
     _empty_mana_pools(game)
     game.emit(Event(EventKind.STEP_ENDED, player=game.active_player, amount=int(step)))
+
+
+def _skipped_for_want_of_attackers(game: Game, step: Step) -> bool:
+    """CR 508.8: an empty combat has no declare blockers or damage step.
+
+    Not a cosmetic tidy-up. A step that happens is a step in which every player
+    receives priority (CR 117.3), so running these two anyway hands out two
+    rounds of priority the rules say do not exist - two more windows to cast
+    instants, two more chances for an "at the beginning of" ability, and two
+    more step boundaries for "until end of combat" to be measured against.
+
+    Asked here rather than in the turn sequence because extra combat phases
+    reach the steps through this same function, and an extra combat with
+    nobody attacking is the commonest way to get an empty one.
+
+    Checked when the step would begin rather than when attackers were
+    declared, because CR 508.8 covers creatures put onto the battlefield
+    attacking too, and those arrive after the declaration.
+    """
+    if step is not Step.DECLARE_BLOCKERS and step is not Step.COMBAT_DAMAGE:
+        return False
+    combat = getattr(game, "combat", None)
+    return combat is None or not combat.attacking
 
 
 def _end_of_step_actions(game: Game, step: Step) -> None:

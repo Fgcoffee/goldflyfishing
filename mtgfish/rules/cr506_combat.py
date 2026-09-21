@@ -63,6 +63,11 @@ class Combat:
     #: declared, and not before. Until then an attacker is neither, so "an
     #: unblocked attacking creature" - ninjutsu's cost - describes nothing.
     blockers_declared: bool = False
+    #: Who controlled each permanent in combat at the moment it joined -
+    #: attackers, blockers, and the planeswalkers and battles being attacked.
+    #: CR 506.4 takes a permanent out of combat when its controller changes,
+    #: and the only way to notice a change is to have recorded what it was.
+    controllers: dict[ObjectId, PlayerId] = field(default_factory=dict)
 
     def is_attacking(self, object_id: ObjectId) -> bool:
         return object_id in self.attacking
@@ -75,8 +80,22 @@ class Combat:
 
     def remove(self, object_id: ObjectId) -> None:
         """CR 506.4: take a permanent out of combat entirely."""
+        self.stop_attacking_or_blocking(object_id)
+        self.stop_being_attacked(object_id)
+        self.controllers.pop(object_id, None)
+
+    def stop_attacking_or_blocking(self, object_id: ObjectId) -> None:
+        """CR 506.4: it stops being an attacking, blocking, blocked and/or
+        unblocked creature.
+
+        Split out from ``remove`` because a permanent can be in combat twice
+        over - CR 506.4d's blocking creature that is also a planeswalker
+        being attacked - and losing one of those card types ends only the
+        role that card type gave it.
+        """
         self.attacking.pop(object_id, None)
         self.attacking_permanent.pop(object_id, None)
+        self.was_blocked.discard(object_id)
         for blockers in self.blockers.values():
             if object_id in blockers:
                 blockers.remove(object_id)
@@ -86,12 +105,26 @@ class Combat:
                 attackers.remove(object_id)
         self.blocking.pop(object_id, None)
 
+    def stop_being_attacked(self, object_id: ObjectId) -> None:
+        """CR 506.4: a planeswalker or battle removed from combat stops being
+        attacked.
+
+        CR 506.4c: its attackers are *not* removed with it. They go on being
+        attacking creatures that attack nothing, which is why the entry is
+        blanked rather than dropped - a missing entry would read as "attacking
+        the defending player" and send the damage through to them.
+        """
+        for attacker_id, attacked in self.attacking_permanent.items():
+            if attacked == object_id:
+                self.attacking_permanent[attacker_id] = NO_OBJECT
+
     def clear(self) -> None:
         self.attacking.clear()
         self.attacking_permanent.clear()
         self.blockers.clear()
         self.blocking.clear()
         self.was_blocked.clear()
+        self.controllers.clear()
         self.blockers_declared = False
 
 
@@ -124,8 +157,14 @@ def declare_attackers(game: Game) -> None:
             continue
         player, permanent = _resolve_defender(game, defender)
         combat.attacking[attacker_id] = player
+        # CR 506.4 watches for a change of controller, so note who both the
+        # attacker and whatever it is attacking belong to right now.
+        combat.controllers[attacker_id] = obj.controller
         if permanent != NO_OBJECT:
             combat.attacking_permanent[attacker_id] = permanent
+            attacked = game.objects.get(permanent)
+            if attacked is not None:
+                combat.controllers[permanent] = attacked.controller
         obj.attacked_this_turn = True
         # CR 508.1f: attacking taps the creature, unless it has vigilance.
         if not game.characteristics(obj).has_keyword("Vigilance"):
@@ -334,8 +373,10 @@ def enter_attacking(
         return False
 
     combat.attacking[permanent.id] = defender
+    combat.controllers[permanent.id] = permanent.controller
     if attacked != NO_OBJECT:
         combat.attacking_permanent[permanent.id] = attacked
+        combat.controllers[attacked] = target.controller
     game.invalidate_characteristics()
     return True
 
@@ -347,7 +388,13 @@ def enter_attacking(
 
 def declare_blockers(game: Game) -> None:
     """CR 509.1: each defending player declares blockers, all at once."""
+    from .restrictions import enforce_block_requirements
+
     combat = _combat(game)
+    # CR 506.4: anything that stopped belonging in combat while attackers were
+    # being declared is out of it before anyone chooses a block, so a creature
+    # that is no longer attacking cannot be blocked.
+    check_removal_from_combat(game)
     # Whether or not anyone blocks, every attacker is now either blocked or
     # unblocked (CR 509.1h).
     combat.blockers_declared = True
@@ -367,6 +414,13 @@ def declare_blockers(game: Game) -> None:
             if can_block_at_all(game, obj)
         ]
         proposal = agent.declare_blockers(game, defender_id, combat, available) or {}
+        # CR 509.1c: the declaration must obey the greatest possible number of
+        # blocking requirements. The defending player's own choices survive
+        # wherever they are compatible with that, since the rule constrains
+        # how many requirements are obeyed and nothing else.
+        proposal = enforce_block_requirements(
+            game, combat, defender_id, available, proposal
+        )
         for blocker_id, attacker_ids in sorted(proposal.items()):
             blocker = game.objects.get(blocker_id)
             if blocker is None or not can_block_at_all(game, blocker):
@@ -380,6 +434,8 @@ def declare_blockers(game: Game) -> None:
             if not legal:
                 continue
             combat.blocking[blocker_id] = legal
+            # CR 506.4 again: a blocker that changes controller leaves combat.
+            combat.controllers[blocker_id] = blocker.controller
             for attacker_id in legal:
                 combat.blockers.setdefault(attacker_id, []).append(blocker_id)
 
@@ -576,6 +632,80 @@ def _defending_player(game: Game, combat: Combat, attacker_id: ObjectId) -> Play
 
 
 # ---------------------------------------------------------------------------
+# Removal from combat (CR 506.4)
+# ---------------------------------------------------------------------------
+
+
+def check_removal_from_combat(game: Game) -> list[ObjectId]:
+    """CR 506.4: take out of combat everything that no longer belongs there.
+
+    The conditions are not state-based actions - a permanent leaves combat the
+    instant one of them is met, not the next time anyone would get priority -
+    but the engine only ever *reads* the combat record at a handful of moments,
+    so sweeping at each of them is indistinguishable from removing it as it
+    happens. Attackers and blockers are checked against the creature
+    conditions; the planeswalkers and battles being attacked are checked
+    against their own, because they can hold both roles at once (CR 506.4d).
+
+    Returns the permanents that left combat, for logging and for tests.
+    """
+    combat = getattr(game, "combat", None)
+    if combat is None or not (combat.attacking or combat.blocking):
+        return []
+
+    fighters = list(combat.attacking) + list(combat.blocking)
+    attacked = [i for i in combat.attacking_permanent.values() if i != NO_OBJECT]
+    removed: list[ObjectId] = []
+
+    for object_id in dict.fromkeys(fighters + attacked):
+        obj = game.objects.get(object_id)
+        if obj is None:
+            combat.remove(object_id)
+            removed.append(object_id)
+            continue
+        if _has_left_the_game_state(combat, obj):
+            actions.remove_from_combat(game, obj)
+            removed.append(object_id)
+            continue
+
+        chars = game.characteristics(obj)
+        left = False
+        # An attacking or blocking creature that stops being a creature, or
+        # becomes a battle, is removed from combat.
+        if object_id in fighters and not (
+            chars.is_creature and not chars.has_type(CardType.BATTLE)
+        ):
+            combat.stop_attacking_or_blocking(object_id)
+            left = True
+        # A planeswalker or battle that stops being one stops being attacked.
+        if object_id in attacked and not (
+            chars.has_type(CardType.PLANESWALKER) or chars.has_type(CardType.BATTLE)
+        ):
+            combat.stop_being_attacked(object_id)
+            left = True
+        if left:
+            combat.controllers.pop(object_id, None)
+            removed.append(object_id)
+            game.log.record(game, f"{obj} is removed from combat", kind="combat")
+            game.invalidate_characteristics()
+
+    return removed
+
+
+def _has_left_the_game_state(combat: Combat, obj: GameObject) -> bool:
+    """The CR 506.4 conditions that apply to everything in combat at once.
+
+    Leaving the battlefield, phasing out (CR 702.26b treats a phased-out
+    permanent as though it did not exist) and changing controller take a
+    permanent out of combat whichever role it was filling.
+    """
+    if not obj.is_permanent or obj.phased_out:
+        return True
+    was = combat.controllers.get(obj.id)
+    return was is not None and was != obj.controller
+
+
+# ---------------------------------------------------------------------------
 # Combat damage (CR 510)
 # ---------------------------------------------------------------------------
 
@@ -587,6 +717,7 @@ def deal_combat_damage(game: Game, *, first_strike_step: bool = False) -> None:
     each other both die.
     """
     combat = _combat(game)
+    check_removal_from_combat(game)  # CR 506.4
     if not combat.attacking:
         return
 
@@ -630,6 +761,10 @@ def _deals_damage_now(game: Game, obj: GameObject, first_strike: bool) -> bool:
 
 def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
     """One damage step: work out every assignment, then deal it all at once."""
+    # CR 506.4 once more: the first-strike step and the priority round after it
+    # kill creatures, steal them and turn them into noncreatures, and none of
+    # that is allowed to still be assigning damage in the second step.
+    check_removal_from_combat(game)
     assignments: list[tuple[GameObject, object, int, bool, bool]] = []
 
     for attacker_id in sorted(combat.attacking):
@@ -765,6 +900,11 @@ def _damage_recipient(game: Game, combat: Combat, attacker: GameObject) -> objec
     """What an unblocked attacker damages: a player, planeswalker, or battle."""
     permanent_id = combat.attacking_permanent.get(attacker.id)
     if permanent_id is not None:
+        if permanent_id == NO_OBJECT:
+            # CR 506.4c: what it was attacking left combat. It is still an
+            # attacking creature, but it attacks nothing, so an unblocked one
+            # deals no damage - it is not redirected to the defending player.
+            return None
         obj = game.objects.get(permanent_id)
         if obj is not None and obj.is_permanent:
             return obj
