@@ -939,7 +939,7 @@ class Game:
             self._remove_from_zone(obj)
             del self.objects[object_id]
 
-        # CR 800.4e: permanents they controlled but did not own revert.
+        # CR 800.4a: any effect giving them control of an object ends.
         for obj in list(self.permanents()):
             if obj.controller == player_id and obj.owner != player_id:
                 obj.controller = obj.owner

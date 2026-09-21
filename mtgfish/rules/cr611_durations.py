@@ -41,6 +41,12 @@ def _controllers_later_turn(game: Game, entry) -> bool:
     controller = getattr(entry, "controller", NO_PLAYER)
     if controller == NO_PLAYER:
         controller = game.active_player
+    # CR 800.4m: a player who has left the game never takes another turn, so
+    # an effect waiting for it would wait for ever. The rule ends it when that
+    # turn would have begun; the next turn boundary is where that falls, since
+    # their seat is skipped rather than played (CR 800.4k).
+    if game.player(controller).has_lost:
+        return True
     return game.active_player == controller and game.turn > entry.created_turn
 
 

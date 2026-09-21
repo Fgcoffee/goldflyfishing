@@ -290,7 +290,7 @@ def deal_damage(
     combat: bool = False,
     is_commander_source: bool = False,
 ) -> int:
-    """Deal damage (CR 119.3).
+    """Deal damage (CR 120).
 
     What damage *does* depends entirely on what receives it: a creature has it
     marked until cleanup, a player loses life, a planeswalker loses loyalty
@@ -404,6 +404,13 @@ def _damage_player(
 ) -> int:
     """Damage to a player causes that much life loss (CR 120.3a)."""
     player = game.player(player_id)
+
+    # CR 800.4e: "If combat damage would be assigned to a player who has left
+    # the game, that damage isn't assigned." A creature can still be attacking
+    # a player who died earlier in the combat, and this is the moment that
+    # would otherwise have drained a life total nobody has any more.
+    if combat and player.has_lost:
+        return 0
 
     # CR 702.90c: infect damages players with poison counters instead of life.
     source_obj = game.objects.get(source)

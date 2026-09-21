@@ -184,6 +184,11 @@ def create_tokens(
     if count <= 0:
         return []
 
+    # CR 800.4b: "If a token would be created under the control of a player
+    # who has left the game, no token is created."
+    if game.player(controller).has_lost:
+        return []
+
     # Replacements apply to the number asked for, before any token exists.
     # A doubler raises it; "creates no tokens instead" takes it to zero, and
     # then there is nothing left to build a card for.
