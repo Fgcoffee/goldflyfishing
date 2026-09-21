@@ -136,8 +136,11 @@ class Game:
     # -- continuous effects and triggers ------------------------------------
     continuous_effects: list[ContinuousEffect] = field(default_factory=list)
     #: Triggered abilities that have triggered but not yet been put on the
-    #: stack (CR 603.3): they wait for a player to receive priority.
-    pending_triggers: list[tuple[ObjectId, Ability, Event]] = field(default_factory=list)
+    #: stack (CR 603.3): they wait for a player to receive priority. Each is a
+    #: ``triggers.PendingTrigger``, which carries the controller read when the
+    #: ability triggered - by the time it reaches the stack its source may be
+    #: gone, and CR 603.3d still puts it under whoever controlled it then.
+    pending_triggers: list = field(default_factory=list)
     delayed_triggers: list = field(default_factory=list)
     #: State triggers (CR 603.8) whose condition is currently true and which
     #: have already fired for it. They re-arm only once the condition goes

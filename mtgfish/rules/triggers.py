@@ -13,16 +13,39 @@ checked only on resolution.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, NamedTuple
 
 from .abilities import Ability, AbilityKind, TriggerCondition
 from .enums import Zone
 from .events import Event, EventKind
 from .gameobject import GameObject
-from .ids import NO_PLAYER, PlayerId
+from .ids import NO_PLAYER, ObjectId, PlayerId
 
 if TYPE_CHECKING:
     from .game import Game
+
+
+class PendingTrigger(NamedTuple):
+    """An ability that has triggered and is waiting for the stack (CR 603.3).
+
+    ``controller`` is captured *here*, when the ability triggers, and not read
+    off the source when the ability finally goes on the stack. CR 603.3d puts
+    the ability under the player who controlled its source at the moment it
+    triggered, and by the time it reaches the stack that source may be gone -
+    a token that ceased to exist, or a permanent owned by a player who has
+    since left the game (CR 800.4a).
+
+    Looking the controller up late gave those abilities no controller at all.
+    An ability controlled by nobody then created tokens owned by nobody, and
+    the first one of those to leave the battlefield took the whole game down
+    with "GRAVEYARD is player-owned; a player is required" - a crash a long
+    way from the trigger that caused it.
+    """
+
+    source: ObjectId
+    ability: Ability
+    event: Event
+    controller: PlayerId
 
 
 #: Zones scanned for triggered abilities. The library is deliberately excluded:
@@ -71,12 +94,14 @@ def collect_triggers(game: Game, event: Event) -> None:
     found.sort(key=lambda pair: (order.get(pair[0].controller, 99), pair[0].timestamp))
 
     for obj, ability in found:
-        game.pending_triggers.append((obj.id, ability, event))
+        # The controller is read now, while the source is still here to ask.
+        pending = PendingTrigger(obj.id, ability, event, obj.controller)
+        game.pending_triggers.append(pending)
         # CR 603.2b: something may say this ability triggers an extra time.
         # Both instances are separate triggers - they go on the stack
         # independently and can be responded to between them.
         for _ in range(_extra_triggers(game, obj, event)):
-            game.pending_triggers.append((obj.id, ability, event))
+            game.pending_triggers.append(pending)
 
 
 def _collect_departed_token(
@@ -251,7 +276,12 @@ def check_state_triggers(game: Game) -> None:
             if key in armed:
                 continue  # Already triggered and the condition never went false.
             game.pending_triggers.append(
-                (obj.id, ability, Event(EventKind.ABILITY_TRIGGERED, object_id=obj.id))
+                PendingTrigger(
+                    obj.id,
+                    ability,
+                    Event(EventKind.ABILITY_TRIGGERED, object_id=obj.id),
+                    obj.controller,
+                )
             )
 
     game.armed_state_triggers = still_true
@@ -470,20 +500,41 @@ def resolve_mana_triggers(game: Game) -> int:
 
     remaining = []
     resolved = 0
-    for source_id, ability, event in game.pending_triggers:
-        if not is_triggered_mana_ability(game, source_id, ability):
-            remaining.append((source_id, ability, event))
+    for pending in game.pending_triggers:
+        if not is_triggered_mana_ability(game, pending.source, pending.ability):
+            remaining.append(pending)
             continue
-        source = game.objects.get(source_id)
-        controller = source.controller if source is not None else NO_PLAYER
+        controller = _controller_of(game, pending)
+        if controller == NO_PLAYER:
+            # CR 800.4a again: its controller has left, so it is gone. Dropped
+            # rather than resolved, because mana added for nobody goes into a
+            # pool that no player owns.
+            resolved += 1
+            continue
         execute(
-            Resolution(game=game, source=source_id, controller=controller),
-            ability.effects,
+            Resolution(game=game, source=pending.source, controller=controller),
+            pending.ability.effects,
         )
         resolved += 1
 
     game.pending_triggers = remaining
     return resolved
+
+
+def _controller_of(game: Game, pending: PendingTrigger) -> PlayerId:
+    """Who controls this waiting ability, now.
+
+    The controller captured when it triggered, unless that player has since
+    left the game - in which case nobody does, and CR 800.4a says the ability
+    ceases to exist rather than resolving under no one.
+
+    The *source* being gone is not this case and never was: a dies-trigger
+    outliving its creature is the ordinary way triggers work (CR 603.3d).
+    """
+    controller = pending.controller
+    if not 0 <= controller < len(game.players):
+        return NO_PLAYER
+    return NO_PLAYER if game.players[controller].has_lost else controller
 
 
 def put_triggers_on_stack(game: Game) -> int:
@@ -506,15 +557,21 @@ def put_triggers_on_stack(game: Game) -> int:
     game.pending_triggers = []
     count = 0
 
-    for source_id, ability, event in pending:
-        source = game.objects.get(source_id)
-        if source is None:
-            # The source is gone. The ability still triggers and still goes on
-            # the stack: it exists independently of its source once it has
-            # triggered (CR 603.3d).
-            controller = NO_PLAYER
-        else:
-            controller = source.controller
+    for entry in pending:
+        ability = entry.ability
+        controller = _controller_of(game, entry)
+        if controller == NO_PLAYER:
+            # CR 800.4a: an ability controlled by a player who has left the
+            # game ceases to exist. It is the only case left where nobody
+            # controls this, and putting it on the stack anyway is what used
+            # to make tokens owned by nobody.
+            game.log.record(
+                game,
+                f"{ability.text or 'A triggered ability'} ceases to exist: "
+                "its controller has left the game (CR 800.4a)",
+                kind="trigger",
+            )
+            continue
 
         stack_object = GameObject(
             id=game.ids.object_id(),
@@ -524,8 +581,8 @@ def put_triggers_on_stack(game: Game) -> int:
             zone=Zone.STACK,
             timestamp=game.ids.timestamp(),
             ability=ability,
-            source=source_id,
-            trigger_event=event,
+            source=entry.source,
+            trigger_event=entry.event,
         )
         # CR 603.3d: modes and targets are chosen now, as the ability is put
         # on the stack - not when it triggered and not when it resolves. An
