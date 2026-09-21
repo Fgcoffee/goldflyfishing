@@ -116,7 +116,22 @@ def _one_pass(game: Game) -> bool:
         _move_commander_home(game, obj)
 
     # -- perform, all at once ------------------------------------------------
+    # CR 704.8: a permanent leaving the battlefield in this same round of
+    # state-based actions has its last known information read from the state
+    # *before* any of them happened. Annihilating its counters first rewrote
+    # the information every later reader gets: a Young Wolf with one +1/+1 and
+    # three -1/-1 counters cancelled a pair, reached the graveyard carrying no
+    # +1/+1 counter, and came back under undying - which the rule's own
+    # example exists to forbid. Its counters are left alone; they cannot
+    # matter to anything except as the record of what it was.
+    leaving = {obj.id for obj in to_graveyard}
+    leaving.update(obj.id for obj in to_destroy)
+    leaving.update(obj.id for obj in to_sacrifice)
+    leaving.update(obj.id for obj in to_cease)
+
     for obj in counter_annihilation:
+        if obj.id in leaving:
+            continue
         # CR 704.5q: +1/+1 and -1/-1 counters cancel in pairs.
         pairs = min(obj.counters.get("+1/+1", 0), obj.counters.get("-1/-1", 0))
         if pairs:
