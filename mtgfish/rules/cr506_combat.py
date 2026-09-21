@@ -8,11 +8,14 @@ greatest possible number of requirements. "Must attack if able" plus "can't
 attack unless you pay {2}" is not a contradiction - it is a constraint problem,
 and the answer is that the creature does not attack.
 
-**Damage assignment order (CR 509.2, 510.1a).** An attacker blocked by several
-creatures orders them, and must assign lethal damage to each before assigning
-any to the next. Deathtouch makes 1 damage lethal for this purpose
-(CR 702.2b), which is what lets a 1/1 deathtoucher trample over a wall of
-blockers.
+**Damage division (CR 510.1c, 510.1d).** An attacker blocked by several
+creatures divides its damage among them however its controller chooses. There
+is no damage assignment order and no lethal-first requirement - both were
+removed from the rules, and an engine that still enforces them is rejecting
+legal assignments. The one place lethal damage still matters is trample
+(CR 702.19b), which may only spill over once every blocker has been assigned
+lethal damage; deathtouch makes 1 damage lethal for that check (CR 702.2b).
+Banding (CR 702.22j) moves the choice to the defending player.
 
 **First strike creates a second damage step (CR 510.4)**, and it only exists if
 someone has first or double strike - checked at that moment, so a creature that
@@ -453,7 +456,6 @@ def declare_blockers(game: Game) -> None:
     for blocker_id in sorted(combat.blocking):
         game.emit(Event(EventKind.BLOCKS, object_id=blocker_id))
 
-    _order_blockers(game, combat)
     game.emit(Event(EventKind.BLOCKERS_DECLARED, player=game.active_player))
 
 
@@ -575,32 +577,6 @@ def _enforce_menace(game: Game, combat: Combat) -> None:
                 if not attackers:
                     combat.blocking.pop(blocker_id, None)
             combat.blockers[attacker_id] = []
-
-
-def _order_blockers(game: Game, combat: Combat) -> None:
-    """CR 509.2: the attacking player orders each attacker's blockers.
-
-    Order decides who receives damage first, and therefore who dies. Defaulting
-    to declaration order keeps it deterministic; the AI overrides it.
-
-    CR 702.22j is the exception, and it is the whole reason banding was ever
-    good: if any blocker has banding, the *defending* player orders the
-    attacker's blockers instead. The attacker loses the ability to aim lethal
-    damage where they want it.
-    """
-    active = game.active_player
-    for attacker_id, blockers in combat.blockers.items():
-        if len(blockers) < 2:
-            continue
-        chooser = active
-        if any(_has_banding(game, blocker_id) for blocker_id in blockers):
-            chooser = _defending_player(game, combat, attacker_id)
-        agent = game.agent_for(chooser)
-        if agent is None or not hasattr(agent, "order_blockers"):
-            continue
-        ordered = agent.order_blockers(game, chooser, attacker_id, list(blockers))
-        if ordered and sorted(ordered) == sorted(blockers):
-            combat.blockers[attacker_id] = list(ordered)
 
 
 def _has_banding(game: Game, object_id: ObjectId) -> bool:
@@ -766,6 +742,17 @@ def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
     # that is allowed to still be assigning damage in the second step.
     check_removal_from_combat(game)
     assignments: list[tuple[GameObject, object, int, bool, bool]] = []
+    # CR 702.19b: lethal damage is checked against what other creatures are
+    # assigning in this same step, so the running total is carried along.
+    marked: dict[ObjectId, int] = {}
+
+    def record(
+        made: list[tuple[GameObject, object, int, bool, bool]]
+    ) -> list[tuple[GameObject, object, int, bool, bool]]:
+        for _, who, amount, _, _ in made:
+            if isinstance(who, GameObject):
+                marked[who.id] = marked.get(who.id, 0) + amount
+        return made
 
     for attacker_id in sorted(combat.attacking):
         attacker = game.objects.get(attacker_id)
@@ -773,7 +760,7 @@ def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
             continue
         if not _deals_damage_now(game, attacker, first_strike):
             continue
-        assignments.extend(_attacker_assignment(game, combat, attacker))
+        assignments.extend(record(_attacker_assignment(game, combat, attacker, marked)))
 
     for blocker_id in sorted(combat.blocking):
         blocker = game.objects.get(blocker_id)
@@ -781,7 +768,7 @@ def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
             continue
         if not _deals_damage_now(game, blocker, first_strike):
             continue
-        assignments.extend(_blocker_assignment(game, combat, blocker))
+        assignments.extend(record(_blocker_assignment(game, combat, blocker, marked)))
 
     from .cr725_designations import (
         combat_damage_to_initiative_holder,
@@ -808,10 +795,15 @@ def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
 
 
 def _attacker_assignment(
-    game: Game, combat: Combat, attacker: GameObject
+    game: Game,
+    combat: Combat,
+    attacker: GameObject,
+    marked: dict[ObjectId, int] | None = None,
 ) -> list[tuple[GameObject, object, int, bool, bool]]:
+    """How one attacking creature divides its combat damage (CR 510.1b-c)."""
     chars = game.characteristics(attacker)
     power = chars.power or 0
+    # CR 510.1a: a creature that would assign 0 or less assigns no damage.
     if power <= 0:
         return []
 
@@ -826,8 +818,9 @@ def _attacker_assignment(
     ]
 
     if not blockers:
-        # CR 509.1h: a creature that was blocked deals no damage to the player
-        # even if every blocker has since left combat.
+        # CR 509.1h: a creature that was blocked stays blocked, and assigns no
+        # damage at all once its blockers are gone - trample is the exception,
+        # since it had damage to spill over in the first place.
         if combat.is_blocked(attacker.id) and not trample:
             return []
         target = _damage_recipient(game, combat, attacker)
@@ -835,50 +828,127 @@ def _attacker_assignment(
             return []
         return [(attacker, target, power, deathtouch, lifelink)]
 
-    # CR 510.1a: assign lethal to each blocker in order before moving on.
-    out: list[tuple[GameObject, object, int, bool, bool]] = []
-    remaining = power
-    for blocker in blockers:
-        if remaining <= 0:
-            break
-        needed = _lethal_damage(game, blocker, deathtouch)
-        assigned = min(remaining, needed)
-        if assigned > 0:
-            out.append((attacker, blocker, assigned, deathtouch, lifelink))
-            remaining -= assigned
-
-    # CR 702.19b: trample assigns the excess to the defending player.
-    if remaining > 0 and trample:
+    # CR 702.19b: trample lets the excess reach what the creature is attacking,
+    # so that is one more thing the damage may be divided among. It always
+    # comes last in ``recipients``, which is what ``spill`` indexes.
+    recipients: list[object] = list(blockers)
+    spill = -1
+    if trample:
         target = _damage_recipient(game, combat, attacker)
         if target is not None:
-            out.append((attacker, target, remaining, deathtouch, lifelink))
-    elif remaining > 0 and blockers:
-        # Without trample the excess is simply assigned to the last blocker.
-        source, blocker, amount, dt, ll = out[-1] if out else (attacker, blockers[-1], 0, deathtouch, lifelink)
-        out = out[:-1] if out else []
-        out.append((attacker, blocker, amount + remaining, deathtouch, lifelink))
+            spill = len(recipients)
+            recipients.append(target)
 
-    return out
+    # CR 510.1c: the attacking creature's controller divides the damage.
+    # CR 702.22j: a blocker with banding hands that choice to the defender.
+    chooser = attacker.controller
+    if any(_has_banding(game, blocker.id) for blocker in blockers):
+        chooser = _defending_player(game, combat, attacker.id)
+
+    lethal = [
+        lethal_damage(game, blocker, deathtouch=deathtouch, marked=marked)
+        for blocker in blockers
+    ]
+    division = _divide(
+        game,
+        chooser,
+        attacker,
+        recipients=recipients,
+        total=power,
+        default=_lethal_first(power, lethal, spill),
+        legal=lambda choice: _attacker_division_is_legal(
+            choice, len(recipients), power, lethal, spill
+        ),
+    )
+    return _as_assignments(attacker, recipients, division, deathtouch, lifelink)
 
 
-def _lethal_damage(game: Game, blocker: GameObject, deathtouch: bool) -> int:
-    """How much damage counts as lethal for assignment purposes (CR 510.1a).
+def _lethal_first(total: int, lethal: list[int], spill: int) -> dict[int, int]:
+    """Lethal to each creature in turn, then the rest onward.
 
-    Deathtouch makes any nonzero amount lethal (CR 702.2b), which is what lets
-    a 1/1 deathtoucher with trample carry almost all of its damage through.
-    Damage already marked counts toward it.
+    Any division is legal (CR 510.1c/d); this one is merely the deterministic
+    default a replay needs, and it is the division that satisfies CR 702.19b
+    when the attacking creature has trample.
+    """
+    division: dict[int, int] = {}
+    remaining = total
+    for index, needed in enumerate(lethal):
+        if remaining <= 0:
+            break
+        assigned = min(remaining, needed)
+        if assigned > 0:
+            division[index] = assigned
+            remaining -= assigned
+    if remaining <= 0:
+        return division
+    last = spill if spill >= 0 else len(lethal) - 1
+    if last >= 0:
+        division[last] = division.get(last, 0) + remaining
+    return division
+
+
+def _attacker_division_is_legal(
+    division: dict[int, int],
+    count: int,
+    total: int,
+    lethal: list[int],
+    spill: int,
+) -> bool:
+    """CR 510.1c and, when the creature tramples, CR 702.19b."""
+    if not _division_covers(division, count, total):
+        return False
+    # CR 702.19b: nothing reaches the player, planeswalker, or battle until
+    # every blocking creature has been assigned lethal damage.
+    if spill >= 0 and division.get(spill, 0) > 0:
+        return all(
+            division.get(index, 0) >= needed for index, needed in enumerate(lethal)
+        )
+    return True
+
+
+def _division_covers(division: dict[int, int], count: int, total: int) -> bool:
+    """Every point goes somewhere it is allowed to go (CR 510.1c, 510.1d)."""
+    if any(not isinstance(k, int) or not 0 <= k < count for k in division):
+        return False
+    if any(not isinstance(v, int) or v < 0 for v in division.values()):
+        return False
+    return sum(division.values()) == total
+
+
+def lethal_damage(
+    game: Game,
+    creature: GameObject,
+    *,
+    deathtouch: bool = False,
+    marked: dict[ObjectId, int] | None = None,
+) -> int:
+    """What counts as lethal damage when checking an assignment (CR 702.19b).
+
+    Damage already marked on the creature counts, and so does damage other
+    creatures are assigning during this same combat damage step - which is why
+    two attackers can between them get a blocker to lethal and both still
+    trample over it. Abilities and effects that would change how much damage is
+    actually dealt are deliberately not considered.
+
+    CR 702.2b: deathtouch makes any nonzero amount lethal.
     """
     if deathtouch:
         return 1
-    chars = game.characteristics(blocker)
-    return max(1, (chars.toughness or 0) - blocker.damage)
+    chars = game.characteristics(creature)
+    already = creature.damage + (marked or {}).get(creature.id, 0)
+    return max(1, (chars.toughness or 0) - already)
 
 
 def _blocker_assignment(
-    game: Game, combat: Combat, blocker: GameObject
+    game: Game,
+    combat: Combat,
+    blocker: GameObject,
+    marked: dict[ObjectId, int] | None = None,
 ) -> list[tuple[GameObject, object, int, bool, bool]]:
+    """How one blocking creature divides its combat damage (CR 510.1d)."""
     chars = game.characteristics(blocker)
     power = chars.power or 0
+    # CR 510.1a.
     if power <= 0:
         return []
     deathtouch = chars.has_keyword("Deathtouch")
@@ -889,11 +959,73 @@ def _blocker_assignment(
         for a in combat.blocking.get(blocker.id, [])
         if a in game.objects and game.objects[a].is_permanent
     ]
+    # CR 510.1d: blocking nothing any more means assigning nothing.
     if not attackers:
         return []
-    # A creature blocking several attackers divides its damage; assigning it
-    # all to the first is the deterministic default.
-    return [(blocker, attackers[0], power, deathtouch, lifelink)]
+    if len(attackers) == 1:
+        return [(blocker, attackers[0], power, deathtouch, lifelink)]
+
+    # CR 510.1d: divided among the creatures it is blocking, as its controller
+    # chooses. There is no lethal-first requirement here.
+    lethal = [
+        lethal_damage(game, attacker, deathtouch=deathtouch, marked=marked)
+        for attacker in attackers
+    ]
+    division = _divide(
+        game,
+        blocker.controller,
+        blocker,
+        recipients=list(attackers),
+        total=power,
+        default=_lethal_first(power, lethal, -1),
+        legal=lambda choice: _division_covers(choice, len(attackers), power),
+    )
+    return _as_assignments(blocker, attackers, division, deathtouch, lifelink)
+
+
+def _divide(
+    game: Game,
+    chooser: PlayerId,
+    source: GameObject,
+    *,
+    recipients: list,
+    total: int,
+    default: dict[int, int],
+    legal,
+) -> dict[int, int]:
+    """Ask whoever is dividing, and hold them to the rules.
+
+    The division comes back keyed by position in ``recipients``, since a
+    recipient may be a creature, a player, a planeswalker, or a battle.
+
+    CR 510.1e: an assignment that does not comply is illegal, and the game
+    rewinds to before the player began making it. An engine cannot rewind a
+    bot's intent, so an illegal division is refused and the legal default
+    stands in its place.
+    """
+    agent = game.agent_for(chooser)
+    if agent is None or not hasattr(agent, "assign_combat_damage"):
+        return default
+    choice = agent.assign_combat_damage(
+        game, chooser, source.id, list(recipients), total
+    )
+    if not isinstance(choice, dict) or not legal(choice):
+        return default
+    return choice
+
+
+def _as_assignments(
+    source: GameObject,
+    recipients: list,
+    division: dict[int, int],
+    deathtouch: bool,
+    lifelink: bool,
+) -> list[tuple[GameObject, object, int, bool, bool]]:
+    return [
+        (source, recipients[index], amount, deathtouch, lifelink)
+        for index, amount in sorted(division.items())
+        if amount > 0
+    ]
 
 
 def _damage_recipient(game: Game, combat: Combat, attacker: GameObject) -> object:

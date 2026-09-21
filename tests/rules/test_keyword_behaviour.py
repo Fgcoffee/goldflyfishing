@@ -99,13 +99,14 @@ def test_skulk_allows_an_equal_sized_blocker(board):
     assert can_block(board.game, equal, attacker)
 
 
-def test_banding_hands_the_damage_order_to_the_defender(board):
+def test_banding_hands_the_damage_division_to_the_defender(board):
     """CR 702.22j, the reason banding was ever played.
 
-    Normally the attacking player orders blockers and can aim lethal damage.
-    With a banding blocker, the defending player orders them instead.
+    Normally the attacking player divides a blocked creature's damage among
+    its blockers (CR 510.1c). With a banding blocker, the defending player
+    divides it instead, and the attacker loses the ability to aim it.
     """
-    from mtgfish.rules.cr506_combat import _combat, _order_blockers
+    from mtgfish.rules.cr506_combat import _attacker_assignment, _combat
 
     board.scripts.add("Grizzly Bears", keyword("Banding"))
     attacker = board.play("Serra Angel", controller=0)
@@ -119,21 +120,21 @@ def test_banding_hands_the_damage_order_to_the_defender(board):
     asked: list[int] = []
 
     class Recorder:
-        def order_blockers(self, game, player, attacker_id, blockers):
+        def assign_combat_damage(self, game, player, source, recipients, total):
             asked.append(player)
-            return blockers
+            return {}
 
     board.game.agents[0] = Recorder()
     board.game.agents[1] = Recorder()
     board.game.active_player = 0
 
-    _order_blockers(board.game, combat)
+    _attacker_assignment(board.game, combat, attacker)
     assert asked == [1], "the defending player should have been asked"
 
 
-def test_without_banding_the_attacker_orders(board):
-    """The control: no banding, and the attacking player chooses as usual."""
-    from mtgfish.rules.cr506_combat import _combat, _order_blockers
+def test_without_banding_the_attacker_divides(board):
+    """The control: no banding, and the attacking player divides as usual."""
+    from mtgfish.rules.cr506_combat import _attacker_assignment, _combat
 
     attacker = board.play("Serra Angel", controller=0)
     one = board.play("Grizzly Bears", controller=1)
@@ -146,15 +147,15 @@ def test_without_banding_the_attacker_orders(board):
     asked: list[int] = []
 
     class Recorder:
-        def order_blockers(self, game, player, attacker_id, blockers):
+        def assign_combat_damage(self, game, player, source, recipients, total):
             asked.append(player)
-            return blockers
+            return {}
 
     board.game.agents[0] = Recorder()
     board.game.agents[1] = Recorder()
     board.game.active_player = 0
 
-    _order_blockers(board.game, combat)
+    _attacker_assignment(board.game, combat, attacker)
     assert asked == [0]
 
 

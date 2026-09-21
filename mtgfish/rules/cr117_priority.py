@@ -76,6 +76,13 @@ class Agent(Protocol):
     The rules engine calls these; it never inspects a bot's internals. Keeping
     the surface this narrow is what lets the same engine run a dumb bot, a
     trained pilot, or a scripted test without changing.
+
+    A few choices are rarer than these, and the engine probes for them with
+    ``hasattr`` rather than demanding every agent implement them - it falls
+    back to a legal default when they are absent. Currently
+    ``assign_combat_damage(game, player, source, recipients, total)``, which
+    divides combat damage (CR 510.1c-d) and returns amounts keyed by position
+    in ``recipients``.
     """
 
     def choose_action(self, game: Game, player: PlayerId, legal: list[Action]) -> Action: ...
