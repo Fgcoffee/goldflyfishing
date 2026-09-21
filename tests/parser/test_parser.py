@@ -18,9 +18,9 @@ from mtgfish.parser.clauses import CLAUSES, parse_effects
 from mtgfish.parser.normalize import normalize
 from mtgfish.parser.split import LineKind, split_abilities
 from mtgfish.parser.tokens import Stream, TokenKind, tokenize
-from mtgfish.rules.abilities import AbilityKind
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.resolve import EXECUTORS
+from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+from mtgfish.rules.cr600_spells_and_abilities.resolve import EXECUTORS
 
 # ---------------------------------------------------------------------------
 # The two load-bearing properties
@@ -144,7 +144,7 @@ def test_no_two_opcodes_share_a_number():
 def test_every_opcode_the_engine_runs_has_its_own_executor():
     """A follow-on from the above: the table is keyed by the enum, so a
     collision there silently dropped one of the two executors."""
-    from mtgfish.rules.resolve import EXECUTORS
+    from mtgfish.rules.cr600_spells_and_abilities.resolve import EXECUTORS
 
     assert len(EXECUTORS) == len({int(kind) for kind in EXECUTORS})
 
@@ -404,7 +404,7 @@ def test_x_is_bound_to_its_trailing_definition():
     spell is zero - so the card parses, resolves, and does nothing. That is the
     worst outcome available: it looks like coverage.
     """
-    from mtgfish.rules.query import ValueKind
+    from mtgfish.rules.kernel.query import ValueKind
 
     effects = parse_effects(
         Stream.of("Draw X cards, where X is the number of creatures you control.")
@@ -433,7 +433,7 @@ def test_a_mana_restriction_is_never_silently_dropped():
     the same restriction the card printed. It is never enough for the words to
     be consumed.
     """
-    from mtgfish.rules.enums import CardType
+    from mtgfish.rules.kernel.enums import CardType
 
     effects = parse_effects(
         Stream.of("Add {G}{G}. Spend this mana only to cast creature spells.")
@@ -454,7 +454,7 @@ def test_kicker_reads_how_the_spell_was_cast(card_db):
     An UNPARSED condition would have been safe - it evaluates false - but the
     ability would have counted as parsed while never doing the kicked half.
     """
-    from mtgfish.rules.query import ConditionKind
+    from mtgfish.rules.kernel.query import ConditionKind
 
     effects = parse_effects(
         Stream.of("If this spell was kicked, draw a card.")
@@ -465,6 +465,6 @@ def test_kicker_reads_how_the_spell_was_cast(card_db):
 
 def test_a_spell_records_the_additional_costs_it_paid(card_db):
     """The engine half: kicker has something real to read."""
-    from mtgfish.rules.gameobject import GameObject
+    from mtgfish.rules.kernel.gameobject import GameObject
 
     assert "additional_costs_paid" in GameObject.__slots__

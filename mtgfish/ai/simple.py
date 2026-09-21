@@ -15,18 +15,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..rules.cr117_priority import PASS, Action, ActionKind
-from ..rules.effects import EffectKind
-from ..rules.enums import CardType
-from ..rules.ids import ObjectId, PlayerId
+from ..rules.cr100_game_concepts.cr117_priority import PASS, Action, ActionKind
+from ..rules.cr600_spells_and_abilities.effects import EffectKind
+from ..rules.kernel.enums import CardType
+from ..rules.kernel.ids import ObjectId, PlayerId
 
 if TYPE_CHECKING:
-    from ..rules.cr506_combat import Combat
-    from ..rules.game import Game
-    from ..rules.gameobject import GameObject
+    from ..rules.cr500_turn_structure.cr506_combat import Combat
+    from ..rules.kernel.game import Game
+    from ..rules.kernel.gameobject import GameObject
 
 
-from ..rules.loops import LOOP_REPETITIONS, is_continuing
+from ..rules.kernel.loops import LOOP_REPETITIONS, is_continuing
 
 
 class SimpleAgent:
@@ -163,7 +163,7 @@ class SimpleAgent:
         to be wasted is worth spending on anything, and holding past that
         point is not patience, it is hoarding.
         """
-        from ..rules.enums import Phase, Step
+        from ..rules.kernel.enums import Phase, Step
 
         own_turn = game.active_player == player
         if own_turn and game.phase in (Phase.PRECOMBAT_MAIN, Phase.POSTCOMBAT_MAIN):
@@ -329,7 +329,7 @@ class SimpleAgent:
         Blocks the biggest attackers first with the smallest creature that can
         survive; if life is low enough to matter, chump-blocks instead.
         """
-        from ..rules.cr506_combat import can_block
+        from ..rules.cr500_turn_structure.cr506_combat import can_block
 
         incoming = [
             game.objects[a]
@@ -394,7 +394,7 @@ class SimpleAgent:
         trampler is spilling over onto - is left until last, which is what
         CR 702.19b requires anyway.
         """
-        from ..rules.cr506_combat import lethal_damage
+        from ..rules.cr500_turn_structure.cr506_combat import lethal_damage
 
         order = sorted(
             range(len(recipients)),
@@ -503,7 +503,7 @@ class _TargetingMixin:
         preferred = theirs if harmful else mine
         pool = preferred or group
 
-        from ..rules.ids import is_player_target, target_player
+        from ..rules.kernel.ids import is_player_target, target_player
 
         def size(object_id: ObjectId) -> tuple:
             if is_player_target(object_id):
@@ -522,7 +522,7 @@ class _TargetingMixin:
 
     @staticmethod
     def _controlled_by(game: Game, object_id: ObjectId, player: PlayerId) -> bool:
-        from ..rules.ids import is_player_target, target_player
+        from ..rules.kernel.ids import is_player_target, target_player
 
         if is_player_target(object_id):
             # A player target is "mine" when it is me. Without this every

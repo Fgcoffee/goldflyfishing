@@ -17,14 +17,12 @@ from __future__ import annotations
 import pytest
 from harness import FixedAgent, ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules.cr506_combat import (
+from mtgfish.rules.cr500_turn_structure.cr506_combat import (
     can_block_at_all,
     declare_attackers,
     declare_blockers,
 )
-from mtgfish.rules.enums import Step
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.restrictions import (
+from mtgfish.rules.cr500_turn_structure.restrictions import (
     BLOCKED_BY_ALL_ABLE,
     BLOCKS_IF_ABLE,
     MUST_BE_BLOCKED,
@@ -34,6 +32,8 @@ from mtgfish.rules.restrictions import (
     enforce_block_requirements,
     register_standing,
 )
+from mtgfish.rules.kernel.enums import Step
+from mtgfish.rules.kernel.ids import PlayerId
 
 
 @pytest.fixture
@@ -377,7 +377,7 @@ def test_the_forced_block_is_accepted_by_declare_blockers(card_db, scripts):
 
 def steps_of(game, run) -> list[Step]:
     """Every step that actually began while ``run`` ran."""
-    from mtgfish.rules.events import EventKind
+    from mtgfish.rules.kernel.events import EventKind
 
     seen: list[Step] = []
 
@@ -395,7 +395,7 @@ def steps_of(game, run) -> list[Step]:
 
 
 def test_no_attackers_skips_declare_blockers_and_damage(card_db, scripts):
-    from mtgfish.rules.cr500_turn import take_turn
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import take_turn
 
     board = combat_board(card_db, scripts)
     board.play("Hill Giant", controller=1)
@@ -409,7 +409,7 @@ def test_no_attackers_skips_declare_blockers_and_damage(card_db, scripts):
 
 
 def test_an_attacker_brings_both_steps_back(card_db, scripts):
-    from mtgfish.rules.cr500_turn import take_turn
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import take_turn
 
     board = combat_board(card_db, scripts)
     bears = board.play("Grizzly Bears", controller=0)

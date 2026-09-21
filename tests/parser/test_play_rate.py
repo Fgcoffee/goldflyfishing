@@ -107,8 +107,8 @@ def test_a_battlebond_land_reads(card_db):
 def test_a_token_can_be_made_by_someone_else(card_db):
     """"Its controller creates a 3/3 green Beast" hands the token to the
     victim. Reading it as your own token turns a drawback into an upside."""
-    from mtgfish.rules.effects import EffectKind
-    from mtgfish.rules.query import PlayerScope
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+    from mtgfish.rules.kernel.query import PlayerScope
 
     stream = Stream.of(
         "Destroy target permanent. Its controller creates a 3/3 green Beast creature token."
@@ -128,7 +128,7 @@ def test_a_token_can_be_made_by_someone_else(card_db):
 
 def test_no_maximum_hand_size_is_a_permission(card_db):
     """Reliquary Tower and Thought Vessel are top-20 cards that did nothing."""
-    from mtgfish.rules.effects import EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 
     stream = Stream.of("You have no maximum hand size.")
     effects = parse_effects(stream)
@@ -139,7 +139,7 @@ def test_no_maximum_hand_size_is_a_permission(card_db):
 def test_reliquary_tower_actually_skips_the_cleanup_discard(card_db, tmp_path):
     """The parse is only half of it - the cleanup step has to honour it."""
     from mtgfish.parser.verdicts import VerdictStore
-    from mtgfish.rules.cr500_turn import _discard_to_hand_size
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import _discard_to_hand_size
     from mtgfish.ui.sandbox import Sandbox
 
     box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))
@@ -155,7 +155,7 @@ def test_reliquary_tower_actually_skips_the_cleanup_discard(card_db, tmp_path):
 
 def test_without_the_tower_the_discard_still_happens(card_db, tmp_path):
     from mtgfish.parser.verdicts import VerdictStore
-    from mtgfish.rules.cr500_turn import _discard_to_hand_size
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import _discard_to_hand_size
     from mtgfish.ui.sandbox import Sandbox
 
     box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))

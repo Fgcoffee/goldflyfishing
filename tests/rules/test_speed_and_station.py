@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.player import MAX_SPEED
+from mtgfish.rules.cr100_game_concepts.player import MAX_SPEED
 from mtgfish.ui.sandbox import Sandbox
 
 
@@ -63,7 +63,7 @@ def test_starting_twice_does_not_advance_speed(box):
 
 
 def test_speed_increases_when_an_opponent_loses_life_on_your_turn(box):
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
 
     box.game.player(0).start_engines()
     actions.lose_life(box.game, box.game.player(1).id, 2)
@@ -71,7 +71,7 @@ def test_speed_increases_when_an_opponent_loses_life_on_your_turn(box):
 
 
 def test_speed_increases_at_most_once_each_turn(box):
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
 
     box.game.player(0).start_engines()
     actions.lose_life(box.game, box.game.player(1).id, 2)
@@ -80,7 +80,7 @@ def test_speed_increases_at_most_once_each_turn(box):
 
 
 def test_your_own_life_loss_does_not_increase_your_speed(box):
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
 
     box.game.player(0).start_engines()
     actions.lose_life(box.game, box.game.player(0).id, 5)
@@ -97,7 +97,7 @@ def test_speed_never_passes_the_maximum(box):
 
 
 def test_a_player_who_never_started_gains_no_speed(box):
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
 
     actions.lose_life(box.game, box.game.player(1).id, 2)
     assert box.game.player(0).speed == 0
@@ -107,7 +107,7 @@ def test_a_max_speed_ability_is_gated_on_speed(card_db):
     """The gate is the whole point: without it the ability works from turn
     one, which is a strictly better card than the one printed."""
     from mtgfish.parser import parse_card
-    from mtgfish.rules.query import ConditionKind
+    from mtgfish.rules.kernel.query import ConditionKind
 
     card = card_db.lookup("Mendicant Core, Guidelight")
     gated = [

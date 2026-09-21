@@ -20,8 +20,8 @@ import pytest
 
 from mtgfish.parser.clauses import parse_effects
 from mtgfish.parser.tokens import Stream
-from mtgfish.rules.cr614_replacement import ReplacementKind
-from mtgfish.rules.effects import EffectKind
+from mtgfish.rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 
 
 @pytest.fixture(autouse=True)
@@ -163,7 +163,7 @@ def test_multiply_happens_before_add(card_db, tmp_path):
     """One arithmetic for the family: multiply, then add. Two doublers of
     different shapes must compose rather than each doing its own thing."""
     from mtgfish.parser.verdicts import VerdictStore
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
     from mtgfish.ui.sandbox import Sandbox
 
     box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))
@@ -202,7 +202,7 @@ def test_an_attack_tax_scales_with_the_attackers(card_db):
     """"{2} for each creature they control that's attacking you". A flat tax
     is a much weaker card once a board develops."""
     from mtgfish.parser import parse_card
-    from mtgfish.rules.effects import EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 
     card = card_db.lookup("Propaganda")
     if card is None:

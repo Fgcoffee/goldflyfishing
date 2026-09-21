@@ -21,11 +21,11 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import actions
-from mtgfish.rules.conditions import holds
-from mtgfish.rules.enums import CardType, Color
-from mtgfish.rules.events import EventKind
-from mtgfish.rules.query import (
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.kernel.conditions import holds
+from mtgfish.rules.kernel.enums import CardType, Color
+from mtgfish.rules.kernel.events import EventKind
+from mtgfish.rules.kernel.query import (
     Condition,
     ConditionKind,
     NumericConstraint,
@@ -160,7 +160,7 @@ def test_it_does_not_match_when_the_description_does_not_fit(box):
 def test_it_is_answered_from_last_known_information(box):
     """"When this dies, if it *was* a creature" is asked when the object is
     already in a graveyard and no longer a creature at all (CR 608.2g)."""
-    from mtgfish.rules.enums import Zone
+    from mtgfish.rules.kernel.enums import Zone
 
     box.put("Grizzly Bears", "battlefield", 0)
     bear = next(

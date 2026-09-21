@@ -21,18 +21,18 @@ import pytest
 from harness import ScriptedAbilities, make_board
 
 from mtgfish.data.decks import parse_decklist
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.cr103_setup import new_game
-from mtgfish.rules.cr106_mana import ManaKind
-from mtgfish.rules.cr117_priority import Action, ActionKind
-from mtgfish.rules.cr118_costs import AlternativeCost, Cost
-from mtgfish.rules.cr601_casting import cast_spell, compute_total_cost
-from mtgfish.rules.enums import LETTER_TO_COLOR, Phase, Step, Zone
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.legality import legal_actions
-from mtgfish.rules.player import COMMANDER_STARTING_LIFE
-from mtgfish.rules.query import Value, ValueKind
-from mtgfish.rules.values import evaluate
+from mtgfish.rules.cr100_game_concepts.cr103_setup import new_game
+from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr100_game_concepts.cr118_costs import AlternativeCost, Cost
+from mtgfish.rules.cr100_game_concepts.player import COMMANDER_STARTING_LIFE
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell, compute_total_cost
+from mtgfish.rules.kernel.enums import LETTER_TO_COLOR, Phase, Step, Zone
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.legality import legal_actions
+from mtgfish.rules.kernel.query import Value, ValueKind
+from mtgfish.rules.kernel.values import evaluate
 
 
 @pytest.fixture

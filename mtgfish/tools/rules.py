@@ -22,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-from ..rules import citations
+from ..rules.kernel import citations
 
 
 def _print_rule(number: str, *, indent: str = "") -> bool:
@@ -172,7 +172,7 @@ def _cmd_audit(args) -> int:
     effect durations and "doesn't untap" were all inside groups scored as
     implemented while the behaviour was missing entirely.
     """
-    from ..rules.coverage import Status, entry_for
+    from ..rules.kernel.coverage import Status, entry_for
 
     cited = {c.number for c in citations.cited_in_source()}
     rules = citations._rules()

@@ -5,8 +5,8 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.cr704_sba import check_state_based_actions
-from mtgfish.rules.enums import Zone
+from mtgfish.rules.cr700_additional_rules.cr704_sba import check_state_based_actions
+from mtgfish.rules.kernel.enums import Zone
 
 
 @pytest.fixture

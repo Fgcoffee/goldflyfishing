@@ -15,13 +15,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from mtgfish.data.decks import parse_decklist
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.characteristics import Characteristics
-from mtgfish.rules.cr103_setup import new_game
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.game import Game
-from mtgfish.rules.gameobject import GameObject, ObjectKind
-from mtgfish.rules.ids import PlayerId
+from mtgfish.rules.cr100_game_concepts.cr103_setup import new_game
+from mtgfish.rules.cr200_parts_of_a_card.characteristics import Characteristics
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.kernel.enums import Zone
+from mtgfish.rules.kernel.game import Game
+from mtgfish.rules.kernel.gameobject import GameObject, ObjectKind
+from mtgfish.rules.kernel.ids import PlayerId
 
 
 def keyword(name: str) -> Ability:
@@ -82,7 +82,7 @@ class FixedAgent:
         self.blocker_order = blocker_order or {}
 
     def choose_action(self, game, player, legal):
-        from mtgfish.rules.cr117_priority import PASS
+        from mtgfish.rules.cr100_game_concepts.cr117_priority import PASS
 
         return PASS
 
@@ -170,8 +170,8 @@ class Board:
         Reads the abilities the layer system produced, which is the only way to
         see intrinsic land mana appearing and disappearing with the land type.
         """
-        from mtgfish.rules.effects import EffectKind
-        from mtgfish.rules.enums import COLOR_LETTERS
+        from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+        from mtgfish.rules.kernel.enums import COLOR_LETTERS
 
         out: set[str] = set()
         for ability in self.game.characteristics(obj).abilities:
@@ -190,19 +190,19 @@ class Board:
 
     def sba(self) -> bool:
         """Run state-based actions once, as the priority loop would."""
-        from mtgfish.rules.cr704_sba import check_state_based_actions
+        from mtgfish.rules.cr700_additional_rules.cr704_sba import check_state_based_actions
 
         return check_state_based_actions(self.game)
 
     def settle(self) -> None:
         """State-based actions plus putting triggers on the stack."""
-        from mtgfish.rules.cr117_priority import settle
+        from mtgfish.rules.cr100_game_concepts.cr117_priority import settle
 
         settle(self.game)
 
     def resolve_stack(self) -> None:
         """Resolve everything on the stack, top first."""
-        from mtgfish.rules.cr608_stack import resolve_top
+        from mtgfish.rules.cr600_spells_and_abilities.cr608_stack import resolve_top
 
         while self.game.stack:
             resolve_top(self.game)

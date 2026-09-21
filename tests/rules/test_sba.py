@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules.enums import LossReason, Zone
+from mtgfish.rules.kernel.enums import LossReason, Zone
 
 
 @pytest.fixture

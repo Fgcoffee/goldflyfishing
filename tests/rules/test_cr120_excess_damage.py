@@ -10,8 +10,8 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.actions import deal_damage, excess_damage
-from mtgfish.rules.events import EventKind
+from mtgfish.rules.cr100_game_concepts.actions import deal_damage, excess_damage
+from mtgfish.rules.kernel.events import EventKind
 
 
 @pytest.fixture

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from mtgfish.rules.cr106_mana import (
+from mtgfish.rules.cr100_game_concepts.cr106_mana import (
     ManaCost,
     ManaKind,
     ManaPool,
@@ -18,7 +18,7 @@ from mtgfish.rules.cr106_mana import (
     find_payment,
     parse_mana_symbol,
 )
-from mtgfish.rules.enums import Color
+from mtgfish.rules.kernel.enums import Color
 
 W = ManaKind(Color.WHITE)
 U = ManaKind(Color.BLUE)

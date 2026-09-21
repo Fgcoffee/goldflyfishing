@@ -165,7 +165,7 @@ def _install_legal_actions_timer() -> None:
     the module attribute is enough. Calls the bot makes itself happen inside a
     timed bot call and stay counted as the bot's.
     """
-    from ..rules import legality
+    from ..rules.kernel import legality
 
     original = legality.legal_actions
     if getattr(original, "_timed", False):
@@ -248,7 +248,7 @@ def measure_games(config, indices, *, memory: bool, out) -> dict:
     """Play each game instrumented, writing one JSON line per game."""
     global _METER
 
-    from ..rules.cr500_turn import TurnOptions, run_game
+    from ..rules.cr500_turn_structure.cr500_turn import TurnOptions, run_game
     from ..sim.observer import Observer, finish, new_record
     from ..sim.runner import _record_opening_hand, _seat_agents, _worker_state, new_game
 

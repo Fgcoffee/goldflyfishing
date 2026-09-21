@@ -14,20 +14,20 @@ from __future__ import annotations
 import pytest
 from harness import FixedAgent, ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules import actions
-from mtgfish.rules.cr506_combat import (
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.cr500_turn_structure.cr506_combat import (
     AttackPermanent,
     check_removal_from_combat,
     deal_combat_damage,
     declare_attackers,
     declare_blockers,
 )
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Duration, Layer, Phase, Step
-from mtgfish.rules.game import ContinuousEffect
-from mtgfish.rules.ids import NO_OBJECT, PlayerId
-from mtgfish.rules.query import ObjectFilter
-from mtgfish.rules.values import Value
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import CardType, Duration, Layer, Phase, Step
+from mtgfish.rules.kernel.game import ContinuousEffect
+from mtgfish.rules.kernel.ids import NO_OBJECT, PlayerId
+from mtgfish.rules.kernel.query import ObjectFilter
+from mtgfish.rules.kernel.values import Value
 
 
 @pytest.fixture

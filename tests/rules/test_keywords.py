@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import pathlib
 
-from mtgfish.rules import keywords
-from mtgfish.rules.keywords import Status
+from mtgfish.rules.cr700_additional_rules import keywords
+from mtgfish.rules.cr700_additional_rules.keywords import Status
 
 
 def test_every_keyword_ability_is_registered(card_db):
@@ -20,7 +20,7 @@ def test_every_keyword_ability_is_registered(card_db):
     missing = keywords.unregistered(catalog)
     assert not missing, (
         f"{len(missing)} keyword abilities are not in the registry: {missing}. "
-        "Add them to mtgfish/rules/keywords.py with an honest status."
+        "Add them to mtgfish/rules/cr700_additional_rules/keywords.py with an honest status."
     )
 
 
@@ -91,9 +91,9 @@ def test_protection_is_quality_aware():
     consult the quality filter, so the caveat is gone and this is what stops
     it coming back.
     """
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
-    from mtgfish.rules.enums import Color
-    from mtgfish.rules.query import ObjectFilter
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.kernel.enums import Color
+    from mtgfish.rules.kernel.query import ObjectFilter
 
     spec = keywords.lookup("Protection")
     assert spec is not None
@@ -113,7 +113,7 @@ def test_a_keyword_with_no_modelled_effect_is_never_implemented():
     derived from what the builder actually produces rather than from a flag
     somebody remembered to set.
     """
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
 
     for name in ("Sneak", "Paradigm", "Power-up"):
         spec = keywords.lookup(name)
@@ -137,10 +137,10 @@ def test_morph_is_an_alternative_cost_plus_a_special_action():
     test would catch until a removal spell got a response window it should
     never have had.
     """
-    from mtgfish.rules.abilities import AbilityKind
-    from mtgfish.rules.cr106_mana import ManaCost
-    from mtgfish.rules.cr118_costs import Cost, CostComponent, CostKind
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost
+    from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
 
     morph_cost = Cost((CostComponent(CostKind.MANA, mana=ManaCost.parse("{2}")),))
     abilities = build(KeywordInstance("Morph", cost=morph_cost))
@@ -209,9 +209,9 @@ def test_a_keyword_that_wraps_card_text_is_graded_on_the_wrapper():
     correctly - so it is graded on the shape, and called without a body it
     still reports the gap.
     """
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
-    from mtgfish.rules.effects import Effect, EffectKind
-    from mtgfish.rules.query import YOU, Value
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.kernel.query import YOU, Value
 
     body = (Effect(EffectKind.DRAW, players=YOU, amount=Value.of(1)),)
 
@@ -242,9 +242,9 @@ def test_forecast_is_restricted_to_your_upkeep():
     one would let a forecast ability be used at instant speed on an opponent's
     turn.
     """
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
-    from mtgfish.rules.enums import Step
-    from mtgfish.rules.query import ConditionKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.kernel.enums import Step
+    from mtgfish.rules.kernel.query import ConditionKind
 
     ability = build(KeywordInstance("Forecast"))[0]
     assert ability.once_each_turn

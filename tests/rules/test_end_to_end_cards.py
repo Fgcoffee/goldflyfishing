@@ -24,7 +24,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.cr601_casting import cost_increases, cost_reductions
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cost_increases, cost_reductions
 from mtgfish.ui.sandbox import Sandbox
 
 
@@ -152,7 +152,7 @@ def test_a_dual_land_makes_two_mana_not_four(box):
 
 
 def test_a_counter_doubler_doubles(box):
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
 
     box.put("Grizzly Bears", "battlefield", 0)
     box.put("Branching Evolution", "battlefield", 0)
@@ -164,7 +164,7 @@ def test_a_counter_doubler_doubles(box):
 
 
 def test_no_maximum_hand_size_is_honoured_in_cleanup(box):
-    from mtgfish.rules.cr500_turn import _discard_to_hand_size
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import _discard_to_hand_size
 
     for _ in range(10):
         box.put("Grizzly Bears", "hand", 0)
@@ -176,7 +176,7 @@ def test_no_maximum_hand_size_is_honoured_in_cleanup(box):
 
 
 def test_a_timing_permission_lets_a_sorcery_be_cast_in_combat(box):
-    from mtgfish.rules.enums import Phase, Step
+    from mtgfish.rules.kernel.enums import Phase, Step
 
     box.put("Wrath of God", "hand", 0)
     box.put("Vedalken Orrery", "battlefield", 0)

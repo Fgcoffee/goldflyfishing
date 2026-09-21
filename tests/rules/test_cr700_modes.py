@@ -16,17 +16,21 @@ from __future__ import annotations
 import pytest
 from harness import FixedAgent, ScriptedAbilities, make_board
 
-from mtgfish.rules.abilities import Ability, TriggerCondition
-from mtgfish.rules.actions import destroy
-from mtgfish.rules.cr117_priority import Action, ActionKind
-from mtgfish.rules.cr118_costs import FREE
-from mtgfish.rules.cr601_casting import activate_ability, cast_spell, legal_modes
-from mtgfish.rules.cr603_triggers import put_triggers_on_stack
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Phase, Step
-from mtgfish.rules.events import EventKind
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.query import YOU, ObjectFilter, Value
+from mtgfish.rules.cr100_game_concepts.actions import destroy
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr100_game_concepts.cr118_costs import FREE
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, TriggerCondition
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+    activate_ability,
+    cast_spell,
+    legal_modes,
+)
+from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import put_triggers_on_stack
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import CardType, Phase, Step
+from mtgfish.rules.kernel.events import EventKind
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.query import YOU, ObjectFilter, Value
 
 CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 ARTIFACTS = ObjectFilter(types_all=CardType.ARTIFACT)
@@ -300,8 +304,8 @@ def test_a_modal_spell_keeps_the_modes_the_action_named(board):
 
 
 def _give_mana(board, player: int, amount: int, color: str = "R") -> None:
-    from mtgfish.rules.cr106_mana import ManaKind
-    from mtgfish.rules.enums import LETTER_TO_COLOR
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import LETTER_TO_COLOR
 
     board.game.player(PlayerId(player)).mana_pool.add(ManaKind(LETTER_TO_COLOR[color]), amount)
 

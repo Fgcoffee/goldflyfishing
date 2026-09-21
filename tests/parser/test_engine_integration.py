@@ -15,9 +15,9 @@ import pytest
 from harness import Board, make_board
 
 from mtgfish.parser.compile import OracleAbilities
-from mtgfish.rules.cr117_priority import Action, ActionKind
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.resolve import Resolution, execute
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, execute
+from mtgfish.rules.kernel.enums import Zone
 
 
 @pytest.fixture
@@ -48,7 +48,7 @@ def test_a_parsed_keyword_reaches_the_layer_system(oracle):
 
 def test_parsed_flying_actually_stops_a_block(oracle):
     """The keyword is not decoration: combat has to read it."""
-    from mtgfish.rules.cr506_combat import can_block
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_block
 
     angel = oracle.play("Serra Angel", controller=0)
     ground = oracle.play("Grizzly Bears", controller=1)
@@ -74,7 +74,7 @@ def test_lightning_bolt_parsed_from_oracle_text_deals_damage(oracle):
     from Scryfall, the opcode from the grammar, and the damage from the
     engine's executor.
     """
-    from mtgfish.rules.abilities import AbilityKind
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
 
     bolt = oracle.hand("Lightning Bolt", controller=0)
     target = oracle.play("Serra Angel", controller=1)
@@ -98,7 +98,7 @@ def test_lightning_bolt_parsed_from_oracle_text_deals_damage(oracle):
 
 def test_a_parsed_draw_spell_actually_draws(oracle):
     """Divination: "Draw two cards."."""
-    from mtgfish.rules.abilities import AbilityKind
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
 
     card = oracle.hand("Divination", controller=0)
     before = len(oracle.game.player(0).hand)
@@ -114,7 +114,7 @@ def test_a_parsed_draw_spell_actually_draws(oracle):
 
 def test_a_parsed_removal_spell_destroys(oracle):
     """Murder: "Destroy target creature."."""
-    from mtgfish.rules.abilities import AbilityKind
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
 
     card = oracle.hand("Murder", controller=0)
     victim = oracle.play("Grizzly Bears", controller=1)
@@ -151,7 +151,7 @@ def test_a_parsed_mana_ability_is_a_mana_ability(oracle):
 def test_activating_a_parsed_mana_ability_adds_mana(oracle):
     """End to end: the ability is read from text, activated, and the mana
     arrives in the pool."""
-    from mtgfish.rules.cr601_casting import activate_ability
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import activate_ability
 
     elves = oracle.play("Llanowar Elves", controller=0)
     elves.summoning_sick = False
@@ -249,8 +249,8 @@ def test_a_full_game_runs_on_parsed_abilities(card_db):
     conclusion without the engine tripping over anything the grammar produced.
     """
     from mtgfish.data.decks import parse_decklist
-    from mtgfish.rules.cr103_setup import new_game
-    from mtgfish.rules.cr500_turn import TurnOptions, run_game
+    from mtgfish.rules.cr100_game_concepts.cr103_setup import new_game
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import TurnOptions, run_game
 
     card_db.registry()
     decks = [
@@ -277,8 +277,8 @@ def test_the_same_seed_gives_the_same_game_with_parsed_cards(card_db):
     breaks every replay in the product.
     """
     from mtgfish.data.decks import parse_decklist
-    from mtgfish.rules.cr103_setup import new_game
-    from mtgfish.rules.cr500_turn import TurnOptions, run_game
+    from mtgfish.rules.cr100_game_concepts.cr103_setup import new_game
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import TurnOptions, run_game
 
     card_db.registry()
 
@@ -333,7 +333,7 @@ def test_a_pronoun_means_the_last_thing_acted_on_not_the_source(oracle):
     """
     from mtgfish.parser.clauses import parse_effects
     from mtgfish.parser.tokens import Stream
-    from mtgfish.rules.query import ObjectFilter
+    from mtgfish.rules.kernel.query import ObjectFilter
 
     effects = parse_effects(Stream.of("Tap target creature. It gains flying."))
     assert effects is not None

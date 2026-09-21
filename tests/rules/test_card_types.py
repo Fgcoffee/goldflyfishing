@@ -10,11 +10,10 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules import cr300_card_types as card_types
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.cr106_mana import ManaCost, ManaKind
-from mtgfish.rules.cr118_costs import Cost, CostComponent, CostKind
-from mtgfish.rules.cr300_card_types import (
+from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost, ManaKind
+from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr300_card_types import cr300_card_types as card_types
+from mtgfish.rules.cr300_card_types.cr300_card_types import (
     chapter_ability,
     class_level,
     class_level_bar,
@@ -25,9 +24,10 @@ from mtgfish.rules.cr300_card_types import (
     station_band,
     to_solve,
 )
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import Phase, Step, Zone
-from mtgfish.rules.query import ALWAYS, Value
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import Phase, Step, Zone
+from mtgfish.rules.kernel.query import ALWAYS, Value
 
 
 @pytest.fixture
@@ -40,7 +40,7 @@ def mana_cost(text: str) -> Cost:
 
 
 def draw_effect(amount: int = 1) -> Effect:
-    from mtgfish.rules.query import YOU
+    from mtgfish.rules.kernel.query import YOU
 
     return Effect(EffectKind.DRAW, players=YOU, amount=Value.of(amount))
 
@@ -120,7 +120,7 @@ def test_two_counters_at_once_fire_both_chapters(board):
 
     A doubling effect on lore counters skips nothing.
     """
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
 
     board.scripts.add(
         "Urza's Saga",
@@ -285,8 +285,8 @@ def test_class_level_bar_is_sorcery_speed_and_steps_by_one(board):
     directly; without the timing check they could level up in response to
     removal.
     """
-    from mtgfish.rules.conditions import holds
-    from mtgfish.rules.enums import Timing
+    from mtgfish.rules.kernel.conditions import holds
+    from mtgfish.rules.kernel.enums import Timing
 
     bar = class_level_bar(2, mana_cost("{2}"))
     assert bar.activated.timing is Timing.SORCERY
@@ -377,8 +377,8 @@ def test_turning_face_up_is_offered_whenever_you_have_priority(board):
     A morphed creature must be able to flip up in response to a removal spell,
     with the removal spell still on the stack.
     """
-    from mtgfish.rules.cr116_special_actions import SpecialKind, available
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr100_game_concepts.cr116_special_actions import SpecialKind, available
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Morph", cost=mana_cost("{2}"))))
     obj = board.play("Grizzly Bears", controller=0, face_down=True)
@@ -390,8 +390,8 @@ def test_turning_face_up_is_offered_whenever_you_have_priority(board):
 
 
 def test_a_face_up_permanent_offers_no_turn_face_up_action(board):
-    from mtgfish.rules.cr116_special_actions import SpecialKind, available
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr100_game_concepts.cr116_special_actions import SpecialKind, available
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Morph", cost=mana_cost("{2}"))))
     board.play("Grizzly Bears", controller=0)
@@ -407,8 +407,8 @@ def test_turning_face_up_restores_characteristics_without_an_etb(board):
     enters-the-battlefield ability, and that is a real difference from
     blinking it.
     """
-    from mtgfish.rules.cr116_special_actions import turn_face_up
-    from mtgfish.rules.events import EventKind
+    from mtgfish.rules.cr100_game_concepts.cr116_special_actions import turn_face_up
+    from mtgfish.rules.kernel.events import EventKind
 
     obj = board.play("Grizzly Bears", controller=0, face_down=True)
     assert board.chars(obj).name != "Grizzly Bears"
@@ -425,7 +425,7 @@ def test_turning_face_up_restores_characteristics_without_an_etb(board):
 
 def test_megamorph_leaves_a_counter_and_morph_does_not(board):
     """CR 702.37b: the whole difference between the two keywords."""
-    from mtgfish.rules.cr116_special_actions import turn_face_up
+    from mtgfish.rules.cr100_game_concepts.cr116_special_actions import turn_face_up
 
     board.scripts.add("Grizzly Bears", keyword("Morph"))
     plain = board.play("Grizzly Bears", controller=0, face_down=True)
@@ -440,7 +440,7 @@ def test_megamorph_leaves_a_counter_and_morph_does_not(board):
 
 def test_special_actions_never_use_the_stack(board):
     """CR 116.1, the property the whole category exists for."""
-    from mtgfish.rules.cr116_special_actions import turn_face_up
+    from mtgfish.rules.cr100_game_concepts.cr116_special_actions import turn_face_up
 
     obj = board.play("Grizzly Bears", controller=0, face_down=True)
     turn_face_up(board.game, obj)
@@ -454,7 +454,7 @@ def test_morph_is_never_offered_as_an_activated_ability(board):
     face up on the stack and handed opponents a response window the rules
     never give them.
     """
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
 
     for name in ("Morph", "Megamorph", "Disguise"):
         abilities = build(KeywordInstance(name, cost=mana_cost("{2}")))
@@ -465,9 +465,9 @@ def test_morph_is_never_offered_as_an_activated_ability(board):
 def test_the_engine_offers_special_actions_in_the_legal_action_list(board):
     """The enumerator and the performer must agree, so both go through
     ``legal_actions``."""
-    from mtgfish.rules.cr117_priority import ActionKind
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
-    from mtgfish.rules.legality import legal_actions
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import ActionKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.kernel.legality import legal_actions
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Morph", cost=mana_cost("{2}"))))
     board.play("Grizzly Bears", controller=0, face_down=True)
@@ -480,8 +480,12 @@ def test_the_engine_offers_special_actions_in_the_legal_action_list(board):
 
 
 def test_performing_the_special_action_turns_the_permanent_up(board):
-    from mtgfish.rules.cr116_special_actions import SpecialKind, available, perform
-    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr100_game_concepts.cr116_special_actions import (
+        SpecialKind,
+        available,
+        perform,
+    )
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Morph", cost=mana_cost("{2}"))))
     obj = board.play("Grizzly Bears", controller=0, face_down=True)
@@ -498,7 +502,7 @@ def test_performing_the_special_action_turns_the_permanent_up(board):
 def test_out_of_scope_special_actions_are_named_not_silent(board):
     """Planechase and Conspiracy Draft are out of scope. Being explicit about
     that is the difference between a known gap and a bug."""
-    from mtgfish.rules.cr116_special_actions import OUT_OF_SCOPE, SpecialKind
+    from mtgfish.rules.cr100_game_concepts.cr116_special_actions import OUT_OF_SCOPE, SpecialKind
 
     assert SpecialKind.ROLL_PLANAR_DIE in OUT_OF_SCOPE
     assert SpecialKind.UNLOCK_CONSPIRACY in OUT_OF_SCOPE

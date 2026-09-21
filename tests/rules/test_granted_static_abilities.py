@@ -14,13 +14,13 @@ from __future__ import annotations
 
 from harness import make_board
 
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import Duration
-from mtgfish.rules.ids import NO_OBJECT, PlayerId
-from mtgfish.rules.query import ObjectFilter
-from mtgfish.rules.resolve import Resolution, _register_continuous
-from mtgfish.rules.values import Value
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, _register_continuous
+from mtgfish.rules.kernel.enums import Duration
+from mtgfish.rules.kernel.ids import NO_OBJECT, PlayerId
+from mtgfish.rules.kernel.query import ObjectFilter
+from mtgfish.rules.kernel.values import Value
 
 
 def _grant(board, obj, ability, controller=0):

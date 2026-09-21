@@ -14,8 +14,8 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.restrictions import Act, prohibited
+from mtgfish.rules.cr500_turn_structure.restrictions import Act, prohibited
+from mtgfish.rules.kernel.enums import Zone
 from mtgfish.ui.sandbox import Sandbox
 
 

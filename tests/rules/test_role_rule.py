@@ -17,10 +17,10 @@ from __future__ import annotations
 
 from harness import make_board
 
-from mtgfish.rules.cr111_tokens import create_tokens
-from mtgfish.rules.effects import TokenSpec
-from mtgfish.rules.enums import CardType, Zone
-from mtgfish.rules.ids import PlayerId
+from mtgfish.rules.cr100_game_concepts.cr111_tokens import create_tokens
+from mtgfish.rules.cr600_spells_and_abilities.effects import TokenSpec
+from mtgfish.rules.kernel.enums import CardType, Zone
+from mtgfish.rules.kernel.ids import PlayerId
 
 
 def _role(board, host, controller=0):

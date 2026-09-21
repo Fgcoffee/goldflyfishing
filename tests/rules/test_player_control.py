@@ -9,10 +9,10 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import LossReason, Zone
-from mtgfish.rules.query import ObjectFilter, PlayerFilter, PlayerScope
-from mtgfish.rules.resolve import Resolution, execute
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, execute
+from mtgfish.rules.kernel.enums import LossReason, Zone
+from mtgfish.rules.kernel.query import ObjectFilter, PlayerFilter, PlayerScope
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ class NamedAgent:
         self.name = name
 
     def choose_action(self, game, player, legal):
-        from mtgfish.rules.cr117_priority import PASS
+        from mtgfish.rules.cr100_game_concepts.cr117_priority import PASS
 
         return PASS
 
@@ -120,7 +120,7 @@ def test_giving_a_player_control_of_themselves_changes_nothing(board):
 def test_control_ends_when_the_turn_does(board):
     """CR 723.1: the effect covers the affected player's whole turn, and ends
     with it - it is not permanent."""
-    from mtgfish.rules.cr500_turn import take_turn
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import take_turn
 
     board.game.agents[0] = NamedAgent("P0")
     board.game.agents[1] = NamedAgent("P1")
@@ -190,7 +190,7 @@ def test_the_restarting_player_goes_first(board):
 def test_a_restart_with_no_decks_to_rebuild_from_says_so(board):
     """The engine must not pretend. A restart it cannot carry out is logged as
     unsupported rather than silently continuing the abandoned game."""
-    from mtgfish.rules.cr500_turn import TurnOptions, _restart
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import TurnOptions, _restart
 
     board.game.log.enabled = True
     board.game.source_decks = []
@@ -204,7 +204,7 @@ def test_a_restart_with_no_decks_to_rebuild_from_says_so(board):
 def test_run_game_returns_the_game_that_finished(board):
     """A restarted game is a different Game, so the caller has to be handed the
     one that actually produced the result."""
-    from mtgfish.rules.cr500_turn import TurnOptions, run_game
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import TurnOptions, run_game
 
     finished = run_game(board.game, TurnOptions(max_rounds=1))
     assert finished is board.game

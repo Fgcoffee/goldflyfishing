@@ -21,27 +21,27 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.cr500_turn import (
+from mtgfish.rules.cr500_turn_structure.cr500_turn import (
     TurnOptions,
     _clear_damage_and_expire_effects,
     _end_of_combat,
     _untap_step,
     take_turn,
 )
-from mtgfish.rules.cr613_layers import Layer
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import Duration
-from mtgfish.rules.game import ContinuousEffect
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.query import ObjectFilter
-from mtgfish.rules.restrictions import (
+from mtgfish.rules.cr500_turn_structure.restrictions import (
     Act,
     Restriction,
     prohibited,
     register_standing,
 )
-from mtgfish.rules.values import Value
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.cr613_layers import Layer
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import Duration
+from mtgfish.rules.kernel.game import ContinuousEffect
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.query import ObjectFilter
+from mtgfish.rules.kernel.values import Value
 
 
 def _pump(board, obj, duration, controller=0):

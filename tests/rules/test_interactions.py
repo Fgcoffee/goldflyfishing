@@ -17,15 +17,19 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.actions import deal_damage, gain_life
-from mtgfish.rules.cr118_costs import TAP_COST
-from mtgfish.rules.cr614_replacement import ReplacementEffect, ReplacementKind, register
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Color, Supertype
-from mtgfish.rules.events import EventKind
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.query import ObjectFilter, PlayerFilter, PlayerScope, Value, ValueKind
+from mtgfish.rules.cr100_game_concepts.actions import deal_damage, gain_life
+from mtgfish.rules.cr100_game_concepts.cr118_costs import TAP_COST
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.cr614_replacement import (
+    ReplacementEffect,
+    ReplacementKind,
+    register,
+)
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import CardType, Color, Supertype
+from mtgfish.rules.kernel.events import EventKind
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.query import ObjectFilter, PlayerFilter, PlayerScope, Value, ValueKind
 
 ALL_CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 NONBASIC_LANDS = ObjectFilter(types_all=CardType.LAND, supertypes_none=Supertype.BASIC)

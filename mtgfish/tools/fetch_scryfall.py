@@ -85,7 +85,7 @@ def main(argv: list[str] | None = None) -> int:
         for word, examples in unknown.items():
             print(f"  {word!r}: {', '.join(examples)}", file=sys.stderr)
         print(
-            "\nAdd these to CardType/Supertype in mtgfish/rules/enums.py.",
+            "\nAdd these to CardType/Supertype in mtgfish/rules/kernel/enums.py.",
             file=sys.stderr,
         )
         return 1

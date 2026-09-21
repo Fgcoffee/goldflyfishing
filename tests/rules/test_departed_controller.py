@@ -28,13 +28,20 @@ from dataclasses import replace
 import pytest
 from harness import make_board
 
-from mtgfish.rules.abilities import Ability, AbilityKind, TriggerCondition
-from mtgfish.rules.cr603_triggers import PendingTrigger, put_triggers_on_stack
-from mtgfish.rules.effects import Effect, EffectKind, TokenSpec
-from mtgfish.rules.enums import CardType, LossReason, Zone
-from mtgfish.rules.events import Event, EventKind
-from mtgfish.rules.ids import NO_PLAYER, PlayerId
-from mtgfish.rules.query import ZERO
+from mtgfish.rules.cr600_spells_and_abilities.abilities import (
+    Ability,
+    AbilityKind,
+    TriggerCondition,
+)
+from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import (
+    PendingTrigger,
+    put_triggers_on_stack,
+)
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
+from mtgfish.rules.kernel.enums import CardType, LossReason, Zone
+from mtgfish.rules.kernel.events import Event, EventKind
+from mtgfish.rules.kernel.ids import NO_PLAYER, PlayerId
+from mtgfish.rules.kernel.query import ZERO
 
 ONE = replace(ZERO, constant=1)
 
@@ -123,7 +130,7 @@ def test_what_it_makes_belongs_to_somebody(table):
 def test_a_token_made_by_such_a_trigger_can_die_without_crashing(table):
     """The crash, end to end: it happened when the token left the battlefield,
     several steps after the trigger that caused it."""
-    from mtgfish.rules.actions import put_into_graveyard
+    from mtgfish.rules.cr100_game_concepts.actions import put_into_graveyard
 
     source = table.token("Grizzly Bears", controller=2)
     queue_trigger(table, source)

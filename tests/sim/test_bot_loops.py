@@ -12,7 +12,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from mtgfish.ai.simple import SimpleAgent
-from mtgfish.rules.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
 from mtgfish.ui.sandbox import Sandbox
 
 

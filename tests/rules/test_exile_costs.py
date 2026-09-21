@@ -18,12 +18,16 @@ import pytest
 from mtgfish.parser.compile import parse_card
 from mtgfish.parser.costs import parse_cost
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.cr117_priority import Action, ActionKind, _perform
-from mtgfish.rules.cr118_costs import EXILE_ZONES, CostKind
-from mtgfish.rules.cr601_casting import CastError, activate_ability, cast_spell
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.legality import legal_actions
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind, _perform
+from mtgfish.rules.cr100_game_concepts.cr118_costs import EXILE_ZONES, CostKind
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+    CastError,
+    activate_ability,
+    cast_spell,
+)
+from mtgfish.rules.kernel.enums import Zone
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.legality import legal_actions
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
 
 YOU = PlayerId(0)

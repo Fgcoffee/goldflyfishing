@@ -232,10 +232,10 @@ def test_the_bot_aims_removal_at_opponents(card_db):
     from harness import ScriptedAbilities, make_board
 
     from mtgfish.ai.simple import SimpleAgent
-    from mtgfish.rules.abilities import Ability
-    from mtgfish.rules.effects import Effect, EffectKind
-    from mtgfish.rules.enums import CardType
-    from mtgfish.rules.query import ObjectFilter
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.kernel.enums import CardType
+    from mtgfish.rules.kernel.query import ObjectFilter
 
     scripts = ScriptedAbilities()
     board = make_board(card_db, scripts)
@@ -264,8 +264,8 @@ def test_the_bot_holds_mana_on_other_players_turns(card_db):
     from harness import ScriptedAbilities, make_board
 
     from mtgfish.ai.simple import SimpleAgent
-    from mtgfish.rules.cr117_priority import Action, ActionKind
-    from mtgfish.rules.enums import Phase, Step
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.kernel.enums import Phase, Step
 
     board = make_board(card_db, ScriptedAbilities())
     trick = board.hand("Giant Growth", controller=0)
@@ -293,12 +293,12 @@ def test_a_targeted_spell_can_be_cast_at_all(card_db):
     """
     from harness import ScriptedAbilities, make_board
 
-    from mtgfish.rules.abilities import Ability
-    from mtgfish.rules.cr117_priority import Action, ActionKind
-    from mtgfish.rules.cr601_casting import cast_spell
-    from mtgfish.rules.effects import Effect, EffectKind
-    from mtgfish.rules.enums import CardType
-    from mtgfish.rules.query import ObjectFilter
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.kernel.enums import CardType
+    from mtgfish.rules.kernel.query import ObjectFilter
 
     scripts = ScriptedAbilities()
     board = make_board(card_db, scripts)
@@ -319,8 +319,8 @@ def test_a_targeted_spell_can_be_cast_at_all(card_db):
     spell = board.hand("Murder", controller=0)
     victim = board.play("Grizzly Bears", controller=1)
 
-    from mtgfish.rules.cr106_mana import ManaKind
-    from mtgfish.rules.enums import LETTER_TO_COLOR
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import LETTER_TO_COLOR
 
     board.game.player(0).mana_pool.add(ManaKind(LETTER_TO_COLOR["B"]), 3)
 
@@ -426,7 +426,7 @@ def test_one_permanent_leaving_is_counted_once(card_db):
     """
     from harness import ScriptedAbilities, make_board
 
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
     from mtgfish.sim.observer import Observer
     from mtgfish.sim.records import GameRecord
 
@@ -451,7 +451,7 @@ def test_your_own_sacrifice_is_not_recorded_as_a_loss(card_db):
     presence somebody took from you."""
     from harness import ScriptedAbilities, make_board
 
-    from mtgfish.rules import actions
+    from mtgfish.rules.cr100_game_concepts import actions
     from mtgfish.sim.observer import Observer
     from mtgfish.sim.records import GameRecord
 

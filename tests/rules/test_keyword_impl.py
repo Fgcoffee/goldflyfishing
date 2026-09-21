@@ -11,12 +11,16 @@ from __future__ import annotations
 import pytest
 from harness import FixedAgent, ScriptedAbilities, make_board
 
-from mtgfish.rules.abilities import AbilityKind
-from mtgfish.rules.actions import destroy
-from mtgfish.rules.cr118_costs import Cost
-from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build, implemented_keywords
-from mtgfish.rules.enums import CardType, Zone
-from mtgfish.rules.ids import PlayerId
+from mtgfish.rules.cr100_game_concepts.actions import destroy
+from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost
+from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
+    KeywordInstance,
+    build,
+    implemented_keywords,
+)
+from mtgfish.rules.kernel.enums import CardType, Zone
+from mtgfish.rules.kernel.ids import PlayerId
 
 
 @pytest.fixture
@@ -36,7 +40,7 @@ def kw(name: str, **kwargs) -> tuple:
 def test_every_builder_names_a_real_keyword(card_db):
     """A builder for a keyword that does not exist is a typo that would make
     the coverage number wrong."""
-    from mtgfish.rules import keywords
+    from mtgfish.rules.cr700_additional_rules import keywords
 
     invented = sorted(k for k in implemented_keywords() if not keywords.is_known(k))
     assert not invented, f"builders for non-existent keywords: {invented}"
@@ -90,8 +94,8 @@ def test_ward_is_a_trigger_not_a_targeting_ban(board):
 
 def test_protection_carries_its_quality(board):
     """CR 702.16a: "from red" is the whole point - a blanket ban over-protects."""
-    from mtgfish.rules.enums import Color
-    from mtgfish.rules.query import ObjectFilter
+    from mtgfish.rules.kernel.enums import Color
+    from mtgfish.rules.kernel.query import ObjectFilter
 
     red = ObjectFilter(colors_any=Color.RED)
     ability = kw("Protection", filter=red)[0]
@@ -112,7 +116,7 @@ def test_landwalk_carries_the_land_type_it_walks(board):
 
 def test_exalted_triggers_on_a_lone_attacker(board):
     """CR 702.90a, with "alone" as an intervening-if (CR 603.4)."""
-    from mtgfish.rules.cr506_combat import declare_attackers
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import declare_attackers
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -132,7 +136,7 @@ def test_exalted_does_not_trigger_with_two_attackers(board):
     second = board.play("Grizzly Bears", controller=0)
     game.agents[PlayerId(0)] = FixedAgent(attackers={first.id: 1, second.id: 1})
 
-    from mtgfish.rules.cr506_combat import declare_attackers
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import declare_attackers
 
     declare_attackers(game)
     assert not game.pending_triggers
@@ -146,7 +150,7 @@ def test_annihilator_carries_its_amount(board):
 
 
 def test_afflict_triggers_on_becoming_blocked(board):
-    from mtgfish.rules.cr506_combat import declare_attackers, declare_blockers
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import declare_attackers, declare_blockers
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -242,10 +246,10 @@ def test_flashback_is_a_graveyard_alternative_cost(board):
 
 def test_flashback_actually_makes_a_graveyard_card_castable(board):
     """End to end: the keyword expansion feeds the legality rules from CR 118.9."""
-    from mtgfish.rules.cr106_mana import ManaKind
-    from mtgfish.rules.cr117_priority import ActionKind
-    from mtgfish.rules.enums import LETTER_TO_COLOR, Phase, Step
-    from mtgfish.rules.legality import legal_actions
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import ActionKind
+    from mtgfish.rules.kernel.enums import LETTER_TO_COLOR, Phase, Step
+    from mtgfish.rules.kernel.legality import legal_actions
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -276,7 +280,7 @@ def test_dash_is_a_hand_alternative_cost(board):
 
 
 def test_equip_is_a_sorcery_speed_activated_ability(board):
-    from mtgfish.rules.enums import Timing
+    from mtgfish.rules.kernel.enums import Timing
 
     ability = kw("Equip", cost=Cost.mana("{2}"))[0]
     assert ability.kind is AbilityKind.ACTIVATED
@@ -285,7 +289,7 @@ def test_equip_is_a_sorcery_speed_activated_ability(board):
 
 
 def test_cycling_functions_from_hand_and_discards_itself(board):
-    from mtgfish.rules.cr118_costs import CostKind
+    from mtgfish.rules.cr100_game_concepts.cr118_costs import CostKind
 
     ability = kw("Cycling", cost=Cost.mana("{2}"))[0]
     assert Zone.HAND in ability.functions_in
@@ -298,7 +302,7 @@ def test_unearth_functions_from_the_graveyard(board):
 
 
 def test_crew_animates_the_vehicle(board):
-    from mtgfish.rules.effects import EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 
     ability = kw("Crew", amount=3)[0]
     assert ability.effects[0].kind is EffectKind.ADD_TYPE
@@ -311,10 +315,10 @@ def test_crew_animates_the_vehicle(board):
 
 
 def test_prowess_triggers_on_a_noncreature_spell(board):
-    from mtgfish.rules.cr106_mana import ManaKind
-    from mtgfish.rules.cr117_priority import Action, ActionKind
-    from mtgfish.rules.cr601_casting import cast_spell
-    from mtgfish.rules.enums import LETTER_TO_COLOR, Phase, Step
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.enums import LETTER_TO_COLOR, Phase, Step
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -332,10 +336,10 @@ def test_prowess_triggers_on_a_noncreature_spell(board):
 
 
 def test_prowess_does_not_trigger_on_a_creature_spell(board):
-    from mtgfish.rules.cr106_mana import ManaKind
-    from mtgfish.rules.cr117_priority import Action, ActionKind
-    from mtgfish.rules.cr601_casting import cast_spell
-    from mtgfish.rules.enums import LETTER_TO_COLOR, Phase, Step
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.enums import LETTER_TO_COLOR, Phase, Step
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -353,7 +357,7 @@ def test_prowess_does_not_trigger_on_a_creature_spell(board):
 
 
 def test_evolve_triggers_on_a_creature_entering(board):
-    from mtgfish.rules.events import Event, EventKind
+    from mtgfish.rules.kernel.events import Event, EventKind
 
     game = board.game
     board.scripts.add("Experiment One", *kw("Evolve"))

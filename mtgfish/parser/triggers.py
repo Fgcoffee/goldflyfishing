@@ -13,10 +13,10 @@ is a table rather than a grammar.
 
 from __future__ import annotations
 
-from ..rules.abilities import TriggerCondition
-from ..rules.enums import CardType, Zone
-from ..rules.events import EventKind
-from ..rules.query import (
+from ..rules.cr600_spells_and_abilities.abilities import TriggerCondition
+from ..rules.kernel.enums import CardType, Zone
+from ..rules.kernel.events import EventKind
+from ..rules.kernel.query import (
     ALWAYS,
     Condition,
     ConditionKind,
@@ -368,7 +368,7 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
         if stream.accept("level"):
             level = stream.accept_number()
             if level is not None:
-                from ..rules.query import (
+                from ..rules.kernel.query import (
                     Comparison,
                     NumericConstraint,
                     Value,

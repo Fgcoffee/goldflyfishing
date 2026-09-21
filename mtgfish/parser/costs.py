@@ -9,9 +9,9 @@ working at all.
 
 from __future__ import annotations
 
-from ..rules.cr106_mana import ManaCost, UnknownManaSymbol
-from ..rules.cr118_costs import EXILE_ZONES, Cost, CostComponent, CostKind
-from ..rules.query import ObjectFilter, Value
+from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
+from ..rules.cr100_game_concepts.cr118_costs import EXILE_ZONES, Cost, CostComponent, CostKind
+from ..rules.kernel.query import ObjectFilter, Value
 from .nouns import SELF_NOUNS, parse_object_filter, parse_value
 from .tokens import Stream, TokenKind
 
@@ -276,7 +276,7 @@ def _discard(stream: Stream) -> CostComponent | None:
         )
     # "Discard your hand" - however many cards happen to be in it, which is
     # not a number the counted-noun path can express.
-    from ..rules.query import PlayerFilter, PlayerScope, ValueKind
+    from ..rules.kernel.query import PlayerFilter, PlayerScope, ValueKind
 
     _YOU = PlayerFilter(PlayerScope.YOU)
     if stream.accept_phrase("your hand") or stream.accept_phrase("their hand"):

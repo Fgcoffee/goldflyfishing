@@ -25,8 +25,8 @@ import pytest
 
 from mtgfish.parser.clauses import parse_effects
 from mtgfish.parser.tokens import Stream
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.query import ValueKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+from mtgfish.rules.kernel.query import ValueKind
 
 
 @pytest.fixture(autouse=True)

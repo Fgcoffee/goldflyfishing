@@ -20,13 +20,18 @@ from __future__ import annotations
 
 from harness import make_board
 
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Duration
-from mtgfish.rules.ids import NO_OBJECT, PlayerId
-from mtgfish.rules.query import ControllerRelation, ObjectFilter
-from mtgfish.rules.resolve import Resolution, _register_continuous
-from mtgfish.rules.restrictions import Act, Restriction, prohibited, register_standing
-from mtgfish.rules.values import Value
+from mtgfish.rules.cr500_turn_structure.restrictions import (
+    Act,
+    Restriction,
+    prohibited,
+    register_standing,
+)
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, _register_continuous
+from mtgfish.rules.kernel.enums import CardType, Duration
+from mtgfish.rules.kernel.ids import NO_OBJECT, PlayerId
+from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter
+from mtgfish.rules.kernel.values import Value
 
 YOUR_CREATURES = ObjectFilter(
     types_all=CardType.CREATURE, controller=ControllerRelation.YOU

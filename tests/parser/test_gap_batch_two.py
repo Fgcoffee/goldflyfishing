@@ -17,8 +17,8 @@ from mtgfish.parser.nouns import parse_object_filter
 from mtgfish.parser.split import LineKind, split_abilities
 from mtgfish.parser.tokens import Stream
 from mtgfish.parser.triggers import parse_trigger
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.query import ValueKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+from mtgfish.rules.kernel.query import ValueKind
 
 
 @pytest.fixture(autouse=True)
@@ -191,7 +191,7 @@ def test_trigger_shapes_that_used_to_fail(text):
 def test_a_leave_zone_trigger_looks_in_that_zone():
     """A graveyard filter tested against the battlefield matches nothing and
     the trigger never fires."""
-    from mtgfish.rules.enums import Zone
+    from mtgfish.rules.kernel.enums import Zone
 
     trigger = parse_trigger(
         Stream.of("Whenever one or more creature cards leave your graveyard, draw a card")
@@ -209,7 +209,7 @@ def test_a_leave_zone_trigger_looks_in_that_zone():
 def test_a_prohibition_can_be_temporary():
     """A "can't" from a resolved spell nearly always has a duration. Reading
     it as permanent left the phrase unconsumed and failed the ability."""
-    from mtgfish.rules.enums import Duration
+    from mtgfish.rules.kernel.enums import Duration
 
     stream = Stream.of("Target creature can't be blocked this turn.")
     effects = parse_effects(stream)

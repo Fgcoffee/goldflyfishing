@@ -20,8 +20,8 @@ from pathlib import Path
 from typing import Iterator
 
 from ..paths import card_db_path, ensure
-from ..rules.cr205_typeline import SubtypeRegistry, TypeLine, install_registry
-from ..rules.enums import CARD_TYPE_NAMES, CardType
+from ..rules.cr200_parts_of_a_card.cr205_typeline import SubtypeRegistry, TypeLine, install_registry
+from ..rules.kernel.enums import CARD_TYPE_NAMES, CardType
 from .cards import CardDef
 from .scryfall import SUBTYPE_CATALOGS, ScryfallClient, file_hash, iter_jsonl
 

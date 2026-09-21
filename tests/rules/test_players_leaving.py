@@ -10,16 +10,16 @@ from __future__ import annotations
 
 from harness import make_board
 
-from mtgfish.rules import actions
-from mtgfish.rules.cr111_tokens import create_tokens
-from mtgfish.rules.cr611_durations import expire_at_start_of_turn
-from mtgfish.rules.cr613_layers import Layer
-from mtgfish.rules.effects import Effect, EffectKind, TokenSpec
-from mtgfish.rules.enums import CardType, Duration, LossReason
-from mtgfish.rules.game import ContinuousEffect
-from mtgfish.rules.ids import NO_OBJECT, PlayerId
-from mtgfish.rules.query import ObjectFilter
-from mtgfish.rules.values import Value
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.cr100_game_concepts.cr111_tokens import create_tokens
+from mtgfish.rules.cr600_spells_and_abilities.cr611_durations import expire_at_start_of_turn
+from mtgfish.rules.cr600_spells_and_abilities.cr613_layers import Layer
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
+from mtgfish.rules.kernel.enums import CardType, Duration, LossReason
+from mtgfish.rules.kernel.game import ContinuousEffect
+from mtgfish.rules.kernel.ids import NO_OBJECT, PlayerId
+from mtgfish.rules.kernel.query import ObjectFilter
+from mtgfish.rules.kernel.values import Value
 
 SOLDIER = TokenSpec(
     types=CardType.CREATURE,

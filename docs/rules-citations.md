@@ -107,7 +107,7 @@ comment beside it. `check` cannot see that — the number resolves fine. Only th
 baseline diff catches it, and only on the release that changes the text.
 
 `python -m mtgfish.tools.rules audit` helps from the other direction: it lists
-rules that `rules/coverage.py` scores as implemented and that no code anywhere
+rules that `rules/kernel/coverage.py` scores as implemented and that no code anywhere
 cites. Coverage is claimed per rule *group*, so marking "601" implemented scores
 all forty of its subrules as done — and that is how the coverage report came to
 report rules as covered whose behaviour was missing outright. An implemented

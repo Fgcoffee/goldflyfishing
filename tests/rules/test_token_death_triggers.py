@@ -20,10 +20,10 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import actions
-from mtgfish.rules.cr117_priority import run_priority
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.gameobject import ObjectKind
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.cr100_game_concepts.cr117_priority import run_priority
+from mtgfish.rules.kernel.enums import Zone
+from mtgfish.rules.kernel.gameobject import ObjectKind
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
 
 

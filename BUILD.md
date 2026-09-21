@@ -234,7 +234,7 @@ the priority loop's 2,000-round cap threw the game out as a runaway with no
 winner. An optional one was cut off by the bot's cap of eight activations per
 ability, which was exactly the eight cycles a loop needs to be recognised.
 
-`rules/loops.py` now does what CR 732.2a allows a player to do: skip to the
+`rules/kernel/loops.py` now does what CR 732.2a allows a player to do: skip to the
 result. Every action and every resolution in a priority window is a *step*;
 when the same cycle of steps repeats **eight times**, on a board of the same
 shape, changing the game by the same amounts each time, it is a loop, and its

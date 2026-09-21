@@ -14,10 +14,10 @@ from __future__ import annotations
 
 from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules import actions
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.enums import CardType
-from mtgfish.rules.query import ObjectFilter
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.kernel.enums import CardType
+from mtgfish.rules.kernel.query import ObjectFilter
 
 
 def _on_battlefield(board, obj):

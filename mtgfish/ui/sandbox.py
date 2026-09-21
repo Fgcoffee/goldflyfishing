@@ -34,16 +34,16 @@ from ..parser import parse_card
 from ..parser.compile import OracleAbilities
 from ..parser.explain import explain_ability
 from ..parser.verdicts import Verdict, VerdictStore
-from ..rules import relaxations
-from ..rules.cr117_priority import Action, ActionKind
-from ..rules.cr601_casting import _candidates_for
-from ..rules.enums import Phase, Step, Zone
-from ..rules.game import Game
-from ..rules.gameobject import GameObject
-from ..rules.ids import ObjectId, PlayerId, is_player_target, target_player
-from ..rules.log import GameLog
-from ..rules.player import DEFAULT_MAX_HAND_SIZE, Player
-from ..rules.relaxations import STRICT, Relaxations
+from ..rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+from ..rules.cr100_game_concepts.player import DEFAULT_MAX_HAND_SIZE, Player
+from ..rules.cr600_spells_and_abilities.cr601_casting import _candidates_for
+from ..rules.kernel import relaxations
+from ..rules.kernel.enums import Phase, Step, Zone
+from ..rules.kernel.game import Game
+from ..rules.kernel.gameobject import GameObject
+from ..rules.kernel.ids import ObjectId, PlayerId, is_player_target, target_player
+from ..rules.kernel.log import GameLog
+from ..rules.kernel.relaxations import STRICT, Relaxations
 
 #: Where a card can be dropped when setting up a position.
 PLACEABLE = {
@@ -154,7 +154,7 @@ class PassiveOpponent:
     """
 
     def choose_action(self, game, player, legal):
-        from ..rules.cr117_priority import PASS
+        from ..rules.cr100_game_concepts.cr117_priority import PASS
 
         return PASS
 
@@ -489,8 +489,10 @@ class Sandbox:
             # same land *played* enters tapped - and an instrument that
             # disagrees with the engine it is meant to be testing is worse
             # than no instrument.
-            from ..rules.cr614_replacement import apply_self_entry_replacements
-            from ..rules.events import Event, EventKind
+            from ..rules.cr600_spells_and_abilities.cr614_replacement import (
+                apply_self_entry_replacements,
+            )
+            from ..rules.kernel.events import Event, EventKind
 
             apply_self_entry_replacements(self.game, obj)
             # Placing a permanent skips move_object, so nothing announced that
@@ -513,8 +515,8 @@ class Sandbox:
         which is the default, it stays there across steps; switch that rule
         back on and CR 500.4 empties it at the end of the step, as in a game.
         """
-        from ..rules.cr106_mana import ManaKind
-        from ..rules.enums import Color
+        from ..rules.cr100_game_concepts.cr106_mana import ManaKind
+        from ..rules.kernel.enums import Color
 
         pool = self.game.player(PlayerId(player)).mana_pool
         for color in (
@@ -541,7 +543,7 @@ class Sandbox:
         the sandbox cannot offer something the engine would refuse - and if it
         offers nothing, that is the answer to "why can't I cast this?".
         """
-        from ..rules.legality import legal_actions
+        from ..rules.kernel.legality import legal_actions
 
         self._apply_rules()
         out = []
@@ -570,7 +572,7 @@ class Sandbox:
         Lightning Bolt kills your own creature - which is a real thing that
         happened the first time this was run.
         """
-        from ..rules.legality import legal_actions
+        from ..rules.kernel.legality import legal_actions
 
         self._apply_rules()
         actions = legal_actions(self.game, PlayerId(player))
@@ -625,7 +627,10 @@ class Sandbox:
         Aura's enchant target, which comes from the keyword rather than from a
         targeting effect (CR 303.4a).
         """
-        from ..rules.cr601_casting import ability_targeting_effects, targeting_effects
+        from ..rules.cr600_spells_and_abilities.cr601_casting import (
+            ability_targeting_effects,
+            targeting_effects,
+        )
 
         chars = self.game.characteristics(obj)
         if action.kind in (ActionKind.ACTIVATE_ABILITY, ActionKind.ACTIVATE_MANA_ABILITY):
@@ -649,8 +654,8 @@ class Sandbox:
         which is fine for an ability with one legal target and wrong for
         anything else.
         """
-        from ..rules.cr117_priority import _perform
-        from ..rules.legality import legal_actions
+        from ..rules.cr100_game_concepts.cr117_priority import _perform
+        from ..rules.kernel.legality import legal_actions
 
         actions = legal_actions(self.game, PlayerId(player))
         if not 0 <= index < len(actions):
@@ -673,8 +678,8 @@ class Sandbox:
 
     def resolve_top(self) -> dict:
         """Resolve the top of the stack, as passing priority would."""
-        from ..rules.cr117_priority import settle
-        from ..rules.cr608_stack import resolve_top
+        from ..rules.cr100_game_concepts.cr117_priority import settle
+        from ..rules.cr600_spells_and_abilities.cr608_stack import resolve_top
 
         if not self.game.stack:
             settle(self.game)
@@ -686,7 +691,7 @@ class Sandbox:
 
     def settle(self) -> dict:
         """Run state-based actions and put waiting triggers on the stack."""
-        from ..rules.cr117_priority import settle
+        from ..rules.cr100_game_concepts.cr117_priority import settle
 
         settle(self.game)
         return self.state(message="state-based actions and triggers settled")
@@ -698,7 +703,11 @@ class Sandbox:
         the boundaries - an upkeep trigger that fires twice, a creature that
         untaps when it should not.
         """
-        from ..rules.cr500_turn import TURN_SEQUENCE, _end_of_step_actions, take_turn
+        from ..rules.cr500_turn_structure.cr500_turn import (
+            TURN_SEQUENCE,
+            _end_of_step_actions,
+            take_turn,
+        )
 
         sequence = list(TURN_SEQUENCE)
         current = (self.game.phase, self.game.step)
@@ -719,8 +728,8 @@ class Sandbox:
         phase, step = sequence[position + 1]
         self.game.phase = phase
         self.game.step = step
-        from ..rules.cr117_priority import settle
-        from ..rules.cr500_turn import TurnOptions, _turn_based_actions
+        from ..rules.cr100_game_concepts.cr117_priority import settle
+        from ..rules.cr500_turn_structure.cr500_turn import TurnOptions, _turn_based_actions
 
         _turn_based_actions(self.game, step, TurnOptions())
         settle(self.game)
@@ -728,7 +737,7 @@ class Sandbox:
 
     def next_turn(self) -> dict:
         """Run a whole turn for the active player."""
-        from ..rules.cr500_turn import take_turn
+        from ..rules.cr500_turn_structure.cr500_turn import take_turn
 
         take_turn(self.game)
         self.game.active_player = self.game.next_player(self.game.active_player)

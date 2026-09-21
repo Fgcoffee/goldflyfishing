@@ -10,14 +10,14 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules import keywords
-from mtgfish.rules.abilities import AbilityKind
-from mtgfish.rules.cr106_mana import ManaCost
-from mtgfish.rules.cr118_costs import Cost, CostComponent, CostKind
-from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.enums import CardType, Color, Zone
-from mtgfish.rules.query import ObjectFilter
+from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost
+from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+from mtgfish.rules.cr700_additional_rules import keywords
+from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+from mtgfish.rules.kernel.enums import CardType, Color, Zone
+from mtgfish.rules.kernel.query import ObjectFilter
 
 
 @pytest.fixture
@@ -77,7 +77,7 @@ def test_living_metal_is_a_creature_only_on_your_turn(board):
 
 def test_skulk_stops_bigger_creatures_blocking(board):
     """CR 702.118b: can't be blocked by creatures with greater power."""
-    from mtgfish.rules.cr506_combat import can_block
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", keyword("Skulk"))
     attacker = board.play("Grizzly Bears", controller=0)  # 2/2 with skulk
@@ -90,7 +90,7 @@ def test_skulk_stops_bigger_creatures_blocking(board):
 
 def test_skulk_allows_an_equal_sized_blocker(board):
     """"Greater power", not "greater or equal" - a 2/2 blocks a 2/2 skulker."""
-    from mtgfish.rules.cr506_combat import can_block
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", keyword("Skulk"))
     attacker = board.play("Grizzly Bears", controller=0)
@@ -106,7 +106,7 @@ def test_banding_hands_the_damage_division_to_the_defender(board):
     its blockers (CR 510.1c). With a banding blocker, the defending player
     divides it instead, and the attacker loses the ability to aim it.
     """
-    from mtgfish.rules.cr506_combat import _attacker_assignment, _combat
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import _attacker_assignment, _combat
 
     board.scripts.add("Grizzly Bears", keyword("Banding"))
     attacker = board.play("Serra Angel", controller=0)
@@ -134,7 +134,7 @@ def test_banding_hands_the_damage_division_to_the_defender(board):
 
 def test_without_banding_the_attacker_divides(board):
     """The control: no banding, and the attacking player divides as usual."""
-    from mtgfish.rules.cr506_combat import _attacker_assignment, _combat
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import _attacker_assignment, _combat
 
     attacker = board.play("Serra Angel", controller=0)
     one = board.play("Grizzly Bears", controller=1)
@@ -161,7 +161,7 @@ def test_without_banding_the_attacker_divides(board):
 
 def test_unleash_stops_blocking_only_while_the_counter_is_there(board):
     """CR 702.101a: the drawback keys off the counter, not off the choice."""
-    from mtgfish.rules.cr506_combat import can_block
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Unleash")))
     blocker = board.play("Grizzly Bears", controller=1)
@@ -180,7 +180,7 @@ def test_unleash_stops_blocking_only_while_the_counter_is_there(board):
 
 def test_decayed_cannot_block(board):
     """CR 702.148a, the first half."""
-    from mtgfish.rules.cr506_combat import can_block
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Decayed")))
     blocker = board.play("Grizzly Bears", controller=1)
@@ -252,7 +252,7 @@ def test_out_of_format_keywords_are_named_not_silent():
     They stay in the registry as DECLARED so a card carrying one is reported,
     rather than being dropped and looking like full coverage.
     """
-    from mtgfish.rules.keywords import Status
+    from mtgfish.rules.cr700_additional_rules.keywords import Status
 
     for name in ("Augment", "Double agenda", "Hidden agenda"):
         spec = keywords.lookup(name)
@@ -266,9 +266,9 @@ def test_create_needs_a_token_to_create():
     An expansion that put a nameless 0/0 onto the battlefield would be worse
     than doing nothing, because the board would look plausible.
     """
-    from mtgfish.rules.cr701_keyword_actions import build as build_action
-    from mtgfish.rules.effects import TokenSpec
-    from mtgfish.rules.query import Value
+    from mtgfish.rules.cr600_spells_and_abilities.effects import TokenSpec
+    from mtgfish.rules.cr700_additional_rules.cr701_keyword_actions import build as build_action
+    from mtgfish.rules.kernel.query import Value
 
     assert build_action("Create")[0].kind is EffectKind.UNPARSED
 
@@ -291,7 +291,7 @@ def test_every_opcode_has_an_executor():
     an executor is a promise the engine cannot keep - it would log and do
     nothing, which is the quiet failure this project exists to avoid.
     """
-    from mtgfish.rules.resolve import EXECUTORS
+    from mtgfish.rules.cr600_spells_and_abilities.resolve import EXECUTORS
 
     missing = sorted(
         kind.name
@@ -303,7 +303,7 @@ def test_every_opcode_has_an_executor():
 
 def test_unparsed_deliberately_has_no_executor():
     """The one opcode that must never run."""
-    from mtgfish.rules.resolve import EXECUTORS
+    from mtgfish.rules.cr600_spells_and_abilities.resolve import EXECUTORS
 
     assert EffectKind.UNPARSED not in EXECUTORS
 
@@ -311,7 +311,7 @@ def test_unparsed_deliberately_has_no_executor():
 def test_protection_quality_is_carried_through(board):
     """CR 702.16b end to end: protection from red does not stop a green
     creature blocking."""
-    from mtgfish.rules.cr506_combat import can_block
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_block
 
     red = ObjectFilter(colors_any=Color.RED)
     board.scripts.add("Serra Angel", *build(KeywordInstance("Protection", filter=red)))

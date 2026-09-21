@@ -14,10 +14,10 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Color, Supertype
-from mtgfish.rules.query import (
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import CardType, Color, Supertype
+from mtgfish.rules.kernel.query import (
     ControllerRelation,
     ObjectFilter,
     Value,

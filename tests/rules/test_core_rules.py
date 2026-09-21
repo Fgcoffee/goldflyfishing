@@ -9,18 +9,29 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules.abilities import Ability, AbilityKind, DelayedTrigger, TriggerCondition
-from mtgfish.rules.actions import destroy, exiled_with, untap
-from mtgfish.rules.cr111_tokens import create_emblem, create_tokens, token_name
-from mtgfish.rules.cr117_priority import Action, ActionKind
-from mtgfish.rules.cr118_costs import Cost, CostComponent, CostKind
-from mtgfish.rules.cr601_casting import activate_ability
-from mtgfish.rules.cr603_triggers import check_state_triggers
-from mtgfish.rules.effects import Effect, EffectKind, TokenSpec
-from mtgfish.rules.enums import CardType, Color, Zone
-from mtgfish.rules.events import EventKind
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.query import (
+from mtgfish.rules.cr100_game_concepts.actions import destroy, exiled_with, untap
+from mtgfish.rules.cr100_game_concepts.cr111_tokens import create_emblem, create_tokens, token_name
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr500_turn_structure.restrictions import (
+    Act,
+    Restriction,
+    prohibited,
+    register_standing,
+)
+from mtgfish.rules.cr600_spells_and_abilities.abilities import (
+    Ability,
+    AbilityKind,
+    DelayedTrigger,
+    TriggerCondition,
+)
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import activate_ability
+from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import check_state_triggers
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
+from mtgfish.rules.kernel.enums import CardType, Color, Zone
+from mtgfish.rules.kernel.events import EventKind
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.query import (
     Comparison,
     Condition,
     ConditionKind,
@@ -30,7 +41,6 @@ from mtgfish.rules.query import (
     PlayerScope,
     Value,
 )
-from mtgfish.rules.restrictions import Act, Restriction, prohibited, register_standing
 
 CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 
@@ -72,7 +82,7 @@ def test_a_prohibition_stops_destruction(board):
 
 
 def test_a_prohibition_stops_attacking(board):
-    from mtgfish.rules.cr506_combat import can_attack
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_attack
 
     bears = board.play("Grizzly Bears")
     assert can_attack(board.game, bears)
@@ -82,7 +92,7 @@ def test_a_prohibition_stops_attacking(board):
 
 
 def test_a_prohibition_stops_blocking(board):
-    from mtgfish.rules.cr506_combat import can_block
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_block
 
     attacker = board.play("Grizzly Bears", controller=0)
     blocker = board.play("Grizzly Bears", controller=1)
@@ -94,7 +104,7 @@ def test_a_prohibition_stops_blocking(board):
 
 def test_a_prohibition_can_be_conditional(board):
     """"Creatures can't attack unless..." - the condition gates the "can't"."""
-    from mtgfish.rules.cr506_combat import can_attack
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import can_attack
 
     bears = board.play("Grizzly Bears")
     never = Condition(ConditionKind.NEVER)
@@ -239,7 +249,7 @@ def test_a_delayed_trigger_fires_on_its_event(board):
         )
     )
 
-    from mtgfish.rules.events import Event
+    from mtgfish.rules.kernel.events import Event
 
     game.emit(Event(EventKind.END_STEP, player=PlayerId(0)))
     assert game.pending_triggers
@@ -258,7 +268,7 @@ def test_a_delayed_trigger_fires_only_once(board):
         )
     )
 
-    from mtgfish.rules.events import Event
+    from mtgfish.rules.kernel.events import Event
 
     game.emit(Event(EventKind.END_STEP, player=PlayerId(0)))
     first = len(game.pending_triggers)
@@ -286,7 +296,7 @@ def test_a_delayed_trigger_survives_its_source_leaving(board):
     board.sba()
     game.pending_triggers.clear()
 
-    from mtgfish.rules.events import Event
+    from mtgfish.rules.kernel.events import Event
 
     game.emit(Event(EventKind.END_STEP, player=PlayerId(0)))
     assert game.pending_triggers
@@ -408,7 +418,7 @@ def test_a_minus_loyalty_ability_removes_counters(board):
 
 def test_a_minus_ability_cannot_be_paid_without_the_counters(board):
     """CR 606.4: the counters *are* the cost, so this is not activatable."""
-    from mtgfish.rules.cr601_casting import _can_pay_activation
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import _can_pay_activation
 
     game = board.game
     board.scripts.add("Ajani, Caller of the Pride", loyalty_ability(-5))
@@ -422,8 +432,8 @@ def test_a_minus_ability_cannot_be_paid_without_the_counters(board):
 
 def test_loyalty_abilities_are_once_per_turn(board):
     """CR 606.3."""
-    from mtgfish.rules.enums import Phase, Step
-    from mtgfish.rules.legality import legal_actions
+    from mtgfish.rules.kernel.enums import Phase, Step
+    from mtgfish.rules.kernel.legality import legal_actions
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -448,7 +458,7 @@ def test_loyalty_abilities_are_once_per_turn(board):
 
 def test_exiling_records_what_did_the_exiling(board):
     """CR 607.2: "the exiled cards" has to be findable later."""
-    from mtgfish.rules.actions import exile
+    from mtgfish.rules.cr100_game_concepts.actions import exile
 
     game = board.game
     source = board.play("Grizzly Bears", controller=0)
@@ -461,7 +471,7 @@ def test_exiling_records_what_did_the_exiling(board):
 
 
 def test_unrelated_exiles_are_not_linked(board):
-    from mtgfish.rules.actions import exile
+    from mtgfish.rules.cr100_game_concepts.actions import exile
 
     game = board.game
     source = board.play("Grizzly Bears", controller=0)
@@ -472,7 +482,7 @@ def test_unrelated_exiles_are_not_linked(board):
 
 def test_a_card_that_leaves_exile_is_no_longer_linked(board):
     """CR 607.2's reference is to cards still in exile."""
-    from mtgfish.rules.actions import exile
+    from mtgfish.rules.cr100_game_concepts.actions import exile
 
     game = board.game
     source = board.play("Grizzly Bears", controller=0)

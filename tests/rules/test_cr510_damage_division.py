@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules.cr506_combat import (
+from mtgfish.rules.cr500_turn_structure.cr506_combat import (
     _attacker_assignment,
     _blocker_assignment,
     _combat,

@@ -11,15 +11,25 @@ from __future__ import annotations
 import pytest
 from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.cr106_mana import ManaCost
-from mtgfish.rules.cr117_priority import Action, ActionKind
-from mtgfish.rules.cr118_costs import AdditionalCost, AlternativeCost, Cost, CostComponent, CostKind
-from mtgfish.rules.cr601_casting import CastError, cast_spell, compute_total_cost
-from mtgfish.rules.enums import CardType, Phase, Step, Zone
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.legality import legal_actions
-from mtgfish.rules.query import ControllerRelation, ObjectFilter, Value
+from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr100_game_concepts.cr118_costs import (
+    AdditionalCost,
+    AlternativeCost,
+    Cost,
+    CostComponent,
+    CostKind,
+)
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+    CastError,
+    cast_spell,
+    compute_total_cost,
+)
+from mtgfish.rules.kernel.enums import CardType, Phase, Step, Zone
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.legality import legal_actions
+from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter, Value
 
 CREATURES_YOU_CONTROL = ObjectFilter(
     types_all=CardType.CREATURE, controller=ControllerRelation.YOU
@@ -36,8 +46,8 @@ def board(card_db):
 
 
 def give_mana(board, amount: int, color: str = "G", player: int = 0):
-    from mtgfish.rules.cr106_mana import ManaKind
-    from mtgfish.rules.enums import LETTER_TO_COLOR
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import LETTER_TO_COLOR
 
     board.game.player(PlayerId(player)).mana_pool.add(LETTER_TO_COLOR[color], 0)
     board.game.player(PlayerId(player)).mana_pool.add(
@@ -210,7 +220,7 @@ def test_a_hand_card_cannot_use_a_graveyard_only_alternative(board):
 
 def test_cost_increases_still_apply_to_an_alternative_cost(board):
     """CR 118.9d: an alternative cost is not a way to dodge a tax."""
-    from mtgfish.rules.effects import Effect, EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
 
     game = board.game
     board.scripts.add("Lightning Bolt", flashback("{R}"))

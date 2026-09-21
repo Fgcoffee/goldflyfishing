@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.cr601_casting import cost_increases, cost_reductions
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cost_increases, cost_reductions
 from mtgfish.ui.sandbox import Sandbox
 
 
@@ -88,7 +88,7 @@ def test_a_reducer_and_a_taxer_compose(box):
 
 def test_the_reducer_ends_with_its_source(box):
     """CR 611.3 - derived from live permanents like every other static."""
-    from mtgfish.rules.enums import Zone
+    from mtgfish.rules.kernel.enums import Zone
 
     assert _net_cost(box, "Sol Ring", ["Foundry Inspector"]) == 0
     inspector = next(
@@ -127,7 +127,7 @@ def test_less_is_negative_and_more_is_positive(card_db, name, expected_sign):
     ignores the word produces a card that does the opposite of what it says
     while still reporting as fully understood."""
     from mtgfish.parser import parse_card
-    from mtgfish.rules.effects import EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 
     card = card_db.lookup(name)
     if card is None:

@@ -17,12 +17,12 @@ from __future__ import annotations
 
 from harness import make_board
 
-from mtgfish.rules.effects import Effect, EffectKind, TokenSpec
-from mtgfish.rules.enums import CardType
-from mtgfish.rules.ids import NO_OBJECT, PlayerId
-from mtgfish.rules.query import PlayerFilter, PlayerScope, ValueKind
-from mtgfish.rules.resolve import Resolution, _do_create_token
-from mtgfish.rules.values import Value
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
+from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, _do_create_token
+from mtgfish.rules.kernel.enums import CardType
+from mtgfish.rules.kernel.ids import NO_OBJECT, PlayerId
+from mtgfish.rules.kernel.query import PlayerFilter, PlayerScope, ValueKind
+from mtgfish.rules.kernel.values import Value
 
 SOLDIER = TokenSpec(
     types=CardType.CREATURE,

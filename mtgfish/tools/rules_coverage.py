@@ -15,7 +15,7 @@ import argparse
 import sys
 
 from ..data.comprehensive_rules import default_path, download, parse
-from ..rules.coverage import Status, entry_for, report
+from ..rules.kernel.coverage import Status, entry_for, report
 
 BAR_WIDTH = 28
 
