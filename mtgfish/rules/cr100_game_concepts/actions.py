@@ -37,7 +37,12 @@ def destroy(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> boo
     destruction with tapping, removing from combat, and clearing damage
     (CR 701.15).
     """
-    if obj.zone is not Zone.BATTLEFIELD:
+    # CR 110.1: a permanent is an object on the battlefield - and only the live
+    # one. CR 400.7 leaves the pre-move object behind still reading the zone it
+    # left, because last-known information needs it, so asking about the zone
+    # alone accepts that husk: destroying an already-dead permanent a second
+    # time moved it again and put a second copy of the card in the graveyard.
+    if not obj.is_permanent:
         return False
 
     if is_indestructible(game, obj):
@@ -76,7 +81,7 @@ def sacrifice(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> b
     Sacrificing is not destroying: indestructible does not stop it, regeneration
     does not replace it, and it cannot be prevented.
     """
-    if obj.zone is not Zone.BATTLEFIELD:
+    if not obj.is_permanent:  # CR 110.1, for the reason ``destroy`` gives.
         return False
     game.emit(
         Event(EventKind.SACRIFICED, object_id=obj.id, player=obj.controller, source=source)
@@ -132,7 +137,7 @@ def put_into_graveyard(game: Game, obj: GameObject) -> GameObject:
 
 def tap(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> bool:
     """CR 701.21a. Tapping an already-tapped permanent does nothing at all."""
-    if obj.zone is not Zone.BATTLEFIELD or obj.tapped:
+    if not obj.is_permanent or obj.tapped:  # CR 110.1
         return False
     obj.tapped = True
     game.emit(Event(EventKind.TAPPED, object_id=obj.id, player=obj.controller, source=source))
@@ -144,7 +149,7 @@ def untap(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> bool:
     (CR 101.2), which is the whole of Winter Orb-style lockdown."""
     from ..cr500_turn_structure.restrictions import Act, prohibited
 
-    if obj.zone is not Zone.BATTLEFIELD or not obj.tapped:
+    if not obj.is_permanent or not obj.tapped:  # CR 110.1
         return False
     if prohibited(game, Act.UNTAP, obj=obj) is not None:
         return False
