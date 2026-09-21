@@ -32,6 +32,7 @@ from typing import TYPE_CHECKING
 from .abilities import Ability, AbilityKind
 from .cr106_mana import ManaCost, find_payment
 from .cr118_costs import EXILE_ZONES, CostComponent, CostKind, TotalCost, required_amount
+from .effects import Effect, EffectKind
 from .enums import Zone
 from .events import Event, EventKind
 from .gameobject import GameObject
@@ -138,8 +139,13 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         game.invalidate_characteristics()
 
     try:
-        # 601.2b: choose modes and X.
-        spell.chosen_modes = action.mode_choices
+        # 601.2b: choose modes and X. The caller may have announced the modes
+        # already; when it has not, the controller is asked, because a modal
+        # spell whose modes nobody chose does nothing at all (CR 700.2).
+        spell.chosen_modes = choose_modes(
+            game, spell, spell_effects(game, spell), player_id,
+            announced=action.mode_choices,
+        )
         spell.x_value = action.x_value
         # CR 601.2b: optional additional costs are chosen here, and whether
         # they were is a fact the spell carries for the rest of its life -
@@ -334,6 +340,189 @@ def cost_reductions(game: Game, spell: GameObject, player_id: PlayerId) -> list[
 
 
 # ---------------------------------------------------------------------------
+# Modes (CR 700.2)
+# ---------------------------------------------------------------------------
+
+
+def modal_effect(effects) -> Effect | None:
+    """The modal instruction among these effects, or None if there is none.
+
+    CR 700.2: the modes are the children of that instruction. The first one
+    found is the object's mode choice: the resolver runs one list of chosen
+    indices, so one list is what is chosen.
+    """
+    for effect in effects:
+        for node in effect.walk():
+            if node.kind is EffectKind.CHOOSE_MODE and node.children:
+                return node
+    return None
+
+
+def legal_modes(
+    game: Game, source: GameObject | None, modal: Effect, player_id: PlayerId
+) -> list[int]:
+    """Which modes may be chosen (CR 700.2a, 700.2b).
+
+    A mode whose targets cannot all be supplied is off the menu entirely -
+    it is not chosen and then fizzled, it cannot be chosen at all.
+    """
+    chosen: list[int] = []
+    for index, mode in enumerate(modal.children):
+        if _mode_is_choosable(game, source, mode, player_id):
+            chosen.append(index)
+    return chosen
+
+
+def _mode_is_choosable(
+    game: Game, source: GameObject | None, mode: Effect, player_id: PlayerId
+) -> bool:
+    for node in mode.walk():
+        if not node.is_targeted:
+            continue
+        if node.targets is not None and (node.targets.up_to or node.targets.includes_players):
+            # "Up to one target" is satisfiable with none, and a player is
+            # always there to be targeted (CR 115.4).
+            continue
+        if source is not None:
+            if not _candidates_for(game, source, node, player_id):
+                return False
+            continue
+        # The source is gone and nothing kept it - a dies-trigger outlives its
+        # creature - so there is no protection to check against it and the
+        # filters alone decide.
+        from .matching import find
+
+        if node.targets is None:
+            if not _targetable_players(game, node.players, player_id):
+                return False
+            continue
+        if not find(game, node.targets, controller=player_id):
+            return False
+    return True
+
+
+def mode_count(modal: Effect) -> int:
+    """How many modes this instruction asks for.
+
+    "Choose one" is the overwhelming majority and the default; an instruction
+    that asks for a fixed larger number says so in its amount.
+    """
+    amount = modal.amount
+    if amount.is_constant and amount.constant > 0:
+        return amount.constant
+    return 1
+
+
+def choose_modes(
+    game: Game,
+    source: GameObject | None,
+    effects,
+    player_id: PlayerId,
+    *,
+    announced: tuple[int, ...] = (),
+    source_id: int = 0,
+) -> tuple[int, ...]:
+    """Choose the mode(s) of a modal object as it goes on the stack.
+
+    One implementation for all three routes into the stack: a spell announced
+    at CR 601.2b, an activated ability at CR 602.2b, and a triggered ability
+    at CR 603.3c. They differ only in what the caller does with an empty
+    result, which means no mode could legally be chosen (CR 700.2b).
+
+    ``announced`` is a choice the caller already made - a scripted action, or
+    a bot with a plan. It is filtered for legality like any other, because
+    CR 700.2a forbids an illegal mode however it was arrived at.
+    """
+    modal = modal_effect(effects)
+    if modal is None:
+        return ()
+    available = legal_modes(game, source, modal, player_id)
+    if not available:
+        return ()
+
+    count = min(mode_count(modal), len(available))
+    if announced:
+        return _cleaned_modes(announced, available, count)
+
+    agent = game.agent_for(player_id)
+    chooser = getattr(agent, "choose_modes", None)
+    if chooser is None:
+        # No agent, or one that predates this hook. A mode has to be chosen
+        # where a legal one exists, so the engine makes the deterministic
+        # choice itself rather than letting the object resolve as a no-op.
+        return tuple(available[:count])
+    # The agent is handed each choosable mode with its index and its effect,
+    # so it can weigh what the mode does; the index is what it returns.
+    options = [(index, modal.children[index]) for index in available]
+    identifier = source.id if source is not None else source_id
+    return _cleaned_modes(
+        chooser(game, player_id, identifier, options, count), available, count
+    )
+
+
+def _cleaned_modes(picked, available: list[int], count: int) -> tuple[int, ...]:
+    """Whatever was asked for, reduced to a legal choice.
+
+    CR 700.2d: the same mode is not chosen twice. An illegal or repeated
+    choice is dropped rather than obeyed, and a choice that comes up short is
+    topped up, because the number of modes is not optional either.
+    """
+    legal = set(available)
+    kept: list[int] = []
+    for index in picked or ():
+        if index in legal and index not in kept:
+            kept.append(index)
+        if len(kept) == count:
+            break
+    for index in available:
+        if len(kept) >= count:
+            break
+        if index not in kept:
+            kept.append(index)
+    return tuple(kept)
+
+
+def targeted_nodes(effects, chosen_modes: tuple[int, ...] | None = None) -> list:
+    """Targeted effect nodes, in the order the resolver will reach them.
+
+    Order is the contract: targets are supplied as one tuple per targeting
+    effect and handed out in execution order, so a slot kept for a mode that
+    never runs would shift every later effect onto the wrong target.
+    CR 700.2c: an unchosen mode's targets are not chosen at all, so its nodes
+    are left out.
+
+    ``None`` means no choice has been made yet - which is the question
+    legality asks of a card in hand - and then every mode is included.
+    """
+    out: list = []
+
+    def visit(node) -> None:
+        if node.kind is EffectKind.CHOOSE_MODE and node.children and chosen_modes is not None:
+            for index in chosen_modes:
+                if 0 <= index < len(node.children):
+                    visit(node.children[index])
+            return
+        if node.is_targeted:
+            out.append(node)
+        for child in node.children + node.otherwise:
+            visit(child)
+
+    for effect in effects:
+        visit(effect)
+    return out
+
+
+def spell_effects(game: Game, spell: GameObject) -> list:
+    """The effects of a spell's spell abilities (CR 113.6a)."""
+    return [
+        effect
+        for ability in game.characteristics(spell).abilities
+        if ability.kind is AbilityKind.SPELL
+        for effect in ability.effects
+    ]
+
+
+# ---------------------------------------------------------------------------
 # Targeting (CR 601.2c, 115)
 # ---------------------------------------------------------------------------
 
@@ -346,14 +535,10 @@ def targeting_effects(game: Game, spell: GameObject) -> list:
     has to walk the effects the same way.
     """
     chars = game.characteristics(spell)
-    nodes = [
-        node
-        for ability in chars.abilities
-        if ability.kind is AbilityKind.SPELL
-        for effect in ability.effects
-        for node in effect.walk()
-        if node.is_targeted
-    ]
+    # CR 700.2c: once the modes are chosen, only the chosen ones have targets.
+    # Before they are chosen - which is what legality asks of a card in hand -
+    # every mode counts.
+    nodes = targeted_nodes(spell_effects(game, spell), spell.chosen_modes or None)
     # CR 303.4a: "An Aura spell requires a target, which is defined by its
     # enchant ability." That target is not written as a targeting effect
     # anywhere - it comes from the keyword - so nothing offered it, an Aura
@@ -456,14 +641,11 @@ def _ask_for_targets(game: Game, spell: GameObject, player_id: PlayerId) -> tupl
     return choose_targets(game, spell, targeting_effects(game, spell), player_id)
 
 
-def ability_targeting_effects(ability: Ability) -> list:
+def ability_targeting_effects(
+    ability: Ability, chosen_modes: tuple[int, ...] | None = None
+) -> list:
     """The targeted effect nodes of one activated or triggered ability."""
-    return [
-        node
-        for effect in ability.effects
-        for node in effect.walk()
-        if node.is_targeted
-    ]
+    return targeted_nodes(ability.effects, chosen_modes)
 
 
 def ability_targets_available(
@@ -474,14 +656,18 @@ def ability_targets_available(
     The activated-ability counterpart of legality's check for spells. Without
     it an ability with nothing to point at was offered, chosen, and refused.
     """
-    for effect in ability.effects:
-        for node in effect.walk():
-            if not node.is_targeted:
-                continue
-            if node.targets is not None and (node.targets.up_to or node.targets.includes_players):
-                continue
-            if not _candidates_for(game, source, node, player_id):
-                return False
+    modal = modal_effect(ability.effects)
+    if modal is not None and not legal_modes(game, source, modal, player_id):
+        # CR 700.2a: one legal mode is enough, and none at all makes the
+        # ability unactivatable. Demanding a legal target for every mode
+        # would hide a charm behind whichever of its modes had nothing to
+        # point at.
+        return False
+    for node in targeted_nodes(ability.effects, ()):
+        if node.targets is not None and (node.targets.up_to or node.targets.includes_players):
+            continue
+        if not _candidates_for(game, source, node, player_id):
+            return False
     return True
 
 
@@ -528,15 +714,7 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
     """
     from .matching import matches
 
-    chars = game.characteristics(spell)
-    effects = [
-        node
-        for ability in chars.abilities
-        if ability.kind is AbilityKind.SPELL
-        for effect in ability.effects
-        for node in effect.walk()
-        if node.is_targeted
-    ]
+    effects = targeted_nodes(spell_effects(game, spell), spell.chosen_modes or None)
 
     if len(targets) < len(effects):
         raise CastError("not every required target was chosen")
@@ -1212,17 +1390,24 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     if not _can_pay_activation(game, source, ability):
         raise CastError("cannot pay the activation cost")
 
+    # CR 602.2b: activating an ability follows CR 601.2b-i, so the modes are
+    # chosen here, before the targets and before anything is paid. A modal
+    # ability with no legal mode cannot be activated at all (CR 700.2a).
+    chosen_modes = choose_modes(
+        game, source, ability.effects, player_id, announced=action.mode_choices
+    )
+    if not chosen_modes and modal_effect(ability.effects) is not None:
+        raise CastError("no legal mode for this ability")
+
     targets = action.targets
     if ability.is_targeted:
         if not targets:
-            effects = [
-                node for effect in ability.effects for node in effect.walk() if node.is_targeted
-            ]
+            effects = targeted_nodes(ability.effects, chosen_modes or None)
             targets = choose_targets(game, source, effects, player_id)
             for node, chosen in zip(effects, targets):
                 if not chosen and not (node.targets is not None and node.targets.up_to):
                     raise CastError("no legal target for this ability")
-        _validate_ability_targets(game, source, ability, targets)
+        _validate_ability_targets(game, source, ability, targets, chosen_modes)
 
     # A fresh record per activation: what the *last* activation tapped must
     # not leak into this one.
@@ -1251,7 +1436,12 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
         Event(EventKind.ABILITY_ACTIVATED, object_id=source.id, player=player_id)
     )
     stack_object = push_ability(
-        game, source, ability, targets=targets, x_value=action.x_value
+        game,
+        source,
+        ability,
+        targets=targets,
+        x_value=action.x_value,
+        chosen_modes=chosen_modes,
     )
     # What the cost consumed travels with the ability, as its targets do. The
     # source's own record belongs to its latest activation, and a Ninja still
@@ -1261,13 +1451,15 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
 
 
 def _validate_ability_targets(
-    game: Game, source: GameObject, ability: Ability, targets: tuple
+    game: Game,
+    source: GameObject,
+    ability: Ability,
+    targets: tuple,
+    chosen_modes: tuple[int, ...] = (),
 ) -> None:
     from .matching import matches
 
-    effects = [
-        node for effect in ability.effects for node in effect.walk() if node.is_targeted
-    ]
+    effects = targeted_nodes(ability.effects, chosen_modes or None)
     if len(targets) < len(effects):
         raise CastError("not every required target was chosen")
     for index, effect in enumerate(effects):

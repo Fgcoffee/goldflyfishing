@@ -589,6 +589,20 @@ def put_triggers_on_stack(game: Game) -> int:
         # ability that finds no legal target is still put on the stack; it is
         # countered on resolution by CR 608.2b, and something may yet change
         # in between.
+        #
+        # CR 603.3c: a mode is different. If the ability is modal and no mode
+        # can be chosen, it is removed from the stack - so it never goes on
+        # it - and nothing about the game state can change that later.
+        stack_object.chosen_modes = _choose_trigger_modes(game, stack_object, controller)
+        if not stack_object.chosen_modes and _is_modal(ability):
+            game.log.record(
+                game,
+                f"{ability.text or 'A triggered ability'} is removed from the stack: "
+                "no mode can be chosen (CR 603.3c)",
+                kind="trigger",
+                player=controller,
+            )
+            continue
         stack_object.targets = _choose_trigger_targets(game, stack_object, controller)
 
         game.objects[stack_object.id] = stack_object
@@ -604,7 +618,39 @@ def put_triggers_on_stack(game: Game) -> int:
     return count
 
 
-def _targeted_effects(ability: Ability) -> list:
+def _is_modal(ability: Ability) -> bool:
+    """Whether this ability has modes to choose at all (CR 700.2)."""
+    from .cr601_casting import modal_effect
+
+    return modal_effect(ability.effects) is not None
+
+
+def _choose_trigger_modes(
+    game: Game, stack_object: GameObject, controller: PlayerId
+) -> tuple[int, ...]:
+    """Ask this ability's controller to choose its mode(s) (CR 603.3c).
+
+    The same choice a spell makes at CR 601.2b, made by the same machinery -
+    there is one modal rule, and a triggered ability differs only in when it
+    is asked and in what happens when nothing can be chosen.
+    """
+    from .cr601_casting import choose_modes
+
+    ability = stack_object.ability
+    if ability is None or controller == NO_PLAYER:
+        return ()
+    # The source may be gone - a dies-trigger outlives its creature - and a
+    # mode's legality is then judged by its filters alone.
+    return choose_modes(
+        game,
+        game.objects.get(stack_object.source),
+        ability.effects,
+        controller,
+        source_id=stack_object.source,
+    )
+
+
+def _targeted_effects(ability: Ability, chosen_modes: tuple[int, ...] = ()) -> list:
     """The targeted effect nodes of an ability, in announcement order.
 
     Every targeted node, player-only ones included, because this list is
@@ -613,12 +659,10 @@ def _targeted_effects(ability: Ability) -> list:
     object filter - chose no target for it and shifted every later effect's
     targets onto the wrong effect.
     """
-    return [
-        node
-        for effect in ability.effects
-        for node in effect.walk()
-        if node.is_targeted
-    ]
+    from .cr601_casting import targeted_nodes
+
+    # CR 700.2c: only a chosen mode's targets are chosen.
+    return targeted_nodes(ability.effects, chosen_modes or None)
 
 
 def _choose_trigger_targets(
@@ -632,7 +676,7 @@ def _choose_trigger_targets(
     ability = stack_object.ability
     if ability is None or controller == NO_PLAYER:
         return ()
-    effects = _targeted_effects(ability)
+    effects = _targeted_effects(ability, stack_object.chosen_modes)
     if not effects:
         return ()
 

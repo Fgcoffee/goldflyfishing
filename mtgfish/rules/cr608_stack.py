@@ -228,7 +228,11 @@ def _all_targets_illegal(game: Game, obj: GameObject) -> bool:
             for effect in a.effects
         )
 
-    targeting_effects = [node for e in effects for node in e.walk() if node.is_targeted]
+    # CR 700.2c: the targets belong to the modes that were chosen, so the
+    # unchosen ones are not walked - their slots do not exist.
+    from .cr601_casting import targeted_nodes
+
+    targeting_effects = targeted_nodes(effects, obj.chosen_modes or None)
     if not targeting_effects:
         return False
 
@@ -275,12 +279,16 @@ def push_ability(
     *,
     targets: tuple = (),
     x_value: int = 0,
+    chosen_modes: tuple[int, ...] = (),
 ) -> GameObject:
     """Put an activated or triggered ability on the stack (CR 113.7).
 
     The ability on the stack is an object in its own right and exists
     independently of its source, so destroying the source in response does not
     remove it.
+
+    The modes travel with it, as its targets do (CR 602.2b, 700.2a): they were
+    chosen as it was put here, and the resolver has no way to ask later.
     """
     stack_object = GameObject(
         id=game.ids.object_id(),
@@ -293,6 +301,7 @@ def push_ability(
         source=source.id,
         targets=targets,
         x_value=x_value,
+        chosen_modes=chosen_modes,
     )
     game.objects[stack_object.id] = stack_object
     game.stack.append(stack_object.id)
