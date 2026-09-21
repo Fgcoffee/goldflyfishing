@@ -352,15 +352,45 @@ def _affordable(
 
 
 def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool:
-    """CR 601.2c: a spell needing a target cannot be cast without a legal one."""
-    from ..cr600_spells_and_abilities.cr601_casting import targeting_effects
+    """CR 601.2c: a spell needing a target cannot be cast without a legal one.
+
+    A modal spell is the awkward case, because which targets it needs depends
+    on a mode nobody has chosen yet - the card is still in hand. CR 700.2a
+    settles it: a mode whose targets cannot be supplied cannot be chosen, so
+    the spell is castable while *any* mode is. Requiring every mode's targets
+    made a charm uncastable whenever a single one of its options had nothing
+    to point at.
+    """
+    from ..cr600_spells_and_abilities.cr601_casting import (
+        aura_target_effect,
+        legal_modes,
+        modal_effect,
+        spell_effects,
+        targeted_nodes,
+        targeting_effects,
+    )
     from .matching import find
 
-    # The engine's own list, rather than a third walk of the same effects.
-    # An Aura's target comes from its enchant ability instead of a targeting
-    # effect (CR 303.4a), so a walk that only looked at effects offered an
-    # Aura as castable with no creature on the battlefield to enchant.
-    for node in targeting_effects(game, obj):
+    modal = modal_effect(spell_effects(game, obj))
+    if modal is None:
+        # The engine's own list, rather than a third walk of the same effects.
+        # An Aura's target comes from its enchant ability instead of a
+        # targeting effect (CR 303.4a), so a walk that only looked at effects
+        # offered an Aura as castable with no creature to enchant.
+        nodes = targeting_effects(game, obj)
+    else:
+        if not legal_modes(game, obj, modal, player_id):
+            # CR 700.2b: no mode can be chosen, so there is nothing to cast.
+            return False
+        # The modes have been judged above, on their own terms. What is left
+        # to check is the targets outside the modal instruction, which an
+        # empty ``chosen_modes`` asks for.
+        nodes = targeted_nodes(spell_effects(game, obj), ())
+        enchant = aura_target_effect(game.characteristics(obj))
+        if enchant is not None:
+            nodes.insert(0, enchant)
+
+    for node in nodes:
         if node.targets is None:
             continue
         # "Up to N" can legally be cast with none, so an empty board
