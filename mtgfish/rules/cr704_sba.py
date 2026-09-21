@@ -325,15 +325,46 @@ def _check_permanents(
 
 
 def _attachment_is_legal(game: Game, obj: GameObject, *, require_host: bool) -> bool:
-    """Whether an attachment is attached to something it can legally be on."""
+    """Whether an attachment is on something it may legally be on.
+
+    CR 303.4c for an Aura, CR 301.5 for Equipment, CR 301.6 for a
+    Fortification. The restriction was already parsed and already on the
+    object - the Enchant keyword carries its filter as ``quality`` - and this
+    check ignored it, so nothing ever fell off: an Aura stayed attached to a
+    creature that had stopped being a creature, and Equipment stayed on a
+    permanent that was no longer one.
+
+    An attachment whose restriction the parser could not read keeps the old
+    behaviour, which is to stay put. Destroying it on a restriction the engine
+    cannot see would be worse than leaving it.
+    """
     if not obj.attached_to:
         return not require_host
     host = game.objects.get(obj.attached_to)
     if host is None or host.zone is not Zone.BATTLEFIELD:
         return False
-    # An Aura or Equipment can only be on a permanent its enchant/equip
-    # restriction allows. Without a parsed restriction the check is limited to
-    # "the host exists and is a permanent", which never wrongly destroys.
+
+    from .matching import matches
+
+    chars = game.characteristics(obj)
+    for ability in chars.abilities:
+        if ability.keyword.lower() not in ("enchant", "equip", "fortify"):
+            continue
+        if ability.quality is None:
+            continue
+        if not matches(
+            game, host, ability.quality, source=obj.id, controller=obj.controller
+        ):
+            return False
+
+    # CR 301.5: Equipment goes on a creature, whatever else its equip ability
+    # says. Fortifications go on lands (CR 301.6). Both are part of the type,
+    # not of the ability's own filter, so neither comes from ``quality``.
+    host_chars = game.characteristics(host)
+    if chars.has_subtype("Equipment") and not host_chars.is_creature:
+        return False
+    if chars.has_subtype("Fortification") and not host_chars.has_type(CardType.LAND):
+        return False
     return True
 
 
@@ -364,10 +395,7 @@ def _final_chapter(chars) -> int | None:
 def _check_ceased(game: Game, to_cease: list[GameObject]) -> None:
     for obj in list(game.objects.values()):
         # CR 704.5d: a token that has left the battlefield.
-        if obj.kind is ObjectKind.TOKEN and obj.zone is not Zone.BATTLEFIELD:
-            to_cease.append(obj)
-        # CR 704.5e: a copy of a spell that is no longer on the stack.
-        elif obj.kind is ObjectKind.COPY and obj.zone is not Zone.STACK:
+        if obj.kind is ObjectKind.TOKEN and obj.zone is not Zone.BATTLEFIELD or obj.kind is ObjectKind.COPY and obj.zone is not Zone.STACK:
             to_cease.append(obj)
 
 
