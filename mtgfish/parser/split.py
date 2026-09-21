@@ -64,7 +64,7 @@ class Line:
 
     text: str
     kind: LineKind
-    #: CR 702.183c: "Max speed - ..." gates whether the ability functions at
+    #: CR 702.178a: "Max speed - ..." gates whether the ability functions at
     #: all. Unlike an ability word - which is pure flavour and is stripped -
     #: dropping this would make the ability work from turn one.
     max_speed: bool = False

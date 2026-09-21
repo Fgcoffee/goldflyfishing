@@ -195,7 +195,7 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
 
     game.log.record(game, f"{game.player(player_id).name} casts {spell}", kind="cast",
                     player=player_id)
-    # CR 731.3 counts spells cast during a turn to decide the day/night flip.
+    # CR 731.2 counts spells cast during a turn to decide the day/night flip.
     game.spells_cast_this_turn += 1
     # 601.2i: the spell has been cast; only now do cast triggers fire.
     game.emit(Event(EventKind.CAST_SPELL, object_id=spell.id, player=player_id))

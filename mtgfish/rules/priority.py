@@ -170,7 +170,7 @@ def run_priority(game: Game) -> None:
     Returns when every player has passed in succession on an empty stack.
     """
     if game.step in NO_PRIORITY_STEPS and not game.pending_triggers:
-        # CR 502.3 and 514.3: no priority in the untap or cleanup step - unless
+        # CR 502.4 and 514.3: no priority in the untap or cleanup step - unless
         # something triggered or a state-based action happened, in which case
         # players do get priority and the step repeats.
         settle(game)

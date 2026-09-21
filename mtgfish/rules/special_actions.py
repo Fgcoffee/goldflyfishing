@@ -120,7 +120,7 @@ FACE_UP_KEYWORDS: dict[str, int] = {
 
 
 def _turn_face_up(game: Game, player_id: PlayerId):
-    """CR 702.36e: any time you have priority, for the printed morph cost.
+    """CR 702.37e: any time you have priority, for the printed morph cost.
 
     Note what is *not* checked: timing beyond having priority, and whether the
     permanent is a creature right now. Turning face up is not casting and not

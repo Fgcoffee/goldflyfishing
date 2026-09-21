@@ -140,7 +140,7 @@ def tap(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> bool:
 
 
 def untap(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> bool:
-    """CR 701.21b. A "can't be untapped" effect beats any instruction to untap
+    """CR 701.26b. A "can't be untapped" effect beats any instruction to untap
     (CR 101.2), which is the whole of Winter Orb-style lockdown."""
     from .restrictions import Act, prohibited
 
@@ -356,7 +356,7 @@ def deal_damage(
             target.dealt_deathtouch_damage = True
     else:
         # Damage to a permanent that is neither creature, planeswalker, nor
-        # battle has no effect (CR 119.3f).
+        # battle has no effect (CR 120.3).
         return 0
 
     game.emit(
@@ -385,7 +385,7 @@ def _damage_player(
     combat: bool,
     is_commander_source: bool,
 ) -> int:
-    """Damage to a player causes that much life loss (CR 119.3c)."""
+    """Damage to a player causes that much life loss (CR 120.3a)."""
     player = game.player(player_id)
 
     # CR 702.90c: infect damages players with poison counters instead of life.

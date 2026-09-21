@@ -128,7 +128,7 @@ class Ability:
     #: CR 606: loyalty abilities are sorcery-speed and once per turn per
     #: permanent, and their cost is a loyalty counter change.
     is_loyalty_ability: bool = False
-    #: CR 602.5f and friends: "activate only once each turn".
+    #: CR 602.5b and friends: "activate only once each turn".
     once_each_turn: bool = False
     activation_condition: Condition = ALWAYS
 
@@ -225,7 +225,7 @@ class Ability:
 
     @property
     def uses_stack(self) -> bool:
-        """Static abilities and mana abilities never use the stack (CR 605.2a)."""
+        """Static abilities and mana abilities never use the stack (CR 605.3b)."""
         if self.kind is AbilityKind.STATIC:
             return False
         return not self.is_mana_ability

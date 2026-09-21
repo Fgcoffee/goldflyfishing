@@ -1538,7 +1538,7 @@ def _fortify(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Start your engines!")
 def _start_your_engines(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.183a: a static ability that starts this player's speed.
+    """CR 702.179a: a static ability that starts this player's speed.
 
     Not a triggered ability - it applies as soon as the permanent is anywhere
     its abilities function, and it is idempotent, so two of them on one board

@@ -91,12 +91,18 @@ was written can still break against what `main` has learned since - and runs
 the tests there. The card database is shared rather than rebuilt per branch.
 
 ```powershell
-.\scriptseview.ps1 list                    # what is waiting, and how far ahead
-.\scriptseview.ps1 diff  <branch>          # what it changes, against main
-.\scriptseview.ps1 test  <branch>          # the suites, on branch merged with main
-.\scriptseview.ps1 run   <branch> -Port 8010   # open the web app on it
-.\scriptseview.ps1 merge <branch>          # fast-forward main when you are happy
-.\scriptseview.ps1 clean                   # remove the review copies
+.\scripts
+eview.ps1 list                    # what is waiting, and how far ahead
+.\scripts
+eview.ps1 diff  <branch>          # what it changes, against main
+.\scripts
+eview.ps1 test  <branch>          # the suites, on branch merged with main
+.\scripts
+eview.ps1 run   <branch> -Port 8010   # open the web app on it
+.\scripts
+eview.ps1 merge <branch>          # fast-forward main when you are happy
+.\scripts
+eview.ps1 clean                   # remove the review copies
 ```
 
 `test` skips the slow parser suite; add `-Full` for everything. `-AsIs` tests
@@ -124,7 +130,7 @@ failure rather than a mystery in the numbers.
 
 | | |
 |---|---|
-| `rules/` | The Comprehensive Rules, implemented. Knows nothing about oracle text, bots or statistics. Every legality check lives here. The one exception is `relaxations.py`, a default-empty set of rules an instrument may suspend; a simulated game never constructs anything but `STRICT`. |
+| `rules/` | The Comprehensive Rules, implemented. Knows nothing about oracle text, bots or statistics. Every legality check lives here. Code cites the rules by number, and `citations.py` checks those citations against the shipped rules text - see [docs/rules-citations.md](docs/rules-citations.md). The one exception is `relaxations.py`, a default-empty set of rules an instrument may suspend; a simulated game never constructs anything but `STRICT`. |
 | `parser/` | Oracle text to an effect IR made only of opcodes the rules layer already runs. It cannot express an effect the engine lacks, which is what makes a mis-parse inert rather than corrupting. |
 | `data/` | The Scryfall card snapshot, and deck import. |
 | `ai/` | Decision making. Enumerates its options *from the engine*, so it can never drift from the real rules. |

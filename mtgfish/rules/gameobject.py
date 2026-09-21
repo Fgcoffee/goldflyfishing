@@ -102,7 +102,7 @@ class GameObject:
     #: outlive the combat they happened in.
     attacked_this_turn: bool = False
     blocked_this_turn: bool = False
-    #: CR 602.5f: activations of once-per-turn abilities, keyed by ability
+    #: CR 602.5b: activations of once-per-turn abilities, keyed by ability
     #: index. Reset when the object changes zones, since it becomes new.
     activations_this_turn: dict = field(default_factory=dict)
 
