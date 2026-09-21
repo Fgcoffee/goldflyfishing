@@ -9,18 +9,17 @@ resolution, and a cast that cannot be paid for leaves the game state untouched.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, keyword, make_board
 
 from mtgfish.rules.abilities import Ability
-from mtgfish.rules.casting import CastError, cast_spell, play_land
+from mtgfish.rules.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr601_casting import CastError, cast_spell, play_land
+from mtgfish.rules.cr608_stack import resolve_top
 from mtgfish.rules.effects import Effect, EffectKind
 from mtgfish.rules.enums import CardType, Phase, Step, Zone
 from mtgfish.rules.ids import PlayerId
 from mtgfish.rules.legality import has_sorcery_speed, legal_actions
-from mtgfish.rules.priority import Action, ActionKind
 from mtgfish.rules.query import ObjectFilter, Value
-from mtgfish.rules.stack import resolve_top
-
-from harness import ScriptedAbilities, keyword, make_board
 
 CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 
@@ -69,8 +68,8 @@ def board(card_db, scripts):
 
 def give_mana(board, player: int, amount: int, color: str = "R"):
     """Put mana straight into a pool, bypassing lands."""
+    from mtgfish.rules.cr106_mana import ManaKind
     from mtgfish.rules.enums import LETTER_TO_COLOR
-    from mtgfish.rules.mana import ManaKind
 
     board.game.player(PlayerId(player)).mana_pool.add(
         ManaKind(LETTER_TO_COLOR[color]), amount
@@ -170,7 +169,7 @@ def test_a_land_taps_for_mana_the_turn_it_arrives(board):
     ]
     assert mana_abilities
 
-    from mtgfish.rules.casting import activate_ability
+    from mtgfish.rules.cr601_casting import activate_ability
 
     index, _ = mana_abilities[0]
     activate_ability(
@@ -393,7 +392,7 @@ def test_an_unpayable_cast_is_rewound(board):
 
 def test_mana_pools_empty_between_steps(board):
     """CR 500.4."""
-    from mtgfish.rules.turn import _empty_mana_pools
+    from mtgfish.rules.cr500_turn import _empty_mana_pools
 
     give_mana(board, 0, 5)
     assert board.game.player(PlayerId(0)).mana_pool.total == 5

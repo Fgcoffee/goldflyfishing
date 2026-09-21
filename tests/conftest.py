@@ -6,8 +6,8 @@ import pytest
 
 from mtgfish.data.db import CardDatabase
 from mtgfish.paths import card_db_path
+from mtgfish.rules.cr205_typeline import SubtypeRegistry, active_registry, install_registry
 from mtgfish.rules.enums import CardType
-from mtgfish.rules.typeline import SubtypeRegistry, active_registry, install_registry
 
 
 @pytest.fixture(scope="session")

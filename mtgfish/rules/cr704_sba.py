@@ -168,7 +168,7 @@ def _check_commander_zone_choice(game: Game) -> list[GameObject]:
         return []
     game.commanders_awaiting_zone_choice = []
 
-    from .replacement import wants_command_zone
+    from .cr614_replacement import wants_command_zone
 
     moves: list[GameObject] = []
     for object_id in pending:

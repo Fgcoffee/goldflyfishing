@@ -514,13 +514,11 @@ _ENGINE_READS_KEYS = frozenset(name.lower() for name in ENGINE_READS)
 
 def _probe_instance(name: str):
     """A representative instance of a keyword, for grading its builder."""
-    from .costs import Cost, CostComponent, CostKind
-    from .keyword_impl import KeywordInstance
-    from .mana import ManaCost
-    from .query import CardType, ObjectFilter
-
+    from .cr106_mana import ManaCost
+    from .cr118_costs import Cost, CostComponent, CostKind
+    from .cr702_keyword_impl import KeywordInstance
     from .effects import Effect, EffectKind
-    from .query import PlayerFilter, PlayerScope, Value
+    from .query import CardType, ObjectFilter, PlayerFilter, PlayerScope, Value
 
     return KeywordInstance(
         name,
@@ -549,9 +547,9 @@ def _builder_status(name: str) -> Status | None:
     without cannot be - which removes the possibility of the table and the
     engine disagreeing.
     """
-    from .keyword_actions import BUILDERS as ACTION_BUILDERS
-    from .keyword_actions import build as build_action
-    from .keyword_impl import BUILDERS, build
+    from .cr701_keyword_actions import BUILDERS as ACTION_BUILDERS
+    from .cr701_keyword_actions import build as build_action
+    from .cr702_keyword_impl import BUILDERS, build
 
     key = name.lower()
 

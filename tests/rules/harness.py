@@ -17,11 +17,11 @@ from dataclasses import dataclass, field
 from mtgfish.data.decks import parse_decklist
 from mtgfish.rules.abilities import Ability, AbilityKind
 from mtgfish.rules.characteristics import Characteristics
+from mtgfish.rules.cr103_setup import new_game
 from mtgfish.rules.enums import Zone
 from mtgfish.rules.game import Game
 from mtgfish.rules.gameobject import GameObject, ObjectKind
 from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.setup import new_game
 
 
 def keyword(name: str) -> Ability:
@@ -82,7 +82,7 @@ class FixedAgent:
         self.blocker_order = blocker_order or {}
 
     def choose_action(self, game, player, legal):
-        from mtgfish.rules.priority import PASS
+        from mtgfish.rules.cr117_priority import PASS
 
         return PASS
 
@@ -190,19 +190,19 @@ class Board:
 
     def sba(self) -> bool:
         """Run state-based actions once, as the priority loop would."""
-        from mtgfish.rules.sba import check_state_based_actions
+        from mtgfish.rules.cr704_sba import check_state_based_actions
 
         return check_state_based_actions(self.game)
 
     def settle(self) -> None:
         """State-based actions plus putting triggers on the stack."""
-        from mtgfish.rules.priority import settle
+        from mtgfish.rules.cr117_priority import settle
 
         settle(self.game)
 
     def resolve_stack(self) -> None:
         """Resolve everything on the stack, top first."""
-        from mtgfish.rules.stack import resolve_top
+        from mtgfish.rules.cr608_stack import resolve_top
 
         while self.game.stack:
             resolve_top(self.game)

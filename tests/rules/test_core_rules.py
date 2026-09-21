@@ -7,16 +7,19 @@ for cards that any real Commander deck contains.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, keyword, make_board
 
 from mtgfish.rules.abilities import Ability, AbilityKind, DelayedTrigger, TriggerCondition
 from mtgfish.rules.actions import destroy, exiled_with, untap
-from mtgfish.rules.casting import activate_ability
-from mtgfish.rules.costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr111_tokens import create_emblem, create_tokens, token_name
+from mtgfish.rules.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr118_costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr601_casting import activate_ability
+from mtgfish.rules.cr603_triggers import check_state_triggers
 from mtgfish.rules.effects import Effect, EffectKind, TokenSpec
 from mtgfish.rules.enums import CardType, Color, Zone
 from mtgfish.rules.events import EventKind
 from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.priority import Action, ActionKind
 from mtgfish.rules.query import (
     Comparison,
     Condition,
@@ -28,10 +31,6 @@ from mtgfish.rules.query import (
     Value,
 )
 from mtgfish.rules.restrictions import Act, Restriction, prohibited, register_standing
-from mtgfish.rules.tokens import create_emblem, create_tokens, token_name
-from mtgfish.rules.triggers import check_state_triggers
-
-from harness import ScriptedAbilities, keyword, make_board
 
 CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 
@@ -73,7 +72,7 @@ def test_a_prohibition_stops_destruction(board):
 
 
 def test_a_prohibition_stops_attacking(board):
-    from mtgfish.rules.combat import can_attack
+    from mtgfish.rules.cr506_combat import can_attack
 
     bears = board.play("Grizzly Bears")
     assert can_attack(board.game, bears)
@@ -83,7 +82,7 @@ def test_a_prohibition_stops_attacking(board):
 
 
 def test_a_prohibition_stops_blocking(board):
-    from mtgfish.rules.combat import can_block
+    from mtgfish.rules.cr506_combat import can_block
 
     attacker = board.play("Grizzly Bears", controller=0)
     blocker = board.play("Grizzly Bears", controller=1)
@@ -95,7 +94,7 @@ def test_a_prohibition_stops_blocking(board):
 
 def test_a_prohibition_can_be_conditional(board):
     """"Creatures can't attack unless..." - the condition gates the "can't"."""
-    from mtgfish.rules.combat import can_attack
+    from mtgfish.rules.cr506_combat import can_attack
 
     bears = board.play("Grizzly Bears")
     never = Condition(ConditionKind.NEVER)
@@ -409,7 +408,7 @@ def test_a_minus_loyalty_ability_removes_counters(board):
 
 def test_a_minus_ability_cannot_be_paid_without_the_counters(board):
     """CR 606.4: the counters *are* the cost, so this is not activatable."""
-    from mtgfish.rules.casting import _can_pay_activation
+    from mtgfish.rules.cr601_casting import _can_pay_activation
 
     game = board.game
     board.scripts.add("Ajani, Caller of the Pride", loyalty_ability(-5))
@@ -423,8 +422,8 @@ def test_a_minus_ability_cannot_be_paid_without_the_counters(board):
 
 def test_loyalty_abilities_are_once_per_turn(board):
     """CR 606.3."""
-    from mtgfish.rules.legality import legal_actions
     from mtgfish.rules.enums import Phase, Step
+    from mtgfish.rules.legality import legal_actions
 
     game = board.game
     game.active_player = PlayerId(0)

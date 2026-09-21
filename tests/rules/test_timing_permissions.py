@@ -112,9 +112,9 @@ def test_casting_from_a_resolving_effect_ignores_timing(box):
     resolving effect calls ``cast_spell`` directly. That is correct, but it is
     correct by structure rather than by intent, so it is pinned here.
     """
-    from mtgfish.rules.casting import cast_spell
+    from mtgfish.rules.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr601_casting import cast_spell
     from mtgfish.rules.ids import PlayerId
-    from mtgfish.rules.priority import Action, ActionKind
 
     box.put("Wrath of God", "hand", 0)
     box.give_mana(10)

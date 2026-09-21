@@ -27,16 +27,16 @@ import pytest
 from mtgfish.data.cards import CardDef, FaceDef, Layout
 from mtgfish.parser.clauses import parse_effects
 from mtgfish.parser.tokens import Stream
+from mtgfish.rules.cr106_mana import ManaCost
+from mtgfish.rules.cr205_typeline import TypeLine
 from mtgfish.rules.effects import Effect, EffectKind
 from mtgfish.rules.enums import Color, Zone
 from mtgfish.rules.events import EventKind
 from mtgfish.rules.game import Game
 from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.mana import ManaCost
 from mtgfish.rules.player import Player
 from mtgfish.rules.query import PlayerFilter, PlayerScope, Value
 from mtgfish.rules.resolve import Resolution, _do_prevent_damage, _do_search_library
-from mtgfish.rules.typeline import TypeLine
 
 
 def a_land(name: str = "Forest") -> CardDef:

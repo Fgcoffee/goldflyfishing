@@ -8,8 +8,9 @@ players expect.
 from __future__ import annotations
 
 import pytest
+from harness import FixedAgent, ScriptedAbilities, keyword, make_board
 
-from mtgfish.rules.combat import (
+from mtgfish.rules.cr506_combat import (
     can_attack,
     can_block,
     deal_combat_damage,
@@ -18,8 +19,6 @@ from mtgfish.rules.combat import (
     end_combat,
 )
 from mtgfish.rules.ids import PlayerId
-
-from harness import FixedAgent, ScriptedAbilities, keyword, make_board
 
 
 @pytest.fixture
@@ -191,7 +190,7 @@ def test_flier_can_block_ground_creature(card_db, scripts):
 
 
 def test_tapped_creature_cannot_block(card_db, scripts):
-    from mtgfish.rules.combat import can_block_at_all
+    from mtgfish.rules.cr506_combat import can_block_at_all
 
     board = make_board(card_db, scripts)
     assert not can_block_at_all(board.game, board.play("Grizzly Bears", tapped=True))
@@ -199,7 +198,7 @@ def test_tapped_creature_cannot_block(card_db, scripts):
 
 def test_summoning_sick_creature_can_still_block(card_db, scripts):
     """CR 302.6 restricts attacking and {T} abilities, never blocking."""
-    from mtgfish.rules.combat import can_block_at_all
+    from mtgfish.rules.cr506_combat import can_block_at_all
 
     board = make_board(card_db, scripts)
     bears = board.play("Grizzly Bears", controller=1)
@@ -438,8 +437,8 @@ def test_an_attacker_is_neither_blocked_nor_unblocked_until_blockers_are_declare
 def test_attackers_are_still_attacking_during_the_end_of_combat_step(card_db, scripts):
     """CR 511.3: creatures leave combat as the end of combat step *ends*, so a
     player with priority during that step still sees them attacking."""
+    from mtgfish.rules.cr500_turn import TurnOptions, _run_step
     from mtgfish.rules.enums import Phase, Step
-    from mtgfish.rules.turn import TurnOptions, _run_step
 
     board = combat_board(card_db, scripts)
     bears = board.play("Grizzly Bears", controller=0)

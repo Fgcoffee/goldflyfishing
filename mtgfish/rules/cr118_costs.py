@@ -16,8 +16,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum
 
+from .cr106_mana import ZERO_COST, ManaCost
 from .enums import Zone
-from .mana import ZERO_COST, ManaCost
 from .query import ZERO, ObjectFilter, Value
 
 

@@ -18,11 +18,11 @@ from dataclasses import dataclass
 
 from .enums import (
     CARD_TYPE_NAMES,
+    CARD_TYPE_ORDER,
+    SUPERTYPE_DISPLAY_NAMES,
     SUPERTYPE_NAMES,
     SUPERTYPE_ORDER,
     TYPE_DISPLAY_NAMES,
-    SUPERTYPE_DISPLAY_NAMES,
-    CARD_TYPE_ORDER,
     CardType,
     Supertype,
 )

@@ -139,7 +139,7 @@ def test_no_maximum_hand_size_is_a_permission(card_db):
 def test_reliquary_tower_actually_skips_the_cleanup_discard(card_db, tmp_path):
     """The parse is only half of it - the cleanup step has to honour it."""
     from mtgfish.parser.verdicts import VerdictStore
-    from mtgfish.rules.turn import _discard_to_hand_size
+    from mtgfish.rules.cr500_turn import _discard_to_hand_size
     from mtgfish.ui.sandbox import Sandbox
 
     box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))
@@ -155,7 +155,7 @@ def test_reliquary_tower_actually_skips_the_cleanup_discard(card_db, tmp_path):
 
 def test_without_the_tower_the_discard_still_happens(card_db, tmp_path):
     from mtgfish.parser.verdicts import VerdictStore
-    from mtgfish.rules.turn import _discard_to_hand_size
+    from mtgfish.rules.cr500_turn import _discard_to_hand_size
     from mtgfish.ui.sandbox import Sandbox
 
     box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))

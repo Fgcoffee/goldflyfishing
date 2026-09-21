@@ -15,18 +15,17 @@ plausible-looking shortcut:
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, keyword, make_board
 
 from mtgfish.rules.abilities import Ability, AbilityKind
 from mtgfish.rules.actions import deal_damage, gain_life
-from mtgfish.rules.costs import TAP_COST
+from mtgfish.rules.cr118_costs import TAP_COST
+from mtgfish.rules.cr614_replacement import ReplacementEffect, ReplacementKind, register
 from mtgfish.rules.effects import Effect, EffectKind
 from mtgfish.rules.enums import CardType, Color, Supertype
 from mtgfish.rules.events import EventKind
 from mtgfish.rules.ids import PlayerId
 from mtgfish.rules.query import ObjectFilter, PlayerFilter, PlayerScope, Value, ValueKind
-from mtgfish.rules.replacement import ReplacementEffect, ReplacementKind, register
-
-from harness import ScriptedAbilities, keyword, make_board
 
 ALL_CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 NONBASIC_LANDS = ObjectFilter(types_all=CardType.LAND, supertypes_none=Supertype.BASIC)

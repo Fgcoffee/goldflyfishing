@@ -236,7 +236,7 @@ def holds(
         # answers for any permanent, Class or not.
         if condition.constraint is None:
             return False
-        from .card_types import class_level
+        from .cr300_card_types import class_level
         from .values import evaluate
 
         subject = _subject(game, condition, source)
@@ -246,7 +246,7 @@ def holds(
         return condition.constraint.comparison.holds(class_level(game, subject), expected)
 
     if kind is ConditionKind.IS_SOLVED:
-        from .card_types import is_solved
+        from .cr300_card_types import is_solved
 
         subject = _subject(game, condition, source)
         return subject != NO_OBJECT and is_solved(game, subject)

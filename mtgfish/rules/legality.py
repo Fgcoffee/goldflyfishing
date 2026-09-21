@@ -13,10 +13,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .abilities import AbilityKind
+from .cr117_priority import PASS, Action, ActionKind
 from .enums import CardType, Phase, Timing, Zone
 from .gameobject import GameObject
 from .ids import ObjectId, PlayerId
-from .priority import PASS, Action, ActionKind
 
 if TYPE_CHECKING:
     from .game import Game
@@ -45,7 +45,7 @@ def legal_actions(game: Game, player_id: PlayerId) -> list[Action]:
     out.extend(_activatable(game, player_id, sorcery_speed))
     # CR 116: special actions need no stack and no timing permission beyond
     # priority, so they are offered in every window a player gets one.
-    from .special_actions import available as special_available
+    from .cr116_special_actions import available as special_available
 
     out.extend(action.as_action() for action in special_available(game, player_id))
     return out
@@ -66,7 +66,7 @@ def _land_plays(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Ac
     if prohibited(game, Act.PLAY_LAND, player=player_id) is not None:
         return []
 
-    from .faces import playable_land_face_indices
+    from .cr707_faces import playable_land_face_indices
 
     out: list[Action] = []
     for object_id in player.hand:
@@ -93,7 +93,7 @@ def _face_characteristics(game: Game, obj: GameObject, face_index: int):
     card's front face.
     """
     from .characteristics import from_face
-    from .layers import intrinsic_land_abilities
+    from .cr613_layers import intrinsic_land_abilities
 
     faces = getattr(obj.card, "faces", ())
     if face_index >= len(faces):
@@ -104,7 +104,7 @@ def _face_characteristics(game: Game, obj: GameObject, face_index: int):
 
 
 def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Action]:
-    from .faces import castable_face_indices
+    from .cr707_faces import castable_face_indices
     from .restrictions import Act, permitted, prohibited
 
     out: list[Action] = []
@@ -202,8 +202,8 @@ def _affordable_alternative(
     of the dry run payment itself uses. Only the mana was asked about, so an
     escape was offered with nothing in the graveyard to exile.
     """
-    from .casting import CastError, _check_payable
-    from .mana import find_payment
+    from .cr106_mana import find_payment
+    from .cr601_casting import CastError, _check_payable
 
     if alternative.cost.is_unparsed:
         return False
@@ -253,7 +253,7 @@ def can_afford(game: Game, player_id: PlayerId, cost) -> bool:
     (CR 116) pay a flat cost with no cost-modification effects applying to
     them, so there is nothing to increase or reduce.
     """
-    from .mana import find_payment
+    from .cr106_mana import find_payment
 
     player = game.player(player_id)
     if cost is None or cost.mana_value == 0:
@@ -286,8 +286,8 @@ def _affordable(
     the exact tap plan. Saying yes when the colors do not work out costs a
     rewound cast; saying no when they do would hide a legal play entirely.
     """
-    from .casting import cost_increases, cost_reductions
-    from .mana import find_payment
+    from .cr106_mana import find_payment
+    from .cr601_casting import cost_increases, cost_reductions
 
     player = game.player(player_id)
     chars = chars if chars is not None else game.characteristics(obj)
@@ -312,7 +312,7 @@ def _affordable(
     # CR 702.51a and friends: convoke, improvise and delve pay part of a cost
     # with something other than mana, so a spell that is unaffordable in mana
     # alone may still be perfectly castable.
-    from .casting import helper_capacity
+    from .cr601_casting import helper_capacity
 
     helpers = helper_capacity(game, obj, player_id)
     if helpers and player.mana_pool.usable_for(obj) + helpers >= cost.mana_value:
@@ -409,7 +409,7 @@ def _activation_sources(game: Game, player_id: PlayerId) -> list[GameObject]:
 
 
 def _activatable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Action]:
-    from .casting import _can_pay_activation, ability_targets_available, activation_refusal
+    from .cr601_casting import _can_pay_activation, ability_targets_available, activation_refusal
     from .restrictions import Act, prohibited
 
     out: list[Action] = []

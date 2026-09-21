@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass, field
 
 from ..rules.abilities import BATTLEFIELD_ONLY, Ability, AbilityKind
-from ..rules.card_types import chapter_ability
+from ..rules.cr300_card_types import chapter_ability
 from ..rules.effects import Effect, EffectKind
 from ..rules.enums import Timing, Zone
 from ..rules.keywords import lookup as keyword_lookup
@@ -208,7 +208,7 @@ def _keyword(line: Line, result: ParsedFace) -> list[Ability]:
     name and parameter to ``keyword_impl``. That is what keeps one definition
     of "flying" in the codebase instead of two that can drift apart.
     """
-    from ..rules.keyword_impl import build
+    from ..rules.cr702_keyword_impl import build
 
     name, argument = _split_keyword(line.text)
     if name is None:
@@ -235,7 +235,7 @@ def _split_keyword(text: str) -> tuple[str | None, str]:
 
 def _keyword_instance(name: str, argument: str, text: str):
     """Turn "Ward {2}" or "Annihilator 2" into a parameterised instance."""
-    from ..rules.keyword_impl import KeywordInstance
+    from ..rules.cr702_keyword_impl import KeywordInstance
     from .nouns import parse_object_filter
 
     amount = 0
@@ -287,8 +287,8 @@ def _keyword_cost(text: str):
     could. Anything else after the symbols is not a cost - "Prototype {1}{B} -
     1/1", "Kicker {B} and/or {R}" - and the symbols stay the cost they were.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
-    from ..rules.mana import ManaCost
+    from ..rules.cr106_mana import ManaCost
+    from ..rules.cr118_costs import Cost, CostComponent, CostKind
     from .costs import parse_cost
 
     stream = Stream.of(text)
@@ -357,7 +357,7 @@ def _triggered(line: Line, result: ParsedFace) -> list[Ability]:
 
 
 def _activated(line: Line, result: ParsedFace) -> list[Ability]:
-    from ..rules.costs import CostKind
+    from ..rules.cr118_costs import CostKind
     from .costs import parse_cost
 
     cost_text, _, effect_text = line.text.partition(":")
@@ -437,7 +437,7 @@ def _zones_paid_from(cost, effects=()) -> frozenset[Zone]:
     "Sacrifice this creature: Return it from your graveyard" does; that one
     works where the creature is.
     """
-    from ..rules.costs import EXILE_ZONES, CostKind
+    from ..rules.cr118_costs import EXILE_ZONES, CostKind
 
     put_there_first = False
     for component in cost.components:
@@ -533,7 +533,6 @@ def _activation_condition(effect_text: str) -> _Activation:
         PlayerFilter,
         PlayerScope,
     )
-
     from .clauses import parse_condition_text
 
     match = _ONLY_RE.search(effect_text)
@@ -786,7 +785,7 @@ def _alternative_cost_line(text: str):
     Returns ``None`` for anything that is not one of these shapes, so an
     ordinary sentence falls through to the clause grammar untouched.
     """
-    from ..rules.costs import AlternativeCost, Cost
+    from ..rules.cr118_costs import AlternativeCost, Cost
     from .clauses import parse_condition_text
     from .costs import parse_cost
 

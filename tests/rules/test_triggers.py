@@ -8,14 +8,18 @@ replacement changes the event *before* it happens and uses nothing.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, make_board
 
 from mtgfish.rules.abilities import Ability, TriggerCondition
 from mtgfish.rules.actions import add_counters, deal_damage, destroy
+from mtgfish.rules.cr603_triggers import put_triggers_on_stack
+from mtgfish.rules.cr614_replacement import ReplacementEffect, ReplacementKind, register
 from mtgfish.rules.effects import Effect, EffectKind
 from mtgfish.rules.enums import CardType, Zone
 from mtgfish.rules.events import EventKind
 from mtgfish.rules.ids import PlayerId
 from mtgfish.rules.query import (
+    YOU,
     Comparison,
     Condition,
     ConditionKind,
@@ -23,12 +27,7 @@ from mtgfish.rules.query import (
     NumericConstraint,
     ObjectFilter,
     Value,
-    YOU,
 )
-from mtgfish.rules.replacement import ReplacementEffect, ReplacementKind, register
-from mtgfish.rules.triggers import put_triggers_on_stack
-
-from harness import ScriptedAbilities, make_board
 
 CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 

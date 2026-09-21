@@ -18,10 +18,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from . import actions
+from .cr117_priority import run_priority, settle
 from .enums import Phase, Step
 from .events import Event, EventKind
 from .ids import PlayerId
-from .priority import run_priority, settle
 
 if TYPE_CHECKING:
     from .game import Game
@@ -130,7 +130,7 @@ def _restart(game: Game, options: TurnOptions, depth: int = 0) -> Game:
         )
         return game
 
-    from .setup import new_game
+    from .cr103_setup import new_game
 
     starting = game.restart_starting_player or 0
     fresh = new_game(
@@ -175,7 +175,7 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
 
     # CR 731.2: the day/night flip reads the *previous* turn's spell count, so
     # it is checked before this turn's counter is reset.
-    from .designations import check_day_night_transition
+    from .cr725_designations import check_day_night_transition
 
     check_day_night_transition(game, game.active_player)
     game.spells_cast_last_turn = game.spells_cast_this_turn
@@ -184,7 +184,7 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     # "Until your next turn" ends as that turn begins, before any of it
     # happens - so a creature lent out until your next turn comes back before
     # you untap, not after.
-    from .durations import expire_at_start_of_turn
+    from .cr611_durations import expire_at_start_of_turn
 
     expire_at_start_of_turn(game)
 
@@ -295,8 +295,8 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
     elif step is Step.MAIN and game.phase is Phase.PRECOMBAT_MAIN:
         # CR 728.1: the rad-counter procedure is a turn-based action at the
         # start of the precombat main phase.
-        from .card_types import saga_lore_counters
-        from .designations import rad_counter_milling
+        from .cr300_card_types import saga_lore_counters
+        from .cr725_designations import rad_counter_milling
 
         rad_counter_milling(game, game.active_player)
         saga_lore_counters(game)
@@ -313,7 +313,7 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         # beginning of the next end step" are waiting to fire.
         game.emit(Event(EventKind.END_STEP, player=game.active_player))
         # CR 725.2: the monarch draws at the beginning of their end step.
-        from .designations import monarch_end_step_draw
+        from .cr725_designations import monarch_end_step_draw
 
         monarch_end_step_draw(game)
     elif step is Step.DRAW:
@@ -402,26 +402,26 @@ def _draw_step(game: Game, options: TurnOptions) -> None:
 
 
 def _declare_attackers(game: Game) -> None:
-    from .combat import declare_attackers
+    from .cr506_combat import declare_attackers
 
     declare_attackers(game)
 
 
 def _declare_blockers(game: Game) -> None:
-    from .combat import declare_blockers
+    from .cr506_combat import declare_blockers
 
     declare_blockers(game)
 
 
 def _combat_damage(game: Game) -> None:
-    from .combat import deal_combat_damage
+    from .cr506_combat import deal_combat_damage
 
     deal_combat_damage(game)
 
 
 def _end_of_combat(game: Game) -> None:
-    from .combat import end_combat
-    from .durations import expire_at_end_of_combat
+    from .cr506_combat import end_combat
+    from .cr611_durations import expire_at_end_of_combat
 
     end_combat(game)
     # CR 511.2: "Effects that last 'until end of combat' expire at the end
@@ -453,7 +453,7 @@ def _cleanup_step(game: Game) -> None:
         game.emit(Event(EventKind.CLEANUP, player=game.active_player))
 
         needs_priority = bool(game.pending_triggers)
-        from .sba import check_state_based_actions
+        from .cr704_sba import check_state_based_actions
 
         if check_state_based_actions(game):
             needs_priority = True
@@ -487,7 +487,7 @@ def _discard_to_hand_size(game: Game) -> None:
 
 def _clear_damage_and_expire_effects(game: Game) -> None:
     """CR 514.2: damage wears off and until-end-of-turn effects end, together."""
-    from .durations import expire_at_cleanup
+    from .cr611_durations import expire_at_cleanup
 
     for obj in game.permanents():
         obj.damage = 0

@@ -9,15 +9,14 @@ the ability actually does the right thing when the engine runs it.
 from __future__ import annotations
 
 import pytest
+from harness import FixedAgent, ScriptedAbilities, make_board
 
 from mtgfish.rules.abilities import AbilityKind
 from mtgfish.rules.actions import destroy
-from mtgfish.rules.costs import Cost
+from mtgfish.rules.cr118_costs import Cost
+from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build, implemented_keywords
 from mtgfish.rules.enums import CardType, Zone
 from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.keyword_impl import KeywordInstance, build, implemented_keywords
-
-from harness import FixedAgent, ScriptedAbilities, make_board
 
 
 @pytest.fixture
@@ -113,7 +112,7 @@ def test_landwalk_carries_the_land_type_it_walks(board):
 
 def test_exalted_triggers_on_a_lone_attacker(board):
     """CR 702.90a, with "alone" as an intervening-if (CR 603.4)."""
-    from mtgfish.rules.combat import declare_attackers
+    from mtgfish.rules.cr506_combat import declare_attackers
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -148,7 +147,7 @@ def test_annihilator_carries_its_amount(board):
 
 
 def test_afflict_triggers_on_becoming_blocked(board):
-    from mtgfish.rules.combat import declare_attackers, declare_blockers
+    from mtgfish.rules.cr506_combat import declare_attackers, declare_blockers
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -244,10 +243,10 @@ def test_flashback_is_a_graveyard_alternative_cost(board):
 
 def test_flashback_actually_makes_a_graveyard_card_castable(board):
     """End to end: the keyword expansion feeds the legality rules from CR 118.9."""
+    from mtgfish.rules.cr106_mana import ManaKind
+    from mtgfish.rules.cr117_priority import ActionKind
     from mtgfish.rules.enums import LETTER_TO_COLOR, Phase, Step
     from mtgfish.rules.legality import legal_actions
-    from mtgfish.rules.mana import ManaKind
-    from mtgfish.rules.priority import ActionKind
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -287,7 +286,7 @@ def test_equip_is_a_sorcery_speed_activated_ability(board):
 
 
 def test_cycling_functions_from_hand_and_discards_itself(board):
-    from mtgfish.rules.costs import CostKind
+    from mtgfish.rules.cr118_costs import CostKind
 
     ability = kw("Cycling", cost=Cost.mana("{2}"))[0]
     assert Zone.HAND in ability.functions_in
@@ -313,10 +312,10 @@ def test_crew_animates_the_vehicle(board):
 
 
 def test_prowess_triggers_on_a_noncreature_spell(board):
-    from mtgfish.rules.casting import cast_spell
+    from mtgfish.rules.cr106_mana import ManaKind
+    from mtgfish.rules.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr601_casting import cast_spell
     from mtgfish.rules.enums import LETTER_TO_COLOR, Phase, Step
-    from mtgfish.rules.mana import ManaKind
-    from mtgfish.rules.priority import Action, ActionKind
 
     game = board.game
     game.active_player = PlayerId(0)
@@ -334,10 +333,10 @@ def test_prowess_triggers_on_a_noncreature_spell(board):
 
 
 def test_prowess_does_not_trigger_on_a_creature_spell(board):
-    from mtgfish.rules.casting import cast_spell
+    from mtgfish.rules.cr106_mana import ManaKind
+    from mtgfish.rules.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr601_casting import cast_spell
     from mtgfish.rules.enums import LETTER_TO_COLOR, Phase, Step
-    from mtgfish.rules.mana import ManaKind
-    from mtgfish.rules.priority import Action, ActionKind
 
     game = board.game
     game.active_player = PlayerId(0)

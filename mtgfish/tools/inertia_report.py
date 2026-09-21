@@ -65,7 +65,7 @@ PROBE_SPELLS = ("Sol Ring", "Serra Angel")
 
 def _probe_state(sandbox) -> tuple:
     """Everything about the board a permanent could plausibly change."""
-    from ..rules.casting import cost_increases, cost_reductions
+    from ..rules.cr601_casting import cost_increases, cost_reductions
 
     game = sandbox.game
     game.invalidate_characteristics()
@@ -97,7 +97,7 @@ def _probe_state(sandbox) -> tuple:
             int(chars.colors),
         )
 
-    from ..rules.replacement import static_replacements
+    from ..rules.cr614_replacement import static_replacements
     from ..rules.restrictions import _active, _active_permissions
 
     return (

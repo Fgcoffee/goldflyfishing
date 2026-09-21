@@ -217,8 +217,8 @@ def test_a_defined_pt_is_marked_characteristic_defining(card_db):
 
 def test_a_cda_functions_outside_the_battlefield(card_db):
     """CR 604.3: a CDA applies in every zone."""
-    from mtgfish.rules.enums import Zone
     from mtgfish.parser import parse_card
+    from mtgfish.rules.enums import Zone
 
     card = card_db.lookup("Nightmare")
     defined = [
@@ -262,8 +262,8 @@ def test_restricted_mana_cannot_pay_for_the_wrong_spell(card_db, tmp_path):
     in a run as nothing but good draws.
     """
     from mtgfish.parser.verdicts import VerdictStore
+    from mtgfish.rules.cr106_mana import ManaKind, SpendOnlyOn
     from mtgfish.rules.enums import Color, Zone
-    from mtgfish.rules.mana import ManaKind, SpendOnlyOn
     from mtgfish.rules.query import ObjectFilter
     from mtgfish.ui.sandbox import Sandbox
 

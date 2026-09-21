@@ -490,7 +490,7 @@ def _enter_as_copy(game: Game, obj, effect) -> None:
     costs a tribal interaction and nothing else, where not copying at all
     costs the whole card.
     """
-    from .faces import copy_permanent
+    from .cr707_faces import copy_permanent
     from .matching import find
 
     spec = effect.targets

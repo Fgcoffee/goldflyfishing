@@ -229,13 +229,13 @@ def test_the_bot_aims_removal_at_opponents(card_db):
     The engine offers every legal target and the default choice is the first
     one, which is as likely to be yours as theirs.
     """
+    from harness import ScriptedAbilities, make_board
+
     from mtgfish.ai.simple import SimpleAgent
+    from mtgfish.rules.abilities import Ability
     from mtgfish.rules.effects import Effect, EffectKind
     from mtgfish.rules.enums import CardType
     from mtgfish.rules.query import ObjectFilter
-
-    from harness import ScriptedAbilities, make_board
-    from mtgfish.rules.abilities import Ability
 
     scripts = ScriptedAbilities()
     board = make_board(card_db, scripts)
@@ -261,11 +261,11 @@ def test_the_bot_holds_mana_on_other_players_turns(card_db):
     """CR gives instant speed for a reason, and a bot that spends the moment
     it can is playing sorcery speed badly - it taps out in an opponent's
     upkeep and cannot cast its own four-drop."""
-    from mtgfish.ai.simple import SimpleAgent
-    from mtgfish.rules.enums import Phase, Step
-    from mtgfish.rules.priority import Action, ActionKind
-
     from harness import ScriptedAbilities, make_board
+
+    from mtgfish.ai.simple import SimpleAgent
+    from mtgfish.rules.cr117_priority import Action, ActionKind
+    from mtgfish.rules.enums import Phase, Step
 
     board = make_board(card_db, ScriptedAbilities())
     trick = board.hand("Giant Growth", controller=0)
@@ -291,14 +291,14 @@ def test_a_targeted_spell_can_be_cast_at_all(card_db):
     silently uncastable and the simulator reported combat damage as the only
     way anyone ever won.
     """
+    from harness import ScriptedAbilities, make_board
+
     from mtgfish.rules.abilities import Ability
-    from mtgfish.rules.casting import cast_spell
+    from mtgfish.rules.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr601_casting import cast_spell
     from mtgfish.rules.effects import Effect, EffectKind
     from mtgfish.rules.enums import CardType
-    from mtgfish.rules.priority import Action, ActionKind
     from mtgfish.rules.query import ObjectFilter
-
-    from harness import ScriptedAbilities, make_board
 
     scripts = ScriptedAbilities()
     board = make_board(card_db, scripts)
@@ -319,8 +319,8 @@ def test_a_targeted_spell_can_be_cast_at_all(card_db):
     spell = board.hand("Murder", controller=0)
     victim = board.play("Grizzly Bears", controller=1)
 
+    from mtgfish.rules.cr106_mana import ManaKind
     from mtgfish.rules.enums import LETTER_TO_COLOR
-    from mtgfish.rules.mana import ManaKind
 
     board.game.player(0).mana_pool.add(ManaKind(LETTER_TO_COLOR["B"]), 3)
 
@@ -424,11 +424,11 @@ def test_one_permanent_leaving_is_counted_once(card_db):
     artifacts counted once - so the removal table ranked creature-removal
     twice as dangerous as it is, and nothing looked wrong.
     """
+    from harness import ScriptedAbilities, make_board
+
     from mtgfish.rules import actions
     from mtgfish.sim.observer import Observer
     from mtgfish.sim.records import GameRecord
-
-    from harness import ScriptedAbilities, make_board
 
     board = make_board(card_db, ScriptedAbilities())
     record = GameRecord(index=0, seed=0, turns=0)
@@ -449,11 +449,11 @@ def test_one_permanent_leaving_is_counted_once(card_db):
 def test_your_own_sacrifice_is_not_recorded_as_a_loss(card_db):
     """A creature you fed to your own outlet is a cost you chose to pay, not
     presence somebody took from you."""
+    from harness import ScriptedAbilities, make_board
+
     from mtgfish.rules import actions
     from mtgfish.sim.observer import Observer
     from mtgfish.sim.records import GameRecord
-
-    from harness import ScriptedAbilities, make_board
 
     board = make_board(card_db, ScriptedAbilities())
     record = GameRecord(index=0, seed=0, turns=0)

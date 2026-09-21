@@ -8,17 +8,16 @@ second bug turned on.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, keyword, make_board
 
 from mtgfish.rules import keywords
 from mtgfish.rules.abilities import AbilityKind
-from mtgfish.rules.costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr106_mana import ManaCost
+from mtgfish.rules.cr118_costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
 from mtgfish.rules.effects import EffectKind
 from mtgfish.rules.enums import CardType, Color, Zone
-from mtgfish.rules.keyword_impl import KeywordInstance, build
-from mtgfish.rules.mana import ManaCost
 from mtgfish.rules.query import ObjectFilter
-
-from harness import ScriptedAbilities, keyword, make_board
 
 
 @pytest.fixture
@@ -78,7 +77,7 @@ def test_living_metal_is_a_creature_only_on_your_turn(board):
 
 def test_skulk_stops_bigger_creatures_blocking(board):
     """CR 702.118b: can't be blocked by creatures with greater power."""
-    from mtgfish.rules.combat import can_block
+    from mtgfish.rules.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", keyword("Skulk"))
     attacker = board.play("Grizzly Bears", controller=0)  # 2/2 with skulk
@@ -91,7 +90,7 @@ def test_skulk_stops_bigger_creatures_blocking(board):
 
 def test_skulk_allows_an_equal_sized_blocker(board):
     """"Greater power", not "greater or equal" - a 2/2 blocks a 2/2 skulker."""
-    from mtgfish.rules.combat import can_block
+    from mtgfish.rules.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", keyword("Skulk"))
     attacker = board.play("Grizzly Bears", controller=0)
@@ -106,7 +105,7 @@ def test_banding_hands_the_damage_order_to_the_defender(board):
     Normally the attacking player orders blockers and can aim lethal damage.
     With a banding blocker, the defending player orders them instead.
     """
-    from mtgfish.rules.combat import _combat, _order_blockers
+    from mtgfish.rules.cr506_combat import _combat, _order_blockers
 
     board.scripts.add("Grizzly Bears", keyword("Banding"))
     attacker = board.play("Serra Angel", controller=0)
@@ -134,7 +133,7 @@ def test_banding_hands_the_damage_order_to_the_defender(board):
 
 def test_without_banding_the_attacker_orders(board):
     """The control: no banding, and the attacking player chooses as usual."""
-    from mtgfish.rules.combat import _combat, _order_blockers
+    from mtgfish.rules.cr506_combat import _combat, _order_blockers
 
     attacker = board.play("Serra Angel", controller=0)
     one = board.play("Grizzly Bears", controller=1)
@@ -161,7 +160,7 @@ def test_without_banding_the_attacker_orders(board):
 
 def test_unleash_stops_blocking_only_while_the_counter_is_there(board):
     """CR 702.101a: the drawback keys off the counter, not off the choice."""
-    from mtgfish.rules.combat import can_block
+    from mtgfish.rules.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Unleash")))
     blocker = board.play("Grizzly Bears", controller=1)
@@ -180,7 +179,7 @@ def test_unleash_stops_blocking_only_while_the_counter_is_there(board):
 
 def test_decayed_cannot_block(board):
     """CR 702.148a, the first half."""
-    from mtgfish.rules.combat import can_block
+    from mtgfish.rules.cr506_combat import can_block
 
     board.scripts.add("Grizzly Bears", *build(KeywordInstance("Decayed")))
     blocker = board.play("Grizzly Bears", controller=1)
@@ -266,8 +265,8 @@ def test_create_needs_a_token_to_create():
     An expansion that put a nameless 0/0 onto the battlefield would be worse
     than doing nothing, because the board would look plausible.
     """
+    from mtgfish.rules.cr701_keyword_actions import build as build_action
     from mtgfish.rules.effects import TokenSpec
-    from mtgfish.rules.keyword_actions import build as build_action
     from mtgfish.rules.query import Value
 
     assert build_action("Create")[0].kind is EffectKind.UNPARSED
@@ -311,7 +310,7 @@ def test_unparsed_deliberately_has_no_executor():
 def test_protection_quality_is_carried_through(board):
     """CR 702.16b end to end: protection from red does not stop a green
     creature blocking."""
-    from mtgfish.rules.combat import can_block
+    from mtgfish.rules.cr506_combat import can_block
 
     red = ObjectFilter(colors_any=Color.RED)
     board.scripts.add("Serra Angel", *build(KeywordInstance("Protection", filter=red)))

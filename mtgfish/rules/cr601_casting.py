@@ -30,17 +30,16 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .abilities import Ability, AbilityKind
-from .mana import ManaCost
-from .costs import EXILE_ZONES, CostComponent, CostKind, TotalCost, required_amount
+from .cr106_mana import ManaCost, find_payment
+from .cr118_costs import EXILE_ZONES, CostComponent, CostKind, TotalCost, required_amount
 from .enums import Zone
 from .events import Event, EventKind
 from .gameobject import GameObject
 from .ids import PlayerId
-from .mana import find_payment
 
 if TYPE_CHECKING:
+    from .cr117_priority import Action
     from .game import Game
-    from .priority import Action
 
 
 class CastError(RuntimeError):
@@ -641,8 +640,8 @@ def _pay_with_helpers(game: Game, player_id: PlayerId, cost, context) -> None:
     something else pays part of it. Anything that later asks the spell what it
     cost sees the printed number (CR 702.51b).
     """
+    from .cr106_mana import ManaKind
     from .enums import CardType, Zone
-    from .mana import ManaKind
 
     chars = game.characteristics(context) if context is not None else None
     if chars is None:
@@ -1142,8 +1141,8 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     one important divergence: a mana ability never goes on the stack and
     resolves immediately (CR 605.3).
     """
+    from .cr608_stack import push_ability
     from .resolve import Resolution, execute
-    from .stack import push_ability
 
     source = game.objects.get(action.source)
     if source is None:
@@ -1193,7 +1192,7 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
         # a mana ability resolves right here too. It cannot wait for the stack,
         # because during cost payment there is no window in which the stack is
         # used at all.
-        from .triggers import resolve_mana_triggers
+        from .cr603_triggers import resolve_mana_triggers
 
         resolve_mana_triggers(game)
         return None

@@ -9,8 +9,8 @@ working at all.
 
 from __future__ import annotations
 
-from ..rules.costs import EXILE_ZONES, Cost, CostComponent, CostKind
-from ..rules.mana import ManaCost, UnknownManaSymbol
+from ..rules.cr106_mana import ManaCost, UnknownManaSymbol
+from ..rules.cr118_costs import EXILE_ZONES, Cost, CostComponent, CostKind
 from ..rules.query import ObjectFilter, Value
 from .nouns import SELF_NOUNS, parse_object_filter, parse_value
 from .tokens import Stream, TokenKind

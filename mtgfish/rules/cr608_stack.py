@@ -69,7 +69,7 @@ def _resolve_ability(game: Game, obj: GameObject) -> None:
     # CR 603.4: an intervening-if clause is checked a second time here, and the
     # ability does nothing if it has become false.
     if ability.kind is AbilityKind.TRIGGERED and ability.trigger is not None:
-        from .triggers import check_intervening_if
+        from .cr603_triggers import check_intervening_if
 
         source = game.objects.get(obj.source)
         if source is not None and not check_intervening_if(game, source, ability.trigger):

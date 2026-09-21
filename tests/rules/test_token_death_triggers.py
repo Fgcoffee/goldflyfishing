@@ -21,9 +21,9 @@ import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
 from mtgfish.rules import actions
+from mtgfish.rules.cr117_priority import run_priority
 from mtgfish.rules.enums import Zone
 from mtgfish.rules.gameobject import ObjectKind
-from mtgfish.rules.priority import run_priority
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
 
 

@@ -23,12 +23,11 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .abilities import Ability, AbilityKind, TriggerCondition
-from .costs import AdditionalCost, AlternativeCost, Cost, CostComponent, CostKind
+from .cr106_mana import ManaCost
+from .cr118_costs import AdditionalCost, AlternativeCost, Cost, CostComponent, CostKind
 from .effects import Effect, EffectKind, TokenSpec
 from .enums import CardType, Color, Duration, Timing, Zone
 from .events import LEAVE_BATTLEFIELD_KINDS, EventKind
-from .mana import ManaCost
-from .restrictions import Act, Restriction
 from .query import (
     Comparison,
     Condition,
@@ -41,6 +40,7 @@ from .query import (
     Value,
     ValueKind,
 )
+from .restrictions import Act, Restriction
 
 BATTLEFIELD = frozenset({Zone.BATTLEFIELD})
 GRAVEYARD = frozenset({Zone.GRAVEYARD})
@@ -151,7 +151,7 @@ def _changeling(instance: KeywordInstance) -> tuple[Ability, ...]:
     interact the way it does. The list comes from the subtype registry built
     from the real card pool, so a new set adds types without code changes.
     """
-    from .typeline import DEFAULT_REGISTRY
+    from .cr205_typeline import DEFAULT_REGISTRY
 
     return (
         Ability(
@@ -971,7 +971,7 @@ def _unearth(instance: KeywordInstance) -> tuple[Ability, ...]:
     change. The card itself is looked for in the graveyard only, so a card
     exiled in response is a new object (CR 400.7) and nothing comes back.
     """
-    from .replacement import ReplacementKind
+    from .cr614_replacement import ReplacementKind
 
     return (
         Ability(
@@ -1544,15 +1544,14 @@ def _start_your_engines(instance: KeywordInstance) -> tuple[Ability, ...]:
     its abilities function, and it is idempotent, so two of them on one board
     do not stack.
     """
-    from .effects import Effect, EffectKind
-    from .query import YOU, ObjectFilter
-
     # A *triggered* ability, not a static one. A static ability contributes a
     # continuous effect through the layer system; it never executes a one-shot
     # opcode, so a START_ENGINES sitting in a static ability would do exactly
     # nothing - the same trap that made "enters tapped" silently inert.
     from .abilities import TriggerCondition
+    from .effects import Effect, EffectKind
     from .events import EventKind
+    from .query import YOU, ObjectFilter
 
     return (
         Ability(
@@ -1590,7 +1589,7 @@ def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
       restricts only the {T} symbol in a permanent's own cost;
     * the number of counters is that creature's power, not one.
     """
-    from .costs import Cost, CostComponent, CostKind
+    from .cr118_costs import Cost, CostComponent, CostKind
     from .effects import Effect, EffectKind
     from .enums import CardType
     from .query import ControllerRelation, ObjectFilter, Value, ValueKind
@@ -3306,7 +3305,7 @@ def _compleated(instance: KeywordInstance) -> tuple[Ability, ...]:
 def _solved(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.169a / 719.3c: "Solved - [ability]" works only once the Case has
     the solved designation."""
-    from .card_types import solved_ability
+    from .cr300_card_types import solved_ability
 
     inner = Ability(
         AbilityKind.STATIC,

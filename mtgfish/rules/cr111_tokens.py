@@ -21,12 +21,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .abilities import Ability, AbilityKind
+from .cr106_mana import ZERO_COST, ManaCost
+from .cr205_typeline import TypeLine
 from .effects import TokenSpec
 from .enums import CardType, Color, Zone
 from .events import Event, EventKind
 from .ids import NO_OBJECT, ObjectId, PlayerId
-from .mana import ZERO_COST, ManaCost
-from .typeline import TypeLine
 
 if TYPE_CHECKING:
     from .game import Game

@@ -18,17 +18,18 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from harness import ScriptedAbilities
 
 from mtgfish.parser.verdicts import VerdictStore
 from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.costs import TAP_COST
+from mtgfish.rules.cr117_priority import ActionKind, _perform
+from mtgfish.rules.cr118_costs import TAP_COST
 from mtgfish.rules.effects import Effect, EffectKind
 from mtgfish.rules.enums import CardType, Zone
 from mtgfish.rules.gameobject import GameObject
 from mtgfish.rules.ids import NO_OBJECT, PlayerId
 from mtgfish.rules.legality import legal_actions
 from mtgfish.rules.matching import matches
-from mtgfish.rules.priority import ActionKind, _perform
 from mtgfish.rules.query import (
     Comparison,
     ControllerRelation,
@@ -38,8 +39,6 @@ from mtgfish.rules.query import (
     ValueKind,
 )
 from mtgfish.ui.sandbox import Sandbox
-
-from harness import ScriptedAbilities
 
 YOU = PlayerId(0)
 THEM = PlayerId(1)

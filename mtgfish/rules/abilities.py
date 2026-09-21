@@ -23,7 +23,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import IntEnum
 
-from .costs import FREE, Cost
+from .cr118_costs import FREE, Cost
 from .effects import Effect
 from .enums import Timing, Zone
 from .events import EventKind

@@ -10,13 +10,13 @@ does not actually have. It has caught one already.
 from __future__ import annotations
 
 from mtgfish.rules import keywords
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.keyword_actions import (
-    ActionInstance,
+from mtgfish.rules.cr701_keyword_actions import (
     BUILDERS,
+    ActionInstance,
     build,
     implemented_actions,
 )
+from mtgfish.rules.effects import EffectKind
 from mtgfish.rules.keywords import Status
 
 

@@ -53,113 +53,113 @@ COVERAGE: dict[str, Entry] = _entries(
     {
         Status.IMPLEMENTED: {
             # -- 100s -------------------------------------------------------
-            "100": ("rules/setup.py", "multiplayer game setup"),
+            "100": ("rules/cr103_setup.py", "multiplayer game setup"),
             "102": ("rules/player.py", ""),
-            "103": ("rules/setup.py", "turn order, opening hands, London mulligan"),
+            "103": ("rules/cr103_setup.py", "turn order, opening hands, London mulligan"),
             "104": ("rules/game.py", "win and loss conditions"),
             "105": ("rules/enums.py", "colors as a bitmask"),
-            "106": ("rules/mana.py", "mana types, pools, emptying"),
-            "107": ("rules/mana.py", "mana symbols incl. hybrid and Phyrexian"),
+            "106": ("rules/cr106_mana.py", "mana types, pools, emptying"),
+            "107": ("rules/cr106_mana.py", "mana symbols incl. hybrid and Phyrexian"),
             "109": ("rules/gameobject.py", "objects"),
             "110": ("rules/gameobject.py", "permanents and status"),
-            "112": ("rules/stack.py", "spells"),
+            "112": ("rules/cr608_stack.py", "spells"),
             "113": ("rules/abilities.py", "the four ability types, and where they function"),
-            "115": ("rules/casting.py", "targets, legality on announce and resolve"),
-            "117": ("rules/priority.py", "priority, passing, resolution"),
+            "115": ("rules/cr601_casting.py", "targets, legality on announce and resolve"),
+            "117": ("rules/cr117_priority.py", "priority, passing, resolution"),
             "119": ("rules/actions.py", "life"),
             "120": ("rules/actions.py", "damage to players, creatures, planeswalkers"),
             "121": ("rules/game.py", "drawing, and the empty-library flag"),
             "122": ("rules/actions.py", "counters, incl. +1/+1 and -1/-1 annihilation"),
             "101": ("rules/restrictions.py", "101.2 'can't beats can' as a general mechanism"),
-            "111": ("rules/tokens.py", "tokens, CR 111.4 naming and CR 111.5 refusal"),
-            "114": ("rules/tokens.py", "emblems, abilities functioning in the command zone"),
+            "111": ("rules/cr111_tokens.py", "tokens, CR 111.4 naming and CR 111.5 refusal"),
+            "114": ("rules/cr111_tokens.py", "emblems, abilities functioning in the command zone"),
             "118": (
-                "rules/costs.py",
+                "rules/cr118_costs.py",
                 "alternative (118.9), additional (118.8), unpayable (118.6), "
                 "atomic payment (118.3), and coloured reduction (118.7b-g)",
             ),
             # -- 200s -------------------------------------------------------
             "201": ("data/cards.py", "names"),
-            "202": ("rules/mana.py", "mana cost and derived color"),
+            "202": ("rules/cr106_mana.py", "mana cost and derived color"),
             "204": ("data/cards.py", "color indicator overrides cost-derived color"),
-            "205": ("rules/typeline.py", "type lines, incl. multi-word subtypes"),
+            "205": ("rules/cr205_typeline.py", "type lines, incl. multi-word subtypes"),
             "208": ("data/cards.py", "power/toughness, incl. non-numeric"),
-            "209": ("rules/stack.py", "loyalty as counters on entry"),
-            "210": ("rules/stack.py", "defense as counters on entry"),
+            "209": ("rules/cr608_stack.py", "loyalty as counters on entry"),
+            "210": ("rules/cr608_stack.py", "defense as counters on entry"),
             # -- 300s -------------------------------------------------------
-            "301": ("rules/sba.py", "artifacts, Equipment attachment"),
-            "302": ("rules/combat.py", "creatures, summoning sickness"),
-            "303": ("rules/sba.py", "enchantments, Aura attachment"),
+            "301": ("rules/cr704_sba.py", "artifacts, Equipment attachment"),
+            "302": ("rules/cr506_combat.py", "creatures, summoning sickness"),
+            "303": ("rules/cr704_sba.py", "enchantments, Aura attachment"),
             "304": ("rules/legality.py", "instants"),
-            "305": ("rules/layers.py", "lands, intrinsic mana, 305.7 type-setting"),
-            "306": ("rules/sba.py", "planeswalkers and loyalty"),
+            "305": ("rules/cr613_layers.py", "lands, intrinsic mana, 305.7 type-setting"),
+            "306": ("rules/cr704_sba.py", "planeswalkers and loyalty"),
             "307": ("rules/legality.py", "sorceries and sorcery-speed timing"),
-            "310": ("rules/sba.py", "battles and defense counters"),
+            "310": ("rules/cr704_sba.py", "battles and defense counters"),
             # -- 400s -------------------------------------------------------
             "400": ("rules/game.py", "zones, and 400.7 new-object semantics"),
             "401": ("rules/player.py", "library"),
             "402": ("rules/player.py", "hand"),
             "403": ("rules/game.py", "battlefield"),
             "404": ("rules/player.py", "graveyard"),
-            "405": ("rules/stack.py", "stack"),
+            "405": ("rules/cr608_stack.py", "stack"),
             "406": ("rules/game.py", "exile"),
             "408": ("rules/game.py", "command zone"),
             # -- 500s -------------------------------------------------------
-            "500": ("rules/turn.py", "phases, steps, mana emptying"),
-            "501": ("rules/turn.py", ""),
-            "502": ("rules/turn.py", "untap step, no priority"),
-            "503": ("rules/turn.py", ""),
-            "504": ("rules/turn.py", "draw step as a turn-based action"),
-            "505": ("rules/turn.py", "main phases"),
-            "506": ("rules/combat.py", "combat phase, removal from combat"),
-            "507": ("rules/turn.py", ""),
-            "508": ("rules/combat.py", "declare attackers, restrictions/requirements"),
-            "509": ("rules/combat.py", "declare blockers, evasion, damage order"),
-            "510": ("rules/combat.py", "combat damage, first/double strike steps"),
-            "511": ("rules/combat.py", ""),
-            "512": ("rules/turn.py", ""),
-            "513": ("rules/turn.py", ""),
-            "514": ("rules/turn.py", "cleanup, discard, damage wearing off"),
+            "500": ("rules/cr500_turn.py", "phases, steps, mana emptying"),
+            "501": ("rules/cr500_turn.py", ""),
+            "502": ("rules/cr500_turn.py", "untap step, no priority"),
+            "503": ("rules/cr500_turn.py", ""),
+            "504": ("rules/cr500_turn.py", "draw step as a turn-based action"),
+            "505": ("rules/cr500_turn.py", "main phases"),
+            "506": ("rules/cr506_combat.py", "combat phase, removal from combat"),
+            "507": ("rules/cr500_turn.py", ""),
+            "508": ("rules/cr506_combat.py", "declare attackers, restrictions/requirements"),
+            "509": ("rules/cr506_combat.py", "declare blockers, evasion, damage order"),
+            "510": ("rules/cr506_combat.py", "combat damage, first/double strike steps"),
+            "511": ("rules/cr506_combat.py", ""),
+            "512": ("rules/cr500_turn.py", ""),
+            "513": ("rules/cr500_turn.py", ""),
+            "514": ("rules/cr500_turn.py", "cleanup, discard, damage wearing off"),
             # -- 600s -------------------------------------------------------
-            "601": ("rules/casting.py", "the full CR 601.2 sequence with rewind"),
-            "602": ("rules/casting.py", "activating abilities"),
-            "603": ("rules/triggers.py", "triggers, intervening-if, LKI, APNAP"),
-            "604": ("rules/layers.py", "static abilities, CDAs"),
-            "605": ("rules/casting.py", "mana abilities do not use the stack"),
-            "606": ("rules/casting.py", "loyalty timing, once-per-turn, counters as the cost"),
-            "612": ("rules/layers.py", "text-changing effects in layer 3"),
-            "608": ("rules/stack.py", "resolution, and 608.2b fizzling"),
+            "601": ("rules/cr601_casting.py", "the full CR 601.2 sequence with rewind"),
+            "602": ("rules/cr601_casting.py", "activating abilities"),
+            "603": ("rules/cr603_triggers.py", "triggers, intervening-if, LKI, APNAP"),
+            "604": ("rules/cr613_layers.py", "static abilities, CDAs"),
+            "605": ("rules/cr601_casting.py", "mana abilities do not use the stack"),
+            "606": ("rules/cr601_casting.py", "loyalty timing, once-per-turn, counters as the cost"),
+            "612": ("rules/cr613_layers.py", "text-changing effects in layer 3"),
+            "608": ("rules/cr608_stack.py", "resolution, and 608.2b fizzling"),
             "609": ("rules/resolve.py", ""),
             "610": ("rules/resolve.py", ""),
-            "611": ("rules/durations.py", "continuous effects and when they end"),
-            "613": ("rules/layers.py", "all layers, sublayers, and 613.8 dependency"),
-            "603.7": ("rules/triggers.py", "delayed triggered abilities"),
-            "603.8": ("rules/triggers.py", "state triggers, with re-arming"),
-            "614": ("rules/replacement.py", "replacement effects"),
-            "615": ("rules/replacement.py", "prevention effects"),
-            "616": ("rules/replacement.py", "ordering multiple replacements"),
+            "611": ("rules/cr611_durations.py", "continuous effects and when they end"),
+            "613": ("rules/cr613_layers.py", "all layers, sublayers, and 613.8 dependency"),
+            "603.7": ("rules/cr603_triggers.py", "delayed triggered abilities"),
+            "603.8": ("rules/cr603_triggers.py", "state triggers, with re-arming"),
+            "614": ("rules/cr614_replacement.py", "replacement effects"),
+            "615": ("rules/cr614_replacement.py", "prevention effects"),
+            "616": ("rules/cr614_replacement.py", "ordering multiple replacements"),
             # -- 700s -------------------------------------------------------
-            "703": ("rules/turn.py", "turn-based actions"),
-            "704": ("rules/sba.py", "the full state-based action list"),
+            "703": ("rules/cr500_turn.py", "turn-based actions"),
+            "704": ("rules/cr704_sba.py", "the full state-based action list"),
             "705": ("rules/actions.py", "coin flips, from the seeded RNG"),
             "706": ("rules/actions.py", "dice rolls, from the seeded RNG"),
-            "725": ("rules/designations.py", "the monarch, incl. combat theft and 725.5"),
-            "726": ("rules/designations.py", "the initiative"),
-            "728": ("rules/designations.py", "rad counters and their main-phase procedure"),
-            "731": ("rules/designations.py", "day and night, incl. the 731.3 flip"),
+            "725": ("rules/cr725_designations.py", "the monarch, incl. combat theft and 725.5"),
+            "726": ("rules/cr725_designations.py", "the initiative"),
+            "728": ("rules/cr725_designations.py", "rad counters and their main-phase procedure"),
+            "731": ("rules/cr725_designations.py", "day and night, incl. the 731.3 flip"),
             "707": (
-                "rules/faces.py",
+                "rules/cr707_faces.py",
                 "copy effects in layer 1, copiable values only, spell copies "
                 "that were never cast, and 707.8 face selection",
             ),
             "116": (
-                "rules/special_actions.py",
+                "rules/cr116_special_actions.py",
                 "all twelve special actions: playing a land, turning face up, "
                 "suspend, foretell, plot, discard-self. The Planechase and "
                 "Conspiracy Draft ones are named as out of scope by format "
                 "rather than quietly missing",
             ),
-            "709": ("rules/faces.py", "split cards - both halves castable, each on its own cost"),
+            "709": ("rules/cr707_faces.py", "split cards - both halves castable, each on its own cost"),
             "722": (
                 "rules/resolve.py",
                 "preparation cards: the prepared designation, and the copy in "
@@ -173,14 +173,14 @@ COVERAGE: dict[str, Entry] = _entries(
                 "(723.6). Ends with the turn",
             ),
             "727": (
-                "rules/turn.py",
+                "rules/cr500_turn.py",
                 "restarting: the game ends with no winner, every card returns "
                 "(727.2), and the restarting player goes first (727.1a). The "
                 "new game's seed derives from the old one so a run stays "
                 "reproducible",
             ),
             "730": (
-                "rules/keyword_impl.py",
+                "rules/cr702_keyword_impl.py",
                 "merging (mutate): a copy effect in layer 1 on a permanent that "
                 "never left, so CR 730.2c holds - counters, damage, auras and "
                 "summoning sickness all survive the merge",
@@ -191,7 +191,7 @@ COVERAGE: dict[str, Entry] = _entries(
                 "prohibition mechanism as everything else CR 101.2 governs",
             ),
             "603.10": (
-                "rules/triggers.py",
+                "rules/cr603_triggers.py",
                 "look-back-in-time triggers: not only leaves-the-battlefield "
                 "(603.10a) but phasing out, becoming unattached and losing "
                 "control, each of which sees the pre-event game",
@@ -202,16 +202,16 @@ COVERAGE: dict[str, Entry] = _entries(
                 "so a blinked permanent's linked ability correctly finds nothing",
             ),
             "613.3": (
-                "rules/layers.py",
+                "rules/cr613_layers.py",
                 "within layers 2-6, characteristic-defining abilities apply "
                 "before timestamped effects, then dependency reorders",
             ),
             "614.12": (
-                "rules/replacement.py",
+                "rules/cr614_replacement.py",
                 "self-replacement effects apply before all others (CR 616.1)",
             ),
             "116.2": (
-                "rules/special_actions.py",
+                "rules/cr116_special_actions.py",
                 "all twelve, enumerated in legal_actions and performed without "
                 "the stack - which is what lets a morph flip up under split "
                 "second",
@@ -232,62 +232,62 @@ COVERAGE: dict[str, Entry] = _entries(
                 "inside the resolution that caused it, not by watching events",
             ),
             "603.11": (
-                "rules/triggers.py",
+                "rules/cr603_triggers.py",
                 "abilities that trigger from other zones, via each ability's "
                 "functions_in - suspend ticking in exile, recover watching from "
                 "the graveyard",
             ),
             "605.4": (
-                "rules/triggers.py",
+                "rules/cr603_triggers.py",
                 "triggered mana abilities resolve without the stack, including "
                 "during cost payment where the stack is not available",
             ),
             "614.13": (
-                "rules/replacement.py",
+                "rules/cr614_replacement.py",
                 "MODIFY_DRAW; dredge replaces the draw from the graveyard",
             ),
-            "614.14": ("rules/replacement.py", "enters-the-battlefield replacements"),
+            "614.14": ("rules/cr614_replacement.py", "enters-the-battlefield replacements"),
             "614.16": (
-                "rules/replacement.py",
+                "rules/cr614_replacement.py",
                 "ENTERS_TAPPED and ENTERS_WITH_COUNTERS modify how a permanent "
                 "enters, rather than acting after it has",
             ),
             "724": (
-                "rules/turn.py",
+                "rules/cr500_turn.py",
                 "ending the turn (724.1b) and extra phases and steps (500.8)",
             ),
             "710": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "flip cards: the bottom half's name, text, types and P/T take "
                 "over, while colour and mana cost stay with the top (710.1c)",
             ),
             "711": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "leveler cards: {LEVEL} bands as level-counter-conditioned "
                 "statics setting base P/T in layer 7b",
             ),
             "714": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "Sagas: chapter symbols as crossing triggers (714.2b), lore "
                 "counters as a precombat-main turn-based action (714.3c), and "
                 "the 704.5s sacrifice - all gated on having chapter abilities",
             ),
             "716": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "Class cards: a level bar is an activated ability plus a static "
                 "one, and level is a non-copiable designation (716.2b)",
             ),
             "719": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "Case cards: the to-solve end-step trigger and the solved "
                 "designation, which ends when the permanent leaves",
             ),
             "721": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "station cards: {N+} charge-counter thresholds as statics",
             ),
             "712": (
-                "rules/faces.py",
+                "rules/cr707_faces.py",
                 "double-faced cards: transforming without a new object (712.18), "
                 "front-face casting (712.11), MDFC land faces (712.12)",
             ),
@@ -315,7 +315,7 @@ COVERAGE: dict[str, Entry] = _entries(
                 "data/cards.py",
                 "text box is stored; turning it into abilities is the parser's job",
             ),
-            "308": ("rules/typeline.py", "Kindred parses; tribal type-matching untested"),
+            "308": ("rules/cr205_typeline.py", "Kindred parses; tribal type-matching untested"),
             "607": (
                 "rules/actions.py",
                 "exiled-with tracking and linked lookups; imprint and hideaway "
@@ -324,7 +324,7 @@ COVERAGE: dict[str, Entry] = _entries(
             # -- 700s -------------------------------------------------------
             "700": ("rules/game.py", "general; 700.4 'dies' is exact"),
             "701": (
-                "rules/keyword_actions.py",
+                "rules/cr701_keyword_actions.py",
                 "59 of 78 keyword actions fully modelled; the rest are Unfinity, "
                 "Planechase, Archenemy or newer than the card-pool snapshot",
             ),
@@ -334,23 +334,23 @@ COVERAGE: dict[str, Entry] = _entries(
                 "(Augment, the Conspiracy agendas) or shapes awaiting card text",
             ),
             "715": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "adventurer cards: the alternative characteristics and the "
                 "exile-on-resolve rule (715.3d); choosing the mode when casting "
                 "is not wired into the action enumerator yet",
             ),
             "718": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "prototype cards: alternative cost and P/T that persist onto the "
                 "battlefield (718.3b); casting mode not wired",
             ),
             "720": (
-                "rules/card_types.py",
+                "rules/cr300_card_types.py",
                 "omen cards: alternative characteristics and the shuffle-on-"
                 "resolve rule (720.3d); casting mode not wired",
             ),
             "708": (
-                "rules/layers.py",
+                "rules/cr613_layers.py",
                 "face-down objects are 2/2 vanillas in layer 1b, cast face down "
                 "through the morph alternative cost, and turned up by the "
                 "CR 116.2b special action",

@@ -26,20 +26,19 @@ parser does not exist yet.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, keyword, make_board
 
 from mtgfish.rules.abilities import Ability, AbilityKind, TriggerCondition
-from mtgfish.rules.costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr106_mana import ManaCost, ManaKind
+from mtgfish.rules.cr116_special_actions import SpecialKind, available, perform
+from mtgfish.rules.cr117_priority import ActionKind
+from mtgfish.rules.cr118_costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
 from mtgfish.rules.effects import Effect, EffectKind
 from mtgfish.rules.enums import LETTER_TO_COLOR, CardType, Phase, Step, Zone
 from mtgfish.rules.events import EventKind
-from mtgfish.rules.keyword_impl import KeywordInstance, build
-from mtgfish.rules.mana import ManaCost, ManaKind
-from mtgfish.rules.priority import ActionKind
 from mtgfish.rules.query import ObjectFilter
 from mtgfish.rules.restrictions import Act, prohibited
-from mtgfish.rules.special_actions import SpecialKind, available, perform
-
-from harness import ScriptedAbilities, keyword, make_board
 
 #: "counter target instant or sorcery spell"
 INSTANT_OR_SORCERY = ObjectFilter(
@@ -123,8 +122,8 @@ def table(card_db):
 
 def cast_grip(board, grip, artifact):
     """P1 casts Krosan Grip targeting the artifact, and it sits on the stack."""
-    from mtgfish.rules.casting import cast_spell
-    from mtgfish.rules.priority import Action
+    from mtgfish.rules.cr117_priority import Action
+    from mtgfish.rules.cr601_casting import cast_spell
 
     return cast_spell(
         board.game,

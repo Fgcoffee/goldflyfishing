@@ -119,7 +119,7 @@ def test_keyword_abilities_know_they_came_from_a_keyword(card_db):
     it, so Bloodthirst, Modular and Fading produced abilities that looked
     hand-written. The name is stamped centrally now.
     """
-    from mtgfish.rules.keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr702_keyword_impl import KeywordInstance, build
 
     for name in ("Bloodthirst", "Modular", "Fading", "Flying", "Haste"):
         abilities = build(KeywordInstance(name, amount=2))

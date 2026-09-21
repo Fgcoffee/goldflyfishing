@@ -9,18 +9,17 @@ in a specific way noted on the test.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, make_board
 
 from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.casting import CastError, cast_spell, compute_total_cost
-from mtgfish.rules.costs import AdditionalCost, AlternativeCost, Cost, CostComponent, CostKind
+from mtgfish.rules.cr106_mana import ManaCost
+from mtgfish.rules.cr117_priority import Action, ActionKind
+from mtgfish.rules.cr118_costs import AdditionalCost, AlternativeCost, Cost, CostComponent, CostKind
+from mtgfish.rules.cr601_casting import CastError, cast_spell, compute_total_cost
 from mtgfish.rules.enums import CardType, Phase, Step, Zone
 from mtgfish.rules.ids import PlayerId
 from mtgfish.rules.legality import legal_actions
-from mtgfish.rules.mana import ManaCost
-from mtgfish.rules.priority import Action, ActionKind
 from mtgfish.rules.query import ControllerRelation, ObjectFilter, Value
-
-from harness import ScriptedAbilities, make_board
 
 CREATURES_YOU_CONTROL = ObjectFilter(
     types_all=CardType.CREATURE, controller=ControllerRelation.YOU
@@ -37,8 +36,8 @@ def board(card_db):
 
 
 def give_mana(board, amount: int, color: str = "G", player: int = 0):
+    from mtgfish.rules.cr106_mana import ManaKind
     from mtgfish.rules.enums import LETTER_TO_COLOR
-    from mtgfish.rules.mana import ManaKind
 
     board.game.player(PlayerId(player)).mana_pool.add(LETTER_TO_COLOR[color], 0)
     board.game.player(PlayerId(player)).mana_pool.add(

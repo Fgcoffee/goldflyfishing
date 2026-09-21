@@ -17,10 +17,9 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 
 from .abilities import Ability
+from .cr106_mana import ZERO_COST, ManaCost
+from .cr205_typeline import TypeLine
 from .enums import CardType, Color, Supertype
-from .mana import ZERO_COST, ManaCost
-from .typeline import TypeLine
-
 
 #: Unwrapped once here rather than on every call - see the note on
 #: ``has_type`` for why an IntFlag comparison is worth avoiding in a

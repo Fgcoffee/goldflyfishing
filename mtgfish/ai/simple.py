@@ -15,18 +15,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..rules.cr117_priority import PASS, Action, ActionKind
 from ..rules.effects import EffectKind
 from ..rules.enums import CardType
 from ..rules.ids import ObjectId, PlayerId
-from ..rules.priority import PASS, Action, ActionKind
 
 if TYPE_CHECKING:
-    from ..rules.combat import Combat
+    from ..rules.cr506_combat import Combat
     from ..rules.game import Game
     from ..rules.gameobject import GameObject
 
 
 from ..rules.loops import LOOP_REPETITIONS, is_continuing
+
 
 class SimpleAgent:
     """Plays out its hand and attacks when the maths is in its favour."""
@@ -328,7 +329,7 @@ class SimpleAgent:
         Blocks the biggest attackers first with the smallest creature that can
         survive; if life is low enough to matter, chump-blocks instead.
         """
-        from ..rules.combat import can_block
+        from ..rules.cr506_combat import can_block
 
         incoming = [
             game.objects[a]

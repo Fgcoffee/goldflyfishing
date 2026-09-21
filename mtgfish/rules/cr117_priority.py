@@ -21,12 +21,12 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import TYPE_CHECKING, Protocol
 
+from .cr603_triggers import put_triggers_on_stack
+from .cr608_stack import resolve_top
+from .cr704_sba import check_state_based_actions
 from .enums import NO_PRIORITY_STEPS
 from .events import Event, EventKind
 from .ids import ObjectId, PlayerId
-from .sba import check_state_based_actions
-from .stack import resolve_top
-from .triggers import put_triggers_on_stack
 
 if TYPE_CHECKING:
     from .game import Game
@@ -145,7 +145,7 @@ def settle(game: Game) -> None:
     that ability going on the stack does not itself need another check, but the
     death of a second creature might.
     """
-    from .triggers import check_state_triggers
+    from .cr603_triggers import check_state_triggers
 
     for _ in range(MAX_PRIORITY_ROUNDS):
         did_sba = check_state_based_actions(game)
@@ -325,7 +325,7 @@ def _perform(game: Game, player_id: PlayerId, action: Action) -> bool:
     available mana rather than solving the tap plan), so an occasional
     unpayable cast is expected and simply does not happen.
     """
-    from .casting import CastError, activate_ability, cast_spell, play_land
+    from .cr601_casting import CastError, activate_ability, cast_spell, play_land
 
     try:
         if action.kind is ActionKind.CAST_SPELL:
@@ -337,7 +337,7 @@ def _perform(game: Game, player_id: PlayerId, action: Action) -> bool:
         elif action.kind is ActionKind.SPECIAL:
             # CR 116.1: no stack, no response window. Whatever it does has
             # already happened by the time the next player gets priority.
-            from .special_actions import perform as perform_special
+            from .cr116_special_actions import perform as perform_special
 
             return perform_special(game, player_id, action)
     except CastError as exc:

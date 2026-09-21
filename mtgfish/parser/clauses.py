@@ -15,10 +15,8 @@ registry against ``EXECUTORS``.
 from __future__ import annotations
 
 import collections
-
-from typing import Callable
-
 from dataclasses import replace
+from typing import Callable
 
 from ..rules.effects import Effect, EffectKind, TokenSpec
 from ..rules.enums import CardType, Duration, Zone
@@ -246,7 +244,7 @@ def _attach_mana_restriction(effects: list[Effect]) -> list[Effect]:
     would be a no-op, and the mana would stay general-purpose - which makes
     every ritual and every narrow ramp source better than it is.
     """
-    from ..rules.mana import SpendOnlyOn
+    from ..rules.cr106_mana import SpendOnlyOn
 
     rider = next(
         (e for e in effects if e.text.startswith(SPEND_ONLY_MARK)), None
@@ -527,8 +525,8 @@ def _payment_cost(stream: Stream):
     grammar rule that fitted the words and produced a completely different
     card.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr106_mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr118_costs import Cost, CostComponent, CostKind
 
     mark = stream.mark()
     if not stream.accept("pays", "pay"):
@@ -600,7 +598,7 @@ def _either_cost(stream: Stream):
     if second is None:
         stream.reset(look)
         return first
-    from ..rules.costs import Cost
+    from ..rules.cr118_costs import Cost
 
     return Cost(choices=(first, second))
 
@@ -613,7 +611,7 @@ def _action_cost(stream: Stream):
     every upkeep-or-sacrifice permanent in the format failed to parse and
     then sat on the battlefield for free.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
+    from ..rules.cr118_costs import Cost, CostComponent, CostKind
 
     mark = stream.mark()
     word = stream.peek().lower
@@ -1633,7 +1631,7 @@ def _token_types(spec: ObjectFilter) -> CardType | None:
     the ability. A token of the wrong card type is not a near miss: it is a
     permanent that dies immediately, or one that never dies at all.
     """
-    from ..rules.typeline import active_registry
+    from ..rules.cr205_typeline import active_registry
 
     if spec.types_all:
         return spec.types_all
@@ -1935,8 +1933,8 @@ def _mana_run(stream: Stream) -> list[str]:
 
 
 def _mana_effect(symbols: list[str]) -> Effect | None:
+    from ..rules.cr106_mana import ManaCost, UnknownManaSymbol
     from ..rules.enums import Color
-    from ..rules.mana import ManaCost, UnknownManaSymbol
 
     try:
         cost = ManaCost.parse("".join(symbols))
@@ -4016,7 +4014,7 @@ def _costs_less(stream: Stream) -> Effect | None:
     A cost reduction, not a discount applied afterwards - the spell's mana
     value is unchanged, which matters for everything that asks.
     """
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr106_mana import ManaCost, UnknownManaSymbol
 
     targets, _ = parse_target(stream)
     if targets is None:
@@ -4364,8 +4362,8 @@ def _pay(stream: Stream) -> Effect | None:
     more" - a completely different card that still ran, and the reason
     Rhystic Study taxed the table instead of drawing a card.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr106_mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr118_costs import Cost, CostComponent, CostKind
 
     if not stream.accept("pay", "pays"):
         return None
@@ -4688,7 +4686,7 @@ def _ability_cost_change(stream: Stream) -> Effect | None:
     if not symbols:
         stream.reset(mark)
         return None
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr106_mana import ManaCost, UnknownManaSymbol
 
     try:
         cost = ManaCost.parse("".join(symbols))
@@ -5248,7 +5246,7 @@ def _others_enter_tapped(stream: Stream) -> Effect | None:
     read; this is the same sentence with a filter in front of it instead of
     "this", and it was failing on every stax piece in the format.
     """
-    from ..rules.replacement import ReplacementKind
+    from ..rules.cr614_replacement import ReplacementKind
 
     mark = stream.mark()
     spec = parse_object_filter(stream)
@@ -6905,7 +6903,7 @@ def _keyword_action(stream: Stream) -> Effect | None:
     "proliferate" failed to parse, and every card in the pool whose only
     effect was a keyword action was inert.
     """
-    from ..rules.keyword_actions import BUILDERS, build
+    from ..rules.cr701_keyword_actions import BUILDERS, build
 
     mark = stream.mark()
     # "it connives", "that creature explores" - the subject comes first, and
@@ -7075,7 +7073,7 @@ def _replaced_event(stream: Stream):
     reader for the whole family: the events are written to a template and the
     differences between them are two or three words.
     """
-    from ..rules.replacement import ReplacementKind
+    from ..rules.cr614_replacement import ReplacementKind
 
     mark = stream.mark()
 
@@ -7160,7 +7158,7 @@ def _subject_led_event(stream: Stream):
     causes them, which is why this cannot go through the object grammar: "one
     or more +1/+1 counters" is a quantity of a thing that is not a permanent.
     """
-    from ..rules.replacement import ReplacementKind
+    from ..rules.cr614_replacement import ReplacementKind
 
     mark = stream.mark()
     stream.accept_number()

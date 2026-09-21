@@ -186,9 +186,9 @@ def copy_permanent(
     every time characteristics are computed - and because a later copy effect
     must be able to override this one by timestamp.
     """
+    from .cr613_layers import layer_for
     from .effects import Effect, EffectKind
     from .game import ContinuousEffect
-    from .layers import layer_for
 
     effect = Effect(
         EffectKind.COPY_PERMANENT,

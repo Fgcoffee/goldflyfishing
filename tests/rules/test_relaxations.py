@@ -16,14 +16,14 @@ import random
 
 import pytest
 
+from mtgfish.rules.cr500_turn import _empty_mana_pools
+from mtgfish.rules.cr704_sba import check_state_based_actions
 from mtgfish.rules.enums import LossReason, Phase, Step
 from mtgfish.rules.game import Game
 from mtgfish.rules.ids import ObjectId, PlayerId
 from mtgfish.rules.log import GameLog
 from mtgfish.rules.player import Player
 from mtgfish.rules.relaxations import BENCH, NAMES, STRICT, Relaxations
-from mtgfish.rules.sba import check_state_based_actions
-from mtgfish.rules.turn import _empty_mana_pools
 
 
 def board(relaxations: Relaxations = STRICT) -> Game:
@@ -155,8 +155,8 @@ def test_drawing_from_an_empty_library_on_a_bench_does_nothing():
 
 
 def test_mana_pools_normally_empty_at_the_end_of_a_step():
+    from mtgfish.rules.cr106_mana import ManaKind
     from mtgfish.rules.enums import Color
-    from mtgfish.rules.mana import ManaKind
 
     game = board()
     game.player(PlayerId(0)).mana_pool.add(ManaKind(Color.RED), 3)
@@ -165,8 +165,8 @@ def test_mana_pools_normally_empty_at_the_end_of_a_step():
 
 
 def test_mana_pools_can_be_made_to_persist():
+    from mtgfish.rules.cr106_mana import ManaKind
     from mtgfish.rules.enums import Color
-    from mtgfish.rules.mana import ManaKind
 
     game = board(BENCH)
     game.player(PlayerId(0)).mana_pool.add(ManaKind(Color.RED), 3)

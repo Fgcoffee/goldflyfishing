@@ -30,12 +30,12 @@ from typing import TYPE_CHECKING
 
 from .abilities import Ability, AbilityKind
 from .characteristics import Characteristics
-from .matching import matches
+from .cr106_mana import ManaCost
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 from .enums import CardType, Color, Layer, Zone
 from .gameobject import GameObject
 from .ids import NO_PLAYER, ObjectId, PlayerId
-from .mana import ManaCost
+from .matching import matches
 from .query import ValueKind
 
 if TYPE_CHECKING:
@@ -664,7 +664,7 @@ def _apply_text_change(current: Characteristics, effect: Effect) -> Characterist
         if subtype not in seen:
             seen.append(subtype)
 
-    from .typeline import TypeLine
+    from .cr205_typeline import TypeLine
 
     return _with_type_line(current, TypeLine(line.supertypes, line.types, tuple(seen)))
 
@@ -676,7 +676,7 @@ def _is_land_type(subtype: str) -> bool:
     so a new land type from a future set is classified correctly with no code
     change.
     """
-    from .typeline import DEFAULT_REGISTRY
+    from .cr205_typeline import DEFAULT_REGISTRY
 
     return bool(DEFAULT_REGISTRY.types_for(subtype) & CardType.LAND)
 
@@ -710,7 +710,7 @@ def intrinsic_land_abilities(line) -> tuple[Ability, ...]:
 
 
 def _build_intrinsic_land_abilities(line) -> tuple[Ability, ...]:
-    from .costs import TAP_COST
+    from .cr118_costs import TAP_COST
     from .effects import Effect as _Effect
 
     if not (line.types & CardType.LAND):
@@ -840,7 +840,7 @@ def _apply_face_down(
     for object_id, obj in by_id.items():
         if not obj.face_down:
             continue
-        from .typeline import TypeLine
+        from .cr205_typeline import TypeLine
 
         state[object_id] = Characteristics(
             name="",

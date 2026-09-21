@@ -474,7 +474,7 @@ class Game:
         # instead (CR 903.9), and where "if it would die, exile it instead"
         # takes hold - in both cases the object never reaches the graveyard at
         # all, which is exactly the observable difference from a trigger.
-        from .replacement import apply_replacements, commander_zone_replacement
+        from .cr614_replacement import apply_replacements, commander_zone_replacement
 
         prospective = Event(
             EventKind.ZONE_CHANGE,
@@ -507,7 +507,7 @@ class Game:
 
         # CR 716.2b, 719.3b: level and the solved designation last only while
         # the permanent is on the battlefield. The new object gets neither.
-        from .card_types import forget_designations
+        from .cr300_card_types import forget_designations
 
         forget_designations(self, obj.id)
 
@@ -613,7 +613,7 @@ class Game:
             # CR 614.1c: before anything observes the permanent, apply its own
             # "as this enters" effects. Doing it after the event would let a
             # "whenever a land enters untapped" trigger see a tapland wrong.
-            from .replacement import apply_self_entry_replacements
+            from .cr614_replacement import apply_self_entry_replacements
 
             apply_self_entry_replacements(self, obj)
             self.emit(
@@ -685,7 +685,7 @@ class Game:
             return self.board_in_progress
         if self._board is not None and self._board_epoch == self.epoch:
             return self._board
-        from .layers import compute_board
+        from .cr613_layers import compute_board
 
         self._board = compute_board(self)
         self._board_epoch = self.epoch
@@ -706,7 +706,7 @@ class Game:
         if obj._characteristics is not None and obj._characteristics_epoch == self.epoch:
             return obj._characteristics
 
-        from .layers import compute_characteristics
+        from .cr613_layers import compute_characteristics
 
         result = compute_characteristics(self, obj)
         obj._characteristics = result
@@ -764,7 +764,7 @@ class Game:
         # CR 305.6: a land's basic land types carry mana abilities that are not
         # printed in its text box. A Swamp taps for {B} whether or not anything
         # says so, so they belong in the printed characteristics.
-        from .layers import intrinsic_land_abilities
+        from .cr613_layers import intrinsic_land_abilities
 
         printed = from_face(face, abilities + intrinsic_land_abilities(face.type_line))
         if face_index != obj.face_index:
@@ -812,7 +812,7 @@ class Game:
         if event.kind is EventKind.LIFE_LOST:
             self._advance_speed(event)
 
-        from .triggers import collect_triggers
+        from .cr603_triggers import collect_triggers
 
         collect_triggers(self, event)
 
@@ -858,7 +858,7 @@ class Game:
         """
         if self.replacement_effects:
             return True
-        from .replacement import static_replacements
+        from .cr614_replacement import static_replacements
 
         return bool(static_replacements(self))
 
@@ -866,7 +866,7 @@ class Game:
         """Run replacement effects over an event that is about to happen."""
         if not self.has_replacements:
             return event
-        from .replacement import apply_replacements
+        from .cr614_replacement import apply_replacements
 
         return apply_replacements(self, event)
 
@@ -953,7 +953,7 @@ class Game:
         # CR 725.5: if the monarch leaves, the crown passes rather than vanishing.
         if player.is_monarch:
             player.is_monarch = False
-            from .designations import monarch_left_the_game
+            from .cr725_designations import monarch_left_the_game
 
             monarch_left_the_game(self)
         self.emit(Event(EventKind.PLAYER_LEFT_GAME, player=player_id))

@@ -15,9 +15,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .cr106_mana import ManaPool
 from .enums import LossReason, Zone
 from .ids import NO_OBJECT, ObjectId, PlayerId
-from .mana import ManaPool
 
 #: CR 903.7: a Commander game starts each player at 40 life.
 COMMANDER_STARTING_LIFE = 40

@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.casting import cost_increases, cost_reductions
+from mtgfish.rules.cr601_casting import cost_increases, cost_reductions
 from mtgfish.ui.sandbox import Sandbox
 
 

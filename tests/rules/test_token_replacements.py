@@ -17,10 +17,10 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
+from mtgfish.rules.cr111_tokens import create_tokens
 from mtgfish.rules.effects import TokenSpec
 from mtgfish.rules.enums import CardType
 from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.tokens import create_tokens
 from mtgfish.rules.values import Value
 from mtgfish.ui.sandbox import Sandbox
 

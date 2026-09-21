@@ -24,7 +24,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.casting import cost_increases, cost_reductions
+from mtgfish.rules.cr601_casting import cost_increases, cost_reductions
 from mtgfish.ui.sandbox import Sandbox
 
 
@@ -164,7 +164,7 @@ def test_a_counter_doubler_doubles(box):
 
 
 def test_no_maximum_hand_size_is_honoured_in_cleanup(box):
-    from mtgfish.rules.turn import _discard_to_hand_size
+    from mtgfish.rules.cr500_turn import _discard_to_hand_size
 
     for _ in range(10):
         box.put("Grizzly Bears", "hand", 0)

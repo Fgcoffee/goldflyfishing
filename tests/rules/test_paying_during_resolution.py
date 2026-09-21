@@ -20,7 +20,7 @@ import pytest
 
 from mtgfish.parser.compile import parse_card
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.casting import pay_cost
+from mtgfish.rules.cr601_casting import pay_cost
 from mtgfish.rules.effects import Effect, EffectKind
 from mtgfish.rules.enums import Zone
 from mtgfish.rules.query import PlayerFilter, PlayerScope, Value
@@ -115,7 +115,7 @@ def test_smothering_tithe_with_only_a_signet_does_not_end_the_game(box):
     """The benchmark crash, end to end, with the bots that hit it."""
     _need(box, "Azorius Signet", "Smothering Tithe", "Island")
     from mtgfish.ai.simple import SimpleAgent
-    from mtgfish.rules.priority import run_priority
+    from mtgfish.rules.cr117_priority import run_priority
 
     game = box.game
     game.agents[0] = SimpleAgent()

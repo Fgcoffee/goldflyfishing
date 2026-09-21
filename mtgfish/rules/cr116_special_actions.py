@@ -21,11 +21,11 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
+from .cr106_mana import ManaCost
+from .cr117_priority import Action, ActionKind
 from .enums import Zone
 from .events import Event, EventKind
 from .ids import NO_OBJECT, ObjectId, PlayerId
-from .mana import ManaCost
-from .priority import Action, ActionKind
 
 if TYPE_CHECKING:
     from .game import Game

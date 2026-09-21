@@ -636,7 +636,7 @@ def _choose_trigger_targets(
     if not effects:
         return ()
 
-    from .casting import _candidates_for, _targetable_players
+    from .cr601_casting import _candidates_for, _targetable_players
     from .ids import player_target
     from .matching import find
 

@@ -11,10 +11,10 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.data.decks import parse_decklist
+from mtgfish.rules.cr103_setup import new_game, take_mulligans
 from mtgfish.rules.enums import LossReason, Zone
 from mtgfish.rules.gameobject import ObjectKind
 from mtgfish.rules.player import COMMANDER_DAMAGE_THRESHOLD
-from mtgfish.rules.setup import new_game, take_mulligans
 
 
 def build_deck(card_db, commander="Kenrith, the Returned King", name="Test"):

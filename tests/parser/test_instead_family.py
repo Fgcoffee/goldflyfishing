@@ -20,8 +20,8 @@ import pytest
 
 from mtgfish.parser.clauses import parse_effects
 from mtgfish.parser.tokens import Stream
+from mtgfish.rules.cr614_replacement import ReplacementKind
 from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.replacement import ReplacementKind
 
 
 @pytest.fixture(autouse=True)

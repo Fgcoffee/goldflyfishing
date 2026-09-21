@@ -248,7 +248,7 @@ def measure_games(config, indices, *, memory: bool, out) -> dict:
     """Play each game instrumented, writing one JSON line per game."""
     global _METER
 
-    from ..rules.turn import TurnOptions, run_game
+    from ..rules.cr500_turn import TurnOptions, run_game
     from ..sim.observer import Observer, finish, new_record
     from ..sim.runner import _record_opening_hand, _seat_agents, _worker_state, new_game
 

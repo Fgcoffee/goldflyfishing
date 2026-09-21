@@ -26,16 +26,15 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from harness import make_board
 
 from mtgfish.rules.abilities import Ability, AbilityKind, TriggerCondition
+from mtgfish.rules.cr603_triggers import PendingTrigger, put_triggers_on_stack
 from mtgfish.rules.effects import Effect, EffectKind, TokenSpec
 from mtgfish.rules.enums import CardType, LossReason, Zone
 from mtgfish.rules.events import Event, EventKind
 from mtgfish.rules.ids import NO_PLAYER, PlayerId
 from mtgfish.rules.query import ZERO
-from mtgfish.rules.triggers import PendingTrigger, put_triggers_on_stack
-
-from harness import make_board
 
 ONE = replace(ZERO, constant=1)
 

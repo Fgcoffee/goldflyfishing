@@ -10,7 +10,7 @@ gives.
 
 from __future__ import annotations
 
-from mtgfish.rules import layers
+from mtgfish.rules import cr613_layers as layers
 from mtgfish.ui.sandbox import Sandbox
 
 STATICS = [

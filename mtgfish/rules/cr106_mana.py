@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Iterable, Iterator, Protocol
 
-from .enums import Color, LETTER_TO_COLOR, color_letters
+from .enums import LETTER_TO_COLOR, Color, color_letters
 
 _SYMBOL_RE = re.compile(r"\{([^}]*)\}")
 

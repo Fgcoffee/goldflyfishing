@@ -74,8 +74,8 @@ def test_that_many_reads_the_event_it_came_from(card_db):
 
 def test_the_stack_object_carries_its_event(box):
     """A trigger on the stack remembers the event that made it (CR 603.3d)."""
+    from mtgfish.rules.cr603_triggers import put_triggers_on_stack
     from mtgfish.rules.events import Event, EventKind
-    from mtgfish.rules.triggers import put_triggers_on_stack
 
     box.put("Old Gnawbone", "battlefield", 0)
     box.game.invalidate_characteristics()
@@ -122,8 +122,8 @@ def test_an_ordinal_trigger_is_read_as_one(card_db):
 def test_an_ordinal_trigger_fires_only_on_that_occurrence(box):
     """The tally is per player and per turn, and only the nth event fires."""
     from mtgfish.rules.abilities import Ability, AbilityKind, TriggerCondition
+    from mtgfish.rules.cr603_triggers import condition_met
     from mtgfish.rules.events import Event, EventKind
-    from mtgfish.rules.triggers import condition_met
 
     box.put("Sol Ring", "battlefield", 0)
     source = next(
@@ -183,7 +183,7 @@ def test_an_extra_trigger_puts_two_abilities_on_the_stack(box):
         for obj in box.game.objects.values()
         if obj.card is not None and obj.card.name == "Solemn Simulacrum"
     )
-    from mtgfish.rules.triggers import collect_triggers
+    from mtgfish.rules.cr603_triggers import collect_triggers
 
     box.game.pending_triggers = []
     collect_triggers(

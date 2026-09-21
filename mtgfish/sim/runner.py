@@ -29,8 +29,8 @@ from dataclasses import dataclass, field
 from typing import Callable, Iterable, Iterator
 
 from ..data.db import CardDatabase
-from ..rules.setup import new_game
-from ..rules.turn import TurnOptions, run_game
+from ..rules.cr103_setup import new_game
+from ..rules.cr500_turn import TurnOptions, run_game
 from .observer import Observer, finish, new_record
 from .records import GameRecord
 

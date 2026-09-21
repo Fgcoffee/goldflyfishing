@@ -22,7 +22,6 @@ from mtgfish.rules.abilities import AbilityKind
 from mtgfish.rules.effects import EffectKind
 from mtgfish.rules.resolve import EXECUTORS
 
-
 # ---------------------------------------------------------------------------
 # The two load-bearing properties
 # ---------------------------------------------------------------------------

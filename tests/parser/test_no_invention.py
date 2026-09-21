@@ -81,7 +81,7 @@ def test_the_attack_requirement_is_the_one_combat_actually_reads():
     function that enforces it rather than against a string in this file."""
     import inspect
 
-    from mtgfish.rules import combat
+    from mtgfish.rules import cr506_combat as combat
 
     source = inspect.getsource(combat._must_attack)
     granted = next(

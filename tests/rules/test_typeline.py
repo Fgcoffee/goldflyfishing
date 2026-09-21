@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+from mtgfish.rules.cr205_typeline import SubtypeRegistry, TypeLine, TypeLineError
 from mtgfish.rules.enums import CardType, Supertype
-from mtgfish.rules.typeline import SubtypeRegistry, TypeLine, TypeLineError
 
 
 @pytest.fixture

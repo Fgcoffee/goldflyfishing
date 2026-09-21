@@ -21,10 +21,10 @@ import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
 from mtgfish.rules import actions
+from mtgfish.rules.cr117_priority import run_priority, settle
 from mtgfish.rules.enums import Zone
 from mtgfish.rules.ids import player_target
 from mtgfish.rules.player import Player
-from mtgfish.rules.priority import run_priority, settle
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
 
 
@@ -70,8 +70,8 @@ def test_target_opponent_is_one_opponent(box):
 def test_target_player_is_somebody(box):
     """Sign in Blood: "target player draws two cards". It drew none."""
     _need(box, "Sign in Blood", "Forest")
+    from mtgfish.rules.cr117_priority import _perform
     from mtgfish.rules.legality import legal_actions
-    from mtgfish.rules.priority import _perform
 
     game = box.game
     for _ in range(5):

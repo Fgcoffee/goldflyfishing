@@ -1,9 +1,9 @@
 """Deck import and Commander deck-construction validation."""
 
-from .model import Deck, DeckEntry, DeckIssue, Severity, validate
-from .textlist import parse_decklist
 from .archidekt import fetch_archidekt, is_archidekt_url
 from .loader import load_deck
+from .model import Deck, DeckEntry, DeckIssue, Severity, validate
+from .textlist import parse_decklist
 
 __all__ = [
     "Deck",

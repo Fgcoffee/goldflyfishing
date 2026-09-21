@@ -12,9 +12,9 @@ import pytest
 
 from mtgfish.ai import SimpleAgent
 from mtgfish.data.decks import parse_decklist
+from mtgfish.rules.cr103_setup import new_game, simple_land_policy, take_mulligans
+from mtgfish.rules.cr500_turn import TURN_SEQUENCE, TurnOptions, run_game, take_turn
 from mtgfish.rules.enums import Step
-from mtgfish.rules.setup import new_game, simple_land_policy, take_mulligans
-from mtgfish.rules.turn import TURN_SEQUENCE, TurnOptions, run_game, take_turn
 
 DECK = (
     "// Commander\n1 Kenrith, the Returned King\n"

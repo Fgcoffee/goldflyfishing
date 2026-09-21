@@ -9,10 +9,9 @@ takes one of your two copies.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, keyword, make_board
 
 from mtgfish.rules.enums import LossReason, Zone
-
-from harness import ScriptedAbilities, keyword, make_board
 
 
 @pytest.fixture

@@ -12,6 +12,7 @@ each one is transcribed from the real oracle text quoted in its docstring.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, make_board
 
 from mtgfish.rules.abilities import Ability, AbilityKind
 from mtgfish.rules.effects import Effect, EffectKind
@@ -22,8 +23,6 @@ from mtgfish.rules.query import (
     Value,
     ValueKind,
 )
-
-from harness import ScriptedAbilities, make_board
 
 # ---------------------------------------------------------------------------
 # Hand-written abilities, transcribed from oracle text

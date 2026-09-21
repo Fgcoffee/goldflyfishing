@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+from ..rules.cr205_typeline import active_registry
 from ..rules.enums import CardType, Color, Supertype, Zone
 from ..rules.query import (
     Comparison,
@@ -37,7 +38,6 @@ from ..rules.query import (
     Value,
     ValueKind,
 )
-from ..rules.typeline import active_registry
 from .tokens import Stream, TokenKind
 
 #: Card types by the word oracle text uses. Plural and singular both appear -

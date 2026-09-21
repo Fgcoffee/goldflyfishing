@@ -596,7 +596,7 @@ def deal_combat_damage(game: Game, *, first_strike_step: bool = False) -> None:
         game.step = Step.FIRST_STRIKE_COMBAT_DAMAGE
         _damage_round(game, combat, first_strike=True)
         game.step = previous
-        from .priority import run_priority
+        from .cr117_priority import run_priority
 
         run_priority(game)
         if game.game_over:
@@ -648,7 +648,7 @@ def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
             continue
         assignments.extend(_blocker_assignment(game, combat, blocker))
 
-    from .designations import (
+    from .cr725_designations import (
         combat_damage_to_initiative_holder,
         combat_damage_to_monarch,
     )

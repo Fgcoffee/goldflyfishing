@@ -9,13 +9,12 @@ observable in whether dies-triggers fire.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, make_board
 
 from mtgfish.rules.actions import deal_damage, destroy
 from mtgfish.rules.enums import LossReason, Zone
 from mtgfish.rules.ids import PlayerId
 from mtgfish.rules.player import COMMANDER_DAMAGE_THRESHOLD
-
-from harness import ScriptedAbilities, make_board
 
 
 @pytest.fixture
