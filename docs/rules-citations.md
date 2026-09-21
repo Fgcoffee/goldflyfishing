@@ -40,6 +40,43 @@ python -m mtgfish.tools.rules find "inherent triggered abilit"
 python -m mtgfish.tools.rules find "untap" --section 701
 ```
 
+## Reading the rules and the engine side by side
+
+```
+python -m mtgfish.tools.rules index --section 502
+python -m mtgfish.tools.rules index --only-cited --out docs/cr-index.txt
+```
+
+`index` prints the rules in number order, each followed by the files and lines
+that cite it. `docs/cr-index.txt` is that index in full, so the rulebook and the
+engine read as one list: go down the CR, and for any rule you can see at once
+whether anything implements it and where.
+
+It shows the gaps as plainly as the coverage. CR 502.2 puts the day/night check
+in the untap step and has no code against it, because the engine runs that check
+in `take_turn` before the phase loop instead.
+
+## Comparing two releases
+
+```
+python -m mtgfish.tools.rules diff "MagicCompRules 20260925.pdf"
+```
+
+Reads either a `.txt` or a `.pdf` and reports what changed against the shipped
+rules - and, separately, which of those changes the engine actually relies on,
+with the file and line for each. Rules nothing cites can change freely.
+
+Against the September 2026 release that is 11 rules added, 7 removed, 4
+reworded, and nothing cited: a renumbering around CR 506, a new keyword action
+(CR 701.71, Empower Jace) and a new predefined token (CR 111.10x, Heartwood).
+
+One caveat about PDFs. Extracted text is not character-identical to WotC's own
+`.txt` even where the rule is word for word the same: the extractor pads em
+dashes and leaves a space where a hyphenated word wrapped, so `state-based`
+comes back as `state- based`. Comparing raw strings made those two files differ
+in 2,491 rules when four had actually changed. `citations.normalise` flattens
+that, and both `diff` and `check` use it.
+
 ## After a rules release
 
 This is the workflow the whole thing exists for.
