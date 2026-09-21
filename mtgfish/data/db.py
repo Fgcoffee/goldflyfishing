@@ -175,6 +175,9 @@ class CardDatabase:
         self._conn = sqlite3.connect(self.path)
         self._conn.row_factory = sqlite3.Row
         self._cache: dict[str, CardDef] = {}
+        #: Cards this build of the engine cannot represent, oracle id -> why.
+        #: They are illegal rather than fatal: see ``by_oracle_id``.
+        self.unrepresentable: dict[str, str] = {}
         self._names: dict[str, list[tuple[str, bool]]] | None = None
         self._registry: SubtypeRegistry | None = None
         #: Read once, here, on the thread that owns the connection. It is a
@@ -264,15 +267,37 @@ class CardDatabase:
         return self._names
 
     def by_oracle_id(self, oracle_id: str) -> CardDef | None:
+        """The card, or None if this build of the engine cannot represent it.
+
+        A card carrying something the engine has no model for - a mana symbol
+        from a set newer than the parser, say - is treated as *illegal*: it is
+        not in the pool, so no deck can contain it and no sweep can trip over
+        it. One such card used to raise out of the middle of an iteration and
+        abort the whole pass, which made every full-pool report impossible to
+        run rather than one card short.
+
+        Illegal, not silent. Every exclusion is recorded in
+        ``unrepresentable`` with the reason, so a report can say what the
+        engine is not modelling and a new symbol still surfaces.
+        """
         cached = self._cache.get(oracle_id)
         if cached is not None:
             return cached
+        if oracle_id in self.unrepresentable:
+            return None
         row = self._conn.execute(
             "SELECT data FROM cards WHERE oracle_id = ?", (oracle_id,)
         ).fetchone()
         if row is None:
             return None
-        card = CardDef.from_scryfall(json.loads(row["data"]), self.registry())
+        try:
+            card = CardDef.from_scryfall(json.loads(row["data"]), self.registry())
+        except ValueError as exc:
+            # UnknownManaSymbol and its kin. Narrow on purpose: a bug in the
+            # engine should still crash, and only a card the engine cannot
+            # express is quietly excluded.
+            self.unrepresentable[oracle_id] = str(exc)
+            return None
         self._cache[oracle_id] = card
         return card
 
