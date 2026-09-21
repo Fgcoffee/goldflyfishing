@@ -232,7 +232,9 @@ def test_simultaneous_triggers_are_ordered_apnap(board):
     victim = board.play("Grizzly Bears", controller=0)
 
     destroy(game, victim)
-    controllers = [game.objects[src].controller for src, _, _ in game.pending_triggers]
+    # The controller each trigger was noted under, which is now recorded on
+    # the pending trigger itself rather than looked up again on its source.
+    controllers = [pending.controller for pending in game.pending_triggers]
     assert controllers[0] == 1, "the active player's trigger is noted first"
 
 
