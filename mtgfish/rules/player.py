@@ -21,7 +21,8 @@ from .ids import NO_OBJECT, ObjectId, PlayerId
 
 #: CR 903.7: a Commander game starts each player at 40 life.
 COMMANDER_STARTING_LIFE = 40
-#: CR 903.10: 21 or more combat damage from a single commander is lethal.
+#: CR 903.10a: 21 or more combat damage from a single commander is lethal.
+#: The state-based action that reads it is CR 704.6c.
 COMMANDER_DAMAGE_THRESHOLD = 21
 #: CR 704.5c: ten or more poison counters.
 POISON_THRESHOLD = 10
@@ -113,14 +114,23 @@ class Player:
     life_lost_this_turn: int = 0
 
     # -- Commander (CR 903) -------------------------------------------------
-    #: The player's commanders, as objects. They begin in the command zone.
+    #: The player's commanders. One card, or two under a partner variant.
+    #: They begin in the command zone (CR 903.6).
+    #:
+    #: CR 903.3 makes the designation an attribute of the *card*, not of the
+    #: object representing it, so these ids are identities rather than live
+    #: objects: a commander that changes zones becomes a new object, and
+    #: ``Game.commander_identity`` maps that object back to the id recorded
+    #: here. Both dictionaries below are keyed the same way, which is what
+    #: lets a tax and a damage clock survive the commander dying.
     commanders: tuple[ObjectId, ...] = ()
     #: CR 903.8: each commander costs {2} more for each previous time it was
     #: cast *from the command zone*, tracked per commander.
     commander_casts: dict[ObjectId, int] = field(default_factory=dict)
-    #: CR 903.10: combat damage taken from each individual commander, keyed by
-    #: the commander's *original* object id so it survives the commander
-    #: changing zones.
+    #: CR 903.10a: combat damage taken from each individual commander, keyed
+    #: by the commander's *original* object id so it survives the commander
+    #: changing zones. Per commander, never pooled: two commanders dealing 20
+    #: each kill nobody.
     commander_damage: dict[ObjectId, int] = field(default_factory=dict)
 
     # -- designations -------------------------------------------------------
@@ -203,7 +213,11 @@ class Player:
 
     @property
     def lethal_commander_damage(self) -> ObjectId:
-        """The commander that has dealt 21+ damage to this player, if any."""
+        """The commander that has dealt 21+ damage to this player, if any.
+
+        CR 903.10a states the rule; CR 704.6c is the state-based action that
+        acts on it, so this only reports and never itself ends the game.
+        """
         for commander, amount in self.commander_damage.items():
             if amount >= COMMANDER_DAMAGE_THRESHOLD:
                 return commander

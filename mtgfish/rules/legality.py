@@ -111,11 +111,15 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
     player = game.player(player_id)
 
     sources: list[tuple[ObjectId, Zone]] = [(oid, Zone.HAND) for oid in player.hand]
-    # CR 903.9: a commander in the command zone may be cast from there.
+    # CR 903.8: a player may cast a commander *they own* from the command zone.
+    # That permission belongs to commanders alone. The command zone also holds
+    # emblems (CR 114.2) and whatever else an effect puts there, and none of it
+    # may be cast - offering it would put a card on the stack that no rule ever
+    # let a player cast.
     sources += [
         (oid, Zone.COMMAND)
         for oid in game.command
-        if game.objects[oid].owner == player_id
+        if game.objects[oid].owner == player_id and game.objects[oid].is_commander
     ]
     # An alternative cost can allow casting from somewhere else entirely -
     # Flashback from a graveyard being the obvious one - so those zones are
@@ -183,7 +187,7 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                 continue
             if alternative.from_zone is None and zone not in (Zone.HAND, Zone.COMMAND):
                 continue
-            if not _affordable_alternative(game, player_id, alternative, obj):
+            if not _affordable_alternative(game, player_id, alternative, obj, zone):
                 continue
             out.append(
                 Action(ActionKind.CAST_SPELL, source=object_id, alternative_cost=index)
@@ -193,7 +197,7 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
 
 
 def _affordable_alternative(
-    game: Game, player_id: PlayerId, alternative, obj: GameObject
+    game: Game, player_id: PlayerId, alternative, obj: GameObject, zone: Zone
 ) -> bool:
     """Whether an alternative cost could plausibly be paid.
 
@@ -217,6 +221,15 @@ def _affordable_alternative(
 
     player = game.player(player_id)
     cost = alternative.cost.mana_component
+    if zone is Zone.COMMAND and obj.is_commander:
+        # CR 903.8 with CR 118.9d: the tax is a cost *increase*, and an
+        # alternative cost replaces the mana cost rather than the increases
+        # applied on top of it. ``compute_total_cost`` charges it either way,
+        # so leaving it out here offers a commander for one mana and then
+        # refuses the payment.
+        cost = cost.increased_by(
+            player.commander_tax(game.commander_identity(obj.id))
+        )
     if find_payment(player.mana_pool, cost, life_available=player.life - 1):
         return True
 

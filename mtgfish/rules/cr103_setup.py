@@ -5,6 +5,13 @@ draws seven, then mulligans are taken. Commanders begin in the command zone
 rather than the library (CR 903.6), which is why a Commander deck is 99 cards
 plus one.
 
+CR 903.2 settles what kind of game this is before any of that: a Free-for-All
+(CR 806) with the attack multiple players option and *without* the limited
+range of influence option. Both of those are honoured by omission - every
+player is every other player's opponent, and nothing anywhere narrows who a
+spell may be aimed at - so the only part that needs code is CR 806.3, seating
+the players at random.
+
 Everything random here draws from the game's seeded RNG. That includes the
 turn-order roll, so a replay reproduces even who went first.
 """
@@ -18,7 +25,7 @@ from .enums import Phase, Step, Zone
 from .game import AbilityProvider, Game
 from .ids import PlayerId
 from .log import GameLog
-from .player import STARTING_HAND_SIZE, Player
+from .player import COMMANDER_STARTING_LIFE, STARTING_HAND_SIZE, Player
 
 #: A decision function: given the game, the player, and how many mulligans they
 #: have already taken, return True to mulligan again.
@@ -64,7 +71,8 @@ def new_game(
             commander_ids.append(obj.id)
         player.commanders = tuple(commander_ids)
 
-    # CR 103.1: turn order is determined at random, then fixed for the game.
+    # CR 103.1, and CR 806.3 for the seating it implies: turn order is
+    # determined at random, then fixed for the game.
     order = [PlayerId(i) for i in range(len(game.players))]
     if randomize_turn_order:
         game.rng.shuffle(order)
@@ -77,6 +85,13 @@ def new_game(
 
     for player_id in order:
         game.shuffle_library(player_id)
+
+    # CR 903.7: once the starting player is known, each player sets their life
+    # total to 40 and draws seven. Setting it here rather than leaving it to
+    # the Player default makes it a step of the setup sequence, in the order
+    # the rule gives it - and 40 is a fact about Commander, not about players.
+    for player_id in order:
+        game.players[player_id].life = COMMANDER_STARTING_LIFE
 
     for player_id in order:
         game.draw(player_id, STARTING_HAND_SIZE)
