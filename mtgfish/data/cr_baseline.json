@@ -165,6 +165,7 @@
     "403.1": "Most of the area between the players represents the battlefield. The battlefield starts out empty. Permanents a player controls are normally kept in front of them on the battlefield, though there are some cases (such as an Aura attached to another player’s permanent) when a permanent one player controls is kept closer to a different player.",
     "404.3": "If an effect or rule puts two or more cards into the same graveyard at the same time, the owner of those cards may arrange them in any order.",
     "405": "Stack",
+    "406.7": "If an object in the exile zone becomes exiled, it doesn’t change zones, but it becomes a new object that has just been exiled.",
     "500": "General",
     "500.1": "A turn consists of five phases, in this order: beginning, precombat main, combat, postcombat main, and ending. Each of these phases takes place every turn, even if nothing happens during the phase. The beginning, combat, and ending phases are further broken down into steps, which proceed in order.",
     "500.4": "As a step or phase begins, if there are effects that last until that step or phase, those effects expire.",

@@ -587,16 +587,21 @@ class Game:
             target.append(new_obj.id)
 
         self.invalidate_characteristics()
-        self.emit(
-            Event(
-                EventKind.ZONE_CHANGE,
-                object_id=new_obj.id,
-                player=owner,
-                from_zone=from_zone,
-                to_zone=to_zone,
-                data=(obj.id,),
+        # CR 406.7: an object in exile that becomes exiled does not change
+        # zones. It still becomes a new object - which is why the work above
+        # is done either way - but nothing watching for a zone change may see
+        # one, because none happened.
+        if not (from_zone is Zone.EXILE and to_zone is Zone.EXILE):
+            self.emit(
+                Event(
+                    EventKind.ZONE_CHANGE,
+                    object_id=new_obj.id,
+                    player=owner,
+                    from_zone=from_zone,
+                    to_zone=to_zone,
+                    data=(obj.id,),
+                )
             )
-        )
         self._emit_zone_specific(new_obj, from_zone, to_zone, previous=obj)
         return new_obj
 
