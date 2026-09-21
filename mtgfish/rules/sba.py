@@ -277,15 +277,13 @@ def _check_permanents(
                 to_graveyard.append(obj)
                 continue
 
-        # CR 704.5w: "If a non-Siege battle has defense 0, it's put into its
-        # owner's graveyard." CR 704.5v says the same for a Siege battle, but
-        # only if it "isn't the source of an ability that has triggered but
-        # not yet left the stack" - that exception is not implemented here,
-        # the same shape of exception the Saga check below does honour.
+        # CR 704.5w: a non-Siege battle with defense 0 goes to its owner's
+        # graveyard. CR 704.5v says the same for a Siege battle, but spares
+        # one that is still the source of a triggered ability on the stack -
+        # that exception is not implemented here, though the Saga check below
+        # honours the same shape of exception.
         #
-        # CR 704.5x, the protector rule, is not implemented either: a battle
-        # with no protector and no attackers has its controller choose one,
-        # and only goes to the graveyard when nobody can be chosen.
+        # CR 704.5x, the protector rule, is not implemented either.
         if chars.has_type(CardType.BATTLE):
             if obj.counter_count("defense") <= 0:
                 to_graveyard.append(obj)
@@ -400,11 +398,7 @@ def _resolve_legend_rule(
 
 
 def _check_role_rule(game: Game, to_graveyard: list[GameObject]) -> None:
-    """CR 704.5z: one Role per permanent per player.
-
-    "If a permanent has more than one Role controlled by the same player
-    attached to it, each of those Roles except the one with the most recent
-    timestamp is put into its owner's graveyard."
+    """CR 704.5z: one Role per permanent per player, keeping the newest.
 
     Per *player*, like the legend rule and unlike the world rule - two
     opponents can each have a Role on the same creature, and both stay. This

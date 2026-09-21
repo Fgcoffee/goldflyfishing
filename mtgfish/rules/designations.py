@@ -59,17 +59,12 @@ def become_monarch(game: Game, player_id: PlayerId) -> bool:
 def monarch_end_step_draw(game: Game) -> None:
     """CR 725.2: the monarch draws a card at the beginning of their end step.
 
-    DIVERGENCE. CR 725.2 calls this an *inherent triggered ability*: "There are
-    two inherent triggered abilities associated with being the monarch. These
-    triggered abilities have no source and are controlled by the player who was
-    the monarch at the time the abilities triggered. ... 'At the beginning of
-    the monarch's end step, that player draws a card'".
-
-    It is done here as a turn-based action instead, so it never goes on the
-    stack. That is right about one thing - it has no source and survives the
-    card that created the monarchy - and wrong about the rest: the draw cannot
-    be responded to, cannot be countered by Stifle or Tale's End, and is not
-    ordered against the other end-step triggers under APNAP.
+    DIVERGENCE. CR 725.2 makes this an inherent triggered ability; it is done
+    here as a turn-based action, so it never goes on the stack. That is right
+    about one thing - it has no source and survives the card that created the
+    monarchy - and wrong about the rest: the draw cannot be responded to,
+    cannot be countered by Stifle or Tale's End, and is not ordered against
+    the other end-step triggers under APNAP.
     """
     holder = monarch(game)
     if holder != NO_PLAYER and holder == game.active_player:
@@ -189,11 +184,8 @@ def rad_counter_milling(game: Game, player_id: PlayerId) -> None:
     lose 1 life and remove a rad counter.
 
     DIVERGENCE. CR 728.1 makes this an inherent triggered ability, not a
-    turn-based action: "There is an inherent triggered ability associated with
-    rad counters. This ability has no source and is controlled by the active
-    player. ... 'At the beginning of each player's precombat main phase, if
-    that player has one or more rad counters, that player mills ...'". Doing it
-    inline means it never uses the stack and cannot be responded to.
+    turn-based action. Doing it inline means it never uses the stack and
+    cannot be responded to.
     """
     player = game.player(player_id)
     if player.rad <= 0:

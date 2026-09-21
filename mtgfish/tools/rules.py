@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 
 from ..rules import citations
 
@@ -207,6 +208,70 @@ def _cmd_audit(args) -> int:
     return 0
 
 
+
+def _cmd_index(args) -> int:
+    """The Comprehensive Rules in order, each rule with the code that cites it.
+
+    This is the rules document and the engine side by side. Read the CR top to
+    bottom, and for any rule the index says which files implement it and where
+    - so a change in a new release is navigable straight to the code that has
+    to change with it, instead of being hunted for.
+    """
+    from ..data.comprehensive_rules import SECTION_NAMES
+
+    by_rule: dict[str, list] = {}
+    for citation in citations.cited_in_source():
+        by_rule.setdefault(citation.number, []).append(citation)
+
+    rules = citations._rules()
+    out = []
+    section = None
+    group = None
+    shown = cited = 0
+
+    for number in sorted(rules, key=_sort_key):
+        if args.section and not number.startswith(args.section):
+            continue
+        hits = by_rule.get(number, [])
+        if args.only_cited and not hits:
+            continue
+
+        major = int(number[0])
+        if major != section:
+            section = major
+            out.append(f"\n\n{'=' * 78}\n{major}00s  {SECTION_NAMES.get(major, '')}\n{'=' * 78}")
+        head = number.split(".")[0]
+        if head != group:
+            group = head
+            out.append(f"\n--- CR {head}  {rules[head].text if head in rules else ''}")
+
+        shown += 1
+        text = rules[number].text
+        if not args.full and len(text) > args.width:
+            text = text[: args.width - 1] + "\u2026"
+        out.append(f"\n  CR {number:<10} {text}")
+        if hits:
+            cited += 1
+            places = sorted({f"{_short(c.path)}:{c.line}" for c in hits})
+            for place in places[: args.limit]:
+                out.append(f"\n                 -> {place}")
+            if len(places) > args.limit:
+                out.append(f"\n                 -> ... and {len(places) - args.limit} more")
+
+    text = "".join(out).lstrip("\n")
+    if args.out:
+        Path(args.out).write_text(text + "\n", encoding="utf8")
+        print(f"Wrote {shown} rules ({cited} with code behind them) to {args.out}")
+    else:
+        print(text)
+    return 0
+
+
+def _short(path: str) -> str:
+    marker = "/mtgfish/"
+    return path[path.index(marker) + 1 :] if marker in path else path
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -231,6 +296,15 @@ def main(argv: list[str] | None = None) -> int:
     audit.add_argument("--section", default="", help='limit to a prefix, e.g. "6"')
     audit.add_argument("--limit", type=int, default=25)
     audit.set_defaults(func=_cmd_audit)
+
+    index = sub.add_parser("index", help="the rules in order, with the code for each")
+    index.add_argument("--section", default="", help='limit to a prefix, e.g. "6"')
+    index.add_argument("--only-cited", action="store_true", help="skip rules no code cites")
+    index.add_argument("--full", action="store_true", help="do not truncate rule text")
+    index.add_argument("--width", type=int, default=100)
+    index.add_argument("--limit", type=int, default=6, help="code locations per rule")
+    index.add_argument("--out", default="", help="write to a file instead of stdout")
+    index.set_defaults(func=_cmd_index)
 
     base = sub.add_parser("baseline", help="record the wording the engine was written against")
     base.add_argument("--write", action="store_true", help="save it")

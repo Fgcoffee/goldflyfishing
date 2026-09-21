@@ -804,12 +804,9 @@ class Game:
         if self.observer is not None:
             self.observer(self, event)
 
-        # DIVERGENCE. CR 702.179d: "There is an inherent triggered ability
-        # associated with a player having 1 or more speed. ... 'Whenever one
-        # or more opponents lose life during your turn, if your speed is less
-        # than 4, your speed increases by 1. This ability triggers only once
-        # each turn.'" It has no source, but it is a triggered ability and
-        # belongs on the stack; applying it inline here skips that.
+        # DIVERGENCE. CR 702.179d makes the speed increase an inherent
+        # triggered ability. It has no source, but it is a triggered ability
+        # and belongs on the stack; applying it inline here skips that.
         self._record_this_turn(event)
 
         if event.kind is EventKind.LIFE_LOST:
