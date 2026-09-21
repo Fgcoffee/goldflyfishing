@@ -30,6 +30,13 @@ if TYPE_CHECKING:
     from .game import Game
 
 
+def current_loyalty(obj, chars):
+    """A planeswalker's loyalty as the game sees it (CR 306.5c)."""
+    from ..cr300_card_types.cr300_characteristics import loyalty
+
+    return loyalty(obj, chars)
+
+
 def matches(
     game: Game,
     obj: GameObject,
@@ -167,8 +174,11 @@ def matches(
         game, chars.mana_value, spec.mana_value, obj, source, controller
     ):
         return False
+    # CR 306.5c: on the battlefield a planeswalker's loyalty *is* its loyalty
+    # counters, not the number printed on the card. "Target planeswalker with
+    # loyalty 3 or less" has to read the board, not the printing.
     if spec.loyalty is not None and not _numeric(
-        game, chars.loyalty, spec.loyalty, obj, source, controller
+        game, current_loyalty(obj, chars), spec.loyalty, obj, source, controller
     ):
         return False
 

@@ -506,6 +506,30 @@ class Game:
         if to_zone is Zone.COMMAND:
             to_player = owner
 
+        # CR 304.4, 307.4: an instant or sorcery that would enter the
+        # battlefield stays where it is instead. Nothing stopped one, so
+        # "put target card from your graveyard onto the battlefield" left a
+        # Lightning Bolt sitting there permanently - the state-based actions
+        # have no rule that would remove it, because the rule is that it
+        # never arrives.
+        if to_zone is Zone.BATTLEFIELD and not self._may_enter_the_battlefield(obj):
+            return obj
+
+        # CR 306.5b, 310.4b: a planeswalker enters with loyalty counters equal
+        # to its printed loyalty, and a battle with defense counters. Read from
+        # the object as it is *now*, before the move, because CR 306.5c would
+        # otherwise answer with the counters it does not have yet.
+        #
+        # This is an intrinsic ability, so it applies however the permanent
+        # arrives. It was only applied to a resolving permanent spell, so a
+        # reanimated planeswalker entered with zero loyalty and the state-based
+        # actions put it straight back in the graveyard.
+        entering: tuple[tuple[str, int], ...] = ()
+        if to_zone is Zone.BATTLEFIELD:
+            from ..cr300_card_types.cr300_characteristics import entering_counters
+
+            entering = entering_counters(self.characteristics(obj))
+
         destination_player = to_player if to_player is not None else owner
 
         # CR 716.2b, 719.3b: level and the solved designation last only while
@@ -560,6 +584,8 @@ class Game:
         if to_zone is Zone.BATTLEFIELD:
             new_obj.entered_battlefield_turn = self.turn
             new_obj.summoning_sick = True
+            for kind, amount in entering:
+                new_obj.add_counters(kind, amount)
 
         # The old object is kept, and deliberately keeps its old zone: that is
         # last-known information (CR 603.6e, 608.2g), and a dies-trigger asking
@@ -653,6 +679,22 @@ class Game:
                         data=(previous.id,) if previous else (),
                     )
                 )
+
+    def _may_enter_the_battlefield(self, obj: GameObject) -> bool:
+        """CR 304.4, 307.4: only a permanent card can become a permanent.
+
+        A double-faced card is one card with two faces (CR 712), and which of
+        them it enters with is settled by the caller after the move - so the
+        question here is whether *any* face could be a permanent. Asking only
+        about the current face refuses a modal double-faced card with a
+        sorcery on the front and a land on the back, which is a card that is
+        played as a land all the time.
+        """
+        if self.characteristics(obj).type_line.is_permanent_type:
+            return True
+        return any(
+            face.type_line.is_permanent_type for face in getattr(obj.card, "faces", ())
+        )
 
     def _remove_from_zone(self, obj: GameObject) -> None:
         contents = self.zone_list(obj.zone, obj.owner)

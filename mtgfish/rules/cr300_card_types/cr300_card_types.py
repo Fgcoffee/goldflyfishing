@@ -142,6 +142,9 @@ def flip(game: Game, obj: GameObject) -> bool:
 
 # ---------------------------------------------------------------------------
 # CR 714: Sagas
+#
+# CR 303.5: Saga is an enchantment subtype, and the enchantment rules say
+# nothing more about it than "see rule 714" - so this is all of it.
 # ---------------------------------------------------------------------------
 
 
@@ -347,6 +350,9 @@ def station_band(threshold: int, *granted: Ability, power: int = 0, toughness: i
 
 # ---------------------------------------------------------------------------
 # CR 716: Classes
+#
+# CR 303.6: Class is an enchantment subtype, and like Saga it is defined
+# entirely in section 700.
 # ---------------------------------------------------------------------------
 
 
