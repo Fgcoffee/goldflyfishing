@@ -203,7 +203,7 @@ def _devoid(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Decayed")
 def _decayed(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.148a: "this creature can't block. When it attacks, sacrifice it
+    """CR 702.147a: "this creature can't block. When it attacks, sacrifice it
     at end of combat."
 
     Two abilities, and the second is a delayed trigger set up by the first -
@@ -257,7 +257,7 @@ def _decayed(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Split second")
 def _split_second(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.82a: while this spell is on the stack, players can't cast spells
+    """CR 702.61a: while this spell is on the stack, players can't cast spells
     or activate abilities that aren't mana abilities.
 
     A static ability that functions from the stack (CR 604.3), which is the
@@ -328,7 +328,7 @@ def _attack_trigger(instance: KeywordInstance, *effects: Effect, subject=None) -
 
 @register("Battle Cry")
 def _battle_cry(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.92a: whenever this creature attacks, each *other* attacking
+    """CR 702.91a: whenever this creature attacks, each *other* attacking
     creature gets +1/+0 until end of turn."""
     others = ObjectFilter(
         types_all=CardType.CREATURE, attacking=True, other_than_source=True
@@ -349,7 +349,7 @@ def _battle_cry(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Exalted")
 def _exalted(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.90a: whenever a creature you control attacks alone, it gets +1/+1.
+    """CR 702.83a: whenever a creature you control attacks alone, it gets +1/+1.
 
     The "alone" clause is an intervening-if on the count of attackers, so it is
     checked both when it would trigger and again on resolution (CR 603.4).
@@ -423,7 +423,7 @@ def _melee(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Mentor")
 def _mentor(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.135a: put a +1/+1 counter on an attacking creature with lesser power."""
+    """CR 702.134a: put a +1/+1 counter on an attacking creature with lesser power."""
     weaker = ObjectFilter(
         types_all=CardType.CREATURE,
         attacking=True,
@@ -459,7 +459,7 @@ def _training(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Dethrone")
 def _dethrone(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.103a: attacking the player with the most life adds a counter."""
+    """CR 702.105a: attacking the player with the most life adds a counter."""
     return (
         _attack_trigger(
             instance,
@@ -472,7 +472,7 @@ def _dethrone(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Afflict")
 def _afflict(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.131a: whenever this becomes blocked, defending player loses N life."""
+    """CR 702.130a: whenever this becomes blocked, defending player loses N life."""
     return (
         Ability.triggered(
             TriggerCondition(
@@ -542,7 +542,7 @@ def _persist(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Undying")
 def _undying(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.92a: the +1/+1 mirror of Persist."""
+    """CR 702.93a: the +1/+1 mirror of Persist."""
     no_plus = Condition(
         ConditionKind.OBJECT_COUNT,
         filter=ObjectFilter(source_only=True, has_counter="+1/+1"),
@@ -641,7 +641,7 @@ def _modular(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Graft")
 def _graft(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.57a: enters with N +1/+1 counters."""
+    """CR 702.58a: enters with N +1/+1 counters."""
     return (
         _enters_with_counters(instance, "+1/+1", Value.of(max(1, instance.amount))),
     )
@@ -658,7 +658,7 @@ def _fading(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Vanishing")
 def _vanishing(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.62a: the time-counter version of Fading."""
+    """CR 702.63a: the time-counter version of Fading."""
     return (
         _enters_with_counters(instance, "time", Value.of(max(1, instance.amount))),
         _upkeep_counter_sacrifice(instance, "time"),
@@ -781,7 +781,7 @@ def _hand_alternative(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Morph", "Megamorph", "Disguise")
 def _morph(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.36a: morph is two abilities that look nothing alike.
+    """CR 702.37a: morph is two abilities that look nothing alike.
 
     The first is a static ability functioning from hand: cast this card face
     down as a 2/2 colourless creature with no name, no types and no text, for
@@ -1051,7 +1051,7 @@ def _prowess(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Extort")
 def _extort(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.100a: whenever you cast a spell, you may pay {W/B} to drain."""
+    """CR 702.101a: whenever you cast a spell, you may pay {W/B} to drain."""
     return (
         Ability.triggered(
             TriggerCondition(
@@ -1096,7 +1096,7 @@ def _evolve(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 
 # ---------------------------------------------------------------------------
-# Protection, ward, and landwalk (CR 702.15, 702.16, 702.21)
+# Protection, ward, and landwalk (CR 702.14, 702.16, 702.21)
 # ---------------------------------------------------------------------------
 
 
@@ -1152,7 +1152,7 @@ def _ward(instance: KeywordInstance) -> tuple[Ability, ...]:
     return (_replace(ward, cost=instance.cost or Cost(()), keyword="Ward"),)
 
 
-#: CR 702.15: landwalk, one per basic land type plus the general forms. Each is
+#: CR 702.14: landwalk, one per basic land type plus the general forms. Each is
 #: "can't be blocked as long as defending player controls a [type]", which is a
 #: property of the *defender's* board rather than of any blocker.
 _LANDWALK_TYPES = {
@@ -1170,7 +1170,7 @@ _LANDWALK_TYPES = {
     "Forestwalk", "Desertwalk", "Legendary landwalk", "Nonbasic landwalk",
 )
 def _landwalk(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.15b."""
+    """CR 702.14c."""
     from .enums import Supertype
 
     key = instance.key
@@ -1202,13 +1202,13 @@ def _landwalk(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 
 # ---------------------------------------------------------------------------
-# Poison and -1/-1 damage (CR 702.75, 702.90, 702.164)
+# Poison and -1/-1 damage (CR 702.80, 702.90, 702.164)
 # ---------------------------------------------------------------------------
 
 
 @register("Infect", "Wither")
 def _infect(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.90a / 702.75a: damage as -1/-1 counters, and to players as poison.
+    """CR 702.90a / 702.80a: damage as -1/-1 counters, and to players as poison.
 
     Both are static abilities the damage routine consults, because the change
     happens as the damage is dealt rather than afterwards - it is still damage,
@@ -1274,7 +1274,7 @@ _CYCLING_SEARCH = {
     "Slivercycling", "Wizardcycling",
 )
 def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.29d: discard this card to search for a card of the named type.
+    """CR 702.29e: discard this card to search for a card of the named type.
 
     A variant of Cycling that fetches instead of drawing, so it shares the
     discard-as-cost shape and differs only in the effect.
@@ -1425,7 +1425,7 @@ def _etb_trigger(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Echo", "Cumulative upkeep", "Suspend")
 def _upkeep_keyword(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.28 / 702.24: upkeep-triggered costs and counters."""
+    """CR 702.30 / 702.24: upkeep-triggered costs and counters."""
     return (
         Ability.triggered(
             TriggerCondition(
@@ -1811,7 +1811,7 @@ def _umbra_armor(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Living weapon")
 def _living_weapon(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.91a: "When this Equipment enters, create a 0/0 black Phyrexian
+    """CR 702.92a: "When this Equipment enters, create a 0/0 black Phyrexian
     Germ creature token, then attach this to it."
 
     The Germ is 0/0 and survives only because the Equipment is attached: take
@@ -1845,7 +1845,7 @@ def _living_weapon(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("For Mirrodin!")
 def _for_mirrodin(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.167a: "When this Equipment enters, create a 2/2 red Rebel
+    """CR 702.163a: "When this Equipment enters, create a 2/2 red Rebel
     creature token, then attach this to it."
     """
     rebel = TokenSpec(
@@ -1872,7 +1872,7 @@ def _for_mirrodin(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Exploit")
 def _exploit(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.129a: "When this creature enters, you may sacrifice a creature."
+    """CR 702.110a: "When this creature enters, you may sacrifice a creature."
 
     The sacrifice is optional and is its own trigger; whatever the card does
     *because* it exploited is a separate "when this exploits a creature"
@@ -1961,7 +1961,7 @@ def _champion(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Riot")
 def _riot(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.137a: "This creature enters with your choice of a +1/+1 counter
+    """CR 702.136a: "This creature enters with your choice of a +1/+1 counter
     on it or haste."
 
     A replacement effect with a mode, chosen as it enters - so the choice is
@@ -1997,7 +1997,7 @@ def _riot(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Unleash")
 def _unleash(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.101a: "You may have this creature enter with a +1/+1 counter on
+    """CR 702.98a: "You may have this creature enter with a +1/+1 counter on
     it. It can't block as long as it has a +1/+1 counter on it."
 
     The drawback is conditioned on the counter, not on the choice, so removing
@@ -2047,7 +2047,7 @@ def _unleash(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Ravenous")
 def _ravenous(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.153a: "This creature enters with X +1/+1 counters on it. If X is
+    """CR 702.156a: "This creature enters with X +1/+1 counters on it. If X is
     5 or more, draw a card when it enters."
     """
     x_counters = Ability.static(
@@ -2120,7 +2120,7 @@ def _soulshift(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Recover")
 def _recover(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.58a: "When a creature is put into your graveyard from the
+    """CR 702.59a: "When a creature is put into your graveyard from the
     battlefield, you may pay [cost]. If you do, return this card from your
     graveyard to your hand. Otherwise, exile it."
 
@@ -2194,7 +2194,7 @@ def _haunt(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Echo")
 def _echo(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.29a: "At the beginning of your upkeep, if this came under your
+    """CR 702.30a: "At the beginning of your upkeep, if this came under your
     control since the beginning of your last upkeep, sacrifice it unless you
     pay its echo cost."
 
@@ -2321,7 +2321,7 @@ def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Ripple")
 def _ripple(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.79a: "When you cast this spell, you may reveal the top N cards of
+    """CR 702.60a: "When you cast this spell, you may reveal the top N cards of
     your library. You may cast any revealed cards with the same name as this
     spell without paying their mana costs. Put the rest on the bottom."
     """
@@ -2549,7 +2549,7 @@ def _transmute(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Transfigure")
 def _transfigure(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.47a: "[Cost], Sacrifice this creature: Search your library for a
+    """CR 702.71a: "[Cost], Sacrifice this creature: Search your library for a
     creature card with the same mana value as this creature, put it onto the
     battlefield, then shuffle. Activate only as a sorcery."
     """
@@ -2605,8 +2605,9 @@ def _reinforce(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Channel")
 def _channel(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.61a: "[Cost], Discard this card: [Effect]. Activate only as a
-    sorcery."
+    """Channel is an ability word (CR 207.2c), not a keyword ability, so it has
+    no CR 702 entry of its own. The shape is "[Cost], Discard this card:
+    [Effect]. Activate only as a sorcery."
 
     The effect is card text, so the shape is here and the body comes from the
     parser. It is an activated ability from hand, which is the part the engine
@@ -2761,7 +2762,7 @@ def _ninjutsu(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Soulbond")
 def _soulbond(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.94a: "You may pair this creature with another unpaired creature
+    """CR 702.95a: "You may pair this creature with another unpaired creature
     when either enters. They remain paired for as long as you control both."
 
     Two triggers, because either arrival can make the pair. What the pairing
@@ -2831,7 +2832,7 @@ def _ingest(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Tribute")
 def _tribute(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.122a: "As this creature enters, an opponent of your choice may
+    """CR 702.104a: "As this creature enters, an opponent of your choice may
     place N +1/+1 counters on it."
 
     A replacement effect an *opponent* chooses, which is the unusual part - the
@@ -2860,7 +2861,7 @@ def _tribute(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Demonstrate")
 def _demonstrate(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.147a: "When you cast this spell, you may copy it. If you do,
+    """CR 702.144a: "When you cast this spell, you may copy it. If you do,
     choose an opponent to also copy it."
     """
     return (
@@ -2937,7 +2938,8 @@ def _ascend(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Daybound", "Nightbound")
 def _day_night(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.145a/146a: the day-night cycle, as transform triggers.
+    """CR 702.145: the day-night cycle, as transform triggers. Daybound is
+    702.145b-d and nightbound 702.145e-g; both live under the one rule.
 
     Daybound turns the permanent to its night face when it becomes night;
     nightbound the reverse. The cycle itself is tracked on the game (CR 726),
@@ -2965,7 +2967,7 @@ def _day_night(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Living metal")
 def _living_metal(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.163a: "As long as it's your turn, this Vehicle is an artifact
+    """CR 702.161a: "As long as it's your turn, this Vehicle is an artifact
     creature."
 
     Layer 4, conditioned on whose turn it is - so a Transformer blocks on your
@@ -3257,7 +3259,7 @@ def _fuse(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("More Than Meets the Eye")
 def _more_than_meets_the_eye(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.157a: "You may cast this card converted for [cost]."
+    """CR 702.162a: "You may cast this card converted for [cost]."
 
     An alternative cost that also picks the other face, which is exactly what
     ``CastMode`` was built for.
@@ -3317,9 +3319,9 @@ def _solved(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Max speed")
 def _max_speed(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.180a: "[Ability] - Active only while you have max speed."
+    """CR 702.178a: "[Ability] - Active only while you have max speed."
 
-    Speed is a player designation that starts at 1 and rises to 4 (CR 702.179,
+    Speed is a player designation that starts at 1 and rises to 4 (CR 702.178,
     "Start your engines!"); max speed is speed 4.
     """
     return (
