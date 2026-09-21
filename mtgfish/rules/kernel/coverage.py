@@ -79,11 +79,9 @@ COVERAGE: dict[str, Entry] = _entries(
                 "atomic payment (118.3), and coloured reduction (118.7b-g)",
             ),
             # -- 200s -------------------------------------------------------
-            "201": ("data/cards.py", "names"),
             "202": ("rules/cr100_game_concepts/cr106_mana.py", "mana cost and derived color"),
             "204": ("data/cards.py", "color indicator overrides cost-derived color"),
             "205": ("rules/cr200_parts_of_a_card/cr205_typeline.py", "type lines, incl. multi-word subtypes"),
-            "208": ("data/cards.py", "power/toughness, incl. non-numeric"),
             "209": ("rules/cr600_spells_and_abilities/cr608_stack.py", "loyalty as counters on entry"),
             "210": ("rules/cr600_spells_and_abilities/cr608_stack.py", "defense as counters on entry"),
             # -- 300s -------------------------------------------------------
@@ -108,7 +106,6 @@ COVERAGE: dict[str, Entry] = _entries(
             "500": ("rules/cr500_turn_structure/cr500_turn.py", "phases, steps, mana emptying"),
             "501": ("rules/cr500_turn_structure/cr500_turn.py", ""),
             "502": ("rules/cr500_turn_structure/cr500_turn.py", "untap step, no priority"),
-            "503": ("rules/cr500_turn_structure/cr500_turn.py", ""),
             "504": ("rules/cr500_turn_structure/cr500_turn.py", "draw step as a turn-based action"),
             "505": ("rules/cr500_turn_structure/cr500_turn.py", "main phases"),
             "506": ("rules/cr500_turn_structure/cr506_combat.py", "combat phase, removal from combat"),
@@ -142,7 +139,6 @@ COVERAGE: dict[str, Entry] = _entries(
             "703": ("rules/cr500_turn_structure/cr500_turn.py", "turn-based actions"),
             "704": ("rules/cr700_additional_rules/cr704_sba.py", "the full state-based action list"),
             "705": ("rules/cr100_game_concepts/actions.py", "coin flips, from the seeded RNG"),
-            "706": ("rules/cr100_game_concepts/actions.py", "dice rolls, from the seeded RNG"),
             "725": ("rules/cr700_additional_rules/cr725_designations.py", "the monarch, incl. combat theft and 725.5"),
             "726": ("rules/cr700_additional_rules/cr725_designations.py", "the initiative"),
             "728": ("rules/cr700_additional_rules/cr725_designations.py", "rad counters and their main-phase procedure"),
@@ -215,11 +211,6 @@ COVERAGE: dict[str, Entry] = _entries(
                 "all twelve, enumerated in legal_actions and performed without "
                 "the stack - which is what lets a morph flip up under split "
                 "second",
-            ),
-            "309": (
-                "rules/cr600_spells_and_abilities/resolve.py",
-                "dungeons as venture position-tracking; which dungeon and what "
-                "each room does is card text the parser has not read yet",
             ),
             "601.3": (
                 "rules/cr600_spells_and_abilities/resolve.py",
@@ -307,6 +298,30 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
         },
         Status.PARTIAL: {
+            "201": (
+                "rules/kernel/matching.py",
+                "a name is matched and compared (201.2a-c); 201.3 interchangeable "
+                "names and 201.4 'choose a card name' have no implementation at "
+                "all - there is no effect kind for naming a card",
+            ),
+            "208": (
+                "data/cards.py",
+                "printed power/toughness including * (208.2), and 208.5's 0-fill; "
+                "208.2b (a replacement effect choosing P/T as it enters) and "
+                "208.4b (effects that *check* base power/toughness) are missing",
+            ),
+            "309": (
+                "rules/cr600_spells_and_abilities/resolve.py",
+                "venture position-tracking only. There is no dungeon in the "
+                "command zone, no rooms, no room abilities, no completion, and "
+                "no 309.3 one-dungeon-per-player rule",
+            ),
+            "706": (
+                "rules/cr100_game_concepts/actions.py",
+                "rolling from the seeded RNG exists; nothing reaches it - there "
+                "is no dice-rolling effect kind, so 706.3's results table and "
+                "706.6's ignore-the-lowest are unreachable",
+            ),
 
             "108": ("data/cards.py", "cards; 108.3 ownership of tokens not modelled"),
 
@@ -372,6 +387,12 @@ COVERAGE: dict[str, Entry] = _entries(
 
         },
         Status.NOT_APPLICABLE: {
+            "503": (
+                "",
+                "503.2 governs 'cast only after [a player's] upkeep step' with "
+                "more than one upkeep step; no card in the Commander-legal pool "
+                "carries that wording, so there is nothing to enforce",
+            ),
             "123": (
                 "",
                 "stickers are Unfinity only, and sticker sheets live outside "
@@ -424,7 +445,12 @@ COVERAGE: dict[str, Entry] = _entries(
             "903.13": ("", "Commander Draft - a different format"),
             "903.11": ("", "cards from outside the game - no sideboard in this sim"),
             "900": ("", "casual variant section header"),
-            "717": ("", "attraction cards - Unfinity only"),
+            "717": (
+                "",
+                "Attractions are Commander-legal, contrary to what this "
+                "entry used to say; they are simply not built - no Attraction "
+                "deck, no zone for it, and no die roll to visit one",
+            ),
             "729": ("", "subgames - Shahrazad only, and banned in Commander"),
             "732": ("", "taking shortcuts - a human convenience with no simulated effect"),
         },

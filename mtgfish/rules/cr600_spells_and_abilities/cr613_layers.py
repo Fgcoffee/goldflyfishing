@@ -165,6 +165,18 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
                 # fixed point; that is rarer than this is common, and a
                 # second pass here would double-apply the first grant.
                 by_layer = _by_layer(_live_effects(game, state, by_id, grants))
+
+        # CR 208.3, 301.7a: a noncreature permanent has no power and no
+        # toughness, whatever is printed on it. Applied to the finished output
+        # rather than inside layer 7, which is what makes CR 301.7b free - the
+        # printed values are the layer-7 base throughout and simply stop being
+        # hidden the moment a Vehicle becomes a creature - and what keeps
+        # CR 208.3a, a modification created while it was not a creature still
+        # applying once it is.
+        from ..cr300_card_types.cr300_characteristics import settle_type_characteristics
+
+        for object_id, obj in by_id.items():
+            state[object_id] = settle_type_characteristics(obj, state[object_id])
     finally:
         game.board_in_progress = previous
 

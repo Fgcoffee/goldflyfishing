@@ -236,12 +236,8 @@ def test_a_planeswalker_put_onto_the_battlefield_gets_its_loyalty(board):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(
-    reason="CR 301.7a is implemented in cr300_characteristics.settle_type_characteristics "
-    "but nothing calls it yet; the call belongs at the end of compute_board in "
-    "cr613_layers.py, which this package does not own",
-)
 def test_the_engine_reports_no_power_for_an_uncrewed_vehicle(board):
+    """CR 301.7a, end to end through the layer system."""
     vehicle = board.play(VEHICLE, controller=0)
 
     assert board.pt(vehicle) == (None, None)
