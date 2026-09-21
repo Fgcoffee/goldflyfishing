@@ -363,11 +363,6 @@ def test_stealing_a_permanent_spell_gives_the_thief_the_permanent(board):
     assert permanent.owner == PlayerId(0), "CR 110.2: the card's owner is unchanged"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="CR 110.2b's default controller is not carried across the resolution; "
-    "see cr608_stack._resolve_spell",
-)
 def test_a_stolen_permanent_spell_still_defaults_to_the_player_who_cast_it(board):
     """CR 110.2b, second half: the permanent's controller *by default* is the
     player who put the spell on the stack, so when the theft ends control goes

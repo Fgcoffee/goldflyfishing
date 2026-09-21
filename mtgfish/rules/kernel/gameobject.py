@@ -203,7 +203,8 @@ class GameObject:
 
     @property
     def is_spell(self) -> bool:
-        """CR 111.1: a card or copy on the stack, as opposed to an ability."""
+        """CR 112.1: a card on the stack, as opposed to an ability. CR 112.1a
+        makes a copy of a spell a spell too, even with no card behind it."""
         return self.zone is Zone.STACK and self.kind is not ObjectKind.ABILITY
 
     @property

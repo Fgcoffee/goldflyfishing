@@ -89,11 +89,21 @@ class Player:
     rad: int = 0
 
     # -- owned zones (CR 401, 402, 404) -------------------------------------
-    #: Ordered, and the order is secret. Index 0 is the top.
+    #: CR 401.1: ordered, and CR 401.2 makes the order secret. Index 0 is the
+    #: top.
     library: list[ObjectId] = field(default_factory=list)
+    #: CR 402.1: where a player holds the cards they have drawn.
+    #:
+    #: CR 402.3 is a documented divergence rather than a rule obeyed: it says
+    #: a player may not look at another player's hand, and this engine hands
+    #: every agent the whole Game. Nothing here is hidden from anybody - the
+    #: same admission CR 723.4 gets in ``resolve._do_control_player``.
     hand: list[ObjectId] = field(default_factory=list)
-    #: Ordered (CR 404.3), because some effects care which card went in first.
-    #: Index -1 is the most recently added.
+    #: CR 404.1: the discard pile, where anything countered, discarded,
+    #: destroyed or sacrificed ends up. CR 404.2 makes it a single face-up
+    #: pile whose order a player may not change, and CR 404.3 orders it -
+    #: which is why this is a list and not a set: some effects care which card
+    #: went in first. Index -1 is the most recently added.
     graveyard: list[ObjectId] = field(default_factory=list)
 
     mana_pool: ManaPool = field(default_factory=ManaPool)

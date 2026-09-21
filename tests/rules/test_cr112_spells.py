@@ -10,8 +10,8 @@ effect that changed a permanent spell on the stack goes on applying to the
 permanent that spell becomes - which cuts directly across CR 400.7, the rule
 that a zone change makes a new object with no memory of the old one. The engine
 implements CR 400.7 and has no exception for this, so the two tests marked
-``xfail`` below record exactly what is missing rather than leaving it to be
-rediscovered.
+effects that named the spell follow it onto the battlefield, which is the one
+exception CR 400.7 has written into the rules.
 """
 
 from __future__ import annotations
@@ -245,11 +245,6 @@ def test_an_ability_granted_to_a_spell_applies_on_the_stack(board):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="CR 112.4 is not implemented: CR 400.7 makes the permanent a new "
-    "object and nothing re-points the effect at it",
-)
 def test_an_effect_on_a_permanent_spell_keeps_applying_to_the_permanent(board):
     """CR 112.4, which is the rule's own example: a creature spell made white
     enters the battlefield white and stays white for the effect's duration.
@@ -268,11 +263,6 @@ def test_an_effect_on_a_permanent_spell_keeps_applying_to_the_permanent(board):
     assert board.chars(permanent).colors is Color.WHITE
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="resolve._register_continuous scopes every settled effect to the "
-    "battlefield, so no resolving spell can reach a spell on the stack",
-)
 def test_a_resolving_spell_can_create_an_effect_that_reaches_the_stack(board):
     """The root cause under CR 112.4, one step earlier than the test above.
 

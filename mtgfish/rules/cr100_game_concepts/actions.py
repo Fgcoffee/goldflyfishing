@@ -91,7 +91,7 @@ def sacrifice(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> b
 
 
 def exile(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> GameObject:
-    """Exile an object (CR 701.6).
+    """Exile an object (CR 701.6, CR 406.2).
 
     Records which object did the exiling (CR 607.2, 614.14). "Exile it, then
     you may play that card" is two abilities that only work together because

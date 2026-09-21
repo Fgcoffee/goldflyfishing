@@ -110,7 +110,20 @@ class Game:
     battlefield: list[ObjectId] = field(default_factory=list)
     #: Index -1 is the top of the stack: the next thing to resolve.
     stack: list[ObjectId] = field(default_factory=list)
+    #: CR 406.1, 406.2: a holding area, and exiling is moving an object into
+    #: it from wherever it was. Unordered as far as the rules go, so CR 406.4
+    #: and CR 406.5 - which say how to keep the physical piles straight - have
+    #: nothing to ask of a simulator, and CR 406.8's older name for the zone
+    #: never appears.
+    #:
+    #: CR 406.3 is only half true here: an exiled card is face up, and
+    #: exiling *face down* (CR 406.3a, 406.3b) is not implemented. It is also
+    #: unreachable - no effect can say it - so the gap is in the parser's
+    #: vocabulary rather than in this zone.
     exile: list[ObjectId] = field(default_factory=list)
+    #: CR 408.1: for the objects that sit outside the game and act on it -
+    #: which in Commander (CR 408.3) means each player's commander, put here
+    #: by CR 903.6, and the emblems CR 408.2 and CR 114.2 create.
     command: list[ObjectId] = field(default_factory=list)
 
     ids: IdAllocator = field(default_factory=IdAllocator)
@@ -224,8 +237,10 @@ class Game:
     standing_restrictions: list = field(default_factory=list)
     restrictions_cache: list | None = None
     restrictions_epoch: int = -1
-    #: CR 607: cards exiled by an ability, keyed by the object that exiled
-    #: them, so a linked ability can find "the exiled cards" later.
+    #: CR 406.6 with CR 607: one ability exiles cards and another refers to
+    #: them, and once a card is in exile nothing about it says how it got
+    #: there - so the link is recorded here, keyed by the object that exiled
+    #: them.
     exiled_with: dict = field(default_factory=dict)
     #: The current combat, if any (CR 506). Recreated each combat phase.
     combat: object | None = None

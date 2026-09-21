@@ -398,6 +398,14 @@ def _empty_mana_pools(game: Game) -> None:
 
 
 def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
+    """The actions a step or phase takes automatically (CR 703.1, 703.3).
+
+    CR 703.3: they are taken as the step or phase begins, before any player
+    receives priority, and they do not use the stack. CR 703.1a draws the line
+    this function sits on: an ability that merely *watches* for a step to
+    begin is a triggered ability and is not here - which is why the upkeep and
+    end step emit an event instead of doing anything.
+    """
     if step is Step.UNTAP:
         _untap_step(game)
     elif step is Step.MAIN and game.phase is Phase.PRECOMBAT_MAIN:

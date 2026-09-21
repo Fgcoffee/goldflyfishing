@@ -469,7 +469,9 @@ def _activatable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[A
                 continue
             if ability.timing is Timing.SORCERY and not sorcery_speed:
                 continue
-            # CR 606.3: loyalty abilities are sorcery-speed and once per turn.
+            # CR 209.2 states the rule and CR 606.3 repeats it: a loyalty
+            # ability is sorcery-speed, and only one of a permanent's loyalty
+            # abilities may be activated per turn.
             if ability.is_loyalty_ability and not sorcery_speed:
                 continue
             if ability.once_each_turn or ability.is_loyalty_ability:

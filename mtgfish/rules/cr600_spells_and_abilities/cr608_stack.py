@@ -126,6 +126,15 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # now, and any enters-the-battlefield trigger fires from there.
         permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=obj.controller)
         permanent.controller = obj.controller
+        # CR 110.2b: a stolen permanent spell becomes a permanent the thief
+        # controls, but its controller *by default* is still the player who
+        # put the spell on the stack. ``move_object`` sets both from the
+        # current controller, so the theft became permanent: layer 2 (CR
+        # 613.1b) recomputes the controller from the default, and when the
+        # control effect ended the permanent went to the thief rather than
+        # back to its caster.
+        permanent.base_controller = obj.base_controller
+        _carry_effects_onto_the_permanent(game, obj, permanent)
         permanent.x_value = obj.x_value
         # It got here by resolving as a spell, which is what "if you cast it"
         # asks. A permanent put onto the battlefield never passes through
@@ -181,6 +190,42 @@ def _attach_aura_on_entry(game: Game, spell: GameObject, permanent: GameObject) 
     from ..cr100_game_concepts import actions
 
     actions.attach(game, permanent, host)
+
+
+def _carry_effects_onto_the_permanent(
+    game: Game, spell: GameObject, permanent: GameObject
+) -> None:
+    """CR 112.4: an effect on a permanent spell follows it onto the battlefield.
+
+    CR 400.7 makes the permanent a new object, and a settled effect (CR 611.2c)
+    names the objects it applies to by id - so every effect that named the
+    spell stopped applying the moment it resolved. A creature spell made white
+    entered the battlefield black again.
+
+    This is the one place CR 400.7's "it remembers nothing" has an exception
+    written into the rules, so it is done by naming the new object as well as
+    the old rather than by loosening what counts as the same object: ``matches``
+    is also the targeting predicate, and making a resolved permanent answer to
+    a filter that named the spell would quietly change target legality too.
+    """
+    from dataclasses import replace
+
+    changed = False
+    for continuous in game.continuous_effects:
+        spec = continuous.effect.targets
+        if spec is None or not spec.specific or spell.id not in spec.specific:
+            continue
+        continuous.effect = replace(
+            continuous.effect,
+            targets=replace(
+                spec,
+                specific=(*spec.specific, permanent.id),
+                zones=frozenset(spec.zones) | {Zone.BATTLEFIELD},
+            ),
+        )
+        changed = True
+    if changed:
+        game.invalidate_characteristics()
 
 
 def _apply_enters_with_counters(game: Game, permanent: GameObject) -> None:

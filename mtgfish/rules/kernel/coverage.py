@@ -59,10 +59,30 @@ COVERAGE: dict[str, Entry] = _entries(
             "104": ("rules/kernel/game.py", "win and loss conditions"),
             "105": ("rules/kernel/enums.py", "colors as a bitmask"),
             "106": ("rules/cr100_game_concepts/cr106_mana.py", "mana types, pools, emptying"),
-            "107": ("rules/cr100_game_concepts/cr106_mana.py", "mana symbols incl. hybrid and Phyrexian"),
             "109": ("rules/kernel/gameobject.py", "objects"),
-            "110": ("rules/kernel/gameobject.py", "permanents and status"),
-            "112": ("rules/cr600_spells_and_abilities/cr608_stack.py", "spells"),
+            "107": (
+                "rules/cr100_game_concepts/cr106_mana.py",
+                (
+                    "mana symbols incl. hybrid and Phyrexian, and 107.1-2's "
+                    "number rules"
+                ),
+            ),
+            "110": (
+                "rules/kernel/gameobject.py",
+                (
+                    "permanents, owner and controller, and 110.2b's default "
+                    "controller surviving a resolution"
+                ),
+            ),
+            "112": (
+                "rules/cr600_spells_and_abilities/cr608_stack.py",
+                (
+                    "spells, and 112.4 - an effect on a permanent spell follows "
+                    "it onto the battlefield. 112.1b and 112.2a are unreachable "
+                    "rather than missing: nothing creates a castable copy of a "
+                    "card (707.12), so no such spell can exist"
+                ),
+            ),
             "113": ("rules/cr600_spells_and_abilities/abilities.py", "the four ability types, and where they function"),
             "115": ("rules/cr600_spells_and_abilities/cr601_casting.py", "targets, legality on announce and resolve"),
             "117": ("rules/cr100_game_concepts/cr117_priority.py", "priority, passing, resolution"),
@@ -70,7 +90,15 @@ COVERAGE: dict[str, Entry] = _entries(
             "120": ("rules/cr100_game_concepts/actions.py", "damage to players, creatures, planeswalkers"),
             "121": ("rules/kernel/game.py", "drawing, and the empty-library flag"),
             "122": ("rules/cr100_game_concepts/actions.py", "counters, incl. +1/+1 and -1/-1 annihilation"),
-            "101": ("rules/cr500_turn_structure/restrictions.py", "101.2 'can't beats can' as a general mechanism"),
+            "101": (
+                "rules/cr500_turn_structure/restrictions.py",
+                (
+                    "101.2 'can't beats can' as a general mechanism. 101.1, the "
+                    "golden rule, is not modelled and cannot be: card text "
+                    "compiles into a fixed effect vocabulary, so a card beats a "
+                    "rule only where the engine already offers a seam"
+                ),
+            ),
             "111": ("rules/cr100_game_concepts/cr111_tokens.py", "tokens, CR 111.4 naming and CR 111.5 refusal"),
             "114": ("rules/cr100_game_concepts/cr111_tokens.py", "emblems, abilities functioning in the command zone"),
             "118": (
@@ -384,6 +412,22 @@ COVERAGE: dict[str, Entry] = _entries(
 
         },
         Status.NOT_IMPLEMENTED: {
+            "107.17": (
+                "",
+                (
+                    "the ticket symbol {TK}. parser/costs.py refuses it as an "
+                    "unknown mana symbol, so the whole cost is unreadable - and "
+                    "70 Commander-legal cards use one"
+                ),
+            ),
+            "107.18": (
+                "",
+                (
+                    "the pawprint symbol {P}. Modes are chosen by count, and an "
+                    "effect has nowhere to carry a per-mode weight (CR 700.2i); "
+                    "8 Commander-legal cards use one"
+                ),
+            ),
             # -- 700s, with the rule names taken from the actual CR ----------
             # -- known gaps *inside* groups marked implemented above ---------
             # A group-level mark would otherwise score every subrule as done,
@@ -395,6 +439,13 @@ COVERAGE: dict[str, Entry] = _entries(
 
         },
         Status.NOT_APPLICABLE: {
+            "204.1": (
+                "",
+                (
+                    "where the colour indicator is printed and what it looks "
+                    "like. What it *means* is 204.2, which is implemented"
+                ),
+            ),
             "503": (
                 "",
                 "503.2 governs 'cast only after [a player's] upkeep step' with "

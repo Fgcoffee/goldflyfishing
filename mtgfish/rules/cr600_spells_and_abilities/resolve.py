@@ -677,6 +677,14 @@ def _do_control_player(resolution: Resolution, effect: Effect) -> None:
     anything the controlled player could see is already visible to whoever is
     deciding for them. A simulator with hidden zones would have to do work
     for this rule; this one has none to do.
+
+    CR 723.7 is a gap rather than a rule honoured by omission: the effect that
+    takes control of a player may also restrict what that player is allowed to
+    do, or compel them, and there is nowhere on the effect to carry either.
+    Control here is total and unconditioned. CR 723.2 is the same gap seen
+    from the card side - the two cards that grant control for a limited
+    duration need exactly that payload - and so is CR 723.3's duration, which
+    is fixed at the controlled player's next turn.
     """
     game = resolution.game
     for player_id in _players(resolution, effect):
@@ -1222,7 +1230,20 @@ def _register_continuous(resolution: Resolution, effect: Effect) -> None:
 
         resolved_effect = _replace(
             effect,
-            targets=ObjectFilter(specific=chosen, zones=frozenset({Zone.BATTLEFIELD})),
+            # CR 112.4: an effect that changed a permanent *spell* keeps
+            # applying to the permanent it becomes, so the zones it may reach
+            # are the ones its objects are in now, plus the battlefield they
+            # may be heading for. Hard-coding the battlefield meant an effect
+            # aimed at a spell was born unable to see it, and "target creature
+            # spell becomes white" did nothing even while the spell was still
+            # on the stack.
+            targets=ObjectFilter(
+                specific=chosen,
+                zones=frozenset(
+                    {game.objects[i].zone for i in chosen if i in game.objects}
+                )
+                | {Zone.BATTLEFIELD},
+            ),
             is_targeted=False,
         )
 
@@ -1565,7 +1586,20 @@ def _do_turn_face_down(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_phase_out(resolution: Resolution, effect: Effect) -> None:
-    """CR 702.26b: a phased-out permanent is treated as not existing."""
+    """CR 702.26b: a phased-out permanent is treated as not existing.
+
+    Only the ordinary phasing of CR 702.26 - out now, back in during its
+    controller's next untap step. CR 610.4's "phase out *until* [event]" is
+    **not implemented**, and CR 610.4a says the untap-step phase-in is exactly
+    what should not happen to such a permanent.
+
+    The gap starts before this function: the ``phase-out`` clause in the
+    parser discards the "until ..." tail, so no duration ever arrives here.
+    For the common Commander wording - "phase out until your next turn" - the
+    two answers coincide, which is why nothing has noticed. CR 610.4b-d, on
+    which object creates the second one-shot effect and when several of them
+    are simultaneous, have nowhere to be expressed at all.
+    """
     game = resolution.game
     for obj in _objects(resolution, effect):
         obj.phased_out = True
