@@ -21,8 +21,8 @@ from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 from .enums import Duration, Zone
 from .events import Event, EventKind
 from .gameobject import GameObject
-from .query import ValueKind
 from .ids import ObjectId, PlayerId
+from .query import ValueKind
 
 if TYPE_CHECKING:
     from .game import Game
@@ -306,7 +306,7 @@ def _do_unless_pays(resolution: Resolution, effect: Effect) -> None:
         execute(resolution, effect.children)
         return
 
-    from .casting import can_pay_cost, pay_cost
+    from .cr601_casting import can_pay_cost, pay_cost
 
     for player_id in payers:
         cost = effect.pay_cost
@@ -388,23 +388,48 @@ def _do_discard(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_create_token(resolution: Resolution, effect: Effect) -> None:
-    """CR 111: create tokens from the effect's specification."""
+    """CR 111.1: create tokens, as many as the effect says, for whoever it says.
+
+    Two bugs lived in the old one line, and both were quiet.
+
+    The count guarded on ``effect.amount.constant``, which is the *value* a
+    literal carries, not a flag saying the amount is a literal. Every
+    non-literal amount therefore read as 0, which is falsy, and fell through
+    to one token: Secure the Wastes for X=6 made one Soldier, Avenger of
+    Zendikar made one Plant, and the whole go-wide archetype quietly stopped
+    working. A literal 0 is how "create a token" arrives with no count at
+    all, so that one still means one; an evaluated 0 - X=0 - correctly makes
+    nothing.
+
+    CR 111.2: "The player who creates a token is its owner. The token enters
+    the battlefield under that player's control." The resolving player was
+    passed regardless of what the effect said, so "target opponent creates a
+    1/1" handed the token to the caster - Forbidden Orchard became a strictly
+    better land and the Hunted cycle lost its drawback entirely.
+    """
     if effect.token is None:
         return
-    from .tokens import create_tokens
+    from .cr111_tokens import create_tokens
+    from .query import ValueKind
 
-    create_tokens(
-        resolution.game,
-        effect.token,
-        resolution.controller,
-        max(1, _amount(resolution, effect)) if effect.amount.constant else 1,
-        source=resolution.source,
-    )
+    if effect.amount.kind is ValueKind.CONSTANT:
+        count = max(1, effect.amount.constant)
+    else:
+        count = _amount(resolution, effect)
+
+    for player_id in _players(resolution, effect):
+        create_tokens(
+            resolution.game,
+            effect.token,
+            player_id,
+            count,
+            source=resolution.source,
+        )
 
 
 def _do_create_emblem(resolution: Resolution, effect: Effect) -> None:
     """CR 114.2: "[player] gets an emblem with [ability]"."""
-    from .tokens import create_emblem
+    from .cr111_tokens import create_emblem
 
     for player_id in _players(resolution, effect):
         create_emblem(
@@ -545,8 +570,8 @@ def _do_replacement(resolution: Resolution, effect: Effect) -> None:
     the first time it applies. Every other replacement a resolution makes goes
     where it always went.
     """
+    from .cr614_replacement import ReplacementEffect, ReplacementKind, register
     from .query import ObjectFilter
-    from .replacement import ReplacementEffect, ReplacementKind, register
 
     spec = effect.targets
     if (
@@ -619,7 +644,7 @@ def _do_become_prepared(resolution: Resolution, effect: Effect) -> None:
     the prepare spell's characteristics, and that copy is what can be cast. The
     permanent itself is unchanged - the designation is a marker, like solved.
     """
-    from .faces import copy_spell
+    from .cr707_faces import copy_spell
 
     game = resolution.game
     for obj in _objects(resolution, effect):
@@ -661,7 +686,7 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
         effects=effect.children,
         text=effect.text or "when you do",
     )
-    from .triggers import PendingTrigger
+    from .cr603_triggers import PendingTrigger
 
     game.pending_triggers.append(
         PendingTrigger(
@@ -903,7 +928,7 @@ def _do_gain_control(resolution: Resolution, effect: Effect) -> None:
 
 def _do_transform(resolution: Resolution, effect: Effect) -> None:
     """CR 701.28 / 712.18: turn it over, keeping the very same object."""
-    from .faces import transform
+    from .cr707_faces import transform
 
     for obj in _objects(resolution, effect):
         transform(resolution.game, obj)
@@ -911,7 +936,7 @@ def _do_transform(resolution: Resolution, effect: Effect) -> None:
 
 def _do_copy_permanent(resolution: Resolution, effect: Effect) -> None:
     """CR 707.1: make a permanent a copy of another."""
-    from .faces import copy_permanent
+    from .cr707_faces import copy_permanent
 
     game = resolution.game
     copier = game.objects.get(resolution.source)
@@ -923,7 +948,7 @@ def _do_copy_permanent(resolution: Resolution, effect: Effect) -> None:
 
 def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
     """CR 707.10: a copy on the stack, which was never cast."""
-    from .faces import copy_spell
+    from .cr707_faces import copy_spell
 
     count = max(1, _amount(resolution, effect)) if effect.amount.constant else 1
     for original in _objects(resolution, effect):
@@ -972,8 +997,8 @@ def _mana_kind(symbol: str, *, snow: bool, restriction=None):
     Hybrid symbols in a mana-*production* ability ("Add {G/U}") are a choice;
     the first color keeps the run deterministic, which replay depends on.
     """
+    from .cr106_mana import ManaKind, parse_mana_symbol
     from .enums import Color
-    from .mana import ManaKind, parse_mana_symbol
 
     parsed = parse_mana_symbol(symbol.strip("{}"))
     colors = list(parsed.colors)
@@ -997,8 +1022,8 @@ def _amount2(resolution: Resolution, effect: Effect) -> int:
 
 def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     """CR 106.1: add mana to a player's pool."""
+    from .cr106_mana import ManaKind
     from .enums import Supertype
-    from .mana import ManaKind
 
     game = resolution.game
     source_obj = game.objects.get(resolution.source)
@@ -1065,8 +1090,8 @@ def _register_continuous(resolution: Resolution, effect: Effect) -> None:
     Its timestamp is the moment of creation, and it persists for its stated
     duration whether or not its source survives (CR 611.2b).
     """
+    from .cr613_layers import layer_for
     from .game import ContinuousEffect
-    from .layers import layer_for
 
     game = resolution.game
     resolved_effect = effect
@@ -1145,7 +1170,7 @@ def _do_pay_cost(resolution: Resolution, effect: Effect) -> None:
     could not be made must leave nothing remembered, or the rest of the card
     fires for free.
     """
-    from .casting import can_pay_cost, pay_cost
+    from .cr601_casting import can_pay_cost, pay_cost
 
     game = resolution.game
     cost = effect.pay_cost
@@ -1316,7 +1341,7 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
     (CR 506.3, 508.4) - handed whatever this ability's cost returned or tapped,
     because ninjutsu's Ninja attacks what the returned creature was attacking.
     """
-    from .combat import enter_attacking
+    from .cr506_combat import enter_attacking
 
     game = resolution.game
     tapped = "tapped" in effect.keywords
@@ -1375,7 +1400,7 @@ def _do_explore(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_copy_permanent_effect(resolution: Resolution, effect: Effect) -> None:
-    from .faces import copy_permanent
+    from .cr707_faces import copy_permanent
 
     game = resolution.game
     copier = game.objects.get(resolution.source)
@@ -1404,7 +1429,7 @@ def _do_turn_face_up(resolution: Resolution, effect: Effect) -> None:
 
 def _do_turn_face_down(resolution: Resolution, effect: Effect) -> None:
     """CR 701.34b, and CR 712.16 stops a double-faced permanent being turned down."""
-    from .faces import layout_of
+    from .cr707_faces import layout_of
 
     game = resolution.game
     for obj in _objects(resolution, effect):
@@ -1514,7 +1539,7 @@ def _do_prevent_damage(resolution: Resolution, effect: Effect) -> None:
     names a player, which a shield with no subject and no players applies to
     everyone - a one-sided Fog that quietly protected the whole table.
     """
-    from .replacement import ReplacementEffect, ReplacementKind, register
+    from .cr614_replacement import ReplacementEffect, ReplacementKind, register
 
     if "combat" in effect.keywords:
         watched = frozenset({EventKind.COMBAT_DAMAGE_DEALT})
@@ -1539,7 +1564,7 @@ def _do_prevent_damage(resolution: Resolution, effect: Effect) -> None:
 
 def _do_redirect_damage(resolution: Resolution, effect: Effect) -> None:
     """CR 614.9: damage that would be dealt to one thing is dealt to another."""
-    from .replacement import ReplacementEffect, ReplacementKind, register
+    from .cr614_replacement import ReplacementEffect, ReplacementKind, register
 
     chosen = _objects(resolution, effect)
     if not chosen:
@@ -1581,7 +1606,7 @@ def _do_skip_step(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_take_initiative(resolution: Resolution, effect: Effect) -> None:
-    from .designations import take_initiative
+    from .cr725_designations import take_initiative
 
     for player_id in _players(resolution, effect):
         take_initiative(resolution.game, player_id)
@@ -1630,7 +1655,7 @@ def _do_set_class_level(resolution: Resolution, effect: Effect) -> None:
     is level 1 is legal if something else granted it, and the level never goes
     backwards on its own.
     """
-    from .card_types import class_level, set_class_level
+    from .cr300_card_types import class_level, set_class_level
 
     amount = _amount(resolution, effect)
     for obj in _objects(resolution, effect):
@@ -1657,7 +1682,7 @@ def _do_set_class_level(resolution: Resolution, effect: Effect) -> None:
 
 def _do_become_solved(resolution: Resolution, effect: Effect) -> None:
     """CR 719.3b: the Case becomes solved, and stays solved until it leaves."""
-    from .card_types import become_solved
+    from .cr300_card_types import become_solved
 
     for obj in _objects(resolution, effect):
         become_solved(resolution.game, obj.id)
@@ -1665,7 +1690,7 @@ def _do_become_solved(resolution: Resolution, effect: Effect) -> None:
 
 def _do_flip_permanent(resolution: Resolution, effect: Effect) -> None:
     """CR 710.4: flip a permanent. One way, and only on the battlefield."""
-    from .card_types import flip
+    from .cr300_card_types import flip
 
     for obj in _objects(resolution, effect):
         flip(resolution.game, obj)
@@ -1722,8 +1747,8 @@ def _do_cast_without_paying(resolution: Resolution, effect: Effect) -> None:
     fire. Only the mana is waived, and only if the controller wants to - "you
     may cast" is the usual wording.
     """
-    from .casting import CastError, cast_spell
-    from .priority import Action, ActionKind
+    from .cr117_priority import Action, ActionKind
+    from .cr601_casting import CastError, cast_spell
 
     game = resolution.game
     for obj in _objects(resolution, effect):
@@ -1750,8 +1775,8 @@ def _do_play_from_zone(resolution: Resolution, effect: Effect) -> None:
     normally and pays its cost, because permission to play is not permission to
     play for free.
     """
-    from .casting import CastError, cast_spell, play_land
-    from .priority import Action, ActionKind
+    from .cr117_priority import Action, ActionKind
+    from .cr601_casting import CastError, cast_spell, play_land
 
     game = resolution.game
     for obj in _objects(resolution, effect):
