@@ -79,10 +79,16 @@ class Agent(Protocol):
 
     A few choices are rarer than these, and the engine probes for them with
     ``hasattr`` rather than demanding every agent implement them - it falls
-    back to a legal default when they are absent. Currently
-    ``assign_combat_damage(game, player, source, recipients, total)``, which
-    divides combat damage (CR 510.1c-d) and returns amounts keyed by position
-    in ``recipients``.
+    back to a legal default when they are absent:
+
+    - ``assign_combat_damage(game, player, source, recipients, total)``
+      divides combat damage (CR 510.1c-d), returning amounts keyed by
+      position in ``recipients``.
+    - ``choose_modes(game, player, source, options, count)`` picks the modes
+      of a modal spell or ability (CR 700.2a-b), returning the indices it
+      wants from the ``(index, effect)`` pairs in ``options``.
+    - ``order_blockers(game, player, attacker, blockers)`` is legacy and no
+      longer called; CR 509.2 has no such step.
     """
 
     def choose_action(self, game: Game, player: PlayerId, legal: list[Action]) -> Action: ...

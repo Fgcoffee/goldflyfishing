@@ -375,14 +375,49 @@ class SimpleAgent:
 
         return assignments
 
-    def order_blockers(
-        self, game: Game, player: PlayerId, attacker: ObjectId, blockers: list[ObjectId]
-    ) -> list[ObjectId]:
-        """Kill the biggest blocker first."""
-        return sorted(
-            blockers,
-            key=lambda b: (-(game.characteristics(game.objects[b]).power or 0), b),
+    def assign_combat_damage(
+        self,
+        game: Game,
+        player: PlayerId,
+        source: ObjectId,
+        recipients: list,
+        total: int,
+    ) -> dict[int, int]:
+        """Kill the biggest blocker first (CR 510.1c).
+
+        This used to be an ordering, back when the rules made an attacker
+        order its blockers and work down the list. The rules now ask for a
+        division instead, so the same preference is expressed by assigning
+        lethal damage to the largest creature first.
+
+        Anything not a creature - the player, planeswalker or battle a
+        trampler is spilling over onto - is left until last, which is what
+        CR 702.19b requires anyway.
+        """
+        from ..rules.cr506_combat import lethal_damage
+
+        order = sorted(
+            range(len(recipients)),
+            key=lambda i: _damage_priority(game, recipients[i], i),
         )
+        division: dict[int, int] = {}
+        remaining = total
+        for index in order:
+            if remaining <= 0:
+                break
+            who = recipients[index]
+            if isinstance(who, int):
+                # A player, planeswalker or battle a trampler is spilling
+                # onto - a bare int always means a player here.
+                continue
+            assigned = min(remaining, lethal_damage(game, who))
+            if assigned > 0:
+                division[index] = assigned
+                remaining -= assigned
+        if remaining > 0:
+            last = order[-1]
+            division[last] = division.get(last, 0) + remaining
+        return division
 
 
 #: Effects that are bad for whatever they point at. The bot aims these at
@@ -504,3 +539,10 @@ class _TargetingMixin:
 SimpleAgent.choose_targets = _TargetingMixin.choose_targets
 SimpleAgent._best = _TargetingMixin._best
 SimpleAgent._controlled_by = staticmethod(_TargetingMixin._controlled_by)
+
+
+def _damage_priority(game: Game, who, index: int):
+    """Biggest creature first; whatever is not a creature last."""
+    if isinstance(who, int):
+        return (1, 0, index)
+    return (0, -(game.characteristics(who).power or 0), index)

@@ -278,6 +278,38 @@ def remove_counters(
 # ---------------------------------------------------------------------------
 
 
+def excess_damage(game: Game, target: GameObject, amount: int) -> int:
+    """How much of ``amount`` would be excess damage (CR 120.10).
+
+    Measured against what the permanent can still take *before* the damage is
+    dealt: lethal damage for a creature, loyalty for a planeswalker, defense
+    for a battle. A permanent with more than one of those card types uses the
+    greatest of the amounts, which is the reading that makes an excess trigger
+    fire as rarely as the rule intends.
+
+    The rule speaks of what one or more sources dealt *together*, and this
+    engine deals damage one source at a time even where the rules have it
+    simultaneous. Each call measures against what is left after the previous
+    one, so the excess reported across a combat damage step still totals the
+    right amount - it simply arrives split across the events rather than in
+    one number.
+    """
+    if amount <= 0:
+        return 0
+    chars = game.characteristics(target)
+    capacities: list[int] = []
+    if chars.is_creature:
+        capacities.append(max(0, (chars.toughness or 0) - target.damage))
+    if chars.has_type(CardType.PLANESWALKER):
+        capacities.append(target.counter_count("loyalty"))
+    if chars.has_type(CardType.BATTLE):
+        capacities.append(target.counter_count("defense"))
+    if not capacities:
+        return 0
+    # The greatest capacity gives the smallest excess.
+    return max(0, amount - max(capacities))
+
+
 def deal_damage(
     game: Game,
     target: GameObject | PlayerId,
@@ -348,6 +380,8 @@ def deal_damage(
     # that watches for damage - but nothing is ever marked on the creature.
     if source_chars is not None and chars.is_creature:
         if source_chars.has_keyword("Wither") or source_chars.has_keyword("Infect"):
+            # CR 120.10 before the counters land, for the same reason as below.
+            excess = excess_damage(game, target, amount)
             add_counters(game, target, "-1/-1", amount, source=source)
             game.emit(
                 Event(
@@ -357,11 +391,16 @@ def deal_damage(
                     source=source,
                     source_controller=source_controller,
                     amount=amount,
+                    data=(excess,),
                 )
             )
             if lifelink and source_controller != NO_PLAYER:
                 gain_life(game, source_controller, amount, source=source)
             return amount
+
+    # CR 120.10: measured before the damage is dealt, and carried on the event
+    # so an ability that checks for excess damage has something to read.
+    excess = excess_damage(game, target, amount)
 
     if chars.has_type(CardType.PLANESWALKER):
         remove_counters(game, target, "loyalty", amount, source=source)
@@ -384,6 +423,7 @@ def deal_damage(
             source=source,
             source_controller=source_controller,
             amount=amount,
+            data=(excess,),
         )
     )
     if lifelink and source_controller != NO_PLAYER:
