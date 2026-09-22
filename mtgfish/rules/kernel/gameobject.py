@@ -159,6 +159,23 @@ class GameObject:
     #: card - the chosen name may match nothing in the game, which is the
     #: whole point of naming a card your opponent has not played yet.
     chosen_name: str = ""
+    #: CR 715.3, 718.3, 720.3: which set of characteristics this object was
+    #: played with. Chosen as the card is played and then fixed, which is why
+    #: it is state rather than something recomputed - and it decides where an
+    #: Adventure or an Omen goes when it resolves (CR 715.3d, 720.3d).
+    #: A ``cr300_card_types.CastMode``, held as an int to keep this module
+    #: from importing it.
+    cast_mode: int = 0
+    #: CR 715.3d and the "exile it, you may play it" effects generally: while
+    #: this card stays in this zone, the named player may play it from there.
+    #: NO_PLAYER means nobody, which is the ordinary case. A zone change
+    #: builds a fresh object (CR 400.7) and so clears it, which is exactly the
+    #: rule's "for as long as that card remains exiled".
+    playable_from_here_by: PlayerId = NO_PLAYER
+    #: Which face that permission covers. CR 715.3d lets the *creature* be
+    #: cast, not the Adventure again, so a permission that offered every face
+    #: would let a player loop the Adventure half for ever.
+    playable_face: int = 0
     #: Modes chosen at announcement (CR 700.2).
     chosen_modes: tuple[int, ...] = ()
     #: The value chosen for X (CR 601.2b).

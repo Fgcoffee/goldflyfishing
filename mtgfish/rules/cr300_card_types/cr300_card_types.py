@@ -119,6 +119,39 @@ def face_index_for_mode(mode: CastMode) -> int:
     return 0 if mode is CastMode.NORMAL else 1
 
 
+def cast_mode_for_face(obj: GameObject, face_index: int) -> CastMode:
+    """Which mode playing this face of this card means.
+
+    The face and the mode are two views of one choice: an Adventure prints
+    its alternative characteristics as a second face, and choosing that face
+    *is* choosing to cast the Adventure (CR 715.3). Which mode it is depends
+    on the card's layout, because the second face of a split card is simply
+    the other half and carries no alternative characteristics at all.
+    """
+    from ..kernel.enums import Layout
+
+    if face_index == 0:
+        return CastMode.NORMAL
+    faces = getattr(obj.card, "faces", ())
+    if face_index >= len(faces):
+        return CastMode.NORMAL
+
+    # Read the subtype rather than the layout. CR 715.1 and CR 720.1 define an
+    # adventurer card and an omen card by the subtype on that half, and the
+    # card data gives both the same layout - so a layout test would call every
+    # Omen an Adventure and send it to exile instead of the library.
+    subtypes = faces[face_index].type_line.subtypes
+    if "Adventure" in subtypes:
+        return CastMode.ADVENTURE
+    if "Omen" in subtypes:
+        return CastMode.OMEN
+    if getattr(obj.card, "layout", Layout.NORMAL) is Layout.PROTOTYPE:
+        return CastMode.PROTOTYPE
+    # A split card's other half is simply the other half: no alternative
+    # characteristics, so nothing special happens when it resolves.
+    return CastMode.NORMAL
+
+
 def resolution_zone(mode: CastMode) -> Zone | None:
     return RESOLUTION_ZONE.get(mode)
 

@@ -399,9 +399,7 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
             "715": (
                 "rules/cr300_card_types/cr300_card_types.py",
-                "adventurer cards: the alternative characteristics and the "
-                "exile-on-resolve rule (715.3d); choosing the mode when casting "
-                "is not wired into the action enumerator yet",
+                "adventurer cards: alternative characteristics, the casting mode, and 715.3d exiling a resolved Adventure so the creature can be cast later",
             ),
             "718": (
                 "rules/cr300_card_types/cr300_card_types.py",
@@ -410,8 +408,7 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
             "720": (
                 "rules/cr300_card_types/cr300_card_types.py",
-                "omen cards: alternative characteristics and the shuffle-on-"
-                "resolve rule (720.3d); casting mode not wired",
+                "omen cards: alternative characteristics, the casting mode, and 720.3d shuffling a resolved Omen into its owner's library",
             ),
             "708": (
                 "rules/cr600_spells_and_abilities/cr613_layers.py",

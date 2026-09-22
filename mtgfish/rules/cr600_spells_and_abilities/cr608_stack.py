@@ -161,8 +161,25 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
 
     game.emit(Event(EventKind.SPELL_RESOLVED, object_id=obj.id, player=obj.controller))
     # CR 608.2m: an instant or sorcery goes to its owner's graveyard as the
-    # final part of its resolution.
-    game.move_object(obj, Zone.GRAVEYARD, to_player=obj.owner)
+    # final part of its resolution - unless it was cast with alternative
+    # characteristics that say otherwise. CR 715.3d exiles a resolved
+    # Adventure so its controller may cast the creature later, and CR 720.3d
+    # shuffles a resolved Omen into its owner's library.
+    from ..cr300_card_types.cr300_card_types import CastMode, resolution_zone
+
+    # Compared against None rather than tested for truth: Zone.LIBRARY is 0,
+    # so "or Zone.GRAVEYARD" silently sends every Omen to the graveyard.
+    destination = resolution_zone(CastMode(obj.cast_mode))
+    if destination is None:
+        destination = Zone.GRAVEYARD
+    moved = game.move_object(obj, destination, to_player=obj.owner)
+    if CastMode(obj.cast_mode) is CastMode.ADVENTURE:
+        # CR 715.3d: for as long as the card remains exiled its controller may
+        # play it - the creature half, not the Adventure again. Recorded on
+        # the exiled object, so CR 400.7 ends the permission the moment the
+        # card moves anywhere else.
+        moved.playable_from_here_by = obj.controller
+        moved.playable_face = 0
 
 
 def _attach_aura_on_entry(game: Game, spell: GameObject, permanent: GameObject) -> None:

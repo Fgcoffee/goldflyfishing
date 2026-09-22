@@ -133,6 +133,13 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     spell = game.move_object(card_object, Zone.STACK, to_player=player_id)
     spell.controller = player_id
     spell.face_index = action.face_index
+    # CR 715.3, 718.3, 720.3: the alternative characteristics apply because
+    # the player chose them as the card was played, so the choice is recorded
+    # now and read later - above all by CR 715.3d and CR 720.3d, which send
+    # the spell somewhere other than the graveyard.
+    from ..cr300_card_types.cr300_card_types import cast_mode_for_face
+
+    spell.cast_mode = int(cast_mode_for_face(spell, action.face_index))
 
     # CR 702.36a: a morph spell is cast *face down*, as a 2/2 with no
     # characteristics of its own. That has to be true from the moment it hits

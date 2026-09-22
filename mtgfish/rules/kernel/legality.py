@@ -16,7 +16,7 @@ from ..cr100_game_concepts.cr117_priority import PASS, Action, ActionKind
 from ..cr600_spells_and_abilities.abilities import AbilityKind
 from .enums import CardType, Phase, Timing, Zone
 from .gameobject import GameObject
-from .ids import ObjectId, PlayerId
+from .ids import NO_PLAYER, ObjectId, PlayerId
 
 if TYPE_CHECKING:
     from .game import Game
@@ -153,6 +153,14 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
         # CR 709.4 / 712.2: a split card or modal double-faced card offers a
         # real choice of face, and each face has its own cost, type and timing.
         for face_index in castable_face_indices(game, obj):
+            # CR 715.3d: the permission covers one face. A card exiled by its
+            # own Adventure may be cast as the creature and not as the
+            # Adventure again, which would otherwise loop for ever.
+            if (
+                obj.playable_from_here_by != NO_PLAYER
+                and face_index != obj.playable_face
+            ):
+                continue
             chars = _face_characteristics(game, obj, face_index)
             if chars.is_land:
                 continue  # Lands are played, not cast.
@@ -175,7 +183,16 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                 continue
 
             # CR 118.6: no mana cost means an unpayable cost, not a free spell.
-            if zone in (Zone.HAND, Zone.COMMAND) and chars.has_mana_cost:
+            #
+            # The zones are the ones a card may be cast from for its ordinary
+            # cost: the hand, the command zone (CR 903.8), and wherever a
+            # standing permission has put it (CR 715.3d). Casting from
+            # anywhere else needs an alternative cost, which is the branch
+            # below.
+            may_cast_from_here = zone in (Zone.HAND, Zone.COMMAND) or (
+                obj.playable_from_here_by == player_id
+            )
+            if may_cast_from_here and chars.has_mana_cost:
                 if _affordable(game, player_id, obj, zone, chars):
                     out.append(
                         Action(
