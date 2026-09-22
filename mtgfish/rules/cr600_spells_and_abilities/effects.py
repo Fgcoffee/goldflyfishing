@@ -171,6 +171,11 @@ class EffectKind(IntEnum):
     #: question about the game state, and encoding it as a condition would
     #: mean every condition evaluator had to learn about resolutions.
     IF_YOU_DONT = 201
+    #: CR 706: roll one or more dice, then act on the results. One opcode for
+    #: the whole of it - the dice, the modifiers, the results table and
+    #: "ignore the lowest" are all one ability (CR 706.3b), so splitting them
+    #: would mean an ability that could half-happen.
+    ROLL_DICE = 202
 
     # -- card-type designations (CR 716, 719) -------------------------------
     #: A Class's level (CR 716.2a). A designation on the permanent, not a
@@ -277,6 +282,28 @@ class TokenSpec:
 
 
 @dataclass(frozen=True, slots=True)
+class DiceOutcome:
+    """One striation of a results table (CR 706.3a).
+
+    "1-3", "4+" and "6" are all the same shape: a range and an effect. A range
+    with a single endpoint ("N+") is written with ``high`` left at zero, which
+    reads as no upper bound - the alternative was a sentinel large number that
+    someone would eventually compare against.
+    """
+
+    low: int
+    high: int = 0
+    effects: tuple = ()
+    text: str = ""
+
+    def covers(self, result: int) -> bool:
+        """CR 706.3a: whether a result falls in this striation."""
+        if result < self.low:
+            return False
+        return self.high <= 0 or result <= self.high
+
+
+@dataclass(frozen=True, slots=True)
 class Effect:
     """One instruction.
 
@@ -371,6 +398,19 @@ class Effect:
     #: Prohibitions created by a RESTRICTION effect (CR 101.2). Data rather
     #: than code, so a new "can't" is a new entry and not a new special case.
     restrictions: tuple = ()
+    #: For ROLL_DICE: how many faces each die has (CR 706.1). ``amount`` is
+    #: how many dice.
+    dice_sides: int = 0
+    #: CR 706.2: added to the natural result to give the result. Modifiers
+    #: from other sources are continuous effects and do not live here.
+    dice_modifier: int = 0
+    #: CR 706.6: how many of the lowest rolls to ignore, as "ignore the lowest
+    #: roll" asks. An ignored roll never happened, so nothing triggers on it.
+    dice_ignore_lowest: int = 0
+    #: CR 706.3a: the results table, if the ability has one. Each entry is a
+    #: range and what happens for a result inside it. Empty means CR 706.4 -
+    #: no table, and the result is read by whatever comes after.
+    outcomes: tuple = ()
     #: For CAST_WITHOUT_PAYING: which face to cast. CR 310.12b's "cast it
     #: transformed" is the only thing that needs it - everything else casts
     #: the front face, which is index 0 and the default.

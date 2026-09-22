@@ -52,6 +52,10 @@ class Resolution:
     #: modes chosen for it have nowhere else to travel. Set only when there is
     #: no stack object to read them off.
     chosen_modes: tuple[int, ...] = ()
+    #: CR 706.2, 706.4: the results of the dice this resolution has rolled,
+    #: after modifiers and after any ignored roll was dropped. What comes
+    #: after the roll reads them through ``ValueKind.DIE_ROLL_RESULT``.
+    die_results: tuple[int, ...] = ()
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -248,6 +252,7 @@ def _amount(resolution: Resolution, effect: Effect, *, second: bool = False) -> 
         controller=resolution.controller,
         x_value=resolution.x_value,
         event_amount=resolution.event_amount,
+        die_results=resolution.die_results,
     )
 
 
@@ -577,6 +582,49 @@ def _do_suspend_rule(resolution: Resolution, effect: Effect) -> None:
             created_turn=resolution.game.turn,
         ),
     )
+
+
+def _do_roll_dice(resolution: Resolution, effect: Effect) -> None:
+    """Roll dice and act on the result (CR 706).
+
+    CR 706.3b makes the whole of it one ability: the dice, the modifiers, the
+    results table and anything that reads the result afterwards. So one
+    opcode does all of it, and what follows the roll can read the number
+    through ``ValueKind.DIE_ROLL_RESULT``.
+    """
+    from ..cr100_game_concepts import actions as game_actions
+
+    game = resolution.game
+    sides = effect.dice_sides
+    if sides < 1:
+        return
+    count = _count(resolution, effect)
+    natural = game_actions.roll_dice(game, resolution.controller, count, sides)
+    if not natural:
+        return
+
+    # CR 706.6: an ignored roll is considered never to have happened, so it is
+    # dropped before anything reads the results. Ties are broken by taking the
+    # first, which is a choice the rule gives the player and the engine has to
+    # make some way.
+    kept = sorted(natural)[max(0, effect.dice_ignore_lowest):] if effect.dice_ignore_lowest else natural
+
+    # CR 706.2: the natural result plus the modifiers is the result.
+    results = tuple(roll + effect.dice_modifier for roll in kept)
+    resolution.die_results = results
+
+    if not effect.outcomes:
+        # CR 706.4: no results table. The number is the point, and whatever
+        # follows in the same ability reads it.
+        return
+
+    # CR 706.3a: each result picks the striation it falls in, and there is one
+    # lookup per die - two dice with a table run the table twice.
+    for result in results:
+        for outcome in effect.outcomes:
+            if outcome.covers(result):
+                execute(resolution, outcome.effects)
+                break
 
 
 def _do_choose_quality(resolution: Resolution, effect: Effect) -> None:
@@ -1166,6 +1214,7 @@ def _amount2(resolution: Resolution, effect: Effect) -> int:
         source=resolution.source,
         controller=resolution.controller,
         event_amount=resolution.event_amount,
+        die_results=resolution.die_results,
     )
 
 
@@ -2149,6 +2198,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.RETURN_TO_HAND: _do_return_to_hand,
     EffectKind.CREATE_TOKEN: _do_create_token,
     EffectKind.RESTRICTION: _do_restriction,
+    EffectKind.ROLL_DICE: _do_roll_dice,
     EffectKind.SUSPEND_RULE: _do_suspend_rule,
     EffectKind.DAMAGE: _do_damage,
     EffectKind.GAIN_LIFE: _do_gain_life,

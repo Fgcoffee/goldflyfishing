@@ -25,6 +25,7 @@ def evaluate(
     controller: PlayerId = NO_PLAYER,
     x_value: int = 0,
     event_amount: int = 0,
+    die_results: tuple[int, ...] = (),
 ) -> int:
     """Work out what a Value currently is."""
     kind = value.kind
@@ -34,6 +35,11 @@ def evaluate(
 
     if kind is ValueKind.EVENT_AMOUNT:
         return event_amount
+
+    # CR 706.4: the result of the roll this ability just made. Several dice
+    # total, which is what "the result" means when more than one was rolled.
+    if kind is ValueKind.DIE_ROLL_RESULT:
+        return sum(die_results)
 
     if kind is ValueKind.EVENT_COUNT_THIS_TURN:
         return _this_turn(game, value, controller)

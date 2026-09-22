@@ -75,6 +75,15 @@ COVERAGE: dict[str, Entry] = _entries(
                     "is refused as an unknown mana symbol"
                 ),
             ),
+            "706": (
+                "rules/cr600_spells_and_abilities/resolve.py",
+                (
+                    "706.1-2 the roll and its modifiers, 706.3a the results "
+                    "table, 706.4 reading the result, and 706.6 ignoring the "
+                    "lowest. 706.5's 'rolled doubles' is one Unfinity card; "
+                    "706.7's planar die is Planechase"
+                ),
+            ),
             "310": (
                 "rules/cr700_additional_rules/cr704_sba.py",
                 (
@@ -358,12 +367,6 @@ COVERAGE: dict[str, Entry] = _entries(
                 "venture position-tracking only. There is no dungeon in the "
                 "command zone, no rooms, no room abilities, no completion, and "
                 "no 309.3 one-dungeon-per-player rule",
-            ),
-            "706": (
-                "rules/cr100_game_concepts/actions.py",
-                "rolling from the seeded RNG exists; nothing reaches it - there "
-                "is no dice-rolling effect kind, so 706.3's results table and "
-                "706.6's ignore-the-lowest are unreachable",
             ),
 
             "108": ("data/cards.py", "cards; 108.3 ownership of tokens not modelled"),

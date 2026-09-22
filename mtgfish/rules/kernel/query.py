@@ -136,6 +136,11 @@ class ValueKind(IntEnum):
     #: question as COLOURS_AMONG and cannot be answered by counting
     #: permanents.
     COMMANDER_COLOUR_IDENTITY = 28
+    #: CR 706.4: the result of the die roll this ability just made. An
+    #: ability with no results table says what to do with the number, and
+    #: this is how the number gets there. With several dice it is their
+    #: total, which is what "the result" means for a multi-die roll.
+    DIE_ROLL_RESULT = 29
 
 
 @dataclass(frozen=True, slots=True)
