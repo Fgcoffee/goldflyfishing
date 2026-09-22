@@ -87,6 +87,9 @@ def matches(
     if not _controller_matches(game, obj, spec, controller):
         return False
 
+    if not _owner_matches(game, obj, spec, controller):
+        return False
+
     chars = override if override is not None else game.characteristics(obj)
 
     # Compared as plain integers, deliberately. These are IntFlags, and
@@ -293,6 +296,32 @@ def _controller_matches(
         return obj.controller == spec.controller_specific
     if relation is ControllerRelation.SAME_AS_SOURCE:
         return obj.controller == controller
+    return True
+
+
+def _owner_matches(
+    game: Game, obj: GameObject, spec: ObjectFilter, controller: PlayerId
+) -> bool:
+    """CR 108.3: who *owns* the object, which is not who controls it.
+
+    The distinction matters wherever a card names a zone: "exile target card
+    from your graveyard" is about the graveyard's owner, and a graveyard has
+    no controller at all. It was not checked, so the constraint failed *open*
+    - an owner filter matched every object, and "your graveyard" reached
+    everyone's. That is the one direction this module promises never to fail
+    in, because an over-broad match lets a spell hit something it should not.
+    """
+    relation = spec.owner
+    if relation is ControllerRelation.ANY:
+        return True
+    if relation is ControllerRelation.YOU:
+        return obj.owner == controller
+    if relation is ControllerRelation.OPPONENT:
+        return obj.owner != controller and controller != NO_PLAYER
+    if relation is ControllerRelation.SPECIFIC:
+        return obj.owner == spec.controller_specific
+    if relation is ControllerRelation.SAME_AS_SOURCE:
+        return obj.owner == controller
     return True
 
 
