@@ -63,8 +63,24 @@ COVERAGE: dict[str, Entry] = _entries(
             "107": (
                 "rules/cr100_game_concepts/cr106_mana.py",
                 (
-                    "mana symbols incl. hybrid and Phyrexian, and 107.1-2's "
-                    "number rules"
+                    "mana symbols incl. hybrid and Phyrexian, 107.1-2's number "
+                    "rules, and 107.18's pawprint modes (700.2i)"
+                ),
+            ),
+            "107.17": (
+                "rules/cr100_game_concepts/player.py",
+                (
+                    "a player can hold ticket counters and a cost can remove "
+                    "them (122.1); what is missing is parser-side, where {TK} "
+                    "is refused as an unknown mana symbol"
+                ),
+            ),
+            "310": (
+                "rules/cr700_additional_rules/cr704_sba.py",
+                (
+                    "battles, defense counters, the protector (310.9, 310.11, "
+                    "310.12a) and the Siege's intrinsic exile-and-cast-"
+                    "transformed ability (310.12b)"
                 ),
             ),
             "110": (
@@ -325,15 +341,6 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
         },
         Status.PARTIAL: {
-            "310": (
-                "rules/cr700_additional_rules/cr704_sba.py",
-                (
-                    "battles, defense counters, and the protector (310.9, "
-                    "310.11, 310.12a); 310.12b's intrinsic exile-and-cast-"
-                    "transformed ability is missing - a Siege at zero defense "
-                    "is buried rather than exiled"
-                ),
-            ),
             "201": (
                 "rules/kernel/matching.py",
                 "a name is matched and compared (201.2a-c); 201.3 interchangeable "
@@ -412,22 +419,6 @@ COVERAGE: dict[str, Entry] = _entries(
 
         },
         Status.NOT_IMPLEMENTED: {
-            "107.17": (
-                "",
-                (
-                    "the ticket symbol {TK}. parser/costs.py refuses it as an "
-                    "unknown mana symbol, so the whole cost is unreadable - and "
-                    "70 Commander-legal cards use one"
-                ),
-            ),
-            "107.18": (
-                "",
-                (
-                    "the pawprint symbol {P}. Modes are chosen by count, and an "
-                    "effect has nowhere to carry a per-mode weight (CR 700.2i); "
-                    "8 Commander-legal cards use one"
-                ),
-            ),
             # -- 700s, with the rule names taken from the actual CR ----------
             # -- known gaps *inside* groups marked implemented above ---------
             # A group-level mark would otherwise score every subrule as done,
@@ -439,6 +430,14 @@ COVERAGE: dict[str, Entry] = _entries(
 
         },
         Status.NOT_APPLICABLE: {
+            "713": (
+                "",
+                (
+                    "substitute cards: a physical game supplement standing in "
+                    "for a double-faced or meld card at a table. A simulator "
+                    "has the real card"
+                ),
+            ),
             "204.1": (
                 "",
                 (

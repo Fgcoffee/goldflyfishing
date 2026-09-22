@@ -24,6 +24,16 @@ COMMANDER_STARTING_LIFE = 40
 #: CR 903.10a: 21 or more combat damage from a single commander is lethal.
 #: The state-based action that reads it is CR 704.6c.
 COMMANDER_DAMAGE_THRESHOLD = 21
+#: CR 122.1: the player counters the rules name often enough to have their own
+#: field. Everything else goes in ``Player.counters``, and both are reached
+#: through ``counter_count`` so a caller never has to know which is which.
+_NAMED_PLAYER_COUNTERS = {
+    "poison": "poison",
+    "energy": "energy",
+    "experience": "experience",
+    "rad": "rad",
+}
+
 #: CR 704.5c: ten or more poison counters.
 POISON_THRESHOLD = 10
 #: CR 103.5 / 402.2: seven cards, and a maximum hand size of seven.
@@ -87,6 +97,49 @@ class Player:
     #: what each room does is card text; this is only the position.
     dungeon_room: int = 0
     rad: int = 0
+    #: CR 122.1: a counter sits on an object *or a player*, and the fields
+    #: above cover only the four kinds the rules name often enough to have
+    #: given them their own words. Everything else a player can carry lives
+    #: here, keyed by kind - ticket counters (CR 107.17a) above all, which 70
+    #: Commander-legal cards use and which are removed from the *player*.
+    counters: dict[str, int] = field(default_factory=dict)
+
+    def counter_count(self, kind: str) -> int:
+        """How many counters of this kind this player has (CR 122.1).
+
+        The four named fields answer for themselves, so a caller asking by
+        name gets the same answer whichever way the counter is stored.
+        """
+        named = _NAMED_PLAYER_COUNTERS.get(kind)
+        if named is not None:
+            return getattr(self, named)
+        return self.counters.get(kind, 0)
+
+    def add_counters(self, kind: str, amount: int) -> int:
+        """Add counters, returning how many were actually added (CR 122.1)."""
+        if amount <= 0:
+            return 0
+        named = _NAMED_PLAYER_COUNTERS.get(kind)
+        if named is not None:
+            setattr(self, named, getattr(self, named) + amount)
+        else:
+            self.counters[kind] = self.counters.get(kind, 0) + amount
+        return amount
+
+    def remove_counters(self, kind: str, amount: int) -> int:
+        """Remove up to ``amount``, returning how many came off (CR 122.1)."""
+        have = self.counter_count(kind)
+        taken = min(have, max(0, amount))
+        if not taken:
+            return 0
+        named = _NAMED_PLAYER_COUNTERS.get(kind)
+        if named is not None:
+            setattr(self, named, have - taken)
+        elif have - taken:
+            self.counters[kind] = have - taken
+        else:
+            self.counters.pop(kind, None)
+        return taken
 
     # -- owned zones (CR 401, 402, 404) -------------------------------------
     #: CR 401.1: ordered, and CR 401.2 makes the order secret. Index 0 is the
