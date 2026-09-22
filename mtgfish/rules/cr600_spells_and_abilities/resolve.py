@@ -197,8 +197,61 @@ def _objects(
 
     from ..kernel.matching import find
 
-    return find(
+    matching = find(
         game, effect.targets, source=resolution.source, controller=resolution.controller
+    )
+    return _narrowed_to_count(resolution, effect, matching)
+
+
+def _narrowed_to_count(
+    resolution: Resolution, effect: Effect, matching: list[GameObject]
+) -> list[GameObject]:
+    """An untargeted effect that names a number affects that many, not all.
+
+    "Choose a creature you control" and "each creature you control" are
+    different sentences, and the filter says which by carrying a count. The
+    count was read only when the effect targeted, so every untargeted one
+    acted on the whole matching set - "put a +1/+1 counter on a creature you
+    control" put one on all of them.
+
+    The choice belongs to the effect's controller (CR 608.2). With no agent to
+    ask, the first few in ``find``'s deterministic order are taken, which
+    keeps a replay reproducible.
+    """
+    spec = effect.targets
+    if spec is None or spec.count is None or len(matching) <= 1:
+        return matching
+    wanted = _value_of(resolution, spec.count)
+    if wanted <= 0:
+        # "Up to" nothing, or a count that evaluated to zero: CR 107.1b makes
+        # it no objects rather than every object.
+        return [] if spec.up_to else matching
+    if wanted >= len(matching):
+        return matching
+
+    agent = resolution.game.agent_for(resolution.controller)
+    chooser = getattr(agent, "choose_objects", None)
+    if chooser is not None:
+        picked = chooser(
+            resolution.game, resolution.controller, effect, list(matching), wanted
+        )
+        kept = [obj for obj in matching if obj in (picked or ())][:wanted]
+        if len(kept) == wanted:
+            return kept
+    return matching[:wanted]
+
+
+def _value_of(resolution: Resolution, value) -> int:
+    from ..kernel.values import evaluate
+
+    return evaluate(
+        resolution.game,
+        value,
+        source=resolution.source,
+        controller=resolution.controller,
+        x_value=resolution.x_value,
+        event_amount=resolution.event_amount,
+        die_results=resolution.die_results,
     )
 
 
