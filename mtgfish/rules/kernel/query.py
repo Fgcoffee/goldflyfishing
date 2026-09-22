@@ -449,6 +449,10 @@ class ObjectFilter:
     #: filter cannot be resolved until there is a game to ask.
     of_chosen_type: bool = False
     of_chosen_color: bool = False
+    #: CR 201.4 with CR 201.2: "the chosen name". Compared the way any other
+    #: name is (CR 201.2a), against the choice recorded on the ability's
+    #: source.
+    of_chosen_name: bool = False
     #: "creatures that aren't of the chosen type". Its own flag rather than
     #: ``of_chosen_type = False``, which is indistinguishable from not asking
     #: at all - and a filter that does not ask matches everything.

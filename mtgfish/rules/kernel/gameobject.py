@@ -155,6 +155,10 @@ class GameObject:
     was_cast: bool = False
     chosen_type: str = ""
     chosen_color: int = 0
+    #: CR 201.4: the card name this object's controller chose. A *name*, not a
+    #: card - the chosen name may match nothing in the game, which is the
+    #: whole point of naming a card your opponent has not played yet.
+    chosen_name: str = ""
     #: Modes chosen at announcement (CR 700.2).
     chosen_modes: tuple[int, ...] = ()
     #: The value chosen for X (CR 601.2b).

@@ -182,7 +182,12 @@ def matches(
     ):
         return False
 
-    if spec.of_chosen_type or spec.of_chosen_color or spec.not_of_chosen_type:
+    if (
+        spec.of_chosen_type
+        or spec.of_chosen_color
+        or spec.not_of_chosen_type
+        or spec.of_chosen_name
+    ):
         chooser = game.objects.get(source)
         if chooser is None:
             return False
@@ -196,6 +201,13 @@ def matches(
         ):
             return False
         if spec.of_chosen_color and not (int(chars.colors) & chooser.chosen_color):
+            return False
+        # CR 201.4 with CR 201.2a: names are compared as names. A chosen name
+        # that matches nothing in the game is not a failure of the choice -
+        # naming a card the opponent has not cast yet is the usual case.
+        if spec.of_chosen_name and (
+            not chooser.chosen_name or chars.name != chooser.chosen_name
+        ):
             return False
 
     if spec.of_chosen_type or spec.of_chosen_color:

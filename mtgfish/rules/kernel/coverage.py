@@ -352,9 +352,12 @@ COVERAGE: dict[str, Entry] = _entries(
         Status.PARTIAL: {
             "201": (
                 "rules/kernel/matching.py",
-                "a name is matched and compared (201.2a-c); 201.3 interchangeable "
-                "names and 201.4 'choose a card name' have no implementation at "
-                "all - there is no effect kind for naming a card",
+                (
+                    "names are matched and compared (201.2a-c), and 201.4's "
+                    "chosen card name is recorded and readable. 201.3's "
+                    "interchangeable names are not modelled - an object "
+                    "carries a single name"
+                ),
             ),
             "208": (
                 "data/cards.py",

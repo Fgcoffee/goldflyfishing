@@ -653,14 +653,43 @@ def _do_choose_quality(resolution: Resolution, effect: Effect) -> None:
 
     if kind == "color":
         obj.chosen_color = _commonest_colour(game, resolution.controller)
+    elif kind == "card name":
+        # CR 201.4: any name in the Oracle reference is legal, so there is no
+        # "commonest" to fall back on the way there is for a colour. Naming
+        # the card most worth naming needs a bot; with no agent to ask, the
+        # deterministic stand-in is the commonest name among what the
+        # opponents have on the battlefield, which is at least a name in this
+        # game rather than an arbitrary string.
+        obj.chosen_name = _commonest_opposing_name(game, resolution.controller)
     else:
         obj.chosen_type = _commonest_subtype(game, resolution.controller)
     game.invalidate_characteristics()
 
 
+def _commonest_opposing_name(game, controller) -> str:
+    """The name an opponent has most of on the battlefield (CR 201.4).
+
+    A stand-in for a real choice, not a rule: CR 201.4 allows any name in the
+    Oracle reference. What it buys is determinism and a name that at least
+    exists in this game.
+    """
+    from collections import Counter
+
+    seen: Counter[str] = Counter()
+    for opponent in game.opponents(controller):
+        for obj in game.permanents(opponent):
+            name = game.characteristics(obj).name
+            if name:
+                seen[name] += 1
+    ranked = sorted(seen.items(), key=lambda kv: (-kv[1], kv[0]))
+    return ranked[0][0] if ranked else ""
+
+
 def _record_quality(obj, kind: str, picked) -> None:
     if kind == "color":
         obj.chosen_color = int(picked)
+    elif kind == "card name":
+        obj.chosen_name = str(picked)
     else:
         obj.chosen_type = str(picked)
 
