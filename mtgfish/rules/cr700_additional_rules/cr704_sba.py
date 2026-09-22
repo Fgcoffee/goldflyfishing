@@ -30,7 +30,7 @@ from ..cr100_game_concepts.actions import (
 from ..kernel.enums import CardType, LossReason, Supertype, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject, ObjectKind
-from ..kernel.ids import NO_PLAYER, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, PlayerId
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
@@ -435,16 +435,26 @@ def _is_being_attacked(game: Game, obj: GameObject) -> bool:
 
 
 def _is_source_on_the_stack(game: Game, obj: GameObject) -> bool:
-    """Whether something on the stack still names this permanent as its source.
+    """Whether an ability of this permanent has triggered and not yet left.
 
     CR 704.5v and CR 714.4 both spare a permanent whose own triggered ability
-    has triggered but not yet left the stack.
+    "has triggered but has not yet left the stack".
+
+    That covers one waiting to be *put* on the stack as well as one already
+    there. A triggered ability goes on the stack only the next time a player
+    would receive priority (CR 603.3), and state-based actions are checked
+    first - so a Siege whose last defense counter has just come off would be
+    in its owner's graveyard before its own CR 310.12b ability ever reached
+    the stack, and the back face would never be seen.
     """
     for object_id in game.stack:
         stack_object = game.objects.get(object_id)
         if stack_object is not None and stack_object.source == obj.id:
             return True
-    return False
+    return any(
+        getattr(pending, "source", NO_OBJECT) == obj.id
+        for pending in getattr(game, "pending_triggers", ())
+    )
 
 
 def _saga_is_finished(game: Game, obj: GameObject, chars) -> bool:
@@ -505,12 +515,18 @@ def _check_legend_rule(
     Per *player*, not per game - two opponents may each have their own Sol
     Ring... their own Karn. The keeper is that player's choice.
     """
+    from ..cr100_game_concepts.cr101_rule_overrides import Rule
+
     grouped: dict[tuple[PlayerId, str], list[GameObject]] = {}
     for obj in game.permanents():
         chars = game.characteristics(obj)
         if not chars.has_supertype(Supertype.LEGENDARY):
             continue
         if not chars.name:
+            continue
+        # CR 101.1: a card may switch the legend rule off, for its controller
+        # or for everyone.
+        if game.rule_is_suspended(Rule.LEGEND_RULE, obj=obj) is not None:
             continue
         grouped.setdefault((obj.controller, chars.name), []).append(obj)
 

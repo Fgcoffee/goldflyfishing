@@ -407,16 +407,35 @@ def _mode_is_choosable(
     return True
 
 
-def mode_count(modal: Effect) -> int:
-    """How many modes this instruction asks for.
+def mode_budget(modal: Effect) -> int:
+    """How much this instruction may spend on modes (CR 700.2, 700.2i).
 
     "Choose one" is the overwhelming majority and the default; an instruction
-    that asks for a fixed larger number says so in its amount.
+    that asks for a fixed larger number says so in its amount, and a pawprint
+    spell's "up to five {P} worth" says five.
     """
     amount = modal.amount
     if amount.is_constant and amount.constant > 0:
         return amount.constant
     return 1
+
+
+def mode_weight(modal: Effect, index: int) -> int:
+    """What choosing this mode costs against the budget (CR 700.2i).
+
+    One, unless the card printed pawprints. An ordinary bulleted mode and a
+    single-pawprint mode are the same thing, which is why this is one
+    mechanism and not two.
+    """
+    weights = modal.mode_weights
+    if index < len(weights) and weights[index] > 0:
+        return weights[index]
+    return 1
+
+
+#: Retained under its old name: "count" was right while every mode cost one.
+def mode_count(modal: Effect) -> int:
+    return mode_budget(modal)
 
 
 def choose_modes(
@@ -446,9 +465,9 @@ def choose_modes(
     if not available:
         return ()
 
-    count = min(mode_count(modal), len(available))
+    budget = mode_budget(modal)
     if announced:
-        return _cleaned_modes(announced, available, count)
+        return _cleaned_modes(announced, available, modal, budget)
 
     agent = game.agent_for(player_id)
     chooser = getattr(agent, "choose_modes", None)
@@ -456,35 +475,61 @@ def choose_modes(
         # No agent, or one that predates this hook. A mode has to be chosen
         # where a legal one exists, so the engine makes the deterministic
         # choice itself rather than letting the object resolve as a no-op.
-        return tuple(available[:count])
-    # The agent is handed each choosable mode with its index and its effect,
-    # so it can weigh what the mode does; the index is what it returns.
-    options = [(index, modal.children[index]) for index in available]
+        return _cleaned_modes((), available, modal, budget)
+    # The agent is handed each choosable mode with its index, its effect and
+    # what it costs against the budget (CR 700.2i), so it can weigh both what
+    # the mode does and what it is spending; the index is what it returns.
+    options = [
+        (index, modal.children[index], mode_weight(modal, index))
+        for index in available
+    ]
     identifier = source.id if source is not None else source_id
     return _cleaned_modes(
-        chooser(game, player_id, identifier, options, count), available, count
+        chooser(game, player_id, identifier, options, budget),
+        available,
+        modal,
+        budget,
     )
 
 
-def _cleaned_modes(picked, available: list[int], count: int) -> tuple[int, ...]:
+def _cleaned_modes(
+    picked, available: list[int], modal: Effect, budget: int
+) -> tuple[int, ...]:
     """Whatever was asked for, reduced to a legal choice.
 
-    CR 700.2d: the same mode is not chosen twice. An illegal or repeated
-    choice is dropped rather than obeyed, and a choice that comes up short is
-    topped up, because the number of modes is not optional either.
+    CR 700.2i makes this a budget rather than a count: each mode costs its
+    pawprint weight, the total may not exceed the budget, and CR 700.2d
+    decides whether a mode may be taken twice - normally not, unless the card
+    says so in so many words.
+
+    An illegal, repeated or unaffordable choice is dropped rather than obeyed.
+    A choice that comes up short is topped up only when the instruction is not
+    "up to": CR 700.2 requires a mode to be chosen where a legal one exists,
+    while CR 700.2i's ceiling may be left unspent.
     """
     legal = set(available)
     kept: list[int] = []
+    spent = 0
     for index in picked or ():
-        if index in legal and index not in kept:
-            kept.append(index)
-        if len(kept) == count:
-            break
+        if index not in legal:
+            continue
+        if not modal.modes_may_repeat and index in kept:
+            continue
+        cost = mode_weight(modal, index)
+        if spent + cost > budget:
+            continue
+        kept.append(index)
+        spent += cost
+    if modal.modes_up_to:
+        return tuple(kept)
     for index in available:
-        if len(kept) >= count:
-            break
-        if index not in kept:
-            kept.append(index)
+        if not modal.modes_may_repeat and index in kept:
+            continue
+        cost = mode_weight(modal, index)
+        if spent + cost > budget:
+            continue
+        kept.append(index)
+        spent += cost
     return tuple(kept)
 
 

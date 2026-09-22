@@ -57,8 +57,17 @@ def legal_actions(game: Game, player_id: PlayerId) -> list[Action]:
 
 
 def _land_plays(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Action]:
+    from ..cr100_game_concepts.cr101_rule_overrides import Rule
+
     player = game.player(player_id)
-    if not sorcery_speed or player.lands_played >= player.max_lands:
+    if not sorcery_speed:
+        return []
+    # CR 305.2 and CR 505.6b: one land per turn, unless a card has switched
+    # the limit off (CR 101.1). A card that merely *raises* it sets
+    # ``Player.max_lands`` instead - this is for the ones that remove it.
+    if player.lands_played >= player.max_lands and (
+        game.rule_is_suspended(Rule.ONE_LAND_PER_TURN, player=player_id) is None
+    ):
         return []
 
     from ..cr500_turn_structure.restrictions import Act, prohibited
@@ -93,14 +102,14 @@ def _face_characteristics(game: Game, obj: GameObject, face_index: int):
     card's front face.
     """
     from ..cr200_parts_of_a_card.characteristics import from_face
-    from ..cr600_spells_and_abilities.cr613_layers import intrinsic_land_abilities
+    from ..cr600_spells_and_abilities.cr613_layers import intrinsic_abilities
 
     faces = getattr(obj.card, "faces", ())
     if face_index >= len(faces):
         return game.printed_characteristics(obj)
     face = faces[face_index]
     abilities = game.ability_provider.abilities_for(obj.card, face_index)
-    return from_face(face, abilities + intrinsic_land_abilities(face.type_line))
+    return from_face(face, abilities + intrinsic_abilities(face.type_line))
 
 
 def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Action]:

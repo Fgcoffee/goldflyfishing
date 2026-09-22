@@ -14,6 +14,21 @@ card counts as read only when *every* ability on it is read. A three-ability
 card at a 58% per-ability rate lands near 19%. Most failing cards are one
 clause away, not hopeless.
 
+## Before you special-case a card
+
+Two seams exist precisely so that card text can beat a rule without any
+per-card code, and reaching for one is almost always right:
+
+- **`docs/rule-overrides.md`** — cards that switch a *rule of the game* off
+  ("creatures don't suffer summoning sickness", "ignore the legend rule").
+  Emit one `SUSPEND_RULE` effect naming the CR number.
+- **`rules/cr500_turn_structure/restrictions.py`** — cards that forbid or
+  permit an *act* ("can't attack unless", "may cast from your graveyard").
+  The `Act` list is deliberately exhaustive; add to it rather than around it.
+
+If a card needs a rule that is not in either list, that is a gap to fill in
+the rules engine, not a reason to name the card in the parser.
+
 ## The failures are a long tail, not one bug
 
 Classified by the construct sitting exactly where the parse gives up:

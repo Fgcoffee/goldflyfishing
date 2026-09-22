@@ -84,9 +84,12 @@ class Agent(Protocol):
     - ``assign_combat_damage(game, player, source, recipients, total)``
       divides combat damage (CR 510.1c-d), returning amounts keyed by
       position in ``recipients``.
-    - ``choose_modes(game, player, source, options, count)`` picks the modes
-      of a modal spell or ability (CR 700.2a-b), returning the indices it
-      wants from the ``(index, effect)`` pairs in ``options``.
+    - ``choose_modes(game, player, source, options, budget)`` picks the modes
+      of a modal spell or ability (CR 700.2a-b). ``options`` holds one
+      ``(index, effect, weight)`` per choosable mode and ``budget`` is what
+      may be spent on them; the agent returns the indices it wants. Weight is
+      1 for an ordinary bulleted mode, and a pawprint spell's (CR 700.2i)
+      modes cost what they print - so "choose one" is simply a budget of 1.
     - ``order_blockers(game, player, attacker, blockers)`` is legacy and no
       longer called; CR 509.2 has no such step.
     """

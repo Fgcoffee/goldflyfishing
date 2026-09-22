@@ -407,6 +407,13 @@ def condition_met(
     if event.kind not in trigger.event_kinds:
         return False
 
+    # A counter trigger that names a kind fires for that kind alone: the
+    # event carries it in ``data``.
+    if trigger.counter_kind and (
+        not event.data or event.data[0] != trigger.counter_kind
+    ):
+        return False
+
     from ..kernel.matching import matches, resolve_players
 
     if trigger.subject is not None:

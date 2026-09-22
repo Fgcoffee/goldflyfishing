@@ -235,6 +235,10 @@ class Game:
     #: Prohibitions from resolved spells, which outlive their source
     #: (CR 611.2b). Those from static abilities are rebuilt each epoch instead.
     standing_restrictions: list = field(default_factory=list)
+    #: CR 101.1: rules a card has switched off, and for whom. See
+    #: ``cr100_game_concepts/cr101_rule_overrides.py`` - the golden rule's
+    #: seam for the rules that are about the game rather than about an object.
+    rule_overrides: list = field(default_factory=list)
     restrictions_cache: list | None = None
     restrictions_epoch: int = -1
     #: CR 406.6 with CR 607: one ability exiles cards and another refers to
@@ -740,6 +744,16 @@ class Game:
         # CR 310.9a: with no battle type, only the controller.
         return [obj.controller] if not self.player(obj.controller).has_lost else []
 
+    def rule_is_suspended(self, rule, *, obj=None, player: PlayerId = NO_PLAYER):
+        """CR 101.1: whether a card has switched this rule off here.
+
+        Returns the override that did it, so a log can say which card, or
+        None. See ``cr100_game_concepts/cr101_rule_overrides.py``.
+        """
+        from ..cr100_game_concepts.cr101_rule_overrides import suspended
+
+        return suspended(self, rule, obj=obj, player=player)
+
     def _may_enter_the_battlefield(self, obj: GameObject) -> bool:
         """CR 304.4, 307.4: only a permanent card can become a permanent.
 
@@ -874,9 +888,9 @@ class Game:
         # CR 305.6: a land's basic land types carry mana abilities that are not
         # printed in its text box. A Swamp taps for {B} whether or not anything
         # says so, so they belong in the printed characteristics.
-        from ..cr600_spells_and_abilities.cr613_layers import intrinsic_land_abilities
+        from ..cr600_spells_and_abilities.cr613_layers import intrinsic_abilities
 
-        printed = from_face(face, abilities + intrinsic_land_abilities(face.type_line))
+        printed = from_face(face, abilities + intrinsic_abilities(face.type_line))
         if face_index != obj.face_index:
             # CR 710.1c: flipping changes name, text, types and P/T, but not
             # colour and not mana cost. Kamigawa's flip creatures stay the

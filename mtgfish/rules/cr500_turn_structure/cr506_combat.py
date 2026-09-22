@@ -31,6 +31,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from ..cr100_game_concepts import actions
+from ..cr100_game_concepts.cr101_rule_overrides import Rule
 from ..kernel.enums import CardType, Step
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
@@ -175,8 +176,13 @@ def declare_attackers(game: Game) -> None:
             if attacked is not None:
                 combat.controllers[permanent] = attacked.controller
         obj.attacked_this_turn = True
-        # CR 508.1f: attacking taps the creature, unless it has vigilance.
-        if not game.characteristics(obj).has_keyword("Vigilance"):
+        # CR 508.1f: attacking taps the creature, unless it has vigilance -
+        # or unless a card has switched the rule off (CR 101.1), which is the
+        # blanket form of the same thing.
+        if (
+            not game.characteristics(obj).has_keyword("Vigilance")
+            and game.rule_is_suspended(Rule.ATTACKING_TAPS, obj=obj) is None
+        ):
             obj.tapped = True
 
     game.invalidate_characteristics()
@@ -199,8 +205,13 @@ def can_attack(game: Game, obj: GameObject) -> bool:
         return False
     if obj.tapped:
         return False
-    # CR 302.6: summoning sickness, unless it has haste.
-    if obj.summoning_sick and not chars.has_keyword("Haste"):
+    # CR 302.6: summoning sickness, unless it has haste - or unless a card
+    # has switched the rule off outright (CR 101.1).
+    if (
+        obj.summoning_sick
+        and not chars.has_keyword("Haste")
+        and game.rule_is_suspended(Rule.SUMMONING_SICKNESS, obj=obj) is None
+    ):
         return False
     # CR 702.3b: a creature with defender can't attack.
     if chars.has_keyword("Defender"):

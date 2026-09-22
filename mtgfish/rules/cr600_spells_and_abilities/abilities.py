@@ -97,6 +97,12 @@ class TriggerCondition:
     chapter: int = 0
     is_state_trigger: bool = False
 
+    #: Which counter a COUNTER_ADDED / COUNTER_REMOVED trigger cares about.
+    #: Empty means any kind. "When the last defense counter is removed"
+    #: (CR 310.12b) is about defense counters and nothing else, and without
+    #: this a Siege would fire on every -1/-1 counter too.
+    counter_kind: str = ""
+
     #: CR 603.2f: some triggers fire at most once in a turn.
     once_each_turn: bool = False
 

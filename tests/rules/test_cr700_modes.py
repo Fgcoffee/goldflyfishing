@@ -77,9 +77,9 @@ class ModeAgent(FixedAgent):
         self.offered: list[list[int]] = []
         self.counts: list[int] = []
 
-    def choose_modes(self, game, player, source, options, count):
-        self.offered.append([index for index, _ in options])
-        self.counts.append(count)
+    def choose_modes(self, game, player, source, options, budget):
+        self.offered.append([index for index, _, _ in options])
+        self.counts.append(budget)
         return self.modes
 
 

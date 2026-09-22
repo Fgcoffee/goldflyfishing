@@ -165,9 +165,6 @@ def test_a_battle_with_defense_left_is_otherwise_untouched(board):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(
-    strict=True, reason="CR 310.12b: Sieges have no intrinsic exile-and-cast ability"
-)
 def test_a_beaten_siege_is_exiled_rather_than_buried(board):
     """CR 310.12b: when the last defense counter is removed, exile it - then
     its controller may cast it transformed for free. CR 310.7 only reaches a
@@ -182,12 +179,30 @@ def test_a_beaten_siege_is_exiled_rather_than_buried(board):
     assert SIEGE not in board.in_graveyard(0)
 
 
-def test_a_beaten_siege_does_at_least_leave_the_battlefield(board):
-    """Not in dispute: CR 310.7 is implemented, so a Siege at zero defense
-    does go away. It goes to the wrong zone, not to no zone."""
+def test_a_siege_at_zero_defense_is_spared_until_its_trigger_resolves(board):
+    """CR 704.5v, and the reason CR 310.12b works at all.
+
+    A triggered ability reaches the stack only when a player would next
+    receive priority, and state-based actions run before that. So the
+    state-based action that buries a battle at zero defense has to spare a
+    Siege whose own ability has triggered and is still waiting - otherwise it
+    is in the graveyard before the ability that would have exiled it ever
+    gets there, and the back face is never seen.
+    """
     siege = enters(board, SIEGE, controller=0)
     source = board.play(CREATURE, controller=1)
     actions.deal_damage(board.game, siege, 3, source=source.id)
     board.sba()
 
-    assert SIEGE not in board.alive(0)
+    assert SIEGE in board.alive(0), "the Siege should be spared, not buried"
+
+
+def test_a_non_siege_battle_at_zero_defense_is_buried(board):
+    """The control: CR 704.5w has no such exception, and a battle with no
+    battle type has no intrinsic ability to wait for."""
+    battle = enters(board, "Occupation of Kulrath", controller=0)
+    while battle.counter_count("defense"):
+        battle.remove_counters("defense", battle.counter_count("defense"))
+    board.sba()
+
+    assert "Occupation of Kulrath" not in board.alive(0)

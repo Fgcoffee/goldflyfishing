@@ -35,7 +35,13 @@ from ..kernel.enums import CardType, Color, Layer, Zone
 from ..kernel.gameobject import GameObject
 from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
 from ..kernel.matching import matches
-from ..kernel.query import ValueKind
+from ..kernel.query import (
+    Condition,
+    ConditionKind,
+    NumericConstraint,
+    ObjectFilter,
+    ValueKind,
+)
 from .abilities import Ability, AbilityKind
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 
@@ -807,7 +813,7 @@ def _with_type_line(current: Characteristics, line) -> Characteristics:
     and loses it again when the type goes.
     """
     kept = tuple(a for a in current.abilities if not a.from_land_type)
-    return current.replace(type_line=line, abilities=kept + intrinsic_land_abilities(line))
+    return current.replace(type_line=line, abilities=kept + intrinsic_abilities(line))
 
 
 #: Memoized by type line. The result depends on nothing else, the type line is
@@ -817,14 +823,88 @@ def _with_type_line(current: Characteristics, line) -> Characteristics:
 _INTRINSIC_CACHE: dict[object, tuple[Ability, ...]] = {}
 
 
-def intrinsic_land_abilities(line) -> tuple[Ability, ...]:
-    """The mana abilities a land gets from its basic land types (CR 305.6)."""
+def intrinsic_abilities(line) -> tuple[Ability, ...]:
+    """The abilities an object has purely from its type line.
+
+    Nothing printed and nothing granted: these come from what the object *is*.
+    CR 305.6 gives a land with a basic land type its mana ability, and
+    CR 310.12b gives every Siege its exile-and-cast-transformed ability.
+
+    Keyed on the type line and cached, because the answer depends on nothing
+    else - which is also what makes it safe to ask during layer computation.
+    """
     cached = _INTRINSIC_CACHE.get(line)
     if cached is not None:
         return cached
-    built = _build_intrinsic_land_abilities(line)
+    built = _build_intrinsic_land_abilities(line) + _build_intrinsic_battle_abilities(
+        line
+    )
     _INTRINSIC_CACHE[line] = built
     return built
+
+
+#: CR 310.12b fires when the *last* defense counter comes off, not on every
+#: one - so the trigger carries an intervening-if (CR 603.4) that none are
+#: left. Checked both when it would trigger and again as it resolves, which is
+#: what stops a Siege that got its counters back from exiling itself.
+NO_DEFENSE_LEFT = Condition(
+    ConditionKind.COUNTER_COUNT,
+    counter_type="defense",
+    constraint=NumericConstraint.at_most(0),
+    text="no defense counters remain",
+)
+
+
+def _build_intrinsic_battle_abilities(line) -> tuple[Ability, ...]:
+    """CR 310.12b: every Siege has the ability that gets it off the battlefield.
+
+    "When the last defense counter is removed from this permanent, exile it,
+    then you may cast it transformed without paying its mana cost."
+
+    Intrinsic, so it is not printed on the card and no parser has to read it -
+    which is the point: it is the same ability on all of them.
+
+    It interlocks with CR 704.5v. A Siege at zero defense would otherwise be
+    put into its owner's graveyard by the state-based actions before this
+    could ever resolve; CR 704.5v spares a Siege that is still the source of a
+    triggered ability on the stack, which is exactly this one.
+    """
+    from ..kernel.events import EventKind as _EventKind
+    from .abilities import TriggerCondition
+    from .effects import Effect as _Effect
+
+    if not (line.types & CardType.BATTLE) or "Siege" not in line.subtypes:
+        return ()
+    remembered = ObjectFilter(remembered=True)
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({_EventKind.COUNTER_REMOVED}),
+                subject=ObjectFilter(source_only=True),
+                counter_kind="defense",
+                intervening_if=NO_DEFENSE_LEFT,
+                text="when the last defense counter is removed from this permanent",
+            ),
+            _Effect(
+                EffectKind.EXILE,
+                targets=ObjectFilter(source_only=True),
+                text="exile it",
+            ),
+            _Effect(
+                EffectKind.CAST_WITHOUT_PAYING,
+                targets=remembered,
+                # "You may" is already how CAST_WITHOUT_PAYING behaves - it
+                # asks the controller before casting (CR 118.5).
+                face_index=1,
+                text="you may cast it transformed without paying its mana cost",
+            ),
+            text=(
+                "When the last defense counter is removed from this permanent, "
+                "exile it, then you may cast it transformed without paying its "
+                "mana cost."
+            ),
+        ),
+    )
 
 
 def _build_intrinsic_land_abilities(line) -> tuple[Ability, ...]:

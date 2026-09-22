@@ -126,6 +126,12 @@ class EffectKind(IntEnum):
     #: "may cast from your graveyard".
     RESTRICTION = 150
     PERMISSION = 151
+    #: CR 101.1: switch a rule off outright - "creatures don't suffer
+    #: summoning sickness". Not a prohibition and not a permission: it
+    #: suspends a rule of the game rather than constraining an act. See
+    #: ``cr100_game_concepts/cr101_rule_overrides.py`` for the list of rules
+    #: that can be named, and how to add one.
+    SUSPEND_RULE = 154
     #: Cost modification, e.g. "spells cost {1} more to cast".
     MODIFY_COST = 152
     #: Replacement effects created by a resolved spell, e.g. "if a creature
@@ -226,6 +232,7 @@ CONTINUOUS_KINDS = frozenset(
         EffectKind.TEXT_CHANGE,
         EffectKind.RESTRICTION,
         EffectKind.PERMISSION,
+        EffectKind.SUSPEND_RULE,
         EffectKind.MODIFY_COST,
         EffectKind.REPLACEMENT,
     }
@@ -341,6 +348,20 @@ class Effect:
     repeats: bool = False
     #: Sub-effects for SEQUENCE, CONDITIONAL, REPEAT, OPTIONAL, CHOOSE_MODE.
     children: tuple[Effect, ...] = ()
+    #: CR 700.2i: what each mode of a CHOOSE_MODE costs against ``amount``,
+    #: one entry per child. Empty means every mode costs one, which is the
+    #: ordinary bulleted "choose one" - so a pawprint spell is not a second
+    #: mechanism, just this one with weights that are not all 1. A card
+    #: printing "{P}{P} -" gives that mode a 2.
+    mode_weights: tuple[int, ...] = ()
+    #: CR 700.2d: normally a mode may not be chosen twice, and some cards say
+    #: otherwise in so many words ("You may choose the same mode more than
+    #: once"). Every pawprint spell printed so far does.
+    modes_may_repeat: bool = False
+    #: CR 700.2i: "choose *up to* N worth of modes" - the budget is a
+    #: ceiling, not a requirement. Plain "choose one" is not up-to: a mode has
+    #: to be chosen where a legal one exists.
+    modes_up_to: bool = False
     #: The "otherwise" branch of a CONDITIONAL.
     otherwise: tuple[Effect, ...] = ()
 
@@ -350,6 +371,14 @@ class Effect:
     #: Prohibitions created by a RESTRICTION effect (CR 101.2). Data rather
     #: than code, so a new "can't" is a new entry and not a new special case.
     restrictions: tuple = ()
+    #: For CAST_WITHOUT_PAYING: which face to cast. CR 310.12b's "cast it
+    #: transformed" is the only thing that needs it - everything else casts
+    #: the front face, which is index 0 and the default.
+    face_index: int = 0
+    #: For SUSPEND_RULE: which rule is switched off, as its CR number - a
+    #: member of ``cr101_rule_overrides.Rule``. ``targets`` and ``players``
+    #: then say for whom, exactly as they do for a prohibition.
+    rule: str = ""
     #: For COPY_PERMANENT: which object's copiable values to take (CR 613.2).
     copy_source: int = 0
     #: For ADD_MANA: produce the colour this permanent's controller chose,

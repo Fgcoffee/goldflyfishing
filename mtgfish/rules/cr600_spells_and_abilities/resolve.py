@@ -150,6 +150,13 @@ def _objects(
         found = []
         for object_id in resolution.remembered:
             obj = game.objects.get(object_id)
+            # CR 400.7 makes a moved object a new one, and ``remembered`` was
+            # recorded before the move - so "exile it, then cast it" would
+            # look at the husk left behind and find it in the wrong zone.
+            # An effect that acts on what it just moved means the object it
+            # became.
+            while obj is not None and obj.superseded_by:
+                obj = game.objects.get(obj.superseded_by)
             if obj is not None:
                 found.append(obj)
         return found
@@ -526,6 +533,50 @@ def _do_restriction(resolution: Resolution, effect: Effect) -> None:
                 created_turn=resolution.game.turn,
             ),
         )
+
+
+def _do_suspend_rule(resolution: Resolution, effect: Effect) -> None:
+    """Switch a rule off (CR 101.1).
+
+    The golden rule's seam for rules that are about the game rather than
+    about an object - "creatures don't suffer summoning sickness" suspends
+    CR 302.6 rather than granting anything. Which rules can be named, and how
+    to add one, is in ``cr100_game_concepts/cr101_rule_overrides.py``.
+
+    Registered standing for the same reason a prohibition is: it outlives its
+    source, and its duration is what ends it. A suspension coming from a
+    permanent's static ability is regenerated with the other continuous
+    effects instead and never reaches here.
+    """
+    from ..cr100_game_concepts.cr101_rule_overrides import Rule, RuleOverride, register
+
+    if not effect.rule:
+        return
+    try:
+        rule = Rule(effect.rule)
+    except ValueError:
+        # A rule the engine has no name for is one it cannot suspend. Silence
+        # here would be a card that claims to switch a rule off and does not,
+        # which is the one failure this module is built to avoid.
+        resolution.game.log.record(
+            resolution.game,
+            f"cannot suspend CR {effect.rule}: not a rule this engine can switch off",
+            kind="unimplemented",
+        )
+        return
+    register(
+        resolution.game,
+        RuleOverride(
+            rule=rule,
+            subject=effect.targets,
+            players=effect.players,
+            source=resolution.source,
+            controller=resolution.controller,
+            text=effect.text,
+            duration=effect.duration,
+            created_turn=resolution.game.turn,
+        ),
+    )
 
 
 def _do_choose_quality(resolution: Resolution, effect: Effect) -> None:
@@ -1928,7 +1979,11 @@ def _do_cast_without_paying(resolution: Resolution, effect: Effect) -> None:
             cast_spell(
                 game,
                 resolution.controller,
-                Action(ActionKind.CAST_SPELL, source=obj.id),
+                Action(
+                    ActionKind.CAST_SPELL,
+                    source=obj.id,
+                    face_index=effect.face_index,
+                ),
             )
         except CastError as exc:
             obj.cast_without_paying = False
@@ -1964,7 +2019,11 @@ def _do_play_from_zone(resolution: Resolution, effect: Effect) -> None:
                 cast_spell(
                     game,
                     resolution.controller,
-                    Action(ActionKind.CAST_SPELL, source=obj.id),
+                    Action(
+                    ActionKind.CAST_SPELL,
+                    source=obj.id,
+                    face_index=effect.face_index,
+                ),
                 )
         except CastError as exc:
             game.log.record(game, f"Play abandoned: {exc}", kind="illegal")
@@ -2090,6 +2149,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.RETURN_TO_HAND: _do_return_to_hand,
     EffectKind.CREATE_TOKEN: _do_create_token,
     EffectKind.RESTRICTION: _do_restriction,
+    EffectKind.SUSPEND_RULE: _do_suspend_rule,
     EffectKind.DAMAGE: _do_damage,
     EffectKind.GAIN_LIFE: _do_gain_life,
     EffectKind.LOSE_LIFE: _do_lose_life,
