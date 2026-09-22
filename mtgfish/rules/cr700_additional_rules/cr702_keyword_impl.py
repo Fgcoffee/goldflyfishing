@@ -1676,8 +1676,8 @@ def _zone_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 
 @register("Living metal", "Living weapon", "Umbra armor", "Compleated", "Solved",
-          "Paradigm", "Max speed", "Power-up", "Epic", "Daybound", "Nightbound",
-          "Ascend", "Companion", "Sneak", "Web-slinging", "Double agenda",
+          "Max speed", "Epic", "Daybound", "Nightbound",
+          "Ascend", "Companion", "Double agenda",
           "Hidden agenda", "Absorb", "Cipher", "Fuse", "Recover", "Rebound",
           "Haunt", "Read Ahead", "More Than Meets the Eye", "Augment", "Dredge",
 )
@@ -3357,7 +3357,7 @@ def _out_of_format(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: rules text the Comprehensive Rules describes but which no Commander-legal
 #: card in the pool uses yet. They are shapes without bodies, and the registry
 #: says so.
-NOT_YET_MODELLED = ("Paradigm", "Power-up", "Sneak", "Web-slinging", "Companion")
+NOT_YET_MODELLED = ("Companion",)
 
 
 @register(*NOT_YET_MODELLED)
@@ -3534,6 +3534,234 @@ def _partner(instance: KeywordInstance) -> tuple[Ability, ...]:
             keyword=instance.name,
             quality=instance.filter,
             functions_in=ANY_ZONE,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Returning a creature to hand as an alternative cost
+#
+# Sneak and web-slinging are the same shape as ninjutsu - pay something and
+# bounce one of your own creatures - but they are *alternative costs on a
+# spell* rather than an activated ability, so the card is genuinely cast and
+# everything that watches casting sees it.
+# ---------------------------------------------------------------------------
+
+
+def _return_creature_cost(
+    cost: Cost, creature: ObjectFilter, description: str
+) -> Cost:
+    """Add "return a creature you control to its owner's hand" to a cost.
+
+    Skipped when the parser already read a return component out of the
+    keyword's own text, so a cost is never charged twice.
+    """
+    if any(c.kind is CostKind.RETURN_TO_HAND for c in cost.components):
+        return cost
+    return cost.with_component(
+        CostComponent(
+            CostKind.RETURN_TO_HAND,
+            filter=creature,
+            amount=Value.of(1),
+            text=description,
+        )
+    )
+
+
+@register("Web-slinging")
+def _web_slinging(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.188a: web-slinging is an alternative cost (CR 601.2b, 601.2f-h).
+
+    "Web-slinging [cost]" lets the spell be cast for that cost plus returning
+    a *tapped* creature you control to its owner's hand, instead of its mana
+    cost. The tapped creature is the whole restriction - it is normally one
+    that has just attacked - so it belongs in the cost rather than in a
+    condition: a cost that cannot be paid is what makes the option disappear
+    from the list of legal casts, and CR 118.9a still allows only one
+    alternative cost on the spell.
+
+    Unlike sneak (CR 702.190a) there is no timing clause: the spell's own
+    timing rules apply unchanged.
+    """
+    tapped_creature = ObjectFilter(
+        types_all=CardType.CREATURE,
+        controller=ControllerRelation.YOU,
+        tapped=True,
+    )
+    cost = _return_creature_cost(
+        instance.cost or Cost(()),
+        tapped_creature,
+        "return a tapped creature you control to its owner's hand",
+    )
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            alternative_cost=AlternativeCost(
+                cost=cost,
+                from_zone=None,
+                keyword=instance.name,
+                text=instance.text or instance.name,
+            ),
+            functions_in=HAND,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Sneak")
+def _sneak(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.190a: an alternative cost with a timing window of its own.
+
+    "Sneak [cost]" is the cost, plus returning an unblocked creature you
+    control to its owner's hand, and it may only be paid when you could cast
+    an instant during your declare blockers step.
+
+    Both halves are expressed where the engine already enforces them. The
+    returned creature is a cost component, exactly as it is for ninjutsu
+    (CR 702.49a), so the dry run in cost payment refuses the cast while there
+    is nothing unblocked to return - and CR 509.1h means nothing is unblocked
+    until blockers have been declared. The step itself is the alternative
+    cost's condition.
+
+    CR 702.190b - a permanent spell cast this way enters tapped and attacking
+    what the returned creature was attacking - is not built here. It is a
+    replacement that applies only when *this* alternative cost was the one
+    paid, and nothing records which alternative cost a spell was cast with,
+    so a replacement built here would tap and attack with every copy of the
+    card however it was cast. The returned creature is modelled; the arrival
+    is not.
+    """
+    from ..kernel.enums import Step
+
+    unblocked_attacker = ObjectFilter(
+        types_all=CardType.CREATURE,
+        controller=ControllerRelation.YOU,
+        attacking=True,
+        blocked=False,
+    )
+    cost = _return_creature_cost(
+        instance.cost or Cost(()),
+        unblocked_attacker,
+        "return an unblocked creature you control to its owner's hand",
+    )
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            alternative_cost=AlternativeCost(
+                cost=cost,
+                from_zone=None,
+                condition=Condition(
+                    kind=ConditionKind.IS_STEP,
+                    players=YOU,
+                    constraint=NumericConstraint.exactly(
+                        int(Step.DECLARE_BLOCKERS)
+                    ),
+                    text="during your declare blockers step",
+                ),
+                keyword=instance.name,
+                text=instance.text or instance.name,
+            ),
+            functions_in=HAND,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Power-up
+# ---------------------------------------------------------------------------
+
+
+@register("Power-up")
+def _power_up(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.193a: "Power-up - [Cost]: [Effect]" is an activated ability with
+    two riders - a cost reduction on the turn the permanent entered, and a
+    limit of one activation.
+
+    The ability itself is ordinary, so it is built as one: the parser supplies
+    the body, the keyword supplies the cost. Neither rider is enforceable with
+    what the engine has today:
+
+    * the reduction (CR 702.193b applies it symbol by symbol, as CR 118.7
+      does) would need a cost reduction that applies to an *activation*, and
+      cost modification currently reaches only spells being cast;
+    * "only once" is once per game, and activations are counted per turn.
+
+    ``once_each_turn`` is set because it is the closest limit the engine
+    enforces and it errs the right way: a power-up is at worst activated once
+    a turn rather than without limit. It is not the rule, and the report says
+    so.
+    """
+    return (
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=_body(instance),
+            cost=instance.cost or Cost(()),
+            once_each_turn=True,
+            keyword=instance.name,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Paradigm
+# ---------------------------------------------------------------------------
+
+
+@register("Paradigm")
+def _paradigm(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.192a: two spell abilities, one of which delays a repeating
+    trigger that copies the spell into exile for a free cast each precombat
+    main phase, and one of which exiles the spell.
+
+    The exile half is built exactly; the copy half is not. Three things it
+    needs and the engine does not have:
+
+    * a copy made *in exile* rather than on the stack (CR 707.10 through
+      ``COPY_SPELL`` puts it on the stack, and ignores a zone);
+    * a trigger at the beginning of a main phase - ``PHASE_BEGAN`` is the
+      event the parser uses for that phrase and nothing emits it, and
+      ``STEP_BEGAN`` cannot say *which* step;
+    * "if this is the first time a spell you control with this name has
+      resolved this game", which no condition kind can ask.
+
+    So the shape is here, the exile happens, and the copy is left unread
+    rather than approximated - the approximation would hand the card a free
+    cast every turn from the first resolution onwards with nothing to stop it
+    compounding.
+    """
+    return (
+        Ability.spell(
+            Effect(
+                EffectKind.DELAYED_TRIGGER,
+                trigger=TriggerCondition(
+                    event_kinds=frozenset({EventKind.PHASE_BEGAN}),
+                    players=YOU,
+                    intervening_if=Condition(
+                        kind=ConditionKind.IS_MAIN_PHASE,
+                        text="a main phase",
+                    ),
+                    functions_in=frozenset({Zone.EXILE}),
+                    text="at the beginning of each of your precombat main phases",
+                ),
+                repeats=True,
+                children=(
+                    Effect(
+                        EffectKind.UNPARSED,
+                        text="create a copy of this in exile and you may cast it",
+                    ),
+                ),
+                text="each of your precombat main phases, a free copy",
+            ),
+            Effect(
+                EffectKind.EXILE,
+                targets=SOURCE_ONLY,
+                text="exile this spell",
+            ),
             text=instance.text or instance.name,
         ),
     )
