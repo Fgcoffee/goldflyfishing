@@ -56,6 +56,10 @@ class Resolution:
     #: after modifiers and after any ignored roll was dropped. What comes
     #: after the roll reads them through ``ValueKind.DIE_ROLL_RESULT``.
     die_results: tuple[int, ...] = ()
+    #: CR 106.1: the colour picked for "add one mana of any color" when the
+    #: payer chose it - the mana planner does, to pay the colour the cost needs.
+    #: ``Color.NONE`` leaves the old deterministic first-colour pick.
+    mana_color: int = 0
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -1325,9 +1329,15 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
         )
     elif effect.colors:
         # No symbol list: "add N mana of any color", where the color set is
-        # the menu and the player picks. Deterministic pick, first color.
+        # the menu and the player picks - the payer's choice when there was
+        # one, otherwise a deterministic pick, first color.
         amount = _count(resolution, effect)
-        chosen = next(iter(effect.colors))
+        wanted = resolution.mana_color
+        chosen = (
+            wanted
+            if wanted and (effect.colors & wanted) == wanted
+            else next(iter(effect.colors))
+        )
         player.mana_pool.add(
             ManaKind(chosen, snow=snow, restriction=effect.mana_restriction), amount
         )

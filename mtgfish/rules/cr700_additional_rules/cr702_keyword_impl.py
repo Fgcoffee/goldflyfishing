@@ -2291,10 +2291,15 @@ def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
     spell's mana value. You may cast that spell without paying its mana cost.
     Put the exiled cards on the bottom in a random order."
     """
+    # "Whose mana value is less than this spell's": the source of the trigger
+    # is the cascading spell, still on the stack as it resolves. Without it any
+    # nonland card in exile could be cast for free - harmless while a free cast
+    # was charged in full anyway, and a free Bloodbraid chain once it was not.
     cheaper = ObjectFilter(
         types_none=CardType.LAND,
         zones=frozenset({Zone.EXILE}),
         owner=ControllerRelation.YOU,
+        mana_value=NumericConstraint(Comparison.LT, Value(kind=ValueKind.MANA_VALUE)),
     )
     return (
         Ability.triggered(

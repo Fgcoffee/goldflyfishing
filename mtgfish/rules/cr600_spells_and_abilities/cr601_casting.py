@@ -159,6 +159,10 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         spell.invalidate()
         game.invalidate_characteristics()
 
+    # CR 601.2h: a cast that cannot be completed is rewound, mana abilities
+    # included. Without this the log said "the game state is unchanged" while
+    # the lands tapped along the way stayed tapped and their mana floated.
+    checkpoint = _mana_checkpoint(game, player_id)
     try:
         # 601.2b: choose modes and X. The caller may have announced the modes
         # already; when it has not, the controller is asked, because a modal
@@ -209,6 +213,7 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
 
     except CastError:
         # 601.2h: an incomplete cast is rewound entirely.
+        _restore_mana_checkpoint(game, player_id, checkpoint)
         game.log.record(game, "Cast rewound; the game state is unchanged", kind="rewind")
         game.move_object(spell, origin_zone, to_player=card_object.owner)
         raise
@@ -1049,47 +1054,16 @@ def _tap_for_mana(
     """CR 601.2g: activate mana abilities to produce what is still needed.
 
     Mana abilities do not use the stack and cannot be responded to (CR 605.3b),
-    so this happens inline. The choice of *which* sources to tap is the
-    player's; the default taps in a stable order so replays reproduce, and the
-    AI overrides it with something better.
+    so this happens inline. Which sources to tap, and for what, is solved by
+    ``mana_plan``: the first mana ability of each source in id order was the
+    wrong one on every pain land and every "any colour" source. When nothing
+    pays the cost nothing is tapped, and the caller reports it unpaid.
     """
-    from .resolve import Resolution, execute
+    from .mana_plan import execute_plan, plan_payment
 
-    player = game.player(player_id)
-    # CR 302.6 applies to creatures only. A land tapped for mana the turn it
-    # arrives is completely normal, and skipping those here made every one-drop
-    # uncastable on turn one.
-    sources = sorted(
-        (
-            obj
-            for obj in game.permanents(player_id)
-            if not obj.tapped
-            and not (obj.summoning_sick and game.characteristics(obj).is_creature)
-        ),
-        key=lambda o: o.id,
-    )
-
-    for obj in sources:
-        if find_payment(player.mana_pool, cost, life_available=0, context=context):
-            return
-        for ability in game.characteristics(obj).abilities:
-            if not ability.is_mana_ability or ability.unparsed:
-                continue
-            if not _can_pay_activation(game, obj, ability):
-                continue
-            _pay_activation(game, obj, ability)
-            # CR 602.2b: the modes are chosen on activation, even when the
-            # activation is the engine's own during cost payment.
-            execute(
-                Resolution(
-                    game=game,
-                    source=obj.id,
-                    controller=player_id,
-                    chosen_modes=choose_modes(game, obj, ability.effects, player_id),
-                ),
-                ability.effects,
-            )
-            break
+    plan = plan_payment(game, player_id, cost, context)
+    if plan:
+        execute_plan(game, player_id, plan)
 
 
 #: Every non-mana cost ``_pay_component`` knows how to charge. Anything else is
@@ -1651,7 +1625,9 @@ def can_pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
         return True
     if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
         return True
-    return _could_produce(game, player_id, mana_cost)
+    from .mana_plan import can_produce
+
+    return can_produce(game, player_id, mana_cost)
 
 
 def pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
@@ -1911,7 +1887,13 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
     if mana_cost:
         if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
             return True
-        return _could_produce(game, source.controller, mana_cost)
+        if ability.is_mana_ability:
+            # The planner asks this very question of every mana ability, so a
+            # Signet's own {1} is left to its search rather than recursing.
+            return _could_produce(game, source.controller, mana_cost)
+        from .mana_plan import can_produce
+
+        return can_produce(game, source.controller, mana_cost, source)
     return True
 
 
