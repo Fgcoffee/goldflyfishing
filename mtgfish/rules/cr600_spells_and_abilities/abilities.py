@@ -112,6 +112,11 @@ class TriggerCondition:
     #: any phase.
     phases: frozenset[int] = frozenset()
 
+    #: For damage events: the damage must have been dealt to a player, not to
+    #: a permanent. "Deals combat damage to a player" names its recipient, and
+    #: combat damage to a blocking creature is combat damage too.
+    to_player: bool = False
+
     #: Set for abilities that trigger on the source leaving the battlefield, so
     #: the engine knows to evaluate them against last-known information
     #: (CR 603.6e, 608.2g).

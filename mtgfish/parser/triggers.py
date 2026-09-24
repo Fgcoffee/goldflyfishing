@@ -71,6 +71,30 @@ _PHASES: dict[str, frozenset[int]] = {
 }
 
 
+#: CR 120: combat damage is damage. The engine emits the two as different
+#: events so "combat damage" can be asked for alone, which means "deals
+#: damage" has to watch both - watching one never fired in combat.
+_ANY_DAMAGE = frozenset({EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT})
+
+
+def _deals_damage(stream: Stream, source, text: str) -> TriggerCondition:
+    """"[source] deals damage", optionally "to a player", "to an opponent",
+    "to a creature". The recipient narrows the trigger; it was read and
+    thrown away, so "deals damage to an opponent" fired on damage to anything.
+    """
+    stream.accept("to")
+    players, _ = parse_player_filter(stream)
+    recipient = parse_object_filter(stream) if players is None else None
+    return TriggerCondition(
+        event_kinds=_ANY_DAMAGE,
+        source=source,
+        subject=recipient,
+        players=players,
+        to_player=players is not None,
+        text=text,
+    )
+
+
 def parse_trigger(stream: Stream) -> TriggerCondition | None:
     """The condition half of a triggered ability, up to and including its comma."""
     if not stream.accept("at", "when", "whenever"):
@@ -91,6 +115,7 @@ def parse_trigger(stream: Stream) -> TriggerCondition | None:
             functions_in=condition.functions_in,
             uses_last_known_information=condition.uses_last_known_information,
             phases=condition.phases,
+            to_player=condition.to_player,
             text=condition.text,
         )
 
@@ -457,20 +482,14 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
         return TriggerCondition(
             event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
             source=SELF,
+            to_player=True,
             text="when this deals combat damage to a player",
         )
     if stream.accept_phrase("deals damage"):
         # "deals damage to a player", "deals damage to an opponent", or with
         # nothing after it at all. The recipient narrows the trigger, so it is
         # read if it is there and left general if it is not.
-        stream.accept("to")
-        parse_player_filter(stream)
-        parse_object_filter(stream)
-        return TriggerCondition(
-            event_kinds=frozenset({EventKind.DAMAGE_DEALT}),
-            source=SELF,
-            text="when this deals damage",
-        )
+        return _deals_damage(stream, SELF, "when this deals damage")
     if stream.accept_phrase("becomes the target of a spell or ability"):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TARGETED}),
@@ -639,17 +658,11 @@ def _subject_event(stream: Stream, subject: ObjectFilter) -> TriggerCondition | 
         return TriggerCondition(
             event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
             source=subject,
+            to_player=True,
             text="whenever something deals combat damage to a player",
         )
     if stream.accept_phrase("deals damage"):
-        stream.accept("to")
-        parse_player_filter(stream)
-        parse_object_filter(stream)
-        return TriggerCondition(
-            event_kinds=frozenset({EventKind.DAMAGE_DEALT}),
-            source=subject,
-            text="whenever something deals damage",
-        )
+        return _deals_damage(stream, subject, "whenever something deals damage")
 
     zoned = _leaves_zone(stream, subject)
     if zoned is not None:
@@ -833,8 +846,8 @@ def _counters_placed(stream: Stream, subject: ObjectFilter):
 #:
 #: Each entry is (phrase, event kinds, uses-last-known-information).
 _SIMPLE_EVENTS: tuple[tuple[str, tuple[EventKind, ...], bool], ...] = (
-    ("is dealt damage", (EventKind.DAMAGE_DEALT,), False),
-    ("are dealt damage", (EventKind.DAMAGE_DEALT,), False),
+    ("is dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
+    ("are dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
     ("becomes the target", (EventKind.TARGETED,), False),
     ("is targeted", (EventKind.TARGETED,), False),
     ("becomes blocked", (EventKind.BECOMES_BLOCKED,), False),

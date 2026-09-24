@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Iterator, NamedTuple
 from ..kernel.enums import Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from .abilities import Ability, AbilityKind, TriggerCondition
 
 if TYPE_CHECKING:
@@ -416,6 +416,10 @@ def condition_met(
     if event.kind not in trigger.event_kinds:
         return False
     if not _right_phase(trigger, event):
+        return False
+    if trigger.to_player and event.object_id != NO_OBJECT:
+        # Damage to a permanent carries the permanent's id; damage to a player
+        # carries none (CR 120.3).
         return False
 
     # A counter trigger that names a kind fires for that kind alone: the
