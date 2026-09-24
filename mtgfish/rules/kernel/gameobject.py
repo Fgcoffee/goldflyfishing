@@ -190,6 +190,15 @@ class GameObject:
     #: CR 601.2b: which optional additional costs were chosen, by index. Read
     #: by kicker and anything else that asks how this spell was cast.
     additional_costs_paid: tuple[int, ...] = ()
+    #: CR 601.2b / 118.9: the keyword of the alternative cost this spell was
+    #: cast for, if any - what "if its sneak cost was paid" asks. Empty for a
+    #: spell cast for its mana cost.
+    alternative_cost_paid: str = ""
+    #: CR 702.190b: a spell whose alternative cost puts it onto the battlefield
+    #: tapped and attacking, and the objects paid for it, whose attack it
+    #: joins (CR 506.3a).
+    enters_tapped_and_attacking: bool = False
+    enters_attacking_like: tuple = ()
     #: How much mana was actually spent casting this spell (CR 601.2g). Zero
     #: for a free cast, which is what Lavinia and friends key off.
     mana_spent: int = 0

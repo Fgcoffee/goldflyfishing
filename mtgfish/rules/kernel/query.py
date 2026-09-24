@@ -728,6 +728,10 @@ class ConditionKind(IntEnum):
     #: Answered from the spell object, because "kicked" is a fact about how
     #: this particular spell was cast rather than about the board.
     WAS_KICKED = 14
+    #: CR 601.2b / 118.9: "if its [keyword] cost was paid" - which alternative
+    #: cost the spell was cast for, named by ``Condition.keyword``. An empty
+    #: keyword asks whether any alternative cost was paid.
+    ALTERNATIVE_COST_PAID = 24
     #: "as long as this permanent has N or more [kind] counters on it" - the
     #: shape shared by level bands (711.2a) and station symbols (721.2a).
     #: Distinct from an ObjectFilter's counter constraint because it asks about
@@ -760,6 +764,8 @@ class Condition:
     #: ints so this module need not import the event enum.
     event_kinds: tuple[int, ...] = ()
     operands: tuple[Condition, ...] = ()
+    #: For ALTERNATIVE_COST_PAID: the keyword whose cost is asked about.
+    keyword: str = ""
     text: str = ""
 
     @property
@@ -842,6 +848,8 @@ class Condition:
             return "no mana was spent casting it"
         if kind is ConditionKind.WAS_KICKED:
             return "it was kicked"
+        if kind is ConditionKind.ALTERNATIVE_COST_PAID:
+            return f"its {self.keyword or 'alternative'} cost was paid"
         if kind is ConditionKind.IS_SOLVED:
             return "this case is solved"
         if kind is ConditionKind.CLASS_LEVEL:

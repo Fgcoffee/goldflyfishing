@@ -260,6 +260,16 @@ def holds(
             return False
         return not spell.mana_spent
 
+    if kind is ConditionKind.ALTERNATIVE_COST_PAID:
+        # Asked of the spell, or of the permanent it became, which carries the
+        # record over (CR 608.3).
+        obj = game.objects.get(source)
+        if obj is None or not obj.alternative_cost_paid:
+            return False
+        return not condition.keyword or (
+            obj.alternative_cost_paid.lower() == condition.keyword.lower()
+        )
+
     if kind is ConditionKind.WAS_KICKED:
         # CR 702.33b: kicked means the optional additional cost was chosen at
         # announcement (CR 601.2b), which the spell records as it is cast.

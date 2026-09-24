@@ -136,12 +136,21 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         permanent.base_controller = obj.base_controller
         _carry_effects_onto_the_permanent(game, obj, permanent)
         permanent.x_value = obj.x_value
+        # CR 702.33e and its kin: "if it was kicked", "if no mana was spent to
+        # cast it", "if its surge cost was paid" are asked by the permanent's
+        # own abilities about the spell it was. Left on the spell, every one
+        # of them read the new object's defaults and was never true.
+        permanent.additional_costs_paid = obj.additional_costs_paid
+        permanent.mana_spent = obj.mana_spent
+        permanent.alternative_cost_paid = obj.alternative_cost_paid
         # It got here by resolving as a spell, which is what "if you cast it"
         # asks. A permanent put onto the battlefield never passes through
         # here and so is left with the default.
         permanent.was_cast = True
         _apply_enters_with_counters(game, permanent)
         _attach_aura_on_entry(game, obj, permanent)
+        if obj.enters_tapped_and_attacking:
+            _enter_tapped_and_attacking(game, obj, permanent)
         game.emit(
             Event(EventKind.SPELL_RESOLVED, object_id=permanent.id, player=obj.controller)
         )
@@ -180,6 +189,21 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # card moves anywhere else.
         moved.playable_from_here_by = obj.controller
         moved.playable_face = 0
+
+
+def _enter_tapped_and_attacking(
+    game: Game, spell: GameObject, permanent: GameObject
+) -> None:
+    """CR 702.190b: the permanent enters tapped and attacking what the creature
+    returned to pay its cost was attacking.
+
+    CR 506.3a: it was never declared as an attacker. ``enter_attacking``
+    decides whether it can be one at all, and what it attacks.
+    """
+    from ..cr500_turn_structure.cr506_combat import enter_attacking
+
+    permanent.tapped = True
+    enter_attacking(game, permanent, like=spell.enters_attacking_like)
 
 
 def _attach_aura_on_entry(game: Game, spell: GameObject, permanent: GameObject) -> None:

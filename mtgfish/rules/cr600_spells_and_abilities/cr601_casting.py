@@ -197,6 +197,7 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         # which several cards key off - and which is not the same as a cost
         # that happened to be reduced to nothing on a card with no mana cost.
         spell.mana_spent = 0 if spell.cast_without_paying else total.base.mana_value
+        _record_alternative_cost(game, spell, action)
 
     except CastError:
         # 601.2h: an incomplete cast is rewound entirely.
@@ -220,6 +221,32 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     return spell
 
 
+def chosen_alternative_cost(game: Game, spell: GameObject, action: Action):
+    """CR 601.2b: the alternative cost chosen as the spell was proposed.
+
+    CR 118.9a allows at most one, so this is one or ``None``.
+    """
+    available = game.characteristics(spell).alternative_costs
+    if 0 <= action.alternative_cost < len(available):
+        return available[action.alternative_cost]
+    return None
+
+
+def _record_alternative_cost(game: Game, spell: GameObject, action: Action) -> None:
+    """Remember how the spell was paid for, for the rest of its life.
+
+    "If its sneak cost was paid" (CR 601.2b) and CR 702.190b's arrival both
+    ask about the payment after it is over.
+    """
+    alternative = chosen_alternative_cost(game, spell, action)
+    if alternative is None:
+        return
+    spell.alternative_cost_paid = alternative.keyword
+    if alternative.enters_tapped_and_attacking:
+        spell.enters_tapped_and_attacking = True
+        spell.enters_attacking_like = tuple(spell.cost_paid_objects)
+
+
 def compute_total_cost(
     game: Game,
     spell: GameObject,
@@ -235,12 +262,7 @@ def compute_total_cost(
     """
     chars = game.characteristics(spell)
 
-    # CR 601.2b: the alternative cost is chosen when the spell is proposed,
-    # before the total is worked out. CR 118.9a allows at most one.
-    alternative = None
-    available = chars.alternative_costs
-    if 0 <= action.alternative_cost < len(available):
-        alternative = available[action.alternative_cost]
+    alternative = chosen_alternative_cost(game, spell, action)
 
     if alternative is not None:
         # CR 118.9c: this replaces what must be *paid*, not the spell's mana

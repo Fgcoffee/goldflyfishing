@@ -260,6 +260,9 @@ class AlternativeCost:
     #: CR 702.190a: some alternative costs let the spell be cast any time its
     #: controller could cast an instant, whatever its own timing.
     instant_speed: bool = False
+    #: CR 702.190b: a permanent spell cast this way enters tapped and
+    #: attacking whatever the creature returned to pay for it was attacking.
+    enters_tapped_and_attacking: bool = False
     #: The keyword this came from, for the log and the coverage report.
     keyword: str = ""
     text: str = ""

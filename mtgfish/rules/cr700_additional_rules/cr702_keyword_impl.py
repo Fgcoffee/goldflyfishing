@@ -3626,12 +3626,9 @@ def _sneak(instance: KeywordInstance) -> tuple[Ability, ...]:
     cost's condition.
 
     CR 702.190b - a permanent spell cast this way enters tapped and attacking
-    what the returned creature was attacking - is not built here. It is a
-    replacement that applies only when *this* alternative cost was the one
-    paid, and nothing records which alternative cost a spell was cast with,
-    so a replacement built here would tap and attack with every copy of the
-    card however it was cast. The returned creature is modelled; the arrival
-    is not.
+    what the returned creature was attacking - is a flag on the alternative
+    cost. The spell records which alternative cost paid for it, and
+    resolution reads that record, so only a sneak cast arrives attacking.
     """
     from ..kernel.enums import Step
 
@@ -3662,6 +3659,7 @@ def _sneak(instance: KeywordInstance) -> tuple[Ability, ...]:
                     text="during your declare blockers step",
                 ),
                 instant_speed=True,
+                enters_tapped_and_attacking=True,
                 keyword=instance.name,
                 text=instance.text or instance.name,
             ),

@@ -29,7 +29,7 @@ from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
     build,
 )
 from mtgfish.rules.cr700_additional_rules.keywords import Status, lookup
-from mtgfish.rules.kernel.enums import CardType, Step, Zone
+from mtgfish.rules.kernel.enums import CardType, Phase, Step, Zone
 from mtgfish.rules.kernel.ids import PlayerId
 from mtgfish.rules.kernel.legality import legal_actions
 from mtgfish.rules.kernel.query import ConditionKind
@@ -464,3 +464,109 @@ def test_a_return_cost_the_parser_already_read_is_not_added_twice():
     for name in ("Sneak", "Web-slinging"):
         (ability,) = build(KeywordInstance(name, cost=printed))
         assert len(return_components(ability.alternative_cost.cost)) == 1, name
+
+
+# ---------------------------------------------------------------------------
+# CR 702.190b - a sneaked permanent enters tapped and attacking
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def table(card_db):
+    """Three players, so "the same player" is distinguishable from "the first
+    opponent"."""
+    return make_board(card_db, ScriptedAbilities(), players=3)
+
+
+def _sneak_in(board, defender: int):
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+
+    board.scripts.add("Runeclaw Bear", *kw("Sneak", "{G}"))
+    board.hand("Runeclaw Bear", controller=0)
+    attacker = board.play("Grizzly Bears", controller=0)
+    give_mana(board, 0, 1)
+    attack_with(board, attacker, defender=defender)
+    board.game.phase = Phase.COMBAT
+    (action,) = alternative_casts(board)
+    spell = cast_spell(board.game, PlayerId(0), action)
+    board.resolve_stack()
+    return spell
+
+
+def _on_battlefield(board, name: str):
+    game = board.game
+    return next(
+        game.objects[oid]
+        for oid in game.battlefield
+        if game.printed_characteristics(game.objects[oid]).name == name
+    )
+
+
+def test_a_sneaked_creature_enters_tapped_and_attacking_the_same_player(table):
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import _combat
+
+    _sneak_in(table, defender=2)
+    bear = _on_battlefield(table, "Runeclaw Bear")
+
+    assert bear.tapped
+    assert _combat(table.game).attacking.get(bear.id) == PlayerId(2)
+
+
+def test_the_spell_remembers_its_sneak_cost_was_paid(table):
+    from mtgfish.rules.kernel.conditions import holds
+    from mtgfish.rules.kernel.query import Condition
+
+    _sneak_in(table, defender=1)
+    bear = _on_battlefield(table, "Runeclaw Bear")
+
+    sneak = Condition(kind=ConditionKind.ALTERNATIVE_COST_PAID, keyword="Sneak")
+    surge = Condition(kind=ConditionKind.ALTERNATIVE_COST_PAID, keyword="Surge")
+    assert holds(table.game, sneak, source=bear.id, controller=PlayerId(0))
+    assert not holds(table.game, surge, source=bear.id, controller=PlayerId(0))
+
+
+def test_the_same_creature_cast_normally_does_not_attack(board):
+    """Control: the arrival belongs to the sneak cost, not the card."""
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import _combat
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.conditions import holds
+    from mtgfish.rules.kernel.query import Condition
+
+    main_phase(board)
+    board.scripts.add("Runeclaw Bear", *kw("Sneak", "{G}"))
+    card = board.hand("Runeclaw Bear", controller=0)
+    give_mana(board, 0, 2)
+    cast_spell(
+        board.game, PlayerId(0), Action(ActionKind.CAST_SPELL, source=card.id)
+    )
+    board.resolve_stack()
+    bear = _on_battlefield(board, "Runeclaw Bear")
+
+    assert not bear.tapped
+    assert bear.id not in _combat(board.game).attacking
+    any_alternative = Condition(kind=ConditionKind.ALTERNATIVE_COST_PAID)
+    assert not holds(board.game, any_alternative, source=bear.id, controller=PlayerId(0))
+
+
+def test_a_kicked_permanent_remembers_it_was_kicked(board):
+    """CR 702.33e: "if it was kicked" on a permanent asks about the spell it
+    was, so the record has to survive resolution (CR 608.3)."""
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.conditions import holds
+    from mtgfish.rules.kernel.query import Condition
+
+    main_phase(board)
+    board.scripts.add("Runeclaw Bear", *kw("Kicker", "{1}"))
+    card = board.hand("Runeclaw Bear", controller=0)
+    give_mana(board, 0, 3)
+    cast_spell(
+        board.game,
+        PlayerId(0),
+        Action(ActionKind.CAST_SPELL, source=card.id, additional_costs=(0,)),
+    )
+    board.resolve_stack()
+    bear = _on_battlefield(board, "Runeclaw Bear")
+
+    kicked = Condition(kind=ConditionKind.WAS_KICKED)
+    assert holds(board.game, kicked, source=bear.id, controller=PlayerId(0))
+    assert bear.mana_spent == 3
