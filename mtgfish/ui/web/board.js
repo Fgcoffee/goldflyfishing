@@ -82,31 +82,49 @@ const Board = (() => {
   /* ------------------------------------------------------------- drawing */
 
   function draw(board) {
-    const host = document.getElementById("replayboardview");
-    host.innerHTML = "";
-
     document.getElementById("boardwhere").textContent =
       `turn ${board.turn} · ${board.phase.toLowerCase().replace(/_/g, " ")}`
       + ` / ${board.step.toLowerCase().replace(/_/g, " ")}`;
-
-    // Everyone's creatures, so an attacker can say whose it is pointed at.
-    const names = {};
-    board.seats.forEach((seat) => { names[seat.player] = `P${seat.player}`; });
-
-    const table = el("div", "boardtable");
-    board.seats.forEach((seat) => table.appendChild(drawSeat(seat, board, names)));
-    host.appendChild(table);
-
-    if (board.stack.length) host.appendChild(drawStack(board));
+    drawInto(document.getElementById("replayboardview"), cards, board);
   }
 
-  function drawSeat(seat, board, names) {
+  /* The whole board, into whatever element asked for it.
+   *
+   * The sandbox draws with this too. A bench that looked different from a
+   * replay would be a second thing to learn for no reason, and the two do
+   * differ in exactly one way: on a bench there is one operator who put every
+   * card there themselves, so hands and graveyards are shown rather than
+   * counted. Everything else is the same board. */
+  function drawInto(host, table, board, options) {
+    options = options || {};
+    const was = cards;
+    cards = table || [];
+    try {
+      host.innerHTML = "";
+      const names = options.names || {};
+      board.seats.forEach((seat) => {
+        if (names[seat.player] === undefined) names[seat.player] = `P${seat.player}`;
+      });
+
+      const grid = el("div", "boardtable");
+      board.seats.forEach((seat) => grid.appendChild(drawSeat(seat, board, names, options)));
+      host.appendChild(grid);
+
+      if (board.stack.length) host.appendChild(drawStack(board));
+    } finally {
+      // Only the replay keeps a card table between calls; a one-off draw must
+      // not leave the scrubber pointing at somebody else's cards.
+      if (options.keep !== true) cards = was;
+    }
+  }
+
+  function drawSeat(seat, board, names, options) {
     const node = el("div", `boardseat seat-${seat.player}`
       + (seat.player === board.active ? " active" : "")
       + (seat.out ? " out" : ""));
 
     const head = el("div", "seathead");
-    head.appendChild(el("span", "seatwho", `P${seat.player}`));
+    head.appendChild(el("span", "seatwho", names[seat.player]));
     head.appendChild(el("span", "seatlife", `${seat.life}`));
     const counts = el("span", "seatcounts");
     counts.appendChild(el("span", "count", `${seat.hand} hand`));
@@ -121,6 +139,7 @@ const Board = (() => {
 
     if (!seat.permanents.length) {
       node.appendChild(el("div", "boardempty", "nothing on the battlefield"));
+      openZones(node, seat, board, names);
       return node;
     }
 
@@ -134,7 +153,21 @@ const Board = (() => {
 
     if (rest.length) node.appendChild(drawRow(rest, board, names));
     if (lands.length) node.appendChild(drawRow(lands, board, names, "lands"));
+    openZones(node, seat, board, names);
     return node;
+  }
+
+  /* Hand and graveyard, when the caller is allowed to see them. A replay never
+   * sends these - it would be showing information nobody at the table had. */
+  function openZones(node, seat, board, names) {
+    [["hand", seat.hand_cards], ["graveyard", seat.graveyard_cards]].forEach(
+      ([label, contents]) => {
+        if (!contents || !contents.length) return;
+        node.appendChild(el("div", "zonename", label));
+        const row = drawRow(contents, board, names, "openzone");
+        node.appendChild(row);
+      }
+    );
   }
 
   function isLand(permanent) {
@@ -290,7 +323,7 @@ const Board = (() => {
     host.appendChild(info);
   }
 
-  return { reset, show, showAtFrame, step, indexForFrame,
+  return { reset, show, showAtFrame, step, indexForFrame, drawInto,
            get count() { return frames.length; },
            get frames() { return frames; },
            get current() { return current; } };

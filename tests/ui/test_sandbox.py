@@ -529,3 +529,78 @@ def test_the_log_the_board_carries_back_is_not_all_events(box):
     assert log
     assert not any(entry["kind"] == "event" for entry in log)
     assert any(entry["kind"] == "turn" for entry in log)
+
+
+# ---------------------------------------------------------------------------
+# The bench as a board
+# ---------------------------------------------------------------------------
+#
+# The sandbox used to describe its board in text, which has the same problem
+# the replay had: a list of names is not a board, and "what is tapped, what is
+# out, what did the parser fail to read" are all questions you answer by
+# looking. It is drawn by the replay's viewer now, from the same snapshot, so
+# there is only one board to learn.
+
+
+def test_the_bench_can_be_drawn_as_a_board(box):
+    from mtgfish.sim.board import BoardRecorder
+
+    box.put("Serra Angel", "battlefield", 0)
+    box.put("Grizzly Bears", "battlefield", 1, 2)
+
+    recorder = BoardRecorder(open_zones=True)
+    recorder.sample(box.game)
+    board = recorder.film.snapshots[-1]
+
+    assert len(board.seats) == 2
+    assert len(board.seats[0].permanents) == 1
+    assert len(board.seats[1].permanents) == 2
+
+
+def test_the_bench_shows_hands_because_it_has_one_operator(box):
+    """A replay never does - it would be showing information nobody had. The
+    sandbox is a bench, and the operator put those cards there themselves."""
+    from mtgfish.sim.board import BoardRecorder
+
+    box.put("Lightning Bolt", "hand", 0, 2)
+    box.put("Grizzly Bears", "graveyard", 0)
+
+    recorder = BoardRecorder(open_zones=True)
+    recorder.sample(box.game)
+    seat = recorder.film.snapshots[-1].seats[0]
+    names = [recorder.film.cards[c.card].name for c in seat.hand_cards]
+    assert names == ["Lightning Bolt", "Lightning Bolt"]
+    assert [recorder.film.cards[c.card].name for c in seat.graveyard_cards] == [
+        "Grizzly Bears"
+    ]
+
+
+def test_a_tapped_permanent_is_tapped_on_the_board(box):
+    from mtgfish.sim.board import BoardRecorder
+
+    box.put("Llanowar Elves", "battlefield", 0)
+    elves = next(a for a in box.legal() if "Add" in a["description"])
+    box.perform(elves["index"])
+
+    recorder = BoardRecorder(open_zones=True)
+    recorder.sample(box.game)
+    assert recorder.film.snapshots[-1].seats[0].permanents[0].tapped is True
+
+
+# ---------------------------------------------------------------------------
+# Finding a card by typing its name
+# ---------------------------------------------------------------------------
+
+
+def test_a_name_typed_in_full_is_offered_first(box):
+    """Play rate orders the rest, and a basic land has no play rate at all - so
+    "Forest" offered Forest Bear, and putting four of them on the battlefield
+    gave the operator four 2/2 creatures where they asked for lands."""
+    assert box.search("Forest")[0]["name"] == "Forest"
+    assert box.search("Island")[0]["name"] == "Island"
+    assert box.search("Swamp")[0]["name"] == "Swamp"
+
+
+def test_a_partial_name_still_ranks_by_play_rate(box):
+    names = [card["name"] for card in box.search("lightning b")]
+    assert names[0] == "Lightning Bolt"

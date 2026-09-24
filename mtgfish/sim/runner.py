@@ -174,7 +174,7 @@ def play_one(
     _record_opening_hand(game, record, config.hero)
 
     finished = run_game(game, TurnOptions(max_rounds=config.max_rounds))
-    finish(finished, record)
+    finish(finished, record, observer)
     return (record, finished) if log else record
 
 

@@ -93,6 +93,11 @@ def _board_payload(snapshot, index: int) -> dict:
                 "poison": seat.poison,
                 "out": seat.out,
                 "permanents": [_permanent_payload(c) for c in seat.permanents],
+                # Left off entirely for a replay, where they are always empty.
+                "hand_cards": [_permanent_payload(c) for c in seat.hand_cards],
+                "graveyard_cards": [
+                    _permanent_payload(c) for c in seat.graveyard_cards
+                ],
             }
             for seat in snapshot.seats
         ],
@@ -271,6 +276,30 @@ class Bridge(QObject):
     @_guard
     def sandbox_set_life(self, life: int, player: int) -> str:
         return _json(self.sandbox.set_life(life, player))
+
+    @Slot(result=str)
+    @_guard
+    def sandbox_board(self) -> str:
+        """The bench as a board, drawn by the replay's viewer.
+
+        The same shape a replay board arrives in, so one renderer draws both -
+        a sandbox that looked different from the replay would be a second thing
+        to learn for no reason.
+
+        Hands and graveyards are listed rather than counted, because the bench
+        has one operator who put every one of those cards there themselves.
+        """
+        from ..sim.board import BoardRecorder
+
+        recorder = BoardRecorder(open_zones=True)
+        recorder.sample(self.sandbox.game)
+        snapshot = recorder.film.snapshots[-1]
+        return _json(
+            {
+                "cards": self._board_cards(recorder.film),
+                "board": _board_payload(snapshot, 0),
+            }
+        )
 
     # -- decks and runs -----------------------------------------------------
 
@@ -888,6 +917,7 @@ class Bridge(QObject):
             "stall_rate": report.stall_rate,
             "wins": report.wins,
             "stalls": report.stalls,
+            "average_win_round": report.average_win_round,
             "average_win_turn": report.average_win_turn,
             "win_reasons": dict(report.win_reasons),
             "loss_reasons": dict(report.loss_reasons),
@@ -899,7 +929,7 @@ class Bridge(QObject):
                 str(k): v for k, v in report.commander_landed.items()
             },
             "commander_never": report.commander_never,
-            "by_win_turn": {str(k): v for k, v in report.by_win_turn.items()},
+            "by_win_round": {str(k): v for k, v in report.by_win_round.items()},
             # Games stopped by the action budget rather than played out, and
             # what was looping in them. Surfaced because a runaway is a bug in
             # a card, and folding it into the stall rate would present an

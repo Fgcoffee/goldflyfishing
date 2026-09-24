@@ -34,8 +34,9 @@ over the same Python bridge.
   answer "is this card worth a slot" - the gap between two decks differing by
   one card is usually smaller than the gap between two runs of the same deck.
   Every variant here plays the same seeds against the same opponents.
-* **Lets you drive a board by hand** in the sandbox, to see whether a card that
-  did nothing was an unread ability or a rules bug. Those need different fixes.
+* **Lets you drive a board by hand** in the sandbox, drawn as the same board a
+  replay is, to see whether a card that did nothing was an unread ability or a
+  rules bug. Those need different fixes.
   The sandbox is a bench rather than a game, so the rules that end games are
   switched off by default - nobody loses, a library you never built is not
   fatal, mana keeps across steps - and each one is a named switch you can put
@@ -163,7 +164,7 @@ like a property of the deck.
 ## Tests
 
 ```bash
-python -m pytest            # 1,271 tests
+python -m pytest            # 1,306 tests
 python -m pytest tests/rules
 ```
 

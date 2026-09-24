@@ -145,6 +145,12 @@ class BoardSeat:
     poison: int = 0
     out: bool = False
     permanents: list[BoardCard] = field(default_factory=list)
+    #: The cards in hand and in the graveyard, when the viewer is allowed to
+    #: see them. Empty in a replay, always: a replay that listed a hand would
+    #: be showing information nobody at the table had. The sandbox is not a
+    #: game - it is a bench with one operator - and shows everything.
+    hand_cards: list[BoardCard] = field(default_factory=list)
+    graveyard_cards: list[BoardCard] = field(default_factory=list)
 
 
 @dataclass(slots=True)
@@ -205,10 +211,14 @@ class BoardRecorder:
     statistics did not come from.
     """
 
-    __slots__ = ("film", "_index", "_previous")
+    __slots__ = ("film", "open_zones", "_index", "_previous")
 
-    def __init__(self) -> None:
+    def __init__(self, *, open_zones: bool = False) -> None:
         self.film = BoardFilm()
+        #: Whether to record the contents of hands and graveyards rather than
+        #: only their size. False for a replay, and the default is False so
+        #: that leaking a hand has to be asked for.
+        self.open_zones = open_zones
         #: card reference -> its index in ``film.cards``.
         self._index: dict[BoardCardRef, int] = {}
         self._previous: BoardSnapshot | None = None
@@ -249,6 +259,17 @@ class BoardRecorder:
             ],
         )
 
+    def _hidden(self, game: Game, object_ids) -> list[BoardCard]:
+        """Cards in a zone a viewer is allowed to look into."""
+        if not self.open_zones:
+            return []
+        out = []
+        for object_id in object_ids:
+            obj = game.objects.get(object_id)
+            if obj is not None:
+                out.append(self._permanent(game, obj, None))
+        return out
+
     def _seat(self, game: Game, player, combat) -> BoardSeat:
         return BoardSeat(
             player=int(player.id),
@@ -268,6 +289,8 @@ class BoardRecorder:
                 self._permanent(game, obj, combat)
                 for obj in game.permanents(player.id)
             ],
+            hand_cards=self._hidden(game, player.hand),
+            graveyard_cards=self._hidden(game, player.graveyard),
         )
 
     def _permanent(self, game: Game, obj, combat) -> BoardCard:

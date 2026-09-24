@@ -83,7 +83,27 @@ def test_life_and_the_hidden_zones_are_counted_not_listed(table):
     assert seat.library > 0
     # Counts, not contents: a replay that listed a hand would be showing
     # information no player at the table had.
-    assert not hasattr(seat, "hand_cards")
+    assert seat.hand_cards == []
+    assert seat.graveyard_cards == []
+
+
+def test_a_hand_is_only_listed_when_the_viewer_may_look(table):
+    """The sandbox is a bench with one operator, not a game, so it shows
+    everything. A replay is a game, and never does - which is why opening the
+    zones has to be asked for rather than being the default."""
+    table.hand("Grizzly Bears", controller=0)
+    table.graveyard("Lightning Bolt", controller=0)
+
+    shut = BoardRecorder()
+    shut.sample(table.game)
+    assert shut.film.snapshots[-1].seats[0].hand_cards == []
+
+    open_bench = BoardRecorder(open_zones=True)
+    open_bench.sample(table.game)
+    seat = open_bench.film.snapshots[-1].seats[0]
+    film = open_bench.film
+    assert [film.cards[c.card].name for c in seat.graveyard_cards] == ["Lightning Bolt"]
+    assert "Grizzly Bears" in [film.cards[c.card].name for c in seat.hand_cards]
 
 
 def test_the_stack_is_bottom_first(table):

@@ -253,7 +253,10 @@ function drawCharts() {
     ["Win rate", `${(report.win_rate * 100).toFixed(1)}%`],
     ["Stall-outs", `${(report.stall_rate * 100).toFixed(1)}%`],
     ["Games", report.games],
-    ["Avg win turn", report.average_win_turn ? report.average_win_turn.toFixed(1) : "-"],
+    // The player's own turn, not the engine's counter. That counts every
+    // player's turn, so it reads about four times too high and means nothing
+    // to anybody: a game "won on turn 92" was won on its winner's 28th turn.
+    ["Avg win turn", report.average_win_round ? report.average_win_round.toFixed(1) : "-"],
     ["Commander never cast", report.commander_never],
   ];
   stats.forEach(([label, value]) => {
@@ -893,25 +896,10 @@ function applyState(state) {
 
   renderBenchRules(state);
 
-  const board = document.getElementById("sb-board");
-  board.innerHTML = "";
-  state.players.forEach((player) => {
-    const zone = el("div", "zone");
-    const out = player.has_lost
-      ? ` — OUT (${player.loss_reason.toLowerCase().replace(/_/g, " ")})` : "";
-    zone.appendChild(el("div", "zonename" + (player.has_lost ? " lost" : ""),
-      `${player.name} — ${player.life} life, ${player.mana} mana in pool, `
-      + `${player.library} in library`
-      + (player.poison ? `, ${player.poison} poison` : "") + out));
-    ["battlefield", "hand", "graveyard"].forEach((where) => {
-      if (!player[where].length) return;
-      const row = el("div");
-      row.appendChild(el("div", "zonename", where));
-      player[where].forEach((obj) => row.appendChild(renderPermanent(obj)));
-      zone.appendChild(row);
-    });
-    board.appendChild(zone);
-  });
+  // The board is drawn by the replay's viewer - same cards, same art, same
+  // parse colours - because a bench that looked different from a replay would
+  // be a second thing to learn for no reason.
+  drawSandboxBoard(state);
 
   const stack = document.getElementById("sb-stack");
   stack.innerHTML = "";
@@ -956,6 +944,24 @@ function renderBenchRules(state) {
     row.appendChild(text);
     host.appendChild(row);
   });
+}
+
+/* The bench, as a board. Fetched separately from the state because it carries
+ * art and parse verdicts the rest of the state has no use for, and because the
+ * mana pool - which only a bench has - stays on the text line above it. */
+async function drawSandboxBoard(state) {
+  const host = document.getElementById("sb-board");
+  const payload = await call("sandbox_board");
+  if (!payload || payload.error) { host.innerHTML = ""; return; }
+
+  const names = {};
+  state.players.forEach((player) => {
+    const pool = player.mana ? ` · ${player.mana} mana` : "";
+    const out = player.has_lost
+      ? ` · OUT (${player.loss_reason.toLowerCase().replace(/_/g, " ")})` : "";
+    names[player.id] = player.name + pool + out;
+  });
+  Board.drawInto(host, payload.cards, payload.board, { names });
 }
 
 function renderPermanent(obj) {
@@ -1319,9 +1325,9 @@ function drawLabResults(payload) {
 
     tr.appendChild(el("td", null, pct(row.win_rate)));
     tr.appendChild(labDelta(row.delta_win_rate, pct, true));
-    tr.appendChild(el("td", null, row.average_win_turn.toFixed(1)));
+    tr.appendChild(el("td", null, row.average_win_round.toFixed(1)));
     // Winning *sooner* is better, so here the good sign is the negative one.
-    tr.appendChild(labDelta(row.delta_win_turn, (v) => v.toFixed(2), false));
+    tr.appendChild(labDelta(row.delta_win_round, (v) => v.toFixed(2), false));
     tr.appendChild(el("td", null, pct(row.stall_rate)));
     tr.appendChild(el("td", null, row.commander_turn.toFixed(1)));
 

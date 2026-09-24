@@ -623,6 +623,16 @@ pre:empty { display: none; }
 .bcard.unread .bart { filter: grayscale(1) contrast(.8); }
 .bcard.unread .bname { color: var(--bad); }
 
+/* Hand and graveyard on the bench, which a replay never shows. Dimmer than the
+   battlefield because they are not in play, and inset so a glance still sorts
+   "what is out" from "what is not". */
+.boardrow.openzone { opacity: .72; padding-left: 8px; border-left: 1px dotted var(--line); }
+.boardseat .zonename { margin-top: 4px; }
+
+/* The sandbox draws into a wider column than a four-seat replay, and two seats
+   want the room. */
+#sb-board .boardtable { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
 .boardstack { margin-top: 8px; padding: 8px; border: 1px dashed var(--accent);
               border-radius: 8px; background: var(--accent-soft); }
 .bcard.onstack { border-color: var(--accent); }
