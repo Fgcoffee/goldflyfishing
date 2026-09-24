@@ -84,6 +84,10 @@ class KeywordInstance:
     #: parser supplies what goes inside it. Empty means the parser did not
     #: read the body, and the builder says so rather than inventing one.
     effects: tuple[Effect, ...] = ()
+    #: For keywords that wrap a whole ability rather than an effect - "∞ -
+    #: At the beginning of your upkeep, ..." (CR 702.186a) - the ability the
+    #: parser read after the dash.
+    abilities: tuple[Ability, ...] = ()
 
     @property
     def key(self) -> str:
@@ -1579,6 +1583,34 @@ def _start_your_engines(instance: KeywordInstance) -> tuple[Ability, ...]:
             keyword=instance.name,
             text=instance.text or instance.name,
         ),
+    )
+
+
+@register("∞")
+def _infinity(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.186b: "∞ - [Ability]" means "as long as this permanent is
+    harnessed, it has [Ability]".
+
+    The wrapped ability keeps its own shape and gains the condition as its
+    static condition: a static one applies only while it holds, and a
+    triggered one cannot trigger while it does not (``cr603_triggers``). An
+    ∞ static effect with no ability around it - the parser's effects alone -
+    becomes a static ability under the same condition.
+    """
+    from dataclasses import replace as _replace
+
+    harnessed = Condition(kind=ConditionKind.IS_HARNESSED, text="this is harnessed")
+    wrapped = instance.abilities or (
+        (Ability(AbilityKind.STATIC, effects=instance.effects),) if instance.effects else ()
+    )
+    return tuple(
+        _replace(
+            ability,
+            static_condition=harnessed,
+            keyword=instance.name,
+            text=instance.text or ability.text or instance.name,
+        )
+        for ability in wrapped
     )
 
 

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .enums import Phase
+from .enums import Phase, Zone
 from .ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from .query import Condition, ConditionKind
 
@@ -259,6 +259,10 @@ def holds(
         if spell is None:
             return False
         return not spell.mana_spent
+
+    if kind is ConditionKind.IS_HARNESSED:
+        obj = game.objects.get(source)
+        return bool(obj is not None and obj.harnessed and obj.zone is Zone.BATTLEFIELD)
 
     if kind is ConditionKind.HAS_ENDURING_STORY:
         return controller != NO_PLAYER and game.player(controller).has_enduring_story

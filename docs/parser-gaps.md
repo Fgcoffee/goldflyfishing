@@ -281,6 +281,24 @@ The engine supports these; the parser does not yet produce them:
   self-entry replacements are recognised), and a plain `BECOME_PREPARED`
   effect for the second. The prepare spell itself is the card's second face;
   parse its text as that face's spell ability like any other card.
+- **"[A player] faces a villainous choice - [A], or [B]"** (14 cards) -
+  `Effect(EffectKind.VILLAINOUS_CHOICE, players=<who faces>, children=(A, B))`.
+  Inside an option, "that player" is `PlayerFilter(PlayerScope.THAT_PLAYER)`,
+  and "you" is still the card's controller. The keyword-action builder takes
+  the two options as `ActionInstance.options`.
+- **"∞ - [ability]"** (CR 702.186) - read the ability after the dash as usual
+  and pass it as `KeywordInstance("∞", abilities=(ability,))`. The builder
+  makes it work only while the permanent is harnessed. "Harness [this]" is
+  the keyword action `Harness` - a designation, not a tap.
+- **"If you have an enduring story" / "as long as you have"** -
+  `Condition(kind=ConditionKind.HAS_ENDURING_STORY)`. Storied itself is the
+  keyword `Storied`.
+- **"Activate/it has [ability] as long as [condition]" on a triggered
+  ability** - put the condition in `Ability.static_condition`; a triggered
+  ability then cannot trigger while it is false.
+- **"Each opponent sacrifices a creature"** already parses as `SACRIFICE`
+  with `players` set; each named player now sacrifices from their own
+  permanents, so keep emitting that shape.
 - **An alternative cost's window and timing.** `AlternativeCost.condition` is
   checked before the cast is offered, and `instant_speed=True` lifts the
   spell to instant timing inside it; otherwise the spell keeps its own

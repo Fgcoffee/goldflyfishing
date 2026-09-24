@@ -220,6 +220,11 @@ class EffectKind(IntEnum):
     #: CR 701.57a: the same, up to mana value ``amount``, and a card not cast
     #: goes to its owner's hand.
     DISCOVER = 222
+    #: CR 701.55: each player in ``players`` chooses one of ``children`` and
+    #: performs all of it; "that player" inside it is the chooser.
+    VILLAINOUS_CHOICE = 223
+    #: CR 701.64a: "harness [this permanent]" - it becomes harnessed.
+    HARNESS = 224
 
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the

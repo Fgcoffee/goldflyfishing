@@ -61,6 +61,10 @@ class ActionInstance:
     #: word - "create a 1/1 white Soldier" - so the parser supplies it and the
     #: action only has to place it.
     token: TokenSpec | None = None
+    #: The sentences the action wraps, where it wraps any: the two options of
+    #: a villainous choice (CR 701.55a). The parser reads them; the action
+    #: only arranges them.
+    options: tuple[Effect, ...] = ()
     text: str = ""
 
     @property
@@ -793,15 +797,14 @@ def _behold(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Harness")
 def _harness(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.64: tap an untapped permanent you control for its harness ability.
-
-    The permanent taps; what that buys is printed on the card.
-    """
+    """CR 701.64a: "harness [this permanent]" - if it isn't harnessed, it
+    becomes harnessed. A designation, not a tap: it was built as "tap an
+    untapped permanent you control", which tapped something and marked
+    nothing, so no ∞ ability ever turned on."""
     return (
         Effect(
-            EffectKind.TAP,
-            targets=instance.filter
-            or ObjectFilter(controller=ControllerRelation.YOU, tapped=False),
+            EffectKind.HARNESS,
+            targets=instance.filter,
             text=instance.text or instance.name,
         ),
     )
@@ -1116,6 +1119,20 @@ YOUR_ATTRACTION_DECK = ObjectFilter(
     zones=frozenset({Zone.COMMAND}),
     count=Value.of(1),
 )
+
+
+@register("Face a villainous choice")
+def _face_a_villainous_choice(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.55a: the named players each choose one option and perform it.
+    Inside an option, "that player" is ``PlayerScope.THAT_PLAYER``."""
+    return (
+        Effect(
+            EffectKind.VILLAINOUS_CHOICE,
+            players=instance.players or EACH_OPPONENT,
+            children=instance.options,
+            text=instance.text or "faces a villainous choice",
+        ),
+    )
 
 
 @register("The Ring tempts you")

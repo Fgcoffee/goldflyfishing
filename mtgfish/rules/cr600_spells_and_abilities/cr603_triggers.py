@@ -78,6 +78,8 @@ def collect_triggers(game: Game, event: Event) -> None:
             continue
         if obj.zone not in ability.trigger.functions_in:
             continue
+        if not _has_the_ability_now(game, obj, ability):
+            continue
         if not condition_met(game, obj, ability.trigger, event):
             continue
         found.append((obj, ability))
@@ -258,6 +260,19 @@ def _collect_delayed(
             delayed.expired = True
 
     game.delayed_triggers = [d for d in game.delayed_triggers if not d.expired]
+
+
+def _has_the_ability_now(game: Game, obj: GameObject, ability) -> bool:
+    """"As long as [condition], it has [ability]" (CR 702.186b's ∞, for one):
+    a triggered ability that exists only under a condition cannot trigger
+    while the condition is false. Carried as the ability's static condition,
+    which is ALWAYS for every ordinary triggered ability."""
+    condition = ability.static_condition
+    if condition.is_always:
+        return True
+    from ..kernel.conditions import holds
+
+    return holds(game, condition, source=obj.id, controller=obj.controller)
 
 
 def _right_phase(trigger: TriggerCondition, event: Event) -> bool:

@@ -311,6 +311,10 @@ class PlayerScope(IntEnum):
     SPECIFIC = 9  # a resolved PlayerId, used once choices are made
     MONARCH = 10
     DEFENDING_PLAYER = 11
+    #: "That player" inside an instruction given to each of several players
+    #: in turn - facing a villainous choice (CR 701.55a) above all. Resolved
+    #: by the resolution, which knows whose turn in the sequence it is.
+    THAT_PLAYER = 12
 
 
 @dataclass(frozen=True, slots=True)
@@ -736,6 +740,8 @@ class ConditionKind(IntEnum):
     RING_TEMPTED_TIMES = 26
     #: CR 702.195b: "if you have an enduring story" / "as long as you have".
     HAS_ENDURING_STORY = 27
+    #: CR 702.186b: whether this permanent is harnessed.
+    IS_HARNESSED = 28
     #: CR 601.2b / 118.9: "if its [keyword] cost was paid" - which alternative
     #: cost the spell was cast for, named by ``Condition.keyword``. An empty
     #: keyword asks whether any alternative cost was paid.

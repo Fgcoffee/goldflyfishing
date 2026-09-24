@@ -451,11 +451,13 @@ KEYWORD_ACTIONS: dict[str, KeywordSpec] = _build(
 CR_ONLY_ACTIONS: dict[str, str] = {
     "The Ring tempts you": "701.54",
     "Recruit": "701.70",
+    "Face a villainous choice": "701.55",
 }
 
 #: The same for keyword abilities.
 CR_ONLY_ABILITIES: dict[str, str] = {
     "Storied": "702.195",
+    "∞": "702.186",
 }
 
 KEYWORD_ACTIONS.update(

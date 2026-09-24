@@ -20,8 +20,8 @@ from ..cr100_game_concepts import actions
 from ..kernel.enums import Duration, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import ObjectId, PlayerId
-from ..kernel.query import ValueKind
+from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
+from ..kernel.query import PlayerScope, ValueKind
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 
 if TYPE_CHECKING:
@@ -56,6 +56,9 @@ class Resolution:
     #: after modifiers and after any ignored roll was dropped. What comes
     #: after the roll reads them through ``ValueKind.DIE_ROLL_RESULT``.
     die_results: tuple[int, ...] = ()
+    #: The player a per-player instruction is currently being carried out for
+    #: - what ``PlayerScope.THAT_PLAYER`` means (CR 701.55a).
+    that_player: PlayerId = NO_PLAYER
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -293,6 +296,8 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
             if not game.player(player_id).has_lost
         ]
 
+    if effect.players is not None and effect.players.scope is PlayerScope.THAT_PLAYER:
+        return [] if resolution.that_player == NO_PLAYER else [resolution.that_player]
     return resolve_players(
         resolution.game, effect.players or YOU, controller=resolution.controller
     )
@@ -2025,6 +2030,51 @@ def _do_sacrifice_blockers_at_end_of_combat(resolution: Resolution, effect: Effe
     )
 
 
+def _do_harness(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.64a/b: only a permanent can become harnessed, and one that is
+    stays so; nothing is tapped or paid - that is the ability's cost."""
+    for obj in _objects(resolution, effect):
+        if obj.zone is Zone.BATTLEFIELD and not obj.harnessed:
+            obj.harnessed = True
+            resolution.game.invalidate_characteristics()
+            resolution.game.log.record(resolution.game, f"{obj} becomes harnessed", kind="designation")
+
+
+def _do_villainous_choice(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.55: "[a player] faces a villainous choice - [A], or [B]".
+
+    The options are the children. Each player facing it chooses one and all
+    of that option is performed (701.55a); several players face it one at a
+    time in APNAP order (701.55d); an impossible option may be chosen and is
+    done as far as possible (701.55b), which executing it gives for free.
+    Inside an option, "that player" is the player facing the choice.
+    """
+    game = resolution.game
+    options = effect.children
+    if not options:
+        return
+    facing = _players(resolution, effect)
+    order = [p for p in game.apnap_order() if p in facing]
+    previous = resolution.that_player
+    for player_id in order:
+        agent = game.agent_for(player_id)
+        chooser = getattr(agent, "choose_villainous_option", None)
+        index = 0
+        if chooser is not None:
+            picked = chooser(game, player_id, options)
+            if isinstance(picked, int) and 0 <= picked < len(options):
+                index = picked
+        game.log.record(
+            game,
+            f"{game.player(player_id).name} chooses: {options[index].text or index}",
+            kind="choice",
+            player=player_id,
+        )
+        resolution.that_player = player_id
+        execute_one(resolution, options[index])
+    resolution.that_player = previous
+
+
 def _do_choose_mode(resolution: Resolution, effect: Effect) -> None:
     """CR 700.2: run only the modes chosen when the spell was announced.
 
@@ -2515,6 +2565,8 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.RING_TEMPTS: _do_ring_tempts,
     EffectKind.CASCADE: _do_cascade,
     EffectKind.DISCOVER: _do_discover,
+    EffectKind.VILLAINOUS_CHOICE: _do_villainous_choice,
+    EffectKind.HARNESS: _do_harness,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.
