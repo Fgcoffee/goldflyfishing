@@ -14,7 +14,7 @@ is a table rather than a grammar.
 from __future__ import annotations
 
 from ..rules.cr600_spells_and_abilities.abilities import TriggerCondition
-from ..rules.kernel.enums import CardType, Zone
+from ..rules.kernel.enums import CardType, Phase, Zone
 from ..rules.kernel.events import EventKind
 from ..rules.kernel.query import (
     ALWAYS,
@@ -57,6 +57,20 @@ _STEP_TRIGGERS: tuple[tuple[str, EventKind], ...] = (
 )
 
 
+#: CR 500.1: which phase a phase trigger's phrase names. The phrases share
+#: one event, so without this "at the beginning of combat" would fire as
+#: every phase begins.
+_MAIN_PHASES = frozenset({int(Phase.PRECOMBAT_MAIN), int(Phase.POSTCOMBAT_MAIN)})
+_PHASES: dict[str, frozenset[int]] = {
+    "first main phase": frozenset({int(Phase.PRECOMBAT_MAIN)}),
+    "precombat main phase": frozenset({int(Phase.PRECOMBAT_MAIN)}),
+    "postcombat main phase": frozenset({int(Phase.POSTCOMBAT_MAIN)}),
+    "second main phase": frozenset({int(Phase.POSTCOMBAT_MAIN)}),
+    "main phase": _MAIN_PHASES,
+    "combat": frozenset({int(Phase.COMBAT)}),
+}
+
+
 def parse_trigger(stream: Stream) -> TriggerCondition | None:
     """The condition half of a triggered ability, up to and including its comma."""
     if not stream.accept("at", "when", "whenever"):
@@ -76,6 +90,7 @@ def parse_trigger(stream: Stream) -> TriggerCondition | None:
             intervening_if=intervening,
             functions_in=condition.functions_in,
             uses_last_known_information=condition.uses_last_known_information,
+            phases=condition.phases,
             text=condition.text,
         )
 
@@ -124,7 +139,9 @@ def _step_words(stream: Stream) -> TriggerCondition | None:
     ):
         if stream.accept_phrase(phrase):
             return TriggerCondition(
-                event_kinds=frozenset({kind}), text=f"at the next {phrase}"
+                event_kinds=frozenset({kind}),
+                phases=_PHASES.get(phrase, frozenset()),
+                text=f"at the next {phrase}",
             )
     return None
 
@@ -155,6 +172,7 @@ def _step_trigger(stream: Stream) -> TriggerCondition | None:
             return TriggerCondition(
                 event_kinds=frozenset({kind}),
                 players=players,
+                phases=_PHASES.get(phrase, frozenset()),
                 text=f"at the beginning of {phrase}",
             )
 

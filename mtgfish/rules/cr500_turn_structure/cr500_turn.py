@@ -291,6 +291,13 @@ def _run_extras(
                 _run_step(game, phase, step, options, progress)
 
 
+#: CR 500.1: the step each phase starts with. The main phases have no steps
+#: at all (CR 505.2), and are modelled as a single MAIN step.
+_FIRST_STEP_OF_PHASE = frozenset(
+    {Step.UNTAP, Step.MAIN, Step.BEGINNING_OF_COMBAT, Step.END_STEP}
+)
+
+
 def _run_step(
     game: Game,
     phase: Phase,
@@ -304,7 +311,14 @@ def _run_step(
     game.phase = phase
     game.step = step
     # CR 500.6: "at the beginning of" this step or phase triggers now, and
-    # waits for the next time a player would receive priority.
+    # waits for the next time a player would receive priority. A phase begins
+    # with its first step (CR 500.1), and nothing announced it, so every "at
+    # the beginning of combat" and "of your precombat main phase" trigger
+    # waited for an event that never came.
+    if step in _FIRST_STEP_OF_PHASE:
+        game.emit(
+            Event(EventKind.PHASE_BEGAN, player=game.active_player, amount=int(phase))
+        )
     game.emit(Event(EventKind.STEP_BEGAN, player=game.active_player, amount=int(step)))
 
     _turn_based_actions(game, step, options)

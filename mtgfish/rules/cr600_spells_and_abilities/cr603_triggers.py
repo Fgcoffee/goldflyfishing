@@ -203,6 +203,8 @@ def _collect_delayed(
             continue
         if event.kind not in delayed.trigger.event_kinds:
             continue
+        if not _right_phase(delayed.trigger, event):
+            continue
 
         source = game.objects.get(delayed.source)
         if source is None:
@@ -256,6 +258,13 @@ def _collect_delayed(
             delayed.expired = True
 
     game.delayed_triggers = [d for d in game.delayed_triggers if not d.expired]
+
+
+def _right_phase(trigger: TriggerCondition, event: Event) -> bool:
+    """CR 500.6: a phase trigger fires as *its* phase begins, not any phase."""
+    if event.kind is not EventKind.PHASE_BEGAN or not trigger.phases:
+        return True
+    return event.amount in trigger.phases
 
 
 def check_state_triggers(game: Game) -> None:
@@ -405,6 +414,8 @@ def condition_met(
         )
 
     if event.kind not in trigger.event_kinds:
+        return False
+    if not _right_phase(trigger, event):
         return False
 
     # A counter trigger that names a kind fires for that kind alone: the

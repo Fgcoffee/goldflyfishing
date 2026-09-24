@@ -489,6 +489,15 @@ def find(
         for obj in _objects_in_zone(game, zone):
             if matches(game, obj, spec, source=source, controller=controller):
                 out.append(obj)
+    if spec.source_only and not out:
+        # "This spell", "this card": the source is wherever it is, which for a
+        # resolving spell is the stack (CR 608.2). The zones default to the
+        # battlefield, so "exile this spell" searched there and found nothing.
+        # Only the live object counts - once it has moved, CR 400.7 makes it
+        # a new object the words no longer refer to.
+        obj = game.objects.get(source)
+        if obj is not None and obj.is_live:
+            out.append(obj)
     return out
 
 

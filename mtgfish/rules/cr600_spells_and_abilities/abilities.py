@@ -106,6 +106,12 @@ class TriggerCondition:
     #: CR 603.2f: some triggers fire at most once in a turn.
     once_each_turn: bool = False
 
+    #: For PHASE_BEGAN: which phases, as ``Phase`` values. "At the beginning
+    #: of combat" (CR 507.1) and "at the beginning of your precombat main
+    #: phase" (CR 505.1a) share the event and differ only here. Empty means
+    #: any phase.
+    phases: frozenset[int] = frozenset()
+
     #: Set for abilities that trigger on the source leaving the battlefield, so
     #: the engine knows to evaluate them against last-known information
     #: (CR 603.6e, 608.2g).

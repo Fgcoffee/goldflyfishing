@@ -588,9 +588,15 @@ class Game:
             self.emit(Event(EventKind.CEASED_TO_EXIST, object_id=obj.id, player=owner))
             return obj
 
+        # CR 707.10f / 608.3f: a copy of a permanent spell stops being a copy
+        # of a spell as it resolves and becomes a token. Kept as a copy, it
+        # was a copy outside the stack, which CR 704.5e removes at once.
+        kind = obj.kind
+        if kind is ObjectKind.COPY and to_zone is Zone.BATTLEFIELD:
+            kind = ObjectKind.TOKEN
         new_obj = GameObject(
             id=self.ids.object_id(),
-            kind=obj.kind,
+            kind=kind,
             owner=owner,
             controller=destination_player if to_zone is Zone.BATTLEFIELD else owner,
             base_controller=destination_player if to_zone is Zone.BATTLEFIELD else owner,

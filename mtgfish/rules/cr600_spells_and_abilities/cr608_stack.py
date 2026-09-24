@@ -176,6 +176,12 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
     # shuffles a resolved Omen into its owner's library.
     from ..cr300_card_types.cr300_card_types import CastMode, resolution_zone
 
+    if not obj.is_live:
+        # CR 608.2m moves the spell only if it is still there to move. One
+        # that has already left the stack - "exile this spell", "shuffle this
+        # card into its owner's library" - is a new object elsewhere, and
+        # moving the old one again put the card in two zones at once.
+        return
     # Compared against None rather than tested for truth: Zone.LIBRARY is 0,
     # so "or Zone.GRAVEYARD" silently sends every Omen to the graveyard.
     destination = resolution_zone(CastMode(obj.cast_mode))

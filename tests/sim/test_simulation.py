@@ -184,12 +184,24 @@ def test_mana_available_never_goes_backwards(result):
     after casting, which *falls* as a deck develops - the 10,000-game chart
     showed a mana base peaking on turn four and decaying to nothing while the
     land count kept climbing.
+
+    The deck's only mana sources that can leave play are its mana creatures,
+    which die in combat - so mana may fall, but never by more than the
+    creature count fell. Lands, which nothing in these decks removes, never
+    fall at all.
     """
     record = max(result.records, key=lambda r: r.turns)
     hero = [s for s in record.turns_series if s.player == 0]
     assert len(hero) >= 3
-    mana = [s.mana_available for s in hero]
-    assert mana == sorted(mana), f"mana went backwards: {mana}"
+    lands = [s.lands for s in hero]
+    assert lands == sorted(lands), f"lands went backwards: {lands}"
+    for before, after in zip(hero, hero[1:]):
+        lost_mana = before.mana_available - after.mana_available
+        lost_creatures = before.creatures - after.creatures
+        assert lost_mana <= max(0, lost_creatures), (
+            f"turn {after.turn}: mana fell by {lost_mana} "
+            f"but only {lost_creatures} creatures left play"
+        )
     for snapshot in hero:
         assert snapshot.mana_available >= snapshot.lands
 
