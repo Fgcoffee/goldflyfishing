@@ -497,6 +497,8 @@ ENGINE_READS = frozenset(
         "Morph", "Megamorph", "Disguise", "Suspend", "Foretell", "Plot",
         # -- characteristics, read by the layer system ---------------------
         "Changeling", "Read Ahead",
+        # -- speed, read by the CR 704.5aa state-based action -------------
+        "Start your engines!",
     }
 )
 

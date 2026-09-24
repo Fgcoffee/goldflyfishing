@@ -182,6 +182,17 @@ class _TurnProgress:
     main_phases: int = 0
 
 
+def clear_turn_activations(game: Game) -> None:
+    """CR 602.5b / 606.3: "only once each turn" is counted per turn.
+
+    Without this the count only ever grew, and a planeswalker's abilities
+    could each be activated once in the whole game.
+    """
+    for obj in game.objects.values():
+        if obj.activations_this_turn:
+            obj.activations_this_turn.clear()
+
+
 def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     """Run one complete turn."""
     options = options or TurnOptions()
@@ -200,6 +211,7 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     game.continuing_loop_steps.clear()
     for each in game.players:
         each.begin_turn()
+    clear_turn_activations(game)
 
     # CR 502.2: the day/night check is the untap step's second turn-based
     # action. It is taken here rather than inside ``_untap_step`` only because

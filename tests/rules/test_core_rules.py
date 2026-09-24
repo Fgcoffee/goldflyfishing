@@ -451,6 +451,82 @@ def test_loyalty_abilities_are_once_per_turn(board):
     )
 
 
+def _walker_activations(game, walker) -> list:
+    from mtgfish.rules.kernel.legality import legal_actions
+
+    return [
+        a
+        for a in legal_actions(game, PlayerId(0))
+        if a.kind is ActionKind.ACTIVATE_ABILITY and a.source == walker.id
+    ]
+
+
+def _main_phase(game) -> None:
+    from mtgfish.rules.kernel.enums import Phase, Step
+
+    game.active_player = PlayerId(0)
+    game.phase = Phase.PRECOMBAT_MAIN
+    game.step = Step.MAIN
+
+
+def test_only_one_loyalty_ability_per_permanent_each_turn(board):
+    """CR 606.3: the limit is per permanent, not per ability - a +1 and then a
+    -2 from the same planeswalker in one turn is two activations too many."""
+    game = board.game
+    _main_phase(game)
+    board.scripts.add(
+        "Ajani, Caller of the Pride", loyalty_ability(1), loyalty_ability(-2)
+    )
+    walker = board.play("Ajani, Caller of the Pride")
+    walker.add_counters("loyalty", 4)
+    board.refresh()
+
+    assert len(_walker_activations(game, walker)) == 2
+    activate_ability(
+        game, PlayerId(0),
+        Action(ActionKind.ACTIVATE_ABILITY, source=walker.id, ability_index=0),
+    )
+    board.resolve_stack()
+    assert not _walker_activations(game, walker)
+    with pytest.raises(Exception):
+        activate_ability(
+            game, PlayerId(0),
+            Action(ActionKind.ACTIVATE_ABILITY, source=walker.id, ability_index=1),
+        )
+
+
+def test_loyalty_abilities_come_back_the_next_turn(board):
+    """CR 606.3 says each turn: the count must reset as a new turn begins."""
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import clear_turn_activations
+
+    game = board.game
+    _main_phase(game)
+    board.scripts.add("Ajani, Caller of the Pride", loyalty_ability(1))
+    walker = board.play("Ajani, Caller of the Pride")
+    walker.add_counters("loyalty", 4)
+    board.refresh()
+
+    activate_ability(
+        game, PlayerId(0),
+        Action(ActionKind.ACTIVATE_ABILITY, source=walker.id, ability_index=0),
+    )
+    board.resolve_stack()
+    assert not _walker_activations(game, walker)
+
+    game.turn += 1
+    clear_turn_activations(game)
+    assert _walker_activations(game, walker)
+
+
+def test_a_new_turn_resets_activation_counts_through_take_turn(board):
+    """The reset lives in the turn itself, not only in the helper."""
+    import inspect
+
+    from mtgfish.rules.cr500_turn_structure import cr500_turn
+
+    assert "clear_turn_activations(game)" in inspect.getsource(cr500_turn.take_turn)
+
+
 # ---------------------------------------------------------------------------
 # CR 607 - linked abilities
 # ---------------------------------------------------------------------------

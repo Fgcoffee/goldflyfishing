@@ -86,6 +86,24 @@ def hand_names(board, player: int = 0) -> list[str]:
     ]
 
 
+def main_phase(board, player: int = 0) -> None:
+    """Your own main phase with an empty stack: sorcery timing (CR 307.1)."""
+    from mtgfish.rules.kernel.enums import Phase
+
+    board.game.active_player = PlayerId(player)
+    board.game.phase = Phase.PRECOMBAT_MAIN
+    board.game.step = Step.MAIN
+
+
+def in_combat(board, player: int = 0) -> None:
+    """Your declare blockers step: instant timing only."""
+    from mtgfish.rules.kernel.enums import Phase
+
+    board.game.active_player = PlayerId(player)
+    board.game.phase = Phase.COMBAT
+    board.game.step = Step.DECLARE_BLOCKERS
+
+
 def return_components(cost: Cost) -> list[CostComponent]:
     return [c for c in cost.components if c.kind is CostKind.RETURN_TO_HAND]
 
@@ -191,6 +209,7 @@ def test_web_slinging_returns_a_tapped_creature():
 
 
 def test_web_slinging_is_offered_only_with_a_tapped_creature(board):
+    main_phase(board)
     board.scripts.add("Runeclaw Bear", *kw("Web-slinging", "{G}"))
     board.hand("Runeclaw Bear", controller=0)
     creature = board.play("Grizzly Bears", controller=0)
@@ -204,13 +223,63 @@ def test_web_slinging_is_offered_only_with_a_tapped_creature(board):
 
 
 def test_web_slinging_needs_no_combat(board):
-    """Unlike sneak: a tapped creature is enough, wherever the turn is."""
+    """Unlike sneak: a tapped creature is enough, in a main phase."""
+    main_phase(board)
     board.scripts.add("Runeclaw Bear", *kw("Web-slinging", "{G}"))
     board.hand("Runeclaw Bear", controller=0)
     board.play("Grizzly Bears", controller=0, tapped=True)
     give_mana(board, 0, 1)
 
     assert alternative_casts(board)
+
+
+def test_web_slinging_keeps_the_spells_own_timing(board):
+    """CR 702.188a changes the cost, not the timing: a creature spell cast by
+    web-slinging is still sorcery-speed (CR 307.1)."""
+    board.scripts.add("Runeclaw Bear", *kw("Web-slinging", "{G}"))
+    board.hand("Runeclaw Bear", controller=0)
+    board.play("Grizzly Bears", controller=0, tapped=True)
+    give_mana(board, 0, 1)
+    in_combat(board)
+
+    assert not alternative_casts(board)
+
+
+def test_sneak_is_not_offered_outside_the_declare_blockers_step(board):
+    """CR 702.190a names the step; an unblocked attacker in the combat damage
+    step is still unblocked, but the window has closed."""
+    board.scripts.add("Runeclaw Bear", *kw("Sneak", "{G}"))
+    board.hand("Runeclaw Bear", controller=0)
+    ninja = board.play("Grizzly Bears", controller=0)
+    give_mana(board, 0, 1)
+    attack_with(board, ninja)
+    board.game.step = Step.COMBAT_DAMAGE
+
+    assert not alternative_casts(board)
+
+
+def test_sneak_is_not_offered_on_an_opponents_turn(board):
+    """CR 702.190a: *your* declare blockers step."""
+    board.scripts.add("Runeclaw Bear", *kw("Sneak", "{G}"))
+    board.hand("Runeclaw Bear", controller=0)
+    ninja = board.play("Grizzly Bears", controller=0)
+    give_mana(board, 0, 1)
+    attack_with(board, ninja)
+    board.game.active_player = PlayerId(1)
+
+    assert not alternative_casts(board)
+
+
+def test_flashback_on_a_sorcery_keeps_sorcery_timing(board):
+    """CR 702.34a with CR 307.1: flashback is a cost, not a timing grant."""
+    board.scripts.add("Divination", *kw("Flashback", "{G}"))
+    board.graveyard("Divination", controller=0)
+    give_mana(board, 0, 1)
+
+    main_phase(board)
+    assert alternative_casts(board)
+    in_combat(board)
+    assert not alternative_casts(board)
 
 
 # ---------------------------------------------------------------------------
@@ -237,29 +306,93 @@ def test_power_up_is_an_activated_ability_around_the_printed_body():
 
 
 def test_power_up_is_limited_to_one_activation():
-    """CR 702.193a ends with an activation limit, which the ability carries."""
+    """CR 702.193a: "Activate this ability only once" - not once each turn."""
     (ability,) = kw("Power-up", "{2}", effects=(_draw_a_card(),))
-    assert ability.once_each_turn
+    assert ability.only_once
+    assert not ability.once_each_turn
+    assert ability.reduced_by_own_mana_cost_on_entry
+
+
+def _power_up_activations(board, bear) -> list:
+    return [
+        action
+        for action in legal_actions(board.game, PlayerId(0))
+        if action.kind is ActionKind.ACTIVATE_ABILITY and action.source == bear.id
+    ]
 
 
 def test_a_power_up_ability_can_be_activated_once_and_then_not_again(board):
+    """The limit outlives the turn: a new turn does not give it back."""
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import clear_turn_activations
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import activate_ability
+
     board.scripts.add("Grizzly Bears", *kw("Power-up", "{G}", effects=(_draw_a_card(),)))
     bear = board.play("Grizzly Bears", controller=0)
-    give_mana(board, 0, 2)
+    give_mana(board, 0, 4)
 
-    activations = [
-        action
-        for action in legal_actions(board.game, PlayerId(0))
-        if action.kind is ActionKind.ACTIVATE_ABILITY and action.source == bear.id
-    ]
-    assert activations
+    (action,) = _power_up_activations(board, bear)
+    activate_ability(board.game, PlayerId(0), action)
+    assert not _power_up_activations(board, bear)
 
-    bear.activations_this_turn[activations[0].ability_index] = 1
-    assert not [
-        action
-        for action in legal_actions(board.game, PlayerId(0))
-        if action.kind is ActionKind.ACTIVATE_ABILITY and action.source == bear.id
-    ]
+    board.game.turn += 1
+    clear_turn_activations(board.game)
+    assert not _power_up_activations(board, bear)
+
+
+def test_power_up_costs_less_by_the_permanents_mana_cost_the_turn_it_entered(board):
+    """CR 702.193a/b: {3}{G}{G} less Grizzly Bears' {1}{G} is {2}{G}."""
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+        activation_mana_cost,
+    )
+
+    board.scripts.add(
+        "Grizzly Bears", *kw("Power-up", "{3}{G}{G}", effects=(_draw_a_card(),))
+    )
+    bear = board.play("Grizzly Bears", controller=0)
+    board.refresh()
+    ability = board.game.characteristics(bear).abilities[0]
+
+    assert activation_mana_cost(board.game, bear, ability) == ManaCost.parse("{2}{G}")
+
+
+def test_power_up_pays_full_price_on_a_later_turn(board):
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+        activation_mana_cost,
+    )
+
+    board.scripts.add(
+        "Grizzly Bears", *kw("Power-up", "{3}{G}{G}", effects=(_draw_a_card(),))
+    )
+    bear = board.play("Grizzly Bears", controller=0)
+    board.game.turn += 1
+    board.refresh()
+    ability = board.game.characteristics(bear).abilities[0]
+
+    assert activation_mana_cost(board.game, bear, ability) == ManaCost.parse("{3}{G}{G}")
+
+
+def test_power_up_reduction_is_offered_with_only_the_reduced_mana(board):
+    """Three mana is not enough for {3}{G}{G}, but it is for the reduced cost."""
+    board.scripts.add(
+        "Grizzly Bears", *kw("Power-up", "{3}{G}{G}", effects=(_draw_a_card(),))
+    )
+    bear = board.play("Grizzly Bears", controller=0)
+    give_mana(board, 0, 3)
+    assert _power_up_activations(board, bear)
+
+
+def test_colored_reduction_with_nothing_to_reduce_comes_off_generic(board):
+    """CR 702.193b: excess colored mana in the mana cost reduces generic."""
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+        activation_mana_cost,
+    )
+
+    board.scripts.add("Grizzly Bears", *kw("Power-up", "{4}{R}", effects=(_draw_a_card(),)))
+    bear = board.play("Grizzly Bears", controller=0)
+    board.refresh()
+    ability = board.game.characteristics(bear).abilities[0]
+
+    assert activation_mana_cost(board.game, bear, ability) == ManaCost.parse("{2}{R}")
 
 
 # ---------------------------------------------------------------------------

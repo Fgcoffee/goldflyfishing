@@ -213,6 +213,10 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                 continue
             if alternative.from_zone is None and zone not in (Zone.HAND, Zone.COMMAND):
                 continue
+            if not _alternative_available_now(
+                game, player_id, alternative, obj, chars, sorcery_speed
+            ):
+                continue
             if not _affordable_alternative(game, player_id, alternative, obj, zone):
                 continue
             out.append(
@@ -220,6 +224,37 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             )
 
     return out
+
+
+def _alternative_available_now(
+    game: Game,
+    player_id: PlayerId,
+    alternative,
+    obj: GameObject,
+    chars,
+    sorcery_speed: bool,
+) -> bool:
+    """Whether this alternative cost may be chosen at this moment.
+
+    CR 601.2b chooses the alternative cost while proposing the spell, and the
+    spell's timing (CR 307.1) still applies to a spell cast that way:
+    flashback on a sorcery is sorcery-speed. An alternative cost may carry its
+    own window (CR 702.190a sneak, "during your declare blockers step") and
+    may lift the spell's timing to instant speed within it.
+    """
+    from ..cr500_turn_structure.restrictions import Act, permitted
+    from .conditions import holds
+
+    if alternative.condition is not None and not holds(
+        game, alternative.condition, source=obj.id, controller=player_id
+    ):
+        return False
+    if sorcery_speed or alternative.instant_speed:
+        return True
+    if _spell_timing(chars) is not Timing.SORCERY:
+        return True
+    # CR 113.6: a granted "as though it had flash" covers this cast too.
+    return permitted(game, Act.CAST_AS_THOUGH_FLASH, obj=obj, player=player_id) is not None
 
 
 def _affordable_alternative(
@@ -482,6 +517,7 @@ def _activatable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[A
     from ..cr600_spells_and_abilities.cr601_casting import (
         _can_pay_activation,
         ability_targets_available,
+        activation_limit_reached,
         activation_refusal,
     )
 
@@ -500,9 +536,8 @@ def _activatable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[A
             # abilities may be activated per turn.
             if ability.is_loyalty_ability and not sorcery_speed:
                 continue
-            if ability.once_each_turn or ability.is_loyalty_ability:
-                if obj.activations_this_turn.get(index, 0) >= 1:
-                    continue
+            if activation_limit_reached(obj, ability, index):
+                continue
             if not _can_pay_activation(game, obj, ability):
                 continue
             if ability.is_targeted and not ability_targets_available(game, obj, ability, player_id):

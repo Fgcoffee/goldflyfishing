@@ -3661,6 +3661,7 @@ def _sneak(instance: KeywordInstance) -> tuple[Ability, ...]:
                     ),
                     text="during your declare blockers step",
                 ),
+                instant_speed=True,
                 keyword=instance.name,
                 text=instance.text or instance.name,
             ),
@@ -3682,25 +3683,19 @@ def _power_up(instance: KeywordInstance) -> tuple[Ability, ...]:
     limit of one activation.
 
     The ability itself is ordinary, so it is built as one: the parser supplies
-    the body, the keyword supplies the cost. Neither rider is enforceable with
-    what the engine has today:
-
-    * the reduction (CR 702.193b applies it symbol by symbol, as CR 118.7
-      does) would need a cost reduction that applies to an *activation*, and
-      cost modification currently reaches only spells being cast;
-    * "only once" is once per game, and activations are counted per turn.
-
-    ``once_each_turn`` is set because it is the closest limit the engine
-    enforces and it errs the right way: a power-up is at worst activated once
-    a turn rather than without limit. It is not the rule, and the report says
-    so.
+    the body, the keyword supplies the cost. Both riders are flags the
+    activation code reads: the reduction (CR 702.193b, applied as CR 118.7
+    applies any reduction by specific mana) in ``activation_mana_cost``, and
+    "only once" - once for the life of the object, not once a turn - in
+    ``activation_limit_reached``.
     """
     return (
         Ability(
             AbilityKind.ACTIVATED,
             effects=_body(instance),
             cost=instance.cost or Cost(()),
-            once_each_turn=True,
+            only_once=True,
+            reduced_by_own_mana_cost_on_entry=True,
             keyword=instance.name,
             text=instance.text or instance.name,
         ),

@@ -1452,6 +1452,8 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     refusal = activation_refusal(game, player_id, source, ability)
     if refusal is not None:
         raise CastError(refusal)
+    if activation_limit_reached(source, ability, action.ability_index):
+        raise CastError("that ability has already been activated as often as it may be")
     if not _can_pay_activation(game, source, ability):
         raise CastError("cannot pay the activation cost")
 
@@ -1478,9 +1480,7 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     # not leak into this one.
     source.cost_paid_objects = []
     _pay_activation(game, source, ability)
-    source.activations_this_turn[action.ability_index] = (
-        source.activations_this_turn.get(action.ability_index, 0) + 1
-    )
+    record_activation(source, ability, action.ability_index)
 
     if ability.is_mana_ability:
         # CR 605.3b: resolves immediately, with no chance to respond. There is
@@ -1753,6 +1753,57 @@ def activation_refusal(
     return None
 
 
+#: CR 606.3: the loyalty limit is one per *permanent* each turn, whichever of
+#: its loyalty abilities was used, so it is counted under its own key beside
+#: the per-ability counts.
+LOYALTY_ACTIVATIONS = "loyalty"
+
+
+def activation_limit_reached(source: GameObject, ability: Ability, index: int) -> bool:
+    """Whether a limit on how often this ability is activated has been hit.
+
+    CR 602.5b covers "only once each turn" and "only once"; CR 606.3 makes a
+    permanent's loyalty abilities share one activation a turn between them.
+    """
+    this_turn = source.activations_this_turn
+    if ability.is_loyalty_ability and (
+        this_turn.get(LOYALTY_ACTIVATIONS, 0) or this_turn.get(index, 0)
+    ):
+        return True
+    if ability.once_each_turn and this_turn.get(index, 0) >= 1:
+        return True
+    return ability.only_once and source.activations_ever.get(index, 0) >= 1
+
+
+def record_activation(source: GameObject, ability: Ability, index: int) -> None:
+    """Count an activation against every limit that could apply to it."""
+    this_turn = source.activations_this_turn
+    this_turn[index] = this_turn.get(index, 0) + 1
+    source.activations_ever[index] = source.activations_ever.get(index, 0) + 1
+    if ability.is_loyalty_ability:
+        this_turn[LOYALTY_ACTIVATIONS] = this_turn.get(LOYALTY_ACTIVATIONS, 0) + 1
+
+
+def activation_mana_cost(game: Game, source: GameObject, ability: Ability) -> ManaCost:
+    """The mana an activation actually costs, after its own reductions.
+
+    CR 702.193a/b: power-up subtracts the permanent's mana cost on the turn it
+    entered, colored against colored and any excess against generic - the
+    CR 118.7 reduction. An {X} in that mana cost is 0 on the battlefield
+    (CR 107.3), so it reduces nothing.
+    """
+    mana = ability.cost.mana_component
+    if not (
+        mana
+        and ability.reduced_by_own_mana_cost_on_entry
+        and source.zone is Zone.BATTLEFIELD
+        and source.entered_this_turn(game.turn)
+    ):
+        return mana
+    own = game.characteristics(source).mana_cost.substitute_x(0)
+    return mana.reduced_by_mana(own) if own else mana
+
+
 def _is_this_card(component: CostComponent) -> bool:
     """"Discard this card", "Exile this card from your hand" - paid by the source."""
     return component.filter is not None and component.filter.source_only
@@ -1821,7 +1872,7 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
             except CastError:
                 return False
 
-    mana_cost = cost.mana_component
+    mana_cost = activation_mana_cost(game, source, ability)
     if mana_cost:
         if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
             return True
@@ -1860,7 +1911,7 @@ def _pay_activation(game: Game, source: GameObject, ability: Ability) -> None:
             Event(EventKind.TAPPED, object_id=source.id, player=source.controller)
         )
 
-    mana_cost = cost.mana_component
+    mana_cost = activation_mana_cost(game, source, ability)
     if mana_cost:
         payment = find_payment(player.mana_pool, mana_cost, life_available=player.life - 1)
         if payment is None:

@@ -109,8 +109,12 @@ class GameObject:
     attacked_this_turn: bool = False
     blocked_this_turn: bool = False
     #: CR 602.5b: activations of once-per-turn abilities, keyed by ability
-    #: index. Reset when the object changes zones, since it becomes new.
+    #: index. Cleared as each turn begins, and reset when the object changes
+    #: zones, since it becomes new (CR 400.7).
     activations_this_turn: dict = field(default_factory=dict)
+    #: CR 602.5b: "activate only once" is a limit over the object's whole
+    #: existence, not a turn, so it is counted separately and never cleared.
+    activations_ever: dict = field(default_factory=dict)
 
     #: The object this one replaced, when it arrived via a zone change. The
     #: mirror of ``superseded_by``. CR 400.7 makes them different objects, but a

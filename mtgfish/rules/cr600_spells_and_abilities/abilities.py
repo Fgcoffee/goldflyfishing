@@ -137,6 +137,12 @@ class Ability:
     is_loyalty_ability: bool = False
     #: CR 602.5b and friends: "activate only once each turn".
     once_each_turn: bool = False
+    #: CR 602.5b: "activate only once" - once for as long as the object
+    #: exists, which CR 400.7 ends at a zone change.
+    only_once: bool = False
+    #: CR 702.193a/b: power-up's cost is reduced by the permanent's own mana
+    #: cost on the turn it entered, symbol by symbol as CR 118.7 reduces.
+    reduced_by_own_mana_cost_on_entry: bool = False
     activation_condition: Condition = ALWAYS
 
     # -- triggered ----------------------------------------------------------

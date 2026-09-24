@@ -254,7 +254,12 @@ class AlternativeCost:
     #: Where the spell must be cast from for this to be available, e.g.
     #: Flashback from a graveyard. ``None`` means anywhere.
     from_zone: object | None = None
+    #: CR 601.2b: when this option may be chosen at all ("during your declare
+    #: blockers step"). ``None`` means whenever the spell could be cast.
     condition: object | None = None
+    #: CR 702.190a: some alternative costs let the spell be cast any time its
+    #: controller could cast an instant, whatever its own timing.
+    instant_speed: bool = False
     #: The keyword this came from, for the log and the coverage report.
     keyword: str = ""
     text: str = ""
