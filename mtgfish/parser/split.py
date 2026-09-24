@@ -16,7 +16,7 @@ import re
 from dataclasses import dataclass
 from enum import IntEnum
 
-from ..rules.abilities import AbilityKind
+from ..rules.cr600_spells_and_abilities.abilities import AbilityKind
 
 
 class LineKind(IntEnum):
@@ -222,7 +222,7 @@ def _keyword_line(paragraph: str) -> list[str] | None:
     keyword - one unknown part and the whole line goes to the ordinary path,
     because "Flying, and it can't be blocked" is not two keywords.
     """
-    from ..rules.keywords import is_known
+    from ..rules.cr700_additional_rules.keywords import is_known
 
     if paragraph.endswith("."):
         # A sentence, not a keyword list. "Flying" never has a full stop;
@@ -235,7 +235,7 @@ def _keyword_line(paragraph: str) -> list[str] | None:
         stripped = paragraph[:-1].strip()
         if " - " in stripped or " — " in stripped:
             head = stripped.replace(" — ", " - ").split(" - ", 1)[0].strip()
-            from ..rules.keywords import is_known as _known
+            from ..rules.cr700_additional_rules.keywords import is_known as _known
 
             if _is_keyword_phrase(head, _known):
                 return [stripped]

@@ -12,20 +12,19 @@ thin enough to trust without driving a window to test it.
 from __future__ import annotations
 
 import json
+import threading
 import traceback
 from dataclasses import asdict
 from pathlib import Path
-
-import threading
-
-# Not PySide6 directly: the web server runs this same bridge without Qt, and
-# qtcompat supplies stand-ins there. The desktop app still gets the real ones.
-from .qtcompat import QObject, Signal, Slot
 
 from ..data.db import CardDatabase
 from ..sim import RunConfig, replay_game, run, summarize
 from ..sim.replay import DETAIL_LEVELS, KEY_KINDS, NOISE_KINDS
 from ..sim.stats import render
+
+# Not PySide6 directly: the web server runs this same bridge without Qt, and
+# qtcompat supplies stand-ins there. The desktop app still gets the real ones.
+from .qtcompat import QObject, Signal, Slot
 from .sandbox import Sandbox
 
 
@@ -312,13 +311,12 @@ class Bridge(QObject):
         legal and still be measured as a deck with ten blanks in it.
         """
         from ..data.decks import parse_decklist
-        from ..parser import parse_card
-
         from ..data.decks.archidekt import (
             ArchidektError,
             fetch_archidekt,
             is_archidekt_url,
         )
+        from ..parser import parse_card
 
         if is_archidekt_url(text.strip()):
             try:

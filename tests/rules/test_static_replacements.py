@@ -18,7 +18,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import actions
+from mtgfish.rules.cr100_game_concepts import actions
 from mtgfish.ui.sandbox import Sandbox
 
 
@@ -64,7 +64,7 @@ def test_two_doublers_both_apply(box):
 
 def test_a_doubler_that_has_left_stops_applying(box):
     """CR 611.3: derived from live permanents, so it ends with its source."""
-    from mtgfish.rules.enums import Zone
+    from mtgfish.rules.kernel.enums import Zone
 
     box.put("Branching Evolution", "battlefield", 0)
     box.put("Grizzly Bears", "battlefield", 0)

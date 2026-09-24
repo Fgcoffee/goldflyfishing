@@ -33,12 +33,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING
 
-from ..rules.enums import Zone
-from ..rules.events import EventKind
-from ..rules.gameobject import ObjectKind
+from ..rules.kernel.enums import Zone
+from ..rules.kernel.events import EventKind
+from ..rules.kernel.gameobject import ObjectKind
 
 if TYPE_CHECKING:
-    from ..rules.game import Game
+    from ..rules.kernel.game import Game
 
 #: Events after which the board may look different. Generous on purpose: an
 #: event that changed nothing costs one comparison and is then dropped, while

@@ -30,7 +30,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..rules.ids import NO_PLAYER
+from ..rules.kernel.ids import NO_PLAYER
 from .board import BoardFilm, BoardRecorder
 from .runner import RunConfig, replay
 

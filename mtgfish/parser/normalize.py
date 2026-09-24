@@ -77,7 +77,7 @@ def _strip_ability_word(line: str) -> str:
     looks like the beginning of a real ability - otherwise "Equip - {2}" and
     every other legitimate keyword-dash-cost line would lose its keyword.
     """
-    from ..rules.keywords import ABILITY_WORDS
+    from ..rules.cr700_additional_rules.keywords import ABILITY_WORDS
 
     match = _ABILITY_WORD.match(line)
     if not match:

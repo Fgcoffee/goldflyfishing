@@ -15,9 +15,9 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.enums import Color
-from mtgfish.rules.query import Value, ValueKind
-from mtgfish.rules.values import evaluate
+from mtgfish.rules.kernel.enums import Color
+from mtgfish.rules.kernel.query import Value, ValueKind
+from mtgfish.rules.kernel.values import evaluate
 from mtgfish.ui.sandbox import Sandbox
 
 

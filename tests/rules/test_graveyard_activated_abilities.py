@@ -19,21 +19,25 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from harness import FixedAgent, ScriptedAbilities, make_board
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import actions
-from mtgfish.rules.abilities import Ability, AbilityKind, DelayedTrigger, TriggerCondition
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import Phase, Step, Zone
-from mtgfish.rules.events import EventKind
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.legality import legal_actions
-from mtgfish.rules.priority import ActionKind, _perform
-from mtgfish.rules.query import ConditionKind, PlayerFilter, PlayerScope, Value
-from mtgfish.rules.turn import take_turn
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.cr100_game_concepts.cr117_priority import ActionKind, _perform
+from mtgfish.rules.cr500_turn_structure.cr500_turn import take_turn
+from mtgfish.rules.cr600_spells_and_abilities.abilities import (
+    Ability,
+    AbilityKind,
+    DelayedTrigger,
+    TriggerCondition,
+)
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import Phase, Step, Zone
+from mtgfish.rules.kernel.events import EventKind
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.legality import legal_actions
+from mtgfish.rules.kernel.query import ConditionKind, PlayerFilter, PlayerScope, Value
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
-
-from harness import FixedAgent, ScriptedAbilities, make_board
 
 YOU = PlayerFilter(PlayerScope.YOU)
 

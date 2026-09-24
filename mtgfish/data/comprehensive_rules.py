@@ -22,7 +22,10 @@ from ..paths import data_root, ensure
 RULES_INDEX_URL = "https://magic.wizards.com/en/rules"
 
 #: A rule number: "100", "100.1", "100.1a".
-_RULE_RE = re.compile(r"^(\d{3})(?:\.(\d+)([a-z]?))?\.?\s+(.*)$")
+#: The letter runs to two characters: the CR carries on past "z" with "aa"
+#: (CR 704.5z is followed by 704.5aa), and a one-letter pattern did not
+#: match that line at all, so its text was swallowed by the rule above it.
+_RULE_RE = re.compile(r"^(\d{3})(?:\.(\d+)([a-z]{0,2}))?\.?\s+(.*)$")
 
 #: Page furniture the PDF extractor interleaves with the body.
 _NOISE_RE = re.compile(r"^(Magic: The Gathering Comprehensive Rules|\d{1,3}\s*$)")
@@ -198,14 +201,22 @@ def _is_heading(
 
 
 def _number_key(number: str) -> tuple:
+    """Sort key for a rule number.
+
+    The letters sort by length first, because the CR carries on past "z" with
+    "aa": CR 704.5z is followed by 704.5aa, and comparing them as plain
+    strings puts "aa" before "z". That made the ordering check treat 704.5aa
+    as a backwards jump, so it was read as a continuation and its text was
+    swallowed into 704.5z.
+    """
     parts = number.split(".")
     major = int(parts[0])
     if len(parts) == 1:
-        return (major, 0, "")
+        return (major, 0, 0, "")
     tail = parts[1]
     digits = "".join(c for c in tail if c.isdigit())
     letter = "".join(c for c in tail if c.isalpha())
-    return (major, int(digits or 0), letter)
+    return (major, int(digits or 0), len(letter), letter)
 
 
 def read_text(path: Path) -> str:
@@ -237,14 +248,7 @@ def _text_from_pdf(path: Path) -> str:
 
 
 def _sort_key(rule: Rule) -> tuple:
-    parts = rule.number.split(".")
-    major = int(parts[0])
-    if len(parts) == 1:
-        return (major, 0, "")
-    tail = parts[1]
-    digits = "".join(c for c in tail if c.isdigit())
-    letter = "".join(c for c in tail if c.isalpha())
-    return (major, int(digits or 0), letter)
+    return _number_key(rule.number)
 
 
 def by_section(rules: list[Rule]) -> dict[int, list[Rule]]:

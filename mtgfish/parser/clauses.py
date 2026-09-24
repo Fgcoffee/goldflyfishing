@@ -15,14 +15,12 @@ registry against ``EXECUTORS``.
 from __future__ import annotations
 
 import collections
-
+from dataclasses import replace
 from typing import Callable
 
-from dataclasses import replace
-
-from ..rules.effects import Effect, EffectKind, TokenSpec
-from ..rules.enums import CardType, Duration, Zone
-from ..rules.query import (
+from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
+from ..rules.kernel.enums import CardType, Duration, Zone
+from ..rules.kernel.query import (
     ObjectFilter,
     PlayerFilter,
     PlayerScope,
@@ -246,7 +244,7 @@ def _attach_mana_restriction(effects: list[Effect]) -> list[Effect]:
     would be a no-op, and the mana would stay general-purpose - which makes
     every ritual and every narrow ramp source better than it is.
     """
-    from ..rules.mana import SpendOnlyOn
+    from ..rules.cr100_game_concepts.cr106_mana import SpendOnlyOn
 
     rider = next(
         (e for e in effects if e.text.startswith(SPEND_ONLY_MARK)), None
@@ -276,7 +274,7 @@ def _unless_tail(stream: Stream, effect: Effect) -> Effect | None:
     happens. Dropping the clause turns every tax effect into an unconditional
     one, which is a much stronger card than the one printed.
     """
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
     if not stream.accept("unless"):
@@ -380,7 +378,7 @@ def _during_tail(stream: Stream, effect: Effect) -> Effect | None:
     ability that says so and does nothing is honest where a permanent untap
     would not be.
     """
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
     stream.skip_punct(",")
@@ -527,8 +525,8 @@ def _payment_cost(stream: Stream):
     grammar rule that fitted the words and produced a completely different
     card.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
 
     mark = stream.mark()
     if not stream.accept("pays", "pay"):
@@ -600,7 +598,7 @@ def _either_cost(stream: Stream):
     if second is None:
         stream.reset(look)
         return first
-    from ..rules.costs import Cost
+    from ..rules.cr100_game_concepts.cr118_costs import Cost
 
     return Cost(choices=(first, second))
 
@@ -613,7 +611,7 @@ def _action_cost(stream: Stream):
     every upkeep-or-sacrifice permanent in the format failed to parse and
     then sat on the battlefield for free.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
+    from ..rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
 
     mark = stream.mark()
     word = stream.peek().lower
@@ -1268,7 +1266,7 @@ def _also_gains(stream: Stream) -> tuple:
     # changeling by another name, which a keyword run cannot express because
     # there is no keyword in the sentence.
     if _all_creature_types(stream):
-        from ..rules.abilities import Ability, AbilityKind
+        from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
 
         return (
             Ability(AbilityKind.STATIC, keyword="Changeling", text="changeling"),
@@ -1304,8 +1302,8 @@ def _quoted_run(stream: Stream) -> tuple:
     than a partial list, because granting some of what a card says is a
     quieter kind of wrong than granting none of it.
     """
-    from ..rules.abilities import Ability, AbilityKind
-    from ..rules.keywords import is_known
+    from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from ..rules.cr700_additional_rules.keywords import is_known
 
     granted: list = []
     while True:
@@ -1364,7 +1362,7 @@ def _another_keyword_follows(stream: Stream) -> bool:
 
 def _starts_a_keyword(stream: Stream) -> bool:
     """Whether the next token begins another granted ability."""
-    from ..rules.keywords import is_known
+    from ..rules.cr700_additional_rules.keywords import is_known
 
     token = stream.peek()
     if token.text == '"':
@@ -1388,7 +1386,7 @@ def _keyword_with_argument(stream: Stream):
     whole phrase is read here and kept as a single ability - "protection from
     black and from green" is one keyword mentioned twice, not two keywords.
     """
-    from ..rules.abilities import Ability, AbilityKind
+    from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
 
     mark = stream.mark()
     word = stream.peek().lower
@@ -1488,7 +1486,7 @@ def _grant_keyword(stream: Stream) -> Effect | None:
         # keyword run cannot express it because there is no keyword.
         if not _all_creature_types(stream):
             return None
-        from ..rules.abilities import Ability, AbilityKind
+        from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
 
         granted = (
             Ability(AbilityKind.STATIC, keyword="Changeling", text="changeling"),
@@ -1633,7 +1631,7 @@ def _token_types(spec: ObjectFilter) -> CardType | None:
     the ability. A token of the wrong card type is not a near miss: it is a
     permanent that dies immediately, or one that never dies at all.
     """
-    from ..rules.typeline import active_registry
+    from ..rules.cr200_parts_of_a_card.cr205_typeline import active_registry
 
     if spec.types_all:
         return spec.types_all
@@ -1810,7 +1808,7 @@ _COLOUR_TAILS = (
 def _any_colour():
     """WUBRG. A function rather than a constant because ``Color`` is imported
     inside the mana clauses, not at module scope."""
-    from ..rules.enums import Color
+    from ..rules.kernel.enums import Color
 
     return Color.WHITE | Color.BLUE | Color.BLACK | Color.RED | Color.GREEN
 
@@ -1822,7 +1820,7 @@ def _amount_of_mana(stream: Stream) -> Effect | None:
     opposite order from every other mana ability and separating them buys
     nothing.
     """
-    from ..rules.query import YOU
+    from ..rules.kernel.query import YOU
 
     mark = stream.mark()
     if not stream.accept_phrase("an amount of"):
@@ -1935,8 +1933,8 @@ def _mana_run(stream: Stream) -> list[str]:
 
 
 def _mana_effect(symbols: list[str]) -> Effect | None:
-    from ..rules.enums import Color
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
+    from ..rules.kernel.enums import Color
 
     try:
         cost = ManaCost.parse("".join(symbols))
@@ -2282,7 +2280,7 @@ def _player_cant(stream: Stream) -> Effect | None:
     filter is the whole card, and reading it as a blanket "can't cast" would
     turn a tax effect into a lock.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     players, _ = parse_player_filter(stream)
     if players is None:
@@ -2359,7 +2357,7 @@ def _cant(stream: Stream) -> Effect | None:
     A "can't" beats every "can" (CR 101.2), so these have to reach the
     restriction system rather than being modelled as an absence of something.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     subject, _ = parse_target(stream)
     if subject is None:
@@ -2481,7 +2479,7 @@ def _doesnt_untap(stream: Stream) -> Effect | None:
     Breath and every Sleep in the format tapped a board down *permanently*.
     Declining is the version of this the coverage report can see.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     subject, _ = parse_target(stream)
     if subject is None:
@@ -2525,7 +2523,7 @@ def _as_though_flash(stream: Stream) -> Effect | None:
     default, so without something that says "yes" these cards do nothing at
     all.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     mark = stream.mark()
     players, _ = parse_player_filter(stream)
@@ -2623,7 +2621,7 @@ def _if_it_happened(stream: Stream) -> Effect | None:
     CR 611.2b the creature keeps it after Massimo leaves - and only loses it
     by changing zones (CR 400.7).
     """
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
     if not stream.accept("if"):
@@ -2699,7 +2697,7 @@ def _if_you_dont(stream: Stream) -> Effect | None:
 @clause("no-maximum-hand-size")
 def _no_maximum_hand_size(stream: Stream) -> Effect | None:
     """"You have no maximum hand size." (CR 402.2)."""
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     mark = stream.mark()
     players, _ = parse_player_filter(stream)
@@ -3103,7 +3101,7 @@ def _condition(stream: Stream):
     - "as long as this card is in your graveyard and you control a Mountain"
     - failed on the conjunction.
     """
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     first = _single_condition(stream)
     if first is None:
@@ -3150,7 +3148,7 @@ def _single_condition(stream: Stream):
     do something it should only sometimes do, which is strictly worse than
     doing nothing.
     """
-    from ..rules.query import (
+    from ..rules.kernel.query import (
         Comparison,
         Condition,
         ConditionKind,
@@ -3325,7 +3323,7 @@ def _controls_more_than(stream: Stream):
     read once and applied to both sides: the thing being counted is the same
     thing, and only whose it is differs.
     """
-    from ..rules.query import (
+    from ..rules.kernel.query import (
         Comparison,
         Condition,
         ConditionKind,
@@ -3367,7 +3365,7 @@ def _controls_more_than(stream: Stream):
 
     from dataclasses import replace as _replace
 
-    from ..rules.query import ControllerRelation
+    from ..rules.kernel.query import ControllerRelation
 
     # The other side is counted by *relation* rather than by player filter,
     # because that is how a filter says whose permanents it means.
@@ -3400,7 +3398,7 @@ def _is_supertype(stream: Stream):
     as "does this object match" against the filter the sentence already
     built.
     """
-    from ..rules.query import Condition, ConditionKind, NumericConstraint
+    from ..rules.kernel.query import Condition, ConditionKind, NumericConstraint
 
     mark = stream.mark()
     subject = parse_object_filter(stream)
@@ -3438,7 +3436,7 @@ def _is_supertype(stream: Stream):
 
 def _life_condition(stream: Stream):
     """"an opponent has 10 or less life", "you have 5 or more life"."""
-    from ..rules.query import Comparison, Condition, ConditionKind, NumericConstraint
+    from ..rules.kernel.query import Comparison, Condition, ConditionKind, NumericConstraint
 
     mark = stream.mark()
     players, _ = parse_player_filter(stream)
@@ -3471,7 +3469,7 @@ def _life_condition(stream: Stream):
 
 def _counter_condition(stream: Stream):
     """"this creature has four or more +1/+1 counters on it"."""
-    from ..rules.query import (
+    from ..rules.kernel.query import (
         Comparison,
         Condition,
         ConditionKind,
@@ -3515,7 +3513,7 @@ def _state_condition(stream: Stream):
     """"<something> is tapped / untapped / attacking / blocking"."""
     from dataclasses import replace
 
-    from ..rules.query import Condition, ConditionKind, NumericConstraint
+    from ..rules.kernel.query import Condition, ConditionKind, NumericConstraint
 
     mark = stream.mark()
     spec = parse_object_filter(stream)
@@ -3548,7 +3546,7 @@ def _state_condition(stream: Stream):
 def _theirs(spec):
     from dataclasses import replace
 
-    from ..rules.query import ControllerRelation
+    from ..rules.kernel.query import ControllerRelation
 
     return replace(spec, controller=ControllerRelation.OPPONENT, count=None)
 
@@ -3585,7 +3583,7 @@ def _about_the_remembered(stream: Stream):
     """
     from dataclasses import replace as _replace
 
-    from ..rules.query import Condition, ConditionKind, ObjectFilter
+    from ..rules.kernel.query import Condition, ConditionKind, ObjectFilter
 
     mark = stream.mark()
 
@@ -3642,8 +3640,8 @@ def _happened_this_turn(stream: Stream):
     it. An amount ("7 or more damage") and a count ("three or more spells") are
     both expressible; which one is meant depends on the verb.
     """
-    from ..rules.events import EventKind
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.events import EventKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
     players, _ = parse_player_filter(stream)
@@ -3689,7 +3687,7 @@ def _opponent_count(stream: Stream):
     always yes, but a four-player game is exactly the setting this simulator
     exists to model, so it is asked properly rather than assumed.
     """
-    from ..rules.query import (
+    from ..rules.kernel.query import (
         Condition,
         ConditionKind,
         NumericConstraint,
@@ -3737,7 +3735,7 @@ def _opponent_count(stream: Stream):
 def _yours(spec):
     from dataclasses import replace
 
-    from ..rules.query import ControllerRelation
+    from ..rules.kernel.query import ControllerRelation
 
     return replace(spec, controller=ControllerRelation.YOU, count=None)
 
@@ -3859,7 +3857,7 @@ def _defined_pt(stream: Stream) -> Effect | None:
 
 def _defined_toughness(stream: Stream, power: Value) -> Value | None:
     """The "and its toughness is equal to that plus 1" half."""
-    from ..rules.query import ValueKind
+    from ..rules.kernel.query import ValueKind
 
     mark = stream.mark()
     stream.skip_punct(",")
@@ -4016,7 +4014,7 @@ def _costs_less(stream: Stream) -> Effect | None:
     A cost reduction, not a discount applied afterwards - the spell's mana
     value is unchanged, which matters for everything that asks.
     """
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
 
     targets, _ = parse_target(stream)
     if targets is None:
@@ -4114,7 +4112,7 @@ def _complement(spec: ObjectFilter) -> ObjectFilter | None:
     creature type itself is dropped first rather than inverted: the counterpart
     of a block is always an attacking creature, so "creature" narrows nothing.
     """
-    from ..rules.enums import CardType as _CardType
+    from ..rules.kernel.enums import CardType as _CardType
 
     reduced = replace(spec, types_all=spec.types_all & ~_CardType.CREATURE)
     blank = ObjectFilter(zones=reduced.zones)
@@ -4153,7 +4151,7 @@ def _can_block_only(stream: Stream) -> Effect | None:
     blocker than the card prints and a better one than the inverted reading
     gave, and unlike the inverted reading it is visible in the coverage report.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     targets, _ = parse_target(stream)
     if targets is None:
@@ -4189,7 +4187,7 @@ def _can_block_only(stream: Stream) -> Effect | None:
 @clause("loses-keyword")
 def _loses_keyword(stream: Stream) -> Effect | None:
     """"Target creature loses flying until end of turn." - layer 6, removal."""
-    from ..rules.keywords import is_known
+    from ..rules.cr700_additional_rules.keywords import is_known
 
     targets, targeted = parse_target(stream)
     if targets is None:
@@ -4364,8 +4362,8 @@ def _pay(stream: Stream) -> Effect | None:
     more" - a completely different card that still ran, and the reason
     Rhystic Study taxed the table instead of drawing a card.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
 
     if not stream.accept("pay", "pays"):
         return None
@@ -4688,7 +4686,7 @@ def _ability_cost_change(stream: Stream) -> Effect | None:
     if not symbols:
         stream.reset(mark)
         return None
-    from ..rules.mana import ManaCost, UnknownManaSymbol
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
 
     try:
         cost = ManaCost.parse("".join(symbols))
@@ -4939,7 +4937,7 @@ def _for_each_colour(stream: Stream) -> Effect | None:
     One mana per colour *present*, which is neither a fixed amount nor a count
     of permanents - two green permanents still make one green mana.
     """
-    from ..rules.query import YOU
+    from ..rules.kernel.query import YOU
 
     mark = stream.mark()
     if not stream.accept_phrase("for each color among") and not (
@@ -4979,7 +4977,7 @@ def _play_from_zone(stream: Stream) -> Effect | None:
     Bolas's Citadel let you play from somewhere other than your hand for as
     long as they are around.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     mark = stream.mark()
     players, _ = parse_player_filter(stream)
@@ -5096,7 +5094,7 @@ def _in_addition_to_types(stream: Stream) -> Effect | None:
 @clause("skip-step")
 def _skip_step(stream: Stream) -> Effect | None:
     """"Skip your draw step." (CR 500.8.)"""
-    from ..rules.enums import Step
+    from ..rules.kernel.enums import Step
 
     mark = stream.mark()
     if not stream.accept("skip", "skips"):
@@ -5248,7 +5246,7 @@ def _others_enter_tapped(stream: Stream) -> Effect | None:
     read; this is the same sentence with a filter in front of it instead of
     "this", and it was failing on every stax piece in the format.
     """
-    from ..rules.replacement import ReplacementKind
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
 
     mark = stream.mark()
     spec = parse_object_filter(stream)
@@ -5438,7 +5436,7 @@ def _top_card_visible(stream: Stream) -> Effect | None:
     also grants "you may play it", which is a separate sentence and already
     read.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     mark = stream.mark()
     players, _ = parse_player_filter(stream)
@@ -5490,7 +5488,7 @@ def _life_total_locked(stream: Stream) -> Effect | None:
     Not a prohibition on gaining or on losing but on both at once, and on
     every other way a total moves - so it is one act rather than a pair.
     """
-    from ..rules.restrictions import Act, Restriction
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
     mark = stream.mark()
     players, _ = parse_player_filter(stream)
@@ -6155,7 +6153,7 @@ def _who_cant(stream: Stream) -> Effect | None:
     if not body:
         stream.reset(mark)
         return None
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     return Effect(
         EffectKind.CONDITIONAL,
@@ -6640,7 +6638,7 @@ def _only_during(stream: Stream) -> Effect | None:
     qualifies a continuous effect the condition is the active player, which
     the engine reads from ``IS_YOUR_TURN``.
     """
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
     stream.accept("only")
@@ -6729,8 +6727,8 @@ def _delayed_trigger(stream: Stream) -> Effect | None:
     A delayed trigger created by a resolution. It belongs to the effect that
     made it, not to any object, so it still fires when its source has left.
     """
-    from ..rules.abilities import TriggerCondition
-    from ..rules.events import EventKind as Kind
+    from ..rules.cr600_spells_and_abilities.abilities import TriggerCondition
+    from ..rules.kernel.events import EventKind as Kind
 
     mark = stream.mark()
     if not stream.accept("at"):
@@ -6828,7 +6826,7 @@ def _kicked(stream: Stream) -> Effect | None:
     Whether the optional additional cost was paid is recorded on the spell, so
     the condition is about the object rather than the board.
     """
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
     if not stream.accept("if"):
@@ -6905,7 +6903,7 @@ def _keyword_action(stream: Stream) -> Effect | None:
     "proliferate" failed to parse, and every card in the pool whose only
     effect was a keyword action was inert.
     """
-    from ..rules.keyword_actions import BUILDERS, build
+    from ..rules.cr700_additional_rules.cr701_keyword_actions import BUILDERS, build
 
     mark = stream.mark()
     # "it connives", "that creature explores" - the subject comes first, and
@@ -7075,7 +7073,7 @@ def _replaced_event(stream: Stream):
     reader for the whole family: the events are written to a template and the
     differences between them are two or three words.
     """
-    from ..rules.replacement import ReplacementKind
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
 
     mark = stream.mark()
 
@@ -7160,7 +7158,7 @@ def _subject_led_event(stream: Stream):
     causes them, which is why this cannot go through the object grammar: "one
     or more +1/+1 counters" is a quantity of a thing that is not a permanent.
     """
-    from ..rules.replacement import ReplacementKind
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
 
     mark = stream.mark()
     stream.accept_number()

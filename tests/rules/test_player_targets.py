@@ -20,11 +20,11 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import actions
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.ids import player_target
-from mtgfish.rules.player import Player
-from mtgfish.rules.priority import run_priority, settle
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.cr100_game_concepts.cr117_priority import run_priority, settle
+from mtgfish.rules.cr100_game_concepts.player import Player
+from mtgfish.rules.kernel.enums import Zone
+from mtgfish.rules.kernel.ids import player_target
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
 
 
@@ -70,8 +70,8 @@ def test_target_opponent_is_one_opponent(box):
 def test_target_player_is_somebody(box):
     """Sign in Blood: "target player draws two cards". It drew none."""
     _need(box, "Sign in Blood", "Forest")
-    from mtgfish.rules.legality import legal_actions
-    from mtgfish.rules.priority import _perform
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import _perform
+    from mtgfish.rules.kernel.legality import legal_actions
 
     game = box.game
     for _ in range(5):
@@ -135,8 +135,8 @@ def test_a_player_who_has_left_is_not_hit(box):
     settle(game)
     trigger = game.objects[game.stack[-1]]
     (chosen,) = trigger.targets[0]
-    from mtgfish.rules.enums import LossReason
-    from mtgfish.rules.ids import target_player
+    from mtgfish.rules.kernel.enums import LossReason
+    from mtgfish.rules.kernel.ids import target_player
 
     game.player_loses(target_player(chosen), LossReason.LIFE)
     box.resolve_top()

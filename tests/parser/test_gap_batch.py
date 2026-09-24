@@ -14,9 +14,9 @@ from mtgfish.parser.clauses import parse_effects
 from mtgfish.parser.nouns import parse_object_filter, parse_value, singular
 from mtgfish.parser.tokens import Stream
 from mtgfish.parser.triggers import parse_trigger
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.enums import CardType
-from mtgfish.rules.query import ValueKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+from mtgfish.rules.kernel.enums import CardType
+from mtgfish.rules.kernel.query import ValueKind
 
 
 def _reads(text, parser=parse_effects):
@@ -217,8 +217,8 @@ def test_a_defined_pt_is_marked_characteristic_defining(card_db):
 
 def test_a_cda_functions_outside_the_battlefield(card_db):
     """CR 604.3: a CDA applies in every zone."""
-    from mtgfish.rules.enums import Zone
     from mtgfish.parser import parse_card
+    from mtgfish.rules.kernel.enums import Zone
 
     card = card_db.lookup("Nightmare")
     defined = [
@@ -262,9 +262,9 @@ def test_restricted_mana_cannot_pay_for_the_wrong_spell(card_db, tmp_path):
     in a run as nothing but good draws.
     """
     from mtgfish.parser.verdicts import VerdictStore
-    from mtgfish.rules.enums import Color, Zone
-    from mtgfish.rules.mana import ManaKind, SpendOnlyOn
-    from mtgfish.rules.query import ObjectFilter
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind, SpendOnlyOn
+    from mtgfish.rules.kernel.enums import Color, Zone
+    from mtgfish.rules.kernel.query import ObjectFilter
     from mtgfish.ui.sandbox import Sandbox
 
     box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))

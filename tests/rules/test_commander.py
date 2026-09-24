@@ -9,13 +9,12 @@ observable in whether dies-triggers fire.
 from __future__ import annotations
 
 import pytest
-
-from mtgfish.rules.actions import deal_damage, destroy
-from mtgfish.rules.enums import LossReason, Zone
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.player import COMMANDER_DAMAGE_THRESHOLD
-
 from harness import ScriptedAbilities, make_board
+
+from mtgfish.rules.cr100_game_concepts.actions import deal_damage, destroy
+from mtgfish.rules.cr100_game_concepts.player import COMMANDER_DAMAGE_THRESHOLD
+from mtgfish.rules.kernel.enums import LossReason, Zone
+from mtgfish.rules.kernel.ids import PlayerId
 
 
 @pytest.fixture
@@ -123,7 +122,7 @@ def test_a_dying_commander_triggers_dies_abilities(board):
 
 def test_an_exiled_commander_is_also_a_state_based_action(board):
     """CR 903.9a covers graveyard and exile alike."""
-    from mtgfish.rules.actions import exile
+    from mtgfish.rules.cr100_game_concepts.actions import exile
 
     game = board.game
     commander = game.move_object(commander_of(board, 0), Zone.BATTLEFIELD, to_player=PlayerId(0))
@@ -145,7 +144,7 @@ def test_a_commander_headed_for_hand_is_replaced_instead(board):
     game = board.game
     commander = game.move_object(commander_of(board, 0), Zone.BATTLEFIELD, to_player=PlayerId(0))
 
-    from mtgfish.rules.actions import bounce
+    from mtgfish.rules.cr100_game_concepts.actions import bounce
 
     bounce(game, commander)
     assert not game.player(PlayerId(0)).hand_size or all(

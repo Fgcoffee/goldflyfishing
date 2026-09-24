@@ -16,9 +16,9 @@ from __future__ import annotations
 
 import pytest
 
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.events import Event, EventKind
-from mtgfish.rules.ids import PlayerId
+from mtgfish.rules.kernel.enums import Zone
+from mtgfish.rules.kernel.events import Event, EventKind
+from mtgfish.rules.kernel.ids import PlayerId
 from mtgfish.sim.board import SAMPLE_AFTER, BoardCardRef, BoardRecorder
 
 from harness import make_board
@@ -108,7 +108,7 @@ def test_a_hand_is_only_listed_when_the_viewer_may_look(table):
 
 def test_the_stack_is_bottom_first(table):
     """The way it resolves: the last one on is the first one off."""
-    from mtgfish.rules.gameobject import ObjectKind
+    from mtgfish.rules.kernel.gameobject import ObjectKind
 
     first = table.game.create_object(
         table.db.lookup("Lightning Bolt"), PlayerId(0), Zone.STACK
@@ -133,7 +133,7 @@ def test_the_stack_is_bottom_first(table):
 
 
 def test_an_attacker_says_who_it_is_attacking(table):
-    from mtgfish.rules.combat import Combat
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import Combat
 
     bear = table.play("Grizzly Bears", controller=0)
     table.game.combat = Combat(attacking={bear.id: PlayerId(2)})
@@ -144,7 +144,7 @@ def test_an_attacker_says_who_it_is_attacking(table):
 
 
 def test_a_blocker_says_what_it_is_blocking(table):
-    from mtgfish.rules.combat import Combat
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import Combat
 
     attacker = table.play("Grizzly Bears", controller=0)
     blocker = table.play("Serra Angel", controller=2)

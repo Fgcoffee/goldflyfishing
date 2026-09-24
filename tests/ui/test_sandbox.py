@@ -330,7 +330,7 @@ def test_object_and_player_targets_do_not_collide(box):
     The encoding keeps them apart by sign, and this is what catches it if that
     ever stops being true.
     """
-    from mtgfish.rules.ids import is_player_target, player_target, target_player
+    from mtgfish.rules.kernel.ids import is_player_target, player_target, target_player
 
     for player in (0, 1, 7):
         encoded = player_target(player)

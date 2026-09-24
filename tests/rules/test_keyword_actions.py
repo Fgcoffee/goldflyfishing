@@ -9,15 +9,15 @@ does not actually have. It has caught one already.
 
 from __future__ import annotations
 
-from mtgfish.rules import keywords
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.keyword_actions import (
-    ActionInstance,
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+from mtgfish.rules.cr700_additional_rules import keywords
+from mtgfish.rules.cr700_additional_rules.cr701_keyword_actions import (
     BUILDERS,
+    ActionInstance,
     build,
     implemented_actions,
 )
-from mtgfish.rules.keywords import Status
+from mtgfish.rules.cr700_additional_rules.keywords import Status
 
 
 def test_every_builder_names_a_real_keyword_action():

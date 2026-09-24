@@ -22,10 +22,10 @@ from mtgfish.parser.explain import explain_ability
 from mtgfish.parser.normalize import normalize
 from mtgfish.parser.split import split_abilities
 from mtgfish.parser.tokens import Stream
-from mtgfish.rules.effects import EffectKind
-from mtgfish.rules.enums import Zone
-from mtgfish.rules.query import ConditionKind
-from mtgfish.rules.restrictions import Act
+from mtgfish.rules.cr500_turn_structure.restrictions import Act
+from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+from mtgfish.rules.kernel.enums import Zone
+from mtgfish.rules.kernel.query import ConditionKind
 
 
 def effects_of(text: str):
@@ -81,7 +81,7 @@ def test_the_attack_requirement_is_the_one_combat_actually_reads():
     function that enforces it rather than against a string in this file."""
     import inspect
 
-    from mtgfish.rules import combat
+    from mtgfish.rules.cr500_turn_structure import cr506_combat as combat
 
     source = inspect.getsource(combat._must_attack)
     granted = next(
@@ -181,7 +181,7 @@ def test_only_if_goes_through_the_ordinary_condition_grammar(subtype_registry):
 def test_two_restrictions_on_one_line_are_both_read(subtype_registry):
     """"Activate only as a sorcery and only if ..." was read by two different
     readers, each of which stopped where the other began."""
-    from mtgfish.rules.enums import Timing
+    from mtgfish.rules.kernel.enums import Timing
 
     made, failures = abilities_of(
         "{2}: Draw a card. Activate only as a sorcery and only if you control a Goblin."
@@ -387,7 +387,7 @@ def test_an_artifact_token_is_not_a_zero_zero_creature(subtype_registry):
     """"Create a Treasure token" names no card type, and creature was the
     default. A 0/0 creature dies to state-based actions the moment it arrives,
     so one of the most-played effects in the format made nothing at all."""
-    from mtgfish.rules.enums import CardType
+    from mtgfish.rules.kernel.enums import CardType
 
     found = nodes("Create a Treasure token.")
     token = next(n for n in found if n.kind is EffectKind.CREATE_TOKEN).token
@@ -441,7 +441,7 @@ def test_a_readable_keyword_is_still_understood():
 def test_an_unreadable_condition_buried_in_a_conjunction_still_counts():
     """NOT, AND and OR carry their operands underneath, and an unreadable one
     inside a conjunction is exactly as inert as one on top."""
-    from mtgfish.rules.query import Condition, ConditionKind
+    from mtgfish.rules.kernel.query import Condition, ConditionKind
 
     buried = Condition(
         kind=ConditionKind.AND,

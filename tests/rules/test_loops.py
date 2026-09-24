@@ -22,10 +22,12 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import actions
-from mtgfish.rules.enums import Color, Zone
-from mtgfish.rules.gameobject import ObjectKind
-from mtgfish.rules.loops import (
+from mtgfish.rules.cr100_game_concepts import actions
+from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+from mtgfish.rules.cr100_game_concepts.cr117_priority import run_priority
+from mtgfish.rules.kernel.enums import Color, Zone
+from mtgfish.rules.kernel.gameobject import ObjectKind
+from mtgfish.rules.kernel.loops import (
     DECLINED,
     LOOP_REPETITIONS,
     LOST,
@@ -38,8 +40,6 @@ from mtgfish.rules.loops import (
     decide,
     note_step,
 )
-from mtgfish.rules.mana import ManaKind
-from mtgfish.rules.priority import run_priority
 from mtgfish.ui.sandbox import STRICT_BENCH, PassiveOpponent, Sandbox
 
 ENGINE = ("A", 0, "ACTIVATE_ABILITY", "Some Engine", 0, 0, ())
@@ -201,8 +201,8 @@ def test_a_pinger_does_exactly_forty_per_player_then_moves_on(box):
     aiming it is a choice made again every activation - so the shortcut drains
     that opponent to lethal and re-aims at the next, finishing the table.
     """
-    from mtgfish.rules.player import Player
-    from mtgfish.rules.priority import settle
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import settle
+    from mtgfish.rules.cr100_game_concepts.player import Player
 
     game = box.game
     for index in (2, 3):
@@ -236,7 +236,7 @@ def test_sanguine_bond_finishes_a_four_player_table(box):
     gained, then forty drains for each of three opponents: 40 + 1 + 120.
     """
     _need(box, "Sanguine Bond", "Exquisite Blood")
-    from mtgfish.rules.player import Player
+    from mtgfish.rules.cr100_game_concepts.player import Player
 
     game = box.game
     for index in (2, 3):

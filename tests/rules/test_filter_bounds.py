@@ -18,18 +18,19 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from harness import ScriptedAbilities
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.costs import TAP_COST
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Zone
-from mtgfish.rules.gameobject import GameObject
-from mtgfish.rules.ids import NO_OBJECT, PlayerId
-from mtgfish.rules.legality import legal_actions
-from mtgfish.rules.matching import matches
-from mtgfish.rules.priority import ActionKind, _perform
-from mtgfish.rules.query import (
+from mtgfish.rules.cr100_game_concepts.cr117_priority import ActionKind, _perform
+from mtgfish.rules.cr100_game_concepts.cr118_costs import TAP_COST
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import CardType, Zone
+from mtgfish.rules.kernel.gameobject import GameObject
+from mtgfish.rules.kernel.ids import NO_OBJECT, PlayerId
+from mtgfish.rules.kernel.legality import legal_actions
+from mtgfish.rules.kernel.matching import matches
+from mtgfish.rules.kernel.query import (
     Comparison,
     ControllerRelation,
     NumericConstraint,
@@ -38,8 +39,6 @@ from mtgfish.rules.query import (
     ValueKind,
 )
 from mtgfish.ui.sandbox import Sandbox
-
-from harness import ScriptedAbilities
 
 YOU = PlayerId(0)
 THEM = PlayerId(1)

@@ -16,14 +16,14 @@ import random
 
 import pytest
 
-from mtgfish.rules.enums import LossReason, Phase, Step
-from mtgfish.rules.game import Game
-from mtgfish.rules.ids import ObjectId, PlayerId
-from mtgfish.rules.log import GameLog
-from mtgfish.rules.player import Player
-from mtgfish.rules.relaxations import BENCH, NAMES, STRICT, Relaxations
-from mtgfish.rules.sba import check_state_based_actions
-from mtgfish.rules.turn import _empty_mana_pools
+from mtgfish.rules.cr100_game_concepts.player import Player
+from mtgfish.rules.cr500_turn_structure.cr500_turn import _empty_mana_pools
+from mtgfish.rules.cr700_additional_rules.cr704_sba import check_state_based_actions
+from mtgfish.rules.kernel.enums import LossReason, Phase, Step
+from mtgfish.rules.kernel.game import Game
+from mtgfish.rules.kernel.ids import ObjectId, PlayerId
+from mtgfish.rules.kernel.log import GameLog
+from mtgfish.rules.kernel.relaxations import BENCH, NAMES, STRICT, Relaxations
 
 
 def board(relaxations: Relaxations = STRICT) -> Game:
@@ -55,7 +55,7 @@ def test_a_game_enforces_every_rule_by_default():
 
 def test_every_relaxation_is_explained():
     """A switch nobody can explain is a switch nobody should flip."""
-    from mtgfish.rules.relaxations import DESCRIPTIONS
+    from mtgfish.rules.kernel.relaxations import DESCRIPTIONS
 
     assert set(DESCRIPTIONS) == set(NAMES)
     assert all(DESCRIPTIONS[name].strip() for name in NAMES)
@@ -155,8 +155,8 @@ def test_drawing_from_an_empty_library_on_a_bench_does_nothing():
 
 
 def test_mana_pools_normally_empty_at_the_end_of_a_step():
-    from mtgfish.rules.enums import Color
-    from mtgfish.rules.mana import ManaKind
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import Color
 
     game = board()
     game.player(PlayerId(0)).mana_pool.add(ManaKind(Color.RED), 3)
@@ -165,8 +165,8 @@ def test_mana_pools_normally_empty_at_the_end_of_a_step():
 
 
 def test_mana_pools_can_be_made_to_persist():
-    from mtgfish.rules.enums import Color
-    from mtgfish.rules.mana import ManaKind
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import Color
 
     game = board(BENCH)
     game.player(PlayerId(0)).mana_pool.add(ManaKind(Color.RED), 3)

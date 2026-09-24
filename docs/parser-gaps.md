@@ -14,6 +14,21 @@ card counts as read only when *every* ability on it is read. A three-ability
 card at a 58% per-ability rate lands near 19%. Most failing cards are one
 clause away, not hopeless.
 
+## Before you special-case a card
+
+Two seams exist precisely so that card text can beat a rule without any
+per-card code, and reaching for one is almost always right:
+
+- **`docs/rule-overrides.md`** — cards that switch a *rule of the game* off
+  ("creatures don't suffer summoning sickness", "ignore the legend rule").
+  Emit one `SUSPEND_RULE` effect naming the CR number.
+- **`rules/cr500_turn_structure/restrictions.py`** — cards that forbid or
+  permit an *act* ("can't attack unless", "may cast from your graveyard").
+  The `Act` list is deliberately exhaustive; add to it rather than around it.
+
+If a card needs a rule that is not in either list, that is a gap to fill in
+the rules engine, not a reason to name the card in the parser.
+
 ## The failures are a long tail, not one bug
 
 Classified by the construct sitting exactly where the parse gives up:
@@ -243,6 +258,27 @@ Each was reproduced on a board, not inferred from reading:
   do not parse.
 - **No duration ends at a player's next untap step**, which is why the "next"
   form of "doesn't untap" declines rather than being read as the permanent one.
+
+### Engine hooks waiting for the grammar
+
+The engine supports these; the parser does not yet produce them:
+
+- **"Activate only once."** (Duggan, Private Detective and others) - set
+  `Ability.only_once=True` (CR 602.5b). It is counted for the life of the
+  object, not per turn; `once_each_turn` is the per-turn form. The restriction
+  parser in `compile.py` handles "once each turn" and nothing else.
+- **"If its [keyword] cost was paid"** (surge, spectacle, prowl, emerge,
+  madness, freerunning, sneak - 20 Commander-legal cards) - emit
+  `Condition(kind=ConditionKind.ALTERNATIVE_COST_PAID, keyword="Surge")`.
+  The spell records which alternative cost paid for it and the permanent it
+  becomes keeps the record, so the same condition works on the spell and on
+  an enters trigger. An empty `keyword` asks whether any alternative cost was
+  paid. "If her sneak cost was paid *this turn*" (Karai) is a different
+  question and is not covered.
+- **An alternative cost's window and timing.** `AlternativeCost.condition` is
+  checked before the cast is offered, and `instant_speed=True` lifts the
+  spell to instant timing inside it; otherwise the spell keeps its own
+  timing, as CR 307.1 requires of flashback on a sorcery.
 
 ## The lesson worth keeping
 

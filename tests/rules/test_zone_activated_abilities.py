@@ -15,30 +15,29 @@ a permanent, and "discard this card" discarded whichever card the agent chose.
 from __future__ import annotations
 
 import pytest
+from harness import FixedAgent, ScriptedAbilities, make_board
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import keywords
-from mtgfish.rules.actions import discard
-from mtgfish.rules.casting import CastError, activate_ability
-from mtgfish.rules.combat import (
+from mtgfish.rules.cr100_game_concepts.actions import discard
+from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind, _perform
+from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost, CostKind
+from mtgfish.rules.cr500_turn_structure.cr506_combat import (
     AttackPermanent,
     deal_combat_damage,
     declare_attackers,
     declare_blockers,
     end_combat,
 )
-from mtgfish.rules.costs import Cost, CostKind
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import Phase, Step, Zone
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.keyword_impl import KeywordInstance, build
-from mtgfish.rules.keywords import Status
-from mtgfish.rules.legality import legal_actions
-from mtgfish.rules.priority import Action, ActionKind, _perform
-from mtgfish.rules.query import YOU, Value
+from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import CastError, activate_ability
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.cr700_additional_rules import keywords
+from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+from mtgfish.rules.cr700_additional_rules.keywords import Status
+from mtgfish.rules.kernel.enums import Phase, Step, Zone
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.legality import legal_actions
+from mtgfish.rules.kernel.query import YOU, Value
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
-
-from harness import FixedAgent, ScriptedAbilities, make_board
 
 DRAW_A_CARD = (Effect(EffectKind.DRAW, players=YOU, amount=Value.of(1)),)
 

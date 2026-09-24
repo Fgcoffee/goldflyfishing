@@ -27,11 +27,11 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Duration, Zone
-from mtgfish.rules.query import ObjectFilter
-from mtgfish.rules.resolve import Resolution, execute
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, execute
+from mtgfish.rules.kernel.enums import CardType, Duration, Zone
+from mtgfish.rules.kernel.query import ObjectFilter
 from mtgfish.ui.sandbox import Sandbox
 
 

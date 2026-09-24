@@ -59,8 +59,8 @@ def test_that_many_reads_the_event_it_came_from(card_db):
     records it. Without the event travelling with the trigger, the amount
     evaluates to zero and the card makes nothing.
     """
-    from mtgfish.rules.effects import EffectKind
-    from mtgfish.rules.query import ValueKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+    from mtgfish.rules.kernel.query import ValueKind
 
     amounts = [
         node.amount.kind
@@ -74,8 +74,8 @@ def test_that_many_reads_the_event_it_came_from(card_db):
 
 def test_the_stack_object_carries_its_event(box):
     """A trigger on the stack remembers the event that made it (CR 603.3d)."""
-    from mtgfish.rules.events import Event, EventKind
-    from mtgfish.rules.triggers import put_triggers_on_stack
+    from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import put_triggers_on_stack
+    from mtgfish.rules.kernel.events import Event, EventKind
 
     box.put("Old Gnawbone", "battlefield", 0)
     box.game.invalidate_characteristics()
@@ -121,9 +121,13 @@ def test_an_ordinal_trigger_is_read_as_one(card_db):
 
 def test_an_ordinal_trigger_fires_only_on_that_occurrence(box):
     """The tally is per player and per turn, and only the nth event fires."""
-    from mtgfish.rules.abilities import Ability, AbilityKind, TriggerCondition
-    from mtgfish.rules.events import Event, EventKind
-    from mtgfish.rules.triggers import condition_met
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import (
+        Ability,
+        AbilityKind,
+        TriggerCondition,
+    )
+    from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import condition_met
+    from mtgfish.rules.kernel.events import Event, EventKind
 
     box.put("Sol Ring", "battlefield", 0)
     source = next(
@@ -151,7 +155,7 @@ def test_an_ordinal_trigger_fires_only_on_that_occurrence(box):
 
 
 def test_panharmonicon_is_read_as_an_extra_trigger(card_db):
-    from mtgfish.rules.effects import EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 
     kinds = {
         node.kind
@@ -169,7 +173,7 @@ def test_an_extra_trigger_puts_two_abilities_on_the_stack(box):
     additional time, so there are two separate triggers on the stack and a
     player may respond between them.
     """
-    from mtgfish.rules.events import Event, EventKind
+    from mtgfish.rules.kernel.events import Event, EventKind
 
     if box.db.lookup("Panharmonicon") is None:
         pytest.skip("Panharmonicon is not in this card pool")
@@ -183,7 +187,7 @@ def test_an_extra_trigger_puts_two_abilities_on_the_stack(box):
         for obj in box.game.objects.values()
         if obj.card is not None and obj.card.name == "Solemn Simulacrum"
     )
-    from mtgfish.rules.triggers import collect_triggers
+    from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import collect_triggers
 
     box.game.pending_triggers = []
     collect_triggers(

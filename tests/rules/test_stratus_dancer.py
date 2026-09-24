@@ -26,20 +26,23 @@ parser does not exist yet.
 from __future__ import annotations
 
 import pytest
-
-from mtgfish.rules.abilities import Ability, AbilityKind, TriggerCondition
-from mtgfish.rules.costs import Cost, CostComponent, CostKind
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import LETTER_TO_COLOR, CardType, Phase, Step, Zone
-from mtgfish.rules.events import EventKind
-from mtgfish.rules.keyword_impl import KeywordInstance, build
-from mtgfish.rules.mana import ManaCost, ManaKind
-from mtgfish.rules.priority import ActionKind
-from mtgfish.rules.query import ObjectFilter
-from mtgfish.rules.restrictions import Act, prohibited
-from mtgfish.rules.special_actions import SpecialKind, available, perform
-
 from harness import ScriptedAbilities, keyword, make_board
+
+from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost, ManaKind
+from mtgfish.rules.cr100_game_concepts.cr116_special_actions import SpecialKind, available, perform
+from mtgfish.rules.cr100_game_concepts.cr117_priority import ActionKind
+from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
+from mtgfish.rules.cr500_turn_structure.restrictions import Act, prohibited
+from mtgfish.rules.cr600_spells_and_abilities.abilities import (
+    Ability,
+    AbilityKind,
+    TriggerCondition,
+)
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+from mtgfish.rules.kernel.enums import LETTER_TO_COLOR, CardType, Phase, Step, Zone
+from mtgfish.rules.kernel.events import EventKind
+from mtgfish.rules.kernel.query import ObjectFilter
 
 #: "counter target instant or sorcery spell"
 INSTANT_OR_SORCERY = ObjectFilter(
@@ -123,8 +126,8 @@ def table(card_db):
 
 def cast_grip(board, grip, artifact):
     """P1 casts Krosan Grip targeting the artifact, and it sits on the stack."""
-    from mtgfish.rules.casting import cast_spell
-    from mtgfish.rules.priority import Action
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
 
     return cast_spell(
         board.game,
@@ -207,7 +210,7 @@ def test_unmorphing_is_still_legal_under_split_second(table):
 
 def test_the_engine_offers_it_in_the_legal_action_list_too(table):
     """Enumeration and permission must agree - one legality model, not two."""
-    from mtgfish.rules.legality import legal_actions
+    from mtgfish.rules.kernel.legality import legal_actions
 
     board, _, artifact, grip = table
     cast_grip(board, grip, artifact)

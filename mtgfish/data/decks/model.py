@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Iterator
 
-from ...rules.enums import Color, color_letters
+from ...rules.kernel.enums import Color, color_letters
 from ..cards import CardDef
 
 

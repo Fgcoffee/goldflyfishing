@@ -17,8 +17,8 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.sim.observer import Observer, new_record
-from mtgfish.rules.events import Event, EventKind
-from mtgfish.rules.ids import PlayerId
+from mtgfish.rules.kernel.events import Event, EventKind
+from mtgfish.rules.kernel.ids import PlayerId
 from mtgfish.sim.stats import Report
 
 
