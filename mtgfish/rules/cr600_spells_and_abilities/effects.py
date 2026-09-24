@@ -16,7 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum
 
-from ..kernel.enums import CardType, Color, Zone
+from ..kernel.enums import CardType, Color, Supertype, Zone
 from ..kernel.query import ALWAYS, ZERO, Condition, ObjectFilter, PlayerFilter, Value
 
 
@@ -209,6 +209,10 @@ class EffectKind(IntEnum):
     #: CR 722.3a: give a permanent with a prepare spell the prepared
     #: designation, which puts a copy of its prepare spell into exile.
     BECOME_PREPARED = 217
+    #: "The blocking creature's controller sacrifices it at end of combat" -
+    #: each creature blocking the triggering attacker, at the beginning of
+    #: the end of combat step (CR 511.2). The Ring's third ability.
+    SACRIFICE_BLOCKERS_AT_END_OF_COMBAT = 220
 
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the
@@ -420,6 +424,9 @@ class Effect:
     #: cast from there. Paradigm's "create a copy of this object in exile.
     #: You may cast the copy".
     cast_a_copy: bool = False
+    #: For ADD_TYPE: supertypes to add - "is legendary in addition to its
+    #: other types" (CR 205.4a).
+    supertypes: Supertype = Supertype.NONE
     #: For SUSPEND_RULE: which rule is switched off, as its CR number - a
     #: member of ``cr101_rule_overrides.Rule``. ``targets`` and ``players``
     #: then say for whom, exactly as they do for a prohibition.

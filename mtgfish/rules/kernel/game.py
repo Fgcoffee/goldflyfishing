@@ -945,6 +945,8 @@ class Game:
 
         if event.kind is EventKind.LIFE_LOST:
             self._advance_speed(event)
+        elif event.kind is EventKind.CONTROL_CHANGED:
+            self._end_ring_bearer_on_control_change(event)
 
         from ..cr600_spells_and_abilities.cr603_triggers import collect_triggers
 
@@ -957,6 +959,14 @@ class Game:
         history[key] = history.get(key, 0) + max(1, int(event.amount or 0))
         counted = (int(event.kind), int(event.player), "count")
         history[counted] = history.get(counted, 0) + 1
+
+    def _end_ring_bearer_on_control_change(self, event: Event) -> None:
+        """CR 701.54a: a creature stops being a player's Ring-bearer when
+        another player gains control of it, and does not become one again if
+        control comes back."""
+        for player in self.players:
+            if player.ring_bearer == event.object_id and event.player != player.id:
+                player.ring_bearer = NO_OBJECT
 
     def _advance_speed(self, event: Event) -> None:
         """CR 702.179d: each player whose speed is 1-3 and who is the active

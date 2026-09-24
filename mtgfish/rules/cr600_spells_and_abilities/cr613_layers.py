@@ -32,7 +32,7 @@ from typing import TYPE_CHECKING
 from ..cr100_game_concepts.cr106_mana import ManaCost
 from ..cr200_parts_of_a_card.characteristics import Characteristics
 from ..kernel.enums import CardType, Color, Layer, Zone
-from ..kernel.gameobject import GameObject
+from ..kernel.gameobject import GameObject, ObjectKind
 from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
 from ..kernel.matching import matches
 from ..kernel.query import (
@@ -130,6 +130,14 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
     """
     scope = [game.objects[i] for i in game.battlefield if i in game.objects]
     scope += [game.objects[i] for i in game.stack if i in game.objects]
+    # CR 114.4: an emblem's abilities function in the command zone. Left out,
+    # no emblem's static ability ever applied - a planeswalker's "creatures
+    # you control get +1/+1" emblem did nothing.
+    scope += [
+        game.objects[i]
+        for i in game.command
+        if i in game.objects and game.objects[i].kind is ObjectKind.EMBLEM
+    ]
 
     state: dict[ObjectId, Characteristics] = {
         obj.id: game.printed_characteristics(obj) for obj in scope
@@ -337,7 +345,11 @@ def _live_effects(
     ]
 
     for object_id, obj in by_id.items():
-        if obj.phased_out or obj.zone is not Zone.BATTLEFIELD:
+        if obj.phased_out:
+            continue
+        if obj.zone is not Zone.BATTLEFIELD and not (
+            obj.zone is Zone.COMMAND and obj.kind is ObjectKind.EMBLEM
+        ):
             continue
         for ability in state[object_id].abilities:
             if ability.kind is not AbilityKind.STATIC or ability.unparsed:
@@ -708,7 +720,9 @@ def apply_effect(
             chooser = game.objects.get(ce.source) if ce is not None else None
             recorded = getattr(chooser, "chosen_type", "") if chooser else ""
             subtypes = (recorded,) if recorded else ()
-        line = current.type_line.adding(types=effect.types, subtypes=subtypes)
+        line = current.type_line.adding(
+            supertypes=effect.supertypes, types=effect.types, subtypes=subtypes
+        )
         return _with_type_line(current, line)
 
     if kind is EffectKind.REMOVE_TYPE:

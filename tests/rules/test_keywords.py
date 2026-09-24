@@ -51,13 +51,25 @@ def test_registry_has_no_entries_that_do_not_exist(card_db):
     }
     if not known:
         return
+    cr_only = {name.lower() for name in keywords.CR_ONLY_ACTIONS}
     invented = sorted(
         spec.name
         for registry in (keywords.KEYWORD_ABILITIES, keywords.KEYWORD_ACTIONS)
         for spec in registry.values()
-        if spec.key not in known
+        if spec.key not in known and spec.key not in cr_only
     )
     assert not invented, f"registry entries with no catalog counterpart: {invented}"
+
+
+def test_cr_only_actions_are_really_in_the_rules():
+    """The exception above is for rules Scryfall does not tag, not a way
+    round the check: each must name a rule the CR defines, titled with it."""
+    from mtgfish.rules.kernel.citations import text as rule_text
+
+    for name, number in keywords.CR_ONLY_ACTIONS.items():
+        text = rule_text(number)
+        assert text, f"{name}: CR {number} does not exist"
+        assert name.lower() in text.lower(), f"CR {number} is not {name}"
 
 
 # ---------------------------------------------------------------------------

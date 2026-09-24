@@ -150,6 +150,19 @@ def matches(
         if obj.entered_this_turn(game.turn) != spec.entered_this_turn:
             return False
 
+    if spec.ring_bearer is not None:
+        # Read-only: matching runs inside the layer system, where a transient
+        # controller must not end the designation.
+        player = game.player(controller) if controller != NO_PLAYER else None
+        bearing = (
+            player is not None
+            and player.ring_bearer == obj.id
+            and obj.zone is Zone.BATTLEFIELD
+            and obj.controller == controller
+        )
+        if bearing != spec.ring_bearer:
+            return False
+
     if spec.attacking is not None or spec.blocking is not None or spec.blocked is not None:
         combat = getattr(game, "combat", None)
         if combat is None:

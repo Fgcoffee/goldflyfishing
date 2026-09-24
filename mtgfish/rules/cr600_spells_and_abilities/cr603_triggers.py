@@ -261,10 +261,12 @@ def _collect_delayed(
 
 
 def _right_phase(trigger: TriggerCondition, event: Event) -> bool:
-    """CR 500.6: a phase trigger fires as *its* phase begins, not any phase."""
-    if event.kind is not EventKind.PHASE_BEGAN or not trigger.phases:
-        return True
-    return event.amount in trigger.phases
+    """CR 500.6: a phase or step trigger fires as *its* phase or step begins."""
+    if event.kind is EventKind.PHASE_BEGAN and trigger.phases:
+        return event.amount in trigger.phases
+    if event.kind is EventKind.STEP_BEGAN and trigger.steps:
+        return event.amount in trigger.steps
+    return True
 
 
 def check_state_triggers(game: Game) -> None:

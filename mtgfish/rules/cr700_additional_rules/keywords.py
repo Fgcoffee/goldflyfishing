@@ -442,6 +442,25 @@ KEYWORD_ACTIONS: dict[str, KeywordSpec] = _build(
 )
 
 
+#: Keyword actions the Comprehensive Rules define that Scryfall's keyword
+#: catalogs do not list - it tags neither on the cards that use them, so a
+#: registry built only from the catalogs never learned they existed, and 70
+#: Commander-legal cards used a rule that was reported as nothing at all.
+#: Each carries the rule that defines it, and ``test_keywords`` checks that
+#: the rule is really in the CR.
+CR_ONLY_ACTIONS: dict[str, str] = {
+    "The Ring tempts you": "701.54",
+    "Recruit": "701.70",
+}
+
+KEYWORD_ACTIONS.update(
+    {
+        name.lower(): KeywordSpec(name, Category.OTHER, Status.IMPLEMENTED, rule)
+        for name, rule in CR_ONLY_ACTIONS.items()
+    }
+)
+
+
 # ---------------------------------------------------------------------------
 # Ability words (CR 207.2c)
 # ---------------------------------------------------------------------------

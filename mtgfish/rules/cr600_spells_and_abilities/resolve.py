@@ -505,6 +505,7 @@ def _do_move_zone(resolution: Resolution, effect: Effect) -> None:
 def _do_discard(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     count = _amount(resolution, effect)
+    discarded: list[ObjectId] = []
     for player_id in _players(resolution, effect):
         player = game.player(player_id)
         agent = game.agent_for(player_id)
@@ -515,7 +516,12 @@ def _do_discard(resolution: Resolution, effect: Effect) -> None:
                 agent.choose_discard(game, player_id) if agent is not None else player.hand[-1]
             )
             obj = game.objects.get(choice) or game.objects[player.hand[-1]]
+            discarded.append(obj.id)
             actions.discard(game, obj, source=resolution.source)
+    # CR 608.2: "if you discarded a nonland card this way" asks about what
+    # was discarded, as it last existed in hand.
+    if discarded:
+        resolution.remembered = discarded
 
 
 def _do_create_token(resolution: Resolution, effect: Effect) -> None:
@@ -1935,17 +1941,25 @@ def _do_add_experience(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_ring_tempts(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.51: the Ring tempts you - the count matters, not just the fact."""
+    """CR 701.54: the Ring tempts each of these players."""
+    from ..cr700_additional_rules.cr701_ring import tempt
+
     for player_id in _players(resolution, effect):
-        player = resolution.game.player(player_id)
-        player.ring_tempted_count += 1
-        resolution.game.emit(
-            Event(
-                EventKind.RING_TEMPTED,
-                player=player_id,
-                amount=player.ring_tempted_count,
-            )
-        )
+        tempt(resolution.game, player_id)
+
+
+def _do_sacrifice_blockers_at_end_of_combat(resolution: Resolution, effect: Effect) -> None:
+    """Each creature blocking the attacker that triggered this is sacrificed
+    by its controller at end of combat."""
+    from ..cr700_additional_rules.cr701_ring import sacrifice_blockers_at_end_of_combat
+
+    stack_object = resolution.stack_object
+    event = getattr(stack_object, "trigger_event", None) if stack_object else None
+    if event is None:
+        return
+    sacrifice_blockers_at_end_of_combat(
+        resolution.game, event.object_id, resolution.controller
+    )
 
 
 def _do_choose_mode(resolution: Resolution, effect: Effect) -> None:
@@ -2365,6 +2379,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.TAKE_INITIATIVE: _do_take_initiative,
     EffectKind.ADD_EXPERIENCE: _do_add_experience,
     EffectKind.RING_TEMPTS: _do_ring_tempts,
+    EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.
     # Present here because an opcode with no entry is an opcode the parser is

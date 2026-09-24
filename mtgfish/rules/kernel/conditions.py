@@ -260,6 +260,15 @@ def holds(
             return False
         return not spell.mana_spent
 
+    if kind is ConditionKind.RING_TEMPTED_TIMES:
+        if condition.constraint is None or controller == NO_PLAYER:
+            return False
+        from .values import evaluate
+
+        expected = evaluate(game, condition.constraint.value, source=source, controller=controller)
+        count = game.player(controller).ring_tempted_count
+        return condition.constraint.comparison.holds(count, expected)
+
     if kind is ConditionKind.FIRST_RESOLUTION_OF_NAME:
         spell = game.objects.get(source)
         if spell is None:

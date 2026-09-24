@@ -442,6 +442,9 @@ class ObjectFilter:
     attacking: bool | None = None
     blocking: bool | None = None
     blocked: bool | None = None
+    #: CR 701.54e: "your Ring-bearer" - the Ring-bearer of the player the
+    #: filter is read for.
+    ring_bearer: bool | None = None
     face_down: bool | None = None
     is_token: bool | None = None
     #: "creatures of the chosen type", "permanents of the chosen color" -
@@ -728,6 +731,9 @@ class ConditionKind(IntEnum):
     #: Answered from the spell object, because "kicked" is a fact about how
     #: this particular spell was cast rather than about the board.
     WAS_KICKED = 14
+    #: CR 701.54c: how many times the Ring has tempted this player, measured
+    #: against ``constraint``.
+    RING_TEMPTED_TIMES = 26
     #: CR 601.2b / 118.9: "if its [keyword] cost was paid" - which alternative
     #: cost the spell was cast for, named by ``Condition.keyword``. An empty
     #: keyword asks whether any alternative cost was paid.

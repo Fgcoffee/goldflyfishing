@@ -1103,6 +1103,58 @@ YOUR_ATTRACTION_DECK = ObjectFilter(
 )
 
 
+@register("The Ring tempts you")
+def _the_ring_tempts_you(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.54: the emblem, the Ring-bearer and the count, all in
+    ``cr701_ring``."""
+    return (
+        Effect(
+            EffectKind.RING_TEMPTS,
+            players=instance.players or YOU,
+            text=instance.text or "the Ring tempts you",
+        ),
+    )
+
+
+@register("Recruit")
+def _recruit(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.70a: draw a card, then discard a card; if the discarded card was
+    a nonland card, create a 1/1 white Human Soldier creature token."""
+    from ..cr600_spells_and_abilities.effects import TokenSpec
+    from ..kernel.query import Condition, ConditionKind, ObjectFilter
+
+    soldier = TokenSpec(
+        types=CardType.CREATURE,
+        subtypes=("Human", "Soldier"),
+        colors=Color.WHITE,
+        power=Value.of(1),
+        toughness=Value.of(1),
+    )
+    return (
+        Effect(EffectKind.DRAW, players=YOU, amount=Value.of(1), text="draw a card"),
+        Effect(EffectKind.DISCARD, players=YOU, amount=Value.of(1), text="discard a card"),
+        Effect(
+            EffectKind.CONDITIONAL,
+            condition=Condition(
+                kind=ConditionKind.REMEMBERED_MATCHES,
+                # The discarded card, as it was in hand - anywhere, since it
+                # is in the graveyard by the time this is asked.
+                filter=ObjectFilter(types_none=CardType.LAND, zones=frozenset()),
+                text="if you discarded a nonland card this way",
+            ),
+            children=(
+                Effect(
+                    EffectKind.CREATE_TOKEN,
+                    token=soldier,
+                    amount=Value.of(1),
+                    players=YOU,
+                    text="create a 1/1 white Human Soldier creature token",
+                ),
+            ),
+        ),
+    )
+
+
 @register("Prepared")
 def _prepared(instance: ActionInstance) -> tuple[Effect, ...]:
     """CR 722.3a: "becomes prepared" / "enters prepared".

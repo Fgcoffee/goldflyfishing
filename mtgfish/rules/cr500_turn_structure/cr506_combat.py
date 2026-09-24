@@ -575,6 +575,14 @@ def can_block(game: Game, blocker: GameObject, attacker: GameObject) -> bool:
     if _has_unblockable_landwalk(game, attacker, blocker.controller):
         return False
 
+    # CR 701.54c: the Ring - "your Ring-bearer ... can't be blocked by
+    # creatures with greater power", the same test as skulk.
+    from ..cr700_additional_rules.cr701_ring import is_a_ring_bearer
+
+    if is_a_ring_bearer(game, attacker):
+        if (blocker_chars.power or 0) > (attacker_chars.power or 0):
+            return False
+
     # CR 702.118b: skulk - can't be blocked by creatures with greater power.
     if attacker_chars.has_keyword("Skulk"):
         attacker_power = attacker_chars.power or 0
