@@ -364,7 +364,22 @@ def _manifest(instance: ActionInstance) -> tuple[Effect, ...]:
 # ---------------------------------------------------------------------------
 
 
-@register("Learn", "Seek", "Discover", "Draft from a spellbook")
+@register("Discover")
+def _discover(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.57a: exile until a nonland card with mana value N or less; cast
+    it free or put it into your hand; the rest to the bottom at random. It
+    is not a search - the cards are exiled, and in order."""
+    return (
+        Effect(
+            EffectKind.DISCOVER,
+            players=YOU,
+            amount=_amount(instance),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Learn", "Seek", "Draft from a spellbook")
 def _search(instance: ActionInstance) -> tuple[Effect, ...]:
     return (
         Effect(

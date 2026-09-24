@@ -213,6 +213,13 @@ class EffectKind(IntEnum):
     #: each creature blocking the triggering attacker, at the beginning of
     #: the end of combat step (CR 511.2). The Ring's third ability.
     SACRIFICE_BLOCKERS_AT_END_OF_COMBAT = 220
+    #: CR 702.85a: exile from the top until a nonland card with lesser mana
+    #: value than this spell; you may cast it free; the rest go to the bottom
+    #: in a random order.
+    CASCADE = 221
+    #: CR 701.57a: the same, up to mana value ``amount``, and a card not cast
+    #: goes to its owner's hand.
+    DISCOVER = 222
 
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the

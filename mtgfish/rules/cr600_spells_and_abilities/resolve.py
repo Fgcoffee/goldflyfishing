@@ -2165,6 +2165,77 @@ def _cast_a_copy_without_paying(resolution: Resolution, effect: Effect) -> None:
             game.log.record(game, f"Free cast of a copy abandoned: {exc}", kind="illegal")
 
 
+def _do_cascade(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.85a, against this spell's mana value as it last existed - the
+    ability resolves after the spell may have left the stack."""
+    game = resolution.game
+    spell = game.objects.get(resolution.source)
+    if spell is None:
+        return
+    below = game.characteristics(spell).mana_value
+    _exile_until_a_free_cast(
+        resolution, lambda mana_value: mana_value < below, to_hand_if_not_cast=False
+    )
+
+
+def _do_discover(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.57a: discover N."""
+    limit = _amount(resolution, effect)
+    _exile_until_a_free_cast(
+        resolution, lambda mana_value: mana_value <= limit, to_hand_if_not_cast=True
+    )
+
+
+def _exile_until_a_free_cast(
+    resolution: Resolution, fits, *, to_hand_if_not_cast: bool
+) -> None:
+    """The procedure cascade and discover share.
+
+    Exile from the top of the library one card at a time until a nonland card
+    whose mana value fits (or the library runs out). That card may be cast
+    without paying its mana cost; discover puts it into its owner's hand if
+    it is not. Every other card exiled this way goes to the bottom of the
+    library in a random order (Game.rng, so a replay orders them the same).
+    """
+    from ..cr100_game_concepts.cr117_priority import Action, ActionKind
+    from .cr601_casting import CastError, cast_spell
+
+    game = resolution.game
+    player_id = resolution.controller
+    library = game.player(player_id).library
+    exiled: list[GameObject] = []
+    hit: GameObject | None = None
+    while library:
+        card = game.objects[library[0]]
+        moved = game.move_object(card, Zone.EXILE, to_player=card.owner)
+        chars = game.characteristics(moved)
+        if not chars.is_land and fits(chars.mana_value):
+            hit = moved
+            break
+        exiled.append(moved)
+
+    if hit is not None:
+        cast = False
+        if _wants(resolution, Effect(EffectKind.CAST_WITHOUT_PAYING, text="cast it free")):
+            hit.cast_without_paying = True
+            try:
+                cast_spell(game, player_id, Action(ActionKind.CAST_SPELL, source=hit.id))
+                cast = True
+            except CastError as exc:
+                hit.cast_without_paying = False
+                game.log.record(game, f"Free cast abandoned: {exc}", kind="illegal")
+        if not cast:
+            if to_hand_if_not_cast:
+                game.move_object(hit, Zone.HAND, to_player=hit.owner)
+            else:
+                exiled.append(hit)
+
+    game.rng.shuffle(exiled)
+    for obj in exiled:
+        if obj.is_live and obj.zone is Zone.EXILE:
+            game.move_object(obj, Zone.LIBRARY, to_player=obj.owner)
+
+
 def _do_play_from_zone(resolution: Resolution, effect: Effect) -> None:
     """CR 601.3: play a card from somewhere other than your hand.
 
@@ -2379,6 +2450,8 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.TAKE_INITIATIVE: _do_take_initiative,
     EffectKind.ADD_EXPERIENCE: _do_add_experience,
     EffectKind.RING_TEMPTS: _do_ring_tempts,
+    EffectKind.CASCADE: _do_cascade,
+    EffectKind.DISCOVER: _do_discover,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.

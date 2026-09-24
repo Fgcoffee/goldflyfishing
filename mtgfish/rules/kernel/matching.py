@@ -76,7 +76,11 @@ def matches(
     if spec.specific and obj.id not in spec.specific:
         return False
 
-    if spec.zones and obj.zone not in spec.zones:
+    # "This" names one object wherever it is: the zones a source-only filter
+    # carries are the parser's default, not a claim about where the object
+    # must be. Checked, they stopped every "when you cast this spell" trigger,
+    # whose source is on the stack.
+    if spec.zones and not spec.source_only and obj.zone not in spec.zones:
         return False
 
     if spec.from_top and not _near_top_of_library(game, obj, spec.from_top):

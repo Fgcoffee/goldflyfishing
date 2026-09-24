@@ -2286,16 +2286,16 @@ def _cumulative_upkeep(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Cascade")
 def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.85a: "When you cast this spell, exile cards from the top of your
-    library until you exile a nonland card whose mana value is less than this
-    spell's mana value. You may cast that spell without paying its mana cost.
-    Put the exiled cards on the bottom in a random order."
+    """CR 702.85a: when you cast this spell, exile from the top of your library
+    until a nonland card with lesser mana value; you may cast it without
+    paying its mana cost; the rest go to the bottom in a random order.
+
+    One opcode, because the steps share state the effect list cannot carry:
+    which cards this cascade exiled. Built as three generic effects, the
+    exile took the cascading spell itself, the free cast was offered any
+    nonland card in exile, and the last step put every card its owner had in
+    exile - foretold, adventuring, imprinted - on the bottom of the library.
     """
-    cheaper = ObjectFilter(
-        types_none=CardType.LAND,
-        zones=frozenset({Zone.EXILE}),
-        owner=ControllerRelation.YOU,
-    )
     return (
         Ability.triggered(
             TriggerCondition(
@@ -2304,23 +2304,7 @@ def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
                 functions_in=frozenset({Zone.STACK}),
                 text="when you cast this spell",
             ),
-            Effect(
-                EffectKind.EXILE,
-                players=YOU,
-                from_zone=Zone.LIBRARY,
-                amount=Value.of(1),
-                text="exile until you hit a cheaper nonland card",
-            ),
-            Effect(
-                EffectKind.CAST_WITHOUT_PAYING,
-                targets=cheaper,
-                text="you may cast it without paying its mana cost",
-            ),
-            Effect(
-                EffectKind.PUT_ON_LIBRARY,
-                targets=ObjectFilter(zones=frozenset({Zone.EXILE}), owner=ControllerRelation.YOU),
-                text="put the rest on the bottom in a random order",
-            ),
+            Effect(EffectKind.CASCADE, text="cascade"),
             text=instance.text or instance.name,
         ),
     )

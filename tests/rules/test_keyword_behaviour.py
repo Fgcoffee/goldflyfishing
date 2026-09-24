@@ -217,12 +217,14 @@ def test_dredge_functions_from_the_graveyard():
     assert abilities[0].effects[0].kind is EffectKind.REPLACEMENT
 
 
-def test_cascade_casts_without_paying():
-    """CR 702.85a. The free cast is the whole keyword; an expansion that only
-    exiled cards would look right and do nothing."""
+def test_cascade_is_the_cascade_procedure():
+    """CR 702.85a. The free cast is the whole keyword, and it is exercised end
+    to end in ``test_cr702_cascade_discover``; this checks the expansion is
+    the procedure rather than a list of generic steps that cannot share which
+    cards they exiled."""
     abilities = build(KeywordInstance("Cascade"))
     kinds = {effect.kind for ability in abilities for effect in ability.effects}
-    assert EffectKind.CAST_WITHOUT_PAYING in kinds
+    assert kinds == {EffectKind.CASCADE}
 
 
 def test_living_weapon_makes_a_germ_and_attaches(board):
