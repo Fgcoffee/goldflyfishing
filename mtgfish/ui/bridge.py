@@ -32,6 +32,81 @@ def _json(payload) -> str:
     return json.dumps(payload, default=str)
 
 
+#: Bit flags for a permanent on the wire. One board is sent per scrub, so the
+#: shape matters less than it would for the whole film - but a board of eighty
+#: permanents written as objects with eleven keys each is twenty times the size
+#: of the same board written as short arrays, for no more information.
+TAPPED, SICK, TOKEN, COMMANDER, FACE_DOWN, PHASED_OUT, UNREADABLE = (
+    1, 2, 4, 8, 16, 32, 64,
+)
+
+
+def _permanent_payload(card) -> list:
+    """One permanent as ``[id, card, flags, power, toughness, damage, extra]``.
+
+    ``extra`` is left off entirely unless the permanent has counters, is
+    attacking, or is blocking - which most of them, most of the time, are not.
+    """
+    flags = (
+        (TAPPED if card.tapped else 0)
+        | (SICK if card.sick else 0)
+        | (TOKEN if card.token else 0)
+        | (COMMANDER if card.commander else 0)
+        | (FACE_DOWN if card.face_down else 0)
+        | (PHASED_OUT if card.phased_out else 0)
+        | (UNREADABLE if card.unreadable else 0)
+    )
+    row = [card.id, card.card, flags, card.power, card.toughness, card.damage]
+    extra = {}
+    if card.counters:
+        extra["c"] = card.counters
+    if card.attacking >= 0:
+        extra["a"] = card.attacking
+    if card.attacking_permanent >= 0:
+        extra["ap"] = card.attacking_permanent
+    if card.blocking:
+        extra["b"] = list(card.blocking)
+    if card.attached_to >= 0:
+        extra["at"] = card.attached_to
+    if extra:
+        row.append(extra)
+    return row
+
+
+def _board_payload(snapshot, index: int) -> dict:
+    return {
+        "index": index,
+        "frame": snapshot.frame,
+        "turn": snapshot.turn,
+        "phase": snapshot.phase,
+        "step": snapshot.step,
+        "active": snapshot.active,
+        "seats": [
+            {
+                "player": seat.player,
+                "life": seat.life,
+                "hand": seat.hand,
+                "library": seat.library,
+                "graveyard": seat.graveyard,
+                "exile": seat.exile,
+                "poison": seat.poison,
+                "out": seat.out,
+                "permanents": [_permanent_payload(c) for c in seat.permanents],
+                # Left off entirely for a replay, where they are always empty.
+                "hand_cards": [_permanent_payload(c) for c in seat.hand_cards],
+                "graveyard_cards": [
+                    _permanent_payload(c) for c in seat.graveyard_cards
+                ],
+            }
+            for seat in snapshot.seats
+        ],
+        "stack": [
+            {"card": item.card, "controller": item.controller, "text": item.text}
+            for item in snapshot.stack
+        ],
+    }
+
+
 def _guard(fn):
     """Turn an exception into something the page can show.
 
@@ -87,6 +162,10 @@ class Bridge(QObject):
         #: The last lab result, kept so a variant's full report can be opened
         #: without running it again.
         self._lab = None
+        #: The board film of the last replay. Kept here rather than sent to the
+        #: page because the whole thing is tens of megabytes of JSON and the
+        #: page only ever draws one board at a time - see ``replay_board``.
+        self._film = None
         #: The Archidekt sign-in, if any: ``{"token", "username"}``. Kept here
         #: and never sent to the page, so a script on the page cannot read it.
         self._archidekt: dict | None = None
@@ -196,6 +275,30 @@ class Bridge(QObject):
     @_guard
     def sandbox_set_life(self, life: int, player: int) -> str:
         return _json(self.sandbox.set_life(life, player))
+
+    @Slot(result=str)
+    @_guard
+    def sandbox_board(self) -> str:
+        """The bench as a board, drawn by the replay's viewer.
+
+        The same shape a replay board arrives in, so one renderer draws both -
+        a sandbox that looked different from the replay would be a second thing
+        to learn for no reason.
+
+        Hands and graveyards are listed rather than counted, because the bench
+        has one operator who put every one of those cards there themselves.
+        """
+        from ..sim.board import BoardRecorder
+
+        recorder = BoardRecorder(open_zones=True)
+        recorder.sample(self.sandbox.game)
+        snapshot = recorder.film.snapshots[-1]
+        return _json(
+            {
+                "cards": self._board_cards(recorder.film),
+                "board": _board_payload(snapshot, 0),
+            }
+        )
 
     # -- decks and runs -----------------------------------------------------
 
@@ -702,6 +805,7 @@ class Bridge(QObject):
         if self._config is None:
             return _json({"error": "no run yet"})
         view = replay_game(self._config, index)
+        self._film = view.film
         return _json(
             {
                 "game_index": view.game_index,
@@ -735,8 +839,66 @@ class Bridge(QObject):
                     }
                     for f in view.frames
                 ],
+                # Everything the board view needs *except* the boards: the
+                # cards to draw, once, with their art and what the parser made
+                # of them, and the log position each board belongs to. The
+                # boards themselves are fetched one at a time; all of them at
+                # once is forty megabytes of JSON for one game.
+                "board_cards": self._board_cards(view.film),
+                "board_frames": [s.frame for s in view.film.snapshots],
             }
         )
+
+    @Slot(int, result=str)
+    @_guard
+    def replay_board(self, index: int) -> str:
+        """One board from the last replay, by its position in the film.
+
+        Kept server-side and asked for a board at a time. The page knows where
+        every board sits in the log (``board_frames``), so scrubbing only asks
+        when it crosses into a different one.
+        """
+        film = self._film
+        if film is None or not film.snapshots:
+            return _json({"error": "no replay yet"})
+        index = max(0, min(int(index), len(film.snapshots) - 1))
+        return _json(_board_payload(film.snapshots[index], index))
+
+    def _board_cards(self, film) -> list[dict]:
+        """Every distinct card in the replayed game, with art and parse status.
+
+        Art is Scryfall's, by printing id, exactly as the Deck tab does it.
+
+        Tokens are looked up by name like anything else, because Scryfall's
+        dump carries token faces too - a board of eleven Treasures with the
+        real Treasure art reads at a glance, and the same board drawn as
+        eleven grey rectangles does not. A token whose name matches nothing
+        falls back to the placeholder, which is the honest answer for a token
+        the engine invented.
+        """
+        from .deckview import image_urls, parse_status
+
+        out = []
+        for ref in film.cards:
+            card = self.db.lookup(ref.name)
+            images = {"normal": "", "large": "", "art": "", "back": None}
+            status = {"status": "ok", "unread": []}
+            if card is not None:
+                images = image_urls(card, self.db.raw_card(card.oracle_id))
+                status = parse_status(card, self.sandbox.verdicts)
+            out.append(
+                {
+                    "name": ref.name,
+                    "type_line": ref.type_line,
+                    "mana_cost": ref.mana_cost,
+                    "token": ref.token,
+                    "art": images["art"],
+                    "image": images["normal"],
+                    "status": status["status"],
+                    "unread": status["unread"],
+                }
+            )
+        return out
 
     @Slot(str, result=str)
     @_guard
@@ -753,6 +915,7 @@ class Bridge(QObject):
             "stall_rate": report.stall_rate,
             "wins": report.wins,
             "stalls": report.stalls,
+            "average_win_round": report.average_win_round,
             "average_win_turn": report.average_win_turn,
             "win_reasons": dict(report.win_reasons),
             "loss_reasons": dict(report.loss_reasons),
@@ -764,7 +927,7 @@ class Bridge(QObject):
                 str(k): v for k, v in report.commander_landed.items()
             },
             "commander_never": report.commander_never,
-            "by_win_turn": {str(k): v for k, v in report.by_win_turn.items()},
+            "by_win_round": {str(k): v for k, v in report.by_win_round.items()},
             # Games stopped by the action budget rather than played out, and
             # what was looping in them. Surfaced because a runaway is a bug in
             # a card, and folding it into the stall rate would present an
