@@ -170,7 +170,7 @@ like a property of the deck.
 ## Tests
 
 ```bash
-python -m pytest            # 1,319 tests
+python -m pytest            # 1,895 tests
 python -m pytest tests/rules
 ```
 
