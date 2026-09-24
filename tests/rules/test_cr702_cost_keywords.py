@@ -28,7 +28,6 @@ from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
     KeywordInstance,
     build,
 )
-from mtgfish.rules.cr700_additional_rules.keywords import Status, lookup
 from mtgfish.rules.kernel.enums import CardType, Phase, Step, Zone
 from mtgfish.rules.kernel.ids import PlayerId
 from mtgfish.rules.kernel.legality import legal_actions
