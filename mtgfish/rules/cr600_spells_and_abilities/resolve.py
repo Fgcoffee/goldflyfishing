@@ -897,29 +897,11 @@ def _do_restart_game(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_become_prepared(resolution: Resolution, effect: Effect) -> None:
-    """CR 722.3a/c: a permanent with a prepare spell becomes prepared.
+    """CR 722.3a/c: a permanent with a prepare spell becomes prepared."""
+    from ..cr700_additional_rules.cr722_preparation import become_prepared
 
-    Becoming prepared puts a copy of the permanent into exile carrying only
-    the prepare spell's characteristics, and that copy is what can be cast. The
-    permanent itself is unchanged - the designation is a marker, like solved.
-    """
-    from ..cr700_additional_rules.cr707_faces import copy_spell
-
-    game = resolution.game
     for obj in _objects(resolution, effect):
-        if obj.id in game.prepared_permanents:
-            continue
-        game.prepared_permanents.add(obj.id)
-        obj.invalidate()
-        game.invalidate_characteristics()
-        # CR 722.3c: the copy has only the prepare spell's characteristics,
-        # which live on the card's second face.
-        if obj.card is not None and len(getattr(obj.card, "faces", ())) > 1:
-            copy = game.create_object(obj.card, obj.owner, Zone.EXILE)
-            copy.face_index = 1
-            copy.controller = obj.controller
-            copy_spell(game, copy, obj)
-        game.log.record(game, f"{obj} becomes prepared", kind="prepared")
+        become_prepared(resolution.game, obj)
 
 
 def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:

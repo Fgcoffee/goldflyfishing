@@ -40,7 +40,7 @@ from ..cr100_game_concepts.cr118_costs import (
 from ..kernel.enums import Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import PlayerId
+from ..kernel.ids import NO_OBJECT, PlayerId
 from .abilities import Ability, AbilityKind
 from .effects import Effect, EffectKind
 
@@ -137,6 +137,9 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     # carried over, every cascade, suspend and discover cast was charged its
     # full mana cost - and abandoned when the mana was not there.
     spell.cast_without_paying = card_object.cast_without_paying
+    # CR 722.3c: casting a prepare copy unprepares its permanent at 601.2i;
+    # it is recorded now and rewound with the cast if the cast fails.
+    prepared_by = card_object.prepare_copy_of
     spell.face_index = action.face_index
     # CR 715.3, 718.3, 720.3: the alternative characteristics apply because
     # the player chose them as the card was played, so the choice is recorded
@@ -216,6 +219,11 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         game.emit(
             Event(EventKind.COMMANDER_CAST, object_id=spell.id, player=player_id)
         )
+
+    if prepared_by != NO_OBJECT:
+        from ..cr700_additional_rules.cr722_preparation import become_unprepared
+
+        become_unprepared(game, prepared_by)
 
     game.log.record(game, f"{game.player(player_id).name} casts {spell}", kind="cast",
                     player=player_id)

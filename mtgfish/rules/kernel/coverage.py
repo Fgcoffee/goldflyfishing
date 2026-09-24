@@ -209,9 +209,12 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
             "709": ("rules/cr700_additional_rules/cr707_faces.py", "split cards - both halves castable, each on its own cost"),
             "722": (
-                "rules/cr600_spells_and_abilities/resolve.py",
-                "preparation cards: the prepared designation, and the copy in "
-                "exile carrying only the prepare spell's characteristics",
+                "rules/cr700_additional_rules/cr722_preparation.py",
+                "preparation cards: never cast as the prepare spell (722.3, "
+                "722.4); the prepared designation (722.3a/b); the copy in "
+                "exile with only the prepare spell's characteristics, kept "
+                "despite 704.5e while prepared, castable by the controller, "
+                "unpreparing the permanent as it is cast (722.3c)",
             ),
             "723": (
                 "rules/kernel/game.py",

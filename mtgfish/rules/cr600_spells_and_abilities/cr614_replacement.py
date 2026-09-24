@@ -458,7 +458,14 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
                     continue
                 if not _is_self_entry(node):
                     continue
-                if node.kind is EffectKind.TAP:
+                if node.kind is EffectKind.BECOME_PREPARED:
+                    # CR 722.3a: "This creature enters prepared."
+                    from ..cr700_additional_rules.cr722_preparation import (
+                        become_prepared,
+                    )
+
+                    become_prepared(game, obj)
+                elif node.kind is EffectKind.TAP:
                     obj.tapped = True
                 elif node.kind is EffectKind.ADD_COUNTERS:
                     add_counters(
@@ -547,7 +554,9 @@ def _is_self_entry(effect) -> bool:
     """
     from .effects import EffectKind
 
-    if effect.kind not in (EffectKind.TAP, EffectKind.ADD_COUNTERS):
+    if effect.kind not in (
+        EffectKind.TAP, EffectKind.ADD_COUNTERS, EffectKind.BECOME_PREPARED
+    ):
         return False
     # ``None`` targets means the effect's own source (see Effect.targets), and
     # the keyword builders use that form while the grammar writes an explicit

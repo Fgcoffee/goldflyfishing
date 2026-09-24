@@ -11,8 +11,8 @@ from harness import ScriptedAbilities, make_board
 
 from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
 from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, execute
-from mtgfish.rules.kernel.enums import LossReason, Zone
-from mtgfish.rules.kernel.query import ObjectFilter, PlayerFilter, PlayerScope
+from mtgfish.rules.kernel.enums import LossReason
+from mtgfish.rules.kernel.query import PlayerFilter, PlayerScope
 
 
 @pytest.fixture
@@ -215,52 +215,7 @@ def test_run_game_returns_the_game_that_finished(board):
 # ---------------------------------------------------------------------------
 
 
-def test_becoming_prepared_is_a_designation(board):
-    """CR 722.3a/b: prepared is a marker on the permanent, and it can be
-    removed again by becoming unprepared."""
-    obj = board.play("Grizzly Bears", controller=0)
-    assert obj.id not in board.game.prepared_permanents
-
-    execute(
-        Resolution(game=board.game, source=obj.id, controller=0),
-        (
-            Effect(
-                EffectKind.BECOME_PREPARED,
-                targets=ObjectFilter(source_only=True),
-            ),
-        ),
-    )
-    assert obj.id in board.game.prepared_permanents
-
-
-def test_preparing_twice_does_nothing_the_second_time(board):
-    """The designation is a set membership, not a counter."""
-    obj = board.play("Grizzly Bears", controller=0)
-    effect = Effect(
-        EffectKind.BECOME_PREPARED, targets=ObjectFilter(source_only=True)
-    )
-    for _ in range(2):
-        execute(
-            Resolution(game=board.game, source=obj.id, controller=0), (effect,)
-        )
-    assert len(board.game.prepared_permanents) == 1
-
-
-def test_a_prepared_permanent_with_a_second_face_makes_an_exiled_copy(board):
-    """CR 722.3c: the copy in exile carries only the prepare spell's
-    characteristics, and it is the copy that can be cast - the permanent itself
-    is untouched."""
-    obj = board.play("Delver of Secrets // Insectile Aberration", controller=0)
-    before = len(board.game.exile)
-
-    execute(
-        Resolution(game=board.game, source=obj.id, controller=0),
-        (
-            Effect(
-                EffectKind.BECOME_PREPARED,
-                targets=ObjectFilter(source_only=True),
-            ),
-        ),
-    )
-    assert len(board.game.exile) == before + 1
-    assert obj.zone is Zone.BATTLEFIELD
+# Preparation is tested in ``test_cr722_preparation``. The tests that stood
+# here prepared a Grizzly Bears and a Delver of Secrets and expected a copy in
+# exile, which CR 722.3a forbids: only a permanent with a prepare spell can
+# become prepared.

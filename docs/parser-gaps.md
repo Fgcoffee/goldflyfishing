@@ -275,6 +275,12 @@ The engine supports these; the parser does not yet produce them:
   an enters trigger. An empty `keyword` asks whether any alternative cost was
   paid. "If her sneak cost was paid *this turn*" (Karai) is a different
   question and is not covered.
+- **"This creature enters prepared." / "it becomes prepared"** (48 cards) -
+  a static ability holding `Effect(EffectKind.BECOME_PREPARED, text="enters
+  prepared")` for the first (the text must start with "enters ", which is how
+  self-entry replacements are recognised), and a plain `BECOME_PREPARED`
+  effect for the second. The prepare spell itself is the card's second face;
+  parse its text as that face's spell ability like any other card.
 - **An alternative cost's window and timing.** `AlternativeCost.condition` is
   checked before the cast is offered, and `instant_speed=True` lifts the
   spell to instant timing inside it; otherwise the spell keeps its own

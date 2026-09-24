@@ -24,6 +24,7 @@ from typing import TYPE_CHECKING
 from ..kernel.enums import CardType, Layout, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject, ObjectKind
+from ..kernel.ids import NO_OBJECT
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
@@ -121,6 +122,10 @@ def castable_face_indices(game: Game, obj: GameObject) -> list[int]:
     faces = getattr(card, "faces", ())
     if not faces:
         return [0]
+    # CR 722.3: a preparation card is never cast as its prepare spell; only
+    # the copy a prepared permanent makes is, and only as that spell.
+    if obj.prepare_copy_of != NO_OBJECT:
+        return [1]
 
     layout = layout_of(obj)
     if layout is Layout.MODAL_DFC:

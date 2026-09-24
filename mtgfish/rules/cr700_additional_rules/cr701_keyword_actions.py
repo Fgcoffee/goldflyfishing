@@ -822,14 +822,11 @@ def _out_of_format_action(instance: ActionInstance) -> tuple[Effect, ...]:
     return (Effect(EffectKind.UNPARSED, text=instance.text or instance.name),)
 
 
-#: Actions this registry can name and nothing else can reach. The first four
-#: appear nowhere in the Comprehensive Rules and on no Commander-legal card -
-#: there is no rule to implement, only a word. "Prepared" is the odd one out
-#: and is listed here rather than built: CR 722.3a makes it a *designation* a
-#: permanent gains, not a verb a sentence performs, so it belongs with the
-#: designations (CR 722) and not in an effect expansion.
+#: Actions this registry can name and nothing else can reach. They appear
+#: nowhere in the Comprehensive Rules and on no Commander-legal card - there
+#: is no rule to implement, only a word.
 NOT_YET_MODELLED_ACTIONS = (
-    "Assimilate", "Face a dilemma", "Heist", "Incorporate", "Prepared",
+    "Assimilate", "Face a dilemma", "Heist", "Incorporate",
 )
 
 
@@ -1104,6 +1101,26 @@ YOUR_ATTRACTION_DECK = ObjectFilter(
     zones=frozenset({Zone.COMMAND}),
     count=Value.of(1),
 )
+
+
+@register("Prepared")
+def _prepared(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 722.3a: "becomes prepared" / "enters prepared".
+
+    Prepared is a designation rather than a verb, so the whole behaviour lives
+    in ``cr722_preparation``: the copy of the prepare spell in exile, its
+    exception to CR 704.5e, and the permanent unpreparing as the copy is cast.
+    The expansion is the effect that grants it - to this permanent unless the
+    sentence names another. "Enters prepared" is the same effect read as a
+    self-entry replacement (CR 614.1c), which ``cr614_replacement`` applies.
+    """
+    return (
+        Effect(
+            EffectKind.BECOME_PREPARED,
+            targets=instance.filter,
+            text=instance.text or "becomes prepared",
+        ),
+    )
 
 
 @register("Open an Attraction")

@@ -37,9 +37,15 @@ before you start: several of its changes touch the areas you named.
 - Paradigm: `Effect.cast_a_copy` (CR 707.12), `Game.spell_resolutions`, and
   `ConditionKind.FIRST_RESOLUTION_OF_NAME`.
 
+- Prepared (CR 722): `rules/cr700_additional_rules/cr722_preparation.py`.
+  Legality now offers casting the prepare-spell copy from exile
+  (`playable_from_here_by` with face 1), so bots will see that option.
+
 ## Next in this session
 
-The Prepared designation (`cr725_designations`).
+Closing the two known CR 701 engine gaps (delayed triggers remembering
+objects; granted abilities on exiled cards), then the remaining PARTIAL
+rules.
 
 ## Left alone
 

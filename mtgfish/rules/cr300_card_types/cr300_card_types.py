@@ -554,6 +554,8 @@ def forget_designations(game: Game, object_id: ObjectId) -> None:
         return
     game.solved_permanents.discard(object_id)
     game.class_levels.pop(object_id, None)
+    # CR 722.3c: prepared lasts only while the permanent is on the battlefield.
+    game.prepared_permanents.discard(object_id)
 
 
 __all__ = [

@@ -194,6 +194,9 @@ class GameObject:
     #: cast for, if any - what "if its sneak cost was paid" asks. Empty for a
     #: spell cast for its mana cost.
     alternative_cost_paid: str = ""
+    #: CR 722.3c: for the copy of a prepare spell waiting in exile, the
+    #: prepared permanent it belongs to.
+    prepare_copy_of: ObjectId = NO_OBJECT
     #: CR 702.190b: a spell whose alternative cost puts it onto the battlefield
     #: tapped and attacking, and the objects paid for it, whose attack it
     #: joins (CR 506.3a).

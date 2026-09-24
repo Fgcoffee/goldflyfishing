@@ -31,6 +31,7 @@ from ..kernel.enums import CardType, LossReason, Supertype, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject, ObjectKind
 from ..kernel.ids import NO_OBJECT, NO_PLAYER, PlayerId
+from .cr722_preparation import keeps_its_prepare_copy
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
@@ -480,7 +481,15 @@ def _final_chapter(chars) -> int | None:
 def _check_ceased(game: Game, to_cease: list[GameObject]) -> None:
     for obj in list(game.objects.values()):
         # CR 704.5d: a token that has left the battlefield.
-        if obj.kind is ObjectKind.TOKEN and obj.zone is not Zone.BATTLEFIELD or obj.kind is ObjectKind.COPY and obj.zone is not Zone.STACK:
+        # CR 704.5e: a copy of a card outside the stack and the battlefield -
+        # save a prepared permanent's copy in exile (CR 722.3c).
+        if obj.kind is ObjectKind.TOKEN and obj.zone is not Zone.BATTLEFIELD:
+            to_cease.append(obj)
+        elif (
+            obj.kind is ObjectKind.COPY
+            and obj.zone not in (Zone.STACK, Zone.BATTLEFIELD)
+            and not keeps_its_prepare_copy(game, obj)
+        ):
             to_cease.append(obj)
 
 
