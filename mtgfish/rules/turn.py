@@ -6,7 +6,7 @@ be responded to (CR 703.2) - untapping, drawing for turn, and declaring
 attackers are all turn-based actions rather than things a player chooses to do
 with priority.
 
-Two steps grant no priority at all (CR 502.3, 514.3): untap, and cleanup. The
+Two steps grant no priority at all (CR 502.4, 514.3): untap, and cleanup. The
 cleanup exception is real, though - if a state-based action happens or a
 triggered ability is waiting, players *do* get priority and another cleanup
 step follows.
@@ -173,7 +173,7 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     for each in game.players:
         each.begin_turn()
 
-    # CR 731.3: the day/night flip reads the *previous* turn's spell count, so
+    # CR 731.2: the day/night flip reads the *previous* turn's spell count, so
     # it is checked before this turn's counter is reset.
     from .designations import check_day_night_transition
 
@@ -250,7 +250,7 @@ def _run_step(game: Game, phase: Phase, step: Step, options: TurnOptions) -> Non
         return
 
     if step in (Step.UNTAP,):
-        # CR 502.3: no player receives priority during the untap step.
+        # CR 502.4: no player receives priority during the untap step.
         return
 
     run_priority(game)
@@ -293,7 +293,7 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
     if step is Step.UNTAP:
         _untap_step(game)
     elif step is Step.MAIN and game.phase is Phase.PRECOMBAT_MAIN:
-        # CR 728.2: the rad-counter procedure is a turn-based action at the
+        # CR 728.1: the rad-counter procedure is a turn-based action at the
         # start of the precombat main phase.
         from .card_types import saga_lore_counters
         from .designations import rad_counter_milling
@@ -312,7 +312,7 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         # when unearth's delayed "exile it" and every "sacrifice it at the
         # beginning of the next end step" are waiting to fire.
         game.emit(Event(EventKind.END_STEP, player=game.active_player))
-        # CR 725.3b: the monarch draws at the beginning of their end step.
+        # CR 725.2: the monarch draws at the beginning of their end step.
         from .designations import monarch_end_step_draw
 
         monarch_end_step_draw(game)
@@ -332,7 +332,7 @@ def _untap_step(game: Game) -> None:
     """CR 502: phasing, then untapping. No priority, no triggers resolve here."""
     active = game.active_player
 
-    # CR 702.183b: the once-each-turn speed increase resets. Without this a
+    # CR 702.179d: the once-each-turn speed increase resets. Without this a
     # player's speed would rise at most once per game rather than once per
     # turn, and no deck would ever reach max speed.
     for player in game.players:
@@ -355,7 +355,7 @@ def _untap_step(game: Game) -> None:
             game.emit(Event(EventKind.PHASED_OUT, object_id=obj.id, player=active))
     game.invalidate_characteristics()
 
-    # CR 502.2: the active player untaps their permanents, all at once - but
+    # CR 502.3: the active player untaps their permanents, all at once - but
     # only the ones allowed to untap. Untapping everything unconditionally is
     # why "doesn't untap during its controller's untap step" did nothing at
     # all: the parser read the prohibition, the restriction system held it,
@@ -424,8 +424,9 @@ def _end_of_combat(game: Game) -> None:
     from .durations import expire_at_end_of_combat
 
     end_combat(game)
-    # CR 511.3: "until end of combat" effects end here, at the same moment
-    # creatures are removed from combat - not at cleanup with the rest.
+    # CR 511.2: "Effects that last 'until end of combat' expire at the end
+    # of the combat phase" - which CR 511.3 places at the moment this step
+    # ends, the same moment creatures are removed from combat.
     expire_at_end_of_combat(game)
 
 

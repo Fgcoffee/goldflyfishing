@@ -146,7 +146,7 @@ def _devotion(game: Game, value: Value, controller: PlayerId) -> int:
     """CR 700.5: coloured mana symbols among permanents a player controls.
 
     Counted per *symbol*, not per permanent - a card costing {B}{B} adds two -
-    and a hybrid symbol counts once if either half matches (CR 700.5b), which
+    and a hybrid symbol counts once if either half matches (CR 700.5), which
     is why this asks the symbol which colours can pay it rather than testing
     equality.
     """

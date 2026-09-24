@@ -387,7 +387,7 @@ class Step(IntEnum):
     CLEANUP = 11
 
 
-#: Steps in which no player receives priority (CR 502.3, 514.3). Note that the
+#: Steps in which no player receives priority (CR 502.4, 514.3). Note that the
 #: cleanup step normally grants no priority, but does if a state-based action is
 #: performed or a triggered ability is waiting - handled in turn.py.
 NO_PRIORITY_STEPS = frozenset({Step.UNTAP, Step.CLEANUP})

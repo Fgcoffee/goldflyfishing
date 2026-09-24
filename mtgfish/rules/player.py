@@ -49,7 +49,7 @@ class Player:
     #: not started their engines; once started it runs 1..4 and never
     #: decreases. "Max speed" abilities function only at 4.
     speed: int = 0
-    #: CR 702.183b: speed increases at most once each turn, so the game has to
+    #: CR 702.179d: speed increases at most once each turn, so the game has to
     #: remember whether it already has this turn.
     speed_increased_this_turn: bool = False
 
@@ -58,7 +58,7 @@ class Player:
         return self.speed >= MAX_SPEED
 
     def start_engines(self) -> bool:
-        """CR 702.183a: if this player has no speed, it becomes 1.
+        """CR 702.179a: if this player has no speed, it becomes 1.
 
         Idempotent, and deliberately so: several permanents on the same board
         each say "Start your engines!", and the second one must not reset or
@@ -70,7 +70,7 @@ class Player:
         return False
 
     def increase_speed(self) -> bool:
-        """CR 702.183b: +1, at most once each turn, never past the maximum.
+        """CR 702.179d: +1, at most once each turn, never past the maximum.
 
         Returns whether it actually moved, so the caller can emit an event
         only when something changed.

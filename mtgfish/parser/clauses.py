@@ -2850,7 +2850,7 @@ _SEARCH_STEPS: tuple[tuple[str, "Zone | None"], ...] = (
 def _search_tail(stream: Stream) -> tuple[Zone, bool]:
     """Where a search puts what it finds, and whether it arrives tapped.
 
-    Defaults to the hand (CR 701.19c: a search with no stated destination
+    Defaults to the hand (CR 701.23c: a search with no stated destination
     reveals nothing and the card stays where the effect says - hand is the
     overwhelmingly common templating).
 
@@ -6306,7 +6306,7 @@ def _class_level(stream: Stream) -> Effect | None:
 
 @clause("spend-only")
 def _spend_only(stream: Stream) -> Effect | None:
-    """"Spend this mana only to cast creature spells." (CR 106.6b).
+    """"Spend this mana only to cast creature spells." (CR 106.6).
 
     A rider on mana already in the pool rather than an effect of its own, so
     it produces no opcode - it narrows the ADD_MANA that came before it, which
@@ -6518,7 +6518,7 @@ def _timing_qualifier(stream: Stream) -> Effect | None:
     return Effect(EffectKind.NOTHING, text="activate only ...")
 
 
-# "Spend this mana only to cast creature spells" (CR 106.6b) is deliberately
+# "Spend this mana only to cast creature spells" (CR 106.6) is deliberately
 # absent. Consuming it without attaching the restriction to the mana would make
 # the engine *more* permissive than the card - mana usable on anything - and a
 # parser that loosens a restriction is worse than one that fails: the game

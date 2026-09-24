@@ -416,7 +416,7 @@ ZERO_COST = ManaCost(())
 
 
 class ManaRestriction(Protocol):
-    """A rider limiting what a unit of mana may be spent on (CR 106.6b).
+    """A rider limiting what a unit of mana may be spent on (CR 106.6).
 
     Restrictions are all-or-nothing for a given payment - "spend only on
     creature spells" is a question about the spell being cast, not about which
@@ -430,7 +430,7 @@ class ManaRestriction(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class SpendOnlyOn:
-    """"Spend this mana only to cast creature spells." (CR 106.6b).
+    """"Spend this mana only to cast creature spells." (CR 106.6).
 
     The payment solver already filters unusable buckets by asking
     ``permits`` - this is simply the first concrete restriction to exist, so
@@ -610,13 +610,13 @@ def find_payment(
     workable default.
 
     ``context`` is the spell or ability being paid for, used to evaluate mana
-    restrictions (CR 106.6b).
+    restrictions (CR 106.6).
     """
     if cost.is_empty:
         return Payment(())
 
     # Mana carrying a restriction that this payment doesn't satisfy is simply
-    # unavailable (CR 106.6b), so drop those buckets before solving.
+    # unavailable (CR 106.6), so drop those buckets before solving.
     usable: list[tuple[ManaKind, int]] = [
         (k, n)
         for k, n in sorted(pool.buckets.items(), key=lambda kv: _kind_sort_key(kv[0]))

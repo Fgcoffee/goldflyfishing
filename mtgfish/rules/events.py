@@ -76,7 +76,7 @@ class EventKind(IntEnum):
     LIFE_SET = 64
     DAMAGE_PREVENTED = 65
     POISON_ADDED = 66
-    #: CR 702.183b: a player's speed went up.
+    #: CR 702.179d: a player's speed went up.
     SPEED_INCREASED = 67
 
     # -- cards -------------------------------------------------------------
