@@ -533,12 +533,16 @@ def _persist(instance: KeywordInstance) -> tuple[Ability, ...]:
             Effect(
                 EffectKind.CONDITIONAL,
                 condition=no_minus,
+                # It returns *with* the counter. A separate "put a counter on
+                # it" had no object to act on but the source - the card left
+                # in the graveyard - so the creature came back without one
+                # and could return again and again.
                 children=(
-                    Effect(EffectKind.PUT_ONTO_BATTLEFIELD, text="return it"),
                     Effect(
-                        EffectKind.ADD_COUNTERS,
+                        EffectKind.PUT_ONTO_BATTLEFIELD,
                         counter_type="-1/-1",
                         amount=Value.of(1),
+                        text="return it with a -1/-1 counter on it",
                     ),
                 ),
             ),
@@ -561,12 +565,16 @@ def _undying(instance: KeywordInstance) -> tuple[Ability, ...]:
             Effect(
                 EffectKind.CONDITIONAL,
                 condition=no_plus,
+                # It returns *with* the counter. A separate "put a counter on
+                # it" had no object to act on but the source - the card left
+                # in the graveyard - so the creature came back without one
+                # and could return again and again.
                 children=(
-                    Effect(EffectKind.PUT_ONTO_BATTLEFIELD, text="return it"),
                     Effect(
-                        EffectKind.ADD_COUNTERS,
+                        EffectKind.PUT_ONTO_BATTLEFIELD,
                         counter_type="+1/+1",
                         amount=Value.of(1),
+                        text="return it with a +1/+1 counter on it",
                     ),
                 ),
             ),

@@ -66,8 +66,11 @@ def matches(
     if not obj.is_live and not allow_stale:
         return False
 
-    if spec.source_only:
-        return _is_same_object(game, obj.id, source)
+    # "This creature with no -1/-1 counters on it" names the source *and*
+    # describes it. Answering on identity alone made every other constraint
+    # decoration, so persist returned a creature however many counters it had.
+    if spec.source_only and not _is_same_object(game, obj.id, source):
+        return False
     if spec.other_than_source and _is_same_object(game, obj.id, source):
         return False
     if spec.specific and obj.id not in spec.specific:
@@ -490,15 +493,36 @@ def find(
             if matches(game, obj, spec, source=source, controller=controller):
                 out.append(obj)
     if spec.source_only and not out:
-        # "This spell", "this card": the source is wherever it is, which for a
-        # resolving spell is the stack (CR 608.2). The zones default to the
-        # battlefield, so "exile this spell" searched there and found nothing.
-        # Only the live object counts - once it has moved, CR 400.7 makes it
-        # a new object the words no longer refer to.
-        obj = game.objects.get(source)
-        if obj is not None and obj.is_live:
-            out.append(obj)
+        out = _the_source_wherever_it_is(game, spec, source, controller)
     return out
+
+
+def _the_source_wherever_it_is(
+    game: Game, spec: ObjectFilter, source: ObjectId, controller: PlayerId
+) -> list[GameObject]:
+    """"This spell", "this card", "it" - the source, in whatever zone it is.
+
+    The zones default to the battlefield, so "exile this spell" searched there
+    and found nothing: a resolving spell is on the stack (CR 608.2). The live
+    source is tried first; failing that, the object it was a moment ago, which
+    is what "if it had no -1/-1 counters on it" asks about (CR 603.10a). Only
+    a live source counts at all - once it has moved on, CR 400.7 makes it a
+    new object the words no longer refer to.
+    """
+    from dataclasses import replace
+
+    obj = game.objects.get(source)
+    if obj is None or not obj.is_live:
+        return []
+    anywhere = replace(spec, zones=frozenset())
+    previous = game.objects.get(obj.previous_id) if obj.previous_id else None
+    for candidate in (obj, previous):
+        if candidate is not None and matches(
+            game, candidate, anywhere, source=source, controller=controller,
+            allow_stale=True,
+        ):
+            return [candidate]
+    return []
 
 
 def _near_top_of_library(game: Game, obj: GameObject, depth: int) -> bool:
