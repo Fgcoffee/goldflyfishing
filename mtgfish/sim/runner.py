@@ -135,6 +135,7 @@ def play_one(
     *,
     log: bool = False,
     cancel: threading.Event | None = None,
+    watch=None,
 ):
     """Play one game and return its record.
 
@@ -143,6 +144,12 @@ def play_one(
 
     ``cancel`` is checked on every game event, so stopping does not have to
     wait for a game to end. One pathological game took over ten minutes.
+
+    ``watch`` is a second observer, called with every event after the run's
+    own. It is how a replay records the board over time (see ``sim.board``)
+    without a run paying anything for it. Like the observer it must only read:
+    a watched game has to be the same game as an unwatched one, or the film
+    shows a board the statistics did not come from.
     """
     decks, provider = _worker_state(config.decklists)
     seed = config.seed_for(index)
@@ -151,13 +158,15 @@ def play_one(
     record = new_record(index, seed, len(game.players))
     observer = Observer(record, config.hero)
     game.observer = observer
-    if cancel is not None:
+    if cancel is not None or watch is not None:
         # The observer sees every event and records the same ones either way,
         # so the game - and its digest - is unchanged by being watched.
-        def watched(game_, event, _observe=observer):
-            if cancel.is_set():
+        def watched(game_, event, _observe=observer, _also=watch):
+            if cancel is not None and cancel.is_set():
                 raise RunCancelled(f"stopped during game {index}")
             _observe(game_, event)
+            if _also is not None:
+                _also(game_, event)
 
         game.observer = watched
 
@@ -371,13 +380,16 @@ def _chunk_of_size(items, size: int):
         yield batch
 
 
-def replay(config: RunConfig, index: int):
+def replay(config: RunConfig, index: int, *, watch=None):
     """Rebuild one game from its seed, with the full log.
 
     Not a lookup - the game is played again. That is what makes storage cost
     nothing and what makes every datapoint clickable.
+
+    ``watch`` is passed through to ``play_one``: it is how the board film is
+    recorded, for a replay only, without a run paying anything for it.
     """
-    return play_one(config, index, log=True)
+    return play_one(config, index, log=True, watch=watch)
 
 
 def verify(config: RunConfig, result: RunResult, *, sample: int = 8) -> list[int]:

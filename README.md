@@ -18,6 +18,14 @@ over the same Python bridge.
   are numbered the way the player who took them would number them, not by the
   engine's global counter - a four-player game's fourth round is its thirteenth
   turn, and nobody means that by "turn four".
+* **Shows the board, not just the log.** A replay is also a table you can scrub
+  through: four seats, what each of them has out, what is tapped, what is
+  attacking whom, and what is on the stack. A log is exact and unreadable - it
+  is a very long way of saying "your deck made five thousand Ape tokens" - and
+  the board is where a card the parser could not read is finally visible in the
+  act of doing nothing. Card art comes from Scryfall as it is needed, so the
+  board wants a network connection; without one it draws the cards blank rather
+  than breaking.
 * **Shows what the engine actually understood.** The Deck tab marks every card
   by how much of its text the parser read: yellow for partly read, red for
   unread. A deck can be perfectly legal and still be measured as a deck with

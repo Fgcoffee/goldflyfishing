@@ -220,7 +220,7 @@ def _print_replay(config: RunConfig, index: int, detail: str = "normal") -> None
     global - a four-player game's fourth round is turn thirteen, and nobody
     means that by "turn four".
     """
-    view = replay_game(config, index)
+    view = replay_game(config, index, boards=False)
     print()
     print(f"--- replay of game {index} (seed {view.seed}) ---")
     for seat in view.seats:
