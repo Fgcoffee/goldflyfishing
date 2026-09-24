@@ -734,6 +734,8 @@ class ConditionKind(IntEnum):
     #: CR 701.54c: how many times the Ring has tempted this player, measured
     #: against ``constraint``.
     RING_TEMPTED_TIMES = 26
+    #: CR 702.195b: "if you have an enduring story" / "as long as you have".
+    HAS_ENDURING_STORY = 27
     #: CR 601.2b / 118.9: "if its [keyword] cost was paid" - which alternative
     #: cost the spell was cast for, named by ``Condition.keyword``. An empty
     #: keyword asks whether any alternative cost was paid.

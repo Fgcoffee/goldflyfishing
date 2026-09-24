@@ -453,10 +453,21 @@ CR_ONLY_ACTIONS: dict[str, str] = {
     "Recruit": "701.70",
 }
 
+#: The same for keyword abilities.
+CR_ONLY_ABILITIES: dict[str, str] = {
+    "Storied": "702.195",
+}
+
 KEYWORD_ACTIONS.update(
     {
         name.lower(): KeywordSpec(name, Category.OTHER, Status.IMPLEMENTED, rule)
         for name, rule in CR_ONLY_ACTIONS.items()
+    }
+)
+KEYWORD_ABILITIES.update(
+    {
+        name.lower(): KeywordSpec(name, Category.STATIC, Status.IMPLEMENTED, rule)
+        for name, rule in CR_ONLY_ABILITIES.items()
     }
 )
 
@@ -518,6 +529,8 @@ ENGINE_READS = frozenset(
         "Changeling", "Read Ahead",
         # -- speed, read by the CR 704.5aa state-based action -------------
         "Start your engines!",
+        # -- enduring story, read beside the state-based actions ----------
+        "Storied",
     }
 )
 

@@ -109,7 +109,11 @@ def execute_one(resolution: Resolution, effect: Effect) -> None:
         )
         return
 
-    if effect.kind in _REMEMBERING and effect.targets is not None:
+    if (
+        effect.kind in _REMEMBERING
+        and effect.targets is not None
+        and not _is_per_player_sacrifice(effect)
+    ):
         # Captured *before* the effect runs: an object that dies to it is
         # exactly the one the next sentence wants to talk about, and after
         # the fact it is a different object (CR 400.7).
@@ -486,9 +490,68 @@ def _return_when_the_source_leaves(
     )
 
 
+def _is_per_player_sacrifice(effect: Effect) -> bool:
+    """"Each opponent sacrifices a creature": named players, each choosing
+    from their own permanents - not a filter over the whole board."""
+    spec = effect.targets
+    return (
+        effect.kind is EffectKind.SACRIFICE
+        and effect.players is not None
+        and not effect.is_targeted
+        and spec is not None
+        and not spec.source_only
+        and not spec.specific
+        and not spec.remembered
+    )
+
+
 def _do_sacrifice(resolution: Resolution, effect: Effect) -> None:
-    for obj in _objects(resolution, effect):
-        actions.sacrifice(resolution.game, obj, source=resolution.source)
+    if not _is_per_player_sacrifice(effect):
+        for obj in _objects(resolution, effect):
+            actions.sacrifice(resolution.game, obj, source=resolution.source)
+        return
+
+    # CR 701.21a: only a permanent its controller controls can be sacrificed,
+    # and CR 608.2d: the player sacrificing makes the choice.
+    from ..kernel.matching import find
+
+    game = resolution.game
+    spec = effect.targets
+    everything = find(game, spec, source=resolution.source, controller=resolution.controller)
+    sacrificed: list[ObjectId] = []
+    for player_id in _players(resolution, effect):
+        theirs = [obj for obj in everything if obj.controller == player_id]
+        for obj in _sacrifice_choice(resolution, effect, theirs, player_id):
+            sacrificed.append(obj.id)
+            actions.sacrifice(game, obj, source=resolution.source)
+    if sacrificed:
+        resolution.remembered = sacrificed
+
+
+def _sacrifice_choice(
+    resolution: Resolution, effect: Effect, theirs: list[GameObject], player_id: PlayerId
+) -> list[GameObject]:
+    """What this player sacrifices: as many as the effect says, their choice.
+
+    Asked of the sacrificing player's agent; without one, the cheapest by
+    mana value and then id, the default sacrifice costs use too.
+    """
+    spec = effect.targets
+    if spec.count is None:
+        return theirs
+    wanted = _value_of(resolution, spec.count)
+    if wanted <= 0 or not theirs:
+        return []
+    if wanted >= len(theirs):
+        return theirs
+    game = resolution.game
+    chooser = getattr(game.agent_for(player_id), "choose_objects", None)
+    if chooser is not None:
+        picked = chooser(game, player_id, effect, list(theirs), wanted)
+        kept = [obj for obj in theirs if obj in (picked or ())][:wanted]
+        if len(kept) == wanted:
+            return kept
+    return sorted(theirs, key=lambda o: (game.characteristics(o).mana_value, o.id))[:wanted]
 
 
 def _do_return_to_hand(resolution: Resolution, effect: Effect) -> None:

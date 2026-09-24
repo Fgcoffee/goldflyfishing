@@ -51,7 +51,11 @@ def test_registry_has_no_entries_that_do_not_exist(card_db):
     }
     if not known:
         return
-    cr_only = {name.lower() for name in keywords.CR_ONLY_ACTIONS}
+    cr_only = {
+        name.lower()
+        for table in (keywords.CR_ONLY_ACTIONS, keywords.CR_ONLY_ABILITIES)
+        for name in table
+    }
     invented = sorted(
         spec.name
         for registry in (keywords.KEYWORD_ABILITIES, keywords.KEYWORD_ACTIONS)
@@ -66,7 +70,7 @@ def test_cr_only_actions_are_really_in_the_rules():
     round the check: each must name a rule the CR defines, titled with it."""
     from mtgfish.rules.kernel.citations import text as rule_text
 
-    for name, number in keywords.CR_ONLY_ACTIONS.items():
+    for name, number in {**keywords.CR_ONLY_ACTIONS, **keywords.CR_ONLY_ABILITIES}.items():
         text = rule_text(number)
         assert text, f"{name}: CR {number} does not exist"
         assert name.lower() in text.lower(), f"CR {number} is not {name}"

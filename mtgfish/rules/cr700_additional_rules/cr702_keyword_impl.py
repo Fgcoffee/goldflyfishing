@@ -1582,6 +1582,19 @@ def _start_your_engines(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Storied")
+def _storied(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.195a: a static ability the engine reads by name - see
+    ``cr704_sba._grant_enduring_stories``, which gives the designation."""
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
 @register("Station")
 def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 721: "Tap another untapped creature you control: Put charge counters

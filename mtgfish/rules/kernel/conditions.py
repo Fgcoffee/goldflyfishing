@@ -260,6 +260,9 @@ def holds(
             return False
         return not spell.mana_spent
 
+    if kind is ConditionKind.HAS_ENDURING_STORY:
+        return controller != NO_PLAYER and game.player(controller).has_enduring_story
+
     if kind is ConditionKind.RING_TEMPTED_TIMES:
         if condition.constraint is None or controller == NO_PLAYER:
             return False
