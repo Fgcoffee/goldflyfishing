@@ -415,6 +415,11 @@ class Effect:
     #: transformed" is the only thing that needs it - everything else casts
     #: the front face, which is index 0 and the default.
     face_index: int = 0
+    #: For CAST_WITHOUT_PAYING: cast a *copy* of the object rather than the
+    #: object (CR 707.12), created in ``zone`` - or where the object is - and
+    #: cast from there. Paradigm's "create a copy of this object in exile.
+    #: You may cast the copy".
+    cast_a_copy: bool = False
     #: For SUSPEND_RULE: which rule is switched off, as its CR number - a
     #: member of ``cr101_rule_overrides.Rule``. ``targets`` and ``players``
     #: then say for whom, exactly as they do for a prohibition.

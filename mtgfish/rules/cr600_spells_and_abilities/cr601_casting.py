@@ -132,6 +132,11 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     # 601.2a: move the card to the stack. It becomes a spell there.
     spell = game.move_object(card_object, Zone.STACK, to_player=player_id)
     spell.controller = player_id
+    # CR 118.5: permission to cast "without paying its mana cost" is given to
+    # the card before it moves, and CR 400.7 makes the spell a new object. Not
+    # carried over, every cascade, suspend and discover cast was charged its
+    # full mana cost - and abandoned when the mana was not there.
+    spell.cast_without_paying = card_object.cast_without_paying
     spell.face_index = action.face_index
     # CR 715.3, 718.3, 720.3: the alternative characteristics apply because
     # the player chose them as the card was played, so the choice is recorded

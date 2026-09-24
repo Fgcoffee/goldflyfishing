@@ -260,6 +260,13 @@ def holds(
             return False
         return not spell.mana_spent
 
+    if kind is ConditionKind.FIRST_RESOLUTION_OF_NAME:
+        spell = game.objects.get(source)
+        if spell is None:
+            return False
+        name = game.characteristics(spell).name.lower()
+        return not game.spell_resolutions.get((int(controller), name), 0)
+
     if kind is ConditionKind.ALTERNATIVE_COST_PAID:
         # Asked of the spell, or of the permanent it became, which carries the
         # record over (CR 608.3).

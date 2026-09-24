@@ -732,6 +732,10 @@ class ConditionKind(IntEnum):
     #: cost the spell was cast for, named by ``Condition.keyword``. An empty
     #: keyword asks whether any alternative cost was paid.
     ALTERNATIVE_COST_PAID = 24
+    #: CR 702.192a: "if this is the first time a spell you control with this
+    #: spell's name has resolved this game". Asked while the spell resolves,
+    #: so it counts earlier resolutions only.
+    FIRST_RESOLUTION_OF_NAME = 25
     #: "as long as this permanent has N or more [kind] counters on it" - the
     #: shape shared by level bands (711.2a) and station symbols (721.2a).
     #: Distinct from an ObjectFilter's counter constraint because it asks about
@@ -850,6 +854,8 @@ class Condition:
             return "it was kicked"
         if kind is ConditionKind.ALTERNATIVE_COST_PAID:
             return f"its {self.keyword or 'alternative'} cost was paid"
+        if kind is ConditionKind.FIRST_RESOLUTION_OF_NAME:
+            return "this is the first time a spell with this name has resolved"
         if kind is ConditionKind.IS_SOLVED:
             return "this case is solved"
         if kind is ConditionKind.CLASS_LEVEL:

@@ -3719,44 +3719,52 @@ def _paradigm(instance: KeywordInstance) -> tuple[Ability, ...]:
     trigger that copies the spell into exile for a free cast each precombat
     main phase, and one of which exiles the spell.
 
-    The exile half is built exactly; the copy half is not. Three things it
-    needs and the engine does not have:
-
-    * a copy made *in exile* rather than on the stack (CR 707.10 through
-      ``COPY_SPELL`` puts it on the stack, and ignores a zone);
-    * a trigger at the beginning of a main phase - ``PHASE_BEGAN`` is the
-      event the parser uses for that phrase and nothing emits it, and
-      ``STEP_BEGAN`` cannot say *which* step;
-    * "if this is the first time a spell you control with this name has
-      resolved this game", which no condition kind can ask.
-
-    So the shape is here, the exile happens, and the copy is left unread
-    rather than approximated - the approximation would hand the card a free
-    cast every turn from the first resolution onwards with nothing to stop it
-    compounding.
+    * "if this is the first time a spell you control with this spell's name
+      has resolved this game" is FIRST_RESOLUTION_OF_NAME, answered from the
+      game's record of resolutions, which is written after the spell's
+      abilities run so the spell does not count itself;
+    * "at the beginning of each of your precombat main phases for the rest of
+      the game" is a repeating delayed trigger on the phase beginning;
+    * "create a copy of this object in exile. You may cast the copy without
+      paying its mana cost" is CR 707.12's cast-a-copy, made from the spell as
+      it last existed. The copy has paradigm too, but by then the name has
+      resolved before, so it starts no second stream.
     """
+    from ..kernel.enums import Phase
+
     return (
         Ability.spell(
             Effect(
-                EffectKind.DELAYED_TRIGGER,
-                trigger=TriggerCondition(
-                    event_kinds=frozenset({EventKind.PHASE_BEGAN}),
-                    players=YOU,
-                    intervening_if=Condition(
-                        kind=ConditionKind.IS_MAIN_PHASE,
-                        text="a main phase",
-                    ),
-                    functions_in=frozenset({Zone.EXILE}),
-                    text="at the beginning of each of your precombat main phases",
+                EffectKind.CONDITIONAL,
+                condition=Condition(
+                    kind=ConditionKind.FIRST_RESOLUTION_OF_NAME,
+                    text="if this is the first time a spell you control with "
+                    "this spell's name has resolved this game",
                 ),
-                repeats=True,
                 children=(
                     Effect(
-                        EffectKind.UNPARSED,
-                        text="create a copy of this in exile and you may cast it",
+                        EffectKind.DELAYED_TRIGGER,
+                        trigger=TriggerCondition(
+                            event_kinds=frozenset({EventKind.PHASE_BEGAN}),
+                            players=YOU,
+                            phases=frozenset({int(Phase.PRECOMBAT_MAIN)}),
+                            text="at the beginning of each of your precombat "
+                            "main phases",
+                        ),
+                        repeats=True,
+                        children=(
+                            Effect(
+                                EffectKind.CAST_WITHOUT_PAYING,
+                                targets=SOURCE_ONLY,
+                                zone=Zone.EXILE,
+                                cast_a_copy=True,
+                                text="create a copy of this object in exile; "
+                                "you may cast the copy without paying its mana cost",
+                            ),
+                        ),
+                        text="each of your precombat main phases, a free copy",
                     ),
                 ),
-                text="each of your precombat main phases, a free copy",
             ),
             Effect(
                 EffectKind.EXILE,

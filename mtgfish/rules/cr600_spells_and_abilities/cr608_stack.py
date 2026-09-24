@@ -149,6 +149,7 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         permanent.was_cast = True
         _apply_enters_with_counters(game, permanent)
         _attach_aura_on_entry(game, obj, permanent)
+        _record_resolution(game, obj, chars)
         if obj.enters_tapped_and_attacking:
             _enter_tapped_and_attacking(game, obj, permanent)
         game.emit(
@@ -168,6 +169,7 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         if ability.kind is AbilityKind.SPELL:
             execute(resolution, ability.effects)
 
+    _record_resolution(game, obj, chars)
     game.emit(Event(EventKind.SPELL_RESOLVED, object_id=obj.id, player=obj.controller))
     # CR 608.2m: an instant or sorcery goes to its owner's graveyard as the
     # final part of its resolution - unless it was cast with alternative
@@ -195,6 +197,16 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # card moves anywhere else.
         moved.playable_from_here_by = obj.controller
         moved.playable_face = 0
+
+
+def _record_resolution(game: Game, spell: GameObject, chars) -> None:
+    """Count this resolution against its controller and name (CR 702.192a).
+
+    Recorded after the spell's abilities have run, so a paradigm spell asking
+    "is this the first time" sees only the resolutions before its own.
+    """
+    key = (int(spell.controller), chars.name.lower())
+    game.spell_resolutions[key] = game.spell_resolutions.get(key, 0) + 1
 
 
 def _enter_tapped_and_attacking(

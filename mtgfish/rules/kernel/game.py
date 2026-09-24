@@ -155,6 +155,10 @@ class Game:
     #: gone, and CR 603.3d still puts it under whoever controlled it then.
     pending_triggers: list = field(default_factory=list)
     delayed_triggers: list = field(default_factory=list)
+    #: CR 702.192a: how many times each player's spells of each name have
+    #: resolved this game, keyed by (controller, lower-case name). Paradigm's
+    #: "the first time a spell you control with this name has resolved".
+    spell_resolutions: dict = field(default_factory=dict)
     #: State triggers (CR 603.8) whose condition is currently true and which
     #: have already fired for it. They re-arm only once the condition goes
     #: false, or a permanently-true condition would trigger endlessly.

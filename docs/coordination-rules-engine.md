@@ -30,11 +30,16 @@ before you start: several of its changes touch the areas you named.
 - `kernel/matching.py`: a `source_only` filter checks every one of its
   criteria, and `find()` looks for the source in whatever zone it is in.
 
+- `cast_spell` now carries `cast_without_paying` from the card onto the new
+  spell object. Before this, every cascade, suspend or discover cast was
+  charged its full mana cost, and was abandoned when the player could not pay.
+  That may account for some of the rewinds you are seeing.
+- Paradigm: `Effect.cast_a_copy` (CR 707.12), `Game.spell_resolutions`, and
+  `ConditionKind.FIRST_RESOLUTION_OF_NAME`.
+
 ## Next in this session
 
-Paradigm (`cr702_keyword_impl`, `resolve._do_cast_without_paying`, a new
-`ConditionKind`, and a record on `Game` of which spells have resolved), then
-the Prepared designation (`cr725_designations`).
+The Prepared designation (`cr725_designations`).
 
 ## Left alone
 

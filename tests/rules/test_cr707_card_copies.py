@@ -79,3 +79,28 @@ def test_a_spell_that_exiles_itself_is_not_also_put_in_the_graveyard(board):
     names = lambda ids: [game.printed_characteristics(game.objects[i]).name for i in ids]  # noqa: E731
     assert names(game.exile).count("Divination") == 1
     assert "Divination" not in names(game.player(PlayerId(0)).graveyard)
+
+
+def test_a_free_cast_costs_no_mana(board):
+    """CR 118.5: cascade, suspend, discover - "without paying its mana cost"
+    must survive the card becoming a spell (CR 400.7)."""
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, execute
+    from mtgfish.rules.kernel.query import ObjectFilter
+
+    game = board.game
+    card = board.hand("Grizzly Bears")
+    source = board.play("Runeclaw Bear")
+    execute(
+        Resolution(game=game, source=source.id, controller=PlayerId(0)),
+        (
+            Effect(
+                EffectKind.CAST_WITHOUT_PAYING,
+                targets=ObjectFilter(specific=(card.id,), zones=frozenset({Zone.HAND})),
+            ),
+        ),
+    )
+    (spell_id,) = game.stack
+    assert game.objects[spell_id].mana_spent == 0
+    board.resolve_stack()
+    assert len(bears_on_battlefield(board)) == 1

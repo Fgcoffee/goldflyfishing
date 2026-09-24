@@ -2100,6 +2100,9 @@ def _do_cast_without_paying(resolution: Resolution, effect: Effect) -> None:
     from .cr601_casting import CastError, cast_spell
 
     game = resolution.game
+    if effect.cast_a_copy:
+        _cast_a_copy_without_paying(resolution, effect)
+        return
     for obj in _objects(resolution, effect):
         if obj.zone is Zone.BATTLEFIELD or obj.zone is Zone.STACK:
             continue
@@ -2119,6 +2122,51 @@ def _do_cast_without_paying(resolution: Resolution, effect: Effect) -> None:
         except CastError as exc:
             obj.cast_without_paying = False
             game.log.record(game, f"Free cast abandoned: {exc}", kind="illegal")
+
+
+def _cast_a_copy_without_paying(resolution: Resolution, effect: Effect) -> None:
+    """CR 707.12: cast a copy of an object, not the object.
+
+    The copy is created in the zone the effect names (or where the object
+    is) and cast from there while this ability resolves, following CR 601.2a-h.
+    A copy that is not cast, or cannot be, stays behind as a copy of a card
+    outside the stack and the battlefield, and CR 704.5e removes it.
+
+    The object copied is the one the effect refers to, as it last existed:
+    Paradigm's "this object" is a spell that has long since left the stack.
+    """
+    from ..cr100_game_concepts.cr117_priority import Action, ActionKind
+    from ..kernel.gameobject import ObjectKind
+    from .cr601_casting import CastError, cast_spell
+
+    game = resolution.game
+    spec = effect.targets
+    if spec is None or spec.source_only:
+        original = game.objects.get(resolution.source)
+        originals = [original] if original is not None and original.card else []
+    else:
+        originals = _objects(resolution, effect)
+
+    for original in originals:
+        zone = effect.zone if effect.zone is not None else original.zone
+        copy = game.create_object(
+            original.card,
+            resolution.controller,
+            zone,
+            kind=ObjectKind.COPY,
+            face_index=original.face_index,
+        )
+        if not _wants(resolution, effect):
+            continue
+        copy.cast_without_paying = True
+        try:
+            cast_spell(
+                game,
+                resolution.controller,
+                Action(ActionKind.CAST_SPELL, source=copy.id, face_index=effect.face_index),
+            )
+        except CastError as exc:
+            game.log.record(game, f"Free cast of a copy abandoned: {exc}", kind="illegal")
 
 
 def _do_play_from_zone(resolution: Resolution, effect: Effect) -> None:
