@@ -19,10 +19,10 @@ creature", and the difference is visible at a glance.
 
 from __future__ import annotations
 
-from ..rules.abilities import Ability, AbilityKind
-from ..rules.effects import Effect, EffectKind
-from ..rules.enums import Duration, Timing, Zone
-from ..rules.query import ObjectFilter, PlayerFilter, Value
+from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from ..rules.kernel.enums import Duration, Timing, Zone
+from ..rules.kernel.query import ObjectFilter, PlayerFilter, Value
 
 
 def explain_ability(ability: Ability) -> str:

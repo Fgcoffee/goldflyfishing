@@ -17,11 +17,11 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.effects import TokenSpec
-from mtgfish.rules.enums import CardType
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.tokens import create_tokens
-from mtgfish.rules.values import Value
+from mtgfish.rules.cr100_game_concepts.cr111_tokens import create_tokens
+from mtgfish.rules.cr600_spells_and_abilities.effects import TokenSpec
+from mtgfish.rules.kernel.enums import CardType
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.values import Value
 from mtgfish.ui.sandbox import Sandbox
 
 
@@ -74,7 +74,7 @@ def test_a_doubler_only_doubles_its_own_controllers_tokens(box):
 
 def test_a_doubler_that_has_left_stops_applying(box):
     """CR 611.3: the replacement is derived from live permanents."""
-    from mtgfish.rules.enums import Zone
+    from mtgfish.rules.kernel.enums import Zone
 
     box.put("Doubling Season", "battlefield", 0)
     box.game.invalidate_characteristics()

@@ -19,7 +19,7 @@ from mtgfish.parser.clauses import parse_effects
 from mtgfish.parser.nouns import parse_object_filter
 from mtgfish.parser.tokens import Stream
 from mtgfish.parser.triggers import parse_trigger
-from mtgfish.rules.enums import CardType
+from mtgfish.rules.kernel.enums import CardType
 
 
 @pytest.fixture(autouse=True)

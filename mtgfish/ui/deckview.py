@@ -19,8 +19,8 @@ from __future__ import annotations
 from ..data.cards import CardDef
 from ..data.db import CardDatabase
 from ..parser import parse_card
-from ..rules.enums import COLOR_LETTERS, COLOR_ORDER, CardType, Color, color_letters
-from ..rules.mana import ManaSymbolKind
+from ..rules.cr100_game_concepts.cr106_mana import ManaSymbolKind
+from ..rules.kernel.enums import COLOR_LETTERS, COLOR_ORDER, CardType, Color, color_letters
 
 #: Scryfall's image CDN. Addressed by printing id, so showing a whole deck
 #: costs no API calls at all - which matters, because the API asks for no more

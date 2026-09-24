@@ -20,9 +20,9 @@ from __future__ import annotations
 
 import pytest
 
-from mtgfish.rules.enums import Phase, Step
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.log import GameLog, LogEntry
+from mtgfish.rules.kernel.enums import Phase, Step
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.log import GameLog, LogEntry
 from mtgfish.sim.replay import (
     DETAIL_LEVELS,
     KEY_KINDS,

@@ -33,8 +33,8 @@ import argparse
 
 from ..data.db import CardDatabase
 from ..parser import parse_card
-from ..rules.abilities import AbilityKind
-from ..rules.effects import EffectKind
+from ..rules.cr600_spells_and_abilities.abilities import AbilityKind
+from ..rules.cr600_spells_and_abilities.effects import EffectKind
 
 #: Opcodes that only ever act through machinery outside the ability itself.
 #: A card whose static text compiles to these and which then changes nothing
@@ -65,7 +65,7 @@ PROBE_SPELLS = ("Sol Ring", "Serra Angel")
 
 def _probe_state(sandbox) -> tuple:
     """Everything about the board a permanent could plausibly change."""
-    from ..rules.casting import cost_increases, cost_reductions
+    from ..rules.cr600_spells_and_abilities.cr601_casting import cost_increases, cost_reductions
 
     game = sandbox.game
     game.invalidate_characteristics()
@@ -97,8 +97,8 @@ def _probe_state(sandbox) -> tuple:
             int(chars.colors),
         )
 
-    from ..rules.replacement import static_replacements
-    from ..rules.restrictions import _active, _active_permissions
+    from ..rules.cr500_turn_structure.restrictions import _active, _active_permissions
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import static_replacements
 
     return (
         characteristics,
@@ -171,7 +171,7 @@ def _attach_if_needed(sandbox, card) -> None:
         # records what is on it - and setting only one side left every
         # "equipped creature ..." filter matching nothing, which made this
         # tool report six false positives.
-        from ..rules import actions
+        from ..rules.cr100_game_concepts import actions
 
         actions.attach(game, attachment, host)
         game.invalidate_characteristics()
@@ -223,7 +223,7 @@ def suspicious(db: CardDatabase, limit: int) -> list[tuple[int, str, str]]:
 
 
 def _is_permanent(card) -> bool:
-    from ..rules.enums import CardType
+    from ..rules.kernel.enums import CardType
 
     type_line = getattr(card.faces[0], "type_line", None)
     if type_line is None:

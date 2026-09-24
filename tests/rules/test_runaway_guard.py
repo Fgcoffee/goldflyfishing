@@ -27,8 +27,13 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.compile import parse_card
-from mtgfish.rules.costs import CONSUMING_COSTS, CostComponent, CostKind, required_amount
-from mtgfish.rules.query import ValueKind
+from mtgfish.rules.cr100_game_concepts.cr118_costs import (
+    CONSUMING_COSTS,
+    CostComponent,
+    CostKind,
+    required_amount,
+)
+from mtgfish.rules.kernel.query import ValueKind
 
 
 @pytest.fixture
@@ -110,8 +115,8 @@ def test_a_runaway_game_is_stopped_and_named(card_db):
     rate is 3% and the culprit was X" is actionable, and a progress bar that
     never moves is not.
     """
-    from mtgfish.rules.priority import ACTION_BUDGET
-    from mtgfish.rules.turn import TurnOptions, run_game
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import ACTION_BUDGET
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import TurnOptions, run_game
     from mtgfish.sim.runner import _worker_state, new_game
 
     card_db.registry()

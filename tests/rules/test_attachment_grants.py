@@ -18,7 +18,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules import actions
+from mtgfish.rules.cr100_game_concepts import actions
 from mtgfish.ui.sandbox import Sandbox
 
 

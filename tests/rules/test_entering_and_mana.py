@@ -89,7 +89,7 @@ def test_placing_a_tapland_agrees_with_playing_one(box):
 def test_a_creature_that_enters_with_counters_gets_them(box, card_db):
     """The other half of CR 614.1c, on the same code path as enters-tapped."""
     from mtgfish.parser import parse_card
-    from mtgfish.rules.effects import EffectKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 
     name = None
     for index, card in enumerate(card_db.iter_cards(commander_legal_only=True)):

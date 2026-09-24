@@ -17,18 +17,18 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from ..rules.enums import (
+from ..rules.cr100_game_concepts.cr106_mana import ManaCost
+from ..rules.cr200_parts_of_a_card.cr205_typeline import SubtypeRegistry, TypeLine
+from ..rules.kernel.enums import (
     BACK_FACE_ONLY_LAYOUTS,
-    CardType,
-    Color,
     DUAL_CASTABLE_LAYOUTS,
     LAYOUT_NAMES,
+    CardType,
+    Color,
     Layout,
     Supertype,
     colors_from_letters,
 )
-from ..rules.mana import ManaCost
-from ..rules.typeline import SubtypeRegistry, TypeLine
 
 _NUMBER_WORDS = {
     "one": 1,

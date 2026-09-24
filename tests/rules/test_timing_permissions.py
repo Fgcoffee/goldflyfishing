@@ -20,7 +20,7 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.parser.verdicts import VerdictStore
-from mtgfish.rules.enums import Phase, Step
+from mtgfish.rules.kernel.enums import Phase, Step
 from mtgfish.ui.sandbox import Sandbox
 
 
@@ -75,7 +75,7 @@ def test_the_permission_ends_with_its_source(box):
         for obj in box.game.objects.values()
         if obj.card is not None and obj.card.name == "Vedalken Orrery"
     )
-    from mtgfish.rules.enums import Zone
+    from mtgfish.rules.kernel.enums import Zone
 
     box.game.move_object(orrery, Zone.GRAVEYARD)
     box.game.invalidate_characteristics()
@@ -112,9 +112,9 @@ def test_casting_from_a_resolving_effect_ignores_timing(box):
     resolving effect calls ``cast_spell`` directly. That is correct, but it is
     correct by structure rather than by intent, so it is pinned here.
     """
-    from mtgfish.rules.casting import cast_spell
-    from mtgfish.rules.ids import PlayerId
-    from mtgfish.rules.priority import Action, ActionKind
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.ids import PlayerId
 
     box.put("Wrath of God", "hand", 0)
     box.give_mana(10)

@@ -15,18 +15,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..rules.effects import EffectKind
-from ..rules.enums import CardType
-from ..rules.ids import ObjectId, PlayerId
-from ..rules.priority import PASS, Action, ActionKind
+from ..rules.cr100_game_concepts.cr117_priority import PASS, Action, ActionKind
+from ..rules.cr600_spells_and_abilities.effects import EffectKind
+from ..rules.kernel.enums import CardType
+from ..rules.kernel.ids import ObjectId, PlayerId
 
 if TYPE_CHECKING:
-    from ..rules.combat import Combat
-    from ..rules.game import Game
-    from ..rules.gameobject import GameObject
+    from ..rules.cr500_turn_structure.cr506_combat import Combat
+    from ..rules.kernel.game import Game
+    from ..rules.kernel.gameobject import GameObject
 
 
-from ..rules.loops import LOOP_REPETITIONS, is_continuing
+from ..rules.kernel.loops import LOOP_REPETITIONS, is_continuing
+
 
 class SimpleAgent:
     """Plays out its hand and attacks when the maths is in its favour."""
@@ -162,7 +163,7 @@ class SimpleAgent:
         to be wasted is worth spending on anything, and holding past that
         point is not patience, it is hoarding.
         """
-        from ..rules.enums import Phase, Step
+        from ..rules.kernel.enums import Phase, Step
 
         own_turn = game.active_player == player
         if own_turn and game.phase in (Phase.PRECOMBAT_MAIN, Phase.POSTCOMBAT_MAIN):
@@ -328,7 +329,7 @@ class SimpleAgent:
         Blocks the biggest attackers first with the smallest creature that can
         survive; if life is low enough to matter, chump-blocks instead.
         """
-        from ..rules.combat import can_block
+        from ..rules.cr500_turn_structure.cr506_combat import can_block
 
         incoming = [
             game.objects[a]
@@ -374,14 +375,49 @@ class SimpleAgent:
 
         return assignments
 
-    def order_blockers(
-        self, game: Game, player: PlayerId, attacker: ObjectId, blockers: list[ObjectId]
-    ) -> list[ObjectId]:
-        """Kill the biggest blocker first."""
-        return sorted(
-            blockers,
-            key=lambda b: (-(game.characteristics(game.objects[b]).power or 0), b),
+    def assign_combat_damage(
+        self,
+        game: Game,
+        player: PlayerId,
+        source: ObjectId,
+        recipients: list,
+        total: int,
+    ) -> dict[int, int]:
+        """Kill the biggest blocker first (CR 510.1c).
+
+        This used to be an ordering, back when the rules made an attacker
+        order its blockers and work down the list. The rules now ask for a
+        division instead, so the same preference is expressed by assigning
+        lethal damage to the largest creature first.
+
+        Anything not a creature - the player, planeswalker or battle a
+        trampler is spilling over onto - is left until last, which is what
+        CR 702.19b requires anyway.
+        """
+        from ..rules.cr500_turn_structure.cr506_combat import lethal_damage
+
+        order = sorted(
+            range(len(recipients)),
+            key=lambda i: _damage_priority(game, recipients[i], i),
         )
+        division: dict[int, int] = {}
+        remaining = total
+        for index in order:
+            if remaining <= 0:
+                break
+            who = recipients[index]
+            if isinstance(who, int):
+                # A player, planeswalker or battle a trampler is spilling
+                # onto - a bare int always means a player here.
+                continue
+            assigned = min(remaining, lethal_damage(game, who))
+            if assigned > 0:
+                division[index] = assigned
+                remaining -= assigned
+        if remaining > 0:
+            last = order[-1]
+            division[last] = division.get(last, 0) + remaining
+        return division
 
 
 #: Effects that are bad for whatever they point at. The bot aims these at
@@ -467,7 +503,7 @@ class _TargetingMixin:
         preferred = theirs if harmful else mine
         pool = preferred or group
 
-        from ..rules.ids import is_player_target, target_player
+        from ..rules.kernel.ids import is_player_target, target_player
 
         def size(object_id: ObjectId) -> tuple:
             if is_player_target(object_id):
@@ -486,7 +522,7 @@ class _TargetingMixin:
 
     @staticmethod
     def _controlled_by(game: Game, object_id: ObjectId, player: PlayerId) -> bool:
-        from ..rules.ids import is_player_target, target_player
+        from ..rules.kernel.ids import is_player_target, target_player
 
         if is_player_target(object_id):
             # A player target is "mine" when it is me. Without this every
@@ -503,3 +539,10 @@ class _TargetingMixin:
 SimpleAgent.choose_targets = _TargetingMixin.choose_targets
 SimpleAgent._best = _TargetingMixin._best
 SimpleAgent._controlled_by = staticmethod(_TargetingMixin._controlled_by)
+
+
+def _damage_priority(game: Game, who, index: int):
+    """Biggest creature first; whatever is not a creature last."""
+    if isinstance(who, int):
+        return (1, 0, index)
+    return (0, -(game.characteristics(who).power or 0), index)

@@ -14,14 +14,14 @@ from __future__ import annotations
 import pytest
 
 from mtgfish.data.comprehensive_rules import default_path, parse
-from mtgfish.rules.coverage import COVERAGE, Status, entry_for, report
+from mtgfish.rules.kernel.coverage import COVERAGE, Status, entry_for, report
 
 #: The core sections, which is what the engine's correctness rests on.
 CORE_SECTIONS = range(1, 7)
 
 #: Current measured coverage of the 100s-600s. Raise it as rules land; never
 #: lower it to make a failing build pass.
-CORE_COVERAGE_FLOOR = 88.0
+CORE_COVERAGE_FLOOR = 93.0
 
 
 @pytest.fixture(scope="module")
@@ -75,7 +75,7 @@ def test_every_core_rule_group_is_classified(rules):
     )
     assert not unclassified, (
         f"{len(unclassified)} rule groups in the core sections are unclassified: "
-        f"{unclassified}. Add them to mtgfish/rules/coverage.py."
+        f"{unclassified}. Add them to mtgfish/rules/kernel/coverage.py."
     )
 
 
@@ -118,7 +118,7 @@ def test_specific_subrules_override_their_group(rules):
     mechanism is checked with a synthetic pair rather than a real gap, so that
     closing gaps does not break the test that guards the arithmetic.
     """
-    from mtgfish.rules.coverage import COVERAGE, Entry
+    from mtgfish.rules.kernel.coverage import COVERAGE, Entry
 
     assert entry_for("601.2f").status is Status.IMPLEMENTED
     assert entry_for("601").status is Status.IMPLEMENTED

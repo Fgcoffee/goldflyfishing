@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import pytest
 
-from mtgfish.rules import citations
+from mtgfish.rules.kernel import citations
 
 
 @pytest.fixture(scope="module")

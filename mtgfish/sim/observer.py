@@ -20,12 +20,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..rules.enums import CardType, LossReason, Zone
-from ..rules.events import Event, EventKind
+from ..rules.kernel.enums import CardType, LossReason, Zone
+from ..rules.kernel.events import Event, EventKind
 from .records import CardEvent, GameRecord, RemovalEvent, TurnSnapshot, WinReason
 
 if TYPE_CHECKING:
-    from ..rules.game import Game
+    from ..rules.kernel.game import Game
 
 #: How a player lost, mapped to how the *winner* won. A player at zero life
 #: died to whatever brought them there, and the engine records the mechanism

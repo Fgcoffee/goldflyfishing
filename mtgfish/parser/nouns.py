@@ -26,8 +26,9 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ..rules.enums import CardType, Color, Supertype, Zone
-from ..rules.query import (
+from ..rules.cr200_parts_of_a_card.cr205_typeline import active_registry
+from ..rules.kernel.enums import CardType, Color, Supertype, Zone
+from ..rules.kernel.query import (
     Comparison,
     ControllerRelation,
     NumericConstraint,
@@ -37,7 +38,6 @@ from ..rules.query import (
     Value,
     ValueKind,
 )
-from ..rules.typeline import active_registry
 from .tokens import Stream, TokenKind
 
 #: Card types by the word oracle text uses. Plural and singular both appear -
@@ -1094,7 +1094,7 @@ def _constraints(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
 
 def _keyword_names(stream: Stream) -> tuple[str, ...]:
     """A run of keyword names: "flying", "flying and haste"."""
-    from ..rules.keywords import is_known
+    from ..rules.cr700_additional_rules.keywords import is_known
 
     names: list[str] = []
     while True:
@@ -1908,7 +1908,7 @@ def _events_this_turn(stream: Stream) -> Value | None:
     the spells are in graveyards and the attacks are over - so the game keeps
     a per-turn tally, which until now only a yes-or-no condition could read.
     """
-    from ..rules.events import EventKind
+    from ..rules.kernel.events import EventKind
 
     mark = stream.mark()
 

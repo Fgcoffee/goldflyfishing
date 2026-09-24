@@ -12,10 +12,10 @@ import pytest
 
 from mtgfish.parser import parse_card
 from mtgfish.parser.explain import explain_ability, explain_card
-from mtgfish.rules.abilities import Ability, AbilityKind
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Duration
-from mtgfish.rules.query import ControllerRelation, ObjectFilter, Value
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import CardType, Duration
+from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter, Value
 
 
 def _abilities(db, name):
@@ -123,7 +123,7 @@ def test_a_mana_ability_names_the_symbols_it_produces(card_db):
 
 
 def test_an_unreadable_ability_says_it_is_inert(card_db):
-    from mtgfish.rules.abilities import Ability as A
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability as A
 
     assert "inert" in explain_ability(A.unreadable("blah blah")).lower()
 

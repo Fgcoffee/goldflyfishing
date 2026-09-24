@@ -26,7 +26,7 @@ from .replay import (
     shown_at,
 )
 from .runner import RunConfig, RunResult, replay, run, verify
-from .stats import CardImpact, Report, RemovalTarget, TurnSeries, render, summarize
+from .stats import CardImpact, RemovalTarget, Report, TurnSeries, render, summarize
 
 __all__ = [
     "DETAIL_LEVELS",

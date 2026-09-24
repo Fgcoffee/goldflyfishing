@@ -35,6 +35,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "play-rate": ("mtgfish.tools.play_rate_report", "parse coverage over the cards people play"),
     "inertia": ("mtgfish.tools.inertia_report", "cards that parse cleanly and then do nothing"),
     "rules-coverage": ("mtgfish.tools.rules_coverage", "Comprehensive Rules coverage"),
+    "rules": ("mtgfish.tools.rules", "look up a rule, check citations, diff a release"),
 }
 
 

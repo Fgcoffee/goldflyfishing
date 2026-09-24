@@ -25,8 +25,8 @@ from __future__ import annotations
 import collections
 from dataclasses import dataclass, field
 
-from ..rules.abilities import AbilityKind
-from ..rules.effects import EffectKind
+from ..rules.cr600_spells_and_abilities.abilities import AbilityKind
+from ..rules.cr600_spells_and_abilities.effects import EffectKind
 from .compile import parse_card
 
 

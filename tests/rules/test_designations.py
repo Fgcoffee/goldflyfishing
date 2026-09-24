@@ -8,9 +8,10 @@ that ignores it systematically underrates every deck that plays it.
 from __future__ import annotations
 
 import pytest
+from harness import FixedAgent, ScriptedAbilities, make_board
 
-from mtgfish.rules.actions import flip_coin, roll_die
-from mtgfish.rules.designations import (
+from mtgfish.rules.cr100_game_concepts.actions import flip_coin, roll_die
+from mtgfish.rules.cr700_additional_rules.cr725_designations import (
     add_rad_counters,
     become_day,
     become_monarch,
@@ -23,10 +24,8 @@ from mtgfish.rules.designations import (
     rad_counter_milling,
     take_initiative,
 )
-from mtgfish.rules.enums import LossReason
-from mtgfish.rules.ids import NO_PLAYER, PlayerId
-
-from harness import FixedAgent, ScriptedAbilities, make_board
+from mtgfish.rules.kernel.enums import LossReason
+from mtgfish.rules.kernel.ids import NO_PLAYER, PlayerId
 
 
 @pytest.fixture
@@ -79,7 +78,10 @@ def test_a_non_monarch_does_not_draw(board):
 
 def test_combat_damage_steals_the_crown(board):
     """CR 725.4."""
-    from mtgfish.rules.combat import deal_combat_damage, declare_attackers
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import (
+        deal_combat_damage,
+        declare_attackers,
+    )
 
     game = board.game
     become_monarch(game, PlayerId(1))
@@ -95,7 +97,11 @@ def test_combat_damage_steals_the_crown(board):
 
 def test_blocked_damage_does_not_steal_the_crown(board):
     """No combat damage reaches the monarch, so the crown stays put."""
-    from mtgfish.rules.combat import deal_combat_damage, declare_attackers, declare_blockers
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import (
+        deal_combat_damage,
+        declare_attackers,
+        declare_blockers,
+    )
 
     game = board.game
     become_monarch(game, PlayerId(1))
@@ -141,7 +147,10 @@ def test_only_one_initiative_holder(board):
 
 
 def test_combat_damage_passes_the_initiative(board):
-    from mtgfish.rules.combat import deal_combat_damage, declare_attackers
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import (
+        deal_combat_damage,
+        declare_attackers,
+    )
 
     game = board.game
     take_initiative(game, PlayerId(1))
@@ -245,7 +254,7 @@ def test_milling_only_lands_costs_no_life(board):
     game = board.game
     player = game.player(PlayerId(0))
     # Rebuild the library out of lands only.
-    from mtgfish.rules.enums import Zone
+    from mtgfish.rules.kernel.enums import Zone
 
     forest = board.db.lookup("Forest")
     player.library.clear()

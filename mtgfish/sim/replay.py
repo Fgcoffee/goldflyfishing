@@ -30,7 +30,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..rules.ids import NO_PLAYER
+from ..rules.kernel.ids import NO_PLAYER
 from .runner import RunConfig, replay
 
 #: The kinds that carry the story of a game: what was played, what happened to

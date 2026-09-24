@@ -11,12 +11,12 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
-from ..rules.abilities import BATTLEFIELD_ONLY, Ability, AbilityKind
-from ..rules.card_types import chapter_ability
-from ..rules.effects import Effect, EffectKind
-from ..rules.enums import Timing, Zone
-from ..rules.keywords import lookup as keyword_lookup
-from ..rules.query import ALWAYS
+from ..rules.cr300_card_types.cr300_card_types import chapter_ability
+from ..rules.cr600_spells_and_abilities.abilities import BATTLEFIELD_ONLY, Ability, AbilityKind
+from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from ..rules.cr700_additional_rules.keywords import lookup as keyword_lookup
+from ..rules.kernel.enums import Timing, Zone
+from ..rules.kernel.query import ALWAYS
 from .clauses import parse_effects
 from .errors import ParseFailure
 from .normalize import normalize
@@ -140,7 +140,7 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
 
 
 def _is_permanent(face) -> bool:
-    from ..rules.enums import CardType
+    from ..rules.kernel.enums import CardType
 
     type_line = getattr(face, "type_line", None)
     if type_line is None:
@@ -169,7 +169,7 @@ def _gate_on_max_speed(ability: Ability) -> Ability:
     """
     from dataclasses import replace
 
-    from ..rules.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind
 
     if ability.unparsed:
         return ability
@@ -208,7 +208,7 @@ def _keyword(line: Line, result: ParsedFace) -> list[Ability]:
     name and parameter to ``keyword_impl``. That is what keeps one definition
     of "flying" in the codebase instead of two that can drift apart.
     """
-    from ..rules.keyword_impl import build
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import build
 
     name, argument = _split_keyword(line.text)
     if name is None:
@@ -223,7 +223,7 @@ def _keyword(line: Line, result: ParsedFace) -> list[Ability]:
 
 def _split_keyword(text: str) -> tuple[str | None, str]:
     """The longest leading prefix that names a keyword, and the rest."""
-    from ..rules.keywords import is_known
+    from ..rules.cr700_additional_rules.keywords import is_known
 
     words = text.split()
     for length in range(len(words), 0, -1):
@@ -235,7 +235,7 @@ def _split_keyword(text: str) -> tuple[str | None, str]:
 
 def _keyword_instance(name: str, argument: str, text: str):
     """Turn "Ward {2}" or "Annihilator 2" into a parameterised instance."""
-    from ..rules.keyword_impl import KeywordInstance
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance
     from .nouns import parse_object_filter
 
     amount = 0
@@ -287,8 +287,8 @@ def _keyword_cost(text: str):
     could. Anything else after the symbols is not a cost - "Prototype {1}{B} -
     1/1", "Kicker {B} and/or {R}" - and the symbols stay the cost they were.
     """
-    from ..rules.costs import Cost, CostComponent, CostKind
-    from ..rules.mana import ManaCost
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost
+    from ..rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
     from .costs import parse_cost
 
     stream = Stream.of(text)
@@ -357,7 +357,7 @@ def _triggered(line: Line, result: ParsedFace) -> list[Ability]:
 
 
 def _activated(line: Line, result: ParsedFace) -> list[Ability]:
-    from ..rules.costs import CostKind
+    from ..rules.cr100_game_concepts.cr118_costs import CostKind
     from .costs import parse_cost
 
     cost_text, _, effect_text = line.text.partition(":")
@@ -437,7 +437,7 @@ def _zones_paid_from(cost, effects=()) -> frozenset[Zone]:
     "Sacrifice this creature: Return it from your graveyard" does; that one
     works where the creature is.
     """
-    from ..rules.costs import EXILE_ZONES, CostKind
+    from ..rules.cr100_game_concepts.cr118_costs import EXILE_ZONES, CostKind
 
     put_there_first = False
     for component in cost.components:
@@ -524,8 +524,8 @@ def _activation_condition(effect_text: str) -> _Activation:
     so in the coverage report, and the cost of ignoring is a simulation that
     is quietly faster than the deck.
     """
-    from ..rules.enums import Step
-    from ..rules.query import (
+    from ..rules.kernel.enums import Step
+    from ..rules.kernel.query import (
         ALWAYS,
         Condition,
         ConditionKind,
@@ -533,7 +533,6 @@ def _activation_condition(effect_text: str) -> _Activation:
         PlayerFilter,
         PlayerScope,
     )
-
     from .clauses import parse_condition_text
 
     match = _ONLY_RE.search(effect_text)
@@ -760,7 +759,7 @@ def _lift_static_condition(body):
     is not a gate, and a CONDITIONAL around a one-shot effect is not one
     either.
     '''
-    from ..rules.effects import CONTINUOUS_KINDS
+    from ..rules.cr600_spells_and_abilities.effects import CONTINUOUS_KINDS
 
     if len(body) != 1:
         return ALWAYS, body
@@ -786,7 +785,7 @@ def _alternative_cost_line(text: str):
     Returns ``None`` for anything that is not one of these shapes, so an
     ordinary sentence falls through to the clause grammar untouched.
     """
-    from ..rules.costs import AlternativeCost, Cost
+    from ..rules.cr100_game_concepts.cr118_costs import AlternativeCost, Cost
     from .clauses import parse_condition_text
     from .costs import parse_cost
 

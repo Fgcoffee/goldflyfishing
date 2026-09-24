@@ -8,14 +8,22 @@ replacement changes the event *before* it happens and uses nothing.
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.abilities import Ability, TriggerCondition
-from mtgfish.rules.actions import add_counters, deal_damage, destroy
-from mtgfish.rules.effects import Effect, EffectKind
-from mtgfish.rules.enums import CardType, Zone
-from mtgfish.rules.events import EventKind
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.query import (
+from mtgfish.rules.cr100_game_concepts.actions import add_counters, deal_damage, destroy
+from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, TriggerCondition
+from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import put_triggers_on_stack
+from mtgfish.rules.cr600_spells_and_abilities.cr614_replacement import (
+    ReplacementEffect,
+    ReplacementKind,
+    register,
+)
+from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from mtgfish.rules.kernel.enums import CardType, Zone
+from mtgfish.rules.kernel.events import EventKind
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.query import (
+    YOU,
     Comparison,
     Condition,
     ConditionKind,
@@ -23,12 +31,7 @@ from mtgfish.rules.query import (
     NumericConstraint,
     ObjectFilter,
     Value,
-    YOU,
 )
-from mtgfish.rules.replacement import ReplacementEffect, ReplacementKind, register
-from mtgfish.rules.triggers import put_triggers_on_stack
-
-from harness import ScriptedAbilities, make_board
 
 CREATURES = ObjectFilter(types_all=CardType.CREATURE)
 
@@ -141,7 +144,7 @@ def test_controller_filter_is_respected(board):
     board.game.pending_triggers.clear()
 
     board.play("Grizzly Bears", controller=1)
-    from mtgfish.rules.events import Event
+    from mtgfish.rules.kernel.events import Event
 
     board.game.emit(
         Event(EventKind.ENTERS_BATTLEFIELD,

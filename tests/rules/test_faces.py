@@ -12,9 +12,10 @@ Two rules that cut against the grain of the rest of the engine:
 from __future__ import annotations
 
 import pytest
+from harness import ScriptedAbilities, make_board
 
-from mtgfish.rules.enums import CardType, Phase, Step, Zone
-from mtgfish.rules.faces import (
+from mtgfish.rules.cr100_game_concepts.cr117_priority import ActionKind
+from mtgfish.rules.cr700_additional_rules.cr707_faces import (
     can_transform,
     castable_face_indices,
     copy_permanent,
@@ -22,11 +23,9 @@ from mtgfish.rules.faces import (
     playable_land_face_indices,
     transform,
 )
-from mtgfish.rules.ids import PlayerId
-from mtgfish.rules.legality import legal_actions
-from mtgfish.rules.priority import ActionKind
-
-from harness import ScriptedAbilities, make_board
+from mtgfish.rules.kernel.enums import CardType, Phase, Step, Zone
+from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.legality import legal_actions
 
 
 @pytest.fixture
@@ -39,8 +38,8 @@ def board(card_db):
 
 
 def give_mana(board, amount: int, color: str = "G", player: int = 0):
-    from mtgfish.rules.enums import LETTER_TO_COLOR
-    from mtgfish.rules.mana import ManaKind
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import LETTER_TO_COLOR
 
     board.game.player(PlayerId(player)).mana_pool.add(
         ManaKind(LETTER_TO_COLOR[color]), amount
@@ -180,8 +179,8 @@ def test_an_mdfc_land_face_is_offered_as_a_land_drop(board):
 
 def test_playing_an_mdfc_land_face_enters_with_that_face_up(board):
     """CR 712.12."""
-    from mtgfish.rules.casting import play_land
-    from mtgfish.rules.priority import Action
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import play_land
 
     game = board.game
     card = board.hand("Bala Ged Recovery", controller=0)
@@ -226,9 +225,9 @@ def test_a_copy_does_not_take_counters(board):
 
 def test_a_copy_does_not_take_a_pump_effect(board):
     """CR 613.2: only layer 1 and text-changing are copiable."""
-    from mtgfish.rules.abilities import Ability
-    from mtgfish.rules.effects import Effect, EffectKind
-    from mtgfish.rules.query import ControllerRelation, ObjectFilter, Value
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter, Value
 
     game = board.game
     board.scripts.add(
@@ -297,8 +296,8 @@ def test_a_later_copy_effect_wins(board):
 
 
 def test_copying_a_spell_puts_a_copy_on_the_stack(board):
-    from mtgfish.rules.casting import cast_spell
-    from mtgfish.rules.priority import Action
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
 
     game = board.game
     card = board.hand("Grizzly Bears", controller=0)
@@ -316,8 +315,8 @@ def test_a_copied_spell_was_not_cast(board):
 
     This is exactly why storm and cascade copies do not chain into each other.
     """
-    from mtgfish.rules.casting import cast_spell
-    from mtgfish.rules.priority import Action
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
 
     game = board.game
     game.log.enabled = True
@@ -334,8 +333,8 @@ def test_a_copied_spell_was_not_cast(board):
 
 def test_a_copy_takes_the_originals_choices(board):
     """CR 707.2: modes, targets, and the value of X come along."""
-    from mtgfish.rules.casting import cast_spell
-    from mtgfish.rules.priority import Action
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
 
     game = board.game
     card = board.hand("Grizzly Bears", controller=0)
@@ -350,8 +349,8 @@ def test_a_copy_takes_the_originals_choices(board):
 
 def test_a_copy_of_a_spell_ceases_to_exist_off_the_stack(board):
     """CR 704.5e: it never reaches the graveyard as a card would."""
-    from mtgfish.rules.casting import cast_spell
-    from mtgfish.rules.priority import Action
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
 
     game = board.game
     card = board.hand("Grizzly Bears", controller=0)

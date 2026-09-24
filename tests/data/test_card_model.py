@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from mtgfish.rules.enums import CardType, Color, Layout, Supertype
+from mtgfish.rules.kernel.enums import CardType, Color, Layout, Supertype
 
 
 def test_snapshot_is_sane(card_db):

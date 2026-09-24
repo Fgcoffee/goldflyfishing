@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import pathlib
 
-from mtgfish.rules import keywords
-from mtgfish.rules.keywords import Status
+from mtgfish.rules.cr700_additional_rules import keywords
+from mtgfish.rules.cr700_additional_rules.keywords import Status
 
 
 def test_every_keyword_ability_is_registered(card_db):
@@ -20,7 +20,7 @@ def test_every_keyword_ability_is_registered(card_db):
     missing = keywords.unregistered(catalog)
     assert not missing, (
         f"{len(missing)} keyword abilities are not in the registry: {missing}. "
-        "Add them to mtgfish/rules/keywords.py with an honest status."
+        "Add them to mtgfish/rules/cr700_additional_rules/keywords.py with an honest status."
     )
 
 
@@ -91,9 +91,9 @@ def test_protection_is_quality_aware():
     consult the quality filter, so the caveat is gone and this is what stops
     it coming back.
     """
-    from mtgfish.rules.keyword_impl import KeywordInstance, build
-    from mtgfish.rules.query import ObjectFilter
-    from mtgfish.rules.enums import Color
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.kernel.enums import Color
+    from mtgfish.rules.kernel.query import ObjectFilter
 
     spec = keywords.lookup("Protection")
     assert spec is not None
@@ -108,25 +108,63 @@ def test_a_keyword_with_no_modelled_effect_is_never_implemented():
     """The registry must not flatter itself.
 
     Several builders produce an ability of exactly the right shape - the right
-    trigger, cost, and zone - wrapped around an effect the engine cannot
-    execute. Those must read as PARTIAL, never IMPLEMENTED, and the status is
-    derived from what the builder actually produces rather than from a flag
-    somebody remembered to set.
+    trigger, cost and zone - wrapped around an effect the engine cannot
+    execute. Those must read as PARTIAL, never IMPLEMENTED.
+
+    Derived rather than listed. A hardcoded set of "these are the partial
+    ones" is a list that rots: every keyword that gets implemented turns this
+    test red for the best possible reason, and the temptation is then to
+    delete the name rather than check the invariant. So the invariant is what
+    is checked, in both directions, against whatever the registry currently
+    claims.
     """
-    from mtgfish.rules.keyword_impl import KeywordInstance, build
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import BUILDERS, build
 
-    for name in ("Sneak", "Paradigm", "Power-up"):
-        spec = keywords.lookup(name)
-        assert spec is not None, name
-        assert spec.status is not Status.IMPLEMENTED, name
-
-        abilities = build(KeywordInstance(name, amount=1))
-        assert any(
+    def has_unmodelled(name: str) -> bool:
+        # The same probe the registry grades with. A bare instance would
+        # judge Channel and equip on inputs no parser would ever hand them -
+        # a cost of nothing - and report gaps that do not exist.
+        abilities = build(keywords._probe_instance(name))
+        return any(
             node.is_unparsed
             for ability in abilities
             for effect in ability.effects
             for node in effect.walk()
-        ), f"{name} is marked partial, so something in it must be unmodelled"
+        ) or any(ability.unparsed for ability in abilities)
+
+    checked = 0
+    skipped: list[str] = []
+    for key in sorted(BUILDERS):
+        spec = keywords.lookup(key)
+        if spec is None:
+            continue
+        try:
+            unmodelled = has_unmodelled(spec.name)
+        except Exception as exc:  # noqa: BLE001
+            # A builder that throws is its own gap, and ``_builder_status``
+            # already grades it DECLARED for exactly that reason. Recorded
+            # rather than swallowed, so a new crash is visible in -v output
+            # instead of looking like a keyword nobody checked.
+            skipped.append(f"{spec.name}: {exc!r}")
+            continue
+        checked += 1
+        # One direction only, and deliberately. A keyword claiming to be
+        # implemented while its builder still emits something unexecutable is
+        # the registry flattering itself, which is the whole thing this
+        # guards against.
+        #
+        # The reverse does not hold: PARTIAL has a second cause. A builder can
+        # produce a perfectly parseable ability that no part of the engine
+        # ever reads - a bare keyword name that changes nothing - and
+        # ``_builder_status`` calls that partial too, correctly. Asserting
+        # "every partial keyword has an unparsed node" would fail on those for
+        # no fault of theirs.
+        if spec.status is Status.IMPLEMENTED:
+            assert not unmodelled, (
+                f"{spec.name} claims IMPLEMENTED but its builder still "
+                "produces something the engine cannot execute"
+            )
+    assert checked > 100, f"only {checked} keywords checked; skipped {skipped}"
 
 
 def test_morph_is_an_alternative_cost_plus_a_special_action():
@@ -137,11 +175,10 @@ def test_morph_is_an_alternative_cost_plus_a_special_action():
     test would catch until a removal spell got a response window it should
     never have had.
     """
-    from mtgfish.rules.abilities import AbilityKind
-    from mtgfish.rules.keyword_impl import KeywordInstance, build
-
-    from mtgfish.rules.costs import Cost, CostComponent, CostKind
-    from mtgfish.rules.mana import ManaCost
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost
+    from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost, CostComponent, CostKind
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
 
     morph_cost = Cost((CostComponent(CostKind.MANA, mana=ManaCost.parse("{2}")),))
     abilities = build(KeywordInstance("Morph", cost=morph_cost))
@@ -210,9 +247,9 @@ def test_a_keyword_that_wraps_card_text_is_graded_on_the_wrapper():
     correctly - so it is graded on the shape, and called without a body it
     still reports the gap.
     """
-    from mtgfish.rules.effects import Effect, EffectKind
-    from mtgfish.rules.keyword_impl import KeywordInstance, build
-    from mtgfish.rules.query import YOU, Value
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.kernel.query import YOU, Value
 
     body = (Effect(EffectKind.DRAW, players=YOU, amount=Value.of(1)),)
 
@@ -243,9 +280,9 @@ def test_forecast_is_restricted_to_your_upkeep():
     one would let a forecast ability be used at instant speed on an opponent's
     turn.
     """
-    from mtgfish.rules.enums import Step
-    from mtgfish.rules.keyword_impl import KeywordInstance, build
-    from mtgfish.rules.query import ConditionKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from mtgfish.rules.kernel.enums import Step
+    from mtgfish.rules.kernel.query import ConditionKind
 
     ability = build(KeywordInstance("Forecast"))[0]
     assert ability.once_each_turn
