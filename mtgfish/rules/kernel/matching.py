@@ -154,6 +154,20 @@ def matches(
         if obj.entered_this_turn(game.turn) != spec.entered_this_turn:
             return False
 
+    if spec.modified is not None or spec.activated_this_turn is not None:
+        from ..cr700_additional_rules.cr700_general import (
+            is_modified,
+            was_activated_this_turn,
+        )
+
+        if spec.modified is not None and is_modified(game, obj) != spec.modified:
+            return False
+        if (
+            spec.activated_this_turn is not None
+            and was_activated_this_turn(obj) != spec.activated_this_turn
+        ):
+            return False
+
     if spec.ring_bearer is not None:
         # Read-only: matching runs inside the layer system, where a transient
         # controller must not end the designation.
@@ -191,6 +205,14 @@ def matches(
         return False
     if spec.toughness is not None and not _numeric(
         game, chars.toughness, spec.toughness, obj, source, controller
+    ):
+        return False
+    if spec.base_power is not None and not _numeric(
+        game, chars.base_power, spec.base_power, obj, source, controller
+    ):
+        return False
+    if spec.base_toughness is not None and not _numeric(
+        game, chars.base_toughness, spec.base_toughness, obj, source, controller
     ):
         return False
     if spec.mana_value is not None and not _numeric(

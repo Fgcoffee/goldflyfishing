@@ -120,6 +120,9 @@ class TriggerCondition:
     #: combat damage to a blocking creature is combat damage too.
     to_player: bool = False
 
+    #: CR 700.14: "whenever you expend N" - the EXPENDED event for total N.
+    expend: int = 0
+
     #: Set for abilities that trigger on the source leaving the battlefield, so
     #: the engine knows to evaluate them against last-known information
     #: (CR 603.6e, 608.2g).

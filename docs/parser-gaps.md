@@ -311,6 +311,18 @@ The engine supports these; the parser does not yet produce them:
   `named`/`of_chosen_name` filters but nothing that compares names with
   another object; that needs a filter referring to a remembered or
   triggering object, designed together with the grammar.
+- **"With base power N"** (CR 208.4b) - `ObjectFilter(base_power=...)` /
+  `base_toughness=...`, the value after setting effects and before pumps and
+  counters.
+- **CR 700 terms** (about 165 lines of card text) - the engine now tracks:
+  "your party" (`ValueKind.PARTY_SIZE`), "modified" (`ObjectFilter(modified=True)`),
+  "that was activated this turn" (`ObjectFilter(activated_this_turn=True)`),
+  "descended" (`EventKind.DESCENDED` - "if you descended this turn" and "the
+  number of times you descended" are the ordinary event-this-turn condition
+  and event count), "outlaw" and "worthy" (`cr700_general.outlaw_filter()` /
+  `worthy_filter()`), "commit a crime" (`EventKind.CRIME_COMMITTED`, a trigger
+  event and an event-this-turn condition) and "whenever you expend N"
+  (`EventKind.EXPENDED` with `TriggerCondition.expend=N`).
 - **An alternative cost's window and timing.** `AlternativeCost.condition` is
   checked before the cast is offered, and `instant_speed=True` lifts the
   spell to instant timing inside it; otherwise the spell keeps its own

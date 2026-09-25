@@ -434,6 +434,8 @@ def condition_met(
         return False
     if not _right_phase(trigger, event):
         return False
+    if trigger.expend and event.amount != trigger.expend:
+        return False
     if trigger.to_player and event.object_id != NO_OBJECT:
         # Damage to a permanent carries the permanent's id; damage to a player
         # carries none (CR 120.3).
@@ -681,6 +683,16 @@ def put_triggers_on_stack(game: Game) -> int:
 
         game.objects[stack_object.id] = stack_object
         game.stack.append(stack_object.id)
+        # Announced as an activated ability's is, so what watches abilities
+        # being put on the stack - a crime (CR 700.13) - sees triggers too.
+        game.emit(
+            Event(
+                EventKind.PUT_ON_STACK,
+                object_id=stack_object.id,
+                player=controller,
+                source=entry.source,
+            )
+        )
         game.log.record(
             game,
             f"Trigger goes on the stack: {ability}",

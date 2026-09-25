@@ -166,6 +166,15 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
             _apply_layer(
                 game, layer, state, by_id, by_layer.get(int(layer), ()), grants
             )
+            if layer is Layer.PT_SET:
+                # CR 208.4b: what "base power" means - after the abilities and
+                # effects that define or set power and toughness, before the
+                # ones that only modify them and before counters.
+                for object_id, chars in state.items():
+                    state[object_id] = chars.replace(
+                        base_power_after_setting=chars.power,
+                        base_toughness_after_setting=chars.toughness,
+                    )
             if layer is Layer.ABILITY:
                 # CR 613.6 with CR 611.3b: an ability *added* in this layer
                 # generates a continuous effect of its own, and that effect

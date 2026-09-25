@@ -52,6 +52,12 @@ class Characteristics:
     #: does that in ``cr600_spells_and_abilities/cr613_layers.py``.
     power: int | None = None
     toughness: int | None = None
+    #: CR 208.4b: power and toughness after characteristic-defining abilities
+    #: and effects that set them, before anything that only modifies them.
+    #: Recorded by the layer system after layer 7b; ``None`` where no layers
+    #: ran, in which case the base is simply the current value.
+    base_power_after_setting: int | None = None
+    base_toughness_after_setting: int | None = None
     #: CR 209.1: a planeswalker card's printed loyalty. It is also the number
     #: of loyalty counters the planeswalker enters with, which is CR 306.5b's
     #: job rather than this one's.
@@ -62,6 +68,20 @@ class Characteristics:
     hand_modifier: int = 0
     life_modifier: int = 0
     text: str = ""
+
+    # -- base power and toughness (CR 208.4b) --------------------------------
+
+    @property
+    def base_power(self) -> int | None:
+        if self.base_power_after_setting is not None:
+            return self.base_power_after_setting
+        return self.power
+
+    @property
+    def base_toughness(self) -> int | None:
+        if self.base_toughness_after_setting is not None:
+            return self.base_toughness_after_setting
+        return self.toughness
 
     # -- type queries -------------------------------------------------------
 

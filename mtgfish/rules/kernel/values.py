@@ -103,6 +103,11 @@ def evaluate(
             return Undeterminable("a commander's colour identity, and there is no commander")
         return bin(int(identity)).count("1")
 
+    if kind is ValueKind.PARTY_SIZE:
+        from ..cr700_additional_rules.cr700_general import party_size
+
+        return party_size(game, controller) if controller != NO_PLAYER else 0
+
     if kind is ValueKind.DEVOTION:
         return _devotion(game, value, controller)
 

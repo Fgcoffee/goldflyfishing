@@ -206,6 +206,8 @@ class Player:
     #: CR 702.195b: the enduring story designation - once gained, kept for
     #: the rest of the game.
     has_enduring_story: bool = False
+    #: CR 700.14: mana spent to cast spells this turn, for expend.
+    mana_spent_on_spells_this_turn: int = 0
     #: CR 701.54a: this player's Ring-bearer, and their emblem named The Ring
     #: (CR 701.54c).
     ring_bearer: int = 0
@@ -306,6 +308,7 @@ class Player:
         self.cards_drawn_this_turn = 0
         self.life_gained_this_turn = 0
         self.life_lost_this_turn = 0
+        self.mana_spent_on_spells_this_turn = 0
 
     @property
     def is_active_in_game(self) -> bool:

@@ -52,6 +52,20 @@ def _entries(rows: dict[Status, dict[str, tuple[str, str]]]) -> dict[str, Entry]
 COVERAGE: dict[str, Entry] = _entries(
     {
         Status.IMPLEMENTED: {
+            "308": (
+                "rules/cr200_parts_of_a_card/cr205_typeline.py",
+                "Kindred: the other card type decides casting and resolving "
+                "(308.1), and the subtypes are creature types filters match "
+                "(308.2) - tested in test_cr308_kindred",
+            ),
+            "700": (
+                "rules/cr700_additional_rules/cr700_general.py",
+                "modes (700.2), 'dies' (700.4), devotion (700.5), historic "
+                "(700.6), and the tracked terms: party (700.8), modified "
+                "(700.9), activated this turn (700.10), descended (700.11), "
+                "outlaw (700.12), crime (700.13), expend (700.14), worthy "
+                "(700.16)",
+            ),
             # -- 100s -------------------------------------------------------
             "100": ("rules/cr100_game_concepts/cr103_setup.py", "multiplayer game setup"),
             "102": ("rules/cr100_game_concepts/player.py", ""),
@@ -364,9 +378,10 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
             "208": (
                 "data/cards.py",
-                "printed power/toughness including * (208.2), and 208.5's 0-fill; "
-                "208.2b (a replacement effect choosing P/T as it enters) and "
-                "208.4b (effects that *check* base power/toughness) are missing",
+                "printed power/toughness including * (208.2), 208.4b base "
+                "power/toughness (recorded after layer 7b and filterable), and "
+                "208.5's 0-fill; 208.2b (a replacement effect choosing P/T as "
+                "it enters) is missing",
             ),
             "309": (
                 "rules/cr600_spells_and_abilities/resolve.py",
@@ -382,14 +397,12 @@ COVERAGE: dict[str, Entry] = _entries(
                 "data/cards.py",
                 "text box is stored; turning it into abilities is the parser's job",
             ),
-            "308": ("rules/cr200_parts_of_a_card/cr205_typeline.py", "Kindred parses; tribal type-matching untested"),
             "607": (
                 "rules/cr100_game_concepts/actions.py",
                 "exiled-with tracking and linked lookups; imprint and hideaway "
                 "record their links but the cards' own text is the parser's job",
             ),
             # -- 700s -------------------------------------------------------
-            "700": ("rules/kernel/game.py", "general; 700.4 'dies' is exact"),
             "701": (
                 "rules/cr700_additional_rules/cr701_keyword_actions.py",
                 "59 of 78 keyword actions fully modelled; the rest are Unfinity, "

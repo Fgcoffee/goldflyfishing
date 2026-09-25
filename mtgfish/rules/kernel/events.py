@@ -136,6 +136,12 @@ class EventKind(IntEnum):
     RING_TEMPTED = 185
     EXPLORED = 187
     DUNGEON_VENTURED = 186
+    #: CR 700.11: a permanent card was put into its owner's graveyard.
+    DESCENDED = 330
+    #: CR 700.13: a player committed a crime.
+    CRIME_COMMITTED = 331
+    #: CR 700.14: a player's mana spent on spells this turn reached ``amount``.
+    EXPENDED = 332
 
 
 #: Events that mean a permanent left the battlefield in some form. Abilities

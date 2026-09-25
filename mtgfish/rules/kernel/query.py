@@ -125,6 +125,8 @@ class ValueKind(IntEnum):
     #: keeps the tally; there was a Condition that could ask whether it
     #: happened and no Value that could ask how often.
     EVENT_COUNT_THIS_TURN = 26
+    #: CR 700.8: the size of the player's party.
+    PARTY_SIZE = 60
     #: A characteristic summed across every object matching a filter: "the
     #: total power of creatures you control". The third way to ask about a
     #: set, alongside GREATEST_AMONG and LEAST_AMONG, and read the same way -
@@ -449,6 +451,11 @@ class ObjectFilter:
     #: CR 701.54e: "your Ring-bearer" - the Ring-bearer of the player the
     #: filter is read for.
     ring_bearer: bool | None = None
+    #: CR 700.9: modified - counters, equipped, or enchanted by its
+    #: controller's Aura.
+    modified: bool | None = None
+    #: CR 700.10: the source of an ability activated this turn.
+    activated_this_turn: bool | None = None
     face_down: bool | None = None
     is_token: bool | None = None
     #: "creatures of the chosen type", "permanents of the chosen color" -
@@ -477,6 +484,9 @@ class ObjectFilter:
     # -- numeric ------------------------------------------------------------
     power: NumericConstraint | None = None
     toughness: NumericConstraint | None = None
+    #: CR 208.4b: "with base power 1", "base toughness 3 or greater".
+    base_power: NumericConstraint | None = None
+    base_toughness: NumericConstraint | None = None
     mana_value: NumericConstraint | None = None
     loyalty: NumericConstraint | None = None
 

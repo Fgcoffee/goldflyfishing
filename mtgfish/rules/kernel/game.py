@@ -64,6 +64,13 @@ class UnparsedAbilityProvider:
         return (Ability.unreadable(text),)
 
 
+
+#: Events that can amount to a CR 700 happening - descending, a crime,
+#: expending - which ``cr700_general`` announces in turn.
+_GENERAL_TERM_EVENTS = frozenset(
+    {EventKind.ZONE_CHANGE, EventKind.CAST_SPELL, EventKind.PUT_ON_STACK}
+)
+
 @dataclass(slots=True)
 class ContinuousEffect:
     """One active continuous effect, awaiting application by the layer system.
@@ -947,6 +954,10 @@ class Game:
             self._advance_speed(event)
         elif event.kind is EventKind.CONTROL_CHANGED:
             self._end_ring_bearer_on_control_change(event)
+        if event.kind in _GENERAL_TERM_EVENTS:
+            from ..cr700_additional_rules.cr700_general import note
+
+            note(self, event)
 
         from ..cr600_spells_and_abilities.cr603_triggers import collect_triggers
 
