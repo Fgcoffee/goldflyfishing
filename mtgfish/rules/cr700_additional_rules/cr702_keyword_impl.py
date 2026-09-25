@@ -3439,7 +3439,7 @@ def _out_of_format(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: rules text the Comprehensive Rules describes but which no Commander-legal
 #: card in the pool uses yet. They are shapes without bodies, and the registry
 #: says so.
-NOT_YET_MODELLED = ("Companion",)
+NOT_YET_MODELLED: tuple[str, ...] = ()
 
 
 @register(*NOT_YET_MODELLED)
@@ -3482,14 +3482,23 @@ def _banding(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Companion")
 def _companion(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.139a: "If this card is your chosen companion, you may pay {3} and
-    put it into your hand from outside the game any time you could cast a
-    sorcery. This starts the game outside the game."
+    """CR 702.139a: companion, an ability that functions outside the game.
 
-    Paying the {3} is a special action (CR 116.2g), so the ability here is the
-    permission the special action reads, plus the deck-building condition the
-    parser fills in. In Commander the companion sits in the command zone
-    alongside the commander, which is why it functions from there.
+    Nothing in play reads it. It matters twice, and both times the card is
+    outside the game with no object to carry it: before the game, when
+    ``cr400_outside_game.reveal_companion`` accepts only a card with this
+    ability (CR 103.2b), and during it, when the special action of CR 116.2g
+    pays {3} and brings the revealed card into its owner's hand
+    (``cr116_special_actions``). Those read this ability off the card, which
+    is why it is built rather than left a bare word.
+
+    CR 400.11: outside the game is not a zone, so the ability functions in
+    none of the zones - once the card is in the game it is an ordinary card,
+    and its companion ability does nothing (CR 702.139c).
+
+    The quality is the deck-building condition as far as the parser reads it.
+    It is carried for display only: conditions are card-specific and nothing
+    checks one generically.
     """
     return (
         Ability(
@@ -3499,12 +3508,12 @@ def _companion(instance: KeywordInstance) -> tuple[Ability, ...]:
                     EffectKind.PERMISSION,
                     targets=ObjectFilter(source_only=True),
                     keywords=("Companion",),
-                    text="you may pay {3} to put this into your hand",
+                    text="you may pay {3} to put this into your hand from outside the game",
                 ),
             ),
             keyword=instance.name,
             quality=instance.filter,
-            functions_in=frozenset({Zone.COMMAND, Zone.EXILE}),
+            functions_in=frozenset(),
             text=instance.text or instance.name,
         ),
     )

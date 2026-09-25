@@ -90,6 +90,7 @@ def available(game: Game, player_id: PlayerId) -> list[SpecialAction]:
     found: list[SpecialAction] = []
     found.extend(_turn_face_up(game, player_id))
     found.extend(_from_hand(game, player_id))
+    found.extend(_companion(game, player_id))
     return found
 
 
@@ -106,6 +107,8 @@ def perform(game: Game, player_id: PlayerId, action: Action) -> bool:
         return obj is not None and _exile_from_hand(game, player_id, obj, kind)
     if kind is SpecialKind.DISCARD_SELF:
         return obj is not None and _discard_self(game, player_id, obj)
+    if kind is SpecialKind.COMPANION:
+        return _put_companion_into_hand(game, player_id)
     if kind in OUT_OF_SCOPE:
         game.log.record(
             game,
@@ -114,7 +117,7 @@ def perform(game: Game, player_id: PlayerId, action: Action) -> bool:
             player=player_id,
         )
         return False
-    # 116.2c/d/g/m: these exist only where a card creates them, and a card that
+    # 116.2c/d/m: these exist only where a card creates them, and a card that
     # creates one registers its own handler. Nothing generic to do.
     return False
 
@@ -376,6 +379,80 @@ def _discard_self(game: Game, player_id: PlayerId, obj) -> bool:
     """CR 116.2e."""
     game.move_object(obj, Zone.GRAVEYARD)
     game.emit(Event(EventKind.DISCARDED, object_id=obj.id, player=player_id))
+    return True
+
+
+# ---------------------------------------------------------------------------
+# CR 116.2g: putting a companion into hand from outside the game
+# ---------------------------------------------------------------------------
+
+
+def _companion_may_come_in(game: Game, player_id: PlayerId) -> bool:
+    """CR 116.2g: the timing and once-per-game conditions, and CR 903.11a.
+
+    The timing is sorcery timing in all but name - priority, an empty stack,
+    a main phase of your own turn. Priority is the caller's to have: this is
+    only ever asked on behalf of the player holding it.
+    """
+    from ..cr400_zones.cr400_outside_game import cannot_bring_in
+    from ..kernel.legality import has_sorcery_speed
+
+    player = game.player(player_id)
+    if player.companion is None or player.companion_brought_in:
+        return False
+    if not has_sorcery_speed(game, player_id):
+        return False
+    return cannot_bring_in(game, player_id, player.companion) is None
+
+
+def _companion(game: Game, player_id: PlayerId):
+    from ..cr400_zones.cr400_outside_game import COMPANION_COST
+    from ..kernel.legality import can_afford
+
+    if not _companion_may_come_in(game, player_id):
+        return
+    cost = ManaCost.parse(COMPANION_COST)
+    if can_afford(game, player_id, cost):
+        # No source: the companion is outside the game and is not an object
+        # until this action brings it in (CR 400.11).
+        yield SpecialAction(SpecialKind.COMPANION, cost=cost, keyword="Companion")
+
+
+def _put_companion_into_hand(game: Game, player_id: PlayerId) -> bool:
+    """CR 116.2g, 702.139a: pay {3} and put the companion into your hand.
+
+    The cost is paid first and in full; an unpayable one leaves the companion
+    outside the game with nothing spent. The card then comes in through the
+    one door from outside the game, which makes the player who brought it in
+    its owner (CR 108.3), and CR 702.139c keeps it in for the rest of the game.
+    """
+    from ..cr400_zones.cr400_outside_game import COMPANION_COST, bring_into_game
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _pay
+    from .cr118_costs import TotalCost
+
+    if not _companion_may_come_in(game, player_id):
+        return False
+    player = game.player(player_id)
+    try:
+        _pay(game, player_id, TotalCost(base=ManaCost.parse(COMPANION_COST)), None)
+    except CastError as exc:
+        game.log.record(
+            game,
+            f"cannot put {player.companion} into hand: {exc}",
+            kind="illegal",
+            player=player_id,
+        )
+        return False
+    obj = bring_into_game(game, player_id, player.companion, Zone.HAND)
+    if obj is None:
+        return False
+    player.companion_brought_in = True
+    game.log.record(
+        game,
+        f"{player.name} puts their companion {player.companion} into their hand",
+        kind="special-action",
+        player=player_id,
+    )
     return True
 
 

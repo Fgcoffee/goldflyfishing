@@ -8,7 +8,7 @@ decide. Only things that make simulation impossible are hard errors.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import IntEnum
 from typing import Iterator
 
@@ -54,6 +54,14 @@ class Deck:
     #: deck.
     unresolved: tuple[str, ...] = ()
     issues: tuple[DeckIssue, ...] = ()
+    #: CR 103.2b / 702.139a: the card this deck reveals as its companion.
+    #: It is not part of the deck - it starts the game outside it (CR 400.11)
+    #: and so counts toward neither the 100 cards nor the singleton rule.
+    companion: CardDef | None = None
+    #: CR 400.11a: sideboard cards, also outside the game. CR 903.11 lets
+    #: nothing bring them into a Commander game; they are kept so that
+    #: outside the game holds what the list says it does.
+    sideboard: tuple[CardDef, ...] = ()
 
     def as_decklist(self) -> str:
         """Back to the text form the paste box accepts.
@@ -72,6 +80,14 @@ class Deck:
             lines.append("")
             lines.append("// Attractions")
             lines.extend(f"1 {card.name}" for card in self.attractions)
+        if self.companion is not None:
+            lines.append("")
+            lines.append("// Companion")
+            lines.append(f"1 {self.companion.name}")
+        if self.sideboard:
+            lines.append("")
+            lines.append("// Sideboard")
+            lines.extend(f"1 {card.name}" for card in self.sideboard)
         return "\n".join(lines)
 
     # -- composition --------------------------------------------------------
@@ -113,15 +129,7 @@ class Deck:
         return any(i.severity is Severity.ERROR for i in self.issues)
 
     def with_issues(self, issues: list[DeckIssue]) -> Deck:
-        return Deck(
-            name=self.name,
-            commanders=self.commanders,
-            entries=self.entries,
-            attractions=self.attractions,
-            source=self.source,
-            unresolved=self.unresolved,
-            issues=tuple(issues),
-        )
+        return replace(self, issues=tuple(issues))
 
     def __str__(self) -> str:
         commanders = " + ".join(c.name for c in self.commanders) or "(no commander)"
@@ -148,6 +156,7 @@ def validate(deck: Deck) -> list[DeckIssue]:
     issues.extend(_check_color_identity(deck))
     issues.extend(_check_legality(deck))
     issues.extend(_check_attractions(deck))
+    issues.extend(_check_companion(deck))
     return issues
 
 
@@ -274,6 +283,8 @@ def _check_legality(deck: Deck) -> Iterator[DeckIssue]:
     banned = [e.card.name for e in deck.entries if not e.card.commander_legal]
     banned += [c.name for c in deck.commanders if not c.commander_legal]
     banned += [c.name for c in deck.attractions if not c.commander_legal]
+    if deck.companion is not None and not deck.companion.commander_legal:
+        banned.append(deck.companion.name)
     if banned:
         yield DeckIssue(
             Severity.ERROR,
@@ -332,3 +343,49 @@ def _check_attractions(deck: Deck) -> Iterator[DeckIssue]:
             f"Each card in an Attraction deck needs a different name "
             f"(CR 717.2a): {', '.join(repeated[:8])}",
         )
+
+
+def _check_companion(deck: Deck) -> Iterator[DeckIssue]:
+    """A companion is a card with companion that CR 903.11a lets in.
+
+    CR 702.139a: only a card with a companion ability can be revealed as one.
+    CR 903.11a: a card brought in from outside a Commander game may not share
+    a name with a card in the starting deck, nor have a colour outside the
+    commander's colour identity - checked here as well as in the game so the
+    deck report says so before any game is played.
+
+    The companion's own condition is card-specific text with no generic
+    predicate behind it, so it is reported as unchecked rather than passed.
+    """
+    companion = deck.companion
+    if companion is None:
+        return
+    if not any("Companion" in face.keywords for face in companion.faces):
+        yield DeckIssue(
+            Severity.ERROR,
+            "not-a-companion",
+            f"{companion.name} has no companion ability (CR 702.139a).",
+        )
+        return
+    starting = {entry.card.name for entry in deck.entries}
+    starting |= {card.name for card in deck.commanders}
+    if companion.name in starting:
+        yield DeckIssue(
+            Severity.ERROR,
+            "companion-name",
+            f"{companion.name} is also in the deck, so it cannot be brought in "
+            f"as a companion (CR 903.11a).",
+        )
+    if deck.commanders and companion.color_identity & ~deck.color_identity:
+        yield DeckIssue(
+            Severity.ERROR,
+            "companion-color-identity",
+            f"{companion.name} ({color_letters(companion.color_identity) or 'C'}) is "
+            f"outside the commander's color identity (CR 903.11a).",
+        )
+    yield DeckIssue(
+        Severity.INFO,
+        "companion-condition-unchecked",
+        f"{companion.name}'s companion condition is not verified against the "
+        f"deck (CR 702.139a); the decklist is trusted.",
+    )

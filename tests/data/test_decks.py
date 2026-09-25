@@ -73,14 +73,15 @@ def test_section_headers_route_cards():
     sections = {line.name: line.section for line in parse_lines(text)}
     assert sections["Kenrith, the Returned King"] == "commander"
     assert sections["Sol Ring"] == "main"
-    assert sections["Black Lotus"] == "ignore"
+    # CR 400.11a: a sideboard is kept, outside the deck.
+    assert sections["Black Lotus"] == "sideboard"
 
 
 def test_sb_prefix_marks_a_single_line():
     parsed = parse_lines("1 Sol Ring\nSB: 1 Black Lotus\n")
     assert [(p.name, p.section) for p in parsed] == [
         ("Sol Ring", "main"),
-        ("Black Lotus", "ignore"),
+        ("Black Lotus", "sideboard"),
     ]
 
 

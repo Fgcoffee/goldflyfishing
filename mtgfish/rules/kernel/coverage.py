@@ -69,11 +69,23 @@ COVERAGE: dict[str, Entry] = _entries(
             # -- 100s -------------------------------------------------------
             "100": ("rules/cr100_game_concepts/cr103_setup.py", "multiplayer game setup"),
             "102": ("rules/cr100_game_concepts/player.py", ""),
-            "103": ("rules/cr100_game_concepts/cr103_setup.py", "turn order, opening hands, London mulligan"),
+            "103": ("rules/cr100_game_concepts/cr103_setup.py", "turn order, opening hands, London mulligan, and 103.2b revealing a companion"),
             "104": ("rules/kernel/game.py", "win and loss conditions"),
             "105": ("rules/kernel/enums.py", "colors as a bitmask"),
             "106": ("rules/cr100_game_concepts/cr106_mana.py", "mana types, pools, emptying"),
             "109": ("rules/kernel/gameobject.py", "objects"),
+            "108": (
+                "rules/kernel/game.py",
+                "cards; 108.3 owner is the player whose deck it started in, a "
+                "token's owner is its creator (111.2), a spell copy's the player "
+                "who put it on the stack (707.10, 112.2a), and 400.3 sends a "
+                "card to its owner's hand, library or graveyard. A card brought "
+                "in from outside the game is owned by the player who brought it "
+                "in, and outside the game holds only that player's own cards - "
+                "their sideboard and companion (108.3, 108.3b, in "
+                "rules/cr400_zones/cr400_outside_game.py). Ante (407) is not "
+                "applicable",
+            ),
             "107": (
                 "rules/cr100_game_concepts/cr106_mana.py",
                 (
@@ -160,7 +172,12 @@ COVERAGE: dict[str, Entry] = _entries(
             "306": ("rules/cr700_additional_rules/cr704_sba.py", "planeswalkers and loyalty"),
             "307": ("rules/kernel/legality.py", "sorceries and sorcery-speed timing"),
             # -- 400s -------------------------------------------------------
-            "400": ("rules/kernel/game.py", "zones, and 400.7 new-object semantics"),
+            "400": (
+                "rules/kernel/game.py",
+                "zones, and 400.7 new-object semantics; 400.11 outside the game "
+                "is per-player card definitions, never objects, with one door in "
+                "(rules/cr400_zones/cr400_outside_game.py)",
+            ),
             "401": ("rules/cr100_game_concepts/player.py", "library"),
             "402": ("rules/cr100_game_concepts/player.py", "hand"),
             "403": ("rules/kernel/game.py", "battlefield"),
@@ -240,7 +257,8 @@ COVERAGE: dict[str, Entry] = _entries(
             "116": (
                 "rules/cr100_game_concepts/cr116_special_actions.py",
                 "all twelve special actions: playing a land, turning face up, "
-                "suspend, foretell, plot, discard-self. The Planechase and "
+                "suspend, foretell, plot, discard-self, and putting a companion "
+                "into hand (116.2g). The Planechase and "
                 "Conspiracy Draft ones are named as out of scope by format "
                 "rather than quietly missing",
             ),
@@ -435,7 +453,9 @@ COVERAGE: dict[str, Entry] = _entries(
                 "rules/cr903_commander/",
                 "command zone, {2} tax, 21 commander damage, 903.9a state-based "
                 "action and 903.9b replacement, colour identity and singleton "
-                "deck construction, and the partner variants",
+                "deck construction, the partner variants, and 903.11 - only the "
+                "companion special action brings a card in from outside the game, "
+                "under 903.11a's name and colour identity limits",
             ),
         },
         Status.PARTIAL: {
@@ -465,15 +485,6 @@ COVERAGE: dict[str, Entry] = _entries(
                 "so a copy takes the card as printed",
             ),
 
-            "108": (
-                "rules/kernel/game.py",
-                "cards; 108.3 owner is the player whose deck it started in, a "
-                "token's owner is its creator (111.2), a spell copy's the player "
-                "who put it on the stack (707.10, 112.2a), and 400.3 sends a "
-                "card to its owner's hand, library or graveyard. Cards brought "
-                "in from outside the game (108.3, 108.3b) and ante are not "
-                "modelled",
-            ),
 
 
             "207": (
@@ -594,7 +605,6 @@ COVERAGE: dict[str, Entry] = _entries(
             "905": ("", "Conspiracy Draft"),
             "903.12": ("", "Brawl option - a different format"),
             "903.13": ("", "Commander Draft - a different format"),
-            "903.11": ("", "cards from outside the game - no sideboard in this sim"),
             "900": ("", "casual variant section header"),
             "729": ("", "subgames - Shahrazad only, and banned in Commander"),
             "732": ("", "taking shortcuts - a human convenience with no simulated effect"),

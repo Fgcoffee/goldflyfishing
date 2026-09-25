@@ -23,5 +23,8 @@ CR 402.2     ``cr500_turn_structure/restrictions.py`` - hand size
 CR 403.1     ``kernel/enums.py``, ``cr100_game_concepts/player.py`` - graveyards
 CR 404.3     ``cr100_game_concepts/player.py`` - graveyard order
 CR 405       ``cr600_spells_and_abilities/cr608_stack.py`` - the stack
+CR 400.11    ``cr400_outside_game.py`` - outside the game, which is not a
+             zone: each player's sideboard and companion, and the one way
+             a card is brought in
 ===========  =========================================================
 """
