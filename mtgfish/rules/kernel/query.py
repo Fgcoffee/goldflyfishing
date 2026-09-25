@@ -742,6 +742,12 @@ class ConditionKind(IntEnum):
     HAS_ENDURING_STORY = 27
     #: CR 702.186b: whether this permanent is harnessed.
     IS_HARNESSED = 28
+    #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
+    #: set, names the dungeon ("if you haven't completed Tomb of
+    #: Annihilation" is the negation of the named form).
+    COMPLETED_DUNGEON = 30
+    #: CR 726.1: "if you have the initiative".
+    HAS_INITIATIVE = 31
     #: CR 601.2b / 118.9: "if its [keyword] cost was paid" - which alternative
     #: cost the spell was cast for, named by ``Condition.keyword``. An empty
     #: keyword asks whether any alternative cost was paid.
@@ -782,7 +788,8 @@ class Condition:
     #: ints so this module need not import the event enum.
     event_kinds: tuple[int, ...] = ()
     operands: tuple[Condition, ...] = ()
-    #: For ALTERNATIVE_COST_PAID: the keyword whose cost is asked about.
+    #: For ALTERNATIVE_COST_PAID: the keyword whose cost is asked about. For
+    #: COMPLETED_DUNGEON: the dungeon's name, or empty for any dungeon.
     keyword: str = ""
     text: str = ""
 

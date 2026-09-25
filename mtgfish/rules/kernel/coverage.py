@@ -192,7 +192,21 @@ COVERAGE: dict[str, Entry] = _entries(
             "704": ("rules/cr700_additional_rules/cr704_sba.py", "the full state-based action list"),
             "705": ("rules/cr100_game_concepts/actions.py", "coin flips, from the seeded RNG"),
             "725": ("rules/cr700_additional_rules/cr725_designations.py", "the monarch, incl. combat theft and 725.5"),
-            "726": ("rules/cr700_additional_rules/cr725_designations.py", "the initiative"),
+            "726": (
+                "rules/cr700_additional_rules/cr725_designations.py",
+                "the initiative: its three 726.2 triggered abilities on the stack "
+                "(venture into Undercity on taking it and at the holder's upkeep; "
+                "combat damage passes it), 726.3, 726.4 and 726.5",
+            ),
+            "309": (
+                "rules/cr300_card_types/cr309_dungeons.py",
+                "dungeon cards in the command zone, one per player (309.3), room "
+                "graphs read from the oracle text, room abilities as triggered "
+                "abilities whose effects the parser reads, player-chosen branches, "
+                "704.5t completion and the completed-dungeon record. Baldur's Gate "
+                "Wilderness prints no arrows and is never offered; rooms the parser "
+                "cannot read stay UNPARSED",
+            ),
             "728": ("rules/cr700_additional_rules/cr725_designations.py", "rad counters and their main-phase procedure"),
             "731": ("rules/cr700_additional_rules/cr725_designations.py", "day and night, incl. the 731.3 flip"),
             "707": (
@@ -367,12 +381,6 @@ COVERAGE: dict[str, Entry] = _entries(
                 "printed power/toughness including * (208.2), and 208.5's 0-fill; "
                 "208.2b (a replacement effect choosing P/T as it enters) and "
                 "208.4b (effects that *check* base power/toughness) are missing",
-            ),
-            "309": (
-                "rules/cr600_spells_and_abilities/resolve.py",
-                "venture position-tracking only. There is no dungeon in the "
-                "command zone, no rooms, no room abilities, no completion, and "
-                "no 309.3 one-dungeon-per-player rule",
             ),
 
             "108": ("data/cards.py", "cards; 108.3 ownership of tokens not modelled"),

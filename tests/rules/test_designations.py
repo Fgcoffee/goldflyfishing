@@ -147,6 +147,7 @@ def test_only_one_initiative_holder(board):
 
 
 def test_combat_damage_passes_the_initiative(board):
+    """CR 726.2: through a triggered ability, so only once it resolves."""
     from mtgfish.rules.cr500_turn_structure.cr506_combat import (
         deal_combat_damage,
         declare_attackers,
@@ -160,7 +161,10 @@ def test_combat_damage_passes_the_initiative(board):
 
     declare_attackers(game)
     deal_combat_damage(game)
+    assert initiative_holder(game) == 1
 
+    board.settle()
+    board.resolve_stack()
     assert initiative_holder(game) == 0
 
 

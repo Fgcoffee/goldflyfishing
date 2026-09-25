@@ -954,6 +954,15 @@ def _each_turn_tail(stream: Stream) -> None:
 def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | None:
     # Oracle text conjugates for the subject: "you gain" but "a player gains".
     # Both forms mean the same event, so both are accepted everywhere.
+    if stream.accept_phrase("complete a dungeon") or stream.accept_phrase(
+        "completes a dungeon"
+    ):
+        # CR 309.7: completing happens as the dungeon leaves the game.
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.DUNGEON_COMPLETED}),
+            players=players,
+            text="whenever a player completes a dungeon",
+        )
     if stream.accept_phrase("gain life") or stream.accept_phrase("gains life"):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.LIFE_GAINED}),
@@ -1187,6 +1196,10 @@ def _count_condition(stream: Stream) -> Condition | None:
             text="if you control ...",
         )
 
+    designation = designation_condition(stream)
+    if designation is not None:
+        return designation
+
     # "if no mana was spent to cast it" - a fact about how the spell was cast,
     # which the spell carries. Free spells are the whole point of the card,
     # and a condition read as always-true would counter everything.
@@ -1206,6 +1219,54 @@ def _count_condition(stream: Stream) -> Condition | None:
         )
 
     stream.reset(mark)
+    return None
+
+
+def designation_condition(stream: Stream) -> Condition | None:
+    """Conditions about what a player has done or holds rather than about
+    the board: "you've completed a dungeon" (CR 309.7), "you haven't
+    completed Tomb of Annihilation", "you have the initiative" (CR 726.1).
+    """
+    mark = stream.mark()
+    negated = False
+    if stream.accept("you've") or stream.accept_phrase("you have"):
+        pass
+    elif stream.accept_phrase("you haven't") or stream.accept_phrase("you have not"):
+        negated = True
+    else:
+        return None
+
+    if stream.accept_phrase("the initiative"):
+        condition = Condition(kind=ConditionKind.HAS_INITIATIVE, text="you have the initiative")
+    elif stream.accept("completed"):
+        condition = _completed_dungeon(stream)
+    else:
+        condition = None
+    if condition is None:
+        stream.reset(mark)
+        return None
+
+    if negated:
+        return Condition(
+            kind=ConditionKind.NOT, operands=(condition,), text=f"not {condition.text}"
+        )
+    return condition
+
+
+def _completed_dungeon(stream: Stream) -> Condition | None:
+    """"completed a dungeon", or one dungeon by name (CR 309.7)."""
+    if stream.accept_phrase("a dungeon"):
+        return Condition(kind=ConditionKind.COMPLETED_DUNGEON, text="you've completed a dungeon")
+    from ..rules.cr300_card_types.cr309_dungeons import DUNGEON_NAMES
+
+    for full_name in DUNGEON_NAMES:
+        name = full_name.split(" // ")[0]
+        if stream.accept_phrase(name):
+            return Condition(
+                kind=ConditionKind.COMPLETED_DUNGEON,
+                keyword=name,
+                text=f"you've completed {name}",
+            )
     return None
 
 

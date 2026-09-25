@@ -904,6 +904,24 @@ def _lose_life(stream: Stream) -> Effect | None:
     )
 
 
+@clause("take-initiative")
+def _take_initiative(stream: Stream) -> Effect | None:
+    """"You take the initiative." (CR 726). What taking it sets off - the
+    venture into Undercity - is the rules' own triggered ability, not part
+    of the card's effect."""
+    players, targeted = parse_player_filter(stream)
+    if not stream.accept("take", "takes"):
+        return None
+    if not stream.accept_phrase("the initiative"):
+        return None
+    return Effect(
+        EffectKind.TAKE_INITIATIVE,
+        players=players or YOU,
+        is_targeted=targeted,
+        text="take the initiative",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Removal
 # ---------------------------------------------------------------------------
@@ -3156,6 +3174,12 @@ def _single_condition(stream: Stream):
     )
 
     mark = stream.mark()
+
+    from .triggers import designation_condition
+
+    designation = designation_condition(stream)
+    if designation is not None:
+        return designation
 
     about_it = _about_the_remembered(stream)
     if about_it is not None:

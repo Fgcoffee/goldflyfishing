@@ -97,6 +97,13 @@ class TriggerCondition:
     chapter: int = 0
     is_state_trigger: bool = False
 
+    #: CR 309.4c: for a dungeon's room ability, the room's position on the
+    #: dungeon counted from 1 at the topmost room. Every room shares one
+    #: trigger condition - the owner's venture marker moving into *this*
+    #: room - so the room is the whole of what tells them apart. Zero for
+    #: every other trigger.
+    room: int = 0
+
     #: Which counter a COUNTER_ADDED / COUNTER_REMOVED trigger cares about.
     #: Empty means any kind. "When the last defense counter is removed"
     #: (CR 310.12b) is about defense counters and nothing else, and without
