@@ -206,14 +206,19 @@ def test_mana_available_counts_every_source_not_the_untapped_ones(result):
         )
 
     # And the shape of the chart that gave the bug away: it peaked on turn four
-    # and decayed. A mana base that is measured properly peaks late, whatever
-    # it loses on the way - so the peak belongs in the second half of the game
-    # and not the first.
+    # and decayed to nothing. A mana base measured properly is still at its
+    # best late in the game, whatever it loses on the way.
+    #
+    # The *last* time it was at its best, not the first: a mana base that grows
+    # and then holds steady sits at its maximum for most of the game, and
+    # asking where it first got there would call that an early peak and fail a
+    # deck that did nothing wrong. Measured over twelve seeds, that mistake
+    # failed two of them.
     mana = [s.mana_available for s in hero]
-    peak = mana.index(max(mana))
-    assert peak >= len(mana) // 2, (
-        f"the mana base peaked at sample {peak} of {len(mana)} and fell away "
-        f"after: {mana}"
+    best = len(mana) - 1 - mana[::-1].index(max(mana))
+    assert best >= len(mana) // 2, (
+        f"the mana base was last at its best at sample {best} of {len(mana)} "
+        f"and decayed after: {mana}"
     )
 
 
@@ -239,17 +244,27 @@ def test_the_mana_metric_would_still_catch_the_bug_it_was_written_for():
     assert any(s.mana_available < s.lands for s in decaying), (
         "untapped-counting must fall below the land count"
     )
+    def last_best(series):
+        return len(series) - 1 - series[::-1].index(max(series))
+
     mana = [s.mana_available for s in decaying]
-    assert mana.index(max(mana)) < len(mana) // 2, (
+    assert last_best(mana) < len(mana) // 2, (
         "untapped-counting must peak early and decay"
     )
 
-    # And a healthy series passes both, so the test is not simply always red.
+    # A healthy series passes both, so the test is not simply always red.
     healthy = [snapshot(t, mana=t + 2, lands=t, permanents=t * 2)
                for t in range(1, 12)]
     assert all(s.mana_available >= s.lands for s in healthy)
-    rising = [s.mana_available for s in healthy]
-    assert rising.index(max(rising)) >= len(rising) // 2
+    assert last_best([s.mana_available for s in healthy]) >= 11 // 2
+
+    # And so does one that grows and then holds - a real mana base, which sits
+    # at its maximum for most of the game. Asking where it *first* reached that
+    # maximum would fail this, and did on two seeds in twelve.
+    plateau = [2, 3, 5, 6, 8, 10, 11, 11, 10, 11, 10, 10, 11, 11, 11, 11, 11]
+    assert last_best(plateau) >= len(plateau) // 2, (
+        "a mana base that grows and then holds is not a decaying one"
+    )
 
 
 def test_the_opening_hand_is_recorded(result):
