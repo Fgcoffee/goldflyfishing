@@ -466,6 +466,10 @@ class Effect:
     #: For EXTRA_TRIGGER: what must have caused the event, when the card says
     #: so ("if a *land* entering causes..."). None means any cause at all.
     trigger_cause: ObjectFilter | None = None
+    #: For VENTURE: CR 701.49d's "venture into [quality]" - the quality a
+    #: dungeon entered this way must have, e.g. "Undercity". Empty for the
+    #: plain "venture into the dungeon".
+    dungeon_quality: str = ""
 
     #: The oracle text this came from, kept for the replay log and for the
     #: coverage report.

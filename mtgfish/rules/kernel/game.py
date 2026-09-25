@@ -312,6 +312,11 @@ class Game:
     solved_permanents: set[ObjectId] = field(default_factory=set)
 
     agents: dict[PlayerId, object] = field(default_factory=dict)
+    #: CR 309.2: the dungeon cards players may bring into the game, which
+    #: begin outside it. Empty until a player first ventures, when the rules'
+    #: own set is loaded (``cr309_dungeons.available_dungeons``); a test may
+    #: supply its own.
+    dungeons: tuple = ()
 
     def is_controlled(self, player_id: PlayerId) -> bool:
         """CR 723.1: whether someone else is making this player's decisions."""
@@ -1111,6 +1116,12 @@ class Game:
             from ..cr700_additional_rules.cr725_designations import monarch_left_the_game
 
             monarch_left_the_game(self)
+        # CR 726.4: likewise the initiative.
+        if player.has_initiative:
+            player.has_initiative = False
+            from ..cr700_additional_rules.cr725_designations import initiative_left_the_game
+
+            initiative_left_the_game(self)
         self.emit(Event(EventKind.PLAYER_LEFT_GAME, player=player_id))
         self._check_game_over()
 

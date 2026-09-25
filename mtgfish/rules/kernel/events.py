@@ -143,6 +143,15 @@ class EventKind(IntEnum):
     #: CR 700.14: a player's mana spent on spells this turn reached ``amount``.
     EXPENDED = 332
 
+    # -- dungeons (CR 309) --------------------------------------------------
+    #: CR 309.4c: a venture marker moved into a room. ``object_id`` is the
+    #: dungeon card and ``amount`` the room's position on it, counted from 1
+    #: at the topmost room - what a room ability's trigger condition reads.
+    VENTURE_MARKER_MOVED = 300
+    #: CR 309.7: a player completed a dungeon. ``object_id`` is the dungeon
+    #: card as it left the game and ``data`` holds its name.
+    DUNGEON_COMPLETED = 301
+
 
 #: Events that mean a permanent left the battlefield in some form. Abilities
 #: that trigger on these use last-known information (CR 603.6e, 608.2g).

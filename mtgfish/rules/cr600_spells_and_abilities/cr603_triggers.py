@@ -490,6 +490,14 @@ def condition_met(
         if not (before < trigger.chapter <= now):
             return False
 
+    # CR 309.4c: a room ability triggers when its owner's venture marker
+    # moves into that room of that dungeon - not a room of the same number on
+    # some other dungeon card.
+    if trigger.room and (
+        event.object_id != source.id or event.amount != trigger.room
+    ):
+        return False
+
     if trigger.ordinal and not _is_nth_this_turn(game, trigger, event):
         return False
 

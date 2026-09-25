@@ -2475,23 +2475,15 @@ def _do_vote(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_venture(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.46: venture into the dungeon.
+    """CR 701.49: venture into the dungeon, or into [quality] (701.49d).
 
-    Position tracking only. Which dungeon, and what each room does, is card
-    text the parser has not read yet - so the position advances and the event
-    fires, and nothing pretends to know what the room said.
+    The procedure - choosing a dungeon, following an arrow, completing the
+    one whose bottommost room was reached - is ``cr309_dungeons``'s.
     """
-    game = resolution.game
+    from ..cr300_card_types.cr309_dungeons import venture
+
     for player_id in _players(resolution, effect):
-        player = game.player(player_id)
-        player.dungeon_room += 1
-        game.emit(
-            Event(
-                EventKind.DUNGEON_VENTURED,
-                player=player_id,
-                amount=player.dungeon_room,
-            )
-        )
+        venture(resolution.game, player_id, effect.dungeon_quality)
 
 
 def _wants(resolution: Resolution, effect: Effect) -> bool:

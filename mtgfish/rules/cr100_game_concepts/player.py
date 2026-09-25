@@ -93,9 +93,15 @@ class Player:
         self.speed += 1
         self.speed_increased_this_turn = True
         return True
-    #: CR 701.46: how deep into a dungeon this player is. Which dungeon and
-    #: what each room does is card text; this is only the position.
-    dungeon_room: int = 0
+    #: CR 309.3, 309.4: the dungeon card this player owns in the command
+    #: zone, if any, and which of its rooms their venture marker is on
+    #: (counted from 0 at the topmost room).
+    dungeon: ObjectId = NO_OBJECT
+    venture_room: int = 0
+    #: CR 309.7: the names of the dungeons this player has completed, once
+    #: per completion, in order. "If you've completed a dungeon" and "each
+    #: differently named dungeon you've completed" both read this.
+    completed_dungeons: list[str] = field(default_factory=list)
     rad: int = 0
     #: CR 122.1: a counter sits on an object *or a player*, and the fields
     #: above cover only the four kinds the rules name often enough to have

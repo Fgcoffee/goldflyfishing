@@ -464,6 +464,10 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         # ever fired in a game; only a test that emitted the event by hand saw
         # one.
         game.emit(Event(EventKind.UPKEEP, player=game.active_player))
+        # CR 726.2: the initiative's holder ventures into Undercity.
+        from ..cr700_additional_rules.cr725_designations import initiative_upkeep
+
+        initiative_upkeep(game)
     elif step is Step.END_STEP:
         # CR 513.1: the end step has no turn-based actions either.
         # CR 513.1a: the same for "at the beginning of the end step", which is
