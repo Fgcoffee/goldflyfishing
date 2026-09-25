@@ -2537,6 +2537,31 @@ def _do_venture(resolution: Resolution, effect: Effect) -> None:
         venture(resolution.game, player_id, effect.dungeon_quality)
 
 
+def _do_open_attraction(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.51b: open an Attraction, as many times as the sentence says.
+
+    Each is its own opening - "open two Attractions" opens the top card, then
+    the new top card - so each one triggers "whenever you open an Attraction"
+    (CR 701.51c). The procedure is ``cr717_attractions``'s.
+    """
+    from ..cr700_additional_rules.cr717_attractions import open_attraction
+
+    count = _count(resolution, effect)
+    for player_id in _players(resolution, effect):
+        for _ in range(max(0, count)):
+            open_attraction(resolution.game, player_id)
+
+
+def _do_roll_to_visit(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.52a: roll to visit your Attractions."""
+    from ..cr700_additional_rules.cr717_attractions import roll_to_visit
+
+    for player_id in _players(resolution, effect):
+        result = roll_to_visit(resolution.game, player_id)
+        # CR 706.4: the roll's number is there for the rest of the ability.
+        resolution.die_results = (result,)
+
+
 def _wants(resolution: Resolution, effect: Effect) -> bool:
     """Whether the controller takes an optional effect."""
     if effect.kind is not EffectKind.OPTIONAL and not effect.children:
@@ -2655,6 +2680,8 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.UNTAP_STEP_SKIP: _do_untap_step_skip,
     EffectKind.VOTE: _do_vote,
     EffectKind.VENTURE: _do_venture,
+    EffectKind.OPEN_ATTRACTION: _do_open_attraction,
+    EffectKind.ROLL_TO_VISIT: _do_roll_to_visit,
     EffectKind.CHOOSE_MODE: _do_choose_mode,
 }
 

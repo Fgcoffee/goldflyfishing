@@ -442,17 +442,21 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         # CR 728.1: the rad-counter procedure is a turn-based action at the
         # start of the precombat main phase.
         # CR 505.4: a lore counter on each Saga the active player controls.
-        # CR 505.5's roll to visit Attractions is missing rather than absent
-        # on principle: Attractions are Commander-legal, but they need the
-        # Attraction deck of CR 717 - a zone built during deck construction -
-        # and the engine has neither that zone nor die rolling. With no
-        # Attraction able to reach the battlefield there is never one to
-        # visit, so the omission is not observable.
+        # CR 505.5, and CR 703.4g for its place straight after the lore
+        # counters: if the active player controls an Attraction, they roll to
+        # visit their Attractions. The visit abilities that triggers wait for
+        # priority like any others.
         from ..cr300_card_types.cr300_card_types import saga_lore_counters
+        from ..cr700_additional_rules.cr717_attractions import (
+            controls_an_attraction,
+            roll_to_visit,
+        )
         from ..cr700_additional_rules.cr725_designations import rad_counter_milling
 
         rad_counter_milling(game, game.active_player)
         saga_lore_counters(game)
+        if controls_an_attraction(game, game.active_player):
+            roll_to_visit(game, game.active_player)
     elif step is Step.UPKEEP:
         # CR 503.1: the upkeep step has no turn-based actions of its own; this
         # event exists only so that abilities can trigger off the step

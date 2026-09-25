@@ -1629,6 +1629,36 @@ def _infinity(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Visit")
+def _visit(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.159a: "Visit - [effect]" is a triggered ability of an
+    Attraction: whenever its controller rolls to visit their Attractions and
+    the result is lit up on it, [effect].
+
+    CR 701.52a states the same thing from the roll's side - each Attraction
+    with that number lit up "has been visited" and its visit ability
+    triggers - and ``cr717_attractions`` emits one visit per Attraction it
+    lit, so the trigger is this Attraction being visited. Only the roller's
+    own Attractions are ever visited, which is the "you" of CR 702.159a.
+    The effect after the dash is ordinary card text, supplied by the parser.
+    CR 702.159b's prize is part of the same ability, but claiming it is not
+    modelled, so a visit that says to claim the prize does not parse.
+    """
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTRACTION_VISITED}),
+                subject=SOURCE_ONLY,
+                functions_in=BATTLEFIELD,
+                text="whenever you roll to visit your Attractions, if the "
+                "result is lit up on this Attraction",
+            ),
+            *_body(instance),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
 @register("Storied")
 def _storied(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.195a: a static ability the engine reads by name - see

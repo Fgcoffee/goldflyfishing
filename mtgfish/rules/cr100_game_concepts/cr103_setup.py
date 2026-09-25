@@ -3,7 +3,8 @@
 The setup sequence is fixed: determine turn order, everyone shuffles, everyone
 draws seven, then mulligans are taken. Commanders begin in the command zone
 rather than the library (CR 903.6), which is why a Commander deck is 99 cards
-plus one.
+plus one. An Attraction deck, where a player has one, begins there too
+(CR 717.2) and is shuffled along with the library (CR 103.3a).
 
 CR 903.2 settles what kind of game this is before any of that: a Free-for-All
 (CR 806) with the attack multiple players option and *without* the limited
@@ -21,6 +22,10 @@ from __future__ import annotations
 import random
 from typing import Callable, Sequence
 
+from ..cr700_additional_rules.cr717_attractions import (
+    set_up_attraction_deck,
+    shuffle_attraction_deck,
+)
 from ..kernel.enums import Phase, Step, Zone
 from ..kernel.game import AbilityProvider, Game
 from ..kernel.ids import PlayerId
@@ -71,6 +76,10 @@ def new_game(
             commander_ids.append(obj.id)
         player.commanders = tuple(commander_ids)
 
+        # CR 717.2: a player playing with Attractions begins with an
+        # Attraction deck in the command zone.
+        set_up_attraction_deck(game, player_id, getattr(deck, "attractions", ()))
+
     # CR 103.1, and CR 806.3 for the seating it implies: turn order is
     # determined at random, then fixed for the game.
     order = [PlayerId(i) for i in range(len(game.players))]
@@ -85,6 +94,8 @@ def new_game(
 
     for player_id in order:
         game.shuffle_library(player_id)
+        # CR 103.3a: and each supplementary deck is shuffled with it.
+        shuffle_attraction_deck(game, player_id)
 
     # CR 903.7: once the starting player is known, each player sets their life
     # total to 40 and draws seven. Setting it here rather than leaving it to

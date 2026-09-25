@@ -222,6 +222,15 @@ class GameObject:
     # -- Commander (CR 903.3) -----------------------------------------------
     is_commander: bool = False
 
+    # -- Attractions (CR 717) -----------------------------------------------
+    #: Which pile of the command zone this card sits in, for the cards CR
+    #: 717.2 and 717.6a keep there apart from commanders and emblems: the
+    #: owner's Attraction deck or their junkyard. Neither is a zone of its
+    #: own (CR 717.6a says so of the junkyard), so the card's zone stays
+    #: COMMAND and this names the pile. A zone change builds a new object
+    #: with it empty, which is CR 400.7 doing the bookkeeping.
+    command_pile: str = ""
+
     # -- caching ------------------------------------------------------------
     #: Characteristics after the layer system has run. Invalidated whenever the
     #: continuous-effect set or any timestamp changes; never written directly.

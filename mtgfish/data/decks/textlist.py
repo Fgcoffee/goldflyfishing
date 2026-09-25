@@ -12,8 +12,9 @@ formats this needs to swallow:
     1x Sol Ring (m3c) 236 [Ramp]       Archidekt with categories
     SB: 1 Sol Ring                     old-style sideboard prefix
 
-plus section headers (``Commander``, ``Deck``, ``Sideboard``, ``// Commander``)
-in any capitalisation, with or without a trailing count.
+plus section headers (``Commander``, ``Deck``, ``Sideboard``, ``// Commander``,
+and ``// Attractions`` for the Attraction deck of CR 717.2) in any
+capitalisation, with or without a trailing count.
 
 Nothing is ever silently dropped. A line that does not resolve to a card is
 collected in ``Deck.unresolved`` and reported, because a quietly shorter deck
@@ -49,6 +50,10 @@ _SECTIONS = {
     "tokens": "ignore",
     "token": "ignore",
     "companion": "ignore",
+    # CR 717.2: the supplementary Attraction deck.
+    "attractions": "attraction",
+    "attraction": "attraction",
+    "attraction deck": "attraction",
 }
 
 _COMMENT_PREFIXES = ("//", "#", ";")
@@ -165,6 +170,7 @@ def parse_decklist(
 
     commanders: list[CardDef] = []
     entries: list[DeckEntry] = []
+    attractions: list[CardDef] = []
     unresolved: list[str] = []
     issues: list[DeckIssue] = []
 
@@ -188,6 +194,8 @@ def parse_decklist(
             continue
         if line.section == "commander":
             commanders.extend([card] * line.quantity)
+        elif line.section == "attraction":
+            attractions.extend([card] * line.quantity)
         else:
             entries.append(DeckEntry(card, line.quantity))
 
@@ -217,6 +225,7 @@ def parse_decklist(
         name=name,
         commanders=tuple(commanders),
         entries=tuple(entries),
+        attractions=tuple(attractions),
         source=source,
         unresolved=tuple(unresolved),
     )

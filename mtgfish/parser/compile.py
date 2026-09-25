@@ -217,8 +217,39 @@ def _keyword(line: Line, result: ParsedFace) -> list[Ability]:
         )
         return [Ability.unreadable(line.text)]
 
+    if name.lower() in _BODY_KEYWORDS:
+        return [_keyword_with_body(name, argument, line, result)]
+
     instance = _keyword_instance(name, argument, line.text)
     return list(build(instance))
+
+
+#: Keywords whose argument is ordinary effect text rather than a number, a
+#: cost or a quality. CR 702.159a: "Visit - [Effect]".
+_BODY_KEYWORDS = frozenset({"visit"})
+
+
+def _keyword_with_body(name: str, argument: str, line: Line, result: ParsedFace) -> Ability:
+    """A keyword wrapped around effect text: the text after the dash is read
+    by the effect grammar and handed to the keyword's builder as its body.
+
+    It goes through ``_finish`` like any other ability, so a body the grammar
+    cannot read completely leaves the whole keyword unreadable rather than
+    triggering with half an effect.
+    """
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+
+    body_text = argument.strip()
+    if body_text.startswith("-"):
+        body_text = body_text[1:].strip()
+    stream = Stream.of(body_text)
+    effects = parse_effects(stream)
+
+    def build_body(body) -> Ability:
+        (ability,) = build(KeywordInstance(name, text=line.text, effects=tuple(body)))
+        return ability
+
+    return _finish(line.text, stream, effects, result, rule="keyword", build=build_body)
 
 
 def _split_keyword(text: str) -> tuple[str | None, str]:

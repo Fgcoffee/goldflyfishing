@@ -6925,6 +6925,35 @@ def _put_into_hand(stream: Stream) -> Effect | None:
 # ---------------------------------------------------------------------------
 
 
+@clause("attraction-action")
+def _attraction_action(stream: Stream) -> Effect | None:
+    """"Open an Attraction", "open two Attractions", "roll to visit your
+    Attractions" (CR 701.51, 701.52).
+
+    Both are keyword actions the registry expands, but neither reads as one
+    to the generic clause: "an" and "two" are counts, so the action's name
+    is split by its own number, and "roll to visit" is four words ahead of
+    the noun it acts on.
+    """
+    from ..rules.cr700_additional_rules.cr701_keyword_actions import build
+
+    mark = stream.mark()
+    stream.accept("you")
+    if stream.accept("open", "opens"):
+        count = stream.accept_number()
+        if count is not None and stream.accept("Attraction", "Attractions"):
+            return build(
+                "Open an Attraction", amount=count, text="open an Attraction"
+            )[0]
+    elif stream.accept("roll", "rolls") and stream.accept_phrase("to visit"):
+        if stream.accept("your", "their") and stream.accept("Attractions"):
+            return build(
+                "Roll to Visit Your Attractions", text="roll to visit your Attractions"
+            )[0]
+    stream.reset(mark)
+    return None
+
+
 @clause("keyword-action")
 def _keyword_action(stream: Stream) -> Effect | None:
     """A bare keyword action: "proliferate", "investigate", "populate".

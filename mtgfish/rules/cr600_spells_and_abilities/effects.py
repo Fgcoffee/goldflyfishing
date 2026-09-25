@@ -231,6 +231,15 @@ class EffectKind(IntEnum):
     #: top two and manifest one.
     MANIFEST = 240
 
+    # -- Attractions (CR 717) -----------------------------------------------
+    #: CR 701.51b: each of ``players`` opens ``amount`` Attractions - the top
+    #: card of their Attraction deck, onto the battlefield under their
+    #: control, one at a time.
+    OPEN_ATTRACTION = 270
+    #: CR 701.52a: each of ``players`` rolls a six-sided die to visit their
+    #: Attractions.
+    ROLL_TO_VISIT = 271
+
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the
     #: coverage report can name exactly what was lost, and so an ability that

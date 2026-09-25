@@ -458,6 +458,7 @@ CR_ONLY_ACTIONS: dict[str, str] = {
 CR_ONLY_ABILITIES: dict[str, str] = {
     "Storied": "702.195",
     "∞": "702.186",
+    "Visit": "702.159",
 }
 
 KEYWORD_ACTIONS.update(

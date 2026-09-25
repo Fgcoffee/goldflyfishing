@@ -351,6 +351,15 @@ COVERAGE: dict[str, Entry] = _entries(
                 "leveler cards: {LEVEL} bands as level-counter-conditioned "
                 "statics setting base P/T in layer 7b",
             ),
+            "717": (
+                "rules/cr700_additional_rules/cr717_attractions.py",
+                "Attractions: the Attraction deck as a pile in the command "
+                "zone, built from a decklist's Attractions section and "
+                "shuffled at setup (717.2, 103.3a), 717.2a's construction "
+                "checks, opening (717.3, 701.51), the precombat-main roll to "
+                "visit (717.4, 505.5), visit abilities (717.5, 702.159) and "
+                "the junkyard replacement (717.6, 717.6a)",
+            ),
             "714": (
                 "rules/cr300_card_types/cr300_card_types.py",
                 "Sagas: chapter symbols as crossing triggers (714.2b), lore "
@@ -428,6 +437,13 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
         },
         Status.PARTIAL: {
+            "717.1": (
+                "rules/cr700_additional_rules/cr717_attractions.py",
+                "lit numbers are read from the card data's attraction_lights, "
+                "which the shipped Scryfall snapshot does not carry - with "
+                "nothing lit up, no Attraction in a real game is ever "
+                "visited, though the roll itself happens",
+            ),
             "201": (
                 "rules/kernel/matching.py",
                 (
@@ -478,12 +494,12 @@ COVERAGE: dict[str, Entry] = _entries(
             # -- 700s -------------------------------------------------------
             "701": (
                 "rules/cr700_additional_rules/cr701_keyword_actions.py",
-                "59 of 78 keyword actions fully modelled; the rest are Unfinity, "
+                "70 of 81 keyword actions fully modelled; the rest are Unfinity, "
                 "Planechase, Archenemy or newer than the card-pool snapshot",
             ),
             "702": (
                 "rules/cr700_additional_rules/keywords.py",
-                "211 of 221 keyword abilities implemented; the remainder are out-of-format "
+                "222 of 225 keyword abilities implemented; the remainder are out-of-format "
                 "(Augment, the Conspiracy agendas) or shapes awaiting card text",
             ),
             # -- 800s -------------------------------------------------------
@@ -576,12 +592,6 @@ COVERAGE: dict[str, Entry] = _entries(
             "903.13": ("", "Commander Draft - a different format"),
             "903.11": ("", "cards from outside the game - no sideboard in this sim"),
             "900": ("", "casual variant section header"),
-            "717": (
-                "",
-                "Attractions are Commander-legal, contrary to what this "
-                "entry used to say; they are simply not built - no Attraction "
-                "deck, no zone for it, and no die roll to visit one",
-            ),
             "729": ("", "subgames - Shahrazad only, and banned in Commander"),
             "732": ("", "taking shortcuts - a human convenience with no simulated effect"),
         },
