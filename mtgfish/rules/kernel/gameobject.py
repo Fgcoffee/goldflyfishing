@@ -77,6 +77,12 @@ class GameObject:
     tapped: bool = False
     flipped: bool = False
     face_down: bool = False
+    #: CR 708.2, 708.6: what made this object face down - "Morph", "Disguise",
+    #: "Manifest", "Cloak" and so on, or empty for an effect that listed no
+    #: characteristics. It decides what the face-down object is (disguise and
+    #: cloak add ward {2}) and how it may be turned face up again (CR 701.40b
+    #: only for a manifested or cloaked permanent).
+    face_down_by: str = ""
     phased_out: bool = False
 
     # -- battlefield state --------------------------------------------------

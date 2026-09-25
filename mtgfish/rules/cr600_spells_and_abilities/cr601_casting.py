@@ -156,6 +156,9 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     # against.
     if _is_face_down_cast(game, spell, action):
         spell.face_down = True
+        # CR 702.168a: which keyword it was decides what the face-down spell
+        # is - a disguised one has ward {2}.
+        spell.face_down_by = chosen_alternative_cost(game, spell, action).keyword
         spell.invalidate()
         game.invalidate_characteristics()
 
@@ -239,7 +242,11 @@ def chosen_alternative_cost(game: Game, spell: GameObject, action: Action):
 
     CR 118.9a allows at most one, so this is one or ``None``.
     """
-    available = game.characteristics(spell).alternative_costs
+    # CR 702.37c: a morph spell is face down on the stack before its cost is
+    # determined, and the face-down spell has no abilities - the {3} it pays
+    # is the card's morph ability, read from the card.
+    chars = game.printed_characteristics(spell) if spell.face_down else game.characteristics(spell)
+    available = chars.alternative_costs
     if 0 <= action.alternative_cost < len(available):
         return available[action.alternative_cost]
     return None

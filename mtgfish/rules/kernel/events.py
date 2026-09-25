@@ -137,6 +137,11 @@ class EventKind(IntEnum):
     EXPLORED = 187
     DUNGEON_VENTURED = 186
 
+    # -- face-down objects (CR 708) ----------------------------------------
+    #: CR 701.62b: after the whole manifest dread process, even if part of it
+    #: was impossible.
+    MANIFESTED_DREAD = 310
+
 
 #: Events that mean a permanent left the battlefield in some form. Abilities
 #: that trigger on these use last-known information (CR 603.6e, 608.2g).

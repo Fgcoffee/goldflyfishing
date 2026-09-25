@@ -322,10 +322,22 @@ def test_an_unreadable_cost_after_the_mana_fails_the_whole_cost(box):
 
 
 def test_text_after_the_mana_that_is_not_a_cost_leaves_the_mana(box):
-    """"Prototype {1}{B} - 1/1": the rest is a size, not something to pay."""
-    alternative = _alternative(box, "Goring Warplow", "Prototype")
-    assert [c.kind for c in alternative.cost.components] == [CostKind.MANA]
-    assert str(alternative.cost.mana_component) == "{1}{B}"
+    """"Prototype {1}{B} - 1/1": the rest is a size, not something to pay.
+
+    Prototype is not an alternative cost (CR 718.3), so the cost sits on the
+    keyword's own ability rather than on an ``AlternativeCost``.
+    """
+    _need(box, "Goring Warplow")
+    faces = parse_card(box.db.lookup("Goring Warplow")).faces
+    prototype = next(
+        ability
+        for face in faces
+        for ability in face.abilities
+        if ability.keyword == "Prototype"
+    )
+    assert prototype.alternative_cost is None
+    assert [c.kind for c in prototype.cost.components] == [CostKind.MANA]
+    assert str(prototype.cost.mana_component) == "{1}{B}"
 
 
 def test_awaken_reads_the_cost_after_its_number(box):

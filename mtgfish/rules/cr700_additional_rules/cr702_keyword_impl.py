@@ -831,9 +831,11 @@ def _morph(instance: KeywordInstance) -> tuple[Ability, ...]:
         Ability(
             AbilityKind.STATIC,
             keyword=instance.name,
+            # CR 702.37c, 702.168b: from any zone the card could be cast from
+            # - the hand, and the command zone for a commander (CR 903.8).
             alternative_cost=AlternativeCost(
                 cost=face_down_cost,
-                from_zone=Zone.HAND,
+                from_zone=None,
                 keyword=instance.name,
                 text=f"cast face down as a 2/2 for {{3}} ({instance.name})",
             ),
@@ -851,20 +853,10 @@ def _morph(instance: KeywordInstance) -> tuple[Ability, ...]:
             text=f"turn face up: {instance.cost or 'its morph cost'}",
         ),
     ]
-    if instance.key == "disguise":
-        # CR 702.168a: a disguised creature is face down *with ward {2}*.
-        abilities.append(
-            Ability.static(
-                Effect(
-                    EffectKind.GRANT_ABILITY,
-                    targets=ObjectFilter(source_only=True, face_down=True),
-                    granted_abilities=build(KeywordInstance("Ward", cost=Cost((
-                        CostComponent(CostKind.MANA, mana=ManaCost.parse("{2}")),
-                    )))),
-                ),
-                text="this creature has ward {2} while face down",
-            )
-        )
+    # CR 702.168a: a disguised creature is face down *with ward {2}*. That is
+    # one of the characteristics the face-down object has, not an ability of
+    # the card granting it - the card has no abilities while face down - so
+    # it lives with the rest of them in ``cr708_face_down``.
     return tuple(abilities)
 
 
@@ -1474,10 +1466,33 @@ def _upkeep_keyword(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Overload", "Foretell", "Emerge", "Freerunning", "Bestow", "Miracle",
           "Warp", "Impending", "Offering", "Assist", "Cleave", "Gift", "Disturb",
-          "Embalm", "Eternalize", "Mutate", "Prototype")
+          "Embalm", "Eternalize", "Mutate")
 def _more_alternatives(instance: KeywordInstance) -> tuple[Ability, ...]:
     zone = Zone.GRAVEYARD if instance.key in ("disturb", "embalm", "eternalize") else None
     return _alternative(instance, zone)
+
+
+@register("Prototype")
+def _prototype(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.160a: the permission to cast this card prototyped.
+
+    Not an alternative cost. Casting prototyped chooses the card's other set
+    of characteristics (CR 718.3), whose mana cost is then the spell's mana
+    cost - so "without paying its mana cost" and cost reductions apply to it
+    as they would to any other. The choice is offered as a face to cast
+    (``castable_face_indices``), and the prototype mana cost, power and
+    toughness are read from the card itself (``prototype_face``); the cost is
+    kept here only so the keyword says what it costs.
+    """
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            cost=instance.cost or Cost(()),
+            functions_in=HAND,
+            text=instance.text or instance.name,
+        ),
+    )
 
 
 @register("Entwine", "Escalate", "Replicate", "Conspire", "Splice", "Squad",

@@ -63,9 +63,21 @@ class SpecialAction:
     #: For turning a face-down permanent up: which keyword permits it, because
     #: megamorph adds a +1/+1 counter and morph does not.
     keyword: str = ""
+    #: For turning a face-down permanent up: which of its ways of turning up
+    #: this is, by position in ``face_up_options``. A manifested card with
+    #: morph has two (CR 701.40c), and the player chooses which cost to pay.
+    option: int = -1
 
     def as_action(self) -> Action:
-        return Action(ActionKind.SPECIAL, source=self.source, ability_index=int(self.kind))
+        # The option rides in ``alternative_cost``: choosing which cost to pay
+        # for turning a permanent up is exactly what that field records for
+        # a spell, and a special action uses it for nothing else.
+        return Action(
+            ActionKind.SPECIAL,
+            source=self.source,
+            ability_index=int(self.kind),
+            alternative_cost=self.option,
+        )
 
 
 def available(game: Game, player_id: PlayerId) -> list[SpecialAction]:
@@ -87,7 +99,9 @@ def perform(game: Game, player_id: PlayerId, action: Action) -> bool:
     obj = game.objects.get(action.source)
 
     if kind is SpecialKind.TURN_FACE_UP:
-        return obj is not None and turn_face_up(game, obj)
+        return obj is not None and _pay_and_turn_face_up(
+            game, player_id, obj, action.alternative_cost
+        )
     if kind in (SpecialKind.SUSPEND, SpecialKind.FORETELL, SpecialKind.PLOT):
         return obj is not None and _exile_from_hand(game, player_id, obj, kind)
     if kind is SpecialKind.DISCARD_SELF:
@@ -133,14 +147,37 @@ def _turn_face_up(game: Game, player_id: PlayerId):
         obj = game.objects.get(object_id)
         if obj is None or obj.controller != player_id or not obj.face_down:
             continue
-        for keyword, cost in _face_up_costs(game, obj):
+        for option, (keyword, cost) in enumerate(face_up_options(game, obj)):
             if can_afford(game, player_id, cost):
                 yield SpecialAction(
                     SpecialKind.TURN_FACE_UP,
                     source=object_id,
                     cost=cost,
                     keyword=keyword,
+                    option=option,
                 )
+
+
+def face_up_options(game: Game, obj) -> list[tuple[str, ManaCost]]:
+    """Every way this face-down permanent may be turned face up, with its cost.
+
+    The morph-family costs come first, then CR 701.40b / 701.58b's mana cost
+    for a manifested or cloaked creature card - both, for a manifested card
+    with morph (CR 701.40c, 701.58c). CR 701.40g: an instant or sorcery card
+    offers nothing, because it cannot be turned face up at all.
+    """
+    from ..cr700_additional_rules.cr708_face_down import (
+        cannot_turn_face_up,
+        mana_cost_to_turn_up,
+    )
+
+    if obj.card is None or cannot_turn_face_up(game, obj):
+        return []
+    options = list(_face_up_costs(game, obj))
+    mana_cost = mana_cost_to_turn_up(game, obj)
+    if mana_cost is not None:
+        options.append((obj.face_down_by, mana_cost))
+    return options
 
 
 def _face_up_costs(game: Game, obj):
@@ -168,34 +205,53 @@ def _face_up_costs(game: Game, obj):
         yield ability.keyword, ability.cost.mana_component
 
 
-def turn_face_up(game: Game, obj) -> bool:
-    """Turn a face-down permanent face up (CR 708.4).
+def turn_face_up(game: Game, obj, keyword: str | None = None) -> bool:
+    """Turn a face-down permanent face up (CR 708.8).
 
     Its characteristics come back all at once, and because it was already on
     the battlefield this is not an enters-the-battlefield event - "when this
     creature is turned face up" triggers fire, "when this creature enters"
     triggers do not.
+
+    ``keyword`` is the cost that was paid. CR 702.37b: only a megamorph cost
+    leaves a +1/+1 counter, so a manifested megamorph card turned up for its
+    mana cost gets none. With no keyword the permanent is taken to be turned
+    up by its own morph-family ability.
     """
-    if not obj.face_down:
+    from ..cr700_additional_rules.cr708_face_down import turn_face_up as turn_up
+
+    if keyword is None:
+        megamorph = game.printed_characteristics(obj).has_keyword("Megamorph")
+    else:
+        megamorph = keyword == "Megamorph"
+    return turn_up(game, obj, megamorph=megamorph)
+
+
+def _pay_and_turn_face_up(game: Game, player_id: PlayerId, obj, option: int) -> bool:
+    """CR 702.37e, 702.168d, 701.40b: show the cost, pay it, turn it up.
+
+    The cost is paid - it is what turning a permanent up is for - and an
+    unpayable one leaves the permanent face down with nothing spent.
+    """
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _pay
+    from .cr118_costs import TotalCost
+
+    if obj.controller != player_id or not obj.face_down:
         return False
-    obj.face_down = False
-    obj.timestamp = game.ids.timestamp()
-    obj.invalidate()
-    game.invalidate_characteristics()
-
-    if game.characteristics(obj).has_keyword("Megamorph"):
-        # CR 702.37b: megamorph turns it up with a +1/+1 counter on it. The
-        # counter is placed *after* the characteristics come back, and layer 7d
-        # has to be told, or the permanent keeps the power it was computed with
-        # a moment ago.
-        obj.add_counters("+1/+1", 1)
-        obj.invalidate()
-        game.invalidate_characteristics()
-
-    game.emit(
-        Event(EventKind.TURNED_FACE_UP, object_id=obj.id, player=obj.controller)
-    )
-    return True
+    options = face_up_options(game, obj)
+    if not options:
+        return False
+    if not 0 <= option < len(options):
+        option = 0
+    keyword, cost = options[option]
+    try:
+        _pay(game, player_id, TotalCost(base=cost), obj)
+    except CastError as exc:
+        game.log.record(
+            game, f"cannot turn {obj} face up: {exc}", kind="illegal", player=player_id
+        )
+        return False
+    return turn_face_up(game, obj, keyword)
 
 
 # ---------------------------------------------------------------------------
@@ -311,6 +367,7 @@ __all__ = [
     "SpecialKind",
     "available",
     "can_take_special_actions",
+    "face_up_options",
     "perform",
     "turn_face_up",
 ]

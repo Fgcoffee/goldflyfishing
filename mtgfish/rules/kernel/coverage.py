@@ -332,6 +332,42 @@ COVERAGE: dict[str, Entry] = _entries(
                 "rules/cr300_card_types/cr300_card_types.py",
                 "station cards: {N+} charge-counter thresholds as statics",
             ),
+            "715": (
+                "rules/cr300_card_types/cr300_card_types.py",
+                "adventurer cards: the Adventure is a castable face judged on its "
+                "own characteristics (715.3a-b), a copy is an Adventure too "
+                "(715.3c), a resolved one is exiled and its creature castable "
+                "(715.3d); \"has an Adventure\" reads the card, through copy "
+                "effects (715.2a-b); any name may be chosen (715.5)",
+            ),
+            "718": (
+                "rules/cr300_card_types/cr300_card_types.py",
+                "prototype cards: casting prototyped is a choice of face, not an "
+                "alternative cost (718.3); the prototype cost, P/T and colour "
+                "are read from the card's prototype line and hold on the stack "
+                "and the battlefield (718.3a-b), in copies (718.3c-d), and "
+                "nowhere else (718.4)",
+            ),
+            "720": (
+                "rules/cr300_card_types/cr300_card_types.py",
+                "omen cards: the Omen is a castable face (720.3a-b), a copy is "
+                "an Omen too (720.3c), a resolved one is shuffled into its "
+                "owner's library (720.3d); \"has an Omen\" as for Adventures",
+            ),
+            "708": (
+                "rules/cr700_additional_rules/cr708_face_down.py",
+                "face-down spells and permanents: layer 1b gives what turned it "
+                "face down (708.2, ward for disguise and cloak); cast face down "
+                "from hand or command zone and judged as the 2/2 (708.4); a "
+                "face-down spell becomes a face-down permanent and nothing "
+                "enters face up (708.3); turning up pays its cost, keeps the "
+                "object (708.8) and restamps it (613.7f); manifest, cloak and "
+                "manifest dread (701.40, 701.58, 701.62); copies take the "
+                "face-down values (708.10); exiled face down has no "
+                "characteristics (406.3a); revealed on leaving and at game end "
+                "(708.9). 708.5-708.6 are about what players may look at, which "
+                "the engine does not hide from agents",
+            ),
             "712": (
                 "rules/cr700_additional_rules/cr707_faces.py",
                 "double-faced cards: transforming without a new object (712.18), "
@@ -399,25 +435,6 @@ COVERAGE: dict[str, Entry] = _entries(
                 "rules/cr700_additional_rules/keywords.py",
                 "211 of 221 keyword abilities implemented; the remainder are out-of-format "
                 "(Augment, the Conspiracy agendas) or shapes awaiting card text",
-            ),
-            "715": (
-                "rules/cr300_card_types/cr300_card_types.py",
-                "adventurer cards: alternative characteristics, the casting mode, and 715.3d exiling a resolved Adventure so the creature can be cast later",
-            ),
-            "718": (
-                "rules/cr300_card_types/cr300_card_types.py",
-                "prototype cards: alternative cost and P/T that persist onto the "
-                "battlefield (718.3b); casting mode not wired",
-            ),
-            "720": (
-                "rules/cr300_card_types/cr300_card_types.py",
-                "omen cards: alternative characteristics, the casting mode, and 720.3d shuffling a resolved Omen into its owner's library",
-            ),
-            "708": (
-                "rules/cr600_spells_and_abilities/cr613_layers.py",
-                "face-down objects are 2/2 vanillas in layer 1b, cast face down "
-                "through the morph alternative cost, and turned up by the "
-                "CR 116.2b special action",
             ),
             # -- 800s -------------------------------------------------------
 

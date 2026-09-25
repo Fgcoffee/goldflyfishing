@@ -450,6 +450,10 @@ class ObjectFilter:
     #: filter is read for.
     ring_bearer: bool | None = None
     face_down: bool | None = None
+    #: CR 715.2a, 720.2a: "that has an Adventure", "that has an Omen" - the
+    #: subtype of the inset spell the card carries, whether or not the object
+    #: is using those characteristics now. Empty for no such requirement.
+    has_inset: str = ""
     is_token: bool | None = None
     #: "creatures of the chosen type", "permanents of the chosen color" -
     #: matched against the choice recorded on the ability's source, so the
@@ -645,6 +649,8 @@ class ObjectFilter:
                 parts.append(no)
         if self.has_keyword:
             parts.append("with " + " and ".join(self.has_keyword))
+        if self.has_inset:
+            parts.append(f"that has an {self.has_inset}")
         if self.lacks_keyword:
             parts.append("without " + " or ".join(self.lacks_keyword))
         return parts

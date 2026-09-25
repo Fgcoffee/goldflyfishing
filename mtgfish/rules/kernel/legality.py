@@ -104,11 +104,14 @@ def _face_characteristics(game: Game, obj: GameObject, face_index: int):
     from ..cr200_parts_of_a_card.characteristics import from_face
     from ..cr600_spells_and_abilities.cr613_layers import intrinsic_abilities
 
-    faces = getattr(obj.card, "faces", ())
-    if face_index >= len(faces):
+    # CR 718.3a: a prototyped spell is judged on its prototype face, which
+    # the card data does not print as a face of its own.
+    from ..cr300_card_types.cr300_card_types import card_face
+
+    face, ability_face = card_face(obj.card, face_index)
+    if face is None:
         return game.printed_characteristics(obj)
-    face = faces[face_index]
-    abilities = game.ability_provider.abilities_for(obj.card, face_index)
+    abilities = game.ability_provider.abilities_for(obj.card, ability_face)
     return from_face(face, abilities + intrinsic_abilities(face.type_line))
 
 
@@ -251,6 +254,14 @@ def _alternative_available_now(
         return False
     if sorcery_speed or alternative.instant_speed:
         return True
+    from ..cr600_spells_and_abilities.cr601_casting import FACE_DOWN_CAST_KEYWORDS
+
+    if alternative.keyword in FACE_DOWN_CAST_KEYWORDS:
+        # CR 708.4: cast face down, it is judged as the 2/2 it will be - which
+        # has no flash, whatever the card underneath has.
+        from ..cr700_additional_rules.cr708_face_down import face_down_characteristics
+
+        chars = face_down_characteristics(obj)
     if _spell_timing(chars) is not Timing.SORCERY:
         return True
     # CR 113.6: a granted "as though it had flash" covers this cast too.

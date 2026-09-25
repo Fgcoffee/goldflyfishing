@@ -225,6 +225,11 @@ class EffectKind(IntEnum):
     VILLAINOUS_CHOICE = 223
     #: CR 701.64a: "harness [this permanent]" - it becomes harnessed.
     HARNESS = 224
+    #: CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread -
+    #: ``keywords[0]`` says which. Put the ``targets`` cards onto the
+    #: battlefield face down, one at a time; for manifest dread, look at the
+    #: top two and manifest one.
+    MANIFEST = 240
 
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the

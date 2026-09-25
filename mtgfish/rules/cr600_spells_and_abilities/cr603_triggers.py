@@ -301,8 +301,7 @@ def check_state_triggers(game: Game) -> None:
     still_true: set[tuple[int, int]] = set()
 
     for obj in _trigger_sources(game):
-        chars = game.printed_characteristics(obj)
-        for index, ability in enumerate(chars.abilities):
+        for index, ability in enumerate(_trigger_abilities(game, obj)):
             if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
                 continue
             trigger = ability.trigger
@@ -347,7 +346,7 @@ def _watchers(game: Game) -> dict:
 
     index: dict = {}
     for obj in _trigger_sources(game):
-        for ability in game.printed_characteristics(obj).abilities:
+        for ability in _trigger_abilities(game, obj):
             if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
                 continue
             trigger = ability.trigger
@@ -359,6 +358,20 @@ def _watchers(game: Game) -> dict:
     game._trigger_index = index
     game._trigger_index_key = (game.epoch, population)
     return index
+
+
+def _trigger_abilities(game: Game, obj: GameObject) -> tuple:
+    """The abilities that may trigger for this object.
+
+    Its printed abilities - except when it is face down. CR 708.2: a
+    face-down permanent has only what turned it face down lists, so the
+    card's own triggered abilities do not exist (and CR 708.3's "enters"
+    abilities never see it), while a disguised or cloaked one's ward does.
+    CR 406.3a: a card exiled face down has none at all.
+    """
+    if obj.face_down:
+        return game.characteristics(obj).abilities
+    return game.printed_characteristics(obj).abilities
 
 
 def _kinds_watched(trigger) -> frozenset:
