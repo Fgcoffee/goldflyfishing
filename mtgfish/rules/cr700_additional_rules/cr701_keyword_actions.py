@@ -833,9 +833,6 @@ OUT_OF_FORMAT_ACTIONS = (
     "Abandon",            # Archenemy schemes
     "Set in motion",      # Archenemy schemes
     "Planeswalk",         # Planechase
-    # CR 505.5: the roll happens in the precombat main phase and needs a die
-    # plus every Attraction's lit numbers, neither of which is modelled.
-    "Roll to Visit Your Attractions",
 )
 
 
@@ -1111,20 +1108,6 @@ def _waterbend(instance: ActionInstance) -> tuple[Effect, ...]:
     )
 
 
-#: CR 717.2: an Attraction deck is a supplementary deck that lives in the
-#: command zone, so its cards are found there rather than in a library.
-YOUR_ATTRACTION_DECK = ObjectFilter(
-    subtypes_any=("Attraction",),
-    # Yours by both readings: CR 717.2 makes the deck the player's own, and a
-    # card sitting in the command zone is controlled by whoever owns it, so
-    # the control relation is the one the matcher can actually answer.
-    controller=ControllerRelation.YOU,
-    owner=ControllerRelation.YOU,
-    zones=frozenset({Zone.COMMAND}),
-    count=Value.of(1),
-)
-
-
 @register("Face a villainous choice")
 def _face_a_villainous_choice(instance: ActionInstance) -> tuple[Effect, ...]:
     """CR 701.55a: the named players each choose one option and perform it.
@@ -1216,20 +1199,33 @@ def _open_an_attraction(instance: ActionInstance) -> tuple[Effect, ...]:
     """CR 701.51b: take the top card of your Attraction deck, turn it face up,
     and put it onto the battlefield under your control.
 
-    A zone change out of the command zone, which is where CR 717.2 keeps the
-    Attraction deck. Face up is the default for anything entering, so nothing
-    has to say it.
-
-    CR 701.51a: a player may only do this in a game where they are playing with
-    an Attraction deck. No deck this engine builds has one, so the filter finds
-    nothing and the action does nothing - which is the outcome the rule
-    prescribes rather than a gap this expansion papers over.
+    The deck is a pile in the command zone (CR 717.2), and which card is on
+    top of it is ``cr717_attractions``'s to say, so this is an opcode of its
+    own rather than a zone change with a filter. "Open two Attractions" is
+    the amount. CR 701.51a: a player with no Attraction deck has no top card,
+    and opens nothing.
     """
     return (
         Effect(
-            EffectKind.PUT_ONTO_BATTLEFIELD,
-            targets=YOUR_ATTRACTION_DECK,
-            from_zone=Zone.COMMAND,
+            EffectKind.OPEN_ATTRACTION,
+            amount=_amount(instance),
+            players=instance.players or YOU,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Roll to Visit Your Attractions")
+def _roll_to_visit(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.52a: roll a six-sided die; each Attraction you control with that
+    number lit up is visited, and its visit ability triggers (CR 702.159a).
+
+    The same procedure CR 505.5 runs as a turn-based action, which is why it
+    lives in ``cr717_attractions`` and this only names it.
+    """
+    return (
+        Effect(
+            EffectKind.ROLL_TO_VISIT,
             players=instance.players or YOU,
             text=instance.text or instance.name,
         ),

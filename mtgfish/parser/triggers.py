@@ -963,6 +963,34 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
             players=players,
             text="whenever a player completes a dungeon",
         )
+    # CR 701.51c: opening an Attraction is the Attraction arriving from the
+    # Attraction deck, which is one event per Attraction opened.
+    if stream.accept_phrase("open an Attraction") or stream.accept_phrase(
+        "opens an Attraction"
+    ):
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.ATTRACTION_OPENED}),
+            players=players,
+            text="whenever a player opens an Attraction",
+        )
+    # CR 701.52a: the roll itself, whatever it lights up.
+    if stream.accept_phrase("roll to visit your Attractions") or stream.accept_phrase(
+        "rolls to visit their Attractions"
+    ):
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.ROLLED_TO_VISIT}),
+            players=players,
+            text="whenever a player rolls to visit their Attractions",
+        )
+    # CR 701.52a: an Attraction that roll lit up "has been visited".
+    if stream.accept_phrase("visit an Attraction") or stream.accept_phrase(
+        "visits an Attraction"
+    ):
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.ATTRACTION_VISITED}),
+            players=players,
+            text="whenever a player visits an Attraction",
+        )
     if stream.accept_phrase("gain life") or stream.accept_phrase("gains life"):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.LIFE_GAINED}),

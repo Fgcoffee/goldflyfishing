@@ -136,6 +136,11 @@ class CardDef:
     commander_legal: bool
     edhrec_rank: int | None = None
     scryfall_uri: str = ""
+    #: CR 717.1: the numbers lit up on an Attraction, which is what a roll to
+    #: visit is compared against (CR 701.52a). Scryfall's ``attraction_lights``
+    #: when the snapshot carries it; empty otherwise, and an Attraction with
+    #: nothing lit up is never visited.
+    attraction_lights: tuple[int, ...] = ()
 
     # -- faces --------------------------------------------------------------
 
@@ -267,10 +272,30 @@ class CardDef:
             commander_legal=legalities.get("commander") == "legal",
             edhrec_rank=data.get("edhrec_rank"),
             scryfall_uri=data.get("scryfall_uri", ""),
+            attraction_lights=_attraction_lights(data),
         )
 
     def __str__(self) -> str:
         return self.name
+
+
+def _attraction_lights(data: dict) -> tuple[int, ...]:
+    """CR 717.1: the lit-up numbers, in ascending order, from Scryfall's key.
+
+    Anything that is not a whole number from 1 to 6 is dropped rather than
+    guessed at: the die rolled to visit has six sides (CR 701.52a), so no
+    other number could ever be matched.
+    """
+    raw = data.get("attraction_lights") or ()
+    lights = set()
+    for value in raw:
+        try:
+            number = int(value)
+        except (TypeError, ValueError):
+            continue
+        if 1 <= number <= 6:
+            lights.add(number)
+    return tuple(sorted(lights))
 
 
 def _as_int(value: str | None) -> int | None:

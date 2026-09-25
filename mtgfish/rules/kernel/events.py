@@ -157,6 +157,18 @@ class EventKind(IntEnum):
     #: was impossible.
     MANIFESTED_DREAD = 310
 
+    # -- Attractions (CR 717) -----------------------------------------------
+    #: CR 701.51c: a player opened an Attraction - it reached the battlefield
+    #: from their Attraction deck. ``object_id`` is the Attraction as it
+    #: entered.
+    ATTRACTION_OPENED = 350
+    #: CR 701.52a: a player rolled to visit their Attractions. ``amount`` is
+    #: the result of the roll.
+    ROLLED_TO_VISIT = 351
+    #: CR 701.52a: one Attraction was visited by that roll. ``object_id`` is
+    #: the Attraction and ``amount`` the result that lit it.
+    ATTRACTION_VISITED = 352
+
 
 #: Events that mean a permanent left the battlefield in some form. Abilities
 #: that trigger on these use last-known information (CR 603.6e, 608.2g).

@@ -45,6 +45,9 @@ class Deck:
     name: str
     commanders: tuple[CardDef, ...] = ()
     entries: tuple[DeckEntry, ...] = ()
+    #: CR 717.2: the supplementary Attraction deck, one CardDef per card. It
+    #: is not part of the deck proper and counts toward no deck size.
+    attractions: tuple[CardDef, ...] = ()
     source: str = ""
     #: Names that could not be resolved against the card database. Kept so the
     #: UI can show exactly what was dropped instead of silently shrinking the
@@ -65,6 +68,10 @@ class Deck:
             lines.append("")
             lines.append("// Commander")
             lines.extend(f"1 {card.name}" for card in self.commanders)
+        if self.attractions:
+            lines.append("")
+            lines.append("// Attractions")
+            lines.extend(f"1 {card.name}" for card in self.attractions)
         return "\n".join(lines)
 
     # -- composition --------------------------------------------------------
@@ -110,6 +117,7 @@ class Deck:
             name=self.name,
             commanders=self.commanders,
             entries=self.entries,
+            attractions=self.attractions,
             source=self.source,
             unresolved=self.unresolved,
             issues=tuple(issues),
@@ -139,6 +147,7 @@ def validate(deck: Deck) -> list[DeckIssue]:
     issues.extend(_check_singleton(deck))
     issues.extend(_check_color_identity(deck))
     issues.extend(_check_legality(deck))
+    issues.extend(_check_attractions(deck))
     return issues
 
 
@@ -264,10 +273,62 @@ def _check_legality(deck: Deck) -> Iterator[DeckIssue]:
     """Banned and non-legal cards. Scryfall marks bans as anything but 'legal'."""
     banned = [e.card.name for e in deck.entries if not e.card.commander_legal]
     banned += [c.name for c in deck.commanders if not c.commander_legal]
+    banned += [c.name for c in deck.attractions if not c.commander_legal]
     if banned:
         yield DeckIssue(
             Severity.ERROR,
             "not-legal",
             f"Not legal in Commander: {', '.join(sorted(set(banned))[:8])}"
             + (" ..." if len(banned) > 8 else ""),
+        )
+
+
+#: CR 717.2a: the smallest Attraction deck constructed play allows.
+MIN_ATTRACTION_DECK = 10
+
+
+def _is_attraction(card: CardDef) -> bool:
+    return card.front.type_line.has_subtype("Attraction")
+
+
+def _check_attractions(deck: Deck) -> Iterator[DeckIssue]:
+    """CR 717.2, 717.2a: the Attraction deck, and Attractions kept out of the
+    deck proper."""
+    # CR 717.2: an Attraction card does not begin the game in a player's deck.
+    misplaced = sorted({e.card.name for e in deck.entries if _is_attraction(e.card)})
+    if misplaced:
+        yield DeckIssue(
+            Severity.ERROR,
+            "attraction-in-deck",
+            f"Attractions belong in the Attraction deck, not the library "
+            f"(CR 717.2): {', '.join(misplaced[:8])}",
+        )
+    if not deck.attractions:
+        return
+    strangers = sorted({c.name for c in deck.attractions if not _is_attraction(c)})
+    if strangers:
+        yield DeckIssue(
+            Severity.ERROR,
+            "not-an-attraction",
+            f"Only Attraction cards go in an Attraction deck (CR 717.2): "
+            f"{', '.join(strangers[:8])}",
+        )
+    # CR 717.2a: at least ten cards, each with a different English name.
+    if len(deck.attractions) < MIN_ATTRACTION_DECK:
+        yield DeckIssue(
+            Severity.ERROR,
+            "attraction-deck-size",
+            f"Attraction deck has {len(deck.attractions)} cards; at least "
+            f"{MIN_ATTRACTION_DECK} are required (CR 717.2a).",
+        )
+    counted: dict[str, int] = {}
+    for card in deck.attractions:
+        counted[card.name] = counted.get(card.name, 0) + 1
+    repeated = sorted(name for name, count in counted.items() if count > 1)
+    if repeated:
+        yield DeckIssue(
+            Severity.ERROR,
+            "attraction-duplicate",
+            f"Each card in an Attraction deck needs a different name "
+            f"(CR 717.2a): {', '.join(repeated[:8])}",
         )

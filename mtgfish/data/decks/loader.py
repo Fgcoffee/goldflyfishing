@@ -43,6 +43,7 @@ def _renamed(deck: Deck, name: str) -> Deck:
         name=name,
         commanders=deck.commanders,
         entries=deck.entries,
+        attractions=deck.attractions,
         source=deck.source,
         unresolved=deck.unresolved,
         issues=deck.issues,

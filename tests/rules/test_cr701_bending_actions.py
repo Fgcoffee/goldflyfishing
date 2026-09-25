@@ -21,6 +21,10 @@ from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
 from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, execute
 from mtgfish.rules.cr700_additional_rules.cr701_keyword_actions import build
+from mtgfish.rules.cr700_additional_rules.cr717_attractions import (
+    attraction_deck,
+    set_up_attraction_deck,
+)
 from mtgfish.rules.kernel.enums import CardType, Zone
 from mtgfish.rules.kernel.events import EventKind
 from mtgfish.rules.kernel.ids import PlayerId
@@ -350,7 +354,8 @@ def test_open_an_attraction_puts_one_onto_the_battlefield(board):
     control. CR 717.2 keeps that deck in the command zone, which is where this
     one is placed."""
     card = board.db.lookup("Push Your Luck")
-    attraction = board.game.create_object(card, PlayerId(0), Zone.COMMAND)
+    set_up_attraction_deck(board.game, PlayerId(0), [card])
+    (attraction,) = attraction_deck(board.game, PlayerId(0))
     board.refresh()
 
     run(board, build("Open an Attraction"))
@@ -375,7 +380,8 @@ def test_open_an_attraction_does_nothing_without_an_attraction_deck(board):
 def test_open_an_attraction_does_not_take_someone_elses(board):
     """A control on the ownership half of CR 701.51b: it is *your* deck."""
     card = board.db.lookup("Push Your Luck")
-    theirs = board.game.create_object(card, PlayerId(1), Zone.COMMAND)
+    set_up_attraction_deck(board.game, PlayerId(1), [card])
+    (theirs,) = attraction_deck(board.game, PlayerId(1))
     board.refresh()
 
     run(board, build("Open an Attraction"), controller=0)

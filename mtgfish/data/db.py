@@ -126,6 +126,8 @@ _KEEP_CARD = frozenset(
         "all_parts",
         "edhrec_rank",
         "scryfall_uri",
+        # CR 717.1: an Attraction's lit-up numbers.
+        "attraction_lights",
     }
 )
 

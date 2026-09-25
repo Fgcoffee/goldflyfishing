@@ -542,6 +542,12 @@ class Game:
             if replaced is None:
                 return obj  # The move was prevented; nothing happened.
             prospective = replaced
+        # CR 717.6: an Attraction card goes to the command zone rather than
+        # to a hand, library, graveyard or the stack - after the other
+        # replacements, so that wherever they sent it is caught too.
+        from ..cr700_additional_rules.cr717_attractions import junkyard_replacement
+
+        prospective = junkyard_replacement(self, obj, prospective)
         to_zone = prospective.to_zone or to_zone
         if to_zone is Zone.COMMAND:
             to_player = owner
@@ -693,6 +699,11 @@ class Game:
         new_obj.previous_id = obj.id
 
         self.objects[new_obj.id] = new_obj
+        if to_zone is Zone.COMMAND:
+            # CR 717.6a: and there it joins its owner's junkyard.
+            from ..cr700_additional_rules.cr717_attractions import arrived_in_command_zone
+
+            arrived_in_command_zone(new_obj)
         if new_obj.is_commander:
             self.commander_origin[new_obj.id] = self.commander_identity(obj.id)
             # CR 903.9a: note it for the state-based action. It really is in the
