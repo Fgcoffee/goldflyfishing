@@ -458,6 +458,9 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
                     continue
                 if not _is_self_entry(node):
                     continue
+                if node.kind is EffectKind.ENTERS_AS_CHOICE:
+                    become_chosen_characteristics(game, obj, node)
+                    continue
                 if node.kind is EffectKind.BECOME_PREPARED:
                     # CR 722.3a: "This creature enters prepared."
                     from ..cr700_additional_rules.cr722_preparation import (
@@ -475,6 +478,41 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
                         max(1, node.amount.constant),
                         source=obj.id,
                     )
+
+
+def become_chosen_characteristics(game: Game, obj, effect) -> None:
+    """CR 208.2b: "it becomes your choice of a 3/3 creature, a 2/2 creature
+    with flying, or ...", as it enters or is turned face up.
+
+    The controller picks one of ``effect.children``; without an agent to ask,
+    the first, so a replay picks the same. The option's effects apply to this
+    object from now on, from the object itself, as the resolution machinery
+    applies any continuous effect: CR 611.2c settles them on this object, so
+    the choice ends when CR 400.7 makes it a new one.
+
+    DIVERGENCE: CR 208.2b makes the chosen values copiable (CR 707.2); here
+    they are continuous effects, so a copy of the permanent copies the card
+    as printed instead.
+    """
+    from .resolve import Resolution, execute
+
+    options = effect.children
+    if not options:
+        return
+    index = 0
+    chooser = getattr(game.agent_for(obj.controller), "choose_entry_option", None)
+    if chooser is not None:
+        picked = chooser(game, obj.controller, obj, options)
+        if isinstance(picked, int) and 0 <= picked < len(options):
+            index = picked
+    execute(Resolution(game=game, source=obj.id, controller=obj.controller), (options[index],))
+    game.invalidate_characteristics()
+    game.log.record(
+        game,
+        f"{obj} becomes {options[index].text or f'option {index + 1}'}",
+        kind="replace",
+        player=obj.controller,
+    )
 
 
 def _is_entry_copy(effect) -> bool:
@@ -554,6 +592,8 @@ def _is_self_entry(effect) -> bool:
     """
     from .effects import EffectKind
 
+    if effect.kind is EffectKind.ENTERS_AS_CHOICE:
+        return True
     if effect.kind not in (
         EffectKind.TAP, EffectKind.ADD_COUNTERS, EffectKind.BECOME_PREPARED
     ):

@@ -225,6 +225,10 @@ class EffectKind(IntEnum):
     VILLAINOUS_CHOICE = 223
     #: CR 701.64a: "harness [this permanent]" - it becomes harnessed.
     HARNESS = 224
+    #: CR 208.2b: "as this enters [or is turned face up], it becomes your
+    #: choice of" - ``children`` are the options, each the continuous effects
+    #: that make it that choice. Applied as a self-entry replacement.
+    ENTERS_AS_CHOICE = 280
     #: CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread -
     #: ``keywords[0]`` says which. Put the ``targets`` cards onto the
     #: battlefield face down, one at a time; for manifest dread, look at the
@@ -464,6 +468,9 @@ class Effect:
     #: colours on offer are narrowed to that identity (CR 903.4), and there
     #: are none without a commander (CR 903.4f).
     colors_in_commander_identity: bool = False
+    #: For ENTERS_AS_CHOICE: "as this enters *or is turned face up*" (CR
+    #: 208.2b) - the choice is made again as it turns face up.
+    also_when_turned_face_up: bool = False
     #: For ATTACH: what is being attached, when it is not the ability's own
     #: source. "Attach *that Equipment* to target creature" names a different
     #: permanent, and attaching the source instead would move the wrong one.

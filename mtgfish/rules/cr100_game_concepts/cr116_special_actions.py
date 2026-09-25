@@ -100,7 +100,7 @@ def perform(game: Game, player_id: PlayerId, action: Action) -> bool:
 
     if kind is SpecialKind.TURN_FACE_UP:
         return obj is not None and _pay_and_turn_face_up(
-            game, player_id, obj, action.alternative_cost
+            game, player_id, obj, action.alternative_cost, x_value=action.x_value
         )
     if kind in (SpecialKind.SUSPEND, SpecialKind.FORETELL, SpecialKind.PLOT):
         return obj is not None and _exile_from_hand(game, player_id, obj, kind)
@@ -227,7 +227,9 @@ def turn_face_up(game: Game, obj, keyword: str | None = None) -> bool:
     return turn_up(game, obj, megamorph=megamorph)
 
 
-def _pay_and_turn_face_up(game: Game, player_id: PlayerId, obj, option: int) -> bool:
+def _pay_and_turn_face_up(
+    game: Game, player_id: PlayerId, obj, option: int, *, x_value: int = 0
+) -> bool:
     """CR 702.37e, 702.168d, 701.40b: show the cost, pay it, turn it up.
 
     The cost is paid - it is what turning a permanent up is for - and an
@@ -245,12 +247,16 @@ def _pay_and_turn_face_up(game: Game, player_id: PlayerId, obj, option: int) -> 
         option = 0
     keyword, cost = options[option]
     try:
-        _pay(game, player_id, TotalCost(base=cost), obj)
+        _pay(game, player_id, TotalCost(base=cost, x_value=x_value), obj)
     except CastError as exc:
         game.log.record(
             game, f"cannot turn {obj} face up: {exc}", kind="illegal", player=player_id
         )
         return False
+    if cost.variable_count:
+        # CR 702.37f: X in the cost is chosen as the action is taken, and the
+        # permanent's other abilities that say X mean that value.
+        obj.x_value = max(0, x_value)
     return turn_face_up(game, obj, keyword)
 
 

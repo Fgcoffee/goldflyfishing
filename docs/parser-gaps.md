@@ -311,6 +311,13 @@ The engine supports these; the parser does not yet produce them:
   `named`/`of_chosen_name` filters but nothing that compares names with
   another object; that needs a filter referring to a remembered or
   triggering object, designed together with the grammar.
+- **"As this creature enters [or is turned face up], it becomes your choice
+  of ..."** (CR 208.2b; Primal Clay, Primal Plasma, Corrupted Shapeshifter,
+  Aquamorph Entity) - a static ability holding
+  `Effect(EffectKind.ENTERS_AS_CHOICE, children=(option, ...))`, each option
+  the continuous effects that make it that choice (SET_PT, GRANT_ABILITY,
+  ADD_TYPE aimed at the source), with `also_when_turned_face_up=True` for
+  the face-up form.
 - **"With base power N"** (CR 208.4b) - `ObjectFilter(base_power=...)` /
   `base_toughness=...`, the value after setting effects and before pumps and
   counters.

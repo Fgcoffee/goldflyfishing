@@ -189,6 +189,22 @@ def cannot_turn_face_up(game: Game, obj: GameObject) -> bool:
     return bool(card.type_line.types & (CardType.INSTANT | CardType.SORCERY))
 
 
+def _as_it_is_turned_face_up(game: Game, obj: GameObject) -> None:
+    """CR 208.2b: "as this creature enters or is turned face up, it becomes
+    your choice of ..." applies at this moment too, and only the choice -
+    turning up is not entering, so nothing else about entering happens."""
+    from ..cr600_spells_and_abilities.cr614_replacement import (
+        become_chosen_characteristics,
+    )
+    from ..cr600_spells_and_abilities.effects import EffectKind
+
+    for ability in game.characteristics(obj).abilities:
+        for effect in ability.effects:
+            for node in effect.walk():
+                if node.kind is EffectKind.ENTERS_AS_CHOICE and node.also_when_turned_face_up:
+                    become_chosen_characteristics(game, obj, node)
+
+
 def turn_face_up(game: Game, obj: GameObject, *, megamorph: bool = False) -> bool:
     """Turn a face-down permanent face up (CR 708.8).
 
@@ -209,6 +225,7 @@ def turn_face_up(game: Game, obj: GameObject, *, megamorph: bool = False) -> boo
     obj.timestamp = game.ids.timestamp()
     obj.invalidate()
     game.invalidate_characteristics()
+    _as_it_is_turned_face_up(game, obj)
     if megamorph:
         # The counter is placed after the characteristics come back, and
         # layer 7d has to be told, or the permanent keeps the power it was
@@ -247,6 +264,54 @@ def turn_face_down(game: Game, obj: GameObject) -> bool:
 # ---------------------------------------------------------------------------
 # CR 708.9: revealing
 # ---------------------------------------------------------------------------
+
+
+def may_look_at(game: Game, viewer: PlayerId, obj: GameObject) -> bool:
+    """CR 708.5: whether this player may see what a face-down object is.
+
+    Its controller may, for a face-down spell on the stack or a face-down
+    permanent (phased out or not). Nobody may look at a face-down card in any
+    other zone, nor at another player's face-down spells and permanents. A
+    face-up object hides nothing.
+    """
+    if not obj.face_down:
+        return True
+    if obj.zone not in (Zone.BATTLEFIELD, Zone.STACK):
+        return False
+    return obj.controller == viewer
+
+
+def characteristics_seen_by(game: Game, viewer: PlayerId, obj: GameObject) -> Characteristics:
+    """What a player may know of an object's characteristics (CR 708.5).
+
+    A face-down object a player may look at shows its card; one they may not
+    shows only what everyone sees - the 2/2 with no text on the battlefield or
+    the stack, nothing at all elsewhere (CR 406.3a). Bots and the UI ask this
+    rather than ``game.characteristics`` when they must not see more than a
+    player could.
+    """
+    if may_look_at(game, viewer, obj) and obj.face_down and obj.card is not None:
+        return game.printed_characteristics(obj)
+    return game.characteristics(obj)
+
+
+def face_down_order(game: Game, controller: PlayerId) -> list[GameObject]:
+    """CR 708.6: a player's face-down spells and permanents, told apart.
+
+    Spells in the order they were cast, then permanents in the order they
+    entered - the object's timestamp, which CR 613.7 sets as it arrives and
+    CR 613.7f renews only as it turns face up or down. What made each one
+    face down travels with it as ``face_down_by``.
+    """
+    face_down = [
+        obj
+        for obj in (
+            [game.objects[i] for i in game.stack if i in game.objects]
+            + list(game.permanents(controller))
+        )
+        if obj.face_down and obj.controller == controller
+    ]
+    return sorted(face_down, key=lambda o: (o.zone is not Zone.STACK, o.timestamp, o.id))
 
 
 def reveal(game: Game, obj: GameObject, why: str) -> None:

@@ -2112,6 +2112,18 @@ def _do_harness(resolution: Resolution, effect: Effect) -> None:
             resolution.game.log.record(resolution.game, f"{obj} becomes harnessed", kind="designation")
 
 
+def _do_enters_as_choice(resolution: Resolution, effect: Effect) -> None:
+    """CR 208.2b, reached by resolution rather than by entering: the choice
+    is made for the permanent the effect refers to. As a printed "as this
+    enters" ability it is applied as a self-entry replacement instead
+    (``cr614_replacement.apply_self_entry_replacements``)."""
+    from .cr614_replacement import become_chosen_characteristics
+
+    for obj in _objects(resolution, effect):
+        if obj.zone is Zone.BATTLEFIELD:
+            become_chosen_characteristics(resolution.game, obj, effect)
+
+
 def _do_villainous_choice(resolution: Resolution, effect: Effect) -> None:
     """CR 701.55: "[a player] faces a villainous choice - [A], or [B]".
 
@@ -2633,6 +2645,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.DISCOVER: _do_discover,
     EffectKind.VILLAINOUS_CHOICE: _do_villainous_choice,
     EffectKind.HARNESS: _do_harness,
+    EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.

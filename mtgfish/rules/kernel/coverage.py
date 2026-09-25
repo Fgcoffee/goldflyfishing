@@ -404,8 +404,10 @@ COVERAGE: dict[str, Entry] = _entries(
                 "manifest dread (701.40, 701.58, 701.62); copies take the "
                 "face-down values (708.10); exiled face down has no "
                 "characteristics (406.3a); revealed on leaving and at game end "
-                "(708.9). 708.5-708.6 are about what players may look at, which "
-                "the engine does not hide from agents",
+                "(708.9); who may look at one (708.5, characteristics_seen_by) "
+                "and telling them apart (708.6, face_down_order). The engine "
+                "itself still shows agents everything - hiding is for callers "
+                "to ask for",
             ),
             "712": (
                 "rules/cr700_additional_rules/cr707_faces.py",
@@ -441,8 +443,10 @@ COVERAGE: dict[str, Entry] = _entries(
                 "data/cards.py",
                 "printed power/toughness including * (208.2), 208.4b base "
                 "power/toughness (recorded after layer 7b and filterable), and "
-                "208.5's 0-fill; 208.2b (a replacement effect choosing P/T as "
-                "it enters) is missing",
+                "208.5's 0-fill, and 208.2b's choice of P/T as it enters or is "
+                "turned face up. What is missing is 208.2b's last sentence: the "
+                "chosen values are continuous effects here, not copiable values, "
+                "so a copy takes the card as printed",
             ),
 
             "108": (
