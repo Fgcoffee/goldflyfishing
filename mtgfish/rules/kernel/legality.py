@@ -347,20 +347,11 @@ def can_afford(game: Game, player_id: PlayerId, cost) -> bool:
     if find_payment(player.mana_pool, cost, life_available=player.life - 1):
         return True
 
-    sources = 0
-    for permanent in game.permanents(player_id):
-        if permanent.tapped:
-            continue
-        chars = game.characteristics(permanent)
-        if chars.is_creature and permanent.summoning_sick:
-            continue
-        if any(a.is_mana_ability and not a.unparsed for a in chars.abilities):
-            sources += 1
-    if sources == 0:
-        return False
-    # No spell here to test a restriction against - a special action pays a
-    # flat cost - so the whole pool counts.
-    return player.mana_pool.total + sources >= cost.mana_value
+    # Solved exactly, as payment will solve it: counting untapped sources said
+    # yes to {R} off a Forest and a pain land that only made {C} by default.
+    from ..cr600_spells_and_abilities.mana_plan import can_produce
+
+    return can_produce(game, player_id, cost)
 
 
 def _affordable(
@@ -368,9 +359,9 @@ def _affordable(
 ) -> bool:
     """Whether the player could plausibly pay for this spell.
 
-    An upper bound on purpose: it counts what is available rather than solving
-    the exact tap plan. Saying yes when the colors do not work out costs a
-    rewound cast; saying no when they do would hide a legal play entirely.
+    Solved exactly by the mana planner, the same search payment runs, so a
+    spell offered as legal is one that can be paid for. Additional costs and
+    convoke-style helpers are still estimated.
     """
     from ..cr100_game_concepts.cr106_mana import find_payment
     from ..cr600_spells_and_abilities.cr601_casting import cost_increases, cost_reductions
@@ -403,25 +394,17 @@ def _affordable(
     helpers = helper_capacity(game, obj, player_id)
     if helpers and player.mana_pool.usable_for(obj) + helpers >= cost.mana_value:
         return True
+    if helpers:
+        # Helpers and mana together: at least the generic part the helpers can
+        # stand in for is off what the mana sources must make.
+        cost = cost.reduced_by(helpers)
 
-    # The count-based fallback is an upper bound used when untapped sources
-    # could still produce something. With no sources at all the pool check
-    # above was exact, so trusting the count here would offer a spell whose
-    # colours plainly cannot be paid.
-    sources = 0
-    for permanent in game.permanents(player_id):
-        if permanent.tapped:
-            continue
-        permanent_chars = game.characteristics(permanent)
-        if permanent_chars.is_creature and permanent.summoning_sick:
-            continue
-        if any(a.is_mana_ability and not a.unparsed for a in permanent_chars.abilities):
-            sources += 1
-    if sources == 0:
-        return False
-    # Only mana that could legally pay for *this* spell counts toward the
-    # bound; restricted mana would otherwise make every spell look affordable.
-    return player.mana_pool.usable_for(obj) + sources >= cost.mana_value
+    # Exact, and the same search the payment runs, so a spell offered as legal
+    # is one the bot can actually pay for. The count-based upper bound this
+    # replaced offered unpayable casts, which were then rewound mid-cast.
+    from ..cr600_spells_and_abilities.mana_plan import can_produce
+
+    return can_produce(game, player_id, cost, obj)
 
 
 def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool:

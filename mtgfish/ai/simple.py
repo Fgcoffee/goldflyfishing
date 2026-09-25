@@ -32,8 +32,15 @@ from ..rules.kernel.loops import LOOP_REPETITIONS, is_continuing
 class SimpleAgent:
     """Plays out its hand and attacks when the maths is in its favour."""
 
-    def __init__(self, *, aggressive: bool = True) -> None:
+    def __init__(self, *, aggressive: bool = True, lookahead: bool = True) -> None:
         self.aggressive = aggressive
+        #: Play a spell or ability out on a copy of the game before choosing
+        #: it, and pass it over if the engine would refuse it or it would
+        #: change nothing. See ``mtgfish.ai.lookahead``.
+        self.lookahead = lookahead
+        #: What the last looked-ahead action was projected to do, for whoever
+        #: wants to learn from it.
+        self.last_projection = None
         #: Actions that failed in the current step, not to be tried again in it.
         self._failed: set[tuple] = set()
         self._failed_window: tuple = ()
@@ -84,8 +91,64 @@ class SimpleAgent:
 
     # -- priority -----------------------------------------------------------
 
+    #: How many chosen actions one decision may look ahead at and reject before
+    #: settling for passing. Each look is a copy of the game.
+    MAX_LOOKS = 4
+
     def choose_action(self, game: Game, player: PlayerId, legal: list[Action]) -> Action:
         """Take the most developing action available, preferring lands.
+
+        With lookahead on, a spell or ability is first played out on a copy of
+        the game. One the engine would refuse, or one that would leave the
+        board as it was, is set aside for this step and the next best is
+        considered instead - the bot sees that the play does nothing rather
+        than finding out by making it.
+        """
+        self.last_projection = None
+        for _ in range(self.MAX_LOOKS):
+            chosen = self._pick(game, player, legal)
+            if not self._needs_a_look(game, chosen):
+                break
+            from .lookahead import project
+
+            projection = project(game, player, chosen)
+            if projection.legal and projection.changed:
+                self.last_projection = projection
+                break
+            self.action_failed(game, player, chosen)
+            legal = [a for a in legal if a is not chosen]
+        else:
+            chosen = PASS
+        if chosen.kind is ActionKind.CAST_SPELL:
+            key = (game.turn, self._card_name(game, chosen))
+            self._casts[key] = self._casts.get(key, 0) + 1
+        return chosen
+
+    def _needs_a_look(self, game: Game, action: Action) -> bool:
+        """Whether an action's outcome is uncertain enough to play out first.
+
+        A permanent spell with no triggered abilities does one thing - the
+        permanent arrives - so a copy of the game would only confirm it. Every
+        instant, sorcery and activated ability, and any permanent that
+        triggers, can fizzle, whiff or set off something else.
+        """
+        if not self.lookahead:
+            return False
+        if action.kind is ActionKind.ACTIVATE_ABILITY:
+            return True
+        if action.kind is not ActionKind.CAST_SPELL:
+            return False
+        if not self._is_permanent(game, action):
+            return True
+        obj = game.objects.get(action.source)
+        from ..rules.cr600_spells_and_abilities.abilities import AbilityKind
+
+        return obj is not None and any(
+            a.kind is AbilityKind.TRIGGERED for a in game.characteristics(obj).abilities
+        )
+
+    def _pick(self, game: Game, player: PlayerId, legal: list[Action]) -> Action:
+        """The action this bot prefers, before any looking ahead.
 
         Mana abilities are never activated speculatively: casting activates
         exactly what it needs (CR 601.2g), and floating mana that then empties
@@ -107,10 +170,7 @@ class SimpleAgent:
         if casts:
             casts = self._worth_casting_now(game, player, casts)
         if casts:
-            chosen = self._best_spell(game, player, casts)
-            key = (game.turn, self._card_name(game, chosen))
-            self._casts[key] = self._casts.get(key, 0) + 1
-            return chosen
+            return self._best_spell(game, player, casts)
 
         activations = [
             a

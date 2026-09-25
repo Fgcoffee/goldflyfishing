@@ -108,8 +108,12 @@ def with_a_full_hand(board):
     """Every type in hand, and enough lands to pay for any of it."""
     for name in (ARTIFACT, CREATURE, ENCHANTMENT, INSTANT, SORCERY, PLANESWALKER, SIEGE):
         board.hand(name, controller=0)
-    for _ in range(20):
-        board.play("Forest", controller=0)
+    # Every colour, because affordability is solved exactly now: twenty Forests
+    # were "enough lands" only while the check counted lands, and Chandra
+    # still needs {R}{R}.
+    for _ in range(4):
+        for basic in ("Plains", "Island", "Swamp", "Mountain", "Forest"):
+            board.play(basic, controller=0)
     board.game.phase = Phase.PRECOMBAT_MAIN
     return board
 
