@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Iterator, NamedTuple
 from ..kernel.enums import Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from .abilities import Ability, AbilityKind, TriggerCondition
 
 if TYPE_CHECKING:
@@ -77,6 +77,8 @@ def collect_triggers(game: Game, event: Event) -> None:
         if obj is None or obj.phased_out:
             continue
         if obj.zone not in ability.trigger.functions_in:
+            continue
+        if not _has_the_ability_now(game, obj, ability):
             continue
         if not condition_met(game, obj, ability.trigger, event):
             continue
@@ -260,11 +262,26 @@ def _collect_delayed(
     game.delayed_triggers = [d for d in game.delayed_triggers if not d.expired]
 
 
-def _right_phase(trigger: TriggerCondition, event: Event) -> bool:
-    """CR 500.6: a phase trigger fires as *its* phase begins, not any phase."""
-    if event.kind is not EventKind.PHASE_BEGAN or not trigger.phases:
+def _has_the_ability_now(game: Game, obj: GameObject, ability) -> bool:
+    """"As long as [condition], it has [ability]" (CR 702.186b's ∞, for one):
+    a triggered ability that exists only under a condition cannot trigger
+    while the condition is false. Carried as the ability's static condition,
+    which is ALWAYS for every ordinary triggered ability."""
+    condition = ability.static_condition
+    if condition.is_always:
         return True
-    return event.amount in trigger.phases
+    from ..kernel.conditions import holds
+
+    return holds(game, condition, source=obj.id, controller=obj.controller)
+
+
+def _right_phase(trigger: TriggerCondition, event: Event) -> bool:
+    """CR 500.6: a phase or step trigger fires as *its* phase or step begins."""
+    if event.kind is EventKind.PHASE_BEGAN and trigger.phases:
+        return event.amount in trigger.phases
+    if event.kind is EventKind.STEP_BEGAN and trigger.steps:
+        return event.amount in trigger.steps
+    return True
 
 
 def check_state_triggers(game: Game) -> None:
@@ -416,6 +433,10 @@ def condition_met(
     if event.kind not in trigger.event_kinds:
         return False
     if not _right_phase(trigger, event):
+        return False
+    if trigger.to_player and event.object_id != NO_OBJECT:
+        # Damage to a permanent carries the permanent's id; damage to a player
+        # carries none (CR 120.3).
         return False
 
     # A counter trigger that names a kind fires for that kind alone: the

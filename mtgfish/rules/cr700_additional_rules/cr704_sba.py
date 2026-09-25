@@ -82,6 +82,7 @@ def _one_pass(game: Game) -> bool:
 
     commander_moves = _check_commander_zone_choice(game)
 
+    _grant_enduring_stories(game)
     _check_players(game, losers)
     _check_permanents(
         game,
@@ -514,6 +515,41 @@ def _check_speed(game: Game, speed_starts: list[PlayerId]) -> None:
             continue
         if game.characteristics(obj).has_keyword("Start your engines!"):
             speed_starts.append(obj.controller)
+
+
+def _grant_enduring_stories(game: Game) -> None:
+    """CR 702.195a: storied - "any time you control three or more permanents
+    that are artifacts, Sagas, and/or legendary", you have an enduring story
+    for the rest of the game.
+
+    Not a state-based action, but checked "any time" in the same way and
+    with the same effect: nothing uses the stack, and it applies however the
+    permanents arrived. It is asked here, where the game already looks at
+    the whole board whenever a player would receive priority. CR 702.195c
+    has continuous effects reapplied before triggers are checked, which the
+    characteristics invalidation below gives.
+    """
+    from ..kernel.enums import Supertype
+
+    for player in game.players:
+        if player.has_enduring_story:
+            continue
+        permanents = game.permanents(player.id)
+        if not any(game.characteristics(o).has_keyword("Storied") for o in permanents):
+            continue
+        storied = 0
+        for obj in permanents:
+            chars = game.characteristics(obj)
+            if (
+                chars.has_type(CardType.ARTIFACT)
+                or chars.has_supertype(Supertype.LEGENDARY)
+                or "Saga" in chars.type_line.subtypes
+            ):
+                storied += 1
+        if storied >= 3:
+            player.has_enduring_story = True
+            game.invalidate_characteristics()
+            game.log.record(game, f"{player.name} has an enduring story", kind="designation")
 
 
 def _check_legend_rule(

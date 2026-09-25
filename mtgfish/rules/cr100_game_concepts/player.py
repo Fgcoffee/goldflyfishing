@@ -203,6 +203,13 @@ class Player:
     has_initiative: bool = False
     has_city_blessing: bool = False
     ring_tempted_count: int = 0
+    #: CR 702.195b: the enduring story designation - once gained, kept for
+    #: the rest of the game.
+    has_enduring_story: bool = False
+    #: CR 701.54a: this player's Ring-bearer, and their emblem named The Ring
+    #: (CR 701.54c).
+    ring_bearer: int = 0
+    ring_emblem: int = 0
 
     # -- game status --------------------------------------------------------
     has_lost: bool = False

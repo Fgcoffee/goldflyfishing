@@ -61,6 +61,10 @@ class ActionInstance:
     #: word - "create a 1/1 white Soldier" - so the parser supplies it and the
     #: action only has to place it.
     token: TokenSpec | None = None
+    #: The sentences the action wraps, where it wraps any: the two options of
+    #: a villainous choice (CR 701.55a). The parser reads them; the action
+    #: only arranges them.
+    options: tuple[Effect, ...] = ()
     text: str = ""
 
     @property
@@ -364,7 +368,22 @@ def _manifest(instance: ActionInstance) -> tuple[Effect, ...]:
 # ---------------------------------------------------------------------------
 
 
-@register("Learn", "Seek", "Discover", "Draft from a spellbook")
+@register("Discover")
+def _discover(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.57a: exile until a nonland card with mana value N or less; cast
+    it free or put it into your hand; the rest to the bottom at random. It
+    is not a search - the cards are exiled, and in order."""
+    return (
+        Effect(
+            EffectKind.DISCOVER,
+            players=YOU,
+            amount=_amount(instance),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Learn", "Seek", "Draft from a spellbook")
 def _search(instance: ActionInstance) -> tuple[Effect, ...]:
     return (
         Effect(
@@ -778,15 +797,14 @@ def _behold(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Harness")
 def _harness(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.64: tap an untapped permanent you control for its harness ability.
-
-    The permanent taps; what that buys is printed on the card.
-    """
+    """CR 701.64a: "harness [this permanent]" - if it isn't harnessed, it
+    becomes harnessed. A designation, not a tap: it was built as "tap an
+    untapped permanent you control", which tapped something and marked
+    nothing, so no ∞ ability ever turned on."""
     return (
         Effect(
-            EffectKind.TAP,
-            targets=instance.filter
-            or ObjectFilter(controller=ControllerRelation.YOU, tapped=False),
+            EffectKind.HARNESS,
+            targets=instance.filter,
             text=instance.text or instance.name,
         ),
     )
@@ -1101,6 +1119,72 @@ YOUR_ATTRACTION_DECK = ObjectFilter(
     zones=frozenset({Zone.COMMAND}),
     count=Value.of(1),
 )
+
+
+@register("Face a villainous choice")
+def _face_a_villainous_choice(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.55a: the named players each choose one option and perform it.
+    Inside an option, "that player" is ``PlayerScope.THAT_PLAYER``."""
+    return (
+        Effect(
+            EffectKind.VILLAINOUS_CHOICE,
+            players=instance.players or EACH_OPPONENT,
+            children=instance.options,
+            text=instance.text or "faces a villainous choice",
+        ),
+    )
+
+
+@register("The Ring tempts you")
+def _the_ring_tempts_you(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.54: the emblem, the Ring-bearer and the count, all in
+    ``cr701_ring``."""
+    return (
+        Effect(
+            EffectKind.RING_TEMPTS,
+            players=instance.players or YOU,
+            text=instance.text or "the Ring tempts you",
+        ),
+    )
+
+
+@register("Recruit")
+def _recruit(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.70a: draw a card, then discard a card; if the discarded card was
+    a nonland card, create a 1/1 white Human Soldier creature token."""
+    from ..cr600_spells_and_abilities.effects import TokenSpec
+    from ..kernel.query import Condition, ConditionKind, ObjectFilter
+
+    soldier = TokenSpec(
+        types=CardType.CREATURE,
+        subtypes=("Human", "Soldier"),
+        colors=Color.WHITE,
+        power=Value.of(1),
+        toughness=Value.of(1),
+    )
+    return (
+        Effect(EffectKind.DRAW, players=YOU, amount=Value.of(1), text="draw a card"),
+        Effect(EffectKind.DISCARD, players=YOU, amount=Value.of(1), text="discard a card"),
+        Effect(
+            EffectKind.CONDITIONAL,
+            condition=Condition(
+                kind=ConditionKind.REMEMBERED_MATCHES,
+                # The discarded card, as it was in hand - anywhere, since it
+                # is in the graveyard by the time this is asked.
+                filter=ObjectFilter(types_none=CardType.LAND, zones=frozenset()),
+                text="if you discarded a nonland card this way",
+            ),
+            children=(
+                Effect(
+                    EffectKind.CREATE_TOKEN,
+                    token=soldier,
+                    amount=Value.of(1),
+                    players=YOU,
+                    text="create a 1/1 white Human Soldier creature token",
+                ),
+            ),
+        ),
+    )
 
 
 @register("Prepared")

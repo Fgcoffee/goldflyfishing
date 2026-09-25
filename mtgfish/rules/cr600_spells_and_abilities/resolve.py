@@ -20,8 +20,8 @@ from ..cr100_game_concepts import actions
 from ..kernel.enums import Duration, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import ObjectId, PlayerId
-from ..kernel.query import ValueKind
+from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
+from ..kernel.query import PlayerScope, ValueKind
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 
 if TYPE_CHECKING:
@@ -60,6 +60,9 @@ class Resolution:
     #: payer chose it - the mana planner does, to pay the colour the cost needs.
     #: ``Color.NONE`` leaves the old deterministic first-colour pick.
     mana_color: int = 0
+    #: The player a per-player instruction is currently being carried out for
+    #: - what ``PlayerScope.THAT_PLAYER`` means (CR 701.55a).
+    that_player: PlayerId = NO_PLAYER
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -113,7 +116,11 @@ def execute_one(resolution: Resolution, effect: Effect) -> None:
         )
         return
 
-    if effect.kind in _REMEMBERING and effect.targets is not None:
+    if (
+        effect.kind in _REMEMBERING
+        and effect.targets is not None
+        and not _is_per_player_sacrifice(effect)
+    ):
         # Captured *before* the effect runs: an object that dies to it is
         # exactly the one the next sentence wants to talk about, and after
         # the fact it is a different object (CR 400.7).
@@ -293,6 +300,8 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
             if not game.player(player_id).has_lost
         ]
 
+    if effect.players is not None and effect.players.scope is PlayerScope.THAT_PLAYER:
+        return [] if resolution.that_player == NO_PLAYER else [resolution.that_player]
     return resolve_players(
         resolution.game, effect.players or YOU, controller=resolution.controller
     )
@@ -490,9 +499,68 @@ def _return_when_the_source_leaves(
     )
 
 
+def _is_per_player_sacrifice(effect: Effect) -> bool:
+    """"Each opponent sacrifices a creature": named players, each choosing
+    from their own permanents - not a filter over the whole board."""
+    spec = effect.targets
+    return (
+        effect.kind is EffectKind.SACRIFICE
+        and effect.players is not None
+        and not effect.is_targeted
+        and spec is not None
+        and not spec.source_only
+        and not spec.specific
+        and not spec.remembered
+    )
+
+
 def _do_sacrifice(resolution: Resolution, effect: Effect) -> None:
-    for obj in _objects(resolution, effect):
-        actions.sacrifice(resolution.game, obj, source=resolution.source)
+    if not _is_per_player_sacrifice(effect):
+        for obj in _objects(resolution, effect):
+            actions.sacrifice(resolution.game, obj, source=resolution.source)
+        return
+
+    # CR 701.21a: only a permanent its controller controls can be sacrificed,
+    # and CR 608.2d: the player sacrificing makes the choice.
+    from ..kernel.matching import find
+
+    game = resolution.game
+    spec = effect.targets
+    everything = find(game, spec, source=resolution.source, controller=resolution.controller)
+    sacrificed: list[ObjectId] = []
+    for player_id in _players(resolution, effect):
+        theirs = [obj for obj in everything if obj.controller == player_id]
+        for obj in _sacrifice_choice(resolution, effect, theirs, player_id):
+            sacrificed.append(obj.id)
+            actions.sacrifice(game, obj, source=resolution.source)
+    if sacrificed:
+        resolution.remembered = sacrificed
+
+
+def _sacrifice_choice(
+    resolution: Resolution, effect: Effect, theirs: list[GameObject], player_id: PlayerId
+) -> list[GameObject]:
+    """What this player sacrifices: as many as the effect says, their choice.
+
+    Asked of the sacrificing player's agent; without one, the cheapest by
+    mana value and then id, the default sacrifice costs use too.
+    """
+    spec = effect.targets
+    if spec.count is None:
+        return theirs
+    wanted = _value_of(resolution, spec.count)
+    if wanted <= 0 or not theirs:
+        return []
+    if wanted >= len(theirs):
+        return theirs
+    game = resolution.game
+    chooser = getattr(game.agent_for(player_id), "choose_objects", None)
+    if chooser is not None:
+        picked = chooser(game, player_id, effect, list(theirs), wanted)
+        kept = [obj for obj in theirs if obj in (picked or ())][:wanted]
+        if len(kept) == wanted:
+            return kept
+    return sorted(theirs, key=lambda o: (game.characteristics(o).mana_value, o.id))[:wanted]
 
 
 def _do_return_to_hand(resolution: Resolution, effect: Effect) -> None:
@@ -509,6 +577,7 @@ def _do_move_zone(resolution: Resolution, effect: Effect) -> None:
 def _do_discard(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     count = _amount(resolution, effect)
+    discarded: list[ObjectId] = []
     for player_id in _players(resolution, effect):
         player = game.player(player_id)
         agent = game.agent_for(player_id)
@@ -519,7 +588,12 @@ def _do_discard(resolution: Resolution, effect: Effect) -> None:
                 agent.choose_discard(game, player_id) if agent is not None else player.hand[-1]
             )
             obj = game.objects.get(choice) or game.objects[player.hand[-1]]
+            discarded.append(obj.id)
             actions.discard(game, obj, source=resolution.source)
+    # CR 608.2: "if you discarded a nonland card this way" asks about what
+    # was discarded, as it last existed in hand.
+    if discarded:
+        resolution.remembered = discarded
 
 
 def _do_create_token(resolution: Resolution, effect: Effect) -> None:
@@ -1945,17 +2019,70 @@ def _do_add_experience(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_ring_tempts(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.51: the Ring tempts you - the count matters, not just the fact."""
+    """CR 701.54: the Ring tempts each of these players."""
+    from ..cr700_additional_rules.cr701_ring import tempt
+
     for player_id in _players(resolution, effect):
-        player = resolution.game.player(player_id)
-        player.ring_tempted_count += 1
-        resolution.game.emit(
-            Event(
-                EventKind.RING_TEMPTED,
-                player=player_id,
-                amount=player.ring_tempted_count,
-            )
+        tempt(resolution.game, player_id)
+
+
+def _do_sacrifice_blockers_at_end_of_combat(resolution: Resolution, effect: Effect) -> None:
+    """Each creature blocking the attacker that triggered this is sacrificed
+    by its controller at end of combat."""
+    from ..cr700_additional_rules.cr701_ring import sacrifice_blockers_at_end_of_combat
+
+    stack_object = resolution.stack_object
+    event = getattr(stack_object, "trigger_event", None) if stack_object else None
+    if event is None:
+        return
+    sacrifice_blockers_at_end_of_combat(
+        resolution.game, event.object_id, resolution.controller
+    )
+
+
+def _do_harness(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.64a/b: only a permanent can become harnessed, and one that is
+    stays so; nothing is tapped or paid - that is the ability's cost."""
+    for obj in _objects(resolution, effect):
+        if obj.zone is Zone.BATTLEFIELD and not obj.harnessed:
+            obj.harnessed = True
+            resolution.game.invalidate_characteristics()
+            resolution.game.log.record(resolution.game, f"{obj} becomes harnessed", kind="designation")
+
+
+def _do_villainous_choice(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.55: "[a player] faces a villainous choice - [A], or [B]".
+
+    The options are the children. Each player facing it chooses one and all
+    of that option is performed (701.55a); several players face it one at a
+    time in APNAP order (701.55d); an impossible option may be chosen and is
+    done as far as possible (701.55b), which executing it gives for free.
+    Inside an option, "that player" is the player facing the choice.
+    """
+    game = resolution.game
+    options = effect.children
+    if not options:
+        return
+    facing = _players(resolution, effect)
+    order = [p for p in game.apnap_order() if p in facing]
+    previous = resolution.that_player
+    for player_id in order:
+        agent = game.agent_for(player_id)
+        chooser = getattr(agent, "choose_villainous_option", None)
+        index = 0
+        if chooser is not None:
+            picked = chooser(game, player_id, options)
+            if isinstance(picked, int) and 0 <= picked < len(options):
+                index = picked
+        game.log.record(
+            game,
+            f"{game.player(player_id).name} chooses: {options[index].text or index}",
+            kind="choice",
+            player=player_id,
         )
+        resolution.that_player = player_id
+        execute_one(resolution, options[index])
+    resolution.that_player = previous
 
 
 def _do_choose_mode(resolution: Resolution, effect: Effect) -> None:
@@ -2159,6 +2286,77 @@ def _cast_a_copy_without_paying(resolution: Resolution, effect: Effect) -> None:
             )
         except CastError as exc:
             game.log.record(game, f"Free cast of a copy abandoned: {exc}", kind="illegal")
+
+
+def _do_cascade(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.85a, against this spell's mana value as it last existed - the
+    ability resolves after the spell may have left the stack."""
+    game = resolution.game
+    spell = game.objects.get(resolution.source)
+    if spell is None:
+        return
+    below = game.characteristics(spell).mana_value
+    _exile_until_a_free_cast(
+        resolution, lambda mana_value: mana_value < below, to_hand_if_not_cast=False
+    )
+
+
+def _do_discover(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.57a: discover N."""
+    limit = _amount(resolution, effect)
+    _exile_until_a_free_cast(
+        resolution, lambda mana_value: mana_value <= limit, to_hand_if_not_cast=True
+    )
+
+
+def _exile_until_a_free_cast(
+    resolution: Resolution, fits, *, to_hand_if_not_cast: bool
+) -> None:
+    """The procedure cascade and discover share.
+
+    Exile from the top of the library one card at a time until a nonland card
+    whose mana value fits (or the library runs out). That card may be cast
+    without paying its mana cost; discover puts it into its owner's hand if
+    it is not. Every other card exiled this way goes to the bottom of the
+    library in a random order (Game.rng, so a replay orders them the same).
+    """
+    from ..cr100_game_concepts.cr117_priority import Action, ActionKind
+    from .cr601_casting import CastError, cast_spell
+
+    game = resolution.game
+    player_id = resolution.controller
+    library = game.player(player_id).library
+    exiled: list[GameObject] = []
+    hit: GameObject | None = None
+    while library:
+        card = game.objects[library[0]]
+        moved = game.move_object(card, Zone.EXILE, to_player=card.owner)
+        chars = game.characteristics(moved)
+        if not chars.is_land and fits(chars.mana_value):
+            hit = moved
+            break
+        exiled.append(moved)
+
+    if hit is not None:
+        cast = False
+        if _wants(resolution, Effect(EffectKind.CAST_WITHOUT_PAYING, text="cast it free")):
+            hit.cast_without_paying = True
+            try:
+                cast_spell(game, player_id, Action(ActionKind.CAST_SPELL, source=hit.id))
+                cast = True
+            except CastError as exc:
+                hit.cast_without_paying = False
+                game.log.record(game, f"Free cast abandoned: {exc}", kind="illegal")
+        if not cast:
+            if to_hand_if_not_cast:
+                game.move_object(hit, Zone.HAND, to_player=hit.owner)
+            else:
+                exiled.append(hit)
+
+    game.rng.shuffle(exiled)
+    for obj in exiled:
+        if obj.is_live and obj.zone is Zone.EXILE:
+            game.move_object(obj, Zone.LIBRARY, to_player=obj.owner)
 
 
 def _do_play_from_zone(resolution: Resolution, effect: Effect) -> None:
@@ -2375,6 +2573,11 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.TAKE_INITIATIVE: _do_take_initiative,
     EffectKind.ADD_EXPERIENCE: _do_add_experience,
     EffectKind.RING_TEMPTS: _do_ring_tempts,
+    EffectKind.CASCADE: _do_cascade,
+    EffectKind.DISCOVER: _do_discover,
+    EffectKind.VILLAINOUS_CHOICE: _do_villainous_choice,
+    EffectKind.HARNESS: _do_harness,
+    EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.
     # Present here because an opcode with no entry is an opcode the parser is

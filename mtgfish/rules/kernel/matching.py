@@ -76,7 +76,11 @@ def matches(
     if spec.specific and obj.id not in spec.specific:
         return False
 
-    if spec.zones and obj.zone not in spec.zones:
+    # "This" names one object wherever it is: the zones a source-only filter
+    # carries are the parser's default, not a claim about where the object
+    # must be. Checked, they stopped every "when you cast this spell" trigger,
+    # whose source is on the stack.
+    if spec.zones and not spec.source_only and obj.zone not in spec.zones:
         return False
 
     if spec.from_top and not _near_top_of_library(game, obj, spec.from_top):
@@ -148,6 +152,19 @@ def matches(
         return False
     if spec.entered_this_turn is not None:
         if obj.entered_this_turn(game.turn) != spec.entered_this_turn:
+            return False
+
+    if spec.ring_bearer is not None:
+        # Read-only: matching runs inside the layer system, where a transient
+        # controller must not end the designation.
+        player = game.player(controller) if controller != NO_PLAYER else None
+        bearing = (
+            player is not None
+            and player.ring_bearer == obj.id
+            and obj.zone is Zone.BATTLEFIELD
+            and obj.controller == controller
+        )
+        if bearing != spec.ring_bearer:
             return False
 
     if spec.attacking is not None or spec.blocking is not None or spec.blocked is not None:

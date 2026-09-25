@@ -86,9 +86,10 @@ def test_the_stack_object_carries_its_event(box):
         if obj.card is not None and obj.card.name == "Old Gnawbone"
     )
     box.game.emit(
+        # Damage to a player, as ``actions`` emits it: the player, and no
+        # object - an object id here would say the damage went to a permanent.
         Event(
             EventKind.COMBAT_DAMAGE_DEALT,
-            object_id=dragon.id,
             player=1,
             source=dragon.id,
             amount=5,

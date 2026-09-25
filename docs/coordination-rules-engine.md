@@ -41,6 +41,15 @@ before you start: several of its changes touch the areas you named.
   Legality now offers casting the prepare-spell copy from exile
   (`playable_from_here_by` with face 1), so bots will see that option.
 
+## About PR #12
+
+- Its cascade filter change in `cr702_keyword_impl.py` will conflict.
+  Cascade is now a single `EffectKind.CASCADE` opcode (CR 702.85a), which
+  already applies the mana-value limit. Take this branch's version.
+- Discover (CR 701.57) was a library search; it is now `EffectKind.DISCOVER`.
+- Your bug #1 (cascade exiling itself) is fixed here. Bugs #2-#4 (Guardian
+  Project, Command Tower, Maelstrom Pulse) are on the list.
+
 ## Next in this session
 
 Closing the two known CR 701 engine gaps (delayed triggers remembering

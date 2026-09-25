@@ -111,6 +111,14 @@ class TriggerCondition:
     #: phase" (CR 505.1a) share the event and differ only here. Empty means
     #: any phase.
     phases: frozenset[int] = frozenset()
+    #: For STEP_BEGAN: which steps, as ``Step`` values - "at end of combat" is
+    #: the end of combat step beginning (CR 511.2). Empty means any step.
+    steps: frozenset[int] = frozenset()
+
+    #: For damage events: the damage must have been dealt to a player, not to
+    #: a permanent. "Deals combat damage to a player" names its recipient, and
+    #: combat damage to a blocking creature is combat damage too.
+    to_player: bool = False
 
     #: Set for abilities that trigger on the source leaving the battlefield, so
     #: the engine knows to evaluate them against last-known information

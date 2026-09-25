@@ -84,6 +84,10 @@ class KeywordInstance:
     #: parser supplies what goes inside it. Empty means the parser did not
     #: read the body, and the builder says so rather than inventing one.
     effects: tuple[Effect, ...] = ()
+    #: For keywords that wrap a whole ability rather than an effect - "∞ -
+    #: At the beginning of your upkeep, ..." (CR 702.186a) - the ability the
+    #: parser read after the dash.
+    abilities: tuple[Ability, ...] = ()
 
     @property
     def key(self) -> str:
@@ -1582,6 +1586,47 @@ def _start_your_engines(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("∞")
+def _infinity(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.186b: "∞ - [Ability]" means "as long as this permanent is
+    harnessed, it has [Ability]".
+
+    The wrapped ability keeps its own shape and gains the condition as its
+    static condition: a static one applies only while it holds, and a
+    triggered one cannot trigger while it does not (``cr603_triggers``). An
+    ∞ static effect with no ability around it - the parser's effects alone -
+    becomes a static ability under the same condition.
+    """
+    from dataclasses import replace as _replace
+
+    harnessed = Condition(kind=ConditionKind.IS_HARNESSED, text="this is harnessed")
+    wrapped = instance.abilities or (
+        (Ability(AbilityKind.STATIC, effects=instance.effects),) if instance.effects else ()
+    )
+    return tuple(
+        _replace(
+            ability,
+            static_condition=harnessed,
+            keyword=instance.name,
+            text=instance.text or ability.text or instance.name,
+        )
+        for ability in wrapped
+    )
+
+
+@register("Storied")
+def _storied(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.195a: a static ability the engine reads by name - see
+    ``cr704_sba._grant_enduring_stories``, which gives the designation."""
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
 @register("Station")
 def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 721: "Tap another untapped creature you control: Put charge counters
@@ -2286,21 +2331,16 @@ def _cumulative_upkeep(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Cascade")
 def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.85a: "When you cast this spell, exile cards from the top of your
-    library until you exile a nonland card whose mana value is less than this
-    spell's mana value. You may cast that spell without paying its mana cost.
-    Put the exiled cards on the bottom in a random order."
+    """CR 702.85a: when you cast this spell, exile from the top of your library
+    until a nonland card with lesser mana value; you may cast it without
+    paying its mana cost; the rest go to the bottom in a random order.
+
+    One opcode, because the steps share state the effect list cannot carry:
+    which cards this cascade exiled. Built as three generic effects, the
+    exile took the cascading spell itself, the free cast was offered any
+    nonland card in exile, and the last step put every card its owner had in
+    exile - foretold, adventuring, imprinted - on the bottom of the library.
     """
-    # "Whose mana value is less than this spell's": the source of the trigger
-    # is the cascading spell, still on the stack as it resolves. Without it any
-    # nonland card in exile could be cast for free - harmless while a free cast
-    # was charged in full anyway, and a free Bloodbraid chain once it was not.
-    cheaper = ObjectFilter(
-        types_none=CardType.LAND,
-        zones=frozenset({Zone.EXILE}),
-        owner=ControllerRelation.YOU,
-        mana_value=NumericConstraint(Comparison.LT, Value(kind=ValueKind.MANA_VALUE)),
-    )
     return (
         Ability.triggered(
             TriggerCondition(
@@ -2309,23 +2349,7 @@ def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
                 functions_in=frozenset({Zone.STACK}),
                 text="when you cast this spell",
             ),
-            Effect(
-                EffectKind.EXILE,
-                players=YOU,
-                from_zone=Zone.LIBRARY,
-                amount=Value.of(1),
-                text="exile until you hit a cheaper nonland card",
-            ),
-            Effect(
-                EffectKind.CAST_WITHOUT_PAYING,
-                targets=cheaper,
-                text="you may cast it without paying its mana cost",
-            ),
-            Effect(
-                EffectKind.PUT_ON_LIBRARY,
-                targets=ObjectFilter(zones=frozenset({Zone.EXILE}), owner=ControllerRelation.YOU),
-                text="put the rest on the bottom in a random order",
-            ),
+            Effect(EffectKind.CASCADE, text="cascade"),
             text=instance.text or instance.name,
         ),
     )
