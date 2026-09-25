@@ -177,21 +177,94 @@ def test_each_player_is_sampled_on_their_own_turn(result):
         assert turns[0] == 1, "a player's first sample is their own turn one"
 
 
-def test_mana_available_never_goes_backwards(result):
-    """It counts every mana source, not the untapped ones.
-
-    Counting untapped sources at end of turn measures what was left over
-    after casting, which *falls* as a deck develops - the 10,000-game chart
+def test_mana_available_counts_every_source_not_the_untapped_ones(result):
+    """Counting untapped sources at end of turn measures what was *left over*
+    after casting, which falls as a deck develops - the 10,000-game chart
     showed a mana base peaking on turn four and decaying to nothing while the
     land count kept climbing.
+
+    The shape of that bug is specific: mana falling while the board grows. So
+    that is what this asserts, and not that the series never falls at all.
+    Mana going backwards is ordinary Magic - an Armageddon, a Strip Mine, a
+    board wipe, or just a Llanowar Elves chump-blocking a 5/5 - and a test that
+    forbade it was testing the deck's luck rather than the metric. It passed
+    until the engine got good enough to trade creatures, then started failing
+    on a game where nothing was wrong.
     """
     record = max(result.records, key=lambda r: r.turns)
     hero = [s for s in record.turns_series if s.player == 0]
     assert len(hero) >= 3
-    mana = [s.mana_available for s in hero]
-    assert mana == sorted(mana), f"mana went backwards: {mana}"
+
+    # The one that bites hardest, and that no amount of removal can make
+    # false: a player who has tapped out has almost no *untapped* sources and
+    # still has every one of their lands.
     for snapshot in hero:
-        assert snapshot.mana_available >= snapshot.lands
+        assert snapshot.mana_available >= snapshot.lands, (
+            f"on their turn {snapshot.turn}, {snapshot.mana_available} mana "
+            f"sources but {snapshot.lands} lands - the lands alone are sources, "
+            f"so this is counting what was left untapped"
+        )
+
+    # And the shape of the chart that gave the bug away: it peaked on turn four
+    # and decayed to nothing. A mana base measured properly is still at its
+    # best late in the game, whatever it loses on the way.
+    #
+    # The *last* time it was at its best, not the first: a mana base that grows
+    # and then holds steady sits at its maximum for most of the game, and
+    # asking where it first got there would call that an early peak and fail a
+    # deck that did nothing wrong. Measured over twelve seeds, that mistake
+    # failed two of them.
+    mana = [s.mana_available for s in hero]
+    best = len(mana) - 1 - mana[::-1].index(max(mana))
+    assert best >= len(mana) // 2, (
+        f"the mana base was last at its best at sample {best} of {len(mana)} "
+        f"and decayed after: {mana}"
+    )
+
+
+def test_the_mana_metric_would_still_catch_the_bug_it_was_written_for():
+    """The test above allows mana to fall, so it has to be shown that it would
+    still fail on the thing it exists to catch - otherwise relaxing it just
+    turned it off."""
+    from mtgfish.sim.records import TurnSnapshot
+
+    def snapshot(turn, mana, lands, permanents):
+        return TurnSnapshot(
+            turn=turn, player=0, life=40, lands=lands, mana_available=mana,
+            cards_in_hand=7, permanents=permanents, board_power=0, creatures=0,
+        )
+
+    # What counting only untapped sources looked like: the board grows every
+    # turn and the number falls anyway, because it is measuring the leftovers.
+    decaying = [snapshot(t, mana=max(0, 5 - t), lands=t, permanents=t * 2)
+                for t in range(1, 12)]
+
+    # Both assertions above fire on it, which is the point of relaxing only
+    # the one that was measuring the deck's luck.
+    assert any(s.mana_available < s.lands for s in decaying), (
+        "untapped-counting must fall below the land count"
+    )
+    def last_best(series):
+        return len(series) - 1 - series[::-1].index(max(series))
+
+    mana = [s.mana_available for s in decaying]
+    assert last_best(mana) < len(mana) // 2, (
+        "untapped-counting must peak early and decay"
+    )
+
+    # A healthy series passes both, so the test is not simply always red.
+    healthy = [snapshot(t, mana=t + 2, lands=t, permanents=t * 2)
+               for t in range(1, 12)]
+    assert all(s.mana_available >= s.lands for s in healthy)
+    assert last_best([s.mana_available for s in healthy]) >= 11 // 2
+
+    # And so does one that grows and then holds - a real mana base, which sits
+    # at its maximum for most of the game. Asking where it *first* reached that
+    # maximum would fail this, and did on two seeds in twelve.
+    plateau = [2, 3, 5, 6, 8, 10, 11, 11, 10, 11, 10, 10, 11, 11, 11, 11, 11]
+    assert last_best(plateau) >= len(plateau) // 2, (
+        "a mana base that grows and then holds is not a decaying one"
+    )
 
 
 def test_the_opening_hand_is_recorded(result):
