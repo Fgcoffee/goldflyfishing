@@ -1356,6 +1356,25 @@ def _amount2(resolution: Resolution, effect: Effect) -> int:
     )
 
 
+def mana_color_choices(game, controller: PlayerId, effect: Effect):
+    """The colours an "any color" mana effect may produce for this player.
+
+    The effect's own set, narrowed to the commander's colour identity when it
+    says so (CR 903.4); empty when that identity is undefined (CR 903.4f).
+    The payment planner should ask this too, so what it plans to tap for and
+    what resolving the ability adds cannot disagree.
+    """
+    from ..kernel.enums import Color
+
+    colors = effect.colors
+    if effect.colors_in_commander_identity:
+        from ..cr903_commander.cr903_color_identity import commander_color_identity
+
+        identity = commander_color_identity(game, controller)
+        colors = Color(int(colors) & int(identity)) if identity is not None else Color.NONE
+    return colors
+
+
 def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     """CR 106.1: add mana to a player's pool."""
     from ..cr100_game_concepts.cr106_mana import ManaKind
@@ -1400,8 +1419,11 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     elif effect.colors:
         # No symbol list: "add N mana of any color", where the color set is
         # the menu and the player picks. Deterministic pick, first color.
+        menu = mana_color_choices(game, resolution.controller, effect)
+        if not menu:
+            return  # CR 903.4f: no commander, no colour to choose.
         amount = _count(resolution, effect)
-        chosen = next(iter(effect.colors))
+        chosen = next(iter(menu))
         player.mana_pool.add(
             ManaKind(chosen, snow=snow, restriction=effect.mana_restriction), amount
         )

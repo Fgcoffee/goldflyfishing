@@ -4568,6 +4568,19 @@ def _add_any_colour(stream: Stream) -> Effect | None:
     if not stream.accept("mana"):
         return None
 
+    # CR 903.4: "in your commander's color identity" narrows the menu, and
+    # the engine does the narrowing; the tail is otherwise swallowed with the
+    # other colour tails, which offered Command Tower's owner all five.
+    mark = stream.mark()
+    in_identity = bool(
+        stream.accept_phrase("of any color")
+        and (
+            stream.accept_phrase("in your commander's color identity")
+            or stream.accept_phrase("in your commanders' color identity")
+        )
+    )
+    stream.reset(mark)
+
     colours = _mana_colour_source(stream)
     if colours is None:
         return None
@@ -4577,6 +4590,7 @@ def _add_any_colour(stream: Stream) -> Effect | None:
         players=YOU,
         amount=amount,
         colors=colours,
+        colors_in_commander_identity=in_identity,
         text="add mana of any color",
     )
 

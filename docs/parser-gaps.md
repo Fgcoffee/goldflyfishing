@@ -299,6 +299,18 @@ The engine supports these; the parser does not yet produce them:
 - **"Each opponent sacrifices a creature"** already parses as `SACRIFICE`
   with `players` set; each named player now sacrifices from their own
   permanents, so keep emitting that shape.
+- **"Of any color in your commander's color identity"** (Command Tower and
+  friends) - the parser now sets `Effect.colors_in_commander_identity`; the
+  engine narrows the colours (CR 903.4) and produces none without a
+  commander (CR 903.4f). A payment planner should ask
+  `resolve.mana_color_choices` rather than read `Effect.colors`.
+- **"The same name as ..."** - Guardian Project ("if it doesn't have the same
+  name as another creature you control or a creature card in your
+  graveyard") and Maelstrom Pulse ("and all other permanents with the same
+  name as that permanent") do not parse, so both are inert. The engine has
+  `named`/`of_chosen_name` filters but nothing that compares names with
+  another object; that needs a filter referring to a remembered or
+  triggering object, designed together with the grammar.
 - **An alternative cost's window and timing.** `AlternativeCost.condition` is
   checked before the cast is offered, and `instant_speed=True` lifts the
   spell to instant timing inside it; otherwise the spell keeps its own

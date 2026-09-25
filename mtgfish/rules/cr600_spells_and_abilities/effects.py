@@ -445,19 +445,20 @@ class Effect:
     rule: str = ""
     #: For COPY_PERMANENT: which object's copiable values to take (CR 613.2).
     copy_source: int = 0
-    #: For ADD_MANA: produce the colour this permanent's controller chose,
-    #: rather than a colour fixed when the card was parsed.
     #: CR 601.2d: the amount is *divided* among the targets rather than
     #: applied to each of them. Two counters among two creatures is one each,
     #: not two each - which is a different card.
     divided: bool = False
-    colors_chosen: bool = False
     #: For ADD_TYPE: add the creature type this permanent recorded, rather
     #: than one named on the card.
     of_chosen_type: bool = False
     #: For ADD_MANA: produce the colour this permanent's controller chose,
     #: rather than a colour fixed when the card was parsed.
     colors_chosen: bool = False
+    #: For ADD_MANA: "of any color in your commander's color identity" - the
+    #: colours on offer are narrowed to that identity (CR 903.4), and there
+    #: are none without a commander (CR 903.4f).
+    colors_in_commander_identity: bool = False
     #: For ATTACH: what is being attached, when it is not the ability's own
     #: source. "Attach *that Equipment* to target creature" names a different
     #: permanent, and attaching the source instead would move the wrong one.

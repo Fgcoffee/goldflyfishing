@@ -89,21 +89,19 @@ def evaluate(
     if kind is ValueKind.COMMANDER_COLOUR_IDENTITY:
         from ..cr100_game_concepts.cr107_numbers import Undeterminable
 
-        player = game.player(controller) if controller != NO_PLAYER else None
-        commanders = getattr(player, "commanders", ()) if player is not None else ()
-        if not commanders:
+        from ..cr903_commander.cr903_color_identity import commander_color_identity
+
+        identity = (
+            commander_color_identity(game, controller) if controller != NO_PLAYER else None
+        )
+        if identity is None:
             # CR 903.4f: with no commander the quality is *undefined*, not
             # zero. An ability referring to it does nothing, which a zero
             # gives for free - but a cost referring to it is unpayable, and a
             # cost of zero is the most payable cost there is. The sentinel is
             # worth zero to every reader and tells the cost machinery apart.
             return Undeterminable("a commander's colour identity, and there is no commander")
-        identity = 0
-        for object_id in commanders:
-            commander = game.objects.get(object_id)
-            if commander is not None and commander.card is not None:
-                identity |= int(commander.card.color_identity)
-        return bin(identity).count("1")
+        return bin(int(identity)).count("1")
 
     if kind is ValueKind.DEVOTION:
         return _devotion(game, value, controller)
