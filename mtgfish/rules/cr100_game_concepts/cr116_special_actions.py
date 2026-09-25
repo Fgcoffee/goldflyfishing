@@ -308,9 +308,32 @@ def _exile_from_hand(game: Game, player_id: PlayerId, obj, kind: SpecialKind) ->
     removed, cast it for its foretell cost, cast it on a later turn - depends
     on which one it was. CR 607: that is a linked ability, so the link is
     stored rather than re-derived.
+
+    CR 116.2f / 702.143a: foretelling costs {2}. The action offered that
+    cost and checked it could be paid, and then never charged it, so every
+    foretold card was exiled for nothing. An unpayable cost now leaves the
+    card in hand with nothing spent, as turning a card face up does.
     """
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _pay
+    from .cr118_costs import TotalCost
+
+    cost_text = next(
+        (text for special, text, _own, _empty in _HAND_ACTIONS.values() if special is kind),
+        "",
+    )
+    if cost_text:
+        try:
+            _pay(game, player_id, TotalCost(base=ManaCost.parse(cost_text)), obj)
+        except CastError as exc:
+            game.log.record(
+                game, f"cannot {kind.name.lower()} {obj}: {exc}", kind="illegal", player=player_id
+            )
+            return False
+
     face_down = kind is not SpecialKind.SUSPEND
-    exiled = game.move_object(obj, Zone.EXILE)
+    # CR 406.3: a foretold or plotted card is exiled face down - face down
+    # as it arrives, so nothing ever sees it face up in exile.
+    exiled = game.move_object(obj, Zone.EXILE, face_down="" if face_down else None)
     exiled.face_down = face_down
     game.exiled_with.setdefault(obj.id, [])
     game.log.record(
