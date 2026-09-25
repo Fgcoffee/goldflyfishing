@@ -146,6 +146,8 @@ def matches(
         return False
     if spec.face_down is not None and obj.face_down != spec.face_down:
         return False
+    if spec.has_inset and not has_inset(game, obj, spec.has_inset):
+        return False
     if spec.is_token is not None and obj.is_token != spec.is_token:
         return False
     if spec.is_commander is not None and obj.is_commander != spec.is_commander:
@@ -646,3 +648,37 @@ def resolve_players(
             return []
         return [obj.controller if scope is PlayerScope.CONTROLLER_OF else obj.owner]
     return []
+
+
+def has_inset(game, obj, subtype: str) -> bool:
+    """CR 715.2a, 720.2a: whether the object "has an Adventure" or "has an
+    Omen" - a face of its card, other than the front, with that subtype.
+
+    Asked of the card rather than the current characteristics, because the
+    rule says it has one "even if the object currently doesn't use them".
+    CR 715.2b, 720.2b: the inset is part of the copiable values, so a
+    permanent copying an adventurer card has an Adventure too - the card
+    asked is the one the latest copy effect on it copied (CR 613.2, layer
+    1a), followed through copies of copies. A face-down permanent's copiable
+    values list no such thing (CR 708.2), so it has none.
+    """
+    from ..cr600_spells_and_abilities.effects import EffectKind
+
+    seen: set = set()
+    while obj is not None and obj.id not in seen:
+        seen.add(obj.id)
+        if obj.face_down:
+            return False
+        copying = [
+            ce
+            for ce in game.continuous_effects
+            if ce.source == obj.id and ce.effect.kind is EffectKind.COPY_PERMANENT
+        ]
+        if not copying:
+            break
+        latest = max(copying, key=lambda ce: ce.timestamp)
+        obj = game.objects.get(latest.effect.copy_source)
+    if obj is None:
+        return False
+    faces = getattr(obj.card, "faces", ())
+    return any(subtype in face.type_line.subtypes for face in faces[1:])

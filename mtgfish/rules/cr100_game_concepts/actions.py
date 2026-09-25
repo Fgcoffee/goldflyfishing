@@ -91,7 +91,12 @@ def sacrifice(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> b
 
 
 def exile(
-    game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT, link_id: int = 0
+    game: Game,
+    obj: GameObject,
+    *,
+    source: ObjectId = NO_OBJECT,
+    link_id: int = 0,
+    face_down: bool = False,
 ) -> GameObject:
     """Exile an object (CR 701.6, CR 406.2).
 
@@ -99,9 +104,12 @@ def exile(
     you may play that card" is two abilities that only work together because
     the second can find what the first exiled, and once the card is in exile
     there is nothing about it that says how it got there.
+
+    CR 406.3: "exile it face down" keeps it hidden, with no characteristics
+    (CR 406.3a) for as long as it stays there.
     """
     game.emit(Event(EventKind.EXILED, object_id=obj.id, source=source))
-    exiled = game.move_object(obj, Zone.EXILE)
+    exiled = game.move_object(obj, Zone.EXILE, face_down="" if face_down else None)
     # CR 607.2a: only a card that really arrived is linked. A prevented move
     # and a token (CR 111.7) hand back the object that was asked to move.
     if source != NO_OBJECT and exiled is not obj:

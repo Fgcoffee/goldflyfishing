@@ -445,9 +445,15 @@ def _do_exile(resolution: Resolution, effect: Effect) -> None:
         return
 
     returning: list[ObjectId] = []
+    # CR 406.3: "exile it face down".
+    face_down = "face down" in effect.keywords
     for obj in _objects(resolution, effect):
         exiled = actions.exile(
-            game, obj, source=resolution.source, link_id=_link_of(resolution)
+            game,
+            obj,
+            source=resolution.source,
+            link_id=_link_of(resolution),
+            face_down=face_down,
         )
         if until_source_leaves and exiled is not None:
             returning.append(exiled.id)
@@ -1774,6 +1780,9 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     tapped = "tapped" in effect.keywords
     attacking = "attacking" in effect.keywords
+    # CR 708.3: "put it onto the battlefield face down" turns it face down
+    # before it enters, as a 2/2 with nothing listed (CR 708.2a).
+    face_down = "" if "face down" in effect.keywords else None
     stack_object = resolution.stack_object
     paid = tuple(stack_object.cost_paid_objects) if stack_object is not None else ()
     for obj in _objects(resolution, effect):
@@ -1786,7 +1795,7 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
         # CR 610.3c: a card coming back from an "until" exile returns to its
         # owner, not to whoever exiled it.
         to = obj.owner if effect.under_owners_control else resolution.controller
-        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to)
+        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to, face_down=face_down)
         permanent.controller = to
         if permanent is not obj:
             # CR 607.2c: what was "put onto the battlefield with" the source.
@@ -1847,39 +1856,43 @@ def _do_copy_permanent_effect(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_turn_face_up(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.34 / 707.9: a face-down permanent is turned up.
+    """An effect turns a face-down permanent face up (CR 708.7, 708.8).
 
-    CR 116.2b makes this a *special action*: it uses no stack and cannot be
-    responded to, which is why a morph flip cannot be answered.
+    No cost is paid, so no megamorph counter (CR 702.37b); an instant or
+    sorcery card is revealed and stays face down (CR 701.40g, 701.58g).
     """
-    game = resolution.game
+    from ..cr700_additional_rules.cr708_face_down import turn_face_up
+
     for obj in _objects(resolution, effect):
-        if not obj.face_down:
-            continue
-        obj.face_down = False
-        game.invalidate_characteristics()
-        game.emit(
-            Event(EventKind.TURNED_FACE_UP, object_id=obj.id, player=obj.controller)
-        )
+        turn_face_up(resolution.game, obj)
 
 
 def _do_turn_face_down(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.34b, and CR 712.16 stops a double-faced permanent being turned down."""
-    from ..cr700_additional_rules.cr707_faces import layout_of
+    """CR 708.2a, 708.2b, and CR 712.16 stops a double-faced permanent being turned down."""
+    from ..cr700_additional_rules.cr708_face_down import turn_face_down
+
+    for obj in _objects(resolution, effect):
+        turn_face_down(resolution.game, obj)
+
+
+def _do_manifest(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread.
+
+    Manifest and cloak put each chosen card onto the battlefield face down,
+    one at a time (CR 701.40e, 701.58e); manifest dread looks at two and
+    manifests one. What turned it face down is recorded, because cloak adds
+    ward {2} and both may later be turned up for the card's mana cost.
+    """
+    from ..cr700_additional_rules.cr708_face_down import manifest, manifest_dread
 
     game = resolution.game
-    for obj in _objects(resolution, effect):
-        if obj.face_down:
-            continue
-        from ..kernel.enums import Layout
-
-        if layout_of(obj) in (Layout.TRANSFORM, Layout.MODAL_DFC, Layout.MELD):
-            continue
-        obj.face_down = True
-        game.invalidate_characteristics()
-        game.emit(
-            Event(EventKind.TURNED_FACE_DOWN, object_id=obj.id, player=obj.controller)
-        )
+    how = effect.keywords[0] if effect.keywords else "Manifest"
+    if how.lower() == "manifest dread":
+        manifest_dread(game, resolution.controller)
+        return
+    how = "Cloak" if how.lower() == "cloak" else "Manifest"
+    for obj in list(_objects(resolution, effect)):
+        manifest(game, resolution.controller, obj, how)
 
 
 def _do_phase_out(resolution: Resolution, effect: Effect) -> None:
@@ -2602,6 +2615,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.COPY_PERMANENT: _do_copy_permanent_effect,
     EffectKind.TURN_FACE_UP: _do_turn_face_up,
     EffectKind.TURN_FACE_DOWN: _do_turn_face_down,
+    EffectKind.MANIFEST: _do_manifest,
     EffectKind.PHASE_OUT: _do_phase_out,
     EffectKind.REGENERATE: _do_regenerate,
     EffectKind.MONSTROSITY: _do_monstrosity,

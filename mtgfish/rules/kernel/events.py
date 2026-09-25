@@ -89,7 +89,7 @@ class EventKind(IntEnum):
     SEARCHED_LIBRARY = 86
     #: CR 716.2: a Class gained a level. ``amount`` is the new level.
     CLASS_LEVEL_GAINED = 87
-    SHUFFLED = 87
+    SHUFFLED = 88
 
     # -- combat (CR 506-511) -----------------------------------------------
     ATTACKERS_DECLARED = 100
@@ -151,6 +151,11 @@ class EventKind(IntEnum):
     #: CR 309.7: a player completed a dungeon. ``object_id`` is the dungeon
     #: card as it left the game and ``data`` holds its name.
     DUNGEON_COMPLETED = 301
+
+    # -- face-down objects (CR 708) ----------------------------------------
+    #: CR 701.62b: after the whole manifest dread process, even if part of it
+    #: was impossible.
+    MANIFESTED_DREAD = 310
 
 
 #: Events that mean a permanent left the battlefield in some form. Abilities

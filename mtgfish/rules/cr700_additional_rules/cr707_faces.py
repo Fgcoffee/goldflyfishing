@@ -138,6 +138,12 @@ def castable_face_indices(game: Game, obj: GameObject) -> list[int]:
         return [
             index for index, face in enumerate(faces) if face.has_mana_cost
         ]
+    if layout is Layout.PROTOTYPE:
+        # CR 718.3: cast normally, or prototyped - index 1 being the
+        # prototype characteristics the card data prints no face for.
+        from ..cr300_card_types.cr300_card_types import card_face
+
+        return [0, 1] if card_face(card, 1)[0] is not None else [0]
     # Transforming and meld cards are cast with their front face (CR 712.11).
     return [0]
 
@@ -177,7 +183,15 @@ def copiable_characteristics(game: Game, obj: GameObject):
     as modified by other copy effects and text-changing effects - and nothing
     from layers 2 through 7. That is why a copy of a creature carrying three
     +1/+1 counters and a Giant Growth is just a plain copy of the card.
+
+    CR 708.2 and 707.2: a face-down permanent's copiable values are the ones
+    listed by whatever turned it face down, so its copy is a nameless 2/2 and
+    never the card underneath.
     """
+    if obj.face_down:
+        from .cr708_face_down import face_down_characteristics
+
+        return face_down_characteristics(obj)
     return game.printed_characteristics(obj)
 
 
@@ -247,6 +261,10 @@ def copy_spell(game: Game, original: GameObject, controller=None) -> GameObject 
         targets=original.targets,
         chosen_modes=original.chosen_modes,
         x_value=original.x_value,
+        # CR 715.3c, 718.3c, 720.3c: a copy of an Adventure, a prototyped
+        # spell or an Omen is one too - the face above gives it the same
+        # characteristics, and the mode says how it was cast.
+        cast_mode=original.cast_mode,
     )
     game.objects[copy.id] = copy
     game.stack.append(copy.id)

@@ -44,3 +44,25 @@ def test_every_handler_is_reachable():
     """
     names = {EffectKind(kind).name for kind in EXECUTORS}
     assert len(names) == len(EXECUTORS)
+
+
+def _aliases(enum_class) -> dict:
+    counts = Counter(member.value for member in enum_class.__members__.values())
+    return {
+        value: sorted(
+            name for name, m in enum_class.__members__.items() if m.value == value
+        )
+        for value, count in counts.items()
+        if count > 1
+    }
+
+
+def test_no_engine_enum_has_aliases():
+    """The same trap in every dispatch-keyed enum. SHUFFLED was 87, which
+    CLASS_LEVEL_GAINED already held, so every library shuffle was also a
+    Class gaining a level to any trigger watching for one."""
+    from mtgfish.rules.kernel.events import EventKind
+    from mtgfish.rules.kernel.query import ConditionKind, PlayerScope, ValueKind
+
+    for enum_class in (EventKind, ConditionKind, ValueKind, PlayerScope):
+        assert not _aliases(enum_class), (enum_class.__name__, _aliases(enum_class))

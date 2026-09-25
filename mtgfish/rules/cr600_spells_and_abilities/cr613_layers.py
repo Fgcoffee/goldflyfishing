@@ -29,7 +29,6 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ..cr100_game_concepts.cr106_mana import ManaCost
 from ..cr200_parts_of_a_card.characteristics import Characteristics
 from ..kernel.enums import CardType, Color, Layer, Zone
 from ..kernel.gameobject import GameObject, ObjectKind
@@ -1043,7 +1042,9 @@ def _apply_copy(
     source_obj = game.objects.get(ce.effect.copy_source)
     if source_obj is None:
         return current
-    return game.printed_characteristics(source_obj)
+    from ..cr700_additional_rules.cr707_faces import copiable_characteristics
+
+    return copiable_characteristics(game, source_obj)
 
 
 def _apply_control(
@@ -1115,29 +1116,19 @@ def _apply_face_down(
     state: dict[ObjectId, Characteristics],
     by_id: dict[ObjectId, GameObject],
 ) -> None:
-    """Layer 1b: face-down permanents (CR 613.2b, 708.2).
+    """Layer 1b: face-down spells and permanents (CR 613.2b, 708.2).
 
     A face-down permanent is a 2/2 creature with no name, no mana cost, no
     types beyond Creature, and no abilities - whatever the card underneath
-    says.
+    says. CR 702.168a and 701.58a list ward {2} as well for a disguised or
+    cloaked one, which is why the answer depends on what turned it face down.
     """
+    from ..cr700_additional_rules.cr708_face_down import face_down_characteristics
 
     for object_id, obj in by_id.items():
         if not obj.face_down:
             continue
-        from ..cr200_parts_of_a_card.cr205_typeline import TypeLine
-
-        state[object_id] = Characteristics(
-            name="",
-            mana_cost=ManaCost(()),
-            has_mana_cost=False,
-            colors=Color.NONE,
-            type_line=TypeLine(types=CardType.CREATURE),
-            abilities=(),
-            power=2,
-            toughness=2,
-            text="",
-        )
+        state[object_id] = face_down_characteristics(obj)
 
 
 #: A counter that modifies power and toughness: "+1/+1", "-2/-1", "+0/+2".
@@ -1258,6 +1249,11 @@ def _apply_cda(game: Game, obj: GameObject, current: Characteristics) -> Charact
 def compute_characteristics(game: Game, obj: GameObject) -> Characteristics:
     """One object's characteristics, from the whole-board computation."""
     if obj.zone not in (Zone.BATTLEFIELD, Zone.STACK):
+        if obj.face_down:
+            # CR 406.3a: a card exiled face down has no characteristics.
+            from ..cr700_additional_rules.cr708_face_down import hidden_characteristics
+
+            return hidden_characteristics()
         # CR 611.2c, 611.3a: an effect that reaches a card in another zone put it
         # in the board computation; any other card there is as printed.
         reached = game.board(obj).get(obj.id)

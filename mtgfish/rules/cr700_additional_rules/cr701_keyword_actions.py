@@ -342,23 +342,27 @@ def _populate(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Manifest", "Manifest dread", "Cloak")
 def _manifest(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.40: put the top card onto the battlefield face down as a 2/2.
+    """CR 701.40a, 701.58a, 701.62a: put cards onto the battlefield face down.
 
-    The face-down part is what the engine already models in layer 1b, so this
-    is a zone change plus a status change rather than anything new.
+    One opcode, because the order matters: CR 708.3 turns the card face down
+    *before* it enters, so its enters abilities never see it face up. Put
+    onto the battlefield first and turned face down after, a manifested card
+    triggered its own enters abilities - and the "turn face down" that
+    followed reached every creature its controller had.
+
+    The cards are the top of the player's library unless the sentence names
+    others ("cloak a card from your hand"); manifest dread chooses its own.
     """
-    top = ObjectFilter(zones=frozenset({Zone.LIBRARY}), count=_amount(instance))
+    cards = instance.filter or ObjectFilter(
+        zones=frozenset({Zone.LIBRARY}), count=_amount(instance)
+    )
     return (
         Effect(
-            EffectKind.PUT_ONTO_BATTLEFIELD,
-            targets=top,
+            EffectKind.MANIFEST,
+            targets=cards,
+            amount=_amount(instance),
+            keywords=(instance.name,),
             text=instance.text or instance.name,
-        ),
-        Effect(
-            EffectKind.TURN_FACE_DOWN,
-            targets=ObjectFilter(
-                types_all=CardType.CREATURE, controller=ControllerRelation.YOU
-            ),
         ),
     )
 
