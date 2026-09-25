@@ -432,6 +432,13 @@ class ObjectFilter:
     #: the *target's* controller, not this card's.
     remembered: bool = False
     specific: tuple[ObjectId, ...] = ()
+    #: CR 607.2a-c: "the exiled cards", "cards exiled with this", "creatures
+    #: put onto the battlefield with this" - what the source's linked ability
+    #: did, and nothing any other object or ability did. ``link_id`` names the
+    #: partner ability (``Ability.link_id``); zero accepts any ability of the
+    #: source.
+    linked_to_source: bool = False
+    link_id: int = 0
 
     # -- zone and control ---------------------------------------------------
     zones: frozenset[Zone] = frozenset({Zone.BATTLEFIELD})
@@ -583,6 +590,8 @@ class ObjectFilter:
             parts.append("(this permanent itself)")
         if self.remembered:
             parts.append("(whatever was just referred to)")
+        if self.linked_to_source:
+            parts.append("(affected by this object's linked ability)")
         if self.named:
             parts.append("named " + " or ".join(self.named))
         if self.not_named:

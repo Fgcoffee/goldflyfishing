@@ -222,6 +222,7 @@ def _collect_delayed(
             )
             game.objects[source.id] = source
 
+        remembered = delayed.remembered
         if delayed.trigger.subject is not None:
             # CR 603.7: a delayed ability can name what the event must be
             # about - "when the permanent that exiled it leaves the
@@ -235,11 +236,15 @@ def _collect_delayed(
             if subject is None or not matches(
                 game,
                 subject,
-                delayed.trigger.subject,
+                _bind_remembered(delayed.trigger.subject, delayed.remembered),
                 controller=delayed.controller,
                 allow_stale=True,
             ):
                 continue
+            if delayed.trigger.subject.remembered:
+                # CR 603.7c: "when that land dies, return it" - "it" is the
+                # one remembered object the event was about, not all of them.
+                remembered = (subject.id,)
 
         if delayed.trigger.players is not None and event.player != NO_PLAYER:
             from ..kernel.matching import resolve_players
@@ -254,12 +259,29 @@ def _collect_delayed(
             effects=delayed.effects,
             trigger=delayed.trigger,
             text=delayed.trigger.text or "delayed trigger",
+            remembered=remembered,
         )
         found.append((source, ability))
         if not delayed.repeating:
             delayed.expired = True
 
     game.delayed_triggers = [d for d in game.delayed_triggers if not d.expired]
+
+
+def _bind_remembered(spec, remembered: tuple[int, ...]):
+    """A delayed trigger's "that land" as the objects it was created about.
+
+    CR 603.7c: the delayed ability refers to particular objects. A filter that
+    says "whatever was remembered" is pinned to those ids; with none of them it
+    must match nothing, which an empty ``specific`` would not say.
+    """
+    if not spec.remembered:
+        return spec
+    from dataclasses import replace
+
+    from ..kernel.ids import NO_OBJECT
+
+    return replace(spec, remembered=False, specific=tuple(remembered) or (NO_OBJECT,))
 
 
 def _has_the_ability_now(game: Game, obj: GameObject, ability) -> bool:

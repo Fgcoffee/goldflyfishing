@@ -202,7 +202,8 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                         )
                     )
 
-        chars = game.printed_characteristics(obj)
+        # CR 113.6: a granted alternative cost works in the card's zone too.
+        chars = game.characteristics(obj)
         if chars.is_land:
             continue
 

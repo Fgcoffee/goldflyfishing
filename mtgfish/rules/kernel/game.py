@@ -540,6 +540,11 @@ class Game:
         to_zone = prospective.to_zone or to_zone
         if to_zone is Zone.COMMAND:
             to_player = owner
+        elif to_zone in (Zone.LIBRARY, Zone.GRAVEYARD, Zone.HAND):
+            # CR 400.3: a card goes to its owner's library, graveyard or hand,
+            # whoever's the instruction named. For a token that is the player
+            # who created it (CR 111.2), though it never arrives (CR 111.7).
+            to_player = owner
 
         # CR 304.4, 307.4: an instant or sorcery that would enter the
         # battlefield stays where it is instead. Nothing stopped one, so

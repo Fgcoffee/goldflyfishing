@@ -142,12 +142,9 @@ def test_the_return_fires_when_the_earthbent_land_dies(board):
     assert len(board.game.stack) == 1
 
 
-@pytest.mark.xfail(
-    reason="a delayed trigger does not carry what the effect that created it "
-    "remembered (resolve.create_delayed_trigger never fills "
-    "DelayedTrigger.remembered), so 'return it' has no 'it' to return",
-)
 def test_the_earthbent_land_comes_back_tapped(board):
+    """CR 603.7c: the delayed ability remembers the land it was made about,
+    and "return it" follows that land across the move that triggered it."""
     from mtgfish.rules.cr100_game_concepts import actions
 
     land = board.play("Forest", controller=0)
@@ -279,13 +276,8 @@ def test_airbend_grants_it_to_cards_and_not_to_tokens():
     assert grant.targets.remembered, "it is the objects just exiled"
 
 
-@pytest.mark.xfail(
-    reason="continuous effects are not computed outside the battlefield and "
-    "the stack (cr613_layers.compute_characteristics), and casting legality "
-    "reads printed alternative costs (kernel/legality), so a grant made to a "
-    "card in exile cannot reach it yet",
-)
 def test_airbend_makes_the_exiled_card_castable_for_two(board):
+    """CR 611.2c: the grant was settled on the card in exile and reaches it."""
     bears = board.play("Grizzly Bears", controller=0)
     run(board, build("Airbend", filter=ObjectFilter(specific=(bears.id,))))
 

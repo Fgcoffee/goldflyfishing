@@ -138,6 +138,7 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
         for i in game.command
         if i in game.objects and game.objects[i].kind is ObjectKind.EMBLEM
     ]
+    scope += _reached_elsewhere(game, scope)
 
     state: dict[ObjectId, Characteristics] = {
         obj.id: game.printed_characteristics(obj) for obj in scope
@@ -204,6 +205,69 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
         game.board_in_progress = previous
 
     return state
+
+
+#: Zones whose objects are outside the board unless an effect reaches them.
+_ELSEWHERE = (Zone.GRAVEYARD, Zone.EXILE, Zone.HAND, Zone.LIBRARY)
+
+
+def _reached_elsewhere(game: Game, scope: list[GameObject]) -> list[GameObject]:
+    """Objects outside the battlefield and the stack that an effect reaches.
+
+    CR 611.2c and 611.3a: a continuous effect modifies the characteristics of
+    whatever it says it affects, in whichever zone that is. "Each card exiled
+    this way may be cast for {2}" gives an ability to a card in exile, and a
+    static ability can speak of "creature cards in your graveyard". Such an
+    object was never in scope, so the grant existed and changed nothing.
+
+    Two ways in: a resolved effect whose set was settled on particular objects
+    (CR 611.2c), and a static ability on the board whose filter names another
+    zone. Everything else in those zones stays out, so the board computation
+    costs nothing extra for the games that never do this.
+    """
+    seen = {obj.id for obj in scope}
+    out: list[GameObject] = []
+
+    def admit(obj: GameObject | None) -> None:
+        if obj is None or obj.id in seen or not obj.is_live:
+            return
+        if obj.zone not in _ELSEWHERE:
+            return
+        seen.add(obj.id)
+        out.append(obj)
+
+    zones: set[Zone] = set()
+    for ce in game.continuous_effects:
+        spec = ce.effect.targets
+        if ce.expired or spec is None or ce.effect.kind not in EFFECT_LAYERS:
+            continue
+        if spec.specific:
+            for object_id in spec.specific:
+                obj = game.objects.get(object_id)
+                if obj is not None and (not spec.zones or obj.zone in spec.zones):
+                    admit(obj)
+        else:
+            zones.update(zone for zone in spec.zones if zone in _ELSEWHERE)
+
+    for obj in scope:
+        if obj.zone is not Zone.BATTLEFIELD and obj.kind is not ObjectKind.EMBLEM:
+            continue
+        for ability in game.printed_characteristics(obj).abilities:
+            if ability.kind is not AbilityKind.STATIC or ability.unparsed:
+                continue
+            for effect in _continuous_parts(ability.effects):
+                if effect.targets is not None and effect.kind in EFFECT_LAYERS:
+                    zones.update(z for z in effect.targets.zones if z in _ELSEWHERE)
+
+    for zone in sorted(zones):
+        if zone is Zone.EXILE:
+            for object_id in game.exile:
+                admit(game.objects.get(object_id))
+            continue
+        for player in game.players:
+            for object_id in player.zone(zone):
+                admit(game.objects.get(object_id))
+    return out
 
 
 def _apply_layer(
@@ -1194,6 +1258,11 @@ def _apply_cda(game: Game, obj: GameObject, current: Characteristics) -> Charact
 def compute_characteristics(game: Game, obj: GameObject) -> Characteristics:
     """One object's characteristics, from the whole-board computation."""
     if obj.zone not in (Zone.BATTLEFIELD, Zone.STACK):
+        # CR 611.2c, 611.3a: an effect that reaches a card in another zone put it
+        # in the board computation; any other card there is as printed.
+        reached = game.board(obj).get(obj.id)
+        if reached is not None:
+            return reached
         base = game.printed_characteristics(obj)
         return _apply_cda(game, obj, base)
     board = game.board(obj)

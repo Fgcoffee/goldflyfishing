@@ -446,11 +446,20 @@ def _do_exile(resolution: Resolution, effect: Effect) -> None:
 
     returning: list[ObjectId] = []
     for obj in _objects(resolution, effect):
-        exiled = actions.exile(game, obj, source=resolution.source)
+        exiled = actions.exile(
+            game, obj, source=resolution.source, link_id=_link_of(resolution)
+        )
         if until_source_leaves and exiled is not None:
             returning.append(exiled.id)
     if returning:
         _return_when_the_source_leaves(resolution, tuple(returning))
+
+
+def _link_of(resolution: Resolution) -> int:
+    """CR 607.1: the link id of the ability resolving, zero for a spell."""
+    stack_object = resolution.stack_object
+    ability = getattr(stack_object, "ability", None) if stack_object else None
+    return getattr(ability, "link_id", 0) or 0
 
 
 def _source_is_on_the_battlefield(resolution: Resolution) -> bool:
@@ -618,13 +627,18 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
 
     count = _count(resolution, effect)
     for player_id in _players(resolution, effect):
-        create_tokens(
+        created = create_tokens(
             resolution.game,
             effect.token,
             player_id,
             count,
             source=resolution.source,
         )
+        # CR 607.2c: "tokens created with this" are these and no others.
+        for token in created:
+            actions.record_link(
+                resolution.game, resolution.source, token.id, _link_of(resolution)
+            )
 
 
 def _do_create_emblem(resolution: Resolution, effect: Effect) -> None:
@@ -1013,6 +1027,19 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
     )
 
 
+def _current_incarnations(resolution: Resolution) -> list[ObjectId]:
+    """What each remembered object has become within this resolution."""
+    game = resolution.game
+    out: list[ObjectId] = []
+    for object_id in resolution.remembered:
+        obj = game.objects.get(object_id)
+        while obj is not None and obj.superseded_by:
+            obj = game.objects.get(obj.superseded_by)
+        if obj is not None:
+            out.append(obj.id)
+    return out
+
+
 def create_delayed_trigger(
     resolution: Resolution, trigger, effects: tuple[Effect, ...], *, repeating: bool = False
 ) -> None:
@@ -1034,6 +1061,11 @@ def create_delayed_trigger(
             controller=resolution.controller,
             source=resolution.source,
             repeating=repeating,
+            # CR 603.7c: "return it", "sacrifice that creature" - the objects
+            # this resolution was talking about when it made the ability, as
+            # they are now: "exile it, then return it at the next end step"
+            # means the card in exile, not the permanent it was (CR 400.7).
+            remembered=tuple(_current_incarnations(resolution)),
         )
     )
 
@@ -1756,6 +1788,11 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
         to = obj.owner if effect.under_owners_control else resolution.controller
         permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to)
         permanent.controller = to
+        if permanent is not obj:
+            # CR 607.2c: what was "put onto the battlefield with" the source.
+            actions.record_link(
+                game, resolution.source, permanent.id, _link_of(resolution)
+            )
         if effect.counter_type:
             permanent.add_counters(effect.counter_type, max(1, _amount(resolution, effect)))
         game.invalidate_characteristics()
@@ -2280,6 +2317,7 @@ def _cast_a_copy_without_paying(resolution: Resolution, effect: Effect) -> None:
 
     for original in originals:
         zone = effect.zone if effect.zone is not None else original.zone
+        # CR 112.2a: the copy is owned by the player told to create and cast it.
         copy = game.create_object(
             original.card,
             resolution.controller,
