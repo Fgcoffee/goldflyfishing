@@ -345,7 +345,13 @@ KEYWORD_ABILITIES: dict[str, KeywordSpec] = _build(
             "Choose a background",
             "Doctor's companion",
         ],
-        (Category.DECK_BUILDING, Status.DECLARED, ""): ["Companion"],
+        (
+            Category.DECK_BUILDING,
+            Status.IMPLEMENTED,
+            "revealed before the game (103.2b) and brought into hand by the "
+            "{3} special action (116.2g); the card-specific condition is not "
+            "checked",
+        ): ["Companion"],
     }
 )
 

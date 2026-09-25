@@ -70,6 +70,24 @@ def new_game(
             obj.is_commander = True
             commander_ids.append(obj.id)
         player.commanders = tuple(commander_ids)
+        # CR 903.11a: what the player started with, commanders included, is
+        # what a card brought in later may not share a name with.
+        player.starting_deck_names = frozenset(
+            card.name for card in list(deck.library_cards()) + list(deck.commanders)
+        )
+
+        # CR 400.11a: a sideboard stays outside the game, as card definitions
+        # rather than objects (CR 400.11c).
+        player.outside_game.extend(getattr(deck, "sideboard", ()))
+        # CR 103.2b: before the game begins, a player may reveal one companion
+        # they own from outside the game. It stays outside until the special
+        # action of CR 116.2g brings it in.
+        companion = getattr(deck, "companion", None)
+        if companion is not None:
+            from ..cr400_zones.cr400_outside_game import reveal_companion
+
+            player.outside_game.append(companion)
+            reveal_companion(game, player_id, companion)
 
     # CR 103.1, and CR 806.3 for the seating it implies: turn order is
     # determined at random, then fixed for the game.

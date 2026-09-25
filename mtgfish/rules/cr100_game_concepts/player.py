@@ -204,6 +204,24 @@ class Player:
     #: each kill nobody.
     commander_damage: dict[ObjectId, int] = field(default_factory=dict)
 
+    # -- outside the game (CR 400.11) ---------------------------------------
+    #: CR 400.11: the cards this player owns that are in none of the game's
+    #: zones - a sideboard (400.11a) and a revealed companion. Outside the
+    #: game is not a zone, so these are card definitions rather than game
+    #: objects: CR 400.11c leaves nothing able to affect them, and holding no
+    #: object is what makes that true rather than a rule to remember. A card
+    #: becomes an object only when something brings it in (400.11b).
+    outside_game: list = field(default_factory=list)
+    #: CR 103.2b / 702.139a: the companion this player revealed before the
+    #: game began, if any. It stays recorded after it is brought in, so the
+    #: game can still say which card it was.
+    companion: object = None
+    #: CR 116.2g: the companion special action may be taken once per game.
+    companion_brought_in: bool = False
+    #: CR 903.11a: the names of the cards this player started the game with,
+    #: commanders included - a card brought in from outside may not share one.
+    starting_deck_names: frozenset[str] = frozenset()
+
     # -- designations -------------------------------------------------------
     is_monarch: bool = False
     has_initiative: bool = False

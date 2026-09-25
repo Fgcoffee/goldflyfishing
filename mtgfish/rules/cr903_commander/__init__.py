@@ -26,6 +26,8 @@ CR 903.10a   ``cr100_game_concepts/player.py`` - 21 combat damage from a
              single commander, per commander and never pooled; the
              state-based action reading it is CR 704.6c in
              ``cr700_additional_rules/cr704_sba.py``
+CR 903.11    ``cr400_zones/cr400_outside_game.py`` - what may come in from
+             outside the game, and 903.11a's name and identity limits
 ===========  =========================================================
 
 Deck construction (CR 903.5) is not a rules-engine concern - it is checked
