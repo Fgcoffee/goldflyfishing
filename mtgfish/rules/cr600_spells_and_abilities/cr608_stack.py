@@ -161,6 +161,11 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # back to its caster.
         permanent.base_controller = obj.base_controller
         _carry_effects_onto_the_permanent(game, obj, permanent)
+        # CR 607.2q: cards exiled to pay for the spell are "exiled with" the
+        # permanent it became.
+        from ..cr100_game_concepts.actions import carry_links
+
+        carry_links(game, obj.id, permanent.id)
         permanent.x_value = obj.x_value
         # CR 702.33e and its kin: "if it was kicked", "if no mana was spent to
         # cast it", "if its surge cost was paid" are asked by the permanent's

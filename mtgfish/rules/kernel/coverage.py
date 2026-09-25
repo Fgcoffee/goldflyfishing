@@ -181,8 +181,17 @@ COVERAGE: dict[str, Entry] = _entries(
             "609": ("rules/cr600_spells_and_abilities/resolve.py", ""),
             "610": ("rules/cr600_spells_and_abilities/resolve.py", ""),
             "611": ("rules/cr600_spells_and_abilities/cr611_durations.py", "continuous effects and when they end"),
-            "613": ("rules/cr600_spells_and_abilities/cr613_layers.py", "all layers, sublayers, and 613.8 dependency"),
-            "603.7": ("rules/cr600_spells_and_abilities/cr603_triggers.py", "delayed triggered abilities"),
+            "613": (
+                "rules/cr600_spells_and_abilities/cr613_layers.py",
+                "all layers, sublayers, and 613.8 dependency; effects reach "
+                "cards in other zones when they name them (611.2c, 611.3a)",
+            ),
+            "603.7": (
+                "rules/cr600_spells_and_abilities/cr603_triggers.py",
+                "delayed triggered abilities; 603.7c they remember the objects "
+                "their effect acted on and follow only the move that triggered "
+                "them",
+            ),
             "603.8": ("rules/cr600_spells_and_abilities/cr603_triggers.py", "state triggers, with re-arming"),
             "614": ("rules/cr600_spells_and_abilities/cr614_replacement.py", "replacement effects"),
             "615": ("rules/cr600_spells_and_abilities/cr614_replacement.py", "prevention effects"),
@@ -249,8 +258,10 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
             "607.2": (
                 "rules/cr100_game_concepts/actions.py",
-                "linked-ability lookups keyed on the event that moved the card, "
-                "so a blinked permanent's linked ability correctly finds nothing",
+                "linked-ability lookups keyed on the source and the link id of "
+                "the ability that moved the card, so another object's or another "
+                "ability's exiles are not 'the exiled cards' and a blinked "
+                "permanent's linked ability correctly finds nothing",
             ),
             "613.3": (
                 "rules/cr600_spells_and_abilities/cr613_layers.py",
@@ -375,7 +386,15 @@ COVERAGE: dict[str, Entry] = _entries(
                 "no 309.3 one-dungeon-per-player rule",
             ),
 
-            "108": ("data/cards.py", "cards; 108.3 ownership of tokens not modelled"),
+            "108": (
+                "rules/kernel/game.py",
+                "cards; 108.3 owner is the player whose deck it started in, a "
+                "token's owner is its creator (111.2), a spell copy's the player "
+                "who put it on the stack (707.10, 112.2a), and 400.3 sends a "
+                "card to its owner's hand, library or graveyard. Cards brought "
+                "in from outside the game (108.3, 108.3b) and ante are not "
+                "modelled",
+            ),
 
 
             "207": (
@@ -385,8 +404,18 @@ COVERAGE: dict[str, Entry] = _entries(
             "308": ("rules/cr200_parts_of_a_card/cr205_typeline.py", "Kindred parses; tribal type-matching untested"),
             "607": (
                 "rules/cr100_game_concepts/actions.py",
-                "exiled-with tracking and linked lookups; imprint and hideaway "
-                "record their links but the cards' own text is the parser's job",
+                "engine side of 607.2a-c and 607.2q: exiles, tokens and "
+                "put-onto-the-battlefield are recorded per source and link id, "
+                "and ObjectFilter.linked_to_source finds only what that source's "
+                "partner ability did; links end when either object changes "
+                "zones (400.7), a leaves-the-battlefield half looks back one "
+                "step (603.10a), and cost-exiled cards pass from spell to "
+                "permanent (607.2q). Chosen values (607.2d) live on the object "
+                "and are undefined on a new one (607.5a). Missing: the parser "
+                "emits neither link ids nor the linked filter, so printed pairs "
+                "(imprint, hideaway, 'the exiled card' across abilities) are "
+                "not yet linked; 607.1d links across two objects and 607.3's "
+                "summed answers are not modelled",
             ),
             # -- 700s -------------------------------------------------------
             "700": ("rules/kernel/game.py", "general; 700.4 'dies' is exact"),

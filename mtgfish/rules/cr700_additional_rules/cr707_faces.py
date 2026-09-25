@@ -228,6 +228,9 @@ def copy_spell(game: Game, original: GameObject, controller=None) -> GameObject 
     if original.zone is not Zone.STACK:
         return None
 
+    # CR 707.10, 112.2: a copy of a spell is owned, as well as controlled, by
+    # the player under whose control it is put on the stack - not by the
+    # original's owner. It keeps that owner as the token it may become.
     owner = controller if controller is not None else original.controller
     copy = GameObject(
         id=game.ids.object_id(),

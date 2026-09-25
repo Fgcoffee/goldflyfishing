@@ -75,6 +75,8 @@ def matches(
         return False
     if spec.specific and obj.id not in spec.specific:
         return False
+    if spec.linked_to_source and not _linked(game, obj, spec, source):
+        return False
 
     # "This" names one object wherever it is: the zones a source-only filter
     # carries are the parser's default, not a claim about where the object
@@ -343,6 +345,34 @@ def _owner_matches(
     if relation is ControllerRelation.SAME_AS_SOURCE:
         return obj.owner == controller
     return True
+
+
+def _linked(game: Game, obj: GameObject, spec: ObjectFilter, source: ObjectId) -> bool:
+    """CR 607.2a-c: whether the source's linked ability affected ``obj``.
+
+    Keyed on the source as it is now, so a source that changed zones is a new
+    object whose abilities are linked to nothing yet (CR 400.7), and on the
+    object as it is now, so a card that left exile is no longer "exiled with"
+    anything.
+    """
+    from ..cr100_game_concepts.actions import linked_objects
+
+    sources = [source]
+    source_obj = game.objects.get(source)
+    if source_obj is not None and source_obj.zone not in (Zone.BATTLEFIELD, Zone.STACK):
+        # CR 603.10a: "when this leaves the battlefield, return the exiled
+        # card" looks back at the permanent that did the exiling. A trigger's
+        # source is the card it became, so the one step back is taken here -
+        # the same single step ``_is_same_object`` allows, and only from a
+        # permanent that just left, never from one that arrived.
+        previous = game.objects.get(source_obj.previous_id)
+        if previous is not None and previous.zone is Zone.BATTLEFIELD:
+            sources.append(previous.id)
+    return any(
+        linked.id == obj.id
+        for candidate in sources
+        for linked in linked_objects(game, candidate, spec.link_id)
+    )
 
 
 def _colors_match(colors: Color, spec: ObjectFilter) -> bool:
