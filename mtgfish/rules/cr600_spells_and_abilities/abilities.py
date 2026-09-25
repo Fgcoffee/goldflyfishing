@@ -201,6 +201,10 @@ class Ability:
     #: True when the parser could not fully read the ability. Such an ability
     #: is registered so it is visible in the coverage report, but never fires.
     unparsed: bool = False
+    #: CR 603.7c: a delayed triggered ability made by a resolving effect
+    #: refers to the objects that effect acted on, and carries them from the
+    #: moment it triggers to its own resolution, where "it" still means them.
+    remembered: tuple[int, ...] = ()
 
     # -- construction helpers ----------------------------------------------
 

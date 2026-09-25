@@ -114,10 +114,8 @@ FACE_DOWN_CAST_KEYWORDS = frozenset({"Morph", "Megamorph", "Disguise"})
 def _is_face_down_cast(game: Game, spell: GameObject, action: Action) -> bool:
     if action.alternative_cost < 0:
         return False
-    alternatives = game.characteristics(spell).alternative_costs
-    if action.alternative_cost >= len(alternatives):
-        return False
-    return alternatives[action.alternative_cost].keyword in FACE_DOWN_CAST_KEYWORDS
+    alternative = chosen_alternative_cost(game, spell, action)
+    return alternative is not None and alternative.keyword in FACE_DOWN_CAST_KEYWORDS
 
 
 def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
@@ -129,9 +127,13 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     origin_zone = card_object.zone
     from_command_zone = origin_zone is Zone.COMMAND
 
+    # CR 601.2b: an alternative cost offered by a granted ability is read off
+    # the card before CR 400.7 separates the spell from the grant.
+    offered = chosen_alternative_cost(game, card_object, action)
     # 601.2a: move the card to the stack. It becomes a spell there.
     spell = game.move_object(card_object, Zone.STACK, to_player=player_id)
     spell.controller = player_id
+    spell.alternative_cost_offered = offered
     # CR 118.5: permission to cast "without paying its mana cost" is given to
     # the card before it moves, and CR 400.7 makes the spell a new object. Not
     # carried over, every cascade, suspend and discover cast was charged its
@@ -239,6 +241,8 @@ def chosen_alternative_cost(game: Game, spell: GameObject, action: Action):
 
     CR 118.9a allows at most one, so this is one or ``None``.
     """
+    if spell.alternative_cost_offered is not None:
+        return spell.alternative_cost_offered
     available = game.characteristics(spell).alternative_costs
     if 0 <= action.alternative_cost < len(available):
         return available[action.alternative_cost]

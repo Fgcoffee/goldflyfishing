@@ -1013,6 +1013,19 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
     )
 
 
+def _current_incarnations(resolution: Resolution) -> list[ObjectId]:
+    """What each remembered object has become within this resolution."""
+    game = resolution.game
+    out: list[ObjectId] = []
+    for object_id in resolution.remembered:
+        obj = game.objects.get(object_id)
+        while obj is not None and obj.superseded_by:
+            obj = game.objects.get(obj.superseded_by)
+        if obj is not None:
+            out.append(obj.id)
+    return out
+
+
 def create_delayed_trigger(
     resolution: Resolution, trigger, effects: tuple[Effect, ...], *, repeating: bool = False
 ) -> None:
@@ -1034,6 +1047,11 @@ def create_delayed_trigger(
             controller=resolution.controller,
             source=resolution.source,
             repeating=repeating,
+            # CR 603.7c: "return it", "sacrifice that creature" - the objects
+            # this resolution was talking about when it made the ability, as
+            # they are now: "exile it, then return it at the next end step"
+            # means the card in exile, not the permanent it was (CR 400.7).
+            remembered=tuple(_current_incarnations(resolution)),
         )
     )
 
