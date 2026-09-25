@@ -75,6 +75,8 @@ def matches(
         return False
     if spec.specific and obj.id not in spec.specific:
         return False
+    if spec.linked_to_source and not _linked(game, obj, spec, source):
+        return False
 
     # "This" names one object wherever it is: the zones a source-only filter
     # carries are the parser's default, not a claim about where the object
@@ -144,6 +146,8 @@ def matches(
         return False
     if spec.face_down is not None and obj.face_down != spec.face_down:
         return False
+    if spec.has_inset and not has_inset(game, obj, spec.has_inset):
+        return False
     if spec.is_token is not None and obj.is_token != spec.is_token:
         return False
     if spec.is_commander is not None and obj.is_commander != spec.is_commander:
@@ -152,6 +156,20 @@ def matches(
         return False
     if spec.entered_this_turn is not None:
         if obj.entered_this_turn(game.turn) != spec.entered_this_turn:
+            return False
+
+    if spec.modified is not None or spec.activated_this_turn is not None:
+        from ..cr700_additional_rules.cr700_general import (
+            is_modified,
+            was_activated_this_turn,
+        )
+
+        if spec.modified is not None and is_modified(game, obj) != spec.modified:
+            return False
+        if (
+            spec.activated_this_turn is not None
+            and was_activated_this_turn(obj) != spec.activated_this_turn
+        ):
             return False
 
     if spec.ring_bearer is not None:
@@ -191,6 +209,14 @@ def matches(
         return False
     if spec.toughness is not None and not _numeric(
         game, chars.toughness, spec.toughness, obj, source, controller
+    ):
+        return False
+    if spec.base_power is not None and not _numeric(
+        game, chars.base_power, spec.base_power, obj, source, controller
+    ):
+        return False
+    if spec.base_toughness is not None and not _numeric(
+        game, chars.base_toughness, spec.base_toughness, obj, source, controller
     ):
         return False
     if spec.mana_value is not None and not _numeric(
@@ -343,6 +369,34 @@ def _owner_matches(
     if relation is ControllerRelation.SAME_AS_SOURCE:
         return obj.owner == controller
     return True
+
+
+def _linked(game: Game, obj: GameObject, spec: ObjectFilter, source: ObjectId) -> bool:
+    """CR 607.2a-c: whether the source's linked ability affected ``obj``.
+
+    Keyed on the source as it is now, so a source that changed zones is a new
+    object whose abilities are linked to nothing yet (CR 400.7), and on the
+    object as it is now, so a card that left exile is no longer "exiled with"
+    anything.
+    """
+    from ..cr100_game_concepts.actions import linked_objects
+
+    sources = [source]
+    source_obj = game.objects.get(source)
+    if source_obj is not None and source_obj.zone not in (Zone.BATTLEFIELD, Zone.STACK):
+        # CR 603.10a: "when this leaves the battlefield, return the exiled
+        # card" looks back at the permanent that did the exiling. A trigger's
+        # source is the card it became, so the one step back is taken here -
+        # the same single step ``_is_same_object`` allows, and only from a
+        # permanent that just left, never from one that arrived.
+        previous = game.objects.get(source_obj.previous_id)
+        if previous is not None and previous.zone is Zone.BATTLEFIELD:
+            sources.append(previous.id)
+    return any(
+        linked.id == obj.id
+        for candidate in sources
+        for linked in linked_objects(game, candidate, spec.link_id)
+    )
 
 
 def _colors_match(colors: Color, spec: ObjectFilter) -> bool:
@@ -594,3 +648,37 @@ def resolve_players(
             return []
         return [obj.controller if scope is PlayerScope.CONTROLLER_OF else obj.owner]
     return []
+
+
+def has_inset(game, obj, subtype: str) -> bool:
+    """CR 715.2a, 720.2a: whether the object "has an Adventure" or "has an
+    Omen" - a face of its card, other than the front, with that subtype.
+
+    Asked of the card rather than the current characteristics, because the
+    rule says it has one "even if the object currently doesn't use them".
+    CR 715.2b, 720.2b: the inset is part of the copiable values, so a
+    permanent copying an adventurer card has an Adventure too - the card
+    asked is the one the latest copy effect on it copied (CR 613.2, layer
+    1a), followed through copies of copies. A face-down permanent's copiable
+    values list no such thing (CR 708.2), so it has none.
+    """
+    from ..cr600_spells_and_abilities.effects import EffectKind
+
+    seen: set = set()
+    while obj is not None and obj.id not in seen:
+        seen.add(obj.id)
+        if obj.face_down:
+            return False
+        copying = [
+            ce
+            for ce in game.continuous_effects
+            if ce.source == obj.id and ce.effect.kind is EffectKind.COPY_PERMANENT
+        ]
+        if not copying:
+            break
+        latest = max(copying, key=lambda ce: ce.timestamp)
+        obj = game.objects.get(latest.effect.copy_source)
+    if obj is None:
+        return False
+    faces = getattr(obj.card, "faces", ())
+    return any(subtype in face.type_line.subtypes for face in faces[1:])

@@ -97,6 +97,13 @@ class TriggerCondition:
     chapter: int = 0
     is_state_trigger: bool = False
 
+    #: CR 309.4c: for a dungeon's room ability, the room's position on the
+    #: dungeon counted from 1 at the topmost room. Every room shares one
+    #: trigger condition - the owner's venture marker moving into *this*
+    #: room - so the room is the whole of what tells them apart. Zero for
+    #: every other trigger.
+    room: int = 0
+
     #: Which counter a COUNTER_ADDED / COUNTER_REMOVED trigger cares about.
     #: Empty means any kind. "When the last defense counter is removed"
     #: (CR 310.12b) is about defense counters and nothing else, and without
@@ -119,6 +126,9 @@ class TriggerCondition:
     #: a permanent. "Deals combat damage to a player" names its recipient, and
     #: combat damage to a blocking creature is combat damage too.
     to_player: bool = False
+
+    #: CR 700.14: "whenever you expend N" - the EXPENDED event for total N.
+    expend: int = 0
 
     #: Set for abilities that trigger on the source leaving the battlefield, so
     #: the engine knows to evaluate them against last-known information
@@ -201,6 +211,10 @@ class Ability:
     #: True when the parser could not fully read the ability. Such an ability
     #: is registered so it is visible in the coverage report, but never fires.
     unparsed: bool = False
+    #: CR 603.7c: a delayed triggered ability made by a resolving effect
+    #: refers to the objects that effect acted on, and carries them from the
+    #: moment it triggers to its own resolution, where "it" still means them.
+    remembered: tuple[int, ...] = ()
 
     # -- construction helpers ----------------------------------------------
 

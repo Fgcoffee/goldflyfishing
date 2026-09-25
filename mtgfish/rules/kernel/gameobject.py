@@ -77,6 +77,12 @@ class GameObject:
     tapped: bool = False
     flipped: bool = False
     face_down: bool = False
+    #: CR 708.2, 708.6: what made this object face down - "Morph", "Disguise",
+    #: "Manifest", "Cloak" and so on, or empty for an effect that listed no
+    #: characteristics. It decides what the face-down object is (disguise and
+    #: cloak add ward {2}) and how it may be turned face up again (CR 701.40b
+    #: only for a manifested or cloaked permanent).
+    face_down_by: str = ""
     phased_out: bool = False
 
     # -- battlefield state --------------------------------------------------
@@ -194,6 +200,10 @@ class GameObject:
     #: cast for, if any - what "if its sneak cost was paid" asks. Empty for a
     #: spell cast for its mana cost.
     alternative_cost_paid: str = ""
+    #: CR 601.2b: the alternative cost announced for this spell when the card
+    #: it was cast from offered it through a granted ability. The grant was
+    #: settled on that card, and CR 400.7 leaves it behind as the spell moves.
+    alternative_cost_offered: object | None = None
     #: CR 722.3c: for the copy of a prepare spell waiting in exile, the
     #: prepared permanent it belongs to.
     prepare_copy_of: ObjectId = NO_OBJECT

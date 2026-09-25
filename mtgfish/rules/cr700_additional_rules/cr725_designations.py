@@ -15,8 +15,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..cr600_spells_and_abilities.effects import Effect, EffectKind
 from ..kernel.events import Event, EventKind
-from ..kernel.ids import NO_PLAYER, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, PlayerId
+from ..kernel.query import YOU, PlayerFilter, PlayerScope
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
@@ -95,6 +97,9 @@ def monarch_left_the_game(game: Game) -> None:
 # The initiative (CR 726)
 # ---------------------------------------------------------------------------
 
+#: CR 726.2: the dungeon quality the initiative ventures into (CR 701.49d).
+UNDERCITY = "Undercity"
+
 
 def initiative_holder(game: Game) -> PlayerId:
     for player in game.players:
@@ -103,28 +108,112 @@ def initiative_holder(game: Game) -> PlayerId:
     return NO_PLAYER
 
 
+def _initiative_trigger(
+    game: Game, controller: PlayerId, effect: Effect, event: Event, text: str
+) -> None:
+    """CR 726.2: one of the initiative's inherent triggered abilities.
+
+    They have no source - the initiative is a designation, not an object -
+    and are controlled by whoever had the initiative as they triggered, so
+    they are noted here directly rather than found on anything by the trigger
+    scan. They then go on the stack and resolve like any other trigger.
+    """
+    if game.suppress_triggers:
+        return
+    from ..cr600_spells_and_abilities.abilities import Ability, AbilityKind, TriggerCondition
+    from ..cr600_spells_and_abilities.cr603_triggers import PendingTrigger
+
+    trigger = TriggerCondition(event_kinds=frozenset({event.kind}), text=text)
+    ability = Ability(AbilityKind.TRIGGERED, effects=(effect,), trigger=trigger, text=text)
+    game.pending_triggers.append(PendingTrigger(NO_OBJECT, ability, event, controller))
+
+
+def _venture_into_undercity() -> Effect:
+    return Effect(
+        EffectKind.VENTURE,
+        players=YOU,
+        dungeon_quality=UNDERCITY,
+        text="venture into Undercity",
+    )
+
+
 def take_initiative(game: Game, player_id: PlayerId) -> bool:
-    """CR 726.2: one holder at a time, exactly like the monarch."""
+    """CR 726.3: one holder at a time, exactly like the monarch.
+
+    Returns whether the designation changed hands. CR 726.5: taking it while
+    already holding it still counts as taking it, so the venture trigger
+    fires either way.
+    """
     if game.player(player_id).has_lost:
         return False
     already = game.player(player_id).has_initiative
     for player in game.players:
         player.has_initiative = player.id == player_id
-    if not already:
-        game.log.record(
-            game, f"{game.player(player_id).name} takes the initiative",
-            kind="initiative", player=player_id,
-        )
-        game.emit(Event(EventKind.TOOK_INITIATIVE, player=player_id))
+    game.log.record(
+        game, f"{game.player(player_id).name} takes the initiative",
+        kind="initiative", player=player_id,
+    )
+    event = Event(EventKind.TOOK_INITIATIVE, player=player_id)
+    game.emit(event)
+    # CR 726.2: "Whenever a player takes the initiative, that player ventures
+    # into Undercity."
+    _initiative_trigger(
+        game, player_id, _venture_into_undercity(), event,
+        "Whenever a player takes the initiative, that player ventures into Undercity.",
+    )
     return not already
 
 
+def initiative_upkeep(game: Game) -> None:
+    """CR 726.2: "At the beginning of the upkeep of the player who has the
+    initiative, that player ventures into Undercity." """
+    holder = initiative_holder(game)
+    if holder == NO_PLAYER or holder != game.active_player:
+        return
+    _initiative_trigger(
+        game, holder, _venture_into_undercity(), Event(EventKind.UPKEEP, player=holder),
+        "At the beginning of the upkeep of the player who has the initiative, that "
+        "player ventures into Undercity.",
+    )
+
+
 def combat_damage_to_initiative_holder(
-    game: Game, victim: PlayerId, attacker_controller: PlayerId
+    game: Game, victim: PlayerId, attacker_controllers
 ) -> None:
-    """CR 726.4: combat damage to the holder passes the initiative."""
-    if game.player(victim).has_initiative and attacker_controller != victim:
-        take_initiative(game, attacker_controller)
+    """CR 726.2: combat damage to the holder passes the initiative.
+
+    "Whenever one or more creatures a player controls deal combat damage to
+    the player who has the initiative" - once per such player per damage
+    step, however many of their creatures connected. The ability belongs to
+    the holder, and resolving it makes the attacking player take the
+    initiative (which in turn triggers the Undercity venture).
+    """
+    if not game.player(victim).has_initiative:
+        return
+    for controller in attacker_controllers:
+        _initiative_trigger(
+            game,
+            victim,
+            Effect(
+                EffectKind.TAKE_INITIATIVE,
+                players=PlayerFilter(PlayerScope.SPECIFIC, specific=controller),
+                text="the controller of those creatures takes the initiative",
+            ),
+            Event(EventKind.COMBAT_DAMAGE_DEALT, player=victim, source_controller=controller),
+            "Whenever one or more creatures a player controls deal combat damage to "
+            "the player who has the initiative, the controller of those creatures "
+            "takes the initiative.",
+        )
+
+
+def initiative_left_the_game(game: Game) -> None:
+    """CR 726.4: if the holder leaves, the active player takes the initiative
+    - or, if the active player is the one leaving, the next in turn order."""
+    if initiative_holder(game) != NO_PLAYER:
+        return
+    order = game.apnap_order()
+    if order:
+        take_initiative(game, order[0])
 
 
 # ---------------------------------------------------------------------------

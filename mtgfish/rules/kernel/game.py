@@ -64,6 +64,13 @@ class UnparsedAbilityProvider:
         return (Ability.unreadable(text),)
 
 
+
+#: Events that can amount to a CR 700 happening - descending, a crime,
+#: expending - which ``cr700_general`` announces in turn.
+_GENERAL_TERM_EVENTS = frozenset(
+    {EventKind.ZONE_CHANGE, EventKind.CAST_SPELL, EventKind.PUT_ON_STACK}
+)
+
 @dataclass(slots=True)
 class ContinuousEffect:
     """One active continuous effect, awaiting application by the layer system.
@@ -305,6 +312,11 @@ class Game:
     solved_permanents: set[ObjectId] = field(default_factory=set)
 
     agents: dict[PlayerId, object] = field(default_factory=dict)
+    #: CR 309.2: the dungeon cards players may bring into the game, which
+    #: begin outside it. Empty until a player first ventures, when the rules'
+    #: own set is loaded (``cr309_dungeons.available_dungeons``); a test may
+    #: supply its own.
+    dungeons: tuple = ()
 
     def is_controlled(self, player_id: PlayerId) -> bool:
         """CR 723.1: whether someone else is making this player's decisions."""
@@ -479,8 +491,13 @@ class Game:
         to_player: PlayerId | None = None,
         to_top: bool = False,
         position: int | None = None,
+        face_down: str | None = None,
     ) -> GameObject:
         """Move an object to another zone, creating a new object (CR 400.7).
+
+        ``face_down`` puts it there face down (CR 708.3, 406.3), naming what
+        turned it face down - "Manifest", "Cloak", or "" for an effect that
+        lists no characteristics.
 
         The new object remembers nothing: counters, damage, attachments, and
         continuous effects targeting the old object are all gone. This is the
@@ -528,6 +545,24 @@ class Game:
         to_zone = prospective.to_zone or to_zone
         if to_zone is Zone.COMMAND:
             to_player = owner
+        elif to_zone in (Zone.LIBRARY, Zone.GRAVEYARD, Zone.HAND):
+            # CR 400.3: a card goes to its owner's library, graveyard or hand,
+            # whoever's the instruction named. For a token that is the player
+            # who created it (CR 111.2), though it never arrives (CR 111.7).
+            to_player = owner
+
+        # CR 708.4: the permanent a face-down spell becomes is face down. CR
+        # 708.3 and 406.3: an object put onto the battlefield or exiled face
+        # down is turned face down before it arrives. Anywhere else a card is
+        # face up.
+        if face_down is None and obj.face_down and (from_zone, to_zone) == (
+            Zone.STACK,
+            Zone.BATTLEFIELD,
+        ):
+            face_down = obj.face_down_by
+        if to_zone not in (Zone.BATTLEFIELD, Zone.EXILE):
+            face_down = None
+        arrives_face_down = face_down is not None
 
         # CR 304.4, 307.4: an instant or sorcery that would enter the
         # battlefield stays where it is instead. Nothing stopped one, so
@@ -535,7 +570,13 @@ class Game:
         # Lightning Bolt sitting there permanently - the state-based actions
         # have no rule that would remove it, because the rule is that it
         # never arrives.
-        if to_zone is Zone.BATTLEFIELD and not self._may_enter_the_battlefield(obj):
+        # CR 701.40f: what may or may not enter is the face-down 2/2, not the
+        # card underneath, so a manifested instant is a creature that enters.
+        if (
+            to_zone is Zone.BATTLEFIELD
+            and not arrives_face_down
+            and not self._may_enter_the_battlefield(obj)
+        ):
             return obj
 
         # CR 306.5b, 310.4b: a planeswalker enters with loyalty counters equal
@@ -548,7 +589,9 @@ class Game:
         # reanimated planeswalker entered with zero loyalty and the state-based
         # actions put it straight back in the graveyard.
         entering: tuple[tuple[str, int], ...] = ()
-        if to_zone is Zone.BATTLEFIELD:
+        # CR 708.3: a face-down permanent has no loyalty or defense to enter
+        # with - the card's printed numbers belong to a face nobody sees.
+        if to_zone is Zone.BATTLEFIELD and not arrives_face_down:
             from ..cr300_card_types.cr300_characteristics import entering_counters
 
             entering = entering_counters(self.characteristics(obj))
@@ -610,6 +653,26 @@ class Game:
             timestamp=self.ids.timestamp(),
             is_commander=obj.is_commander,
         )
+        if arrives_face_down:
+            new_obj.face_down = True
+            new_obj.face_down_by = face_down or ""
+        elif obj.face_down and from_zone in (Zone.BATTLEFIELD, Zone.STACK):
+            # CR 708.9: a face-down permanent or spell leaving for anywhere
+            # but the battlefield is revealed to every player as it moves.
+            from ..cr700_additional_rules.cr708_face_down import reveal
+
+            reveal(self, obj, f"it left the {from_zone.name.lower()}")
+        if from_zone is Zone.STACK and to_zone is Zone.BATTLEFIELD:
+            # CR 718.3b: a prototyped spell becomes a prototyped permanent.
+            # (The face it reads is carried with ``face_index``; the mode is
+            # carried so "was it prototyped" has an answer.)
+            from ..cr300_card_types.cr300_card_types import (
+                PERSISTS_ON_BATTLEFIELD,
+                CastMode,
+            )
+
+            if CastMode(obj.cast_mode) in PERSISTS_ON_BATTLEFIELD:
+                new_obj.cast_mode = obj.cast_mode
         if to_zone is Zone.BATTLEFIELD:
             new_obj.entered_battlefield_turn = self.turn
             new_obj.summoning_sick = True
@@ -835,6 +898,15 @@ class Game:
             found = self.board_in_progress.get(obj.id)
             if found is not None:
                 return found
+            if obj.face_down:
+                # CR 406.3a: a card exiled face down has no characteristics.
+                from ..cr700_additional_rules.cr708_face_down import (
+                    hidden_characteristics,
+                    is_hidden,
+                )
+
+                if is_hidden(obj):
+                    return hidden_characteristics()
             return self.printed_characteristics(obj)
 
         if obj._characteristics is not None and obj._characteristics_epoch == self.epoch:
@@ -882,9 +954,12 @@ class Game:
         # only ever its top half - so it is resolved here rather than by
         # rewriting face_index and having every other caller see it.
         face_index = 1 if obj.flipped and obj.face_index == 0 else obj.face_index
-        try:
-            face = card.faces[face_index]  # type: ignore[attr-defined]
-        except (AttributeError, IndexError):
+        # CR 718.3b: a prototyped spell, and the permanent it becomes, reads
+        # its prototype face - which borrows the front face's abilities.
+        from ..cr300_card_types.cr300_card_types import card_face
+
+        face, ability_face = card_face(card, face_index)
+        if face is None:
             return Characteristics(name=getattr(card, "name", ""))
         # Tokens and emblems have no card behind them, so they carry their
         # abilities directly rather than going through the provider - the
@@ -894,7 +969,7 @@ class Game:
         if own is not None:
             abilities = tuple(own)
         else:
-            abilities = self.ability_provider.abilities_for(card, face_index)
+            abilities = self.ability_provider.abilities_for(card, ability_face)
         # CR 305.6: a land's basic land types carry mana abilities that are not
         # printed in its text box. A Swamp taps for {B} whether or not anything
         # says so, so they belong in the printed characteristics.
@@ -947,6 +1022,10 @@ class Game:
             self._advance_speed(event)
         elif event.kind is EventKind.CONTROL_CHANGED:
             self._end_ring_bearer_on_control_change(event)
+        if event.kind in _GENERAL_TERM_EVENTS:
+            from ..cr700_additional_rules.cr700_general import note
+
+            note(self, event)
 
         from ..cr600_spells_and_abilities.cr603_triggers import collect_triggers
 
@@ -1075,6 +1154,10 @@ class Game:
             player=player_id,
         )
 
+        # CR 708.9: their face-down spells and permanents are revealed first.
+        from ..cr700_additional_rules.cr708_face_down import reveal_all
+
+        reveal_all(self, owner=player_id)
         # CR 800.4a: objects owned by the departing player leave the game.
         for object_id in list(self.objects):
             obj = self.objects.get(object_id)
@@ -1100,6 +1183,12 @@ class Game:
             from ..cr700_additional_rules.cr725_designations import monarch_left_the_game
 
             monarch_left_the_game(self)
+        # CR 726.4: likewise the initiative.
+        if player.has_initiative:
+            player.has_initiative = False
+            from ..cr700_additional_rules.cr725_designations import initiative_left_the_game
+
+            initiative_left_the_game(self)
         self.emit(Event(EventKind.PLAYER_LEFT_GAME, player=player_id))
         self._check_game_over()
 
@@ -1117,6 +1206,11 @@ class Game:
         if len(living) <= 1:
             self.game_over = True
             self.winners = tuple(p.id for p in living)
+            # CR 708.9: at the end of the game every face-down spell and
+            # permanent is revealed.
+            from ..cr700_additional_rules.cr708_face_down import reveal_all
+
+            reveal_all(self)
 
     def player_wins(self, player_id: PlayerId) -> None:
         """CR 104.2b: a spell or ability says a player wins.

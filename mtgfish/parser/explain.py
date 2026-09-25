@@ -180,6 +180,7 @@ _OBJECT_VERBS = {
     EffectKind.TRANSFORM: "transform",
     EffectKind.TURN_FACE_UP: "turn face up",
     EffectKind.TURN_FACE_DOWN: "turn face down",
+    EffectKind.MANIFEST: "put onto the battlefield face down",
     EffectKind.PHASE_OUT: "phase out",
     EffectKind.REGENERATE: "regenerate",
     EffectKind.GOAD: "goad",

@@ -50,6 +50,13 @@ before you start: several of its changes touch the areas you named.
 - Your bug #1 (cascade exiling itself) is fixed here. Bugs #2-#4 (Guardian
   Project, Command Tower, Maelstrom Pulse) are on the list.
 
+- Your bug #3 (Command Tower): `Effect.colors_in_commander_identity` plus
+  `resolve.mana_color_choices(game, controller, effect)`. Please have
+  `mana_plan` ask that function for an "any color" effect's colours instead of
+  reading `effect.colors`; otherwise it will plan colours the Tower cannot
+  make. Bugs #2 and #4 are parser gaps (both cards fail to parse) and are
+  written up in `docs/parser-gaps.md`.
+
 ## Next in this session
 
 Closing the two known CR 701 engine gaps (delayed triggers remembering

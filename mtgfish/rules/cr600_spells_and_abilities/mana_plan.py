@@ -248,10 +248,15 @@ def _produced(game: Game, obj, effects, player_id: PlayerId):
     adds = list(_add_mana_effects(effects))
     if not adds:
         return
+    from .resolve import mana_color_choices
+
     menu = Color.NONE
     for effect in adds:
         if not effect.mana_produced and not effect.colors_chosen and effect.colors:
-            menu |= effect.colors
+            # The same menu resolution offers - Command Tower's is the
+            # commander's colour identity - so a plan cannot count on a colour
+            # the ability will not make.
+            menu |= mana_color_choices(game, player_id, effect)
     choices = [c for c in Color if c and c in menu] if menu else [Color.NONE]
     for color in choices:
         produced: list[ManaKind] = []
@@ -291,7 +296,12 @@ def _predict(game: Game, obj, effect, player_id: PlayerId, color: Color) -> list
         recorded = getattr(obj, "chosen_color", 0) or Color.NONE
         return [ManaKind(Color(recorded), snow=snow, restriction=restriction)] * amount
     if effect.colors:
-        pick = color if color and color in effect.colors else _first(effect.colors)
+        from .resolve import mana_color_choices
+
+        menu = mana_color_choices(game, player_id, effect)
+        if not menu:
+            return []  # CR 903.4f: no colour to choose, no mana.
+        pick = color if color and color in menu else _first(menu)
         return [ManaKind(pick, snow=snow, restriction=restriction)] * amount
     return [ManaKind(snow=snow, restriction=restriction)] * amount
 

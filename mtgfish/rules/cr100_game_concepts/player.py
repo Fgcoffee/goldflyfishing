@@ -93,9 +93,15 @@ class Player:
         self.speed += 1
         self.speed_increased_this_turn = True
         return True
-    #: CR 701.46: how deep into a dungeon this player is. Which dungeon and
-    #: what each room does is card text; this is only the position.
-    dungeon_room: int = 0
+    #: CR 309.3, 309.4: the dungeon card this player owns in the command
+    #: zone, if any, and which of its rooms their venture marker is on
+    #: (counted from 0 at the topmost room).
+    dungeon: ObjectId = NO_OBJECT
+    venture_room: int = 0
+    #: CR 309.7: the names of the dungeons this player has completed, once
+    #: per completion, in order. "If you've completed a dungeon" and "each
+    #: differently named dungeon you've completed" both read this.
+    completed_dungeons: list[str] = field(default_factory=list)
     rad: int = 0
     #: CR 122.1: a counter sits on an object *or a player*, and the fields
     #: above cover only the four kinds the rules name often enough to have
@@ -206,6 +212,8 @@ class Player:
     #: CR 702.195b: the enduring story designation - once gained, kept for
     #: the rest of the game.
     has_enduring_story: bool = False
+    #: CR 700.14: mana spent to cast spells this turn, for expend.
+    mana_spent_on_spells_this_turn: int = 0
     #: CR 701.54a: this player's Ring-bearer, and their emblem named The Ring
     #: (CR 701.54c).
     ring_bearer: int = 0
@@ -306,6 +314,7 @@ class Player:
         self.cards_drawn_this_turn = 0
         self.life_gained_this_turn = 0
         self.life_lost_this_turn = 0
+        self.mana_spent_on_spells_this_turn = 0
 
     @property
     def is_active_in_game(self) -> bool:

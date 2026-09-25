@@ -125,6 +125,8 @@ class ValueKind(IntEnum):
     #: keeps the tally; there was a Condition that could ask whether it
     #: happened and no Value that could ask how often.
     EVENT_COUNT_THIS_TURN = 26
+    #: CR 700.8: the size of the player's party.
+    PARTY_SIZE = 60
     #: A characteristic summed across every object matching a filter: "the
     #: total power of creatures you control". The third way to ask about a
     #: set, alongside GREATEST_AMONG and LEAST_AMONG, and read the same way -
@@ -430,6 +432,13 @@ class ObjectFilter:
     #: the *target's* controller, not this card's.
     remembered: bool = False
     specific: tuple[ObjectId, ...] = ()
+    #: CR 607.2a-c: "the exiled cards", "cards exiled with this", "creatures
+    #: put onto the battlefield with this" - what the source's linked ability
+    #: did, and nothing any other object or ability did. ``link_id`` names the
+    #: partner ability (``Ability.link_id``); zero accepts any ability of the
+    #: source.
+    linked_to_source: bool = False
+    link_id: int = 0
 
     # -- zone and control ---------------------------------------------------
     zones: frozenset[Zone] = frozenset({Zone.BATTLEFIELD})
@@ -449,7 +458,16 @@ class ObjectFilter:
     #: CR 701.54e: "your Ring-bearer" - the Ring-bearer of the player the
     #: filter is read for.
     ring_bearer: bool | None = None
+    #: CR 700.9: modified - counters, equipped, or enchanted by its
+    #: controller's Aura.
+    modified: bool | None = None
+    #: CR 700.10: the source of an ability activated this turn.
+    activated_this_turn: bool | None = None
     face_down: bool | None = None
+    #: CR 715.2a, 720.2a: "that has an Adventure", "that has an Omen" - the
+    #: subtype of the inset spell the card carries, whether or not the object
+    #: is using those characteristics now. Empty for no such requirement.
+    has_inset: str = ""
     is_token: bool | None = None
     #: "creatures of the chosen type", "permanents of the chosen color" -
     #: matched against the choice recorded on the ability's source, so the
@@ -477,6 +495,9 @@ class ObjectFilter:
     # -- numeric ------------------------------------------------------------
     power: NumericConstraint | None = None
     toughness: NumericConstraint | None = None
+    #: CR 208.4b: "with base power 1", "base toughness 3 or greater".
+    base_power: NumericConstraint | None = None
+    base_toughness: NumericConstraint | None = None
     mana_value: NumericConstraint | None = None
     loyalty: NumericConstraint | None = None
 
@@ -573,6 +594,8 @@ class ObjectFilter:
             parts.append("(this permanent itself)")
         if self.remembered:
             parts.append("(whatever was just referred to)")
+        if self.linked_to_source:
+            parts.append("(affected by this object's linked ability)")
         if self.named:
             parts.append("named " + " or ".join(self.named))
         if self.not_named:
@@ -645,6 +668,8 @@ class ObjectFilter:
                 parts.append(no)
         if self.has_keyword:
             parts.append("with " + " and ".join(self.has_keyword))
+        if self.has_inset:
+            parts.append(f"that has an {self.has_inset}")
         if self.lacks_keyword:
             parts.append("without " + " or ".join(self.lacks_keyword))
         return parts
@@ -742,6 +767,12 @@ class ConditionKind(IntEnum):
     HAS_ENDURING_STORY = 27
     #: CR 702.186b: whether this permanent is harnessed.
     IS_HARNESSED = 28
+    #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
+    #: set, names the dungeon ("if you haven't completed Tomb of
+    #: Annihilation" is the negation of the named form).
+    COMPLETED_DUNGEON = 30
+    #: CR 726.1: "if you have the initiative".
+    HAS_INITIATIVE = 31
     #: CR 601.2b / 118.9: "if its [keyword] cost was paid" - which alternative
     #: cost the spell was cast for, named by ``Condition.keyword``. An empty
     #: keyword asks whether any alternative cost was paid.
@@ -782,7 +813,8 @@ class Condition:
     #: ints so this module need not import the event enum.
     event_kinds: tuple[int, ...] = ()
     operands: tuple[Condition, ...] = ()
-    #: For ALTERNATIVE_COST_PAID: the keyword whose cost is asked about.
+    #: For ALTERNATIVE_COST_PAID: the keyword whose cost is asked about. For
+    #: COMPLETED_DUNGEON: the dungeon's name, or empty for any dungeon.
     keyword: str = ""
     text: str = ""
 

@@ -449,12 +449,27 @@ def _do_exile(resolution: Resolution, effect: Effect) -> None:
         return
 
     returning: list[ObjectId] = []
+    # CR 406.3: "exile it face down".
+    face_down = "face down" in effect.keywords
     for obj in _objects(resolution, effect):
-        exiled = actions.exile(game, obj, source=resolution.source)
+        exiled = actions.exile(
+            game,
+            obj,
+            source=resolution.source,
+            link_id=_link_of(resolution),
+            face_down=face_down,
+        )
         if until_source_leaves and exiled is not None:
             returning.append(exiled.id)
     if returning:
         _return_when_the_source_leaves(resolution, tuple(returning))
+
+
+def _link_of(resolution: Resolution) -> int:
+    """CR 607.1: the link id of the ability resolving, zero for a spell."""
+    stack_object = resolution.stack_object
+    ability = getattr(stack_object, "ability", None) if stack_object else None
+    return getattr(ability, "link_id", 0) or 0
 
 
 def _source_is_on_the_battlefield(resolution: Resolution) -> bool:
@@ -622,13 +637,18 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
 
     count = _count(resolution, effect)
     for player_id in _players(resolution, effect):
-        create_tokens(
+        created = create_tokens(
             resolution.game,
             effect.token,
             player_id,
             count,
             source=resolution.source,
         )
+        # CR 607.2c: "tokens created with this" are these and no others.
+        for token in created:
+            actions.record_link(
+                resolution.game, resolution.source, token.id, _link_of(resolution)
+            )
 
 
 def _do_create_emblem(resolution: Resolution, effect: Effect) -> None:
@@ -1017,6 +1037,19 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
     )
 
 
+def _current_incarnations(resolution: Resolution) -> list[ObjectId]:
+    """What each remembered object has become within this resolution."""
+    game = resolution.game
+    out: list[ObjectId] = []
+    for object_id in resolution.remembered:
+        obj = game.objects.get(object_id)
+        while obj is not None and obj.superseded_by:
+            obj = game.objects.get(obj.superseded_by)
+        if obj is not None:
+            out.append(obj.id)
+    return out
+
+
 def create_delayed_trigger(
     resolution: Resolution, trigger, effects: tuple[Effect, ...], *, repeating: bool = False
 ) -> None:
@@ -1038,6 +1071,11 @@ def create_delayed_trigger(
             controller=resolution.controller,
             source=resolution.source,
             repeating=repeating,
+            # CR 603.7c: "return it", "sacrifice that creature" - the objects
+            # this resolution was talking about when it made the ability, as
+            # they are now: "exile it, then return it at the next end step"
+            # means the card in exile, not the permanent it was (CR 400.7).
+            remembered=tuple(_current_incarnations(resolution)),
         )
     )
 
@@ -1360,6 +1398,25 @@ def _amount2(resolution: Resolution, effect: Effect) -> int:
     )
 
 
+def mana_color_choices(game, controller: PlayerId, effect: Effect):
+    """The colours an "any color" mana effect may produce for this player.
+
+    The effect's own set, narrowed to the commander's colour identity when it
+    says so (CR 903.4); empty when that identity is undefined (CR 903.4f).
+    The payment planner should ask this too, so what it plans to tap for and
+    what resolving the ability adds cannot disagree.
+    """
+    from ..kernel.enums import Color
+
+    colors = effect.colors
+    if effect.colors_in_commander_identity:
+        from ..cr903_commander.cr903_color_identity import commander_color_identity
+
+        identity = commander_color_identity(game, controller)
+        colors = Color(int(colors) & int(identity)) if identity is not None else Color.NONE
+    return colors
+
+
 def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     """CR 106.1: add mana to a player's pool."""
     from ..cr100_game_concepts.cr106_mana import ManaKind
@@ -1403,15 +1460,14 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
         )
     elif effect.colors:
         # No symbol list: "add N mana of any color", where the color set is
-        # the menu and the player picks - the payer's choice when there was
-        # one, otherwise a deterministic pick, first color.
+        # the menu and the player picks - the payer's choice when the payment
+        # planner made one, otherwise a deterministic pick, first color.
+        menu = mana_color_choices(game, resolution.controller, effect)
+        if not menu:
+            return  # CR 903.4f: no commander, no colour to choose.
         amount = _count(resolution, effect)
         wanted = resolution.mana_color
-        chosen = (
-            wanted
-            if wanted and (effect.colors & wanted) == wanted
-            else next(iter(effect.colors))
-        )
+        chosen = wanted if wanted and (menu & wanted) == wanted else next(iter(menu))
         player.mana_pool.add(
             ManaKind(chosen, snow=snow, restriction=effect.mana_restriction), amount
         )
@@ -1730,6 +1786,9 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     tapped = "tapped" in effect.keywords
     attacking = "attacking" in effect.keywords
+    # CR 708.3: "put it onto the battlefield face down" turns it face down
+    # before it enters, as a 2/2 with nothing listed (CR 708.2a).
+    face_down = "" if "face down" in effect.keywords else None
     stack_object = resolution.stack_object
     paid = tuple(stack_object.cost_paid_objects) if stack_object is not None else ()
     for obj in _objects(resolution, effect):
@@ -1742,8 +1801,13 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
         # CR 610.3c: a card coming back from an "until" exile returns to its
         # owner, not to whoever exiled it.
         to = obj.owner if effect.under_owners_control else resolution.controller
-        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to)
+        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to, face_down=face_down)
         permanent.controller = to
+        if permanent is not obj:
+            # CR 607.2c: what was "put onto the battlefield with" the source.
+            actions.record_link(
+                game, resolution.source, permanent.id, _link_of(resolution)
+            )
         if effect.counter_type:
             permanent.add_counters(effect.counter_type, max(1, _amount(resolution, effect)))
         game.invalidate_characteristics()
@@ -1798,39 +1862,43 @@ def _do_copy_permanent_effect(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_turn_face_up(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.34 / 707.9: a face-down permanent is turned up.
+    """An effect turns a face-down permanent face up (CR 708.7, 708.8).
 
-    CR 116.2b makes this a *special action*: it uses no stack and cannot be
-    responded to, which is why a morph flip cannot be answered.
+    No cost is paid, so no megamorph counter (CR 702.37b); an instant or
+    sorcery card is revealed and stays face down (CR 701.40g, 701.58g).
     """
-    game = resolution.game
+    from ..cr700_additional_rules.cr708_face_down import turn_face_up
+
     for obj in _objects(resolution, effect):
-        if not obj.face_down:
-            continue
-        obj.face_down = False
-        game.invalidate_characteristics()
-        game.emit(
-            Event(EventKind.TURNED_FACE_UP, object_id=obj.id, player=obj.controller)
-        )
+        turn_face_up(resolution.game, obj)
 
 
 def _do_turn_face_down(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.34b, and CR 712.16 stops a double-faced permanent being turned down."""
-    from ..cr700_additional_rules.cr707_faces import layout_of
+    """CR 708.2a, 708.2b, and CR 712.16 stops a double-faced permanent being turned down."""
+    from ..cr700_additional_rules.cr708_face_down import turn_face_down
+
+    for obj in _objects(resolution, effect):
+        turn_face_down(resolution.game, obj)
+
+
+def _do_manifest(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread.
+
+    Manifest and cloak put each chosen card onto the battlefield face down,
+    one at a time (CR 701.40e, 701.58e); manifest dread looks at two and
+    manifests one. What turned it face down is recorded, because cloak adds
+    ward {2} and both may later be turned up for the card's mana cost.
+    """
+    from ..cr700_additional_rules.cr708_face_down import manifest, manifest_dread
 
     game = resolution.game
-    for obj in _objects(resolution, effect):
-        if obj.face_down:
-            continue
-        from ..kernel.enums import Layout
-
-        if layout_of(obj) in (Layout.TRANSFORM, Layout.MODAL_DFC, Layout.MELD):
-            continue
-        obj.face_down = True
-        game.invalidate_characteristics()
-        game.emit(
-            Event(EventKind.TURNED_FACE_DOWN, object_id=obj.id, player=obj.controller)
-        )
+    how = effect.keywords[0] if effect.keywords else "Manifest"
+    if how.lower() == "manifest dread":
+        manifest_dread(game, resolution.controller)
+        return
+    how = "Cloak" if how.lower() == "cloak" else "Manifest"
+    for obj in list(_objects(resolution, effect)):
+        manifest(game, resolution.controller, obj, how)
 
 
 def _do_phase_out(resolution: Resolution, effect: Effect) -> None:
@@ -2268,6 +2336,7 @@ def _cast_a_copy_without_paying(resolution: Resolution, effect: Effect) -> None:
 
     for original in originals:
         zone = effect.zone if effect.zone is not None else original.zone
+        # CR 112.2a: the copy is owned by the player told to create and cast it.
         copy = game.create_object(
             original.card,
             resolution.controller,
@@ -2463,23 +2532,15 @@ def _do_vote(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_venture(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.46: venture into the dungeon.
+    """CR 701.49: venture into the dungeon, or into [quality] (701.49d).
 
-    Position tracking only. Which dungeon, and what each room does, is card
-    text the parser has not read yet - so the position advances and the event
-    fires, and nothing pretends to know what the room said.
+    The procedure - choosing a dungeon, following an arrow, completing the
+    one whose bottommost room was reached - is ``cr309_dungeons``'s.
     """
-    game = resolution.game
+    from ..cr300_card_types.cr309_dungeons import venture
+
     for player_id in _players(resolution, effect):
-        player = game.player(player_id)
-        player.dungeon_room += 1
-        game.emit(
-            Event(
-                EventKind.DUNGEON_VENTURED,
-                player=player_id,
-                amount=player.dungeon_room,
-            )
-        )
+        venture(resolution.game, player_id, effect.dungeon_quality)
 
 
 def _wants(resolution: Resolution, effect: Effect) -> bool:
@@ -2560,6 +2621,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.COPY_PERMANENT: _do_copy_permanent_effect,
     EffectKind.TURN_FACE_UP: _do_turn_face_up,
     EffectKind.TURN_FACE_DOWN: _do_turn_face_down,
+    EffectKind.MANIFEST: _do_manifest,
     EffectKind.PHASE_OUT: _do_phase_out,
     EffectKind.REGENERATE: _do_regenerate,
     EffectKind.MONSTROSITY: _do_monstrosity,

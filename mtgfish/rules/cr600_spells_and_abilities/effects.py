@@ -225,6 +225,11 @@ class EffectKind(IntEnum):
     VILLAINOUS_CHOICE = 223
     #: CR 701.64a: "harness [this permanent]" - it becomes harnessed.
     HARNESS = 224
+    #: CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread -
+    #: ``keywords[0]`` says which. Put the ``targets`` cards onto the
+    #: battlefield face down, one at a time; for manifest dread, look at the
+    #: top two and manifest one.
+    MANIFEST = 240
 
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the
@@ -445,19 +450,20 @@ class Effect:
     rule: str = ""
     #: For COPY_PERMANENT: which object's copiable values to take (CR 613.2).
     copy_source: int = 0
-    #: For ADD_MANA: produce the colour this permanent's controller chose,
-    #: rather than a colour fixed when the card was parsed.
     #: CR 601.2d: the amount is *divided* among the targets rather than
     #: applied to each of them. Two counters among two creatures is one each,
     #: not two each - which is a different card.
     divided: bool = False
-    colors_chosen: bool = False
     #: For ADD_TYPE: add the creature type this permanent recorded, rather
     #: than one named on the card.
     of_chosen_type: bool = False
     #: For ADD_MANA: produce the colour this permanent's controller chose,
     #: rather than a colour fixed when the card was parsed.
     colors_chosen: bool = False
+    #: For ADD_MANA: "of any color in your commander's color identity" - the
+    #: colours on offer are narrowed to that identity (CR 903.4), and there
+    #: are none without a commander (CR 903.4f).
+    colors_in_commander_identity: bool = False
     #: For ATTACH: what is being attached, when it is not the ability's own
     #: source. "Attach *that Equipment* to target creature" names a different
     #: permanent, and attaching the source instead would move the wrong one.
@@ -465,6 +471,10 @@ class Effect:
     #: For EXTRA_TRIGGER: what must have caused the event, when the card says
     #: so ("if a *land* entering causes..."). None means any cause at all.
     trigger_cause: ObjectFilter | None = None
+    #: For VENTURE: CR 701.49d's "venture into [quality]" - the quality a
+    #: dungeon entered this way must have, e.g. "Undercity". Empty for the
+    #: plain "venture into the dungeon".
+    dungeon_quality: str = ""
 
     #: The oracle text this came from, kept for the replay log and for the
     #: coverage report.

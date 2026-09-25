@@ -29,7 +29,6 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from ..cr100_game_concepts.cr106_mana import ManaCost
 from ..cr200_parts_of_a_card.characteristics import Characteristics
 from ..kernel.enums import CardType, Color, Layer, Zone
 from ..kernel.gameobject import GameObject, ObjectKind
@@ -138,6 +137,7 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
         for i in game.command
         if i in game.objects and game.objects[i].kind is ObjectKind.EMBLEM
     ]
+    scope += _reached_elsewhere(game, scope)
 
     state: dict[ObjectId, Characteristics] = {
         obj.id: game.printed_characteristics(obj) for obj in scope
@@ -166,6 +166,15 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
             _apply_layer(
                 game, layer, state, by_id, by_layer.get(int(layer), ()), grants
             )
+            if layer is Layer.PT_SET:
+                # CR 208.4b: what "base power" means - after the abilities and
+                # effects that define or set power and toughness, before the
+                # ones that only modify them and before counters.
+                for object_id, chars in state.items():
+                    state[object_id] = chars.replace(
+                        base_power_after_setting=chars.power,
+                        base_toughness_after_setting=chars.toughness,
+                    )
             if layer is Layer.ABILITY:
                 # CR 613.6 with CR 611.3b: an ability *added* in this layer
                 # generates a continuous effect of its own, and that effect
@@ -195,6 +204,69 @@ def compute_board(game: Game) -> dict[ObjectId, Characteristics]:
         game.board_in_progress = previous
 
     return state
+
+
+#: Zones whose objects are outside the board unless an effect reaches them.
+_ELSEWHERE = (Zone.GRAVEYARD, Zone.EXILE, Zone.HAND, Zone.LIBRARY)
+
+
+def _reached_elsewhere(game: Game, scope: list[GameObject]) -> list[GameObject]:
+    """Objects outside the battlefield and the stack that an effect reaches.
+
+    CR 611.2c and 611.3a: a continuous effect modifies the characteristics of
+    whatever it says it affects, in whichever zone that is. "Each card exiled
+    this way may be cast for {2}" gives an ability to a card in exile, and a
+    static ability can speak of "creature cards in your graveyard". Such an
+    object was never in scope, so the grant existed and changed nothing.
+
+    Two ways in: a resolved effect whose set was settled on particular objects
+    (CR 611.2c), and a static ability on the board whose filter names another
+    zone. Everything else in those zones stays out, so the board computation
+    costs nothing extra for the games that never do this.
+    """
+    seen = {obj.id for obj in scope}
+    out: list[GameObject] = []
+
+    def admit(obj: GameObject | None) -> None:
+        if obj is None or obj.id in seen or not obj.is_live:
+            return
+        if obj.zone not in _ELSEWHERE:
+            return
+        seen.add(obj.id)
+        out.append(obj)
+
+    zones: set[Zone] = set()
+    for ce in game.continuous_effects:
+        spec = ce.effect.targets
+        if ce.expired or spec is None or ce.effect.kind not in EFFECT_LAYERS:
+            continue
+        if spec.specific:
+            for object_id in spec.specific:
+                obj = game.objects.get(object_id)
+                if obj is not None and (not spec.zones or obj.zone in spec.zones):
+                    admit(obj)
+        else:
+            zones.update(zone for zone in spec.zones if zone in _ELSEWHERE)
+
+    for obj in scope:
+        if obj.zone is not Zone.BATTLEFIELD and obj.kind is not ObjectKind.EMBLEM:
+            continue
+        for ability in game.printed_characteristics(obj).abilities:
+            if ability.kind is not AbilityKind.STATIC or ability.unparsed:
+                continue
+            for effect in _continuous_parts(ability.effects):
+                if effect.targets is not None and effect.kind in EFFECT_LAYERS:
+                    zones.update(z for z in effect.targets.zones if z in _ELSEWHERE)
+
+    for zone in sorted(zones):
+        if zone is Zone.EXILE:
+            for object_id in game.exile:
+                admit(game.objects.get(object_id))
+            continue
+        for player in game.players:
+            for object_id in player.zone(zone):
+                admit(game.objects.get(object_id))
+    return out
 
 
 def _apply_layer(
@@ -970,7 +1042,9 @@ def _apply_copy(
     source_obj = game.objects.get(ce.effect.copy_source)
     if source_obj is None:
         return current
-    return game.printed_characteristics(source_obj)
+    from ..cr700_additional_rules.cr707_faces import copiable_characteristics
+
+    return copiable_characteristics(game, source_obj)
 
 
 def _apply_control(
@@ -1042,29 +1116,19 @@ def _apply_face_down(
     state: dict[ObjectId, Characteristics],
     by_id: dict[ObjectId, GameObject],
 ) -> None:
-    """Layer 1b: face-down permanents (CR 613.2b, 708.2).
+    """Layer 1b: face-down spells and permanents (CR 613.2b, 708.2).
 
     A face-down permanent is a 2/2 creature with no name, no mana cost, no
     types beyond Creature, and no abilities - whatever the card underneath
-    says.
+    says. CR 702.168a and 701.58a list ward {2} as well for a disguised or
+    cloaked one, which is why the answer depends on what turned it face down.
     """
+    from ..cr700_additional_rules.cr708_face_down import face_down_characteristics
 
     for object_id, obj in by_id.items():
         if not obj.face_down:
             continue
-        from ..cr200_parts_of_a_card.cr205_typeline import TypeLine
-
-        state[object_id] = Characteristics(
-            name="",
-            mana_cost=ManaCost(()),
-            has_mana_cost=False,
-            colors=Color.NONE,
-            type_line=TypeLine(types=CardType.CREATURE),
-            abilities=(),
-            power=2,
-            toughness=2,
-            text="",
-        )
+        state[object_id] = face_down_characteristics(obj)
 
 
 #: A counter that modifies power and toughness: "+1/+1", "-2/-1", "+0/+2".
@@ -1185,6 +1249,16 @@ def _apply_cda(game: Game, obj: GameObject, current: Characteristics) -> Charact
 def compute_characteristics(game: Game, obj: GameObject) -> Characteristics:
     """One object's characteristics, from the whole-board computation."""
     if obj.zone not in (Zone.BATTLEFIELD, Zone.STACK):
+        if obj.face_down:
+            # CR 406.3a: a card exiled face down has no characteristics.
+            from ..cr700_additional_rules.cr708_face_down import hidden_characteristics
+
+            return hidden_characteristics()
+        # CR 611.2c, 611.3a: an effect that reaches a card in another zone put it
+        # in the board computation; any other card there is as printed.
+        reached = game.board(obj).get(obj.id)
+        if reached is not None:
+            return reached
         base = game.printed_characteristics(obj)
         return _apply_cda(game, obj, base)
     board = game.board(obj)

@@ -904,6 +904,24 @@ def _lose_life(stream: Stream) -> Effect | None:
     )
 
 
+@clause("take-initiative")
+def _take_initiative(stream: Stream) -> Effect | None:
+    """"You take the initiative." (CR 726). What taking it sets off - the
+    venture into Undercity - is the rules' own triggered ability, not part
+    of the card's effect."""
+    players, targeted = parse_player_filter(stream)
+    if not stream.accept("take", "takes"):
+        return None
+    if not stream.accept_phrase("the initiative"):
+        return None
+    return Effect(
+        EffectKind.TAKE_INITIATIVE,
+        players=players or YOU,
+        is_targeted=targeted,
+        text="take the initiative",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Removal
 # ---------------------------------------------------------------------------
@@ -3157,6 +3175,12 @@ def _single_condition(stream: Stream):
 
     mark = stream.mark()
 
+    from .triggers import designation_condition
+
+    designation = designation_condition(stream)
+    if designation is not None:
+        return designation
+
     about_it = _about_the_remembered(stream)
     if about_it is not None:
         return about_it
@@ -4568,6 +4592,19 @@ def _add_any_colour(stream: Stream) -> Effect | None:
     if not stream.accept("mana"):
         return None
 
+    # CR 903.4: "in your commander's color identity" narrows the menu, and
+    # the engine does the narrowing; the tail is otherwise swallowed with the
+    # other colour tails, which offered Command Tower's owner all five.
+    mark = stream.mark()
+    in_identity = bool(
+        stream.accept_phrase("of any color")
+        and (
+            stream.accept_phrase("in your commander's color identity")
+            or stream.accept_phrase("in your commanders' color identity")
+        )
+    )
+    stream.reset(mark)
+
     colours = _mana_colour_source(stream)
     if colours is None:
         return None
@@ -4577,6 +4614,7 @@ def _add_any_colour(stream: Stream) -> Effect | None:
         players=YOU,
         amount=amount,
         colors=colours,
+        colors_in_commander_identity=in_identity,
         text="add mana of any color",
     )
 

@@ -267,6 +267,20 @@ def holds(
     if kind is ConditionKind.HAS_ENDURING_STORY:
         return controller != NO_PLAYER and game.player(controller).has_enduring_story
 
+    if kind is ConditionKind.COMPLETED_DUNGEON:
+        # CR 309.7: completing is recorded as the dungeon leaves the game, so
+        # this reads the record rather than anything still in a zone.
+        if controller == NO_PLAYER:
+            return False
+        completed = game.player(controller).completed_dungeons
+        if not condition.keyword:
+            return bool(completed)
+        wanted = condition.keyword.lower()
+        return any(name.lower() == wanted for name in completed)
+
+    if kind is ConditionKind.HAS_INITIATIVE:
+        return controller != NO_PLAYER and game.player(controller).has_initiative
+
     if kind is ConditionKind.RING_TEMPTED_TIMES:
         if condition.constraint is None or controller == NO_PLAYER:
             return False

@@ -222,6 +222,7 @@ def _collect_delayed(
             )
             game.objects[source.id] = source
 
+        remembered = delayed.remembered
         if delayed.trigger.subject is not None:
             # CR 603.7: a delayed ability can name what the event must be
             # about - "when the permanent that exiled it leaves the
@@ -235,11 +236,15 @@ def _collect_delayed(
             if subject is None or not matches(
                 game,
                 subject,
-                delayed.trigger.subject,
+                _bind_remembered(delayed.trigger.subject, delayed.remembered),
                 controller=delayed.controller,
                 allow_stale=True,
             ):
                 continue
+            if delayed.trigger.subject.remembered:
+                # CR 603.7c: "when that land dies, return it" - "it" is the
+                # one remembered object the event was about, not all of them.
+                remembered = (subject.id,)
 
         if delayed.trigger.players is not None and event.player != NO_PLAYER:
             from ..kernel.matching import resolve_players
@@ -254,12 +259,29 @@ def _collect_delayed(
             effects=delayed.effects,
             trigger=delayed.trigger,
             text=delayed.trigger.text or "delayed trigger",
+            remembered=remembered,
         )
         found.append((source, ability))
         if not delayed.repeating:
             delayed.expired = True
 
     game.delayed_triggers = [d for d in game.delayed_triggers if not d.expired]
+
+
+def _bind_remembered(spec, remembered: tuple[int, ...]):
+    """A delayed trigger's "that land" as the objects it was created about.
+
+    CR 603.7c: the delayed ability refers to particular objects. A filter that
+    says "whatever was remembered" is pinned to those ids; with none of them it
+    must match nothing, which an empty ``specific`` would not say.
+    """
+    if not spec.remembered:
+        return spec
+    from dataclasses import replace
+
+    from ..kernel.ids import NO_OBJECT
+
+    return replace(spec, remembered=False, specific=tuple(remembered) or (NO_OBJECT,))
 
 
 def _has_the_ability_now(game: Game, obj: GameObject, ability) -> bool:
@@ -301,8 +323,7 @@ def check_state_triggers(game: Game) -> None:
     still_true: set[tuple[int, int]] = set()
 
     for obj in _trigger_sources(game):
-        chars = game.printed_characteristics(obj)
-        for index, ability in enumerate(chars.abilities):
+        for index, ability in enumerate(_trigger_abilities(game, obj)):
             if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
                 continue
             trigger = ability.trigger
@@ -347,7 +368,7 @@ def _watchers(game: Game) -> dict:
 
     index: dict = {}
     for obj in _trigger_sources(game):
-        for ability in game.printed_characteristics(obj).abilities:
+        for ability in _trigger_abilities(game, obj):
             if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
                 continue
             trigger = ability.trigger
@@ -359,6 +380,20 @@ def _watchers(game: Game) -> dict:
     game._trigger_index = index
     game._trigger_index_key = (game.epoch, population)
     return index
+
+
+def _trigger_abilities(game: Game, obj: GameObject) -> tuple:
+    """The abilities that may trigger for this object.
+
+    Its printed abilities - except when it is face down. CR 708.2: a
+    face-down permanent has only what turned it face down lists, so the
+    card's own triggered abilities do not exist (and CR 708.3's "enters"
+    abilities never see it), while a disguised or cloaked one's ward does.
+    CR 406.3a: a card exiled face down has none at all.
+    """
+    if obj.face_down:
+        return game.characteristics(obj).abilities
+    return game.printed_characteristics(obj).abilities
 
 
 def _kinds_watched(trigger) -> frozenset:
@@ -434,6 +469,8 @@ def condition_met(
         return False
     if not _right_phase(trigger, event):
         return False
+    if trigger.expend and event.amount != trigger.expend:
+        return False
     if trigger.to_player and event.object_id != NO_OBJECT:
         # Damage to a permanent carries the permanent's id; damage to a player
         # carries none (CR 120.3).
@@ -487,6 +524,14 @@ def condition_met(
         before = now - max(1, event.amount)
         if not (before < trigger.chapter <= now):
             return False
+
+    # CR 309.4c: a room ability triggers when its owner's venture marker
+    # moves into that room of that dungeon - not a room of the same number on
+    # some other dungeon card.
+    if trigger.room and (
+        event.object_id != source.id or event.amount != trigger.room
+    ):
+        return False
 
     if trigger.ordinal and not _is_nth_this_turn(game, trigger, event):
         return False
@@ -681,6 +726,16 @@ def put_triggers_on_stack(game: Game) -> int:
 
         game.objects[stack_object.id] = stack_object
         game.stack.append(stack_object.id)
+        # Announced as an activated ability's is, so what watches abilities
+        # being put on the stack - a crime (CR 700.13) - sees triggers too.
+        game.emit(
+            Event(
+                EventKind.PUT_ON_STACK,
+                object_id=stack_object.id,
+                player=controller,
+                source=entry.source,
+            )
+        )
         game.log.record(
             game,
             f"Trigger goes on the stack: {ability}",

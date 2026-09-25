@@ -79,6 +79,7 @@ def _one_pass(game: Game) -> bool:
     legend_choices: list[tuple[PlayerId, str, list[GameObject]]] = []
     to_sacrifice: list[GameObject] = []
     speed_starts: list[PlayerId] = []
+    finished_dungeons: list[GameObject] = []
 
     commander_moves = _check_commander_zone_choice(game)
 
@@ -97,6 +98,7 @@ def _one_pass(game: Game) -> bool:
     _check_legend_rule(game, legend_choices)
     _check_world_rule(game, to_graveyard)
     _check_role_rule(game, to_graveyard)
+    _check_dungeons(game, finished_dungeons)
 
     if not any(
         (
@@ -110,6 +112,7 @@ def _one_pass(game: Game) -> bool:
             to_sacrifice,
             speed_starts,
             commander_moves,
+            finished_dungeons,
         )
     ):
         return False
@@ -180,6 +183,12 @@ def _one_pass(game: Game) -> bool:
 
     for controller, name, group in legend_choices:
         _resolve_legend_rule(game, controller, name, group)
+
+    if finished_dungeons:
+        from ..cr300_card_types.cr309_dungeons import complete_dungeon
+
+        for obj in finished_dungeons:
+            complete_dungeon(game, obj)
 
     for player_id, reason in losers:
         game.player_loses(player_id, reason)
@@ -457,6 +466,16 @@ def _is_source_on_the_stack(game: Game, obj: GameObject) -> bool:
         getattr(pending, "source", NO_OBJECT) == obj.id
         for pending in getattr(game, "pending_triggers", ())
     )
+
+
+def _check_dungeons(game: Game, finished: list[GameObject]) -> None:
+    """CR 704.5t: a dungeon whose last room has been reached, and whose last
+    room ability has left the stack, is removed and completed (CR 309.6)."""
+    if not any(player.dungeon for player in game.players):
+        return
+    from ..cr300_card_types.cr309_dungeons import finished_dungeons
+
+    finished.extend(finished_dungeons(game))
 
 
 def _saga_is_finished(game: Game, obj: GameObject, chars) -> bool:
