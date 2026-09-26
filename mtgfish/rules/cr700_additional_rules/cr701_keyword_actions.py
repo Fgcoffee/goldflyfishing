@@ -61,6 +61,10 @@ class ActionInstance:
     #: word - "create a 1/1 white Soldier" - so the parser supplies it and the
     #: action only has to place it.
     token: TokenSpec | None = None
+    #: The sentences the action wraps, where it wraps any: the two options of
+    #: a villainous choice (CR 701.55a). The parser reads them; the action
+    #: only arranges them.
+    options: tuple[Effect, ...] = ()
     text: str = ""
 
     @property
@@ -338,23 +342,27 @@ def _populate(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Manifest", "Manifest dread", "Cloak")
 def _manifest(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.40: put the top card onto the battlefield face down as a 2/2.
+    """CR 701.40a, 701.58a, 701.62a: put cards onto the battlefield face down.
 
-    The face-down part is what the engine already models in layer 1b, so this
-    is a zone change plus a status change rather than anything new.
+    One opcode, because the order matters: CR 708.3 turns the card face down
+    *before* it enters, so its enters abilities never see it face up. Put
+    onto the battlefield first and turned face down after, a manifested card
+    triggered its own enters abilities - and the "turn face down" that
+    followed reached every creature its controller had.
+
+    The cards are the top of the player's library unless the sentence names
+    others ("cloak a card from your hand"); manifest dread chooses its own.
     """
-    top = ObjectFilter(zones=frozenset({Zone.LIBRARY}), count=_amount(instance))
+    cards = instance.filter or ObjectFilter(
+        zones=frozenset({Zone.LIBRARY}), count=_amount(instance)
+    )
     return (
         Effect(
-            EffectKind.PUT_ONTO_BATTLEFIELD,
-            targets=top,
+            EffectKind.MANIFEST,
+            targets=cards,
+            amount=_amount(instance),
+            keywords=(instance.name,),
             text=instance.text or instance.name,
-        ),
-        Effect(
-            EffectKind.TURN_FACE_DOWN,
-            targets=ObjectFilter(
-                types_all=CardType.CREATURE, controller=ControllerRelation.YOU
-            ),
         ),
     )
 
@@ -364,7 +372,22 @@ def _manifest(instance: ActionInstance) -> tuple[Effect, ...]:
 # ---------------------------------------------------------------------------
 
 
-@register("Learn", "Seek", "Discover", "Draft from a spellbook")
+@register("Discover")
+def _discover(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.57a: exile until a nonland card with mana value N or less; cast
+    it free or put it into your hand; the rest to the bottom at random. It
+    is not a search - the cards are exiled, and in order."""
+    return (
+        Effect(
+            EffectKind.DISCOVER,
+            players=YOU,
+            amount=_amount(instance),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Learn", "Seek", "Draft from a spellbook")
 def _search(instance: ActionInstance) -> tuple[Effect, ...]:
     return (
         Effect(
@@ -778,15 +801,14 @@ def _behold(instance: ActionInstance) -> tuple[Effect, ...]:
 
 @register("Harness")
 def _harness(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.64: tap an untapped permanent you control for its harness ability.
-
-    The permanent taps; what that buys is printed on the card.
-    """
+    """CR 701.64a: "harness [this permanent]" - if it isn't harnessed, it
+    becomes harnessed. A designation, not a tap: it was built as "tap an
+    untapped permanent you control", which tapped something and marked
+    nothing, so no ∞ ability ever turned on."""
     return (
         Effect(
-            EffectKind.TAP,
-            targets=instance.filter
-            or ObjectFilter(controller=ControllerRelation.YOU, tapped=False),
+            EffectKind.HARNESS,
+            targets=instance.filter,
             text=instance.text or instance.name,
         ),
     )
@@ -811,9 +833,6 @@ OUT_OF_FORMAT_ACTIONS = (
     "Abandon",            # Archenemy schemes
     "Set in motion",      # Archenemy schemes
     "Planeswalk",         # Planechase
-    # CR 505.5: the roll happens in the precombat main phase and needs a die
-    # plus every Attraction's lit numbers, neither of which is modelled.
-    "Roll to Visit Your Attractions",
 )
 
 
@@ -822,14 +841,11 @@ def _out_of_format_action(instance: ActionInstance) -> tuple[Effect, ...]:
     return (Effect(EffectKind.UNPARSED, text=instance.text or instance.name),)
 
 
-#: Actions this registry can name and nothing else can reach. The first four
-#: appear nowhere in the Comprehensive Rules and on no Commander-legal card -
-#: there is no rule to implement, only a word. "Prepared" is the odd one out
-#: and is listed here rather than built: CR 722.3a makes it a *designation* a
-#: permanent gains, not a verb a sentence performs, so it belongs with the
-#: designations (CR 722) and not in an effect expansion.
+#: Actions this registry can name and nothing else can reach. They appear
+#: nowhere in the Comprehensive Rules and on no Commander-legal card - there
+#: is no rule to implement, only a word.
 NOT_YET_MODELLED_ACTIONS = (
-    "Assimilate", "Face a dilemma", "Heist", "Incorporate", "Prepared",
+    "Assimilate", "Face a dilemma", "Heist", "Incorporate",
 )
 
 
@@ -1092,18 +1108,90 @@ def _waterbend(instance: ActionInstance) -> tuple[Effect, ...]:
     )
 
 
-#: CR 717.2: an Attraction deck is a supplementary deck that lives in the
-#: command zone, so its cards are found there rather than in a library.
-YOUR_ATTRACTION_DECK = ObjectFilter(
-    subtypes_any=("Attraction",),
-    # Yours by both readings: CR 717.2 makes the deck the player's own, and a
-    # card sitting in the command zone is controlled by whoever owns it, so
-    # the control relation is the one the matcher can actually answer.
-    controller=ControllerRelation.YOU,
-    owner=ControllerRelation.YOU,
-    zones=frozenset({Zone.COMMAND}),
-    count=Value.of(1),
-)
+@register("Face a villainous choice")
+def _face_a_villainous_choice(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.55a: the named players each choose one option and perform it.
+    Inside an option, "that player" is ``PlayerScope.THAT_PLAYER``."""
+    return (
+        Effect(
+            EffectKind.VILLAINOUS_CHOICE,
+            players=instance.players or EACH_OPPONENT,
+            children=instance.options,
+            text=instance.text or "faces a villainous choice",
+        ),
+    )
+
+
+@register("The Ring tempts you")
+def _the_ring_tempts_you(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.54: the emblem, the Ring-bearer and the count, all in
+    ``cr701_ring``."""
+    return (
+        Effect(
+            EffectKind.RING_TEMPTS,
+            players=instance.players or YOU,
+            text=instance.text or "the Ring tempts you",
+        ),
+    )
+
+
+@register("Recruit")
+def _recruit(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.70a: draw a card, then discard a card; if the discarded card was
+    a nonland card, create a 1/1 white Human Soldier creature token."""
+    from ..cr600_spells_and_abilities.effects import TokenSpec
+    from ..kernel.query import Condition, ConditionKind, ObjectFilter
+
+    soldier = TokenSpec(
+        types=CardType.CREATURE,
+        subtypes=("Human", "Soldier"),
+        colors=Color.WHITE,
+        power=Value.of(1),
+        toughness=Value.of(1),
+    )
+    return (
+        Effect(EffectKind.DRAW, players=YOU, amount=Value.of(1), text="draw a card"),
+        Effect(EffectKind.DISCARD, players=YOU, amount=Value.of(1), text="discard a card"),
+        Effect(
+            EffectKind.CONDITIONAL,
+            condition=Condition(
+                kind=ConditionKind.REMEMBERED_MATCHES,
+                # The discarded card, as it was in hand - anywhere, since it
+                # is in the graveyard by the time this is asked.
+                filter=ObjectFilter(types_none=CardType.LAND, zones=frozenset()),
+                text="if you discarded a nonland card this way",
+            ),
+            children=(
+                Effect(
+                    EffectKind.CREATE_TOKEN,
+                    token=soldier,
+                    amount=Value.of(1),
+                    players=YOU,
+                    text="create a 1/1 white Human Soldier creature token",
+                ),
+            ),
+        ),
+    )
+
+
+@register("Prepared")
+def _prepared(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 722.3a: "becomes prepared" / "enters prepared".
+
+    Prepared is a designation rather than a verb, so the whole behaviour lives
+    in ``cr722_preparation``: the copy of the prepare spell in exile, its
+    exception to CR 704.5e, and the permanent unpreparing as the copy is cast.
+    The expansion is the effect that grants it - to this permanent unless the
+    sentence names another. "Enters prepared" is the same effect read as a
+    self-entry replacement (CR 614.1c), which ``cr614_replacement`` applies.
+    """
+    return (
+        Effect(
+            EffectKind.BECOME_PREPARED,
+            targets=instance.filter,
+            text=instance.text or "becomes prepared",
+        ),
+    )
 
 
 @register("Open an Attraction")
@@ -1111,20 +1199,33 @@ def _open_an_attraction(instance: ActionInstance) -> tuple[Effect, ...]:
     """CR 701.51b: take the top card of your Attraction deck, turn it face up,
     and put it onto the battlefield under your control.
 
-    A zone change out of the command zone, which is where CR 717.2 keeps the
-    Attraction deck. Face up is the default for anything entering, so nothing
-    has to say it.
-
-    CR 701.51a: a player may only do this in a game where they are playing with
-    an Attraction deck. No deck this engine builds has one, so the filter finds
-    nothing and the action does nothing - which is the outcome the rule
-    prescribes rather than a gap this expansion papers over.
+    The deck is a pile in the command zone (CR 717.2), and which card is on
+    top of it is ``cr717_attractions``'s to say, so this is an opcode of its
+    own rather than a zone change with a filter. "Open two Attractions" is
+    the amount. CR 701.51a: a player with no Attraction deck has no top card,
+    and opens nothing.
     """
     return (
         Effect(
-            EffectKind.PUT_ONTO_BATTLEFIELD,
-            targets=YOUR_ATTRACTION_DECK,
-            from_zone=Zone.COMMAND,
+            EffectKind.OPEN_ATTRACTION,
+            amount=_amount(instance),
+            players=instance.players or YOU,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Roll to Visit Your Attractions")
+def _roll_to_visit(instance: ActionInstance) -> tuple[Effect, ...]:
+    """CR 701.52a: roll a six-sided die; each Attraction you control with that
+    number lit up is visited, and its visit ability triggers (CR 702.159a).
+
+    The same procedure CR 505.5 runs as a turn-based action, which is why it
+    lives in ``cr717_attractions`` and this only names it.
+    """
+    return (
+        Effect(
+            EffectKind.ROLL_TO_VISIT,
             players=instance.players or YOU,
             text=instance.text or instance.name,
         ),

@@ -77,6 +77,12 @@ class GameObject:
     tapped: bool = False
     flipped: bool = False
     face_down: bool = False
+    #: CR 708.2, 708.6: what made this object face down - "Morph", "Disguise",
+    #: "Manifest", "Cloak" and so on, or empty for an effect that listed no
+    #: characteristics. It decides what the face-down object is (disguise and
+    #: cloak add ward {2}) and how it may be turned face up again (CR 701.40b
+    #: only for a manifested or cloaked permanent).
+    face_down_by: str = ""
     phased_out: bool = False
 
     # -- battlefield state --------------------------------------------------
@@ -194,6 +200,16 @@ class GameObject:
     #: cast for, if any - what "if its sneak cost was paid" asks. Empty for a
     #: spell cast for its mana cost.
     alternative_cost_paid: str = ""
+    #: CR 601.2b: the alternative cost announced for this spell when the card
+    #: it was cast from offered it through a granted ability. The grant was
+    #: settled on that card, and CR 400.7 leaves it behind as the spell moves.
+    alternative_cost_offered: object | None = None
+    #: CR 722.3c: for the copy of a prepare spell waiting in exile, the
+    #: prepared permanent it belongs to.
+    prepare_copy_of: ObjectId = NO_OBJECT
+    #: CR 701.64b: the harnessed designation. It lasts until the permanent
+    #: leaves the battlefield, which CR 400.7 gives by making a new object.
+    harnessed: bool = False
     #: CR 702.190b: a spell whose alternative cost puts it onto the battlefield
     #: tapped and attacking, and the objects paid for it, whose attack it
     #: joins (CR 506.3a).
@@ -205,6 +221,15 @@ class GameObject:
 
     # -- Commander (CR 903.3) -----------------------------------------------
     is_commander: bool = False
+
+    # -- Attractions (CR 717) -----------------------------------------------
+    #: Which pile of the command zone this card sits in, for the cards CR
+    #: 717.2 and 717.6a keep there apart from commanders and emblems: the
+    #: owner's Attraction deck or their junkyard. Neither is a zone of its
+    #: own (CR 717.6a says so of the junkyard), so the card's zone stays
+    #: COMMAND and this names the pile. A zone change builds a new object
+    #: with it empty, which is CR 400.7 doing the bookkeeping.
+    command_pile: str = ""
 
     # -- caching ------------------------------------------------------------
     #: Characteristics after the layer system has run. Invalidated whenever the

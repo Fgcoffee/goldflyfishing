@@ -97,6 +97,13 @@ class TriggerCondition:
     chapter: int = 0
     is_state_trigger: bool = False
 
+    #: CR 309.4c: for a dungeon's room ability, the room's position on the
+    #: dungeon counted from 1 at the topmost room. Every room shares one
+    #: trigger condition - the owner's venture marker moving into *this*
+    #: room - so the room is the whole of what tells them apart. Zero for
+    #: every other trigger.
+    room: int = 0
+
     #: Which counter a COUNTER_ADDED / COUNTER_REMOVED trigger cares about.
     #: Empty means any kind. "When the last defense counter is removed"
     #: (CR 310.12b) is about defense counters and nothing else, and without
@@ -105,6 +112,23 @@ class TriggerCondition:
 
     #: CR 603.2f: some triggers fire at most once in a turn.
     once_each_turn: bool = False
+
+    #: For PHASE_BEGAN: which phases, as ``Phase`` values. "At the beginning
+    #: of combat" (CR 507.1) and "at the beginning of your precombat main
+    #: phase" (CR 505.1a) share the event and differ only here. Empty means
+    #: any phase.
+    phases: frozenset[int] = frozenset()
+    #: For STEP_BEGAN: which steps, as ``Step`` values - "at end of combat" is
+    #: the end of combat step beginning (CR 511.2). Empty means any step.
+    steps: frozenset[int] = frozenset()
+
+    #: For damage events: the damage must have been dealt to a player, not to
+    #: a permanent. "Deals combat damage to a player" names its recipient, and
+    #: combat damage to a blocking creature is combat damage too.
+    to_player: bool = False
+
+    #: CR 700.14: "whenever you expend N" - the EXPENDED event for total N.
+    expend: int = 0
 
     #: Set for abilities that trigger on the source leaving the battlefield, so
     #: the engine knows to evaluate them against last-known information
@@ -187,6 +211,10 @@ class Ability:
     #: True when the parser could not fully read the ability. Such an ability
     #: is registered so it is visible in the coverage report, but never fires.
     unparsed: bool = False
+    #: CR 603.7c: a delayed triggered ability made by a resolving effect
+    #: refers to the objects that effect acted on, and carries them from the
+    #: moment it triggers to its own resolution, where "it" still means them.
+    remembered: tuple[int, ...] = ()
 
     # -- construction helpers ----------------------------------------------
 

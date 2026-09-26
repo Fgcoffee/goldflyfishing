@@ -345,7 +345,13 @@ KEYWORD_ABILITIES: dict[str, KeywordSpec] = _build(
             "Choose a background",
             "Doctor's companion",
         ],
-        (Category.DECK_BUILDING, Status.DECLARED, ""): ["Companion"],
+        (
+            Category.DECK_BUILDING,
+            Status.IMPLEMENTED,
+            "revealed before the game (103.2b) and brought into hand by the "
+            "{3} special action (116.2g); the card-specific condition is not "
+            "checked",
+        ): ["Companion"],
     }
 )
 
@@ -442,6 +448,39 @@ KEYWORD_ACTIONS: dict[str, KeywordSpec] = _build(
 )
 
 
+#: Keyword actions the Comprehensive Rules define that Scryfall's keyword
+#: catalogs do not list - it tags neither on the cards that use them, so a
+#: registry built only from the catalogs never learned they existed, and 70
+#: Commander-legal cards used a rule that was reported as nothing at all.
+#: Each carries the rule that defines it, and ``test_keywords`` checks that
+#: the rule is really in the CR.
+CR_ONLY_ACTIONS: dict[str, str] = {
+    "The Ring tempts you": "701.54",
+    "Recruit": "701.70",
+    "Face a villainous choice": "701.55",
+}
+
+#: The same for keyword abilities.
+CR_ONLY_ABILITIES: dict[str, str] = {
+    "Storied": "702.195",
+    "∞": "702.186",
+    "Visit": "702.159",
+}
+
+KEYWORD_ACTIONS.update(
+    {
+        name.lower(): KeywordSpec(name, Category.OTHER, Status.IMPLEMENTED, rule)
+        for name, rule in CR_ONLY_ACTIONS.items()
+    }
+)
+KEYWORD_ABILITIES.update(
+    {
+        name.lower(): KeywordSpec(name, Category.STATIC, Status.IMPLEMENTED, rule)
+        for name, rule in CR_ONLY_ABILITIES.items()
+    }
+)
+
+
 # ---------------------------------------------------------------------------
 # Ability words (CR 207.2c)
 # ---------------------------------------------------------------------------
@@ -499,6 +538,8 @@ ENGINE_READS = frozenset(
         "Changeling", "Read Ahead",
         # -- speed, read by the CR 704.5aa state-based action -------------
         "Start your engines!",
+        # -- enduring story, read beside the state-based actions ----------
+        "Storied",
     }
 )
 

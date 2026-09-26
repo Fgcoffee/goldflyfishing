@@ -21,6 +21,10 @@ from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
 from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
 from mtgfish.rules.cr600_spells_and_abilities.resolve import Resolution, execute
 from mtgfish.rules.cr700_additional_rules.cr701_keyword_actions import build
+from mtgfish.rules.cr700_additional_rules.cr717_attractions import (
+    attraction_deck,
+    set_up_attraction_deck,
+)
 from mtgfish.rules.kernel.enums import CardType, Zone
 from mtgfish.rules.kernel.events import EventKind
 from mtgfish.rules.kernel.ids import PlayerId
@@ -142,12 +146,9 @@ def test_the_return_fires_when_the_earthbent_land_dies(board):
     assert len(board.game.stack) == 1
 
 
-@pytest.mark.xfail(
-    reason="a delayed trigger does not carry what the effect that created it "
-    "remembered (resolve.create_delayed_trigger never fills "
-    "DelayedTrigger.remembered), so 'return it' has no 'it' to return",
-)
 def test_the_earthbent_land_comes_back_tapped(board):
+    """CR 603.7c: the delayed ability remembers the land it was made about,
+    and "return it" follows that land across the move that triggered it."""
     from mtgfish.rules.cr100_game_concepts import actions
 
     land = board.play("Forest", controller=0)
@@ -279,13 +280,8 @@ def test_airbend_grants_it_to_cards_and_not_to_tokens():
     assert grant.targets.remembered, "it is the objects just exiled"
 
 
-@pytest.mark.xfail(
-    reason="continuous effects are not computed outside the battlefield and "
-    "the stack (cr613_layers.compute_characteristics), and casting legality "
-    "reads printed alternative costs (kernel/legality), so a grant made to a "
-    "card in exile cannot reach it yet",
-)
 def test_airbend_makes_the_exiled_card_castable_for_two(board):
+    """CR 611.2c: the grant was settled on the card in exile and reaches it."""
     bears = board.play("Grizzly Bears", controller=0)
     run(board, build("Airbend", filter=ObjectFilter(specific=(bears.id,))))
 
@@ -358,7 +354,8 @@ def test_open_an_attraction_puts_one_onto_the_battlefield(board):
     control. CR 717.2 keeps that deck in the command zone, which is where this
     one is placed."""
     card = board.db.lookup("Push Your Luck")
-    attraction = board.game.create_object(card, PlayerId(0), Zone.COMMAND)
+    set_up_attraction_deck(board.game, PlayerId(0), [card])
+    (attraction,) = attraction_deck(board.game, PlayerId(0))
     board.refresh()
 
     run(board, build("Open an Attraction"))
@@ -383,7 +380,8 @@ def test_open_an_attraction_does_nothing_without_an_attraction_deck(board):
 def test_open_an_attraction_does_not_take_someone_elses(board):
     """A control on the ownership half of CR 701.51b: it is *your* deck."""
     card = board.db.lookup("Push Your Luck")
-    theirs = board.game.create_object(card, PlayerId(1), Zone.COMMAND)
+    set_up_attraction_deck(board.game, PlayerId(1), [card])
+    (theirs,) = attraction_deck(board.game, PlayerId(1))
     board.refresh()
 
     run(board, build("Open an Attraction"), controller=0)

@@ -189,6 +189,58 @@ def test_undying_triggers_on_death(board):
     assert game.pending_triggers
 
 
+def _creature_named(board, name: str):
+    game = board.game
+    return [
+        game.objects[oid]
+        for oid in game.battlefield
+        if game.printed_characteristics(game.objects[oid]).name == name
+    ]
+
+
+def test_persist_returns_a_creature_without_a_minus_counter(board):
+    """CR 702.79a: it comes back, with a -1/-1 counter."""
+    game = board.game
+    board.scripts.add("Grizzly Bears", *kw("Persist"))
+    bears = board.play("Grizzly Bears", controller=0)
+
+    destroy(game, bears)
+    board.settle()
+    board.resolve_stack()
+
+    (back,) = _creature_named(board, "Grizzly Bears")
+    assert back.counter_count("-1/-1") == 1
+
+
+def test_persist_does_not_return_a_creature_that_had_a_minus_counter(board):
+    """CR 702.79a: "if it had no -1/-1 counters on it" - asked of the creature
+    as it last existed on the battlefield (CR 603.10a)."""
+    game = board.game
+    board.scripts.add("Grizzly Bears", *kw("Persist"))
+    bears = board.play("Grizzly Bears", controller=0)
+    bears.add_counters("-1/-1", 1)
+
+    destroy(game, bears)
+    board.settle()
+    board.resolve_stack()
+
+    assert not _creature_named(board, "Grizzly Bears")
+
+
+def test_undying_does_not_return_a_creature_that_had_a_plus_counter(board):
+    """CR 702.93a, the mirror image."""
+    game = board.game
+    board.scripts.add("Grizzly Bears", *kw("Undying"))
+    bears = board.play("Grizzly Bears", controller=0)
+    bears.add_counters("+1/+1", 1)
+
+    destroy(game, bears)
+    board.settle()
+    board.resolve_stack()
+
+    assert not _creature_named(board, "Grizzly Bears")
+
+
 def test_afterlife_makes_the_right_number_of_tokens(board):
     abilities = kw("Afterlife", amount=2)
     effect = abilities[0].effects[0]
@@ -369,3 +421,18 @@ def test_evolve_triggers_on_a_creature_entering(board):
         Event(EventKind.ENTERS_BATTLEFIELD, object_id=newcomer.id, player=PlayerId(0))
     )
     assert game.pending_triggers
+
+
+def test_a_persisted_creature_does_not_persist_a_second_time(board):
+    """The counter it came back with is what stops the loop (CR 702.79a)."""
+    game = board.game
+    board.scripts.add("Grizzly Bears", *kw("Persist"))
+    board.play("Grizzly Bears", controller=0)
+
+    for _ in range(2):
+        (bears,) = _creature_named(board, "Grizzly Bears")
+        destroy(game, bears)
+        board.settle()
+        board.resolve_stack()
+
+    assert not _creature_named(board, "Grizzly Bears")

@@ -31,6 +31,7 @@ from ..kernel.enums import CardType, LossReason, Supertype, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject, ObjectKind
 from ..kernel.ids import NO_OBJECT, NO_PLAYER, PlayerId
+from .cr722_preparation import keeps_its_prepare_copy
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
@@ -78,9 +79,11 @@ def _one_pass(game: Game) -> bool:
     legend_choices: list[tuple[PlayerId, str, list[GameObject]]] = []
     to_sacrifice: list[GameObject] = []
     speed_starts: list[PlayerId] = []
+    finished_dungeons: list[GameObject] = []
 
     commander_moves = _check_commander_zone_choice(game)
 
+    _grant_enduring_stories(game)
     _check_players(game, losers)
     _check_permanents(
         game,
@@ -95,6 +98,7 @@ def _one_pass(game: Game) -> bool:
     _check_legend_rule(game, legend_choices)
     _check_world_rule(game, to_graveyard)
     _check_role_rule(game, to_graveyard)
+    _check_dungeons(game, finished_dungeons)
 
     if not any(
         (
@@ -108,6 +112,7 @@ def _one_pass(game: Game) -> bool:
             to_sacrifice,
             speed_starts,
             commander_moves,
+            finished_dungeons,
         )
     ):
         return False
@@ -178,6 +183,12 @@ def _one_pass(game: Game) -> bool:
 
     for controller, name, group in legend_choices:
         _resolve_legend_rule(game, controller, name, group)
+
+    if finished_dungeons:
+        from ..cr300_card_types.cr309_dungeons import complete_dungeon
+
+        for obj in finished_dungeons:
+            complete_dungeon(game, obj)
 
     for player_id, reason in losers:
         game.player_loses(player_id, reason)
@@ -457,6 +468,16 @@ def _is_source_on_the_stack(game: Game, obj: GameObject) -> bool:
     )
 
 
+def _check_dungeons(game: Game, finished: list[GameObject]) -> None:
+    """CR 704.5t: a dungeon whose last room has been reached, and whose last
+    room ability has left the stack, is removed and completed (CR 309.6)."""
+    if not any(player.dungeon for player in game.players):
+        return
+    from ..cr300_card_types.cr309_dungeons import finished_dungeons
+
+    finished.extend(finished_dungeons(game))
+
+
 def _saga_is_finished(game: Game, obj: GameObject, chars) -> bool:
     """CR 714.4: final chapter reached, and no chapter ability waiting."""
     final = _final_chapter(chars)
@@ -480,7 +501,15 @@ def _final_chapter(chars) -> int | None:
 def _check_ceased(game: Game, to_cease: list[GameObject]) -> None:
     for obj in list(game.objects.values()):
         # CR 704.5d: a token that has left the battlefield.
-        if obj.kind is ObjectKind.TOKEN and obj.zone is not Zone.BATTLEFIELD or obj.kind is ObjectKind.COPY and obj.zone is not Zone.STACK:
+        # CR 704.5e: a copy of a card outside the stack and the battlefield -
+        # save a prepared permanent's copy in exile (CR 722.3c).
+        if obj.kind is ObjectKind.TOKEN and obj.zone is not Zone.BATTLEFIELD:
+            to_cease.append(obj)
+        elif (
+            obj.kind is ObjectKind.COPY
+            and obj.zone not in (Zone.STACK, Zone.BATTLEFIELD)
+            and not keeps_its_prepare_copy(game, obj)
+        ):
             to_cease.append(obj)
 
 
@@ -505,6 +534,41 @@ def _check_speed(game: Game, speed_starts: list[PlayerId]) -> None:
             continue
         if game.characteristics(obj).has_keyword("Start your engines!"):
             speed_starts.append(obj.controller)
+
+
+def _grant_enduring_stories(game: Game) -> None:
+    """CR 702.195a: storied - "any time you control three or more permanents
+    that are artifacts, Sagas, and/or legendary", you have an enduring story
+    for the rest of the game.
+
+    Not a state-based action, but checked "any time" in the same way and
+    with the same effect: nothing uses the stack, and it applies however the
+    permanents arrived. It is asked here, where the game already looks at
+    the whole board whenever a player would receive priority. CR 702.195c
+    has continuous effects reapplied before triggers are checked, which the
+    characteristics invalidation below gives.
+    """
+    from ..kernel.enums import Supertype
+
+    for player in game.players:
+        if player.has_enduring_story:
+            continue
+        permanents = game.permanents(player.id)
+        if not any(game.characteristics(o).has_keyword("Storied") for o in permanents):
+            continue
+        storied = 0
+        for obj in permanents:
+            chars = game.characteristics(obj)
+            if (
+                chars.has_type(CardType.ARTIFACT)
+                or chars.has_supertype(Supertype.LEGENDARY)
+                or "Saga" in chars.type_line.subtypes
+            ):
+                storied += 1
+        if storied >= 3:
+            player.has_enduring_story = True
+            game.invalidate_characteristics()
+            game.log.record(game, f"{player.name} has an enduring story", kind="designation")
 
 
 def _check_legend_rule(

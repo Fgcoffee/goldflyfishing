@@ -275,6 +275,61 @@ The engine supports these; the parser does not yet produce them:
   an enters trigger. An empty `keyword` asks whether any alternative cost was
   paid. "If her sneak cost was paid *this turn*" (Karai) is a different
   question and is not covered.
+- **"This creature enters prepared." / "it becomes prepared"** (48 cards) -
+  a static ability holding `Effect(EffectKind.BECOME_PREPARED, text="enters
+  prepared")` for the first (the text must start with "enters ", which is how
+  self-entry replacements are recognised), and a plain `BECOME_PREPARED`
+  effect for the second. The prepare spell itself is the card's second face;
+  parse its text as that face's spell ability like any other card.
+- **"[A player] faces a villainous choice - [A], or [B]"** (14 cards) -
+  `Effect(EffectKind.VILLAINOUS_CHOICE, players=<who faces>, children=(A, B))`.
+  Inside an option, "that player" is `PlayerFilter(PlayerScope.THAT_PLAYER)`,
+  and "you" is still the card's controller. The keyword-action builder takes
+  the two options as `ActionInstance.options`.
+- **"∞ - [ability]"** (CR 702.186) - read the ability after the dash as usual
+  and pass it as `KeywordInstance("∞", abilities=(ability,))`. The builder
+  makes it work only while the permanent is harnessed. "Harness [this]" is
+  the keyword action `Harness` - a designation, not a tap.
+- **"If you have an enduring story" / "as long as you have"** -
+  `Condition(kind=ConditionKind.HAS_ENDURING_STORY)`. Storied itself is the
+  keyword `Storied`.
+- **"Activate/it has [ability] as long as [condition]" on a triggered
+  ability** - put the condition in `Ability.static_condition`; a triggered
+  ability then cannot trigger while it is false.
+- **"Each opponent sacrifices a creature"** already parses as `SACRIFICE`
+  with `players` set; each named player now sacrifices from their own
+  permanents, so keep emitting that shape.
+- **"Of any color in your commander's color identity"** (Command Tower and
+  friends) - the parser now sets `Effect.colors_in_commander_identity`; the
+  engine narrows the colours (CR 903.4) and produces none without a
+  commander (CR 903.4f). A payment planner should ask
+  `resolve.mana_color_choices` rather than read `Effect.colors`.
+- **"The same name as ..."** - Guardian Project ("if it doesn't have the same
+  name as another creature you control or a creature card in your
+  graveyard") and Maelstrom Pulse ("and all other permanents with the same
+  name as that permanent") do not parse, so both are inert. The engine has
+  `named`/`of_chosen_name` filters but nothing that compares names with
+  another object; that needs a filter referring to a remembered or
+  triggering object, designed together with the grammar.
+- **"As this creature enters [or is turned face up], it becomes your choice
+  of ..."** (CR 208.2b; Primal Clay, Primal Plasma, Corrupted Shapeshifter,
+  Aquamorph Entity) - a static ability holding
+  `Effect(EffectKind.ENTERS_AS_CHOICE, children=(option, ...))`, each option
+  the continuous effects that make it that choice (SET_PT, GRANT_ABILITY,
+  ADD_TYPE aimed at the source), with `also_when_turned_face_up=True` for
+  the face-up form.
+- **"With base power N"** (CR 208.4b) - `ObjectFilter(base_power=...)` /
+  `base_toughness=...`, the value after setting effects and before pumps and
+  counters.
+- **CR 700 terms** (about 165 lines of card text) - the engine now tracks:
+  "your party" (`ValueKind.PARTY_SIZE`), "modified" (`ObjectFilter(modified=True)`),
+  "that was activated this turn" (`ObjectFilter(activated_this_turn=True)`),
+  "descended" (`EventKind.DESCENDED` - "if you descended this turn" and "the
+  number of times you descended" are the ordinary event-this-turn condition
+  and event count), "outlaw" and "worthy" (`cr700_general.outlaw_filter()` /
+  `worthy_filter()`), "commit a crime" (`EventKind.CRIME_COMMITTED`, a trigger
+  event and an event-this-turn condition) and "whenever you expend N"
+  (`EventKind.EXPENDED` with `TriggerCondition.expend=N`).
 - **An alternative cost's window and timing.** `AlternativeCost.condition` is
   checked before the cast is offered, and `instant_speed=True` lifts the
   spell to instant timing inside it; otherwise the spell keeps its own

@@ -52,14 +52,40 @@ def _entries(rows: dict[Status, dict[str, tuple[str, str]]]) -> dict[str, Entry]
 COVERAGE: dict[str, Entry] = _entries(
     {
         Status.IMPLEMENTED: {
+            "308": (
+                "rules/cr200_parts_of_a_card/cr205_typeline.py",
+                "Kindred: the other card type decides casting and resolving "
+                "(308.1), and the subtypes are creature types filters match "
+                "(308.2) - tested in test_cr308_kindred",
+            ),
+            "700": (
+                "rules/cr700_additional_rules/cr700_general.py",
+                "modes (700.2), 'dies' (700.4), devotion (700.5), historic "
+                "(700.6), and the tracked terms: party (700.8), modified "
+                "(700.9), activated this turn (700.10), descended (700.11), "
+                "outlaw (700.12), crime (700.13), expend (700.14), worthy "
+                "(700.16)",
+            ),
             # -- 100s -------------------------------------------------------
             "100": ("rules/cr100_game_concepts/cr103_setup.py", "multiplayer game setup"),
             "102": ("rules/cr100_game_concepts/player.py", ""),
-            "103": ("rules/cr100_game_concepts/cr103_setup.py", "turn order, opening hands, London mulligan"),
+            "103": ("rules/cr100_game_concepts/cr103_setup.py", "turn order, opening hands, London mulligan, and 103.2b revealing a companion"),
             "104": ("rules/kernel/game.py", "win and loss conditions"),
             "105": ("rules/kernel/enums.py", "colors as a bitmask"),
             "106": ("rules/cr100_game_concepts/cr106_mana.py", "mana types, pools, emptying"),
             "109": ("rules/kernel/gameobject.py", "objects"),
+            "108": (
+                "rules/kernel/game.py",
+                "cards; 108.3 owner is the player whose deck it started in, a "
+                "token's owner is its creator (111.2), a spell copy's the player "
+                "who put it on the stack (707.10, 112.2a), and 400.3 sends a "
+                "card to its owner's hand, library or graveyard. A card brought "
+                "in from outside the game is owned by the player who brought it "
+                "in, and outside the game holds only that player's own cards - "
+                "their sideboard and companion (108.3, 108.3b, in "
+                "rules/cr400_zones/cr400_outside_game.py). Ante (407) is not "
+                "applicable",
+            ),
             "107": (
                 "rules/cr100_game_concepts/cr106_mana.py",
                 (
@@ -146,7 +172,12 @@ COVERAGE: dict[str, Entry] = _entries(
             "306": ("rules/cr700_additional_rules/cr704_sba.py", "planeswalkers and loyalty"),
             "307": ("rules/kernel/legality.py", "sorceries and sorcery-speed timing"),
             # -- 400s -------------------------------------------------------
-            "400": ("rules/kernel/game.py", "zones, and 400.7 new-object semantics"),
+            "400": (
+                "rules/kernel/game.py",
+                "zones, and 400.7 new-object semantics; 400.11 outside the game "
+                "is per-player card definitions, never objects, with one door in "
+                "(rules/cr400_zones/cr400_outside_game.py)",
+            ),
             "401": ("rules/cr100_game_concepts/player.py", "library"),
             "402": ("rules/cr100_game_concepts/player.py", "hand"),
             "403": ("rules/kernel/game.py", "battlefield"),
@@ -181,8 +212,17 @@ COVERAGE: dict[str, Entry] = _entries(
             "609": ("rules/cr600_spells_and_abilities/resolve.py", ""),
             "610": ("rules/cr600_spells_and_abilities/resolve.py", ""),
             "611": ("rules/cr600_spells_and_abilities/cr611_durations.py", "continuous effects and when they end"),
-            "613": ("rules/cr600_spells_and_abilities/cr613_layers.py", "all layers, sublayers, and 613.8 dependency"),
-            "603.7": ("rules/cr600_spells_and_abilities/cr603_triggers.py", "delayed triggered abilities"),
+            "613": (
+                "rules/cr600_spells_and_abilities/cr613_layers.py",
+                "all layers, sublayers, and 613.8 dependency; effects reach "
+                "cards in other zones when they name them (611.2c, 611.3a)",
+            ),
+            "603.7": (
+                "rules/cr600_spells_and_abilities/cr603_triggers.py",
+                "delayed triggered abilities; 603.7c they remember the objects "
+                "their effect acted on and follow only the move that triggered "
+                "them",
+            ),
             "603.8": ("rules/cr600_spells_and_abilities/cr603_triggers.py", "state triggers, with re-arming"),
             "614": ("rules/cr600_spells_and_abilities/cr614_replacement.py", "replacement effects"),
             "615": ("rules/cr600_spells_and_abilities/cr614_replacement.py", "prevention effects"),
@@ -192,7 +232,21 @@ COVERAGE: dict[str, Entry] = _entries(
             "704": ("rules/cr700_additional_rules/cr704_sba.py", "the full state-based action list"),
             "705": ("rules/cr100_game_concepts/actions.py", "coin flips, from the seeded RNG"),
             "725": ("rules/cr700_additional_rules/cr725_designations.py", "the monarch, incl. combat theft and 725.5"),
-            "726": ("rules/cr700_additional_rules/cr725_designations.py", "the initiative"),
+            "726": (
+                "rules/cr700_additional_rules/cr725_designations.py",
+                "the initiative: its three 726.2 triggered abilities on the stack "
+                "(venture into Undercity on taking it and at the holder's upkeep; "
+                "combat damage passes it), 726.3, 726.4 and 726.5",
+            ),
+            "309": (
+                "rules/cr300_card_types/cr309_dungeons.py",
+                "dungeon cards in the command zone, one per player (309.3), room "
+                "graphs read from the oracle text, room abilities as triggered "
+                "abilities whose effects the parser reads, player-chosen branches, "
+                "704.5t completion and the completed-dungeon record. Baldur's Gate "
+                "Wilderness prints no arrows and is never offered; rooms the parser "
+                "cannot read stay UNPARSED",
+            ),
             "728": ("rules/cr700_additional_rules/cr725_designations.py", "rad counters and their main-phase procedure"),
             "731": ("rules/cr700_additional_rules/cr725_designations.py", "day and night, incl. the 731.3 flip"),
             "707": (
@@ -203,15 +257,19 @@ COVERAGE: dict[str, Entry] = _entries(
             "116": (
                 "rules/cr100_game_concepts/cr116_special_actions.py",
                 "all twelve special actions: playing a land, turning face up, "
-                "suspend, foretell, plot, discard-self. The Planechase and "
+                "suspend, foretell, plot, discard-self, and putting a companion "
+                "into hand (116.2g). The Planechase and "
                 "Conspiracy Draft ones are named as out of scope by format "
                 "rather than quietly missing",
             ),
             "709": ("rules/cr700_additional_rules/cr707_faces.py", "split cards - both halves castable, each on its own cost"),
             "722": (
-                "rules/cr600_spells_and_abilities/resolve.py",
-                "preparation cards: the prepared designation, and the copy in "
-                "exile carrying only the prepare spell's characteristics",
+                "rules/cr700_additional_rules/cr722_preparation.py",
+                "preparation cards: never cast as the prepare spell (722.3, "
+                "722.4); the prepared designation (722.3a/b); the copy in "
+                "exile with only the prepare spell's characteristics, kept "
+                "despite 704.5e while prepared, castable by the controller, "
+                "unpreparing the permanent as it is cast (722.3c)",
             ),
             "723": (
                 "rules/kernel/game.py",
@@ -246,8 +304,10 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
             "607.2": (
                 "rules/cr100_game_concepts/actions.py",
-                "linked-ability lookups keyed on the event that moved the card, "
-                "so a blinked permanent's linked ability correctly finds nothing",
+                "linked-ability lookups keyed on the source and the link id of "
+                "the ability that moved the card, so another object's or another "
+                "ability's exiles are not 'the exiled cards' and a blinked "
+                "permanent's linked ability correctly finds nothing",
             ),
             "613.3": (
                 "rules/cr600_spells_and_abilities/cr613_layers.py",
@@ -309,6 +369,15 @@ COVERAGE: dict[str, Entry] = _entries(
                 "leveler cards: {LEVEL} bands as level-counter-conditioned "
                 "statics setting base P/T in layer 7b",
             ),
+            "717": (
+                "rules/cr700_additional_rules/cr717_attractions.py",
+                "Attractions: the Attraction deck as a pile in the command "
+                "zone, built from a decklist's Attractions section and "
+                "shuffled at setup (717.2, 103.3a), 717.2a's construction "
+                "checks, opening (717.3, 701.51), the precombat-main roll to "
+                "visit (717.4, 505.5), visit abilities (717.5, 702.159) and "
+                "the junkyard replacement (717.6, 717.6a)",
+            ),
             "714": (
                 "rules/cr300_card_types/cr300_card_types.py",
                 "Sagas: chapter symbols as crossing triggers (714.2b), lore "
@@ -329,6 +398,44 @@ COVERAGE: dict[str, Entry] = _entries(
                 "rules/cr300_card_types/cr300_card_types.py",
                 "station cards: {N+} charge-counter thresholds as statics",
             ),
+            "715": (
+                "rules/cr300_card_types/cr300_card_types.py",
+                "adventurer cards: the Adventure is a castable face judged on its "
+                "own characteristics (715.3a-b), a copy is an Adventure too "
+                "(715.3c), a resolved one is exiled and its creature castable "
+                "(715.3d); \"has an Adventure\" reads the card, through copy "
+                "effects (715.2a-b); any name may be chosen (715.5)",
+            ),
+            "718": (
+                "rules/cr300_card_types/cr300_card_types.py",
+                "prototype cards: casting prototyped is a choice of face, not an "
+                "alternative cost (718.3); the prototype cost, P/T and colour "
+                "are read from the card's prototype line and hold on the stack "
+                "and the battlefield (718.3a-b), in copies (718.3c-d), and "
+                "nowhere else (718.4)",
+            ),
+            "720": (
+                "rules/cr300_card_types/cr300_card_types.py",
+                "omen cards: the Omen is a castable face (720.3a-b), a copy is "
+                "an Omen too (720.3c), a resolved one is shuffled into its "
+                "owner's library (720.3d); \"has an Omen\" as for Adventures",
+            ),
+            "708": (
+                "rules/cr700_additional_rules/cr708_face_down.py",
+                "face-down spells and permanents: layer 1b gives what turned it "
+                "face down (708.2, ward for disguise and cloak); cast face down "
+                "from hand or command zone and judged as the 2/2 (708.4); a "
+                "face-down spell becomes a face-down permanent and nothing "
+                "enters face up (708.3); turning up pays its cost, keeps the "
+                "object (708.8) and restamps it (613.7f); manifest, cloak and "
+                "manifest dread (701.40, 701.58, 701.62); copies take the "
+                "face-down values (708.10); exiled face down has no "
+                "characteristics (406.3a); revealed on leaving and at game end "
+                "(708.9); who may look at one (708.5, characteristics_seen_by) "
+                "and telling them apart (708.6, face_down_order). The engine "
+                "itself still shows agents everything - hiding is for callers "
+                "to ask for",
+            ),
             "712": (
                 "rules/cr700_additional_rules/cr707_faces.py",
                 "double-faced cards: transforming without a new object (712.18), "
@@ -346,10 +453,19 @@ COVERAGE: dict[str, Entry] = _entries(
                 "rules/cr903_commander/",
                 "command zone, {2} tax, 21 commander damage, 903.9a state-based "
                 "action and 903.9b replacement, colour identity and singleton "
-                "deck construction, and the partner variants",
+                "deck construction, the partner variants, and 903.11 - only the "
+                "companion special action brings a card in from outside the game, "
+                "under 903.11a's name and colour identity limits",
             ),
         },
         Status.PARTIAL: {
+            "717.1": (
+                "rules/cr700_additional_rules/cr717_attractions.py",
+                "lit numbers are read from the card data's attraction_lights, "
+                "which the shipped Scryfall snapshot does not carry - with "
+                "nothing lit up, no Attraction in a real game is ever "
+                "visited, though the roll itself happens",
+            ),
             "201": (
                 "rules/kernel/matching.py",
                 (
@@ -361,60 +477,45 @@ COVERAGE: dict[str, Entry] = _entries(
             ),
             "208": (
                 "data/cards.py",
-                "printed power/toughness including * (208.2), and 208.5's 0-fill; "
-                "208.2b (a replacement effect choosing P/T as it enters) and "
-                "208.4b (effects that *check* base power/toughness) are missing",
-            ),
-            "309": (
-                "rules/cr600_spells_and_abilities/resolve.py",
-                "venture position-tracking only. There is no dungeon in the "
-                "command zone, no rooms, no room abilities, no completion, and "
-                "no 309.3 one-dungeon-per-player rule",
+                "printed power/toughness including * (208.2), 208.4b base "
+                "power/toughness (recorded after layer 7b and filterable), and "
+                "208.5's 0-fill, and 208.2b's choice of P/T as it enters or is "
+                "turned face up. What is missing is 208.2b's last sentence: the "
+                "chosen values are continuous effects here, not copiable values, "
+                "so a copy takes the card as printed",
             ),
 
-            "108": ("data/cards.py", "cards; 108.3 ownership of tokens not modelled"),
 
 
             "207": (
                 "data/cards.py",
                 "text box is stored; turning it into abilities is the parser's job",
             ),
-            "308": ("rules/cr200_parts_of_a_card/cr205_typeline.py", "Kindred parses; tribal type-matching untested"),
             "607": (
                 "rules/cr100_game_concepts/actions.py",
-                "exiled-with tracking and linked lookups; imprint and hideaway "
-                "record their links but the cards' own text is the parser's job",
+                "engine side of 607.2a-c and 607.2q: exiles, tokens and "
+                "put-onto-the-battlefield are recorded per source and link id, "
+                "and ObjectFilter.linked_to_source finds only what that source's "
+                "partner ability did; links end when either object changes "
+                "zones (400.7), a leaves-the-battlefield half looks back one "
+                "step (603.10a), and cost-exiled cards pass from spell to "
+                "permanent (607.2q). Chosen values (607.2d) live on the object "
+                "and are undefined on a new one (607.5a). Missing: the parser "
+                "emits neither link ids nor the linked filter, so printed pairs "
+                "(imprint, hideaway, 'the exiled card' across abilities) are "
+                "not yet linked; 607.1d links across two objects and 607.3's "
+                "summed answers are not modelled",
             ),
             # -- 700s -------------------------------------------------------
-            "700": ("rules/kernel/game.py", "general; 700.4 'dies' is exact"),
             "701": (
                 "rules/cr700_additional_rules/cr701_keyword_actions.py",
-                "59 of 78 keyword actions fully modelled; the rest are Unfinity, "
+                "70 of 81 keyword actions fully modelled; the rest are Unfinity, "
                 "Planechase, Archenemy or newer than the card-pool snapshot",
             ),
             "702": (
                 "rules/cr700_additional_rules/keywords.py",
-                "211 of 221 keyword abilities implemented; the remainder are out-of-format "
+                "222 of 225 keyword abilities implemented; the remainder are out-of-format "
                 "(Augment, the Conspiracy agendas) or shapes awaiting card text",
-            ),
-            "715": (
-                "rules/cr300_card_types/cr300_card_types.py",
-                "adventurer cards: alternative characteristics, the casting mode, and 715.3d exiling a resolved Adventure so the creature can be cast later",
-            ),
-            "718": (
-                "rules/cr300_card_types/cr300_card_types.py",
-                "prototype cards: alternative cost and P/T that persist onto the "
-                "battlefield (718.3b); casting mode not wired",
-            ),
-            "720": (
-                "rules/cr300_card_types/cr300_card_types.py",
-                "omen cards: alternative characteristics, the casting mode, and 720.3d shuffling a resolved Omen into its owner's library",
-            ),
-            "708": (
-                "rules/cr600_spells_and_abilities/cr613_layers.py",
-                "face-down objects are 2/2 vanillas in layer 1b, cast face down "
-                "through the morph alternative cost, and turned up by the "
-                "CR 116.2b special action",
             ),
             # -- 800s -------------------------------------------------------
 
@@ -504,14 +605,7 @@ COVERAGE: dict[str, Entry] = _entries(
             "905": ("", "Conspiracy Draft"),
             "903.12": ("", "Brawl option - a different format"),
             "903.13": ("", "Commander Draft - a different format"),
-            "903.11": ("", "cards from outside the game - no sideboard in this sim"),
             "900": ("", "casual variant section header"),
-            "717": (
-                "",
-                "Attractions are Commander-legal, contrary to what this "
-                "entry used to say; they are simply not built - no Attraction "
-                "deck, no zone for it, and no die roll to visit one",
-            ),
             "729": ("", "subgames - Shahrazad only, and banned in Commander"),
             "732": ("", "taking shortcuts - a human convenience with no simulated effect"),
         },

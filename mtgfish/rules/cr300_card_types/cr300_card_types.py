@@ -27,8 +27,10 @@ rather than four.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, replace
 from enum import IntEnum
+from functools import lru_cache
 from typing import TYPE_CHECKING
 
 from ..cr100_game_concepts import actions
@@ -132,6 +134,11 @@ def cast_mode_for_face(obj: GameObject, face_index: int) -> CastMode:
 
     if face_index == 0:
         return CastMode.NORMAL
+    # CR 718.3: the prototype characteristics are not printed as a face of
+    # their own in the card data, so the layout is asked before the faces.
+    if getattr(obj.card, "layout", Layout.NORMAL) is Layout.PROTOTYPE:
+        face, _ = card_face(obj.card, face_index)
+        return CastMode.PROTOTYPE if face is not None else CastMode.NORMAL
     faces = getattr(obj.card, "faces", ())
     if face_index >= len(faces):
         return CastMode.NORMAL
@@ -145,8 +152,6 @@ def cast_mode_for_face(obj: GameObject, face_index: int) -> CastMode:
         return CastMode.ADVENTURE
     if "Omen" in subtypes:
         return CastMode.OMEN
-    if getattr(obj.card, "layout", Layout.NORMAL) is Layout.PROTOTYPE:
-        return CastMode.PROTOTYPE
     # A split card's other half is simply the other half: no alternative
     # characteristics, so nothing special happens when it resolves.
     return CastMode.NORMAL
@@ -154,6 +159,65 @@ def cast_mode_for_face(obj: GameObject, face_index: int) -> CastMode:
 
 def resolution_zone(mode: CastMode) -> Zone | None:
     return RESOLUTION_ZONE.get(mode)
+
+
+#: CR 702.160a: "Prototype [mana cost] - [power]/[toughness]", as the card
+#: data prints it at the start of a line of the card's own text.
+_PROTOTYPE_LINE = re.compile(
+    r"^Prototype\s+((?:\{[^}]+\})+)\s*[\u2014-]\s*(\d+)/(\d+)", re.MULTILINE
+)
+
+
+@lru_cache(maxsize=None)
+def prototype_face(face):
+    """CR 718.2: the prototype card's alternative set of characteristics.
+
+    The inset frame is a second mana cost, power and toughness, and nothing
+    else - CR 718.5 keeps the name, text, types and abilities. The card data
+    prints no second face for it, only the keyword line, so the face is built
+    from that line: the front face with those three values swapped in, and
+    CR 718.3b's colour taken from the new cost. None when the face has no
+    prototype line to read.
+    """
+    match = _PROTOTYPE_LINE.search(getattr(face, "oracle_text", "") or "")
+    if match is None:
+        return None
+    from ..cr100_game_concepts.cr106_mana import ManaCost
+
+    cost = ManaCost.parse(match.group(1))
+    return replace(
+        face,
+        mana_cost=cost,
+        has_mana_cost=True,
+        power=match.group(2),
+        toughness=match.group(3),
+        colors=cost.colors,
+        color_indicator=None,
+    )
+
+
+def card_face(card, face_index: int):
+    """The face a face index names, and the face whose abilities it has.
+
+    An ordinary face is its own answer. The one exception is a prototype
+    card's index 1, which is its prototype characteristics (CR 718.2) - a
+    face the card data never prints, whose abilities are the front face's
+    (CR 718.5). ``(None, face_index)`` when the index names nothing.
+    """
+    from ..kernel.enums import Layout
+
+    faces = getattr(card, "faces", ())
+    if face_index < len(faces):
+        return faces[face_index], face_index
+    if (
+        face_index == 1
+        and faces
+        and getattr(card, "layout", Layout.NORMAL) is Layout.PROTOTYPE
+    ):
+        proto = prototype_face(faces[0])
+        if proto is not None:
+            return proto, 0
+    return None, face_index
 
 
 def flip(game: Game, obj: GameObject) -> bool:
@@ -554,11 +618,14 @@ def forget_designations(game: Game, object_id: ObjectId) -> None:
         return
     game.solved_permanents.discard(object_id)
     game.class_levels.pop(object_id, None)
+    # CR 722.3c: prepared lasts only while the permanent is on the battlefield.
+    game.prepared_permanents.discard(object_id)
 
 
 __all__ = [
     "CastMode",
     "ClassLevel",
+    "card_face",
     "become_solved",
     "chapter_ability",
     "chapter_numbers",
@@ -571,6 +638,7 @@ __all__ = [
     "forget_designations",
     "is_solved",
     "level_band",
+    "prototype_face",
     "resolution_zone",
     "saga_lore_counters",
     "set_class_level",

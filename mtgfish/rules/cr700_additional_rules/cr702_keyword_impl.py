@@ -84,6 +84,10 @@ class KeywordInstance:
     #: parser supplies what goes inside it. Empty means the parser did not
     #: read the body, and the builder says so rather than inventing one.
     effects: tuple[Effect, ...] = ()
+    #: For keywords that wrap a whole ability rather than an effect - "∞ -
+    #: At the beginning of your upkeep, ..." (CR 702.186a) - the ability the
+    #: parser read after the dash.
+    abilities: tuple[Ability, ...] = ()
 
     @property
     def key(self) -> str:
@@ -533,12 +537,16 @@ def _persist(instance: KeywordInstance) -> tuple[Ability, ...]:
             Effect(
                 EffectKind.CONDITIONAL,
                 condition=no_minus,
+                # It returns *with* the counter. A separate "put a counter on
+                # it" had no object to act on but the source - the card left
+                # in the graveyard - so the creature came back without one
+                # and could return again and again.
                 children=(
-                    Effect(EffectKind.PUT_ONTO_BATTLEFIELD, text="return it"),
                     Effect(
-                        EffectKind.ADD_COUNTERS,
+                        EffectKind.PUT_ONTO_BATTLEFIELD,
                         counter_type="-1/-1",
                         amount=Value.of(1),
+                        text="return it with a -1/-1 counter on it",
                     ),
                 ),
             ),
@@ -561,12 +569,16 @@ def _undying(instance: KeywordInstance) -> tuple[Ability, ...]:
             Effect(
                 EffectKind.CONDITIONAL,
                 condition=no_plus,
+                # It returns *with* the counter. A separate "put a counter on
+                # it" had no object to act on but the source - the card left
+                # in the graveyard - so the creature came back without one
+                # and could return again and again.
                 children=(
-                    Effect(EffectKind.PUT_ONTO_BATTLEFIELD, text="return it"),
                     Effect(
-                        EffectKind.ADD_COUNTERS,
+                        EffectKind.PUT_ONTO_BATTLEFIELD,
                         counter_type="+1/+1",
                         amount=Value.of(1),
+                        text="return it with a +1/+1 counter on it",
                     ),
                 ),
             ),
@@ -819,9 +831,11 @@ def _morph(instance: KeywordInstance) -> tuple[Ability, ...]:
         Ability(
             AbilityKind.STATIC,
             keyword=instance.name,
+            # CR 702.37c, 702.168b: from any zone the card could be cast from
+            # - the hand, and the command zone for a commander (CR 903.8).
             alternative_cost=AlternativeCost(
                 cost=face_down_cost,
-                from_zone=Zone.HAND,
+                from_zone=None,
                 keyword=instance.name,
                 text=f"cast face down as a 2/2 for {{3}} ({instance.name})",
             ),
@@ -839,20 +853,10 @@ def _morph(instance: KeywordInstance) -> tuple[Ability, ...]:
             text=f"turn face up: {instance.cost or 'its morph cost'}",
         ),
     ]
-    if instance.key == "disguise":
-        # CR 702.168a: a disguised creature is face down *with ward {2}*.
-        abilities.append(
-            Ability.static(
-                Effect(
-                    EffectKind.GRANT_ABILITY,
-                    targets=ObjectFilter(source_only=True, face_down=True),
-                    granted_abilities=build(KeywordInstance("Ward", cost=Cost((
-                        CostComponent(CostKind.MANA, mana=ManaCost.parse("{2}")),
-                    )))),
-                ),
-                text="this creature has ward {2} while face down",
-            )
-        )
+    # CR 702.168a: a disguised creature is face down *with ward {2}*. That is
+    # one of the characteristics the face-down object has, not an ability of
+    # the card granting it - the card has no abilities while face down - so
+    # it lives with the rest of them in ``cr708_face_down``.
     return tuple(abilities)
 
 
@@ -1462,10 +1466,33 @@ def _upkeep_keyword(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Overload", "Foretell", "Emerge", "Freerunning", "Bestow", "Miracle",
           "Warp", "Impending", "Offering", "Assist", "Cleave", "Gift", "Disturb",
-          "Embalm", "Eternalize", "Mutate", "Prototype")
+          "Embalm", "Eternalize", "Mutate")
 def _more_alternatives(instance: KeywordInstance) -> tuple[Ability, ...]:
     zone = Zone.GRAVEYARD if instance.key in ("disturb", "embalm", "eternalize") else None
     return _alternative(instance, zone)
+
+
+@register("Prototype")
+def _prototype(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.160a: the permission to cast this card prototyped.
+
+    Not an alternative cost. Casting prototyped chooses the card's other set
+    of characteristics (CR 718.3), whose mana cost is then the spell's mana
+    cost - so "without paying its mana cost" and cost reductions apply to it
+    as they would to any other. The choice is offered as a face to cast
+    (``castable_face_indices``), and the prototype mana cost, power and
+    toughness are read from the card itself (``prototype_face``); the cost is
+    kept here only so the keyword says what it costs.
+    """
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            cost=instance.cost or Cost(()),
+            functions_in=HAND,
+            text=instance.text or instance.name,
+        ),
+    )
 
 
 @register("Entwine", "Escalate", "Replicate", "Conspire", "Splice", "Squad",
@@ -1565,6 +1592,77 @@ def _start_your_engines(instance: KeywordInstance) -> tuple[Ability, ...]:
     countered, and left a permanent that arrived any other way - reanimated,
     blinked, a token copy, a change of control - never starting at all.
     """
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("∞")
+def _infinity(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.186b: "∞ - [Ability]" means "as long as this permanent is
+    harnessed, it has [Ability]".
+
+    The wrapped ability keeps its own shape and gains the condition as its
+    static condition: a static one applies only while it holds, and a
+    triggered one cannot trigger while it does not (``cr603_triggers``). An
+    ∞ static effect with no ability around it - the parser's effects alone -
+    becomes a static ability under the same condition.
+    """
+    from dataclasses import replace as _replace
+
+    harnessed = Condition(kind=ConditionKind.IS_HARNESSED, text="this is harnessed")
+    wrapped = instance.abilities or (
+        (Ability(AbilityKind.STATIC, effects=instance.effects),) if instance.effects else ()
+    )
+    return tuple(
+        _replace(
+            ability,
+            static_condition=harnessed,
+            keyword=instance.name,
+            text=instance.text or ability.text or instance.name,
+        )
+        for ability in wrapped
+    )
+
+
+@register("Visit")
+def _visit(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.159a: "Visit - [effect]" is a triggered ability of an
+    Attraction: whenever its controller rolls to visit their Attractions and
+    the result is lit up on it, [effect].
+
+    CR 701.52a states the same thing from the roll's side - each Attraction
+    with that number lit up "has been visited" and its visit ability
+    triggers - and ``cr717_attractions`` emits one visit per Attraction it
+    lit, so the trigger is this Attraction being visited. Only the roller's
+    own Attractions are ever visited, which is the "you" of CR 702.159a.
+    The effect after the dash is ordinary card text, supplied by the parser.
+    CR 702.159b's prize is part of the same ability, but claiming it is not
+    modelled, so a visit that says to claim the prize does not parse.
+    """
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTRACTION_VISITED}),
+                subject=SOURCE_ONLY,
+                functions_in=BATTLEFIELD,
+                text="whenever you roll to visit your Attractions, if the "
+                "result is lit up on this Attraction",
+            ),
+            *_body(instance),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Storied")
+def _storied(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.195a: a static ability the engine reads by name - see
+    ``cr704_sba._grant_enduring_stories``, which gives the designation."""
     return (
         Ability(
             AbilityKind.STATIC,
@@ -2278,16 +2376,16 @@ def _cumulative_upkeep(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Cascade")
 def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.85a: "When you cast this spell, exile cards from the top of your
-    library until you exile a nonland card whose mana value is less than this
-    spell's mana value. You may cast that spell without paying its mana cost.
-    Put the exiled cards on the bottom in a random order."
+    """CR 702.85a: when you cast this spell, exile from the top of your library
+    until a nonland card with lesser mana value; you may cast it without
+    paying its mana cost; the rest go to the bottom in a random order.
+
+    One opcode, because the steps share state the effect list cannot carry:
+    which cards this cascade exiled. Built as three generic effects, the
+    exile took the cascading spell itself, the free cast was offered any
+    nonland card in exile, and the last step put every card its owner had in
+    exile - foretold, adventuring, imprinted - on the bottom of the library.
     """
-    cheaper = ObjectFilter(
-        types_none=CardType.LAND,
-        zones=frozenset({Zone.EXILE}),
-        owner=ControllerRelation.YOU,
-    )
     return (
         Ability.triggered(
             TriggerCondition(
@@ -2296,23 +2394,7 @@ def _cascade(instance: KeywordInstance) -> tuple[Ability, ...]:
                 functions_in=frozenset({Zone.STACK}),
                 text="when you cast this spell",
             ),
-            Effect(
-                EffectKind.EXILE,
-                players=YOU,
-                from_zone=Zone.LIBRARY,
-                amount=Value.of(1),
-                text="exile until you hit a cheaper nonland card",
-            ),
-            Effect(
-                EffectKind.CAST_WITHOUT_PAYING,
-                targets=cheaper,
-                text="you may cast it without paying its mana cost",
-            ),
-            Effect(
-                EffectKind.PUT_ON_LIBRARY,
-                targets=ObjectFilter(zones=frozenset({Zone.EXILE}), owner=ControllerRelation.YOU),
-                text="put the rest on the bottom in a random order",
-            ),
+            Effect(EffectKind.CASCADE, text="cascade"),
             text=instance.text or instance.name,
         ),
     )
@@ -3357,7 +3439,7 @@ def _out_of_format(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: rules text the Comprehensive Rules describes but which no Commander-legal
 #: card in the pool uses yet. They are shapes without bodies, and the registry
 #: says so.
-NOT_YET_MODELLED = ("Companion",)
+NOT_YET_MODELLED: tuple[str, ...] = ()
 
 
 @register(*NOT_YET_MODELLED)
@@ -3400,14 +3482,23 @@ def _banding(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Companion")
 def _companion(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.139a: "If this card is your chosen companion, you may pay {3} and
-    put it into your hand from outside the game any time you could cast a
-    sorcery. This starts the game outside the game."
+    """CR 702.139a: companion, an ability that functions outside the game.
 
-    Paying the {3} is a special action (CR 116.2g), so the ability here is the
-    permission the special action reads, plus the deck-building condition the
-    parser fills in. In Commander the companion sits in the command zone
-    alongside the commander, which is why it functions from there.
+    Nothing in play reads it. It matters twice, and both times the card is
+    outside the game with no object to carry it: before the game, when
+    ``cr400_outside_game.reveal_companion`` accepts only a card with this
+    ability (CR 103.2b), and during it, when the special action of CR 116.2g
+    pays {3} and brings the revealed card into its owner's hand
+    (``cr116_special_actions``). Those read this ability off the card, which
+    is why it is built rather than left a bare word.
+
+    CR 400.11: outside the game is not a zone, so the ability functions in
+    none of the zones - once the card is in the game it is an ordinary card,
+    and its companion ability does nothing (CR 702.139c).
+
+    The quality is the deck-building condition as far as the parser reads it.
+    It is carried for display only: conditions are card-specific and nothing
+    checks one generically.
     """
     return (
         Ability(
@@ -3417,12 +3508,12 @@ def _companion(instance: KeywordInstance) -> tuple[Ability, ...]:
                     EffectKind.PERMISSION,
                     targets=ObjectFilter(source_only=True),
                     keywords=("Companion",),
-                    text="you may pay {3} to put this into your hand",
+                    text="you may pay {3} to put this into your hand from outside the game",
                 ),
             ),
             keyword=instance.name,
             quality=instance.filter,
-            functions_in=frozenset({Zone.COMMAND, Zone.EXILE}),
+            functions_in=frozenset(),
             text=instance.text or instance.name,
         ),
     )
@@ -3711,44 +3802,52 @@ def _paradigm(instance: KeywordInstance) -> tuple[Ability, ...]:
     trigger that copies the spell into exile for a free cast each precombat
     main phase, and one of which exiles the spell.
 
-    The exile half is built exactly; the copy half is not. Three things it
-    needs and the engine does not have:
-
-    * a copy made *in exile* rather than on the stack (CR 707.10 through
-      ``COPY_SPELL`` puts it on the stack, and ignores a zone);
-    * a trigger at the beginning of a main phase - ``PHASE_BEGAN`` is the
-      event the parser uses for that phrase and nothing emits it, and
-      ``STEP_BEGAN`` cannot say *which* step;
-    * "if this is the first time a spell you control with this name has
-      resolved this game", which no condition kind can ask.
-
-    So the shape is here, the exile happens, and the copy is left unread
-    rather than approximated - the approximation would hand the card a free
-    cast every turn from the first resolution onwards with nothing to stop it
-    compounding.
+    * "if this is the first time a spell you control with this spell's name
+      has resolved this game" is FIRST_RESOLUTION_OF_NAME, answered from the
+      game's record of resolutions, which is written after the spell's
+      abilities run so the spell does not count itself;
+    * "at the beginning of each of your precombat main phases for the rest of
+      the game" is a repeating delayed trigger on the phase beginning;
+    * "create a copy of this object in exile. You may cast the copy without
+      paying its mana cost" is CR 707.12's cast-a-copy, made from the spell as
+      it last existed. The copy has paradigm too, but by then the name has
+      resolved before, so it starts no second stream.
     """
+    from ..kernel.enums import Phase
+
     return (
         Ability.spell(
             Effect(
-                EffectKind.DELAYED_TRIGGER,
-                trigger=TriggerCondition(
-                    event_kinds=frozenset({EventKind.PHASE_BEGAN}),
-                    players=YOU,
-                    intervening_if=Condition(
-                        kind=ConditionKind.IS_MAIN_PHASE,
-                        text="a main phase",
-                    ),
-                    functions_in=frozenset({Zone.EXILE}),
-                    text="at the beginning of each of your precombat main phases",
+                EffectKind.CONDITIONAL,
+                condition=Condition(
+                    kind=ConditionKind.FIRST_RESOLUTION_OF_NAME,
+                    text="if this is the first time a spell you control with "
+                    "this spell's name has resolved this game",
                 ),
-                repeats=True,
                 children=(
                     Effect(
-                        EffectKind.UNPARSED,
-                        text="create a copy of this in exile and you may cast it",
+                        EffectKind.DELAYED_TRIGGER,
+                        trigger=TriggerCondition(
+                            event_kinds=frozenset({EventKind.PHASE_BEGAN}),
+                            players=YOU,
+                            phases=frozenset({int(Phase.PRECOMBAT_MAIN)}),
+                            text="at the beginning of each of your precombat "
+                            "main phases",
+                        ),
+                        repeats=True,
+                        children=(
+                            Effect(
+                                EffectKind.CAST_WITHOUT_PAYING,
+                                targets=SOURCE_ONLY,
+                                zone=Zone.EXILE,
+                                cast_a_copy=True,
+                                text="create a copy of this object in exile; "
+                                "you may cast the copy without paying its mana cost",
+                            ),
+                        ),
+                        text="each of your precombat main phases, a free copy",
                     ),
                 ),
-                text="each of your precombat main phases, a free copy",
             ),
             Effect(
                 EffectKind.EXILE,

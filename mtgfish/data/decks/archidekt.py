@@ -202,6 +202,7 @@ def parse_archidekt_payload(
 
     commanders: list = []
     entries: list[DeckEntry] = []
+    attractions: list = []
     unresolved: list[str] = []
     issues: list[DeckIssue] = []
 
@@ -228,6 +229,10 @@ def parse_archidekt_payload(
 
         if COMMANDER_CATEGORY in categories:
             commanders.extend([card] * quantity)
+        elif card.front.type_line.has_subtype("Attraction"):
+            # CR 717.2: an Attraction card never begins the game in the deck;
+            # one listed with it can only be meant for the Attraction deck.
+            attractions.extend([card] * quantity)
         else:
             entries.append(DeckEntry(card, quantity))
 
@@ -246,11 +251,13 @@ def parse_archidekt_payload(
     # not be reproduced, and a "slow game 37" vanished on the next fetch.
     commanders.sort(key=lambda card: card.name)
     entries.sort(key=lambda entry: entry.card.name)
+    attractions.sort(key=lambda card: card.name)
 
     deck = Deck(
         name=payload.get("name") or "Archidekt deck",
         commanders=tuple(commanders),
         entries=tuple(entries),
+        attractions=tuple(attractions),
         source=source,
         unresolved=tuple(unresolved),
     )

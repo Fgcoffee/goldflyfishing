@@ -1034,6 +1034,19 @@ def _constraints(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
             stream.reset(mark)
             return spec
 
+        # CR 715.2a, 720.2a: "a creature spell that has an Adventure" - a
+        # question about the card's inset spell, not about what it is now.
+        look = stream.mark()
+        if stream.accept_phrase("that has an") or stream.accept_phrase("that have an"):
+            inset = next(
+                (word for word in ("Adventure", "Omen") if stream.accept(word.lower())),
+                "",
+            )
+            if inset:
+                spec = replace(spec, has_inset=inset)
+                continue
+            stream.reset(look)
+
         # "spells you cast *that's red or green*", "a creature that's white"
         # - a relative clause about colour, which is a constraint the filter
         # has had all along with no wording that reached it.

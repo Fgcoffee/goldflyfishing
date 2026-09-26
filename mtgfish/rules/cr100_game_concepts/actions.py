@@ -90,32 +90,40 @@ def sacrifice(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> b
     return True
 
 
-def exile(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> GameObject:
+def exile(
+    game: Game,
+    obj: GameObject,
+    *,
+    source: ObjectId = NO_OBJECT,
+    link_id: int = 0,
+    face_down: bool = False,
+) -> GameObject:
     """Exile an object (CR 701.6, CR 406.2).
 
     Records which object did the exiling (CR 607.2, 614.14). "Exile it, then
     you may play that card" is two abilities that only work together because
     the second can find what the first exiled, and once the card is in exile
     there is nothing about it that says how it got there.
+
+    CR 406.3: "exile it face down" keeps it hidden, with no characteristics
+    (CR 406.3a) for as long as it stays there.
     """
     game.emit(Event(EventKind.EXILED, object_id=obj.id, source=source))
-    exiled = game.move_object(obj, Zone.EXILE)
-    if source != NO_OBJECT:
-        game.exiled_with.setdefault(source, []).append(exiled.id)
+    exiled = game.move_object(obj, Zone.EXILE, face_down="" if face_down else None)
+    # CR 607.2a: only a card that really arrived is linked. A prevented move
+    # and a token (CR 111.7) hand back the object that was asked to move.
+    if source != NO_OBJECT and exiled is not obj:
+        record_link(game, source, exiled.id, link_id)
     return exiled
 
 
-def exiled_with(game: Game, source: ObjectId) -> list[GameObject]:
-    """The cards a given object exiled, for its linked ability (CR 607.2)."""
+def exiled_with(game: Game, source: ObjectId, link_id: int = 0) -> list[GameObject]:
+    """The cards a given object exiled, for its linked ability (CR 607.2a)."""
     # ``is_live`` matters: a card that left exile is superseded by a new object
     # but the husk keeps its old zone for last-known information, so a zone
     # check alone would keep reporting it as exiled for ever.
     return [
-        game.objects[i]
-        for i in game.exiled_with.get(source, ())
-        if i in game.objects
-        and game.objects[i].is_live
-        and game.objects[i].zone is Zone.EXILE
+        obj for obj in linked_objects(game, source, link_id) if obj.zone is Zone.EXILE
     ]
 
 
@@ -730,11 +738,14 @@ def linked_objects(game, source_id: int, link_id: int = 0) -> list:
     if not recorded:
         return []
     out = []
-    for entry in recorded:
-        object_id, entry_link = entry if isinstance(entry, tuple) else (entry, 0)
-        if link_id and entry_link and entry_link != link_id:
+    for object_id, entry_link in recorded:
+        # CR 607.2a: a named link refers only to what its own partner did. An
+        # exile by an unlinked ability of the same object (the example under
+        # CR 607.5) is not one of "the exiled cards".
+        if link_id and entry_link != link_id:
             continue
         obj = game.objects.get(object_id)
+        # CR 400.7: once the object has moved on, the link is to nothing.
         if obj is not None and obj.is_live:
             out.append(obj)
     return out
@@ -743,3 +754,11 @@ def linked_objects(game, source_id: int, link_id: int = 0) -> list:
 def record_link(game, source_id: int, object_id: int, link_id: int = 0) -> None:
     """Remember that this ability moved this object (CR 607.2)."""
     game.exiled_with.setdefault(source_id, []).append((object_id, link_id))
+
+
+def carry_links(game, old_id: int, new_id: int) -> None:
+    """CR 607.2q with 400.7d: a permanent refers to the cards exiled to pay
+    for the spell it was, so the spell's links pass to the permanent."""
+    recorded = game.exiled_with.get(old_id)
+    if recorded:
+        game.exiled_with.setdefault(new_id, []).extend(recorded)

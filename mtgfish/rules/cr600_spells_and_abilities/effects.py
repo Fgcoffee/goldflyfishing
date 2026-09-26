@@ -16,7 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum
 
-from ..kernel.enums import CardType, Color, Zone
+from ..kernel.enums import CardType, Color, Supertype, Zone
 from ..kernel.query import ALWAYS, ZERO, Condition, ObjectFilter, PlayerFilter, Value
 
 
@@ -209,6 +209,40 @@ class EffectKind(IntEnum):
     #: CR 722.3a: give a permanent with a prepare spell the prepared
     #: designation, which puts a copy of its prepare spell into exile.
     BECOME_PREPARED = 217
+    #: "The blocking creature's controller sacrifices it at end of combat" -
+    #: each creature blocking the triggering attacker, at the beginning of
+    #: the end of combat step (CR 511.2). The Ring's third ability.
+    SACRIFICE_BLOCKERS_AT_END_OF_COMBAT = 220
+    #: CR 702.85a: exile from the top until a nonland card with lesser mana
+    #: value than this spell; you may cast it free; the rest go to the bottom
+    #: in a random order.
+    CASCADE = 221
+    #: CR 701.57a: the same, up to mana value ``amount``, and a card not cast
+    #: goes to its owner's hand.
+    DISCOVER = 222
+    #: CR 701.55: each player in ``players`` chooses one of ``children`` and
+    #: performs all of it; "that player" inside it is the chooser.
+    VILLAINOUS_CHOICE = 223
+    #: CR 701.64a: "harness [this permanent]" - it becomes harnessed.
+    HARNESS = 224
+    #: CR 208.2b: "as this enters [or is turned face up], it becomes your
+    #: choice of" - ``children`` are the options, each the continuous effects
+    #: that make it that choice. Applied as a self-entry replacement.
+    ENTERS_AS_CHOICE = 280
+    #: CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread -
+    #: ``keywords[0]`` says which. Put the ``targets`` cards onto the
+    #: battlefield face down, one at a time; for manifest dread, look at the
+    #: top two and manifest one.
+    MANIFEST = 240
+
+    # -- Attractions (CR 717) -----------------------------------------------
+    #: CR 701.51b: each of ``players`` opens ``amount`` Attractions - the top
+    #: card of their Attraction deck, onto the battlefield under their
+    #: control, one at a time.
+    OPEN_ATTRACTION = 270
+    #: CR 701.52a: each of ``players`` rolls a six-sided die to visit their
+    #: Attractions.
+    ROLL_TO_VISIT = 271
 
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the
@@ -415,25 +449,37 @@ class Effect:
     #: transformed" is the only thing that needs it - everything else casts
     #: the front face, which is index 0 and the default.
     face_index: int = 0
+    #: For CAST_WITHOUT_PAYING: cast a *copy* of the object rather than the
+    #: object (CR 707.12), created in ``zone`` - or where the object is - and
+    #: cast from there. Paradigm's "create a copy of this object in exile.
+    #: You may cast the copy".
+    cast_a_copy: bool = False
+    #: For ADD_TYPE: supertypes to add - "is legendary in addition to its
+    #: other types" (CR 205.4a).
+    supertypes: Supertype = Supertype.NONE
     #: For SUSPEND_RULE: which rule is switched off, as its CR number - a
     #: member of ``cr101_rule_overrides.Rule``. ``targets`` and ``players``
     #: then say for whom, exactly as they do for a prohibition.
     rule: str = ""
     #: For COPY_PERMANENT: which object's copiable values to take (CR 613.2).
     copy_source: int = 0
-    #: For ADD_MANA: produce the colour this permanent's controller chose,
-    #: rather than a colour fixed when the card was parsed.
     #: CR 601.2d: the amount is *divided* among the targets rather than
     #: applied to each of them. Two counters among two creatures is one each,
     #: not two each - which is a different card.
     divided: bool = False
-    colors_chosen: bool = False
     #: For ADD_TYPE: add the creature type this permanent recorded, rather
     #: than one named on the card.
     of_chosen_type: bool = False
     #: For ADD_MANA: produce the colour this permanent's controller chose,
     #: rather than a colour fixed when the card was parsed.
     colors_chosen: bool = False
+    #: For ADD_MANA: "of any color in your commander's color identity" - the
+    #: colours on offer are narrowed to that identity (CR 903.4), and there
+    #: are none without a commander (CR 903.4f).
+    colors_in_commander_identity: bool = False
+    #: For ENTERS_AS_CHOICE: "as this enters *or is turned face up*" (CR
+    #: 208.2b) - the choice is made again as it turns face up.
+    also_when_turned_face_up: bool = False
     #: For ATTACH: what is being attached, when it is not the ability's own
     #: source. "Attach *that Equipment* to target creature" names a different
     #: permanent, and attaching the source instead would move the wrong one.
@@ -441,6 +487,10 @@ class Effect:
     #: For EXTRA_TRIGGER: what must have caused the event, when the card says
     #: so ("if a *land* entering causes..."). None means any cause at all.
     trigger_cause: ObjectFilter | None = None
+    #: For VENTURE: CR 701.49d's "venture into [quality]" - the quality a
+    #: dungeon entered this way must have, e.g. "Undercity". Empty for the
+    #: plain "venture into the dungeon".
+    dungeon_quality: str = ""
 
     #: The oracle text this came from, kept for the replay log and for the
     #: coverage report.

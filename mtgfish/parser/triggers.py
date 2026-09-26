@@ -14,7 +14,7 @@ is a table rather than a grammar.
 from __future__ import annotations
 
 from ..rules.cr600_spells_and_abilities.abilities import TriggerCondition
-from ..rules.kernel.enums import CardType, Zone
+from ..rules.kernel.enums import CardType, Phase, Zone
 from ..rules.kernel.events import EventKind
 from ..rules.kernel.query import (
     ALWAYS,
@@ -57,6 +57,44 @@ _STEP_TRIGGERS: tuple[tuple[str, EventKind], ...] = (
 )
 
 
+#: CR 500.1: which phase a phase trigger's phrase names. The phrases share
+#: one event, so without this "at the beginning of combat" would fire as
+#: every phase begins.
+_MAIN_PHASES = frozenset({int(Phase.PRECOMBAT_MAIN), int(Phase.POSTCOMBAT_MAIN)})
+_PHASES: dict[str, frozenset[int]] = {
+    "first main phase": frozenset({int(Phase.PRECOMBAT_MAIN)}),
+    "precombat main phase": frozenset({int(Phase.PRECOMBAT_MAIN)}),
+    "postcombat main phase": frozenset({int(Phase.POSTCOMBAT_MAIN)}),
+    "second main phase": frozenset({int(Phase.POSTCOMBAT_MAIN)}),
+    "main phase": _MAIN_PHASES,
+    "combat": frozenset({int(Phase.COMBAT)}),
+}
+
+
+#: CR 120: combat damage is damage. The engine emits the two as different
+#: events so "combat damage" can be asked for alone, which means "deals
+#: damage" has to watch both - watching one never fired in combat.
+_ANY_DAMAGE = frozenset({EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT})
+
+
+def _deals_damage(stream: Stream, source, text: str) -> TriggerCondition:
+    """"[source] deals damage", optionally "to a player", "to an opponent",
+    "to a creature". The recipient narrows the trigger; it was read and
+    thrown away, so "deals damage to an opponent" fired on damage to anything.
+    """
+    stream.accept("to")
+    players, _ = parse_player_filter(stream)
+    recipient = parse_object_filter(stream) if players is None else None
+    return TriggerCondition(
+        event_kinds=_ANY_DAMAGE,
+        source=source,
+        subject=recipient,
+        players=players,
+        to_player=players is not None,
+        text=text,
+    )
+
+
 def parse_trigger(stream: Stream) -> TriggerCondition | None:
     """The condition half of a triggered ability, up to and including its comma."""
     if not stream.accept("at", "when", "whenever"):
@@ -76,6 +114,8 @@ def parse_trigger(stream: Stream) -> TriggerCondition | None:
             intervening_if=intervening,
             functions_in=condition.functions_in,
             uses_last_known_information=condition.uses_last_known_information,
+            phases=condition.phases,
+            to_player=condition.to_player,
             text=condition.text,
         )
 
@@ -124,7 +164,9 @@ def _step_words(stream: Stream) -> TriggerCondition | None:
     ):
         if stream.accept_phrase(phrase):
             return TriggerCondition(
-                event_kinds=frozenset({kind}), text=f"at the next {phrase}"
+                event_kinds=frozenset({kind}),
+                phases=_PHASES.get(phrase, frozenset()),
+                text=f"at the next {phrase}",
             )
     return None
 
@@ -155,6 +197,7 @@ def _step_trigger(stream: Stream) -> TriggerCondition | None:
             return TriggerCondition(
                 event_kinds=frozenset({kind}),
                 players=players,
+                phases=_PHASES.get(phrase, frozenset()),
                 text=f"at the beginning of {phrase}",
             )
 
@@ -439,20 +482,14 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
         return TriggerCondition(
             event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
             source=SELF,
+            to_player=True,
             text="when this deals combat damage to a player",
         )
     if stream.accept_phrase("deals damage"):
         # "deals damage to a player", "deals damage to an opponent", or with
         # nothing after it at all. The recipient narrows the trigger, so it is
         # read if it is there and left general if it is not.
-        stream.accept("to")
-        parse_player_filter(stream)
-        parse_object_filter(stream)
-        return TriggerCondition(
-            event_kinds=frozenset({EventKind.DAMAGE_DEALT}),
-            source=SELF,
-            text="when this deals damage",
-        )
+        return _deals_damage(stream, SELF, "when this deals damage")
     if stream.accept_phrase("becomes the target of a spell or ability"):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TARGETED}),
@@ -621,17 +658,11 @@ def _subject_event(stream: Stream, subject: ObjectFilter) -> TriggerCondition | 
         return TriggerCondition(
             event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
             source=subject,
+            to_player=True,
             text="whenever something deals combat damage to a player",
         )
     if stream.accept_phrase("deals damage"):
-        stream.accept("to")
-        parse_player_filter(stream)
-        parse_object_filter(stream)
-        return TriggerCondition(
-            event_kinds=frozenset({EventKind.DAMAGE_DEALT}),
-            source=subject,
-            text="whenever something deals damage",
-        )
+        return _deals_damage(stream, subject, "whenever something deals damage")
 
     zoned = _leaves_zone(stream, subject)
     if zoned is not None:
@@ -815,8 +846,8 @@ def _counters_placed(stream: Stream, subject: ObjectFilter):
 #:
 #: Each entry is (phrase, event kinds, uses-last-known-information).
 _SIMPLE_EVENTS: tuple[tuple[str, tuple[EventKind, ...], bool], ...] = (
-    ("is dealt damage", (EventKind.DAMAGE_DEALT,), False),
-    ("are dealt damage", (EventKind.DAMAGE_DEALT,), False),
+    ("is dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
+    ("are dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
     ("becomes the target", (EventKind.TARGETED,), False),
     ("is targeted", (EventKind.TARGETED,), False),
     ("becomes blocked", (EventKind.BECOMES_BLOCKED,), False),
@@ -923,6 +954,43 @@ def _each_turn_tail(stream: Stream) -> None:
 def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | None:
     # Oracle text conjugates for the subject: "you gain" but "a player gains".
     # Both forms mean the same event, so both are accepted everywhere.
+    if stream.accept_phrase("complete a dungeon") or stream.accept_phrase(
+        "completes a dungeon"
+    ):
+        # CR 309.7: completing happens as the dungeon leaves the game.
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.DUNGEON_COMPLETED}),
+            players=players,
+            text="whenever a player completes a dungeon",
+        )
+    # CR 701.51c: opening an Attraction is the Attraction arriving from the
+    # Attraction deck, which is one event per Attraction opened.
+    if stream.accept_phrase("open an Attraction") or stream.accept_phrase(
+        "opens an Attraction"
+    ):
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.ATTRACTION_OPENED}),
+            players=players,
+            text="whenever a player opens an Attraction",
+        )
+    # CR 701.52a: the roll itself, whatever it lights up.
+    if stream.accept_phrase("roll to visit your Attractions") or stream.accept_phrase(
+        "rolls to visit their Attractions"
+    ):
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.ROLLED_TO_VISIT}),
+            players=players,
+            text="whenever a player rolls to visit their Attractions",
+        )
+    # CR 701.52a: an Attraction that roll lit up "has been visited".
+    if stream.accept_phrase("visit an Attraction") or stream.accept_phrase(
+        "visits an Attraction"
+    ):
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.ATTRACTION_VISITED}),
+            players=players,
+            text="whenever a player visits an Attraction",
+        )
     if stream.accept_phrase("gain life") or stream.accept_phrase("gains life"):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.LIFE_GAINED}),
@@ -1156,6 +1224,10 @@ def _count_condition(stream: Stream) -> Condition | None:
             text="if you control ...",
         )
 
+    designation = designation_condition(stream)
+    if designation is not None:
+        return designation
+
     # "if no mana was spent to cast it" - a fact about how the spell was cast,
     # which the spell carries. Free spells are the whole point of the card,
     # and a condition read as always-true would counter everything.
@@ -1175,6 +1247,54 @@ def _count_condition(stream: Stream) -> Condition | None:
         )
 
     stream.reset(mark)
+    return None
+
+
+def designation_condition(stream: Stream) -> Condition | None:
+    """Conditions about what a player has done or holds rather than about
+    the board: "you've completed a dungeon" (CR 309.7), "you haven't
+    completed Tomb of Annihilation", "you have the initiative" (CR 726.1).
+    """
+    mark = stream.mark()
+    negated = False
+    if stream.accept("you've") or stream.accept_phrase("you have"):
+        pass
+    elif stream.accept_phrase("you haven't") or stream.accept_phrase("you have not"):
+        negated = True
+    else:
+        return None
+
+    if stream.accept_phrase("the initiative"):
+        condition = Condition(kind=ConditionKind.HAS_INITIATIVE, text="you have the initiative")
+    elif stream.accept("completed"):
+        condition = _completed_dungeon(stream)
+    else:
+        condition = None
+    if condition is None:
+        stream.reset(mark)
+        return None
+
+    if negated:
+        return Condition(
+            kind=ConditionKind.NOT, operands=(condition,), text=f"not {condition.text}"
+        )
+    return condition
+
+
+def _completed_dungeon(stream: Stream) -> Condition | None:
+    """"completed a dungeon", or one dungeon by name (CR 309.7)."""
+    if stream.accept_phrase("a dungeon"):
+        return Condition(kind=ConditionKind.COMPLETED_DUNGEON, text="you've completed a dungeon")
+    from ..rules.cr300_card_types.cr309_dungeons import DUNGEON_NAMES
+
+    for full_name in DUNGEON_NAMES:
+        name = full_name.split(" // ")[0]
+        if stream.accept_phrase(name):
+            return Condition(
+                kind=ConditionKind.COMPLETED_DUNGEON,
+                keyword=name,
+                text=f"you've completed {name}",
+            )
     return None
 
 

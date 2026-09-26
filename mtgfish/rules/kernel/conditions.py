@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .enums import Phase
+from .enums import Phase, Zone
 from .ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from .query import Condition, ConditionKind
 
@@ -259,6 +259,43 @@ def holds(
         if spell is None:
             return False
         return not spell.mana_spent
+
+    if kind is ConditionKind.IS_HARNESSED:
+        obj = game.objects.get(source)
+        return bool(obj is not None and obj.harnessed and obj.zone is Zone.BATTLEFIELD)
+
+    if kind is ConditionKind.HAS_ENDURING_STORY:
+        return controller != NO_PLAYER and game.player(controller).has_enduring_story
+
+    if kind is ConditionKind.COMPLETED_DUNGEON:
+        # CR 309.7: completing is recorded as the dungeon leaves the game, so
+        # this reads the record rather than anything still in a zone.
+        if controller == NO_PLAYER:
+            return False
+        completed = game.player(controller).completed_dungeons
+        if not condition.keyword:
+            return bool(completed)
+        wanted = condition.keyword.lower()
+        return any(name.lower() == wanted for name in completed)
+
+    if kind is ConditionKind.HAS_INITIATIVE:
+        return controller != NO_PLAYER and game.player(controller).has_initiative
+
+    if kind is ConditionKind.RING_TEMPTED_TIMES:
+        if condition.constraint is None or controller == NO_PLAYER:
+            return False
+        from .values import evaluate
+
+        expected = evaluate(game, condition.constraint.value, source=source, controller=controller)
+        count = game.player(controller).ring_tempted_count
+        return condition.constraint.comparison.holds(count, expected)
+
+    if kind is ConditionKind.FIRST_RESOLUTION_OF_NAME:
+        spell = game.objects.get(source)
+        if spell is None:
+            return False
+        name = game.characteristics(spell).name.lower()
+        return not game.spell_resolutions.get((int(controller), name), 0)
 
     if kind is ConditionKind.ALTERNATIVE_COST_PAID:
         # Asked of the spell, or of the permanent it became, which carries the

@@ -89,7 +89,7 @@ class EventKind(IntEnum):
     SEARCHED_LIBRARY = 86
     #: CR 716.2: a Class gained a level. ``amount`` is the new level.
     CLASS_LEVEL_GAINED = 87
-    SHUFFLED = 87
+    SHUFFLED = 88
 
     # -- combat (CR 506-511) -----------------------------------------------
     ATTACKERS_DECLARED = 100
@@ -136,6 +136,38 @@ class EventKind(IntEnum):
     RING_TEMPTED = 185
     EXPLORED = 187
     DUNGEON_VENTURED = 186
+    #: CR 700.11: a permanent card was put into its owner's graveyard.
+    DESCENDED = 330
+    #: CR 700.13: a player committed a crime.
+    CRIME_COMMITTED = 331
+    #: CR 700.14: a player's mana spent on spells this turn reached ``amount``.
+    EXPENDED = 332
+
+    # -- dungeons (CR 309) --------------------------------------------------
+    #: CR 309.4c: a venture marker moved into a room. ``object_id`` is the
+    #: dungeon card and ``amount`` the room's position on it, counted from 1
+    #: at the topmost room - what a room ability's trigger condition reads.
+    VENTURE_MARKER_MOVED = 300
+    #: CR 309.7: a player completed a dungeon. ``object_id`` is the dungeon
+    #: card as it left the game and ``data`` holds its name.
+    DUNGEON_COMPLETED = 301
+
+    # -- face-down objects (CR 708) ----------------------------------------
+    #: CR 701.62b: after the whole manifest dread process, even if part of it
+    #: was impossible.
+    MANIFESTED_DREAD = 310
+
+    # -- Attractions (CR 717) -----------------------------------------------
+    #: CR 701.51c: a player opened an Attraction - it reached the battlefield
+    #: from their Attraction deck. ``object_id`` is the Attraction as it
+    #: entered.
+    ATTRACTION_OPENED = 350
+    #: CR 701.52a: a player rolled to visit their Attractions. ``amount`` is
+    #: the result of the roll.
+    ROLLED_TO_VISIT = 351
+    #: CR 701.52a: one Attraction was visited by that roll. ``object_id`` is
+    #: the Attraction and ``amount`` the result that lit it.
+    ATTRACTION_VISITED = 352
 
 
 #: Events that mean a permanent left the battlefield in some form. Abilities

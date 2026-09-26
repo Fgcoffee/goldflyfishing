@@ -163,6 +163,10 @@ _PLAYER_VERBS = {
     EffectKind.EXTRA_TURN: "takes {n} extra turn(s)",
     EffectKind.EXTRA_LAND_DROP: "may play {n} additional land(s)",
     EffectKind.SHUFFLE: "shuffles",
+    EffectKind.CASCADE: "cascades",
+    EffectKind.DISCOVER: "discovers {n}",
+    EffectKind.OPEN_ATTRACTION: "opens {n} Attraction(s)",
+    EffectKind.ROLL_TO_VISIT: "rolls to visit their Attractions",
 }
 
 #: Effects that are "<verb> <the objects>" and nothing more.
@@ -180,6 +184,7 @@ _OBJECT_VERBS = {
     EffectKind.TRANSFORM: "transform",
     EffectKind.TURN_FACE_UP: "turn face up",
     EffectKind.TURN_FACE_DOWN: "turn face down",
+    EffectKind.MANIFEST: "put onto the battlefield face down",
     EffectKind.PHASE_OUT: "phase out",
     EffectKind.REGENERATE: "regenerate",
     EffectKind.GOAD: "goad",

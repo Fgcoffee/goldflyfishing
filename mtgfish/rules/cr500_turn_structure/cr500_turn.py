@@ -291,6 +291,13 @@ def _run_extras(
                 _run_step(game, phase, step, options, progress)
 
 
+#: CR 500.1: the step each phase starts with. The main phases have no steps
+#: at all (CR 505.2), and are modelled as a single MAIN step.
+_FIRST_STEP_OF_PHASE = frozenset(
+    {Step.UNTAP, Step.MAIN, Step.BEGINNING_OF_COMBAT, Step.END_STEP}
+)
+
+
 def _run_step(
     game: Game,
     phase: Phase,
@@ -304,7 +311,14 @@ def _run_step(
     game.phase = phase
     game.step = step
     # CR 500.6: "at the beginning of" this step or phase triggers now, and
-    # waits for the next time a player would receive priority.
+    # waits for the next time a player would receive priority. A phase begins
+    # with its first step (CR 500.1), and nothing announced it, so every "at
+    # the beginning of combat" and "of your precombat main phase" trigger
+    # waited for an event that never came.
+    if step in _FIRST_STEP_OF_PHASE:
+        game.emit(
+            Event(EventKind.PHASE_BEGAN, player=game.active_player, amount=int(phase))
+        )
     game.emit(Event(EventKind.STEP_BEGAN, player=game.active_player, amount=int(step)))
 
     _turn_based_actions(game, step, options)
@@ -428,17 +442,21 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         # CR 728.1: the rad-counter procedure is a turn-based action at the
         # start of the precombat main phase.
         # CR 505.4: a lore counter on each Saga the active player controls.
-        # CR 505.5's roll to visit Attractions is missing rather than absent
-        # on principle: Attractions are Commander-legal, but they need the
-        # Attraction deck of CR 717 - a zone built during deck construction -
-        # and the engine has neither that zone nor die rolling. With no
-        # Attraction able to reach the battlefield there is never one to
-        # visit, so the omission is not observable.
+        # CR 505.5, and CR 703.4g for its place straight after the lore
+        # counters: if the active player controls an Attraction, they roll to
+        # visit their Attractions. The visit abilities that triggers wait for
+        # priority like any others.
         from ..cr300_card_types.cr300_card_types import saga_lore_counters
+        from ..cr700_additional_rules.cr717_attractions import (
+            controls_an_attraction,
+            roll_to_visit,
+        )
         from ..cr700_additional_rules.cr725_designations import rad_counter_milling
 
         rad_counter_milling(game, game.active_player)
         saga_lore_counters(game)
+        if controls_an_attraction(game, game.active_player):
+            roll_to_visit(game, game.active_player)
     elif step is Step.UPKEEP:
         # CR 503.1: the upkeep step has no turn-based actions of its own; this
         # event exists only so that abilities can trigger off the step
@@ -450,6 +468,10 @@ def _turn_based_actions(game: Game, step: Step, options: TurnOptions) -> None:
         # ever fired in a game; only a test that emitted the event by hand saw
         # one.
         game.emit(Event(EventKind.UPKEEP, player=game.active_player))
+        # CR 726.2: the initiative's holder ventures into Undercity.
+        from ..cr700_additional_rules.cr725_designations import initiative_upkeep
+
+        initiative_upkeep(game)
     elif step is Step.END_STEP:
         # CR 513.1: the end step has no turn-based actions either.
         # CR 513.1a: the same for "at the beginning of the end step", which is

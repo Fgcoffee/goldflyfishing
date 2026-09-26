@@ -40,7 +40,7 @@ from ..cr100_game_concepts.cr118_costs import (
 from ..kernel.enums import Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import PlayerId
+from ..kernel.ids import NO_OBJECT, PlayerId
 from .abilities import Ability, AbilityKind
 from .effects import Effect, EffectKind
 
@@ -114,10 +114,8 @@ FACE_DOWN_CAST_KEYWORDS = frozenset({"Morph", "Megamorph", "Disguise"})
 def _is_face_down_cast(game: Game, spell: GameObject, action: Action) -> bool:
     if action.alternative_cost < 0:
         return False
-    alternatives = game.characteristics(spell).alternative_costs
-    if action.alternative_cost >= len(alternatives):
-        return False
-    return alternatives[action.alternative_cost].keyword in FACE_DOWN_CAST_KEYWORDS
+    alternative = chosen_alternative_cost(game, spell, action)
+    return alternative is not None and alternative.keyword in FACE_DOWN_CAST_KEYWORDS
 
 
 def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
@@ -129,9 +127,21 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     origin_zone = card_object.zone
     from_command_zone = origin_zone is Zone.COMMAND
 
+    # CR 601.2b: an alternative cost offered by a granted ability is read off
+    # the card before CR 400.7 separates the spell from the grant.
+    offered = chosen_alternative_cost(game, card_object, action)
     # 601.2a: move the card to the stack. It becomes a spell there.
     spell = game.move_object(card_object, Zone.STACK, to_player=player_id)
     spell.controller = player_id
+    spell.alternative_cost_offered = offered
+    # CR 118.5: permission to cast "without paying its mana cost" is given to
+    # the card before it moves, and CR 400.7 makes the spell a new object. Not
+    # carried over, every cascade, suspend and discover cast was charged its
+    # full mana cost - and abandoned when the mana was not there.
+    spell.cast_without_paying = card_object.cast_without_paying
+    # CR 722.3c: casting a prepare copy unprepares its permanent at 601.2i;
+    # it is recorded now and rewound with the cast if the cast fails.
+    prepared_by = card_object.prepare_copy_of
     spell.face_index = action.face_index
     # CR 715.3, 718.3, 720.3: the alternative characteristics apply because
     # the player chose them as the card was played, so the choice is recorded
@@ -148,9 +158,16 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     # against.
     if _is_face_down_cast(game, spell, action):
         spell.face_down = True
+        # CR 702.168a: which keyword it was decides what the face-down spell
+        # is - a disguised one has ward {2}.
+        spell.face_down_by = chosen_alternative_cost(game, spell, action).keyword
         spell.invalidate()
         game.invalidate_characteristics()
 
+    # CR 601.2h: a cast that cannot be completed is rewound, mana abilities
+    # included. Without this the log said "the game state is unchanged" while
+    # the lands tapped along the way stayed tapped and their mana floated.
+    checkpoint = _mana_checkpoint(game, player_id)
     try:
         # 601.2b: choose modes and X. The caller may have announced the modes
         # already; when it has not, the controller is asked, because a modal
@@ -201,6 +218,7 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
 
     except CastError:
         # 601.2h: an incomplete cast is rewound entirely.
+        _restore_mana_checkpoint(game, player_id, checkpoint)
         game.log.record(game, "Cast rewound; the game state is unchanged", kind="rewind")
         game.move_object(spell, origin_zone, to_player=card_object.owner)
         raise
@@ -211,6 +229,11 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         game.emit(
             Event(EventKind.COMMANDER_CAST, object_id=spell.id, player=player_id)
         )
+
+    if prepared_by != NO_OBJECT:
+        from ..cr700_additional_rules.cr722_preparation import become_unprepared
+
+        become_unprepared(game, prepared_by)
 
     game.log.record(game, f"{game.player(player_id).name} casts {spell}", kind="cast",
                     player=player_id)
@@ -226,7 +249,13 @@ def chosen_alternative_cost(game: Game, spell: GameObject, action: Action):
 
     CR 118.9a allows at most one, so this is one or ``None``.
     """
-    available = game.characteristics(spell).alternative_costs
+    if spell.alternative_cost_offered is not None:
+        return spell.alternative_cost_offered
+    # CR 702.37c: a morph spell is face down on the stack before its cost is
+    # determined, and the face-down spell has no abilities - the {3} it pays
+    # is the card's morph ability, read from the card.
+    chars = game.printed_characteristics(spell) if spell.face_down else game.characteristics(spell)
+    available = chars.alternative_costs
     if 0 <= action.alternative_cost < len(available):
         return available[action.alternative_cost]
     return None
@@ -1036,47 +1065,16 @@ def _tap_for_mana(
     """CR 601.2g: activate mana abilities to produce what is still needed.
 
     Mana abilities do not use the stack and cannot be responded to (CR 605.3b),
-    so this happens inline. The choice of *which* sources to tap is the
-    player's; the default taps in a stable order so replays reproduce, and the
-    AI overrides it with something better.
+    so this happens inline. Which sources to tap, and for what, is solved by
+    ``mana_plan``: the first mana ability of each source in id order was the
+    wrong one on every pain land and every "any colour" source. When nothing
+    pays the cost nothing is tapped, and the caller reports it unpaid.
     """
-    from .resolve import Resolution, execute
+    from .mana_plan import execute_plan, plan_payment
 
-    player = game.player(player_id)
-    # CR 302.6 applies to creatures only. A land tapped for mana the turn it
-    # arrives is completely normal, and skipping those here made every one-drop
-    # uncastable on turn one.
-    sources = sorted(
-        (
-            obj
-            for obj in game.permanents(player_id)
-            if not obj.tapped
-            and not (obj.summoning_sick and game.characteristics(obj).is_creature)
-        ),
-        key=lambda o: o.id,
-    )
-
-    for obj in sources:
-        if find_payment(player.mana_pool, cost, life_available=0, context=context):
-            return
-        for ability in game.characteristics(obj).abilities:
-            if not ability.is_mana_ability or ability.unparsed:
-                continue
-            if not _can_pay_activation(game, obj, ability):
-                continue
-            _pay_activation(game, obj, ability)
-            # CR 602.2b: the modes are chosen on activation, even when the
-            # activation is the engine's own during cost payment.
-            execute(
-                Resolution(
-                    game=game,
-                    source=obj.id,
-                    controller=player_id,
-                    chosen_modes=choose_modes(game, obj, ability.effects, player_id),
-                ),
-                ability.effects,
-            )
-            break
+    plan = plan_payment(game, player_id, cost, context)
+    if plan:
+        execute_plan(game, player_id, plan)
 
 
 #: Every non-mana cost ``_pay_component`` knows how to charge. Anything else is
@@ -1638,7 +1636,9 @@ def can_pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
         return True
     if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
         return True
-    return _could_produce(game, player_id, mana_cost)
+    from .mana_plan import can_produce
+
+    return can_produce(game, player_id, mana_cost)
 
 
 def pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
@@ -1898,7 +1898,13 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
     if mana_cost:
         if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
             return True
-        return _could_produce(game, source.controller, mana_cost)
+        if ability.is_mana_ability:
+            # The planner asks this very question of every mana ability, so a
+            # Signet's own {1} is left to its search rather than recursing.
+            return _could_produce(game, source.controller, mana_cost)
+        from .mana_plan import can_produce
+
+        return can_produce(game, source.controller, mana_cost, source)
     return True
 
 

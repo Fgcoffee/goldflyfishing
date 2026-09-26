@@ -63,9 +63,21 @@ class SpecialAction:
     #: For turning a face-down permanent up: which keyword permits it, because
     #: megamorph adds a +1/+1 counter and morph does not.
     keyword: str = ""
+    #: For turning a face-down permanent up: which of its ways of turning up
+    #: this is, by position in ``face_up_options``. A manifested card with
+    #: morph has two (CR 701.40c), and the player chooses which cost to pay.
+    option: int = -1
 
     def as_action(self) -> Action:
-        return Action(ActionKind.SPECIAL, source=self.source, ability_index=int(self.kind))
+        # The option rides in ``alternative_cost``: choosing which cost to pay
+        # for turning a permanent up is exactly what that field records for
+        # a spell, and a special action uses it for nothing else.
+        return Action(
+            ActionKind.SPECIAL,
+            source=self.source,
+            ability_index=int(self.kind),
+            alternative_cost=self.option,
+        )
 
 
 def available(game: Game, player_id: PlayerId) -> list[SpecialAction]:
@@ -78,6 +90,7 @@ def available(game: Game, player_id: PlayerId) -> list[SpecialAction]:
     found: list[SpecialAction] = []
     found.extend(_turn_face_up(game, player_id))
     found.extend(_from_hand(game, player_id))
+    found.extend(_companion(game, player_id))
     return found
 
 
@@ -87,11 +100,15 @@ def perform(game: Game, player_id: PlayerId, action: Action) -> bool:
     obj = game.objects.get(action.source)
 
     if kind is SpecialKind.TURN_FACE_UP:
-        return obj is not None and turn_face_up(game, obj)
+        return obj is not None and _pay_and_turn_face_up(
+            game, player_id, obj, action.alternative_cost, x_value=action.x_value
+        )
     if kind in (SpecialKind.SUSPEND, SpecialKind.FORETELL, SpecialKind.PLOT):
         return obj is not None and _exile_from_hand(game, player_id, obj, kind)
     if kind is SpecialKind.DISCARD_SELF:
         return obj is not None and _discard_self(game, player_id, obj)
+    if kind is SpecialKind.COMPANION:
+        return _put_companion_into_hand(game, player_id)
     if kind in OUT_OF_SCOPE:
         game.log.record(
             game,
@@ -100,7 +117,7 @@ def perform(game: Game, player_id: PlayerId, action: Action) -> bool:
             player=player_id,
         )
         return False
-    # 116.2c/d/g/m: these exist only where a card creates them, and a card that
+    # 116.2c/d/m: these exist only where a card creates them, and a card that
     # creates one registers its own handler. Nothing generic to do.
     return False
 
@@ -133,14 +150,37 @@ def _turn_face_up(game: Game, player_id: PlayerId):
         obj = game.objects.get(object_id)
         if obj is None or obj.controller != player_id or not obj.face_down:
             continue
-        for keyword, cost in _face_up_costs(game, obj):
+        for option, (keyword, cost) in enumerate(face_up_options(game, obj)):
             if can_afford(game, player_id, cost):
                 yield SpecialAction(
                     SpecialKind.TURN_FACE_UP,
                     source=object_id,
                     cost=cost,
                     keyword=keyword,
+                    option=option,
                 )
+
+
+def face_up_options(game: Game, obj) -> list[tuple[str, ManaCost]]:
+    """Every way this face-down permanent may be turned face up, with its cost.
+
+    The morph-family costs come first, then CR 701.40b / 701.58b's mana cost
+    for a manifested or cloaked creature card - both, for a manifested card
+    with morph (CR 701.40c, 701.58c). CR 701.40g: an instant or sorcery card
+    offers nothing, because it cannot be turned face up at all.
+    """
+    from ..cr700_additional_rules.cr708_face_down import (
+        cannot_turn_face_up,
+        mana_cost_to_turn_up,
+    )
+
+    if obj.card is None or cannot_turn_face_up(game, obj):
+        return []
+    options = list(_face_up_costs(game, obj))
+    mana_cost = mana_cost_to_turn_up(game, obj)
+    if mana_cost is not None:
+        options.append((obj.face_down_by, mana_cost))
+    return options
 
 
 def _face_up_costs(game: Game, obj):
@@ -168,34 +208,59 @@ def _face_up_costs(game: Game, obj):
         yield ability.keyword, ability.cost.mana_component
 
 
-def turn_face_up(game: Game, obj) -> bool:
-    """Turn a face-down permanent face up (CR 708.4).
+def turn_face_up(game: Game, obj, keyword: str | None = None) -> bool:
+    """Turn a face-down permanent face up (CR 708.8).
 
     Its characteristics come back all at once, and because it was already on
     the battlefield this is not an enters-the-battlefield event - "when this
     creature is turned face up" triggers fire, "when this creature enters"
     triggers do not.
+
+    ``keyword`` is the cost that was paid. CR 702.37b: only a megamorph cost
+    leaves a +1/+1 counter, so a manifested megamorph card turned up for its
+    mana cost gets none. With no keyword the permanent is taken to be turned
+    up by its own morph-family ability.
     """
-    if not obj.face_down:
+    from ..cr700_additional_rules.cr708_face_down import turn_face_up as turn_up
+
+    if keyword is None:
+        megamorph = game.printed_characteristics(obj).has_keyword("Megamorph")
+    else:
+        megamorph = keyword == "Megamorph"
+    return turn_up(game, obj, megamorph=megamorph)
+
+
+def _pay_and_turn_face_up(
+    game: Game, player_id: PlayerId, obj, option: int, *, x_value: int = 0
+) -> bool:
+    """CR 702.37e, 702.168d, 701.40b: show the cost, pay it, turn it up.
+
+    The cost is paid - it is what turning a permanent up is for - and an
+    unpayable one leaves the permanent face down with nothing spent.
+    """
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _pay
+    from .cr118_costs import TotalCost
+
+    if obj.controller != player_id or not obj.face_down:
         return False
-    obj.face_down = False
-    obj.timestamp = game.ids.timestamp()
-    obj.invalidate()
-    game.invalidate_characteristics()
-
-    if game.characteristics(obj).has_keyword("Megamorph"):
-        # CR 702.37b: megamorph turns it up with a +1/+1 counter on it. The
-        # counter is placed *after* the characteristics come back, and layer 7d
-        # has to be told, or the permanent keeps the power it was computed with
-        # a moment ago.
-        obj.add_counters("+1/+1", 1)
-        obj.invalidate()
-        game.invalidate_characteristics()
-
-    game.emit(
-        Event(EventKind.TURNED_FACE_UP, object_id=obj.id, player=obj.controller)
-    )
-    return True
+    options = face_up_options(game, obj)
+    if not options:
+        return False
+    if not 0 <= option < len(options):
+        option = 0
+    keyword, cost = options[option]
+    try:
+        _pay(game, player_id, TotalCost(base=cost, x_value=x_value), obj)
+    except CastError as exc:
+        game.log.record(
+            game, f"cannot turn {obj} face up: {exc}", kind="illegal", player=player_id
+        )
+        return False
+    if cost.variable_count:
+        # CR 702.37f: X in the cost is chosen as the action is taken, and the
+        # permanent's other abilities that say X mean that value.
+        obj.x_value = max(0, x_value)
+    return turn_face_up(game, obj, keyword)
 
 
 # ---------------------------------------------------------------------------
@@ -252,9 +317,32 @@ def _exile_from_hand(game: Game, player_id: PlayerId, obj, kind: SpecialKind) ->
     removed, cast it for its foretell cost, cast it on a later turn - depends
     on which one it was. CR 607: that is a linked ability, so the link is
     stored rather than re-derived.
+
+    CR 116.2f / 702.143a: foretelling costs {2}. The action offered that
+    cost and checked it could be paid, and then never charged it, so every
+    foretold card was exiled for nothing. An unpayable cost now leaves the
+    card in hand with nothing spent, as turning a card face up does.
     """
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _pay
+    from .cr118_costs import TotalCost
+
+    cost_text = next(
+        (text for special, text, _own, _empty in _HAND_ACTIONS.values() if special is kind),
+        "",
+    )
+    if cost_text:
+        try:
+            _pay(game, player_id, TotalCost(base=ManaCost.parse(cost_text)), obj)
+        except CastError as exc:
+            game.log.record(
+                game, f"cannot {kind.name.lower()} {obj}: {exc}", kind="illegal", player=player_id
+            )
+            return False
+
     face_down = kind is not SpecialKind.SUSPEND
-    exiled = game.move_object(obj, Zone.EXILE)
+    # CR 406.3: a foretold or plotted card is exiled face down - face down
+    # as it arrives, so nothing ever sees it face up in exile.
+    exiled = game.move_object(obj, Zone.EXILE, face_down="" if face_down else None)
     exiled.face_down = face_down
     game.exiled_with.setdefault(obj.id, [])
     game.log.record(
@@ -294,6 +382,80 @@ def _discard_self(game: Game, player_id: PlayerId, obj) -> bool:
     return True
 
 
+# ---------------------------------------------------------------------------
+# CR 116.2g: putting a companion into hand from outside the game
+# ---------------------------------------------------------------------------
+
+
+def _companion_may_come_in(game: Game, player_id: PlayerId) -> bool:
+    """CR 116.2g: the timing and once-per-game conditions, and CR 903.11a.
+
+    The timing is sorcery timing in all but name - priority, an empty stack,
+    a main phase of your own turn. Priority is the caller's to have: this is
+    only ever asked on behalf of the player holding it.
+    """
+    from ..cr400_zones.cr400_outside_game import cannot_bring_in
+    from ..kernel.legality import has_sorcery_speed
+
+    player = game.player(player_id)
+    if player.companion is None or player.companion_brought_in:
+        return False
+    if not has_sorcery_speed(game, player_id):
+        return False
+    return cannot_bring_in(game, player_id, player.companion) is None
+
+
+def _companion(game: Game, player_id: PlayerId):
+    from ..cr400_zones.cr400_outside_game import COMPANION_COST
+    from ..kernel.legality import can_afford
+
+    if not _companion_may_come_in(game, player_id):
+        return
+    cost = ManaCost.parse(COMPANION_COST)
+    if can_afford(game, player_id, cost):
+        # No source: the companion is outside the game and is not an object
+        # until this action brings it in (CR 400.11).
+        yield SpecialAction(SpecialKind.COMPANION, cost=cost, keyword="Companion")
+
+
+def _put_companion_into_hand(game: Game, player_id: PlayerId) -> bool:
+    """CR 116.2g, 702.139a: pay {3} and put the companion into your hand.
+
+    The cost is paid first and in full; an unpayable one leaves the companion
+    outside the game with nothing spent. The card then comes in through the
+    one door from outside the game, which makes the player who brought it in
+    its owner (CR 108.3), and CR 702.139c keeps it in for the rest of the game.
+    """
+    from ..cr400_zones.cr400_outside_game import COMPANION_COST, bring_into_game
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _pay
+    from .cr118_costs import TotalCost
+
+    if not _companion_may_come_in(game, player_id):
+        return False
+    player = game.player(player_id)
+    try:
+        _pay(game, player_id, TotalCost(base=ManaCost.parse(COMPANION_COST)), None)
+    except CastError as exc:
+        game.log.record(
+            game,
+            f"cannot put {player.companion} into hand: {exc}",
+            kind="illegal",
+            player=player_id,
+        )
+        return False
+    obj = bring_into_game(game, player_id, player.companion, Zone.HAND)
+    if obj is None:
+        return False
+    player.companion_brought_in = True
+    game.log.record(
+        game,
+        f"{player.name} puts their companion {player.companion} into their hand",
+        kind="special-action",
+        player=player_id,
+    )
+    return True
+
+
 def can_take_special_actions(game: Game, player_id: PlayerId) -> bool:
     """Whether the player has any special action available.
 
@@ -311,6 +473,7 @@ __all__ = [
     "SpecialKind",
     "available",
     "can_take_special_actions",
+    "face_up_options",
     "perform",
     "turn_face_up",
 ]

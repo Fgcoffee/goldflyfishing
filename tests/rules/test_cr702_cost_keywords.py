@@ -1,13 +1,13 @@
 """Keywords that change how a spell is paid for or activated (CR 702).
 
-Four keywords that the registry used to call PARTIAL - an ability of the right
+Three keywords that the registry used to call PARTIAL - an ability of the right
 shape wrapped around an effect the engine could not run:
 
 * sneak (CR 702.190) and web-slinging (CR 702.188), alternative costs that
   also return one of your creatures to your hand;
-* power-up (CR 702.193), an activated ability with an activation limit;
-* paradigm (CR 702.192), which is still partial and is tested here so the
-  reason stays visible.
+* power-up (CR 702.193), an activated ability with an activation limit.
+
+Paradigm (CR 702.192) has its own file, ``test_cr702_paradigm``.
 
 The shape tests check what the builder produces; the engine tests cast and
 activate the result, because an alternative cost that the legality layer never
@@ -28,7 +28,6 @@ from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
     KeywordInstance,
     build,
 )
-from mtgfish.rules.cr700_additional_rules.keywords import Status, lookup
 from mtgfish.rules.kernel.enums import CardType, Phase, Step, Zone
 from mtgfish.rules.kernel.ids import PlayerId
 from mtgfish.rules.kernel.legality import legal_actions
@@ -393,77 +392,6 @@ def test_colored_reduction_with_nothing_to_reduce_comes_off_generic(board):
     ability = board.game.characteristics(bear).abilities[0]
 
     assert activation_mana_cost(board.game, bear, ability) == ManaCost.parse("{2}{R}")
-
-
-# ---------------------------------------------------------------------------
-# Paradigm (CR 702.192a) - still partial, deliberately
-# ---------------------------------------------------------------------------
-
-
-def test_paradigm_exiles_the_spell():
-    """CR 702.192a's second spell ability is buildable today."""
-    (ability,) = kw("Paradigm")
-
-    assert ability.kind is AbilityKind.SPELL
-    assert any(effect.kind is EffectKind.EXILE for effect in ability.effects)
-
-
-def test_paradigm_still_reports_the_copy_it_cannot_make():
-    """A copy created *in exile* has no opcode, so the gap stays visible."""
-    (ability,) = kw("Paradigm")
-
-    assert any(
-        node.is_unparsed for effect in ability.effects for node in effect.walk()
-    )
-    assert lookup("Paradigm").status is Status.PARTIAL
-
-
-# ---------------------------------------------------------------------------
-# Controls: shapes these changes must not have disturbed
-# ---------------------------------------------------------------------------
-
-
-def test_flashback_is_still_a_graveyard_alternative_cost():
-    (ability,) = kw("Flashback", "{2}{R}")
-
-    assert ability.alternative_cost.from_zone is Zone.GRAVEYARD
-    assert not return_components(ability.alternative_cost.cost)
-
-
-def test_ninjutsu_still_returns_an_unblocked_attacker_as_an_activation_cost():
-    """The same cost component, on an activated ability rather than a cast."""
-    (ability,) = kw("Ninjutsu", "{1}{U}")
-
-    assert ability.kind is AbilityKind.ACTIVATED
-    (returned,) = return_components(ability.cost)
-    assert returned.filter.blocked is False
-
-
-def test_an_unknown_keyword_is_still_unparsed():
-    (ability,) = kw("Zibbleflorp")
-    assert ability.unparsed
-
-
-def test_a_return_cost_the_parser_already_read_is_not_added_twice():
-    """The keyword's text may spell the return out; one is still one."""
-    from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter, Value
-
-    printed = Cost(
-        (
-            CostComponent(CostKind.MANA, mana=ManaCost.parse("{G}")),
-            CostComponent(
-                CostKind.RETURN_TO_HAND,
-                filter=ObjectFilter(
-                    types_all=CardType.CREATURE, controller=ControllerRelation.YOU
-                ),
-                amount=Value.of(1),
-                text="return a creature you control",
-            ),
-        )
-    )
-    for name in ("Sneak", "Web-slinging"):
-        (ability,) = build(KeywordInstance(name, cost=printed))
-        assert len(return_components(ability.alternative_cost.cost)) == 1, name
 
 
 # ---------------------------------------------------------------------------

@@ -575,6 +575,14 @@ def can_block(game: Game, blocker: GameObject, attacker: GameObject) -> bool:
     if _has_unblockable_landwalk(game, attacker, blocker.controller):
         return False
 
+    # CR 701.54c: the Ring - "your Ring-bearer ... can't be blocked by
+    # creatures with greater power", the same test as skulk.
+    from ..cr700_additional_rules.cr701_ring import is_a_ring_bearer
+
+    if is_a_ring_bearer(game, attacker):
+        if (blocker_chars.power or 0) > (attacker_chars.power or 0):
+            return False
+
     # CR 702.118b: skulk - can't be blocked by creatures with greater power.
     if attacker_chars.has_keyword("Skulk"):
         attacker_power = attacker_chars.power or 0
@@ -836,12 +844,21 @@ def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
         combat_damage_to_monarch,
     )
 
+    # CR 726.2: which players' creatures hit the initiative's holder, read
+    # before any damage is dealt - the trigger is about the player who has it
+    # as the damage is dealt, and damage that kills them must not hide it.
+    initiative_attackers: dict[PlayerId, list[PlayerId]] = {}
+    for source, target, amount, _, _ in assignments:
+        if isinstance(target, int) and amount > 0 and game.player(PlayerId(target)).has_initiative:
+            hitters = initiative_attackers.setdefault(PlayerId(target), [])
+            if source.controller not in hitters:
+                hitters.append(source.controller)
+
     for source, target, amount, deathtouch, lifelink in assignments:
         if isinstance(target, int) and amount > 0:
-            # CR 725.4 / 726.4: combat damage to the holder passes it on. Done
+            # CR 725.4: combat damage to the monarch passes it on. Done
             # before the damage so it is not skipped when the damage kills them.
             combat_damage_to_monarch(game, PlayerId(target), source.controller)
-            combat_damage_to_initiative_holder(game, PlayerId(target), source.controller)
         actions.deal_damage(
             game,
             target,
@@ -853,6 +870,9 @@ def _damage_round(game: Game, combat: Combat, *, first_strike: bool) -> None:
             combat=True,
             is_commander_source=source.is_commander,
         )
+
+    for victim, hitters in initiative_attackers.items():
+        combat_damage_to_initiative_holder(game, victim, hitters)
 
 
 def _attacker_assignment(

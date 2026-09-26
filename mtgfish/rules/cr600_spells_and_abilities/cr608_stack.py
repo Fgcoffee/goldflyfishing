@@ -23,6 +23,7 @@ from .resolve import Resolution, execute
 
 if TYPE_CHECKING:
     from ..kernel.game import Game
+    from ..kernel.ids import ObjectId
 
 
 def top(game: Game) -> GameObject | None:
@@ -91,12 +92,37 @@ def _resolve_ability(game: Game, obj: GameObject) -> None:
         targets=obj.targets,
         x_value=obj.x_value,
         event_amount=getattr(obj.trigger_event, "amount", 0) or 0,
+        # CR 603.7c: a delayed ability's "it" was fixed when it was created.
+        remembered=_still_where_expected(game, ability, obj.trigger_event),
     )
     execute(resolution, ability.effects)
     game.emit(
         Event(EventKind.ABILITY_RESOLVED, object_id=obj.id, player=obj.controller)
     )
     _cease(game, obj)
+
+
+def _still_where_expected(game: Game, ability, event) -> list[ObjectId]:
+    """The objects a delayed ability refers to that it may still affect.
+
+    CR 603.7c: an object that has left the zone it was expected in is out of
+    reach, and coming back makes it a new object (CR 400.7). The one move the
+    ability may follow is the one that triggered it - "when that land dies,
+    return it" means the card that event put in the graveyard.
+    """
+    if not ability.remembered:
+        return []
+    moved = set()
+    if event is not None:
+        moved = {event.object_id, *(i for i in event.data if isinstance(i, int))}
+    out: list[ObjectId] = []
+    for object_id in ability.remembered:
+        obj = game.objects.get(object_id)
+        if obj is not None and obj.superseded_by and object_id in moved:
+            obj = game.objects.get(obj.superseded_by)
+        if obj is not None and obj.is_live:
+            out.append(obj.id)
+    return out
 
 
 def _cease(game: Game, obj: GameObject) -> None:
@@ -135,6 +161,11 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # back to its caster.
         permanent.base_controller = obj.base_controller
         _carry_effects_onto_the_permanent(game, obj, permanent)
+        # CR 607.2q: cards exiled to pay for the spell are "exiled with" the
+        # permanent it became.
+        from ..cr100_game_concepts.actions import carry_links
+
+        carry_links(game, obj.id, permanent.id)
         permanent.x_value = obj.x_value
         # CR 702.33e and its kin: "if it was kicked", "if no mana was spent to
         # cast it", "if its surge cost was paid" are asked by the permanent's
@@ -149,6 +180,7 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         permanent.was_cast = True
         _apply_enters_with_counters(game, permanent)
         _attach_aura_on_entry(game, obj, permanent)
+        _record_resolution(game, obj, chars)
         if obj.enters_tapped_and_attacking:
             _enter_tapped_and_attacking(game, obj, permanent)
         game.emit(
@@ -168,6 +200,7 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         if ability.kind is AbilityKind.SPELL:
             execute(resolution, ability.effects)
 
+    _record_resolution(game, obj, chars)
     game.emit(Event(EventKind.SPELL_RESOLVED, object_id=obj.id, player=obj.controller))
     # CR 608.2m: an instant or sorcery goes to its owner's graveyard as the
     # final part of its resolution - unless it was cast with alternative
@@ -176,6 +209,12 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
     # shuffles a resolved Omen into its owner's library.
     from ..cr300_card_types.cr300_card_types import CastMode, resolution_zone
 
+    if not obj.is_live:
+        # CR 608.2m moves the spell only if it is still there to move. One
+        # that has already left the stack - "exile this spell", "shuffle this
+        # card into its owner's library" - is a new object elsewhere, and
+        # moving the old one again put the card in two zones at once.
+        return
     # Compared against None rather than tested for truth: Zone.LIBRARY is 0,
     # so "or Zone.GRAVEYARD" silently sends every Omen to the graveyard.
     destination = resolution_zone(CastMode(obj.cast_mode))
@@ -189,6 +228,16 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # card moves anywhere else.
         moved.playable_from_here_by = obj.controller
         moved.playable_face = 0
+
+
+def _record_resolution(game: Game, spell: GameObject, chars) -> None:
+    """Count this resolution against its controller and name (CR 702.192a).
+
+    Recorded after the spell's abilities have run, so a paradigm spell asking
+    "is this the first time" sees only the resolutions before its own.
+    """
+    key = (int(spell.controller), chars.name.lower())
+    game.spell_resolutions[key] = game.spell_resolutions.get(key, 0) + 1
 
 
 def _enter_tapped_and_attacking(

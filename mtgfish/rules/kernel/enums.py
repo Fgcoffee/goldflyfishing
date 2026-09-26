@@ -533,6 +533,7 @@ class Layout(IntEnum):
     PLANAR = 22
     SCHEME = 23
     VANGUARD = 24
+    PREPARE = 25  # CR 722 - a prepare spell in an inset frame
 
 
 LAYOUT_NAMES: dict[str, Layout] = {
@@ -546,6 +547,7 @@ LAYOUT_NAMES: dict[str, Layout] = {
     "class": Layout.CLASS,
     "saga": Layout.SAGA,
     "adventure": Layout.ADVENTURE,
+    "prepare": Layout.PREPARE,
     "mutate": Layout.MUTATE,
     "prototype": Layout.PROTOTYPE,
     "case": Layout.CASE,

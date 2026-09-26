@@ -12,8 +12,9 @@ formats this needs to swallow:
     1x Sol Ring (m3c) 236 [Ramp]       Archidekt with categories
     SB: 1 Sol Ring                     old-style sideboard prefix
 
-plus section headers (``Commander``, ``Deck``, ``Sideboard``, ``// Commander``)
-in any capitalisation, with or without a trailing count.
+plus section headers (``Commander``, ``Deck``, ``Sideboard``, ``// Commander``,
+and ``// Attractions`` for the Attraction deck of CR 717.2) in any
+capitalisation, with or without a trailing count.
 
 Nothing is ever silently dropped. A line that does not resolve to a card is
 collected in ``Deck.unresolved`` and reported, because a quietly shorter deck
@@ -30,7 +31,9 @@ from ..db import CardDatabase
 from .model import Deck, DeckEntry, DeckIssue, Severity, validate
 
 #: Section header word -> which pile it fills. Anything mapped to "ignore" is
-#: parsed and discarded, so a maybeboard does not inflate the deck.
+#: parsed and discarded, so a maybeboard does not inflate the deck. A sideboard
+#: and a companion are kept, but outside the deck: both start the game outside
+#: it (CR 400.11a, 103.2b).
 _SECTIONS = {
     "commander": "commander",
     "commanders": "commander",
@@ -42,13 +45,18 @@ _SECTIONS = {
     "creatures": "main",
     "lands": "main",
     "spells": "main",
-    "sideboard": "ignore",
-    "sb": "ignore",
+    "sideboard": "sideboard",
+    "sb": "sideboard",
     "maybeboard": "ignore",
     "considering": "ignore",
     "tokens": "ignore",
     "token": "ignore",
-    "companion": "ignore",
+    # CR 717.2: the supplementary Attraction deck.
+    "attractions": "attraction",
+    "attraction": "attraction",
+    "attraction deck": "attraction",
+    # CR 103.2b: the card revealed as a companion, kept outside the game.
+    "companion": "companion",
 }
 
 _COMMENT_PREFIXES = ("//", "#", ";")
@@ -112,7 +120,7 @@ def parse_lines(text: str) -> list[ParsedLine]:
         # "SB: 1 Sol Ring" - a per-line section marker.
         if line.lower().startswith("sb:"):
             line = line[3:].strip()
-            line_section = "ignore"
+            line_section = "sideboard"
         else:
             line_section = None
 
@@ -164,7 +172,10 @@ def parse_decklist(
     lines = parse_lines(text)
 
     commanders: list[CardDef] = []
+    companions: list[CardDef] = []
+    sideboard: list[CardDef] = []
     entries: list[DeckEntry] = []
+    attractions: list[CardDef] = []
     unresolved: list[str] = []
     issues: list[DeckIssue] = []
 
@@ -174,6 +185,17 @@ def parse_decklist(
         if line.section == "ignore":
             continue
         card = _resolve(db, line.name)
+        if card is None and line.section == "sideboard":
+            # CR 903.11: a sideboard card can never enter a Commander game,
+            # so one that does not resolve changes nothing and is only noted.
+            issues.append(
+                DeckIssue(
+                    Severity.INFO,
+                    "unresolved-sideboard",
+                    f"Sideboard card {line.name!r} not found; ignored.",
+                )
+            )
+            continue
         if card is None:
             unresolved.append(line.name)
             suggestions = db.suggest(line.name)
@@ -188,6 +210,12 @@ def parse_decklist(
             continue
         if line.section == "commander":
             commanders.extend([card] * line.quantity)
+        elif line.section == "attraction":
+            attractions.extend([card] * line.quantity)
+        elif line.section == "companion":
+            companions.extend([card] * line.quantity)
+        elif line.section == "sideboard":
+            sideboard.extend([card] * line.quantity)
         else:
             entries.append(DeckEntry(card, line.quantity))
 
@@ -213,12 +241,26 @@ def parse_decklist(
                 )
             )
 
+    # CR 103.2b: no more than one companion may be revealed.
+    if len(companions) > 1:
+        issues.append(
+            DeckIssue(
+                Severity.ERROR,
+                "too-many-companions",
+                f"{len(companions)} companions listed; a player reveals at most "
+                f"one (CR 103.2b). Using {companions[0].name}.",
+            )
+        )
+
     deck = Deck(
         name=name,
         commanders=tuple(commanders),
         entries=tuple(entries),
+        attractions=tuple(attractions),
         source=source,
         unresolved=tuple(unresolved),
+        companion=companions[0] if companions else None,
+        sideboard=tuple(sideboard),
     )
     return deck.with_issues(issues + validate(deck))
 
