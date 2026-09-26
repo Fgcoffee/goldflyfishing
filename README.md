@@ -18,6 +18,14 @@ over the same Python bridge.
   are numbered the way the player who took them would number them, not by the
   engine's global counter - a four-player game's fourth round is its thirteenth
   turn, and nobody means that by "turn four".
+* **Shows the board, not just the log.** A replay is also a table you can scrub
+  through: four seats, what each of them has out, what is tapped, what is
+  attacking whom, and what is on the stack. A log is exact and unreadable - it
+  is a very long way of saying "your deck made five thousand Ape tokens" - and
+  the board is where a card the parser could not read is finally visible in the
+  act of doing nothing. Card art comes from Scryfall as it is needed, so the
+  board wants a network connection; without one it draws the cards blank rather
+  than breaking.
 * **Shows what the engine actually understood.** The Deck tab marks every card
   by how much of its text the parser read: yellow for partly read, red for
   unread. A deck can be perfectly legal and still be measured as a deck with
@@ -26,8 +34,9 @@ over the same Python bridge.
   answer "is this card worth a slot" - the gap between two decks differing by
   one card is usually smaller than the gap between two runs of the same deck.
   Every variant here plays the same seeds against the same opponents.
-* **Lets you drive a board by hand** in the sandbox, to see whether a card that
-  did nothing was an unread ability or a rules bug. Those need different fixes.
+* **Lets you drive a board by hand** in the sandbox, drawn as the same board a
+  replay is, to see whether a card that did nothing was an unread ability or a
+  rules bug. Those need different fixes.
   The sandbox is a bench rather than a game, so the rules that end games are
   switched off by default - nobody loses, a library you never built is not
   fatal, mana keeps across steps - and each one is a named switch you can put
@@ -161,7 +170,7 @@ like a property of the deck.
 ## Tests
 
 ```bash
-python -m pytest            # 1,271 tests
+python -m pytest            # 1,895 tests
 python -m pytest tests/rules
 ```
 

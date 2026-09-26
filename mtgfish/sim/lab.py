@@ -380,12 +380,16 @@ def comparison(result: LabResult) -> list[dict]:
                 "games": report.games,
                 "win_rate": report.win_rate,
                 "stall_rate": report.stall_rate,
+                "average_win_round": report.average_win_round,
                 "average_win_turn": report.average_win_turn,
                 "commander_turn": _commander_turn(report),
             }
         )
         if base is not None and base.report is not None and variant is not base:
             row["delta_win_rate"] = report.win_rate - base.report.win_rate
+            row["delta_win_round"] = (
+                report.average_win_round - base.report.average_win_round
+            )
             row["delta_win_turn"] = (
                 report.average_win_turn - base.report.average_win_turn
             )

@@ -150,6 +150,12 @@ class Report:
     seats: int = 4
     wins: int = 0
     stalls: int = 0
+    #: The hero's own turn number in each game they won - what a person means
+    #: by "won on turn six". Not the engine's player-turn counter, which counts
+    #: everybody's turns and so reads about four times too high.
+    win_rounds: list[int] = field(default_factory=list)
+    #: The same games in the engine's counter, kept because the turn cap and
+    #: anything comparing against the log are in those units.
     win_turns: list[int] = field(default_factory=list)
     win_reasons: collections.Counter = field(default_factory=collections.Counter)
     loss_reasons: collections.Counter = field(default_factory=collections.Counter)
@@ -165,7 +171,7 @@ class Report:
     series: list[TurnSeries] = field(default_factory=list)
     #: Game indices grouped by outcome, so "show me a game I won on turn 7"
     #: is a lookup rather than a search.
-    by_win_turn: dict[int, list[int]] = field(default_factory=dict)
+    by_win_round: dict[int, list[int]] = field(default_factory=dict)
     #: Games stopped by the action budget, and what was looping in them. A
     #: runaway is a bug in a card rather than a fact about the deck, so it is
     #: reported separately instead of being folded into the stall rate where
@@ -188,7 +194,18 @@ class Report:
         return self.stalls / self.games if self.games else 0.0
 
     @property
+    def average_win_round(self) -> float:
+        """Which of the hero's own turns they tend to win on.
+
+        The number to put in front of a person. "Average win turn 92" is the
+        engine's player-turn counter and means nothing to anybody; the same
+        game was won on its winner's twenty-eighth turn.
+        """
+        return sum(self.win_rounds) / len(self.win_rounds) if self.win_rounds else 0.0
+
+    @property
     def average_win_turn(self) -> float:
+        """The same games in player-turns. See ``average_win_round``."""
         return sum(self.win_turns) / len(self.win_turns) if self.win_turns else 0.0
 
     def top_cards(self, limit: int = 20) -> list[CardImpact]:
@@ -237,9 +254,10 @@ def _outcomes(records: list[GameRecord], hero: int, report: Report) -> None:
 
         if record.winner == hero:
             report.wins += 1
+            report.win_rounds.append(record.rounds)
             report.win_turns.append(record.turns)
             report.win_reasons[record.win_reason.name] += 1
-            report.by_win_turn.setdefault(record.turns, []).append(record.index)
+            report.by_win_round.setdefault(record.rounds, []).append(record.index)
         else:
             for _, loser, reason in record.eliminations:
                 if loser == hero:
@@ -391,13 +409,12 @@ def render(report: Report) -> str:
         f"Win rate:   {report.win_rate:.1%}  ({report.wins} wins)",
         f"Stall-outs: {report.stall_rate:.1%}  ({report.stalls})",
     ]
-    if report.win_turns:
-        # Both forms, because they answer different questions. The engine
-        # counts player-turns; a player thinks in rounds around the table.
-        rounds = report.average_win_turn / max(1, report.seats)
+    if report.win_rounds:
+        # The player's own turn first, because that is the one they mean, with
+        # the engine's counter after it for anyone reading a log beside this.
         lines.append(
-            f"Avg win turn: {report.average_win_turn:.1f} player-turns"
-            f"  (~round {rounds:.1f})"
+            f"Avg win turn: {report.average_win_round:.1f}  (your own turns; "
+            f"{report.average_win_turn:.1f} player-turns around the table)"
         )
 
     lines.append("")

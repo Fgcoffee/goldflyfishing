@@ -348,6 +348,11 @@ class CardDatabase:
         not resolve, and its fuzzy match is both too slow for every keystroke
         and wrong for a prefix: "lightning b" is not close to "Lightning Bolt"
         by edit distance, but it is plainly what the person is typing.
+
+        A name typed in full comes first, ahead of anything merely starting
+        with it. Play rate decides the rest, and basic lands have no play rate
+        at all - so "Forest" used to offer Forest Bear, and the sandbox put a
+        2/2 on the battlefield for someone who asked for a land.
         """
         needle = " ".join(text.split())
         if len(needle) < 2:
@@ -355,9 +360,10 @@ class CardDatabase:
         escaped = needle.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
         rows = self._conn.execute(
             "SELECT name FROM cards WHERE playable = 1 AND name LIKE ? ESCAPE '\\'"
-            " ORDER BY (name LIKE ? ESCAPE '\\') DESC, edhrec_rank IS NULL, edhrec_rank, name"
+            " ORDER BY (name = ? COLLATE NOCASE) DESC,"
+            " (name LIKE ? ESCAPE '\\') DESC, edhrec_rank IS NULL, edhrec_rank, name"
             " LIMIT ?",
-            (f"%{escaped}%", f"{escaped}%", int(limit)),
+            (f"%{escaped}%", needle, f"{escaped}%", int(limit)),
         )
         return [row["name"] for row in rows]
 

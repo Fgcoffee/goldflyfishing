@@ -253,7 +253,10 @@ function drawCharts() {
     ["Win rate", `${(report.win_rate * 100).toFixed(1)}%`],
     ["Stall-outs", `${(report.stall_rate * 100).toFixed(1)}%`],
     ["Games", report.games],
-    ["Avg win turn", report.average_win_turn ? report.average_win_turn.toFixed(1) : "-"],
+    // The player's own turn, not the engine's counter. That counts every
+    // player's turn, so it reads about four times too high and means nothing
+    // to anybody: a game "won on turn 92" was won on its winner's 28th turn.
+    ["Avg win turn", report.average_win_round ? report.average_win_round.toFixed(1) : "-"],
     ["Commander never cast", report.commander_never],
   ];
   stats.forEach(([label, value]) => {
@@ -507,8 +510,46 @@ async function loadReplay() {
   drawReplayHeader();
   drawReplayTurns();
   drawReplayLog();
+  // The board reads the same replay and fetches its pictures separately.
+  Board.reset(view, followLogTo);
   document.getElementById("replayboard").textContent = view.final_board;
   setStatus(`game ${index} replayed`);
+}
+
+/* ------------------------------------------------------- board and log sync */
+
+/* Two views of one game, and moving either should move the other - a board
+ * with no idea what just happened is a screenshot, and a log with no idea what
+ * the table looked like is what this replaced. */
+
+document.getElementById("boardscrub").addEventListener("input", (event) => {
+  Board.show(Number(event.target.value));
+});
+document.getElementById("boardscrub").addEventListener("change", (event) => {
+  followLogTo(Board.frames[Number(event.target.value)]);
+});
+document.getElementById("boardprev").addEventListener("click", () => Board.step(-1));
+document.getElementById("boardnext").addEventListener("click", () => Board.step(1));
+
+/* Put the log where the board is. Highlighted rather than scrolled when the
+ * line is already on screen, because a log that jumps under the cursor every
+ * time the board ticks is worse than one that does not move. */
+function followLogTo(frame) {
+  if (!document.getElementById("boardfollow").checked) return;
+  if (frame === undefined || frame === null) return;
+  const lines = document.querySelectorAll("#replaylog .line[data-frame]");
+  let best = null;
+  lines.forEach((line) => {
+    if (Number(line.dataset.frame) <= frame) best = line;
+  });
+  document.querySelectorAll("#replaylog .line.at").forEach((l) => l.classList.remove("at"));
+  if (!best) return;
+  best.classList.add("at");
+  const box = document.getElementById("replaylog").getBoundingClientRect();
+  const where = best.getBoundingClientRect();
+  if (where.top < box.top || where.bottom > box.bottom) {
+    best.scrollIntoView({ block: "center" });
+  }
 }
 
 /* Who was at the table, how many turns each of them took, and how it ended.
@@ -570,6 +611,7 @@ function drawReplayTurns() {
       row.classList.add("chosen");
       const header = document.getElementById(`turnhead-${position}`);
       if (header) header.scrollIntoView({ block: "start", behavior: "smooth" });
+      Board.showAtFrame(turn.start);
     });
     host.appendChild(row);
   });
@@ -607,7 +649,10 @@ function drawReplayLog() {
       if (frame.kind === "turn") continue;
       if (!shownAtDetail(frame.kind)) continue;
       if (needle && !frame.text.toLowerCase().includes(needle)) continue;
-      lines.push(frame);
+      // The position carries the frame's index, which is what the board is
+      // keyed on: the frames array is dense, so a line's place in it is its
+      // place in the game.
+      lines.push({ frame, at: i });
     }
     // While filtering, a turn where nothing matched is not worth a heading.
     if (needle && !lines.length) return;
@@ -626,15 +671,23 @@ function drawReplayLog() {
     }
 
     let step = null;
-    lines.forEach((frame) => {
+    lines.forEach(({ frame, at }) => {
       if (frame.step !== step) {
         step = frame.step;
         block.appendChild(el("div", "stephead", step.toLowerCase().replace(/_/g, " ")));
       }
       const line = el("div", `line kind-${frame.kind}`);
       line.style.paddingLeft = `${12 + frame.depth * 16}px`;
+      line.dataset.frame = at;
       line.appendChild(el("span", "linekind", frame.kind));
       line.appendChild(el("span", "linetext", frame.text));
+      // Reading a line and wanting to see the table it happened on is the
+      // whole reason both views are here.
+      line.addEventListener("click", () => {
+        document.querySelectorAll("#replaylog .line.at").forEach((l) => l.classList.remove("at"));
+        line.classList.add("at");
+        Board.showAtFrame(at);
+      });
       block.appendChild(line);
       shown += 1;
     });
@@ -843,25 +896,10 @@ function applyState(state) {
 
   renderBenchRules(state);
 
-  const board = document.getElementById("sb-board");
-  board.innerHTML = "";
-  state.players.forEach((player) => {
-    const zone = el("div", "zone");
-    const out = player.has_lost
-      ? ` — OUT (${player.loss_reason.toLowerCase().replace(/_/g, " ")})` : "";
-    zone.appendChild(el("div", "zonename" + (player.has_lost ? " lost" : ""),
-      `${player.name} — ${player.life} life, ${player.mana} mana in pool, `
-      + `${player.library} in library`
-      + (player.poison ? `, ${player.poison} poison` : "") + out));
-    ["battlefield", "hand", "graveyard"].forEach((where) => {
-      if (!player[where].length) return;
-      const row = el("div");
-      row.appendChild(el("div", "zonename", where));
-      player[where].forEach((obj) => row.appendChild(renderPermanent(obj)));
-      zone.appendChild(row);
-    });
-    board.appendChild(zone);
-  });
+  // The board is drawn by the replay's viewer - same cards, same art, same
+  // parse colours - because a bench that looked different from a replay would
+  // be a second thing to learn for no reason.
+  drawSandboxBoard(state);
 
   const stack = document.getElementById("sb-stack");
   stack.innerHTML = "";
@@ -906,6 +944,24 @@ function renderBenchRules(state) {
     row.appendChild(text);
     host.appendChild(row);
   });
+}
+
+/* The bench, as a board. Fetched separately from the state because it carries
+ * art and parse verdicts the rest of the state has no use for, and because the
+ * mana pool - which only a bench has - stays on the text line above it. */
+async function drawSandboxBoard(state) {
+  const host = document.getElementById("sb-board");
+  const payload = await call("sandbox_board");
+  if (!payload || payload.error) { host.innerHTML = ""; return; }
+
+  const names = {};
+  state.players.forEach((player) => {
+    const pool = player.mana ? ` · ${player.mana} mana` : "";
+    const out = player.has_lost
+      ? ` · OUT (${player.loss_reason.toLowerCase().replace(/_/g, " ")})` : "";
+    names[player.id] = player.name + pool + out;
+  });
+  Board.drawInto(host, payload.cards, payload.board, { names });
 }
 
 function renderPermanent(obj) {
@@ -1269,9 +1325,9 @@ function drawLabResults(payload) {
 
     tr.appendChild(el("td", null, pct(row.win_rate)));
     tr.appendChild(labDelta(row.delta_win_rate, pct, true));
-    tr.appendChild(el("td", null, row.average_win_turn.toFixed(1)));
+    tr.appendChild(el("td", null, row.average_win_round.toFixed(1)));
     // Winning *sooner* is better, so here the good sign is the negative one.
-    tr.appendChild(labDelta(row.delta_win_turn, (v) => v.toFixed(2), false));
+    tr.appendChild(labDelta(row.delta_win_round, (v) => v.toFixed(2), false));
     tr.appendChild(el("td", null, pct(row.stall_rate)));
     tr.appendChild(el("td", null, row.commander_turn.toFixed(1)));
 
