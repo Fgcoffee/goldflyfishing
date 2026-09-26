@@ -143,6 +143,16 @@ class ValueKind(IntEnum):
     #: this is how the number gets there. With several dice it is their
     #: total, which is what "the result" means for a multi-die roll.
     DIE_ROLL_RESULT = 29
+    #: CR 608.2c: "the life lost this way", "the damage dealt this way" - how
+    #: much of something the resolving spell or ability has itself done so
+    #: far. ``event_kinds`` names the events whose amounts are totalled. Not a
+    #: count of objects: an opponent losing 5 life is one event of amount 5.
+    AMOUNT_THIS_WAY = 7001
+    #: "The amount of life you gained this turn": the *total amount* of the
+    #: named events this turn for the named players, where
+    #: EVENT_COUNT_THIS_TURN counts how many times they happened. Gaining 2
+    #: life twice is 4 life and two events.
+    EVENT_AMOUNT_THIS_TURN = 7002
 
 
 @dataclass(frozen=True, slots=True)
@@ -198,6 +208,12 @@ class Value:
             return "the mana spent to cast it"
         if self.kind is ValueKind.COLOURS_AMONG:
             return f"the number of colors among {self.filter}"
+        if self.kind in (ValueKind.AMOUNT_THIS_WAY, ValueKind.EVENT_AMOUNT_THIS_TURN):
+            what = _event_amount_phrase(self.event_kinds)
+            if self.kind is ValueKind.AMOUNT_THIS_WAY:
+                return f"the {what} this way"
+            who = str(self.players) if self.players is not None else "you"
+            return f"the total {what} this turn (by {who})"
         if self.kind is ValueKind.DEVOTION:
             names = " and ".join(c.name.lower() for c in self.colors) or "nothing"
             return f"your devotion to {names}"
@@ -256,6 +272,28 @@ class Value:
         if self.kind is ValueKind.HALF_ROUNDED_DOWN:
             return f"half of {operands[0] if operands else '?'}, rounded down"
         return f"{self.kind.name.lower()}({', '.join(operands)})"
+
+
+def _event_amount_phrase(event_kinds: tuple[int, ...]) -> str:
+    """"life lost", "damage dealt" - what an amount-of-events value totals.
+
+    Named from the event kinds themselves, so a value that totals something
+    unexpected says so rather than borrowing a plausible phrase.
+    """
+    from .events import EventKind
+
+    names = {
+        int(EventKind.LIFE_LOST): "life lost",
+        int(EventKind.LIFE_GAINED): "life gained",
+        int(EventKind.DAMAGE_DEALT): "damage dealt",
+        int(EventKind.COMBAT_DAMAGE_DEALT): "damage dealt",
+    }
+    phrases: list[str] = []
+    for kind in event_kinds:
+        phrase = names.get(int(kind)) or EventKind(kind).name.lower().replace("_", " ")
+        if phrase not in phrases:
+            phrases.append(phrase)
+    return " and ".join(phrases) or "nothing"
 
 
 ZERO = Value.of(0)

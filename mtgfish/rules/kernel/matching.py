@@ -505,6 +505,12 @@ def _numeric(
     return constraint.comparison.holds(actual, expected)
 
 
+def value_subjects(value) -> tuple[bool, bool, bool]:
+    """Public entry to ``_subjects``: whether a value reads the tested or
+    affected object, the ability's source, or anything at all."""
+    return _subjects(value)
+
+
 def _subjects(value) -> tuple[bool, bool, bool]:
     """What a bound reads: the tested object, the ability's source, anything.
 
