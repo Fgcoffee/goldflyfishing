@@ -164,4 +164,4 @@ def test_every_effect_opcode_the_parser_emits_has_a_phrasing(card_db):
                         if _effect(node).startswith("["):
                             seen.add(node.kind.name)
 
-    assert len(seen) <= 12, f"unphrased opcodes have grown: {sorted(seen)}"
+    assert len(seen) <= 10, f"unphrased opcodes have grown: {sorted(seen)}"

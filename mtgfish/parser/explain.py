@@ -163,6 +163,10 @@ _PLAYER_VERBS = {
     EffectKind.EXTRA_TURN: "takes {n} extra turn(s)",
     EffectKind.EXTRA_LAND_DROP: "may play {n} additional land(s)",
     EffectKind.SHUFFLE: "shuffles",
+    EffectKind.CASCADE: "cascades",
+    EffectKind.DISCOVER: "discovers {n}",
+    EffectKind.OPEN_ATTRACTION: "opens {n} Attraction(s)",
+    EffectKind.ROLL_TO_VISIT: "rolls to visit their Attractions",
 }
 
 #: Effects that are "<verb> <the objects>" and nothing more.
