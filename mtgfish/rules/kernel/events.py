@@ -243,6 +243,11 @@ class Event:
     @property
     def looks_back_in_time(self) -> bool:
         """CR 603.10: whether this event's triggers see the pre-event game."""
+        if self.kind is EventKind.ZONE_CHANGE:
+            # CR 603.10a: "abilities that trigger when a card leaves a
+            # graveyard" look back too - the card is asked about as it was
+            # in the graveyard, not as whatever it became where it went.
+            return self.from_zone is Zone.GRAVEYARD
         return self.kind in LOOK_BACK_KINDS
 
     def __str__(self) -> str:

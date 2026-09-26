@@ -787,6 +787,24 @@ class Game:
                     )
                 )
 
+        if to_zone is Zone.GRAVEYARD:
+            # "Is put into a graveyard from anywhere" (CR 603.6c): the arrival,
+            # whatever the origin. Nothing emitted it, so every trigger written
+            # that way - The Gitrog Monster's, every self-mill payoff - waited
+            # for an event that never came. ``from_zone`` says where it came
+            # from, for the triggers that name an origin ("from your
+            # library"), and the pre-move object rides along in ``data``.
+            self.emit(
+                Event(
+                    EventKind.PUT_INTO_GRAVEYARD,
+                    object_id=obj.id,
+                    player=obj.owner,
+                    from_zone=from_zone,
+                    to_zone=to_zone,
+                    data=(previous.id,) if previous else (),
+                )
+            )
+
     def choose_protector(self, obj: GameObject) -> bool:
         """Designate a battle's protector (CR 310.9a, 310.11).
 
