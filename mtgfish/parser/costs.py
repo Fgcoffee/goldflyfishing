@@ -255,10 +255,13 @@ def _sacrifice(stream: Stream) -> CostComponent | None:
     spec = parse_object_filter(stream)
     if spec is None:
         return None
+    # "Sacrifice *two* creatures" - the count lives on the noun phrase, as it
+    # does for an exile cost. Charged as one, every such cost was half price
+    # or less.
     return CostComponent(
         CostKind.SACRIFICE,
         filter=spec,
-        amount=Value.of(1),
+        amount=spec.count if spec.count is not None else Value.of(1),
         text="sacrifice",
     )
 
@@ -289,10 +292,13 @@ def _discard(stream: Stream) -> CostComponent | None:
     spec = parse_object_filter(stream)
     if spec is None and not stream.accept("card", "cards"):
         return None
-    # "at random" says *how* the card is chosen. The engine's discard already
-    # picks without the player's judgement, so the phrase is consumed rather
-    # than modelled - but leaving it unread failed the whole cost.
-    stream.accept_phrase("at random")
+    # "at random" says *how* the card is chosen (CR 701.8a): the game picks,
+    # not the payer. Consumed and dropped, it made the cost a chosen discard -
+    # the payer keeping the card that mattered - so it is a kind of its own.
+    if stream.accept_phrase("at random"):
+        return CostComponent(
+            CostKind.DISCARD_AT_RANDOM, filter=spec, amount=amount, text="discard at random"
+        )
     return CostComponent(
         CostKind.DISCARD, filter=spec, amount=amount, text="discard"
     )
@@ -410,8 +416,16 @@ def _return_to_hand(stream: Stream) -> CostComponent | None:
         return None
     if not (
         stream.accept_phrase("to its owner's hand")
+        or stream.accept_phrase("to their owner's hand")
         or stream.accept_phrase("to your hand")
     ):
         stream.reset(mark)
         return None
-    return CostComponent(CostKind.RETURN_TO_HAND, filter=spec, text="return to hand")
+    # "Return *two* lands you control": the count is on the noun phrase, and
+    # left unset the cost was floored to one land.
+    return CostComponent(
+        CostKind.RETURN_TO_HAND,
+        filter=spec,
+        amount=spec.count if spec.count is not None else Value.of(1),
+        text="return to hand",
+    )

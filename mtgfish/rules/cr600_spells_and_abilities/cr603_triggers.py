@@ -736,6 +736,12 @@ def put_triggers_on_stack(game: Game) -> int:
                 source=entry.source,
             )
         )
+        # CR 603.3d: its targets were chosen as it went on the stack, and a
+        # permanent that became one of them has become the target of an
+        # ability - which ward (CR 702.21a) watches for.
+        from .cr601_casting import _announce_targets
+
+        _announce_targets(game, stack_object, controller)
         game.log.record(
             game,
             f"Trigger goes on the stack: {ability}",

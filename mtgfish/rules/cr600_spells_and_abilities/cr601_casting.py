@@ -40,7 +40,7 @@ from ..cr100_game_concepts.cr118_costs import (
 from ..kernel.enums import Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_OBJECT, PlayerId
+from ..kernel.ids import NO_OBJECT, ObjectId, PlayerId
 from .abilities import Ability, AbilityKind
 from .effects import Effect, EffectKind
 
@@ -859,6 +859,9 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
 def _announce_targets(game: Game, spell: GameObject, controller: PlayerId) -> None:
     """Emit a TARGETED event for each chosen target (CR 115.1).
 
+    ``spell`` is whatever is on the stack doing the targeting - a spell, or an
+    activated or triggered ability, which ward treats alike.
+
     Ward is a *triggered* ability (CR 702.21a), not a targeting restriction:
     "whenever this becomes the target of a spell or ability an opponent
     controls, counter it unless that player pays [cost]". So becoming a target
@@ -1093,6 +1096,7 @@ _PAYABLE_KINDS = frozenset(
         CostKind.RETURN_TO_HAND,
         CostKind.UNATTACH,
         CostKind.DISCARD,
+        CostKind.DISCARD_AT_RANDOM,
         *EXILE_ZONES,
         CostKind.MILL,
         CostKind.REMOVE_COUNTERS,
@@ -1216,15 +1220,13 @@ def _pay_component(
             raise CastError("this card is not in its owner's hand")
         game_actions.discard(game, context, source=context.id)
 
-    elif kind is CostKind.DISCARD:
-        if len(player.hand) < amount:
-            raise CastError("not enough cards in hand")
-        agent = game.agent_for(player_id)
+    elif kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+        candidates = discard_candidates(game, player_id, component, context)
+        if len(candidates) < amount:
+            raise CastError("not enough cards in hand to discard")
         for _ in range(amount):
-            choice = (
-                agent.choose_discard(game, player_id) if agent is not None else player.hand[-1]
-            )
-            obj = game.objects.get(choice) or game.objects[player.hand[-1]]
+            obj = pick_discard(game, player_id, component, candidates)
+            candidates.remove(obj)
             game_actions.discard(game, obj, source=context.id)
 
     elif kind in EXILE_ZONES:
@@ -1275,7 +1277,6 @@ def _check_payable(
     cast from. It is on the stack by the time the cost is paid, so it cannot
     pay for itself: a Force of Will is not the blue card it exiles.
     """
-    from ..kernel.matching import find
     from ..kernel.values import evaluate
 
     player = game.player(player_id)
@@ -1300,10 +1301,9 @@ def _check_payable(
         if context.zone is not Zone.HAND:
             raise CastError("this card is not in its owner's hand")
         return
-    if kind is CostKind.DISCARD:
-        in_hand = [i for i in player.hand if spell is None or i != spell.id]
-        if len(in_hand) < amount:
-            raise CastError("not enough cards in hand")
+    if kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+        if len(discard_candidates(game, player_id, component, context, spell)) < amount:
+            raise CastError("not enough cards in hand to discard")
     if kind in EXILE_ZONES:
         if len(_exile_candidates(game, player_id, component, context, spell)) < amount:
             raise CastError(_exile_shortfall(component))
@@ -1322,7 +1322,7 @@ def _check_payable(
         if obj is None or obj.counter_count(component.counter_type) < amount:
             raise CastError(f"not enough {component.counter_type} counters")
     if kind in (CostKind.SACRIFICE, CostKind.RETURN_TO_HAND) and component.filter is not None:
-        if len(find(game, component.filter, source=context.id, controller=player_id)) < amount:
+        if len(cost_permanents(game, player_id, component, context.id)) < amount:
             raise CastError("not enough permanents to pay the cost")
     if kind is CostKind.TAP_SELF:
         obj = game.objects.get(context.source or context.id)
@@ -1343,14 +1343,12 @@ def _choose_permanents(
     creature cannot pay two costs. That falls out of actually sacrificing it
     before the next component is paid.
     """
-    from ..kernel.matching import find
-
     spec = component.filter
     if spec is None:
         obj = game.objects.get(context.source or context.id)
         return [obj] if obj is not None else []
 
-    candidates = find(game, spec, source=context.id, controller=player_id)
+    candidates = cost_permanents(game, player_id, component, context.id)
     if len(candidates) < amount:
         raise CastError("not enough permanents to pay the cost")
 
@@ -1363,6 +1361,76 @@ def _choose_permanents(
     return sorted(candidates, key=lambda o: (game.characteristics(o).mana_value, o.id))[
         :amount
     ]
+
+
+def cost_permanents(
+    game: Game, player_id: PlayerId, component: CostComponent, source: ObjectId
+) -> list[GameObject]:
+    """The permanents that could pay a sacrifice or return cost.
+
+    CR 701.17a: a player can sacrifice only a permanent they control. "Sacrifice
+    a creature" names no controller, and the filter alone matched every
+    creature on the battlefield - so a cost could be paid with an opponent's
+    creature, which is both free and removal.
+    """
+    from ..kernel.matching import find
+
+    found = find(game, component.filter, source=source, controller=player_id)
+    if component.kind is CostKind.SACRIFICE:
+        found = [obj for obj in found if obj.controller == player_id]
+    return found
+
+
+def discard_candidates(
+    game: Game,
+    player_id: PlayerId,
+    component: CostComponent,
+    context: GameObject | None = None,
+    spell: GameObject | None = None,
+) -> list[GameObject]:
+    """The cards in the payer's hand that could pay a discard cost.
+
+    "Discard an artifact card" is paid with an artifact card and nothing
+    else. The filter was ignored, so any card paid it - which makes the cost
+    payable when it is not and lets the payer keep the card it names. CR
+    118.3: a cost is paid with exactly what it asks for. ``spell`` is a card
+    asked about before it is cast, which will be on the stack by the time the
+    cost is paid and so cannot pay it (see ``_check_payable``).
+    """
+    from dataclasses import replace
+
+    from ..kernel.matching import matches
+
+    hand = [
+        game.objects[i]
+        for i in game.player(player_id).hand
+        if i in game.objects and (spell is None or i != spell.id)
+    ]
+    spec = component.filter
+    if spec is None:
+        return hand
+    spec = replace(spec, zones=frozenset({Zone.HAND}), count=None)
+    source = context.id if context is not None else NO_OBJECT
+    return [
+        obj for obj in hand if matches(game, obj, spec, source=source, controller=player_id)
+    ]
+
+
+def pick_discard(
+    game: Game, player_id: PlayerId, component: CostComponent, candidates: list[GameObject]
+) -> GameObject:
+    """One card to discard for a cost, from the cards that may pay it.
+
+    CR 701.8a: a card discarded "at random" is picked by the game, not the
+    payer. Otherwise the payer chooses - and a pick the cost does not accept
+    (the agent is asked about its whole hand) falls back to the deterministic
+    default, the last card, which is what was always taken with no agent.
+    """
+    if component.kind is CostKind.DISCARD_AT_RANDOM:
+        return game.rng.choice(candidates)
+    agent = game.agent_for(player_id)
+    choice = agent.choose_discard(game, player_id) if agent is not None else None
+    return next((c for c in candidates if c.id == choice), candidates[-1])
 
 
 def _exile_candidates(
@@ -1535,6 +1603,10 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
         x_value=action.x_value,
         chosen_modes=chosen_modes,
     )
+    # CR 602.2b applies CR 601.2c: an ability's targets are chosen as it is
+    # activated, and becoming one is an event ward watches (CR 702.21a) -
+    # "a spell or ability", not only a spell.
+    _announce_targets(game, stack_object, player_id)
     # What the cost consumed travels with the ability, as its targets do. The
     # source's own record belongs to its latest activation, and a Ninja still
     # in hand can activate ninjutsu again while the first is on the stack.
@@ -1597,39 +1669,71 @@ def _scaled_mana(game: Game, player_id: PlayerId, cost):
     return mana.increased_by(mana.mana_value * (times - 1))
 
 
-def can_pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
+#: The non-mana components a player can be charged with no activation behind
+#: them - "unless that player pays ...", and ward's cost (CR 702.21a). Anything
+#: else is refused by ``can_pay_cost``, so a keyword that builds such a cost
+#: asks here first rather than building one nobody can pay.
+PLAYER_PAYABLE_KINDS = frozenset(
+    {
+        CostKind.MANA,
+        CostKind.PAY_LIFE,
+        CostKind.DISCARD,
+        CostKind.DISCARD_AT_RANDOM,
+        CostKind.SACRIFICE,
+    }
+)
+
+
+def _player_amount(
+    game: Game, player_id: PlayerId, component: CostComponent, source: ObjectId
+) -> int:
+    """What a player-scoped component charges. ``source`` is the object whose
+    ability asks - "pay life equal to *this creature's* power"."""
+    from ..kernel.values import evaluate
+
+    return required_amount(
+        component, evaluate(game, component.amount, source=source, controller=player_id)
+    )
+
+
+def can_pay_cost(
+    game: Game, player_id: PlayerId, cost, *, source: ObjectId = NO_OBJECT
+) -> bool:
     """Whether a player could pay a cost that has no source permanent.
 
     "Unless that player pays {1}" is charged to a player, not to a permanent,
     so none of the activation helpers apply: there is nothing to tap and no
-    controller to infer. Only the components that actually appear in these
-    clauses are supported - mana, life, sacrificing, discarding - and anything
-    else answers no, which lets the effect happen rather than silently
-    waiving it.
+    controller to infer. Only the components in ``PLAYER_PAYABLE_KINDS`` are
+    supported, and anything else answers no, which lets the effect happen
+    rather than silently waiving it.
     """
     if cost.choices:
         # "Discard a card or pay 3 life": payable if either half is.
-        return any(can_pay_cost(game, player_id, each) for each in cost.choices)
+        return any(
+            can_pay_cost(game, player_id, each, source=source) for each in cost.choices
+        )
 
     player = game.player(player_id)
     for component in cost.non_mana_components:
+        if component.kind not in PLAYER_PAYABLE_KINDS:
+            return False
+        try:
+            amount = _player_amount(game, player_id, component, source)
+        except CastError:
+            return False  # CR 903.4f: an amount that cannot be determined.
         if component.kind is CostKind.PAY_LIFE:
-            from ..kernel.values import evaluate
-
-            if player.life <= evaluate(game, component.amount, controller=player_id):
+            if player.life <= amount:
                 return False
-        elif component.kind is CostKind.DISCARD:
-            if not player.hand:
+        elif component.kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+            # The cards the cost accepts, not merely any card: "discard an
+            # enchantment, instant, or sorcery card" cannot be paid with a land.
+            if len(discard_candidates(game, player_id, component)) < amount:
                 return False
         elif component.kind is CostKind.SACRIFICE:
-            from ..kernel.matching import find
-
-            if component.filter is None or not find(
-                game, component.filter, controller=player_id
-            ):
+            if component.filter is None or len(
+                cost_permanents(game, player_id, component, source)
+            ) < amount:
                 return False
-        else:
-            return False
 
     mana_cost = _scaled_mana(game, player_id, cost)
     if not mana_cost:
@@ -1641,15 +1745,17 @@ def can_pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
     return can_produce(game, player_id, mana_cost)
 
 
-def pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
+def pay_cost(
+    game: Game, player_id: PlayerId, cost, *, source: ObjectId = NO_OBJECT
+) -> bool:
     """Charge a player-scoped cost. False if it could not be paid in full."""
     if cost.choices:
         # The first half that can actually be paid. A player choosing between
         # two costs would weigh them; with nothing to ask, taking the first
         # payable one keeps the run deterministic.
         for each in cost.choices:
-            if can_pay_cost(game, player_id, each):
-                return pay_cost(game, player_id, each)
+            if can_pay_cost(game, player_id, each, source=source):
+                return pay_cost(game, player_id, each, source=source)
         return False
 
     player = game.player(player_id)
@@ -1688,19 +1794,34 @@ def pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
         if payment.life:
             player.lose_life(payment.life)
 
+    from ..cr100_game_concepts import actions as game_actions
+
     for component in cost.non_mana_components:
+        amount = _player_amount(game, player_id, component, source)
         if component.kind is CostKind.PAY_LIFE:
-            from ..kernel.values import evaluate
-
-            player.lose_life(evaluate(game, component.amount, controller=player_id))
-        elif component.kind is CostKind.DISCARD and player.hand:
-            game.move_object(game.objects[player.hand[-1]], Zone.GRAVEYARD)
+            player.lose_life(amount)
+        elif component.kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+            # A real discard (CR 701.8), so madness and "whenever you discard"
+            # see it; moving the card to the graveyard was not one.
+            candidates = discard_candidates(game, player_id, component)
+            for _ in range(min(amount, len(candidates))):
+                obj = pick_discard(game, player_id, component, candidates)
+                candidates.remove(obj)
+                game_actions.discard(game, obj, source=source)
         elif component.kind is CostKind.SACRIFICE and component.filter is not None:
-            from ..kernel.matching import find
-
-            found = find(game, component.filter, controller=player_id)
-            if found:
-                game.move_object(found[0], Zone.GRAVEYARD)
+            # As many as the cost names, each a real sacrifice (CR 701.17) of
+            # a permanent the payer controls.
+            candidates = cost_permanents(game, player_id, component, source)
+            agent = game.agent_for(player_id)
+            picked = None
+            if agent is not None and hasattr(agent, "choose_cost_permanents"):
+                picked = agent.choose_cost_permanents(game, player_id, candidates, amount)
+            if not picked or len(picked) != amount:
+                picked = sorted(
+                    candidates, key=lambda o: (game.characteristics(o).mana_value, o.id)
+                )[:amount]
+            for obj in picked:
+                game_actions.sacrifice(game, obj, source=source)
     return True
 
 

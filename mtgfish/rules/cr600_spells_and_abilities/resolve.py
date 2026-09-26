@@ -176,6 +176,18 @@ def _objects(
                 found.append(obj)
         return found
 
+    if effect.targets is not None and effect.targets.trigger_source:
+        # "Counter that spell or ability" (CR 702.21a): the object whose
+        # action the ability triggered on, and only while it is still where
+        # the filter says - a spell that has already left the stack is a new
+        # object (CR 400.7) and is not countered.
+        event = _trigger_event(resolution)
+        obj = game.objects.get(event.source) if event is not None else None
+        if obj is None or not obj.is_live:
+            return []
+        zones = effect.targets.zones
+        return [obj] if not zones or obj.zone in zones else []
+
     if effect.is_targeted:
         from ..kernel.matching import matches
 
@@ -279,6 +291,12 @@ def _targeted_players(resolution: Resolution, effect: Effect, chosen) -> list[Pl
     return [target_player(target) for target in chosen if is_player_target(target)]
 
 
+def _trigger_event(resolution: Resolution):
+    """The event a resolving triggered ability triggered on, if it has one."""
+    stack_object = resolution.stack_object
+    return getattr(stack_object, "trigger_event", None) if stack_object else None
+
+
 def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
     from ..kernel.matching import resolve_players
     from ..kernel.query import YOU
@@ -302,6 +320,17 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
 
     if effect.players is not None and effect.players.scope is PlayerScope.THAT_PLAYER:
         return [] if resolution.that_player == NO_PLAYER else [resolution.that_player]
+    if (
+        effect.players is not None
+        and effect.players.scope is PlayerScope.TRIGGER_SOURCE_CONTROLLER
+    ):
+        # CR 702.21a: ward's "that player" controls the spell or ability that
+        # targeted - read off the event the ability triggered on, which
+        # captured the controller as it happened (CR 603.3d).
+        event = _trigger_event(resolution)
+        if event is None or event.source_controller == NO_PLAYER:
+            return []
+        return [event.source_controller]
     return resolve_players(
         resolution.game, effect.players or YOU, controller=resolution.controller
     )
@@ -392,7 +421,9 @@ def _do_unless_pays(resolution: Resolution, effect: Effect) -> None:
 
     for player_id in payers:
         cost = effect.pay_cost
-        if cost is None or not can_pay_cost(game, player_id, cost):
+        if cost is None or not can_pay_cost(
+            game, player_id, cost, source=resolution.source
+        ):
             execute(resolution, effect.children)
             continue
         agent = game.agent_for(player_id)
@@ -402,7 +433,7 @@ def _do_unless_pays(resolution: Resolution, effect: Effect) -> None:
         # ``can_pay_cost`` is an upper bound, so a willing player can still
         # fail to pay. A payment that did not happen must not waive the
         # effect, or every "unless that player pays" is free to dodge.
-        if not (willing and pay_cost(game, player_id, cost)):
+        if not (willing and pay_cost(game, player_id, cost, source=resolution.source)):
             execute(resolution, effect.children)
 
 

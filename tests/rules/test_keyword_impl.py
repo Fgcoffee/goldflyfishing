@@ -89,7 +89,8 @@ def test_ward_is_a_trigger_not_a_targeting_ban(board):
     abilities = kw("Ward", cost=Cost.mana("{2}"))
     assert abilities[0].kind is AbilityKind.TRIGGERED
     assert abilities[0].keyword == "Ward"
-    assert str(abilities[0].cost.mana_component) == "{2}", "the cost travels with it"
+    (unless,) = abilities[0].effects
+    assert str(unless.pay_cost.mana_component) == "{2}", "the cost travels with it"
 
 
 def test_protection_carries_its_quality(board):
