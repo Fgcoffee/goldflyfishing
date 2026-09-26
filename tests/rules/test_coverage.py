@@ -21,7 +21,7 @@ CORE_SECTIONS = range(1, 7)
 
 #: Current measured coverage of the 100s-600s. Raise it as rules land; never
 #: lower it to make a failing build pass.
-CORE_COVERAGE_FLOOR = 94.9
+CORE_COVERAGE_FLOOR = 95.8
 
 
 @pytest.fixture(scope="module")
