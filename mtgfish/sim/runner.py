@@ -154,7 +154,15 @@ def play_one(
     decks, provider = _worker_state(config.decklists)
     seed = config.seed_for(index)
 
-    game = new_game(decks, seed=seed, log_enabled=log, ability_provider=provider)
+    game = new_game(
+        decks,
+        seed=seed,
+        log_enabled=log,
+        ability_provider=provider,
+        # MTG Arena's conjure names cards by name; this thread's database is
+        # where they are found (``Game.card_catalog``).
+        card_catalog=_WORKER.get(threading.get_ident(), {}).get("db"),
+    )
     record = new_record(index, seed, len(game.players))
     observer = Observer(record, config.hero)
     game.observer = observer

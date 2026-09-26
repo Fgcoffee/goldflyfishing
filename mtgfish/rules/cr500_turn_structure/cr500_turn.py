@@ -144,6 +144,7 @@ def _restart(game: Game, options: TurnOptions, depth: int = 0) -> Game:
         log_enabled=game.log.enabled,
         ability_provider=game.ability_provider,
         randomize_turn_order=False,
+        card_catalog=game.card_catalog,
     )
     fresh.source_decks = decks
     # CR 727.1a: the player who restarted the game goes first.

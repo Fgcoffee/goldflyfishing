@@ -317,6 +317,16 @@ class Game:
     #: own set is loaded (``cr309_dungeons.available_dungeons``); a test may
     #: supply its own.
     dungeons: tuple = ()
+    #: Where MTG Arena's conjure finds a card by the name its text prints:
+    #: anything with ``lookup(name) -> card or None``, such as
+    #: ``data.db.CardDatabase``. ``None`` means this game has no catalogue,
+    #: and a conjure logs that it could not happen rather than guessing.
+    card_catalog: object = None
+    #: MTG Arena's "perpetually": the changes bound to each card for the rest
+    #: of the game, keyed by object id (see
+    #: ``cr700_additional_rules/digital_mechanics.py``). A zone change carries
+    #: them to the new object, which is the whole of what "perpetually" adds.
+    perpetual: dict = field(default_factory=dict)
 
     def is_controlled(self, player_id: PlayerId) -> bool:
         """CR 723.1: whether someone else is making this player's decisions."""
@@ -697,6 +707,11 @@ class Game:
         # in one direction or the other.
         obj.superseded_by = new_obj.id
         new_obj.previous_id = obj.id
+        # MTG Arena's "perpetually" is exactly the exception to CR 400.7: the
+        # change stays with the card as it moves. The old object keeps its
+        # copy too, as last-known information.
+        if obj.id in self.perpetual:
+            self.perpetual[new_obj.id] = self.perpetual[obj.id]
 
         self.objects[new_obj.id] = new_obj
         if to_zone is Zone.COMMAND:

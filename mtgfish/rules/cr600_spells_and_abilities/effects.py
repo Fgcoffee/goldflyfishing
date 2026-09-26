@@ -244,6 +244,30 @@ class EffectKind(IntEnum):
     #: Attractions.
     ROLL_TO_VISIT = 271
 
+    # -- digital-only mechanics (MTG Arena) ---------------------------------
+    #: These are not in the Comprehensive Rules at all; they exist only on MTG
+    #: Arena, whose own published descriptions are the rules they follow. See
+    #: ``cr700_additional_rules/digital_mechanics.py`` for each one's source.
+    #:
+    #: "[objects] perpetually [change]": ``targets`` names the objects, settled
+    #: as the effect resolves; ``children`` are the layered changes (MODIFY_PT,
+    #: GRANT_ABILITY, SET_PT, ADD_TYPE ...), each aimed at its own object
+    #: (``targets`` None). The change is bound to each card for the rest of the
+    #: game, following it from zone to zone. ``keywords`` holds "at random"
+    #: when the objects are a random pick among those matching.
+    PERPETUALLY = 6000
+    #: "conjure [N] card(s) named X [into a zone]": create cards from outside
+    #: the game, owned by ``players``. ``card_name`` names the card; or
+    #: ``targets`` gives objects whose card is used - a "duplicate" (marked in
+    #: ``keywords``) also keeps the original's perpetual changes. ``zone`` is
+    #: where they go, ``amount`` how many, and ``amount2`` a library position
+    #: counted from the top (zero for none).
+    CONJURE = 6001
+    #: "seek [N] [filter] card(s)": each of ``players`` puts ``amount`` cards
+    #: at random from among the cards in their library matching ``targets``
+    #: into their hand (``zone``, which defaults to the hand).
+    SEEK = 6002
+
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the
     #: coverage report can name exactly what was lost, and so an ability that
@@ -491,6 +515,9 @@ class Effect:
     #: dungeon entered this way must have, e.g. "Undercity". Empty for the
     #: plain "venture into the dungeon".
     dungeon_quality: str = ""
+    #: For CONJURE: the name of the card conjured, exactly as the oracle text
+    #: prints it. Empty when ``targets`` supplies the card instead.
+    card_name: str = ""
 
     #: The oracle text this came from, kept for the replay log and for the
     #: coverage report.

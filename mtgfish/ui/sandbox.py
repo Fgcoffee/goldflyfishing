@@ -214,6 +214,8 @@ class Sandbox:
 
         game = Game(rng=random.Random(0), log=GameLog(enabled=True))
         game.ability_provider = self.provider
+        # Where MTG Arena's conjure looks a card up by name.
+        game.card_catalog = self.db
         for index, name in enumerate(("You", "Opponent")):
             game.players.append(Player(id=PlayerId(index), name=name))
         game.turn_order = [PlayerId(0), PlayerId(1)]
