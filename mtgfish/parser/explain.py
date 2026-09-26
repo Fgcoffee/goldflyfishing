@@ -34,6 +34,8 @@ def explain_ability(ability: Ability) -> str:
 
     if ability.kind is AbilityKind.TRIGGERED:
         when = _trigger(ability.trigger)
+        if not ability.static_condition.is_always:
+            when += f" (only while {ability.static_condition})"
         return f"{when}, {body}." if body else f"{when}, (nothing)."
 
     if ability.kind is AbilityKind.ACTIVATED:
@@ -43,6 +45,12 @@ def explain_ability(ability: Ability) -> str:
             parts.append("(sorcery speed only)")
         if ability.once_each_turn:
             parts.append("(once each turn)")
+        if ability.only_once:
+            # CR 602.5b: once for the life of the object, not once a turn.
+            parts.append("(only once)")
+        where = _functions_in(ability.functions_in)
+        if where:
+            parts.append(f"(from {where})")
         if not ability.activation_condition.is_always:
             # CR 602.5b. Without this the round-trip said a restricted ability
             # could be activated whenever you liked, which is exactly the
@@ -62,6 +70,9 @@ def explain_ability(ability: Ability) -> str:
             if not ability.static_condition.is_always
             else ""
         )
+        where = _functions_in(ability.functions_in)
+        if where:
+            gate += f" (from {where})"
         return f"Continuously{gate}: {body}."
 
     return f"{body[:1].upper()}{body[1:]}." if body else "(nothing)."
@@ -121,10 +132,29 @@ def _trigger(trigger) -> str:
         parts.append(f"(player: {_players(trigger.players)})")
     if trigger.source is not None:
         parts.append(f"(from {_filter(trigger.source)})")
+    if trigger.to_player:
+        parts.append("(to a player)")
+    if trigger.counter_kind:
+        parts.append(f"({trigger.counter_kind} counters)")
+    if trigger.phases or trigger.steps:
+        from ..rules.kernel.enums import Phase, Step
+
+        names = [Phase(p).name.lower() for p in sorted(trigger.phases)]
+        names += [Step(s).name.lower() for s in sorted(trigger.steps)]
+        parts.append(f"(of {'/'.join(n.replace('_', ' ') for n in names)})")
+    if trigger.ordinal:
+        parts.append(f"(only the #{trigger.ordinal} such event each turn)")
+    if trigger.alternatives:
+        parts.append(f"(or {len(trigger.alternatives)} other condition(s))")
+    if trigger.expend:
+        parts.append(f"(expend {trigger.expend})")
     if trigger.chapter:
         parts.append(f"(chapter {trigger.chapter})")
     if trigger.once_each_turn:
         parts.append("(once each turn)")
+    where = _functions_in(trigger.functions_in)
+    if where:
+        parts.append(f"(works from {where})")
     condition = str(trigger.intervening_if)
     if condition not in ("always", ""):
         parts.append(f"- but only if {condition}")
@@ -201,6 +231,20 @@ _OBJECT_VERBS = {
 
 
 def _effect(effect: Effect) -> str:
+    text = _effect_body(effect)
+    # A guard written on the node itself rather than on a CONDITIONAL around
+    # it. Every executor that reads one skips the node when it is false, so
+    # leaving it out rendered a conditional effect as an unconditional one.
+    if (
+        text
+        and effect.kind is not EffectKind.CONDITIONAL
+        and not effect.condition.is_always
+    ):
+        text += f" (only if {effect.condition})"
+    return text
+
+
+def _effect_body(effect: Effect) -> str:
     kind = effect.kind
 
     flow = _control_flow(effect)
@@ -225,7 +269,14 @@ def _effect(effect: Effect) -> str:
         return continuous
 
     if kind is EffectKind.DELAYED_TRIGGER:
-        return f"later - {_trigger(effect.trigger)}, {_effects(effect.children)}"
+        # CR 603.7b: a delayed trigger fires once unless it says otherwise,
+        # and the two read identically without this - "draw a card at the
+        # beginning of the next upkeep" and "at the beginning of each upkeep".
+        how_often = "each time" if effect.repeats else "once"
+        return (
+            f"later ({how_often}) - {_trigger(effect.trigger)}, "
+            f"{_effects(effect.children)}"
+        )
     if kind is EffectKind.REFLEXIVE_TRIGGER:
         return f"when you do, {_effects(effect.children)}"
 
@@ -248,9 +299,63 @@ _PLAYER_ACTED_VERBS = {
 def _object_verb(effect: Effect, objects: str) -> str:
     """"<verb> <the objects>", with the actor and the count when they are said."""
     verb = _OBJECT_VERBS[effect.kind]
+    if effect.kind is EffectKind.PUT_ON_LIBRARY:
+        # The executor reads the sign of the amount: negative is the bottom.
+        where = "bottom" if effect.amount.constant < 0 else "top"
+        verb = f"put on {where} of library"
+    if effect.targets is None and effect.from_zone is not None:
+        # "Exile the top card of each player's library", "target player
+        # reveals their hand": no object filter, a zone and a player instead.
+        # Rendered as "this permanent" it read like the card exiling itself.
+        objects = _zone_of_players(effect)
     if effect.players is not None and effect.kind in _PLAYER_ACTED_VERBS:
-        return f"{_players(effect.players)} {_PLAYER_ACTED_VERBS[effect.kind]} {objects}"
-    return f"{verb} {objects}"
+        text = f"{_who(effect)} {_PLAYER_ACTED_VERBS[effect.kind]} {objects}"
+    else:
+        text = f"{verb} {objects}"
+    return text + _object_riders(effect)
+
+
+def _zone_of_players(effect: Effect) -> str:
+    """"the top 2 card(s) of each player's library", "target player's hand"."""
+    whose = _who(effect) if effect.players is not None else "your"
+    whose = "your" if whose == "you" else f"{whose}'s"
+    if effect.from_zone is Zone.LIBRARY:
+        return f"the top {_amount(effect.amount)} card(s) of {whose} library"
+    return f"{whose} {_zone(effect.from_zone)}"
+
+
+def _object_riders(effect: Effect) -> str:
+    """How the objects arrive or how long the change lasts.
+
+    Each of these is a field an executor reads, and each was invisible: a
+    creature put onto the battlefield tapped and attacking read the same as
+    one put onto it untapped, and a temporary steal the same as a permanent
+    one.
+    """
+    parts: list[str] = []
+    for word in ("tapped", "attacking", "face down"):
+        if word in effect.keywords:
+            parts.append(word)
+    if effect.under_owners_control:
+        parts.append("under its owner's control")
+    if effect.counter_type and effect.kind is EffectKind.PUT_ONTO_BATTLEFIELD:
+        parts.append(
+            f"with {_amount(effect.amount)} {effect.counter_type} counter(s)"
+        )
+    if (
+        effect.kind in (EffectKind.EXILE, EffectKind.GAIN_CONTROL)
+        and effect.duration == Duration.WHILE_SOURCE_PERSISTS
+    ):
+        parts.append(
+            "until this leaves the battlefield"
+            if effect.kind is EffectKind.EXILE
+            else "for as long as this remains"
+        )
+    else:
+        duration = _duration(effect.duration)
+        if duration:
+            parts.append(duration.strip())
+    return (" " + " ".join(parts)) if parts else ""
 
 
 def _control_flow(effect: Effect) -> str | None:
@@ -258,7 +363,9 @@ def _control_flow(effect: Effect) -> str | None:
     if kind is EffectKind.SEQUENCE:
         return _effects(effect.children)
     if kind is EffectKind.OPTIONAL:
-        return f"you may {_effects(effect.children)}"
+        # Whose option it is. "You may" and "that player may" are different
+        # cards, and printing "you" whatever the IR held made them identical.
+        return f"{_who(effect)} may {_effects(effect.children)}"
     if kind is EffectKind.CONDITIONAL:
         text = f"if {effect.condition}, {_effects(effect.children)}"
         if effect.otherwise:
@@ -267,15 +374,19 @@ def _control_flow(effect: Effect) -> str | None:
     if kind is EffectKind.REPEAT:
         return f"do this {_amount(effect.amount)} times: {_effects(effect.children)}"
     if kind is EffectKind.UNLESS_PAYS:
-        who = _players(effect.players)
+        who = _who(effect)
         return (
             f"{_effects(effect.children)}, unless {who} pays {effect.pay_cost}"
         )
+    if kind is EffectKind.IF_YOU_DONT:
+        # The consequence of declining - without its children the round-trip
+        # said "[if_you_dont]" and hid what declining costs.
+        return f"if that was not done, {_effects(effect.children)}"
     if kind is EffectKind.CHOOSE_MODE:
-        modes = "; or ".join(
-            _effects(child.children) or _effect(child) for child in effect.children
-        )
-        return f"choose one - {modes}"
+        # Each mode rendered whole: rendering only a mode's children dropped
+        # an OPTIONAL's "may" and a CONDITIONAL's "if".
+        modes = "; or ".join(_effect(child) for child in effect.children)
+        return f"{_mode_choice(effect)} - {modes}"
     if kind is EffectKind.NOTHING:
         return ""
     if kind is EffectKind.UNPARSED:
@@ -286,7 +397,10 @@ def _control_flow(effect: Effect) -> str | None:
 def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None:
     kind = effect.kind
     if kind is EffectKind.DAMAGE:
-        return f"deal {amount} damage to {objects}"
+        # CR 601.2d: divided among the targets is a different card from the
+        # same amount to each of them.
+        split = " divided among" if effect.divided else " to"
+        return f"deal {amount} damage{split} {objects}"
     if kind is EffectKind.PREVENT_DAMAGE:
         # -1 is the "all" sentinel the executor reads; printing it as a number
         # made a Fog read like a card that heals one damage.
@@ -298,15 +412,22 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
     if kind is EffectKind.SEARCH_LIBRARY:
         where = f" and puts it into {_zone(effect.zone)}" if effect.zone else ""
         tapped = " tapped" if "tapped" in effect.keywords else ""
+        # The executor takes at most ``amount`` cards whatever the filter's
+        # own count says, so both are shown when they differ.
+        cap = ""
+        spec = effect.targets
+        if spec is not None and spec.count is not None and str(spec.count) != amount:
+            cap = f" (takes at most {amount})"
         return (
             f"{who} searches their library for {_filter(effect.targets)}"
-            f"{where}{tapped}"
+            f"{cap}{where}{tapped}"
         )
     if kind is EffectKind.MOVE_ZONE:
         origin = f"from {_zone(effect.from_zone)} " if effect.from_zone else ""
         return f"move {objects} {origin}to {_zone(effect.zone)}"
     if kind is EffectKind.ADD_COUNTERS:
-        return f"put {amount} {_counter(effect)} counter(s) on {objects}"
+        split = " divided among" if effect.divided else " on"
+        return f"put {amount} {_counter(effect)} counter(s){split} {objects}"
     if kind is EffectKind.REMOVE_COUNTERS:
         return f"remove {amount} {_counter(effect)} counter(s) from {objects}"
     if kind is EffectKind.PROLIFERATE:
@@ -316,13 +437,56 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
     if kind is EffectKind.START_ENGINES:
         return f"{who} starts their engines (speed becomes 1 if it is 0)"
     if kind is EffectKind.CREATE_TOKEN:
-        return f"{who} creates {amount} {effect.token or 'token'} token(s)"
+        return f"{who} creates {amount} {_token(effect.token)} token(s)"
     if kind is EffectKind.ADD_MANA:
-        symbols = "".join(effect.mana_produced)
-        if symbols:
-            return f"{who} adds {symbols}"
-        return f"{who} adds {amount} mana of {_colors(effect.colors)}"
+        return _add_mana(effect, who, amount)
     return None
+
+
+def _token(token) -> str:
+    """The token, with how it arrives - tapped, attacking, or as a copy."""
+    if token is None:
+        return "token"
+    text = str(token)
+    if token.copy_of is not None:
+        text = f"copy of {_filter(token.copy_of)}"
+    riders = [
+        word
+        for word, flag in (
+            ("tapped", token.enters_tapped),
+            ("attacking", token.enters_attacking),
+        )
+        if flag
+    ]
+    return f"{text} ({' and '.join(riders)})" if riders else text
+
+
+def _add_mana(effect: Effect, who: str, amount: str) -> str:
+    """"Add {G}{U}", "add one mana of the chosen color", "... for each Swamp".
+
+    Every field here is one the executor reads: the chosen colour, the
+    commander's identity narrowing "any color", the repeat count a "for each"
+    puts in ``amount2``, and a spending restriction.
+    """
+    symbols = "".join(effect.mana_produced)
+    if symbols:
+        text = f"{who} adds {symbols}"
+        repeat = effect.amount2
+        if not repeat.is_constant or repeat.constant:
+            text += f" {_amount(repeat)} time(s)"
+    elif effect.colors_chosen:
+        text = f"{who} adds {amount} mana of the chosen color"
+    elif effect.colors:
+        menu = _colors(effect.colors)
+        if effect.colors_in_commander_identity:
+            menu += " in your commander's color identity"
+        text = f"{who} adds {amount} mana of {menu}"
+    else:
+        text = f"{who} adds {amount} colorless mana"
+    if effect.mana_restriction is not None:
+        key = getattr(effect.mana_restriction, "key", "") or "a restricted use"
+        text += f" (spend only on {key})"
+    return text
 
 
 def _continuous(effect: Effect, objects: str) -> str | None:
@@ -348,7 +512,12 @@ def _continuous(effect: Effect, objects: str) -> str | None:
     if kind is EffectKind.REMOVE_TYPE:
         return f"{objects} loses {effect.types}{duration}"
     if kind in (EffectKind.RESTRICTION, EffectKind.PERMISSION):
-        rules = ", ".join(_act(r) for r in effect.restrictions) or "act"
+        rules = ", ".join(_act(r) for r in effect.restrictions)
+        if not rules and effect.keywords:
+            # A keyword the payment step consults (Convoke, Improvise): the
+            # keyword is the whole of what the engine reads.
+            rules = f"help pay by {', '.join(effect.keywords)}"
+        rules = rules or "act"
         verb = "can't" if kind is EffectKind.RESTRICTION else "may"
         return f"{objects} {verb} {rules}{duration}"
     if kind is EffectKind.MODIFY_COST:
@@ -362,6 +531,10 @@ def _continuous(effect: Effect, objects: str) -> str | None:
                 5: "damage dealt",
             }.get(effect.replacement_kind, "the amount")
             return f"replacement - {what} become {_scaled(effect)}"
+        if not effect.children:
+            # Kind zero with nothing to do instead is never registered
+            # (``static_replacements`` skips it): the ability is inert.
+            return "replacement of a shape the engine has no kind for (does nothing)"
         return f"replacement - instead, {_effects(effect.children)}{duration}"
     return None
 
@@ -420,8 +593,54 @@ def _counter(effect: Effect) -> str:
 
 def _subject(effect: Effect) -> str:
     if effect.players is not None:
-        return _players(effect.players)
+        return _who(effect)
     return "you"
+
+
+def _who(effect: Effect) -> str:
+    """The player an effect names, as the engine will resolve it.
+
+    A "target" scope on an effect that chose no target is not a target at
+    all: the resolver answers it from the scope alone, which for "target
+    player" is nobody and for "target opponent" is every opponent. Printing
+    it as "target player" made that parse read exactly like a real target.
+    """
+    from ..rules.kernel.query import PlayerScope
+
+    players = effect.players
+    text = _players(players)
+    if (
+        players is not None
+        and players.scope in (PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT)
+        and not effect.is_targeted
+    ):
+        text += " (not targeted)"
+    return text
+
+
+def _mode_choice(effect: Effect) -> str:
+    """"choose one", "choose up to two", "choose two (a mode may repeat)"."""
+    count = _amount(effect.amount) if not (
+        effect.amount.is_constant and effect.amount.constant in (0, 1)
+    ) else "one"
+    text = f"choose {'up to ' if effect.modes_up_to else ''}{count}"
+    if effect.mode_weights and any(w != 1 for w in effect.mode_weights):
+        text += f" (mode costs {list(effect.mode_weights)})"
+    if effect.modes_may_repeat:
+        text += " (a mode may be chosen more than once)"
+    return text
+
+
+def _functions_in(zones) -> str:
+    """Zones other than the default battlefield an ability works from."""
+    from ..rules.cr600_spells_and_abilities.abilities import (
+        BATTLEFIELD_ONLY,
+        STACK_ONLY,
+    )
+
+    if not zones or zones in (BATTLEFIELD_ONLY, STACK_ONLY):
+        return ""
+    return ", ".join(sorted(_zone(zone) for zone in zones))
 
 
 def _players(players: PlayerFilter | None) -> str:
