@@ -343,7 +343,7 @@ def test_an_unlit_number_visits_nothing(board, card_db):
 
 
 def test_an_attraction_without_lights_is_never_visited(board, card_db):
-    card = card_db.lookup(ATTRACTIONS[0])
+    card = lit(card_db, ATTRACTIONS[0])
     board.scripts.add(card.name, visit_ability(gain_one()))
     place(board, card)
     life = board.game.player(P0).life
