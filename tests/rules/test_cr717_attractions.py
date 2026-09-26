@@ -115,9 +115,15 @@ def test_lit_numbers_are_read_from_scryfall_data():
 
 
 def test_a_card_without_lights_has_none(card_db):
-    """The control: the snapshot carries no lights, so nothing is lit."""
+    """The control: a card that is not an Attraction has nothing lit."""
     assert CardDef.from_scryfall({"name": "X"}).attraction_lights == ()
-    assert card_db.lookup("Information Booth").attraction_lights == ()
+    assert card_db.lookup("Lightning Bolt").attraction_lights == ()
+
+
+def test_the_snapshot_carries_an_attractions_lights(card_db):
+    """The snapshot keeps Scryfall's ``attraction_lights``, so a real
+    Attraction arrives with its numbers lit."""
+    assert card_db.lookup("Information Booth").attraction_lights == (2, 6)
 
 
 # ---------------------------------------------------------------------------

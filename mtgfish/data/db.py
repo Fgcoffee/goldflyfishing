@@ -27,7 +27,7 @@ from .scryfall import SUBTYPE_CATALOGS, ScryfallClient, file_hash, iter_jsonl
 
 #: Bumped when the stored shape changes, forcing a rebuild rather than letting
 #: a stale database produce subtly wrong cards.
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 #: Layouts that are not real, castable cards. They stay in the database - token
 #: definitions are needed for "create a 1/1 Soldier" - but they must never win a
@@ -56,6 +56,10 @@ CREATE TABLE IF NOT EXISTS cards (
     oracle_id       TEXT PRIMARY KEY,
     name            TEXT NOT NULL,
     commander_legal INTEGER NOT NULL,
+    -- Legal (or restricted) in at least one format. Cards legal nowhere -
+    -- Un-set joke cards, playtest cards, oversized and test cards - are kept
+    -- for lookups but are not part of the pool the parser is measured over.
+    format_legal    INTEGER NOT NULL DEFAULT 0,
     playable        INTEGER NOT NULL,
     edhrec_rank     INTEGER,
     data            TEXT NOT NULL
@@ -367,10 +371,24 @@ class CardDatabase:
         )
         return [row["name"] for row in rows]
 
-    def iter_cards(self, *, commander_legal_only: bool = False) -> Iterator[CardDef]:
+    def iter_cards(
+        self, *, commander_legal_only: bool = False, format_legal_only: bool = False
+    ) -> Iterator[CardDef]:
+        """Every representable card, optionally narrowed by legality.
+
+        ``format_legal_only`` is the pool the parser is held to: every card
+        legal (or restricted) in at least one format. What it leaves out is
+        legal nowhere - Un-set joke cards, playtest cards and the like - and
+        is not something a real game will ever see.
+        """
         sql = "SELECT oracle_id FROM cards"
+        clauses = []
         if commander_legal_only:
-            sql += " WHERE commander_legal = 1"
+            clauses.append("commander_legal = 1")
+        if format_legal_only:
+            clauses.append("format_legal = 1")
+        if clauses:
+            sql += " WHERE " + " AND ".join(clauses)
         sql += " ORDER BY oracle_id"
         for row in self._conn.execute(sql):
             card = self.by_oracle_id(row["oracle_id"])
@@ -550,6 +568,9 @@ def build_database(
                 continue
             legalities = raw.get("legalities", {})
             commander_legal = 1 if legalities.get("commander") == "legal" else 0
+            format_legal = int(
+                any(status in ("legal", "restricted") for status in legalities.values())
+            )
             if commander_legal:
                 for type_line in _type_lines(raw):
                     _, unknown = TypeLine.scan(type_line, registry)
@@ -560,6 +581,7 @@ def build_database(
                     oracle_id,
                     raw.get("name", ""),
                     commander_legal,
+                    format_legal,
                     0 if raw.get("layout") in NON_PLAYABLE_LAYOUTS else 1,
                     raw.get("edhrec_rank"),
                     json.dumps(_prune(raw), separators=(",", ":")),
@@ -586,8 +608,8 @@ def build_database(
 
         conn.executemany(
             "INSERT OR REPLACE INTO cards"
-            "(oracle_id, name, commander_legal, playable, edhrec_rank, data)"
-            " VALUES (?, ?, ?, ?, ?, ?)",
+            "(oracle_id, name, commander_legal, format_legal, playable, edhrec_rank, data)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?)",
             card_rows,
         )
         conn.executemany(
