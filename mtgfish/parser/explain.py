@@ -176,7 +176,6 @@ _OBJECT_VERBS = {
     EffectKind.SACRIFICE: "sacrifice",
     EffectKind.RETURN_TO_HAND: "return to hand",
     EffectKind.PUT_ONTO_BATTLEFIELD: "put onto the battlefield",
-    EffectKind.PUT_ON_LIBRARY: "put on top of library",
     EffectKind.TAP: "tap",
     EffectKind.UNTAP: "untap",
     EffectKind.GAIN_CONTROL: "gain control of",
@@ -304,7 +303,22 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
         )
     if kind is EffectKind.MOVE_ZONE:
         origin = f"from {_zone(effect.from_zone)} " if effect.from_zone else ""
-        return f"move {objects} {origin}to {_zone(effect.zone)}"
+        shown = "reveal and " if "reveal" in effect.keywords else ""
+        return f"{shown}move {objects} {origin}to {_zone(effect.zone)}"
+    if kind is EffectKind.PUT_ON_LIBRARY:
+        where = "the bottom" if (
+            "bottom" in effect.keywords or effect.amount.constant < 0
+        ) else "top"
+        order = " in a random order" if "random" in effect.keywords else ""
+        shown = "reveal and " if "reveal" in effect.keywords else ""
+        return f"{shown}put {objects} on {where} of its owner's library{order}"
+    if kind is EffectKind.LOOK_AT_TOP:
+        verb = "reveals" if "reveal" in effect.keywords else "looks at"
+        whose = "target player's" if effect.is_targeted else "their"
+        return (
+            f"{who} {verb} the top {amount} card(s) of {whose} library "
+            "(setting them aside to choose from; nothing moves)"
+        )
     if kind is EffectKind.ADD_COUNTERS:
         return f"put {amount} {_counter(effect)} counter(s) on {objects}"
     if kind is EffectKind.REMOVE_COUNTERS:

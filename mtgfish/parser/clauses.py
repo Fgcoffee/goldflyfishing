@@ -236,6 +236,94 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
     return _bind_x(_attach_mana_restriction(effects))
 
 
+#: Instructions that set a pile aside for "from among them" and "the rest".
+PILE_MAKERS = frozenset({EffectKind.LOOK_AT_TOP, EffectKind.MILL})
+
+#: Children that run in a resolution of their own - a reflexive or delayed
+#: trigger goes on the stack later (CR 603.7, 603.12), and the pile does not
+#: go with it.
+_OWN_RESOLUTION = frozenset({EffectKind.REFLEXIVE_TRIGGER, EffectKind.DELAYED_TRIGGER})
+
+
+def pile_references_ok(effects, have_pile: bool = False, local: bool = False) -> bool:
+    """Whether every "from among them" / "the rest" in an ability has a pile.
+
+    The grammar reads those phrases wherever they stand, but they mean
+    something only after a look, a reveal or a mill *in the same
+    resolution*. Two shapes are refused:
+
+    * a pile reference with no pile before it - including one inside an "if
+      you do", which the engine resolves as a separate triggered ability;
+    * "the rest" anywhere but alongside the instruction that made the pile.
+      "You may put a land from among them onto the battlefield. If you
+      don't, put a card from among them into your hand. Put the rest on the
+      bottom" reads its last sentence into the "if you don't", where it
+      would happen only on one branch - a different card.
+
+    Also refused: "if you do / don't" straight after an optional pile move,
+    because the engine decides those by what was remembered, and the look
+    already remembered the whole pile.
+    """
+    previous = None
+    for effect in effects:
+        if effect.kind in (EffectKind.IF_YOU_DONT, EffectKind.REFLEXIVE_TRIGGER) and (
+            previous is not None
+            and previous.kind is EffectKind.OPTIONAL
+            and any(_uses_pile(node) for node in previous.walk())
+        ):
+            return False
+        if _uses_pile(effect):
+            if not (have_pile or local):
+                return False
+            if _is_the_rest(effect) and not local:
+                return False
+        if effect.kind is EffectKind.SEQUENCE:
+            # A sequence is the same level spelled as one node.
+            if not pile_references_ok(effect.children, have_pile, local):
+                return False
+            if any(child.kind in PILE_MAKERS for child in effect.children):
+                local = True
+        elif effect.kind is EffectKind.CHOOSE_MODE:
+            for mode in effect.children:
+                if not pile_references_ok((mode,), have_pile or local):
+                    return False
+        elif effect.children or effect.otherwise:
+            inherited = False if effect.kind in _OWN_RESOLUTION else (have_pile or local)
+            for branch in (effect.children, effect.otherwise):
+                if not _nested_ok(branch, inherited):
+                    return False
+        if effect.kind in PILE_MAKERS:
+            local = True
+        previous = effect
+    return True
+
+
+def _nested_ok(effects, have_pile: bool) -> bool:
+    """A nested branch: its pile references may lean on an outer pile, but
+    its "the rest" may not - only on a pile made in the same branch."""
+    if not effects:
+        return True
+    for effect in effects:
+        if _is_the_rest(effect) and not any(e.kind in PILE_MAKERS for e in effects):
+            return False
+    return pile_references_ok(effects, have_pile)
+
+
+def _uses_pile(effect: Effect) -> bool:
+    return effect.targets is not None and effect.targets.from_pile
+
+
+def _is_the_rest(effect: Effect) -> bool:
+    spec = effect.targets
+    return (
+        spec is not None
+        and spec.from_pile
+        and spec.count is None
+        and not spec.up_to
+        and spec == ObjectFilter(from_pile=True)
+    )
+
+
 def _attach_mana_restriction(effects: list[Effect]) -> list[Effect]:
     """Fold a "spend this mana only on ..." rider into the mana it restricts.
 
@@ -2109,20 +2197,21 @@ def _more_targets(stream: Stream) -> list:
 def _in_any_order_tail(stream: Stream, effect: Effect) -> Effect | None:
     """A trailing "in any order" / "in a random order" on a library move.
 
-    Who picks the order is the only thing being said, and no decision in this
-    simulator picks better than random - so the phrase is consumed and the
-    effect is unchanged. Leaving it unread failed the sentence.
+    CR 401.4: several cards put into a library at once are ordered by their
+    owner unless the effect says otherwise - "in any order" is that choice,
+    "in a random order" takes it away. It was consumed after *any* effect and
+    changed nothing, so a random bottom was a chosen one. Only a move into a
+    library has an order to speak of.
     """
-    mark = stream.mark()
-    if not (
-        stream.accept_phrase("in any order")
-        or stream.accept_phrase("in a random order")
-        or stream.accept_phrase("in random order")
-    ):
+    if effect.kind is not EffectKind.PUT_ON_LIBRARY:
         return None
+    if "random" in effect.keywords:
+        return None
+    mark = stream.mark()
+    order = _library_order_words(stream)
     if stream.mark() == mark:
         return None
-    return effect
+    return replace(effect, keywords=(*effect.keywords, *order))
 
 
 def _under_control(stream: Stream) -> None:
@@ -4434,25 +4523,16 @@ def _reveal_hand(stream: Stream) -> Effect | None:
 
 @clause("reveal-top")
 def _reveal_top(stream: Stream) -> Effect | None:
-    """"Reveal the top card of your library."."""
-    players, _ = parse_player_filter(stream)
-    if not stream.accept("reveal", "reveals"):
-        return None
-    stream.accept("the")
-    amount = parse_value(stream) or Value.of(1)
-    if not stream.accept("card", "cards"):
-        return None
-    if not stream.accept_phrase("of your library") and not stream.accept_phrase(
-        "of their library"
-    ):
-        return None
-    return Effect(
-        EffectKind.REVEAL,
-        players=players or YOU,
-        from_zone=Zone.LIBRARY,
-        amount=amount,
-        text="reveal from library",
-    )
+    """"Reveal the top four cards of your library." (CR 701.16a).
+
+    The same instruction as looking at them, shown to everyone: the cards stay
+    where they are and become the pile the next sentences choose among. It
+    used to be read by a clause that could not get past the word "top", and
+    what did read it produced a reveal of *this* object, so "reveal the top
+    card of your library. If it's a creature card, put it into your hand"
+    asked its question about the wrong card.
+    """
+    return _top_cards_pile(stream, ("reveal", "reveals"), reveal=True)
 
 
 @clause("sacrifice-it")
@@ -4478,29 +4558,88 @@ def _sacrifice_it(stream: Stream) -> Effect | None:
 def _look_at_top(stream: Stream) -> Effect | None:
     """"Look at the top four cards of your library."
 
-    Looking is scrying with nothing put on the bottom: the cards are seen and
-    stay where they are, which is exactly what SCRY with no reordering does.
-    Whatever the card does next - put one in your hand, exile them - is a
-    separate sentence the grammar reads on its own.
+    This was read as SCRY, which it is not: scrying *moves* the cards it
+    rejects to the bottom (CR 701.22a), and the default agent bottoms
+    anything it does not like, so "look at the top card" dug through the
+    library, and Impulse's "put one of them into your hand" then took
+    whatever the resolution happened to remember. Looking moves nothing. It
+    sets the cards aside as a pile (``EffectKind.LOOK_AT_TOP``) that "one of
+    them", "a creature card from among them" and "the rest" choose among.
     """
-    if not stream.accept("look"):
+    return _top_cards_pile(stream, ("look", "looks"), reveal=False)
+
+
+def _top_cards_pile(
+    stream: Stream, verbs: tuple[str, ...], *, reveal: bool
+) -> Effect | None:
+    """[subject] look at / reveal "the top N cards of <whose> library".
+
+    Whose library is said three ways, and each is kept: "your library" is
+    the controller's; "target player's library" / "target opponent's
+    library" is a player chosen as the ability is put on the stack (CR
+    115.1); and a named subject's "their library" is that player's. Anything
+    else - "each player's library", "that player's library" - names a player
+    this cannot pin down and is left unread.
+    """
+    mark = stream.mark()
+    subject, subject_targeted = parse_player_filter(stream)
+    if not stream.accept(*verbs):
+        stream.reset(mark)
         return None
-    if not stream.accept("at"):
+    if not reveal and not stream.accept("at"):
+        stream.reset(mark)
         return None
-    stream.accept("the")
-    if not stream.accept("top"):
+    if not stream.accept_phrase("the top"):
+        stream.reset(mark)
         return None
-    amount = parse_value(stream) or Value.of(1)
-    if not stream.accept("card", "cards"):
+    amount = Value.of(1)
+    if stream.accept("card"):
+        pass
+    else:
+        amount = parse_value(stream)
+        if amount is None or not stream.accept("cards"):
+            stream.reset(mark)
+            return None
+    if not stream.accept("of"):
+        stream.reset(mark)
         return None
-    if not (
-        stream.accept_phrase("of your library")
-        or stream.accept_phrase("of their library")
-        or stream.accept_phrase("of target player's library")
+
+    players, targeted = None, False
+    if stream.accept_phrase("your library"):
+        players = YOU
+        if subject is not None and subject.scope is not PlayerScope.YOU:
+            stream.reset(mark)
+            return None
+    elif stream.accept_phrase("target player's library"):
+        players, targeted = PlayerFilter(PlayerScope.TARGET_PLAYER), True
+    elif stream.accept_phrase("target opponent's library"):
+        players, targeted = PlayerFilter(PlayerScope.TARGET_OPPONENT), True
+    elif stream.accept_phrase("their library") or stream.accept_phrase(
+        "his or her library"
     ):
+        if subject is None or subject.scope not in (
+            PlayerScope.TARGET_PLAYER,
+            PlayerScope.TARGET_OPPONENT,
+        ):
+            stream.reset(mark)
+            return None
+        players, targeted = subject, subject_targeted
+    else:
+        stream.reset(mark)
         return None
+    if subject is not None and players is not subject and subject.scope is not (
+        PlayerScope.YOU
+    ):
+        stream.reset(mark)
+        return None
+
     return Effect(
-        EffectKind.SCRY, players=YOU, amount=amount, text="look at the top"
+        EffectKind.LOOK_AT_TOP,
+        players=players,
+        is_targeted=targeted,
+        amount=amount,
+        keywords=("reveal",) if reveal else (),
+        text="reveal the top" if reveal else "look at the top",
     )
 
 
@@ -4542,6 +4681,9 @@ def _put_on_library(stream: Stream) -> Effect | None:
     if not stream.accept("on"):
         return None
     stream.accept("the")
+    # Top or bottom is the whole difference between Condemn and a card that
+    # hands the attacker back as next turn's draw; it was accepted and dropped.
+    bottom = stream.at("bottom")
     if not stream.accept("top", "bottom"):
         return None
     if not (
@@ -4550,12 +4692,13 @@ def _put_on_library(stream: Stream) -> Effect | None:
         or stream.accept_phrase("of its owner's library")
     ):
         return None
-    stream.accept_phrase("in a random order")
+    order = _library_order_words(stream)
     return Effect(
         EffectKind.PUT_ON_LIBRARY,
         targets=targets,
         players=YOU,
         is_targeted=targeted,
+        keywords=("bottom", *order) if bottom else order,
         text="put on library",
     )
 
@@ -5342,70 +5485,298 @@ def _poison(stream: Stream) -> Effect | None:
 
 @clause("library-order")
 def _library_order(stream: Stream) -> Effect | None:
-    """"put them back in any order", "put the rest on the bottom of your
-    library in a random order".
+    """What happens to the cards a look or a reveal set aside.
 
-    The tail of every look-at-the-top-N card. It moves cards the resolution is
-    already holding and the *order* is the only thing being said, which is why
-    it is one clause rather than a variation on each verb that can precede it.
+    "Put one of them into your hand and the rest on the bottom of your
+    library in any order", "Put all Goblin cards revealed this way into your
+    hand and the rest into your graveyard", "put them back in any order".
+    Each part names some of the pile and a place, and a sentence may list
+    several parts with the verb said once (Telling Time: "one into your hand,
+    one on top of your library, and one on the bottom").
+
+    The parts used to become moves of whatever the resolution *remembered*,
+    with no filter and no count: "put a creature card from among them into
+    your hand" moved every remembered card, and "the rest" was the same set
+    again. Now a part chooses from the pile (``ObjectFilter.from_pile``) by
+    its own description and count, and "the rest" is what is left.
     """
     mark = stream.mark()
+    if not stream.accept("put", "puts"):
+        return None
+
+    # "put them back in any order" - the whole pile, where it already is.
+    look = stream.mark()
+    if stream.accept("them", "it") or stream.accept_phrase("those cards"):
+        if stream.accept("back"):
+            _library_words(stream, "on top of")
+            return Effect(
+                EffectKind.PUT_ON_LIBRARY,
+                targets=ObjectFilter(remembered=True),
+                keywords=_library_order_words(stream),
+                text="put them back",
+            )
+        stream.reset(look)
+
+    parts = _pile_parts(stream)
+    if not parts:
+        stream.reset(mark)
+        return None
+    if len(parts) == 1:
+        return parts[0]
+    return Effect(EffectKind.SEQUENCE, children=tuple(parts), text="put them")
+
+
+def _pile_parts(stream: Stream, *, after_first: bool = False) -> list[Effect]:
+    """One or more "<some of the pile> <place>" parts, joined by commas and
+    "and". The ones after the first may be a bare number ("one on top of your
+    library"), which only makes sense once "of them" has been said."""
+    parts: list[Effect] = []
+    while True:
+        look = stream.mark()
+        if parts or after_first:
+            stream.skip_punct(",")
+            stream.accept("and")
+        part = _pile_part(stream, continuation=bool(parts) or after_first)
+        if part is None:
+            stream.reset(look)
+            break
+        parts.append(part)
+    return parts
+
+
+def _pile_part(stream: Stream, *, continuation: bool) -> Effect | None:
+    mark = stream.mark()
+    spec = _pile_object(stream, continuation=continuation)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    part = _pile_destination(stream, spec)
+    if part is None:
+        stream.reset(mark)
+        return None
+    return part
+
+
+#: "The rest", however a card spells it: everything in the pile not yet put
+#: somewhere. "The other" is the same thing when two cards were looked at.
+_THE_REST = (
+    "all other cards revealed this way",
+    "all the other cards revealed this way",
+    "all cards revealed this way that weren't put onto the battlefield",
+    "the rest of the cards revealed this way",
+    "the rest of the revealed cards",
+    "the rest of them",
+    "the rest",
+    "the others",
+    "the other",
+)
+
+
+def _pile_object(stream: Stream, *, continuation: bool) -> ObjectFilter | None:
+    """Which of the pile a part is about.
+
+    "the rest" is all that is left; "two of them" / "up to one of them" /
+    "one of those cards" is a count from the pile; "a creature card from among
+    them" and "all land cards revealed this way" are descriptions, read by the
+    noun grammar, which marks them as choosing from the pile.
+    """
+    for phrase in _THE_REST:
+        if stream.accept_phrase(phrase):
+            return ObjectFilter(from_pile=True)
+
+    mark = stream.mark()
+    up_to = stream.accept_phrase("up to")
+    number = stream.accept_number()
+    if number is None and stream.accept("X"):
+        count = Value(kind=ValueKind.X)
+    elif number is not None:
+        count = Value.of(number)
+    else:
+        count = None
+    if count is not None:
+        if stream.accept_phrase("of them") or stream.accept_phrase("of those cards"):
+            return ObjectFilter(from_pile=True, count=count, up_to=up_to)
+        if continuation and not up_to:
+            # "..., one on top of your library, and one on the bottom" - the
+            # "of them" was said once for the whole list.
+            return ObjectFilter(from_pile=True, count=count)
+    stream.reset(mark)
+
+    any_number = stream.at_phrase("any number of")
+    spec = parse_object_filter(stream)
+    if spec is None or not spec.from_pile:
+        stream.reset(mark)
+        return None
+    if any_number:
+        # "any number of" is a choice of how many, which is not "all" - it is
+        # kept apart so the round-trip says which. The engine's choice with
+        # no agent is every match, which is one legal answer.
+        spec = replace(spec, count=None, up_to=True)
+    return spec
+
+
+def _library_order_words(stream: Stream) -> tuple[str, ...]:
+    """CR 401.4: "in any order" is the owner's choice (with no agent, the
+    order the cards are in), "in a random order" is not a choice at all."""
+    if stream.accept_phrase("in any order"):
+        return ()
+    if stream.accept_phrase("in a random order") or stream.accept_phrase(
+        "in random order"
+    ):
+        return ("random",)
+    return ()
+
+
+def _pile_destination(stream: Stream, spec: ObjectFilter) -> Effect | None:
+    """Where a part of the pile goes, as the effect that puts it there."""
+    if (
+        stream.accept_phrase("into your hand")
+        or stream.accept_phrase("into their owner's hand")
+        or stream.accept_phrase("into its owner's hand")
+        or stream.accept_phrase("into their owners' hands")
+    ):
+        return Effect(
+            EffectKind.MOVE_ZONE, targets=spec, zone=Zone.HAND, text="put into hand"
+        )
+    if (
+        stream.accept_phrase("into your graveyard")
+        or stream.accept_phrase("into their owner's graveyard")
+        or stream.accept_phrase("into its owner's graveyard")
+        or stream.accept_phrase("into their owners' graveyards")
+        or stream.accept_phrase("into that player's graveyard")
+    ):
+        return Effect(
+            EffectKind.MOVE_ZONE,
+            targets=spec,
+            zone=Zone.GRAVEYARD,
+            text="put into graveyard",
+        )
+    if stream.accept_phrase("onto the battlefield"):
+        keywords: tuple[str, ...] = ()
+        look = stream.mark()
+        if stream.accept("tapped"):
+            if stream.at("and"):
+                # "tapped and attacking" - what it attacks is not said here.
+                stream.reset(look)
+                return None
+            keywords = ("tapped",)
+        # CR 110.2a: a permanent is controlled by the player who put it onto
+        # the battlefield, which is what the executor does - so "under your
+        # control" is that default said aloud.
+        stream.accept_phrase("under your control")
+        return Effect(
+            EffectKind.PUT_ONTO_BATTLEFIELD,
+            targets=spec,
+            zone=Zone.BATTLEFIELD,
+            keywords=keywords,
+            text="put onto the battlefield",
+        )
+
+    top = None
+    if stream.accept("back"):
+        top = True
+        _library_words(stream, "on top of")
+    elif _library_words(stream, "on top of") or _library_words(stream, "on the top of"):
+        top = True
+    elif stream.accept_phrase("on top"):
+        top = True
+    elif _library_words(stream, "on the bottom of"):
+        top = False
+    elif stream.accept_phrase("on the bottom"):
+        top = False
+    if top is None:
+        return None
+    order = _library_order_words(stream)
+    keywords = order if top else ("bottom", *order)
+    return Effect(
+        EffectKind.PUT_ON_LIBRARY,
+        targets=spec,
+        keywords=keywords,
+        text="put on top of library" if top else "put on the bottom of library",
+    )
+
+
+def _library_words(stream: Stream, preposition: str) -> bool:
+    """"<preposition> your library" and its owner-naming spellings. CR 400.3
+    sends a card to its *owner's* library whatever the sentence says, so the
+    spellings all mean the same place."""
+    for owner in (
+        "your library",
+        "their library",
+        "its owner's library",
+        "their owner's library",
+        "their owners' libraries",
+        "that player's library",
+    ):
+        if stream.accept_phrase(f"{preposition} {owner}"):
+            return True
+    return False
+
+
+@clause("pile-reveal-and-put")
+def _pile_reveal_and_put(stream: Stream) -> Effect | None:
+    """"Reveal a creature card from among them and put it into your hand."
+
+    CR 701.16a: the reveal shows the card; the put moves it. One card, chosen
+    once, does both - so the pair is one effect carrying "reveal", not a
+    reveal of one choice and a move of whatever the resolution remembered.
+    """
+    mark = stream.mark()
+    if not stream.accept("reveal", "reveals"):
+        return None
+    spec = _pile_object(stream, continuation=False)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    stream.skip_punct(",")
+    if not (stream.accept("and") or stream.accept("then")):
+        stream.reset(mark)
+        return None
     if not stream.accept("put"):
         stream.reset(mark)
         return None
-
-    # "put them back", "put the rest on the bottom", "put one of them into
-    # your hand" - the same verb over a pile the resolution is holding, said
-    # three ways, differing only in how much of the pile is meant.
-    stream.accept_number()
-    stream.accept_phrase("of them")
     if not (
-        stream.accept("them", "it")
-        or stream.accept_phrase("the rest of them")
-        or stream.accept_phrase("the rest")
-        or stream.mark() != mark + 1
+        stream.accept("it", "them")
+        or stream.accept_phrase("that card")
+        or stream.accept_phrase("those cards")
+        or stream.accept_phrase("the revealed cards")
+        or stream.accept_phrase("the revealed card")
     ):
         stream.reset(mark)
         return None
-
-    if stream.accept_phrase("into your hand"):
+    moved = _pile_destination(stream, spec)
+    if moved is None or moved.kind is EffectKind.PUT_ONTO_BATTLEFIELD:
+        stream.reset(mark)
+        return None
+    moved = replace(moved, keywords=("reveal", *moved.keywords), text="reveal and put")
+    # "..., then put that card on top of your library and the rest on the
+    # bottom" - the rest of the pile, in the same sentence.
+    rest = _pile_parts(stream, after_first=True)
+    if rest:
         return Effect(
-            EffectKind.MOVE_ZONE,
-            targets=ObjectFilter(remembered=True),
-            zone=Zone.HAND,
-            text="put them into your hand",
+            EffectKind.SEQUENCE, children=(moved, *rest), text="reveal and put"
         )
+    return moved
 
-    if stream.accept("back"):
-        from_top = True
-    elif stream.accept_phrase("on top of your library") or stream.accept_phrase(
-        "on the top of your library"
+
+@clause("pile-exile")
+def _pile_exile(stream: Stream) -> Effect | None:
+    """"Exile one of them face down", "exile two of those cards" - a count
+    from the pile, which the ordinary exile clause's noun grammar cannot read
+    ("of them" has no head noun)."""
+    mark = stream.mark()
+    if not stream.accept("exile"):
+        return None
+    number = stream.accept_number()
+    if number is None or not (
+        stream.accept_phrase("of them") or stream.accept_phrase("of those cards")
     ):
-        from_top = True
-    elif (
-        stream.accept_phrase("on the bottom of your library")
-        or stream.accept_phrase("on the bottom of their library")
-        or stream.accept_phrase("on the bottom")
-    ):
-        from_top = False
-    else:
         stream.reset(mark)
         return None
-
-    # "In any order" and "in a random order" differ only in who picks, and no
-    # decision in this simulator picks better than random - so both are
-    # consumed and neither changes the effect.
-    (
-        stream.accept_phrase("in any order")
-        or stream.accept_phrase("in a random order")
-        or stream.accept_phrase("in random order")
-    )
-
     return Effect(
-        EffectKind.MOVE_ZONE,
-        targets=ObjectFilter(remembered=True, from_top=from_top),
-        zone=Zone.LIBRARY,
-        text="put them back",
+        EffectKind.EXILE,
+        targets=ObjectFilter(from_pile=True, count=Value.of(number)),
+        text="exile from the pile",
     )
 
 
@@ -5591,46 +5962,24 @@ def _and_the_rest(stream: Stream) -> Effect | None:
     """"... and the rest on the bottom of your library in any order."
 
     The verb is elided: "Put one of them into your hand *and the rest on the
-    bottom*" says "put" once and means it twice. Read as its own effect
-    because that is what it is - the second half moves different cards to a
-    different place.
+    bottom*" says "put" once and means it twice. The put clause reads the
+    whole list itself; this is for the rest standing after something else
+    took the first half.
     """
     mark = stream.mark()
     stream.skip_punct(",")
-    # The "and" is optional: when this half follows another effect the
-    # sentence chainer has already taken it, and when it opens a sentence
-    # there is none to take.
     stream.accept("and")
-    if not (
-        stream.accept_phrase("the rest of them") or stream.accept_phrase("the rest")
-    ):
-        stream.reset(mark)
-        return None
-
-    if (
-        stream.accept_phrase("on the bottom of your library")
-        or stream.accept_phrase("on the bottom of their library")
-        or stream.accept_phrase("on the bottom")
-    ):
-        from_top = False
-    elif stream.accept_phrase("on top of your library"):
-        from_top = True
+    for phrase in _THE_REST:
+        if stream.at_phrase(phrase):
+            break
     else:
         stream.reset(mark)
         return None
-
-    (
-        stream.accept_phrase("in any order")
-        or stream.accept_phrase("in a random order")
-        or stream.accept_phrase("in random order")
-    )
-
-    return Effect(
-        EffectKind.MOVE_ZONE,
-        targets=ObjectFilter(remembered=True, from_top=from_top),
-        zone=Zone.LIBRARY,
-        text="and the rest",
-    )
+    part = _pile_part(stream, continuation=False)
+    if part is None:
+        stream.reset(mark)
+        return None
+    return part
 
 
 @clause("becomes-a-copy")

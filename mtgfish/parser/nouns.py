@@ -227,12 +227,12 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
             stream.reset(look)
     spec = _ownership(stream, spec)
     # "a creature card *from among them*" - the pile the resolution is
-    # holding, which is the same set "those cards" names. Read here because
-    # it can follow any noun phrase at all.
-    if stream.accept_phrase("from among them") or stream.accept_phrase(
-        "from among those cards"
-    ):
-        spec = replace(spec, remembered=True)
+    # holding: the cards an earlier "look at the top N" or "reveal the top N"
+    # set aside, and only those not yet dealt with. It was read as the plain
+    # pronoun, which the engine answers with *everything* remembered and no
+    # filter at all, so "a creature card from among them" took every card.
+    if pile_phrase(stream):
+        spec = replace(spec, from_pile=True)
 
     # "Creatures you control *of the chosen type*", "permanents of that
     # type", "creatures that aren't of the chosen type" - a reference to the
@@ -276,7 +276,12 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
     if participle.kind is TokenKind.WORD and participle.lower.endswith("ed"):
         stream.next()
         if stream.accept_phrase("this way"):
-            spec = replace(spec, remembered=True)
+            # "All creature cards *revealed* this way" are the pile a reveal
+            # set aside - a set to choose from with a filter, not a pronoun.
+            if participle.lower == "revealed":
+                spec = replace(spec, from_pile=True)
+            else:
+                spec = replace(spec, remembered=True)
         else:
             stream.reset(look)
     # Constraints and zones interleave: "creature *on the battlefield* with
@@ -289,10 +294,32 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
         spec = _zone(stream, spec)
         if stream.mark() == before:
             break
+    # "a creature card with power 3 or less *from among them*" - the pile
+    # phrase follows the constraints as often as it precedes them.
+    if not spec.from_pile and pile_phrase(stream):
+        spec = replace(spec, from_pile=True)
 
     if count is not None:
         spec = replace(spec, count=Value.of(count), up_to=up_to)
     return spec
+
+
+#: The ways oracle text names the pile a look, a reveal or a mill has just
+#: set aside (``ObjectFilter.from_pile``).
+_PILE_PHRASES = (
+    "from among them",
+    "from among those cards",
+    "from among the revealed cards",
+    "from among cards revealed this way",
+    "from among the cards revealed this way",
+    "from among the milled cards",
+    "from among the cards milled this way",
+)
+
+
+def pile_phrase(stream: Stream) -> bool:
+    """Consume "from among them" or one of its spellings."""
+    return any(stream.accept_phrase(phrase) for phrase in _PILE_PHRASES)
 
 
 def _self_or_attached(stream: Stream) -> ObjectFilter | None:
