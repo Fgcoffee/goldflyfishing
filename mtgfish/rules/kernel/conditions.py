@@ -64,21 +64,75 @@ def _happened_this_turn(game, condition, controller) -> bool:
         return False
 
     counting = condition.counter_type == "count"
-    total = 0
-    for event_kind in condition.event_kinds:
-        for player in players:
+    expected = (
+        evaluate(game, condition.constraint.value, controller=controller)
+        if condition.constraint is not None
+        else 0
+    )
+
+    def satisfied(total: int) -> bool:
+        if condition.constraint is None:
+            return total > 0
+        return condition.constraint.comparison.holds(total, expected)
+
+    def tally(player) -> int:
+        total = 0
+        for event_kind in condition.event_kinds:
             key = (
                 (int(event_kind), int(player), "count")
                 if counting
                 else (int(event_kind), int(player))
             )
             total += game.turn_history.get(key, 0)
+        return total
 
-    if condition.constraint is None:
-        return total > 0
-    return condition.constraint.comparison.holds(
-        total,
-        evaluate(game, condition.constraint.value, controller=controller),
+    # "An opponent lost 2 or more life this turn" is about one opponent: two
+    # opponents losing one life each is not it. Summing them answered a
+    # different question.
+    if _existential(condition.players):
+        return any(satisfied(tally(p)) for p in players)
+    from .query import PlayerScope
+
+    if condition.players is not None and condition.players.scope in (
+        PlayerScope.EACH_OPPONENT, PlayerScope.EACH_PLAYER
+    ):
+        return all(satisfied(tally(p)) for p in players)
+    return satisfied(sum(tally(p) for p in players))
+
+
+def _existential(players) -> bool:
+    """Whether a player phrase in a condition means "some one of them".
+
+    CR 102.3: "an opponent" is any one opponent. The EACH_ scopes are "each"
+    and every player named must satisfy the condition.
+    """
+    from .query import PlayerScope
+
+    return players is not None and players.scope is PlayerScope.OPPONENT
+
+
+def _trigger_object_matches(game, condition, event, source, controller) -> bool:
+    """Whether the object a trigger event was about fits the description.
+
+    CR 603.10a / 608.2h: for an event that looks back in time - a creature
+    dying, a permanent leaving - the object is asked about as it last existed
+    before the event, which the event carries as its first datum. Otherwise
+    the object named by the event is asked about as it is now.
+    """
+    from .matching import matches
+
+    if event is None or condition.filter is None:
+        return False
+    obj = None
+    if event.looks_back_in_time and event.data:
+        obj = game.objects.get(event.data[0])
+    if obj is None:
+        obj = game.objects.get(event.object_id)
+    if obj is None:
+        return False
+    return matches(
+        game, obj, condition.filter, source=source, controller=controller,
+        allow_stale=True,
     )
 
 
@@ -106,16 +160,26 @@ def _compare_counts(game, condition, controller) -> bool:
     )
     target = evaluate(game, condition.constraint.value, controller=controller)
 
+    results = []
     for player in players:
+        if game.player(player).has_lost:
+            continue
         spec = replace(
             condition.filter,
             controller=ControllerRelation.SPECIFIC,
             controller_specific=player,
         )
         count = len(find(game, spec, controller=controller))
-        if condition.constraint.comparison.holds(count, target):
-            return True
-    return False
+        results.append(condition.constraint.comparison.holds(count, target))
+    if not results:
+        return False
+    # "Each opponent controls ..." holds only if every one does; any other
+    # scope names one player, or means "some one of them".
+    if condition.players is not None and condition.players.scope in (
+        PlayerScope.EACH_OPPONENT, PlayerScope.EACH_PLAYER
+    ):
+        return all(results)
+    return any(results)
 
 
 def holds(
@@ -125,6 +189,7 @@ def holds(
     source: ObjectId = NO_OBJECT,
     controller: PlayerId = NO_PLAYER,
     remembered: tuple[ObjectId, ...] = (),
+    event=None,
 ) -> bool:
     """Whether a condition is currently true.
 
@@ -137,6 +202,22 @@ def holds(
 
     if kind is ConditionKind.REMEMBERED_MATCHES:
         return _remembered_matches(game, condition, remembered, controller)
+    if kind is ConditionKind.TRIGGER_OBJECT_MATCHES:
+        return _trigger_object_matches(game, condition, event, source, controller)
+    if kind is ConditionKind.AFFECTED_MATCHES:
+        # The caller passes the guarded effect's objects as ``remembered``;
+        # see ``resolve._condition_holds``.
+        return _remembered_matches(game, condition, remembered, controller)
+    if kind is ConditionKind.VALUE_COMPARE:
+        if condition.value is None or condition.constraint is None:
+            return False
+        from .values import evaluate
+
+        actual = evaluate(game, condition.value, source=source, controller=controller)
+        expected = evaluate(
+            game, condition.constraint.value, source=source, controller=controller
+        )
+        return condition.constraint.comparison.holds(actual, expected)
 
     if kind is ConditionKind.ALWAYS:
         return True
@@ -178,14 +259,18 @@ def holds(
     if kind is ConditionKind.NEVER or kind is ConditionKind.UNPARSED:
         return False
 
+    # The context travels into the operands: "if it's a creature and you
+    # control a Forest" asks its first half about the same "it". Dropped, an
+    # operand about a remembered or triggering object was always false.
+    context = dict(
+        source=source, controller=controller, remembered=remembered, event=event
+    )
     if kind is ConditionKind.AND:
-        return all(holds(game, c, source=source, controller=controller) for c in condition.operands)
+        return all(holds(game, c, **context) for c in condition.operands)
     if kind is ConditionKind.OR:
-        return any(holds(game, c, source=source, controller=controller) for c in condition.operands)
+        return any(holds(game, c, **context) for c in condition.operands)
     if kind is ConditionKind.NOT:
-        return not any(
-            holds(game, c, source=source, controller=controller) for c in condition.operands
-        )
+        return not any(holds(game, c, **context) for c in condition.operands)
 
     if kind in (ConditionKind.OBJECT_COUNT, ConditionKind.CONTROLS_MATCHING):
         if condition.filter is None or condition.constraint is None:
@@ -208,12 +293,20 @@ def holds(
         if not players:
             return False
         expected = evaluate(game, condition.constraint.value, source=source, controller=controller)
+        results = []
         for player_id in players:
             player = game.player(player_id)
+            if player.has_lost:
+                continue
             actual = player.life if kind is ConditionKind.LIFE else player.hand_size
-            if not condition.constraint.comparison.holds(actual, expected):
-                return False
-        return True
+            results.append(condition.constraint.comparison.holds(actual, expected))
+        if not results:
+            return False
+        # "An opponent has 10 or less life" is about some one opponent;
+        # "each opponent has ..." about all of them. Requiring every opponent
+        # made the indefinite form false in any game with two opponents at
+        # different life totals - which is most four-player games.
+        return any(results) if _existential(condition.players) else all(results)
 
     if kind is ConditionKind.IS_YOUR_TURN:
         return game.active_player == controller
