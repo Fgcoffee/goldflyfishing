@@ -76,3 +76,28 @@ def test_an_unimplemented_combat_keyword_is_still_unread(card_db):
     """Owner's rule 1: a keyword with no faithful builder reports as unread."""
     (ability,) = _keyword_abilities(card_db, "Goblin Grappler", "Provoke")
     assert [e.kind for e in ability.effects] == [EffectKind.UNPARSED]
+
+
+# ---------------------------------------------------------------------------
+# Mobilize
+# ---------------------------------------------------------------------------
+
+
+def test_mobilize_reads_its_amount_and_sacrifices_what_it_made(card_db):
+    (ability,) = _keyword_abilities(card_db, "Dalkovan Packbeasts", "Mobilize")
+    assert ability.trigger.event_kinds == frozenset({EventKind.ATTACKS})
+    create, later = ability.effects
+    assert create.kind is EffectKind.CREATE_TOKEN
+    assert create.amount.constant == 3
+    assert create.token.subtypes == ("Warrior",)
+    assert create.token.enters_tapped and create.token.enters_attacking
+    assert later.kind is EffectKind.DELAYED_TRIGGER
+    assert later.trigger.event_kinds == frozenset({EventKind.END_STEP})
+    (sacrifice,) = later.children
+    assert sacrifice.kind is EffectKind.SACRIFICE and sacrifice.targets.remembered
+
+
+def test_mobilize_x_is_left_unread(card_db):
+    """"Mobilize X, where X is ..." has a definition of X no builder reads."""
+    parsed = parse_face(card_db.lookup("Avenger of the Fallen"), 0)
+    assert not parsed.fully_parsed

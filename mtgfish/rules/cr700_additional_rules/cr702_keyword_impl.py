@@ -567,6 +567,55 @@ def _rampage(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Mobilize")
+def _mobilize(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.181a: "Whenever this creature attacks, create N 1/1 red Warrior
+    creature tokens. Those tokens enter tapped and attacking. Sacrifice them
+    at the beginning of the next end step."
+
+    "Them" is the tokens just made (CR 608.2c), which the token executor
+    remembers; the sacrifice is a delayed trigger (CR 603.7) so it happens
+    even if this creature has left by then.
+    """
+    from ..cr600_spells_and_abilities.effects import TokenSpec
+
+    n = max(1, instance.amount)
+    warrior = TokenSpec(
+        types=CardType.CREATURE,
+        subtypes=("Warrior",),
+        colors=Color.RED,
+        power=Value.of(1),
+        toughness=Value.of(1),
+        enters_tapped=True,
+        enters_attacking=True,
+    )
+    sacrifice_them = Effect(
+        EffectKind.SACRIFICE,
+        targets=ObjectFilter(remembered=True),
+        players=YOU,
+        text="sacrifice them",
+    )
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.CREATE_TOKEN,
+                token=warrior,
+                amount=Value.of(n),
+                players=YOU,
+            ),
+            _delayed(
+                TriggerCondition(
+                    event_kinds=frozenset({EventKind.END_STEP}),
+                    text="at the beginning of the next end step",
+                ),
+                sacrifice_them,
+                text="sacrifice them at the beginning of the next end step",
+            ),
+        ),
+    )
+
+
 @register("Flanking")
 def _flanking(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.25a: "Whenever this creature becomes blocked by a creature
@@ -1485,7 +1534,6 @@ UNIMPLEMENTED_COMBAT_KEYWORDS = {
     "frenzy": "CR 702.68a: +N/+0 whenever it attacks and isn't blocked",
     "renown": "CR 702.112a: counters when it deals combat damage to a player, if not renowned",
     "enlist": "CR 702.154a: tap a creature as it attacks to add that creature's power",
-    "mobilize": "CR 702.181a: attacking Warrior tokens, sacrificed at end step",
     "myriad": "CR 702.116a: token copies attacking each other opponent",
     "double team": "a digital keyword: conjure a copy into hand when it attacks",
     "undaunted": "CR 702.125a: costs {1} less for each opponent",
@@ -1497,7 +1545,7 @@ UNIMPLEMENTED_COMBAT_KEYWORDS = {
 }
 
 
-@register("Frenzy", "Renown", "Enlist", "Mobilize",
+@register("Frenzy", "Renown", "Enlist",
           "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke", "Firebending",
           "Increment", "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:

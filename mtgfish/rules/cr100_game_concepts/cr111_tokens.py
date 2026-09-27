@@ -225,6 +225,14 @@ def create_tokens(
             continue
 
         created.append(obj)
+        if spec.enters_attacking:
+            # CR 508.4: put onto the battlefield attacking - what it attacks
+            # is chosen as it enters, so it is attacking before anything sees
+            # it arrive. It never "attacked" (no ATTACKS event), and
+            # CR 506.3a-c decide whether it is attacking at all.
+            from ..cr500_turn_structure.cr506_combat import enter_attacking
+
+            enter_attacking(game, obj)
         game.emit(
             Event(EventKind.TOKEN_CREATED, object_id=obj.id, player=controller, source=source)
         )

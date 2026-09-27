@@ -161,3 +161,61 @@ def test_flanking_does_nothing_on_a_blocker(board):
     _combat(board, {bears.id: 1}, {giant.id: [bears.id]})
     assert board.pt(bears) == (2, 2)
     assert board.pt(giant) == (3, 3)
+
+
+# ---------------------------------------------------------------------------
+# Mobilize (CR 702.181a)
+# ---------------------------------------------------------------------------
+
+
+def _warriors(board, controller: int = 0):
+    return [
+        obj
+        for obj in board.game.permanents(PlayerId(controller))
+        if board.chars(obj).name != "Grizzly Bears"
+    ]
+
+
+def _attack_in_combat(board, attackers: dict) -> None:
+    from mtgfish.rules.kernel.enums import Phase
+
+    game = board.game
+    game.active_player = PlayerId(0)
+    game.phase = Phase.COMBAT
+    game.agents[PlayerId(0)] = FixedAgent(attackers=attackers)
+    declare_attackers(game)
+    board.settle()
+    board.resolve_stack()
+    board.refresh()
+
+
+def test_mobilize_makes_tapped_attacking_warriors(board):
+    board.scripts.add("Grizzly Bears", *kw("Mobilize", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    _attack_in_combat(board, {bears.id: 1})
+
+    warriors = _warriors(board)
+    assert len(warriors) == 2
+    combat = board.game.combat
+    for token in warriors:
+        chars = board.chars(token)
+        assert "Warrior" in chars.subtypes
+        assert board.pt(token) == (1, 1)
+        assert token.tapped
+        assert combat.is_attacking(token.id)
+
+
+def test_mobilize_sacrifices_the_tokens_at_the_next_end_step(board):
+    from mtgfish.rules.kernel.events import Event, EventKind
+
+    board.scripts.add("Grizzly Bears", *kw("Mobilize", amount=1))
+    bears = board.play("Grizzly Bears", controller=0)
+    board.play("Llanowar Elves", controller=0)
+    _attack_in_combat(board, {bears.id: 1})
+    assert len(_warriors(board)) == 2  # the Warrior and the Elves
+
+    board.game.emit(Event(EventKind.END_STEP, player=PlayerId(0)))
+    board.settle()
+    board.resolve_stack()
+    # Only the token goes: "them" is what the mobilize trigger created.
+    assert board.alive(0) == ["Grizzly Bears", "Llanowar Elves"]
