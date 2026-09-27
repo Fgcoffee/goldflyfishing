@@ -20,7 +20,7 @@ from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
     KeywordInstance,
     build,
 )
-from mtgfish.rules.kernel.ids import PlayerId
+from mtgfish.rules.kernel.ids import PlayerId, player_target
 
 
 @pytest.fixture
@@ -352,3 +352,111 @@ def test_becoming_renowned_triggers_when_this_becomes_renowned(board):
     assert condition_met(board.game, bears, trigger, event)
     counters = Event(EventKind.COUNTER_ADDED, object_id=bears.id, player=bears.controller)
     assert not condition_met(board.game, bears, trigger, counters)
+
+
+# ---------------------------------------------------------------------------
+# Frenzy (CR 702.68)
+# ---------------------------------------------------------------------------
+
+
+def test_frenzy_pumps_power_of_an_unblocked_attacker(board):
+    """CR 702.68a: +N/+0 - power only."""
+    board.scripts.add("Grizzly Bears", *kw("Frenzy", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    _combat(board, {bears.id: 1}, {})
+    assert board.pt(bears) == (4, 2)
+
+
+def test_frenzy_does_nothing_when_blocked(board):
+    board.scripts.add("Grizzly Bears", *kw("Frenzy", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    wall = board.play("Wall of Stone", controller=1)
+    _combat(board, {bears.id: 1}, {wall.id: [bears.id]})
+    assert board.pt(bears) == (2, 2)
+
+
+def test_frenzy_does_not_trigger_on_attacking_alone(board):
+    """It waits for blockers: declaring the attack is not enough."""
+    board.scripts.add("Grizzly Bears", *kw("Frenzy", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    _attack_in_combat(board, {bears.id: 1})
+    assert board.pt(bears) == (2, 2)
+
+
+def test_frenzy_instances_trigger_separately(board):
+    """CR 702.68b."""
+    board.scripts.add("Grizzly Bears", *kw("Frenzy", amount=1), *kw("Frenzy", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    _combat(board, {bears.id: 1}, {})
+    assert board.pt(bears) == (5, 2)
+
+
+def test_frenzy_only_pumps_its_own_creature(board):
+    board.scripts.add("Grizzly Bears", *kw("Frenzy", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    giant = board.play("Hill Giant", controller=0)
+    _combat(board, {bears.id: 1, giant.id: 1}, {})
+    assert board.pt(giant) == (3, 3)
+
+
+# ---------------------------------------------------------------------------
+# Increment (CR 702.191)
+# ---------------------------------------------------------------------------
+
+
+def _cast(board, name: str, controller: int = 0, targets=()) -> None:
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.enums import Color
+
+    card = board.hand(name, controller=controller)
+    player = PlayerId(controller)
+    board.game.player(player).mana_pool.add(ManaKind(Color.BLUE), 3)
+    board.game.player(player).mana_pool.add(ManaKind(Color.RED), 1)
+    cast_spell(
+        board.game, player, Action(ActionKind.CAST_SPELL, source=card.id, targets=targets)
+    )
+    board.settle()
+    board.resolve_stack()
+    board.refresh()
+
+
+def test_increment_counts_a_spell_costing_more_than_its_power_and_toughness(board):
+    board.scripts.add("Grizzly Bears", *kw("Increment"))
+    bears = board.play("Grizzly Bears", controller=0)
+    _cast(board, "Divination")
+    assert bears.counter_count("+1/+1") == 1
+
+
+def test_increment_ignores_a_cheap_spell(board):
+    board.scripts.add("Grizzly Bears", *kw("Increment"))
+    bears = board.play("Grizzly Bears", controller=0)
+    _cast(board, "Lightning Bolt", targets=((player_target(PlayerId(1)),),))
+    assert bears.counter_count("+1/+1") == 0
+
+
+def test_increment_needs_only_power_or_toughness_to_be_exceeded(board):
+    """Wall of Stone is 0/8: one mana is more than its power."""
+    board.scripts.add("Wall of Stone", *kw("Increment"))
+    wall = board.play("Wall of Stone", controller=0)
+    _cast(board, "Lightning Bolt", targets=((player_target(PlayerId(1)),),))
+    assert wall.counter_count("+1/+1") == 1
+
+
+def test_increment_ignores_an_opponents_spell(board):
+    board.scripts.add("Grizzly Bears", *kw("Increment"))
+    bears = board.play("Grizzly Bears", controller=0)
+    board.game.active_player = PlayerId(1)
+    _cast(board, "Divination", controller=1)
+    assert bears.counter_count("+1/+1") == 0
+
+
+def test_increment_rechecks_as_it_resolves(board):
+    """CR 603.4: two instances both trigger on a three-mana spell, but after
+    the first a 3/3 is no longer smaller than three - the second does
+    nothing."""
+    board.scripts.add("Grizzly Bears", *kw("Increment"), *kw("Increment"))
+    bears = board.play("Grizzly Bears", controller=0)
+    _cast(board, "Divination")
+    assert bears.counter_count("+1/+1") == 1

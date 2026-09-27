@@ -101,6 +101,11 @@ class EventKind(IntEnum):
     #: creature blocking it, so this is emitted once per (attacker, blocker)
     #: pair: ``object_id`` is the attacker and ``source`` the blocker.
     BECOMES_BLOCKED_BY = 18001
+    #: CR 509.3g: "attacks and isn't blocked" - emitted as blockers are
+    #: declared for each attacking creature no blocker was declared for
+    #: (``object_id``). Not emitted later, so an attacker whose blockers are
+    #: all removed from combat does not trigger it.
+    ATTACKS_UNBLOCKED = 18003
     REMOVED_FROM_COMBAT = 105
 
     # -- turn structure (CR 500) -------------------------------------------

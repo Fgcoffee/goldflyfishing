@@ -892,6 +892,11 @@ class ConditionKind(IntEnum):
     IS_HARNESSED = 28
     #: CR 702.112b: whether this permanent is renowned.
     IS_RENOWNED = 18001
+    #: CR 702.191a (increment): "if this permanent is a creature and the
+    #: amount of mana spent to cast that spell is greater than this
+    #: creature's power or this creature's toughness". "That spell" is the
+    #: one the trigger event was about; asked again on resolution (CR 603.4).
+    SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS = 18002
     #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
     #: set, names the dungeon ("if you haven't completed Tomb of
     #: Annihilation" is the negation of the named form).
@@ -1093,6 +1098,11 @@ class Condition:
             return "it is a main phase"
         if kind is ConditionKind.NO_MANA_SPENT:
             return "no mana was spent casting it"
+        if kind is ConditionKind.SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS:
+            return (
+                "this is a creature and the mana spent to cast that spell is"
+                " greater than its power or its toughness"
+            )
         if kind is ConditionKind.WAS_KICKED:
             return "it was kicked"
         if kind is ConditionKind.ALTERNATIVE_COST_PAID:

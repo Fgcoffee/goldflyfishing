@@ -357,6 +357,21 @@ def holds(
         obj = game.objects.get(source)
         return bool(obj is not None and obj.harnessed and obj.zone is Zone.BATTLEFIELD)
 
+    if kind is ConditionKind.SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS:
+        # CR 702.191a. The spell is the trigger event's object; one that has
+        # left the stack since is asked as it last was (CR 608.2h).
+        if event is None:
+            return False
+        obj = game.objects.get(source)
+        spell = game.objects.get(event.object_id)
+        if obj is None or spell is None or obj.zone is not Zone.BATTLEFIELD:
+            return False
+        chars = game.characteristics(obj)
+        if not chars.is_creature:
+            return False
+        spent = spell.mana_spent
+        return spent > (chars.power or 0) or spent > (chars.toughness or 0)
+
     if kind is ConditionKind.IS_RENOWNED:
         obj = game.objects.get(source)
         return bool(obj is not None and obj.renowned and obj.zone is Zone.BATTLEFIELD)

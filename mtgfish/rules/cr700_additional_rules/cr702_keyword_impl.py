@@ -675,6 +675,73 @@ def _flanking(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Frenzy")
+def _frenzy(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.68a: "Whenever this creature attacks and isn't blocked, it gets
+    +N/+0 until end of turn." Each instance triggers separately (702.68b).
+
+    "Attacks and isn't blocked" triggers as blockers are declared, if none is
+    declared for it (CR 509.3g) - not when it attacks, and not if it is
+    blocked and its blockers later leave combat.
+    """
+    n = max(1, instance.amount)
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTACKS_UNBLOCKED}),
+                subject=ObjectFilter(source_only=True),
+                functions_in=BATTLEFIELD,
+                text="whenever this attacks and isn't blocked",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                amount=Value.of(n),
+                amount2=Value.of(0),
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or f"Frenzy {n}",
+        ),
+    )
+
+
+@register("Increment")
+def _increment(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.191a: "Whenever you cast a spell, if this permanent is a
+    creature and the amount of mana spent to cast that spell is greater than
+    this creature's power or this creature's toughness, put a +1/+1 counter
+    on this creature." Each instance triggers separately (702.191b).
+
+    The whole "if" is an intervening if (CR 603.4): checked as the spell is
+    cast and again as the ability resolves, against the creature as it is
+    then - so a counter from one instance can stop another.
+    """
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.CAST_SPELL}),
+                subject=ObjectFilter(zones=frozenset({Zone.STACK})),
+                players=YOU,
+                intervening_if=Condition(
+                    ConditionKind.SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS,
+                    text=(
+                        "if this is a creature and the mana spent to cast that"
+                        " spell is greater than its power or toughness"
+                    ),
+                ),
+                functions_in=BATTLEFIELD,
+                text="whenever you cast a spell, if ...",
+            ),
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(1),
+                text="put a +1/+1 counter on this creature",
+            ),
+            text=instance.text or "Increment",
+        ),
+    )
+
+
 @register("Renown")
 def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.112a: "When this creature deals combat damage to a player, if
@@ -1595,20 +1662,18 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: makes token copies, undaunted reduces a cost, flanking shrinks blockers).
 #: Each is inert until it has a builder of its own.
 UNIMPLEMENTED_COMBAT_KEYWORDS = {
-    "frenzy": "CR 702.68a: +N/+0 whenever it attacks and isn't blocked",
     "enlist": "CR 702.154a: tap a creature as it attacks to add that creature's power",
     "myriad": "CR 702.116a: token copies attacking each other opponent",
     "double team": "a digital keyword: conjure a copy into hand when it attacks",
     "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
     "provoke": "CR 702.39a: untap a creature and force it to block",
-    "increment": "CR 702.191a: a counter when a spell cast costs more than its power or toughness",
     "intensity": "a digital intensity counter mechanic",
 }
 
 
-@register("Frenzy", "Enlist",
+@register("Enlist",
           "Myriad", "Double team", "Teamwork", "Provoke",
-          "Increment", "Intensity")
+          "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
     """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""
     return (
