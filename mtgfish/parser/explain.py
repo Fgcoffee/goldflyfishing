@@ -338,8 +338,10 @@ def _digital(effect: Effect, who: str, amount: str, objects: str) -> str | None:
             f" into {_zone((Zone.HAND if effect.zone is None else effect.zone))}"
         )
     if kind is EffectKind.CONJURE:
-        if effect.card_name:
-            what = f"{amount} card(s) named {effect.card_name}"
+        from ..rules.cr700_additional_rules.digital_mechanics import conjured_name
+
+        if conjured_name(effect):
+            what = f"{amount} card(s) named {conjured_name(effect)}"
         elif "duplicate" in effect.keywords:
             what = f"{amount} duplicate(s) (with perpetual changes) of {objects}"
         else:

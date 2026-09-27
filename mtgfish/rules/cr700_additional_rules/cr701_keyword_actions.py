@@ -387,7 +387,12 @@ def _discover(instance: ActionInstance) -> tuple[Effect, ...]:
     )
 
 
-@register("Learn", "Seek", "Draft from a spellbook")
+# "Seek" and "Draft from a spellbook" were registered here too, which read
+# MTG Arena's seek (a *random* matching card, no shuffle) and drafting from a
+# spellbook (a card from outside the game) as a library search. Seek is its
+# own opcode now (EffectKind.SEEK, clauses._seek); a spellbook's contents are
+# not in the card's text, so drafting from one is left unread.
+@register("Learn")
 def _search(instance: ActionInstance) -> tuple[Effect, ...]:
     return (
         Effect(

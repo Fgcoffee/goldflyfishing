@@ -257,7 +257,8 @@ class EffectKind(IntEnum):
     #: when the objects are a random pick among those matching.
     PERPETUALLY = 6000
     #: "conjure [N] card(s) named X [into a zone]": create cards from outside
-    #: the game, owned by ``players``. ``card_name`` names the card; or
+    #: the game, owned by ``players``. a ``keywords`` entry "named:X" names the card (see
+    #: ``digital_mechanics.conjured_name``); or
     #: ``targets`` gives objects whose card is used - a "duplicate" (marked in
     #: ``keywords``) also keeps the original's perpetual changes. ``zone`` is
     #: where they go, ``amount`` how many, and ``amount2`` a library position
@@ -515,9 +516,6 @@ class Effect:
     #: dungeon entered this way must have, e.g. "Undercity". Empty for the
     #: plain "venture into the dungeon".
     dungeon_quality: str = ""
-    #: For CONJURE: the name of the card conjured, exactly as the oracle text
-    #: prints it. Empty when ``targets`` supplies the card instead.
-    card_name: str = ""
 
     #: The oracle text this came from, kept for the replay log and for the
     #: coverage report.

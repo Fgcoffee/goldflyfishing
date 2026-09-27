@@ -1756,6 +1756,7 @@ def _do_conjure(resolution: Resolution, effect: Effect) -> None:
         catalog_card,
         conjure,
         conjure_duplicate,
+        conjured_name,
     )
 
     game = resolution.game
@@ -1767,8 +1768,9 @@ def _do_conjure(resolution: Resolution, effect: Effect) -> None:
     )
     made: list[ObjectId] = []
     players = _players(resolution, effect)
-    if effect.card_name:
-        card = catalog_card(game, effect.card_name)
+    card_name = conjured_name(effect)
+    if card_name:
+        card = catalog_card(game, card_name)
         if card is not None:
             for player_id in players:
                 for _ in range(count):

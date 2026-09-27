@@ -15,6 +15,8 @@ from mtgfish.rules.kernel.events import EventKind
 from mtgfish.rules.kernel.ids import PlayerId
 from mtgfish.rules.kernel.query import ObjectFilter, PlayerFilter, PlayerScope, Value
 
+from mtgfish.rules.cr700_additional_rules.digital_mechanics import named
+
 from harness import make_board
 
 SELF = ObjectFilter(source_only=True)
@@ -149,7 +151,7 @@ def test_conjure_by_name_needs_the_catalogue_and_does_nothing_without_it(card_db
     source = board.play("Llanowar Elves")
     before = len(board.game.player(0).hand)
     board.game.card_catalog = None
-    _run(board, source, Effect(EffectKind.CONJURE, card_name="Lightning Bolt", zone=Zone.HAND))
+    _run(board, source, Effect(EffectKind.CONJURE, keywords=(named("Lightning Bolt"),), zone=Zone.HAND))
     assert len(board.game.player(0).hand) == before
 
 
@@ -163,7 +165,7 @@ def test_conjure_puts_a_new_card_owned_by_the_conjurer_into_the_named_zone(card_
         source,
         Effect(
             EffectKind.CONJURE,
-            card_name="Lightning Bolt",
+            keywords=(named("Lightning Bolt"),),
             zone=Zone.HAND,
             amount=Value.of(2),
         ),
@@ -190,9 +192,8 @@ def test_a_card_conjured_onto_the_battlefield_enters_and_triggers(card_db):
         source,
         Effect(
             EffectKind.CONJURE,
-            card_name="Jace Beleren",
             zone=Zone.BATTLEFIELD,
-            keywords=("tapped",),
+            keywords=(named("Jace Beleren"), "tapped"),
         ),
     )
     (jace_id,) = resolution.remembered
@@ -211,7 +212,7 @@ def test_conjure_into_the_library_at_a_position(card_db):
         source,
         Effect(
             EffectKind.CONJURE,
-            card_name="Lightning Bolt",
+            keywords=(named("Lightning Bolt"),),
             zone=Zone.LIBRARY,
             amount2=Value.of(3),
         ),

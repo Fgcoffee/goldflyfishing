@@ -298,6 +298,25 @@ def conjure_duplicate(
     return made
 
 
+#: How a CONJURE effect carries the printed name of the card it conjures: a
+#: ``keywords`` entry with this prefix. A marker rather than a field of its
+#: own, so the Effect struct - and so the census hash of every other ability -
+#: is unchanged by a mechanic only a few hundred cards use.
+NAMED = "named:"
+
+
+def named(name: str) -> str:
+    return NAMED + name
+
+
+def conjured_name(effect: Effect) -> str:
+    """The card name a CONJURE effect prints, or "" if it names none."""
+    for word in effect.keywords:
+        if word.startswith(NAMED):
+            return word[len(NAMED) :]
+    return ""
+
+
 def catalog_card(game: Game, name: str) -> object | None:
     """The card a conjure names, or ``None`` - logged - if it can't be found."""
     catalog = game.card_catalog
@@ -360,6 +379,8 @@ __all__ = [
     "CardCatalog",
     "PerpetualChange",
     "catalog_card",
+    "conjured_name",
+    "named",
     "conjure",
     "conjure_duplicate",
     "perpetual_changes",
