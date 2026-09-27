@@ -567,6 +567,8 @@ def _add_mana(effect: Effect, who: str, amount: str) -> str:
             text += f" {_amount(repeat)} time(s)"
     elif effect.colors_chosen:
         text = f"{who} adds {amount} mana of the chosen color"
+    elif effect.colors_from_trigger:
+        text = f"{who} adds {amount} mana of any type that land produced"
     elif effect.colors:
         menu = _colors(effect.colors)
         if effect.colors_in_commander_identity:

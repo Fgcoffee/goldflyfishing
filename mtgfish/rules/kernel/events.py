@@ -125,6 +125,11 @@ class EventKind(IntEnum):
     MANA_EMPTIED = 145
     PRIORITY_RECEIVED = 146
     LAND_PLAYED = 147
+    #: CR 106.12a: a mana ability with {T} in its cost resolved and produced
+    #: mana, so its permanent was "tapped for mana". ``object_id`` is that
+    #: permanent and ``player`` who activated it. Emitted once per
+    #: activation, beside the ``MANA_ADDED`` of the mana itself.
+    TAPPED_FOR_MANA = 148
 
     # -- Commander (CR 903) -------------------------------------------------
     COMMANDER_CAST = 160

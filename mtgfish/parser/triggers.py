@@ -779,9 +779,9 @@ def _entry_state(stream: Stream, subject):
 def _tapped_for_mana(stream: Stream, subject):
     """"is tapped for mana", "you tap a permanent for {C}".
 
-    Both are the same event - mana was produced by tapping something - and
-    the engine emits it already. The mana-doubling lands and every "adds an
-    additional" enchantment in the format depend on it.
+    Both are the same event (CR 106.12a): a mana ability with {T} in its
+    cost resolved and produced mana. The mana-doubling lands and every "adds
+    an additional" enchantment in the format depend on it.
     """
     mark = stream.mark()
     if not (
@@ -797,7 +797,7 @@ def _tapped_for_mana(stream: Stream, subject):
         return None
 
     return TriggerCondition(
-        event_kinds=frozenset({EventKind.MANA_ADDED}),
+        event_kinds=frozenset({EventKind.TAPPED_FOR_MANA}),
         subject=subject,
         text="whenever something is tapped for mana",
     )
@@ -1335,7 +1335,7 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
             and not stream.at("of")
         ):
             return TriggerCondition(
-                event_kinds=frozenset({EventKind.MANA_ADDED}),
+                event_kinds=frozenset({EventKind.TAPPED_FOR_MANA}),
                 subject=tapped,
                 players=players,
                 text="whenever a player taps something for mana",

@@ -517,13 +517,31 @@ def test_mana_added_without_tapping_is_not_tapping_for_mana(board):
     watch(board, text)
     land = board.play("Forest", 0)
     add = Effect(EffectKind.ADD_MANA, mana_produced=("G",), text="Add {G}.")
+    from mtgfish.rules.cr600_spells_and_abilities.resolve import resolve_mana_ability
+
     execute(Resolution(game=board.game, source=land.id, controller=PlayerId(0)), (add,))
     assert fired(board, text) == 0
-    execute(
-        Resolution(game=board.game, source=land.id, controller=PlayerId(0), tapped_for_mana=True),
+    # A mana ability without {T} in its cost ("Sacrifice this: Add {G}").
+    resolve_mana_ability(
+        Resolution(game=board.game, source=land.id, controller=PlayerId(0)),
+        (add,),
+        tapped=False,
+    )
+    assert fired(board, text) == 0
+    resolve_mana_ability(
+        Resolution(game=board.game, source=land.id, controller=PlayerId(0)),
         (add, add),
+        tapped=True,
     )
     assert fired(board, text) == 1
+    # CR 106.12a: it must also produce mana; a tapping that produced none
+    # (no Swamps for "Add {B} for each Swamp you control") triggers nothing.
+    resolve_mana_ability(
+        Resolution(game=board.game, source=land.id, controller=PlayerId(0)),
+        (Effect(EffectKind.NOTHING, text="nothing"),),
+        tapped=True,
+    )
+    assert fired(board, text) == 0
 
 
 @pytest.mark.parametrize(
@@ -538,3 +556,54 @@ def test_tapped_for_a_kind_of_mana_is_not_read(text):
     stream = Stream.of(text)
     trigger = parse_trigger(stream)
     assert trigger is None or not stream.at(",")
+
+
+def test_a_land_tapped_to_pay_for_a_spell_is_tapped_for_mana(box):
+    """The engine's own payment path (CR 601.2g) activates the same mana
+    abilities, and Wild Growth's land was tapped for mana there too."""
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.enums import Color
+
+    if box.db.lookup("Wild Growth") is None:
+        pytest.skip("Wild Growth is not in this card pool")
+    game = box.game
+    box.put("Forest", "battlefield", 0)
+    box.put("Wild Growth", "battlefield", 0)
+    actions.attach(game, _only(game, "Wild Growth"), _only(game, "Forest"))
+    box.put("Llanowar Elves", "hand", 0)
+    game.invalidate_characteristics()
+    elves = next(
+        o for o in game.objects.values()
+        if o.card is not None and o.card.name == "Llanowar Elves" and o.zone.name == "HAND"
+    )
+    cast_spell(game, PlayerId(0), Action(ActionKind.CAST_SPELL, source=elves.id))
+    assert game.stack, "the spell could not be paid for"
+    # {G} paid, and Wild Growth's {G} left over.
+    assert game.player(PlayerId(0)).mana_pool.amount_of(Color.GREEN) == 1
+
+
+def test_you_tap_a_land_for_mana_is_your_land_only(box):
+    """Zendikar Resurgent: "whenever *you* tap a land for mana" - an
+    opponent tapping theirs adds nothing to either pool."""
+    from mtgfish.rules.kernel.enums import Color
+
+    if box.db.lookup("Zendikar Resurgent") is None:
+        pytest.skip("Zendikar Resurgent is not in this card pool")
+    game = box.game
+    box.put("Zendikar Resurgent", "battlefield", 0)
+    box.put("Forest", "battlefield", 1)
+    _tap_for_mana(game, _only(game, "Forest"))
+    assert game.player(PlayerId(1)).mana_pool.amount_of(Color.GREEN) == 1
+    assert game.player(PlayerId(0)).mana_pool.total == 0
+
+    box.put("Forest", "battlefield", 0)
+    mine = next(
+        o for o in game.objects.values()
+        if o.card is not None and o.card.name == "Forest"
+        and o.zone.name == "BATTLEFIELD" and o.controller == PlayerId(0)
+    )
+    _tap_for_mana(game, mine)
+    # One mana of a type that land produced: green again.
+    assert game.player(PlayerId(0)).mana_pool.amount_of(Color.GREEN) == 2
+

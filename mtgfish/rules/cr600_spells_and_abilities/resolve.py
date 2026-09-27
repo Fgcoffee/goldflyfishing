@@ -75,10 +75,6 @@ class Resolution:
     #: The event a triggered ability triggered on, for a resolution with no
     #: stack object to carry it - a triggered mana ability (CR 605.4a).
     trigger_event: object | None = None
-    #: CR 106.12: this is a mana ability with {T} in its cost resolving - its
-    #: permanent is being "tapped for mana". The first mana it adds says so
-    #: (CR 106.12a); cleared once said, so one activation is one event.
-    tapped_for_mana: bool = False
     #: The players an earlier instruction of this resolution targeted, for
     #: "that player" after "target player ..." (``PlayerScope.CHOSEN_PLAYER``).
     chosen_players: list[PlayerId] = field(default_factory=list)
@@ -1959,6 +1955,26 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
                     ),
                     1,
                 )
+    elif effect.colors_from_trigger:
+        # "One mana of any type that land produced": a type the tapping that
+        # triggered this produced (CR 106.12a), colorless included (CR
+        # 106.1b). No such event, no type: no mana (CR 106.5).
+        from ..kernel.enums import Color
+
+        event = _trigger_event(resolution)
+        produced = (
+            [Color(value) for value in event.data]
+            if event is not None and event.kind is EventKind.TAPPED_FOR_MANA
+            else []
+        )
+        if not produced:
+            return
+        amount = _count(resolution, effect)
+        wanted = resolution.mana_color
+        chosen = wanted if wanted in produced else produced[0]
+        player.mana_pool.add(
+            ManaKind(chosen, snow=snow, restriction=effect.mana_restriction), amount
+        )
     elif effect.colors_chosen:
         # "Add one mana of the chosen color" - the colour this permanent
         # recorded as it entered (CR 614.1b). Nothing on the card names it,
@@ -1987,21 +2003,45 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
         player.mana_pool.add(
             ManaKind(snow=snow, restriction=effect.mana_restriction), amount
         )
-    # CR 106.12a: "whenever [a permanent] is tapped for mana" triggers when
-    # such a mana ability resolves and produces mana. The event is about that
-    # permanent only then; mana added any other way - a triggered ability's
-    # "adds an additional {G}", a spell - names no permanent, so it cannot
-    # set those abilities off again.
-    tapped = resolution.tapped_for_mana
-    resolution.tapped_for_mana = False
     game.emit(
-        Event(
-            EventKind.MANA_ADDED,
-            object_id=resolution.source if tapped else NO_OBJECT,
-            player=resolution.controller,
-            source=resolution.source,
-        )
+        Event(EventKind.MANA_ADDED, player=resolution.controller, source=resolution.source)
     )
+
+
+def resolve_mana_ability(resolution: Resolution, effects, *, tapped: bool) -> None:
+    """Resolve an activated mana ability where it stands (CR 605.3b).
+
+    With ``tapped`` - {T} is in its cost (CR 106.12) - its permanent was
+    "tapped for mana" if it produced any: CR 106.12a triggers those
+    abilities when such a mana ability resolves and produces mana. Once per
+    activation, however many instructions added the mana, and never for mana
+    added any other way - a triggered ability's "adds an additional {G}" or
+    a spell taps nothing. The event's ``data`` is the types produced (colour
+    values, 0 for colorless), for "one mana of any type that land produced".
+    """
+    game = resolution.game
+    pool = game.player(resolution.controller).mana_pool
+    before = dict(pool.buckets)
+    execute(resolution, effects)
+    if not tapped:
+        return
+    produced = sorted(
+        {
+            int(kind.color)
+            for kind, amount in pool.buckets.items()
+            if amount > before.get(kind, 0)
+        }
+    )
+    if produced:
+        game.emit(
+            Event(
+                EventKind.TAPPED_FOR_MANA,
+                object_id=resolution.source,
+                player=resolution.controller,
+                source=resolution.source,
+                data=tuple(produced),
+            )
+        )
 
 
 # ---------------------------------------------------------------------------

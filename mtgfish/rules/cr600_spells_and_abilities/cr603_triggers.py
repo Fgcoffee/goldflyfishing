@@ -710,7 +710,10 @@ def is_triggered_mana_ability(game: Game, source_id: int, ability: Ability) -> b
     """
     if ability.trigger is None:
         return False
-    if EventKind.MANA_ADDED not in ability.trigger.event_kinds:
+    if not ability.trigger.event_kinds & {
+        EventKind.MANA_ADDED,
+        EventKind.TAPPED_FOR_MANA,
+    }:
         return False
     if ability.is_targeted:
         return False
