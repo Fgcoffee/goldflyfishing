@@ -17,7 +17,7 @@ from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind
 from ..rules.cr700_additional_rules.keywords import lookup as keyword_lookup
 from ..rules.kernel.enums import Timing, Zone
 from ..rules.kernel.query import ALWAYS
-from .clauses import parse_effects
+from .clauses import parse_effects, pile_references_ok
 from .errors import ParseFailure
 from .normalize import normalize
 from .split import Line, LineKind, split_abilities
@@ -983,6 +983,14 @@ def _finish(
                 remaining=stream.unreached(),
                 rule=rule,
             )
+        )
+        return Ability.unreadable(text)
+    if not pile_references_ok(effects):
+        # "The rest" with nothing looked at, or on only one branch of an "if
+        # you don't": every word was read, and the sentences do not fit
+        # together into something the engine would do as printed.
+        result.failures.append(
+            ParseFailure(text, "pile reference without a pile", rule=rule)
         )
         return Ability.unreadable(text)
     return build(effects)

@@ -13,7 +13,7 @@ permanent with hexproof it was never allowed to target.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Callable
 
 from ..cr100_game_concepts import actions
@@ -67,6 +67,11 @@ class Resolution:
     #: kind - life lost, life gained, damage dealt - so "you gain life equal
     #: to the life lost this way" can read it. Totals, not counts.
     this_way: dict = field(default_factory=dict)
+    #: The cards a "look at / reveal the top N" instruction set aside, in
+    #: library order, for "from among them" and "the rest" to choose among
+    #: (``ObjectFilter.from_pile``). A card leaves the pile when something is
+    #: done with it; what is left when the last instruction runs is "the rest".
+    pile: list[ObjectId] = field(default_factory=list)
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -103,6 +108,11 @@ _REMEMBERING = frozenset(
         EffectKind.COPY_PERMANENT,
         EffectKind.SEARCH_LIBRARY,
         EffectKind.DAMAGE,
+        # "Reveal a creature card from among them and put it into your hand.
+        # If it's legendary, ..." - "it" is the card that moved, not the
+        # whole pile the look before it remembered.
+        EffectKind.MOVE_ZONE,
+        EffectKind.PUT_ON_LIBRARY,
     }
 )
 
@@ -212,6 +222,9 @@ def _objects(
     """
     game = resolution.game
 
+    if effect.targets is not None and effect.targets.from_pile:
+        return _from_pile(resolution, effect)
+
     # CR 608.2: a pronoun refers to whatever the resolution last acted on.
     # Answering it with the source instead would quietly redirect half the
     # removal spells in the pool at the card that cast them.
@@ -278,6 +291,36 @@ def _objects(
         game, effect.targets, source=resolution.source, controller=resolution.controller
     )
     return _narrowed_to_count(resolution, effect, matching)
+
+
+def _from_pile(resolution: Resolution, effect: Effect) -> list[GameObject]:
+    """The cards of the pile a filter picks out ("a creature card from among
+    them", "two of them", "the rest").
+
+    Only cards still where they were looked at count: one already put into a
+    hand is a new object (CR 400.7) and no longer "among them", and one put
+    back on top was taken out of the pile when it was. The filter's zones are
+    ignored - the pile is where the cards are - and its count is chosen by the
+    effect's controller like any other untargeted count (CR 608.2d).
+    """
+    from ..kernel.matching import matches
+
+    game = resolution.game
+    loose = replace(effect.targets, from_pile=False, count=None, up_to=False)
+    candidates: list[GameObject] = []
+    for object_id in resolution.pile:
+        obj = game.objects.get(object_id)
+        if obj is None or not obj.is_live:
+            continue
+        if matches(
+            game,
+            obj,
+            replace(loose, zones=frozenset({obj.zone})),
+            source=resolution.source,
+            controller=resolution.controller,
+        ):
+            candidates.append(obj)
+    return _narrowed_to_count(resolution, effect, candidates)
 
 
 def _narrowed_to_count(
@@ -512,8 +555,21 @@ def _do_draw(resolution: Resolution, effect: Effect) -> None:
 
 def _do_mill(resolution: Resolution, effect: Effect) -> None:
     count = _amount(resolution, effect)
+    game = resolution.game
+    milled: list[ObjectId] = []
     for player_id in _players(resolution, effect):
-        actions.mill(resolution.game, player_id, count, source=resolution.source)
+        top = list(game.player(player_id).library[: max(0, count)])
+        actions.mill(game, player_id, count, source=resolution.source)
+        # "Mill three cards. You may put a land card from among them into
+        # your hand" - the milled cards, as the objects they became in the
+        # graveyard (CR 400.7), are the pile the next sentence chooses from.
+        for object_id in top:
+            obj = game.objects.get(object_id)
+            while obj is not None and obj.superseded_by:
+                obj = game.objects.get(obj.superseded_by)
+            if obj is not None and obj.zone is Zone.GRAVEYARD:
+                milled.append(obj.id)
+    resolution.pile = milled
 
 
 def _do_destroy(resolution: Resolution, effect: Effect) -> None:
@@ -674,8 +730,22 @@ def _do_return_to_hand(resolution: Resolution, effect: Effect) -> None:
 
 def _do_move_zone(resolution: Resolution, effect: Effect) -> None:
     destination = effect.zone or Zone.GRAVEYARD
-    for obj in _objects(resolution, effect):
+    objects = _objects(resolution, effect)
+    # "Reveal it and put it into your hand" (CR 701.16a): the reveal is part
+    # of the instruction, and it is the card being moved that is shown.
+    _reveal_if_said(resolution, effect, objects)
+    for obj in objects:
         resolution.game.move_object(obj, destination, to_player=obj.owner)
+
+
+def _reveal_if_said(
+    resolution: Resolution, effect: Effect, objects: list[GameObject]
+) -> None:
+    if "reveal" not in effect.keywords:
+        return
+    game = resolution.game
+    for obj in objects:
+        game.emit(Event(EventKind.REVEALED, object_id=obj.id, player=obj.owner))
 
 
 def _do_discard(resolution: Resolution, effect: Effect) -> None:
@@ -1947,10 +2017,68 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_put_on_library(resolution: Resolution, effect: Effect) -> None:
+    """Put objects on top of or on the bottom of their owners' libraries.
+
+    "On the bottom" is ``keywords`` holding "bottom" (the older negative
+    ``amount`` still reads as bottom too). It was dropped by the grammar, so
+    Condemn put the attacker on *top* of its owner's library, where it is
+    drawn again next turn.
+
+    CR 401.4: several cards put into a library at once are ordered by their
+    owner - "in any order" is the controller's choice (with no agent, the
+    order they are listed in), and "in a random order" is the game's shuffle.
+
+    A card already in that library - one of the cards looked at a moment
+    ago - is moved *within* the zone: that is not a zone change (CR 400.7
+    needs a new zone), so it stays the same object and triggers nothing.
+    """
     game = resolution.game
-    on_top = effect.amount.constant >= 0
-    for obj in _objects(resolution, effect):
+    on_top = effect.amount.constant >= 0 and "bottom" not in effect.keywords
+    objects = list(_objects(resolution, effect))
+    _reveal_if_said(resolution, effect, objects)
+    if "random" in effect.keywords:
+        game.rng.shuffle(objects)
+    if on_top:
+        # Placed one at a time onto the top, so the last placed is on top:
+        # reversed, the list reads top-down in the order it was chosen.
+        objects.reverse()
+    placed: set[ObjectId] = set()
+    for obj in objects:
+        placed.add(obj.id)
+        library = game.player(obj.owner).library
+        if obj.is_live and obj.zone is Zone.LIBRARY and obj.id in library:
+            library.remove(obj.id)
+            if on_top:
+                library.insert(0, obj.id)
+            else:
+                library.append(obj.id)
+            continue
         game.move_object(obj, Zone.LIBRARY, to_player=obj.owner, to_top=on_top)
+    if placed and resolution.pile:
+        resolution.pile = [i for i in resolution.pile if i not in placed]
+
+
+def _do_look_at_top(resolution: Resolution, effect: Effect) -> None:
+    """"Look at the top N cards of your library" / "reveal the top N cards".
+
+    Looking changes nothing but what the player knows, and revealing only
+    shows the cards to everyone (CR 701.16a) - no card moves. What the
+    instruction does is set the cards aside as the pile the following
+    instructions choose among, and name them as "them" for a pronoun. Fewer
+    cards than asked for is all of them (CR 701.16b's "as many as possible"
+    reading of a short library).
+    """
+    game = resolution.game
+    count = max(0, _amount(resolution, effect))
+    pile: list[ObjectId] = []
+    for player_id in _players(resolution, effect):
+        pile.extend(game.player(player_id).library[:count])
+    resolution.pile = pile
+    resolution.remembered = list(pile)
+    if "reveal" in effect.keywords:
+        for object_id in pile:
+            obj = game.objects[object_id]
+            game.emit(Event(EventKind.REVEALED, object_id=object_id, player=obj.owner))
 
 
 def _do_explore(resolution: Resolution, effect: Effect) -> None:
@@ -2781,6 +2909,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.SURVEIL: _do_surveil,
     EffectKind.PUT_ONTO_BATTLEFIELD: _do_put_onto_battlefield,
     EffectKind.PUT_ON_LIBRARY: _do_put_on_library,
+    EffectKind.LOOK_AT_TOP: _do_look_at_top,
     EffectKind.EXPLORE: _do_explore,
     EffectKind.COPY_PERMANENT: _do_copy_permanent_effect,
     EffectKind.TURN_FACE_UP: _do_turn_face_up,

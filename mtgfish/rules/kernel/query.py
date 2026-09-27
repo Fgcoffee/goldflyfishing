@@ -493,6 +493,13 @@ class ObjectFilter:
     #: source.
     linked_to_source: bool = False
     link_id: int = 0
+    #: "from among them", "the rest", "all cards revealed this way" - the
+    #: cards an earlier instruction of this same resolution looked at or
+    #: revealed (``EffectKind.LOOK_AT_TOP``), and only those not yet dealt
+    #: with. They are still in the library they were looked at in (CR 701.16a:
+    #: revealing moves nothing), so the filter's ``zones`` say nothing here;
+    #: the rest of it narrows which of the pile may be chosen.
+    from_pile: bool = False
 
     # -- zone and control ---------------------------------------------------
     zones: frozenset[Zone] = frozenset({Zone.BATTLEFIELD})
@@ -603,6 +610,8 @@ class ObjectFilter:
 
     def _quantity(self) -> list[str]:
         if self.count is None:
+            if self.up_to:
+                return ["any number of"]
             return (
                 ["all"]
                 if not self.source_only and not self.remembered and not self.trigger_source
@@ -654,6 +663,8 @@ class ObjectFilter:
             parts.append("(whatever was just referred to)")
         if self.trigger_source:
             parts.append("(the spell or ability that triggered this)")
+        if self.from_pile:
+            parts.append("from among the cards looked at")
         if self.linked_to_source:
             parts.append("(affected by this object's linked ability)")
         if self.named:
@@ -751,7 +762,7 @@ class ObjectFilter:
             elif self.owner is ControllerRelation.OPPONENT:
                 where = "an opponent's library"
             return [f"from the top {self.from_top} of {where}"]
-        if self.zones == frozenset({Zone.BATTLEFIELD}):
+        if self.from_pile or self.zones == frozenset({Zone.BATTLEFIELD}):
             return []
         names = sorted(z.name.lower().replace("_", " ") for z in self.zones)
         return ["in " + " or ".join(names)] if names else []
