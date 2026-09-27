@@ -151,7 +151,8 @@ def declare_attackers(game: Game) -> None:
     active = game.active_player
     candidates = [obj for obj in game.permanents(active) if can_attack(game, obj)]
     if not candidates:
-        game.emit(Event(EventKind.ATTACKERS_DECLARED, player=active))
+        # ``amount`` is how many attackers were declared: none here.
+        game.emit(Event(EventKind.ATTACKERS_DECLARED, player=active, amount=0))
         return
 
     agent = game.agent_for(active)
@@ -195,7 +196,9 @@ def declare_attackers(game: Game) -> None:
                 amount=combat.attacking[attacker_id],
             )
         )
-    game.emit(Event(EventKind.ATTACKERS_DECLARED, player=active))
+    game.emit(
+        Event(EventKind.ATTACKERS_DECLARED, player=active, amount=len(combat.attacking))
+    )
 
 
 def can_attack(game: Game, obj: GameObject) -> bool:

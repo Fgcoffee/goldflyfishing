@@ -1406,6 +1406,31 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
         # follows - "attacks one or more planeswalkers you control" (CR
         # 508.3e) - narrows it in a way the declaration event cannot be
         # asked, and is left unread rather than dropped.
+        if stream.accept("with"):
+            # "Whenever you attack with one or more Elves" (CR 508.3c): an
+            # attacker of that kind - the attacking player's own creature -
+            # was declared, once for the declaration (CR 603.2c). Only the
+            # batch: "with two or more creatures" is a threshold nothing
+            # here records, and "with a creature" is not templated.
+            if not stream.at_phrase("one or more"):
+                stream.reset(look)
+                return None
+            attackers, batched = _event_subject(stream)
+            if (
+                attackers is None
+                or attackers is _UNREADABLE
+                or not batched
+                or stream.peek().kind is not TokenKind.PUNCT
+            ):
+                stream.reset(look)
+                return None
+            return TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTACKS}),
+                subject=attackers,
+                players=players,
+                batched=True,
+                text="whenever a player attacks with one or more creatures",
+            )
         if stream.peek().kind is not TokenKind.PUNCT:
             stream.reset(look)
             return None

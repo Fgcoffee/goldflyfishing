@@ -625,3 +625,70 @@ def test_an_alternative_keeps_its_own_constraints(board):
     board.game.pending_triggers.clear()
     board.game.emit(Event(EventKind.ATTACKS, object_id=other.id, player=PlayerId(0)))
     assert fired(board, text) == 0
+
+
+# ---------------------------------------------------------------------------
+# CR 508.3c-d: a player attacking
+# ---------------------------------------------------------------------------
+
+
+def test_you_attack_needs_an_attacker(board):
+    """CR 508.3d: "whenever you attack" triggers if one or more of your
+    creatures are declared as attackers - the declaration of none is not an
+    attack, and fired it every combat."""
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import declare_attackers
+
+    text = "Whenever you attack, draw a card."
+    watch(board, text)
+    board.game.emit(Event(EventKind.ATTACKERS_DECLARED, player=PlayerId(0), amount=0))
+    assert fired(board, text) == 0
+    board.game.emit(Event(EventKind.ATTACKERS_DECLARED, player=PlayerId(0), amount=2))
+    assert fired(board, text) == 1
+    board.game.emit(Event(EventKind.ATTACKERS_DECLARED, player=PlayerId(1), amount=2))
+    assert fired(board, text) == 0
+    # The engine's own declaration of no attackers says none.
+    board.game.active_player = PlayerId(0)
+    declare_attackers(board.game)
+    assert fired(board, text) == 0
+
+
+def test_you_attack_with_one_or_more_of_a_kind(board):
+    """CR 508.3c with "one or more" (CR 603.2c): once per declaration, and
+    only for an attacker of that kind."""
+    text = "Whenever you attack with one or more creatures with power 3 or greater, draw a card."
+    watch(board, text)
+    giants = [board.play("Hill Giant", 0), board.play("Hill Giant", 0)]
+    bear = board.play("Savannah Lions", 0)
+    theirs = board.play("Hill Giant", 1)
+    board.game.pending_triggers.clear()
+
+    board.game.event_batch += 1
+    board.game.emit(Event(EventKind.ATTACKS, object_id=bear.id, player=PlayerId(0), amount=1))
+    assert fired(board, text) == 0
+
+    board.game.event_batch += 1
+    for giant in giants:
+        board.game.emit(
+            Event(EventKind.ATTACKS, object_id=giant.id, player=PlayerId(0), amount=1)
+        )
+    assert fired(board, text) == 1
+
+    board.game.event_batch += 1
+    board.game.emit(Event(EventKind.ATTACKS, object_id=theirs.id, player=PlayerId(1), amount=0))
+    assert fired(board, text) == 0
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Whenever you attack with two or more creatures, draw a card.",
+        "Whenever you attack with a creature, draw a card.",
+        "Whenever you attack a player, draw a card.",
+        "Whenever an opponent attacks you, draw a card.",
+        "Whenever you attack with one or more creatures and whenever a creature dies, draw a card.",
+    ],
+)
+def test_unreadable_player_attacks_are_not_read(text):
+    stream = Stream.of(text)
+    trigger = parse_trigger(stream)
+    assert trigger is None or not stream.at(",")
