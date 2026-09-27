@@ -765,14 +765,34 @@ def _who(effect: Effect) -> str:
 
 def _mode_choice(effect: Effect) -> str:
     """"choose one", "choose up to two", "choose two (a mode may repeat)"."""
+    from dataclasses import replace
+
     count = _amount(effect.amount) if not (
         effect.amount.is_constant and effect.amount.constant in (0, 1)
     ) else "one"
-    text = f"choose {'up to ' if effect.modes_up_to else ''}{count}"
+    if effect.modes_up_to and effect.modes_at_least > 0:
+        # CR 700.2: a floor as well as a ceiling - "choose one or both",
+        # "choose one or more".
+        floor = _amount(Value.of(effect.modes_at_least))
+        text = f"choose at least {floor} and up to {count}"
+    else:
+        text = f"choose {'up to ' if effect.modes_up_to else ''}{count}"
     if effect.mode_weights and any(w != 1 for w in effect.mode_weights):
         text += f" (mode costs {list(effect.mode_weights)})"
     if effect.modes_may_repeat:
         text += " (a mode may be chosen more than once)"
+    if effect.modes_instead:
+        condition, budget, up_to, at_least = effect.modes_instead
+        instead = _mode_choice(
+            replace(
+                effect,
+                amount=Value.of(budget),
+                modes_up_to=up_to,
+                modes_at_least=at_least,
+                modes_instead=(),
+            )
+        )
+        text += f" (if {condition} as the modes are chosen: {instead} instead)"
     return text
 
 
