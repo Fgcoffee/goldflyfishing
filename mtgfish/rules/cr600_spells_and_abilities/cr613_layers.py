@@ -835,6 +835,17 @@ def apply_effect(
         return current.with_abilities(current.abilities + granted)
 
     if kind is EffectKind.REMOVE_ABILITIES:
+        # CR 613.1f: "loses flying" removes flying and nothing else. The
+        # parser names the lost keywords in ``keywords``; "*" (or nothing
+        # named at all) is "loses all abilities". Removing everything for a
+        # named keyword made Colossus Hammer's "loses flying" a Humility on
+        # the equipped creature and Shadowspear's "lose hexproof and
+        # indestructible" strip every ability an opponent's permanents had.
+        names = {name.lower() for name in effect.keywords}
+        if names and "*" not in names:
+            return current.with_abilities(
+                tuple(a for a in current.abilities if a.keyword.lower() not in names)
+            )
         # Intrinsic land mana abilities are abilities too, and Humility takes
         # them (CR 613.1f applies to all abilities, printed or granted).
         return current.with_abilities(())

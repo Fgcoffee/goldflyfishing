@@ -339,6 +339,9 @@ def _continuous(effect: Effect, objects: str) -> str | None:
         granted = granted or ", ".join(effect.keywords)
         return f"{objects} gains {granted or 'an ability'}{duration}"
     if kind is EffectKind.REMOVE_ABILITIES:
+        named = [name for name in effect.keywords if name != "*"]
+        if named and "*" not in effect.keywords:
+            return f"{objects} loses {', '.join(named)}{duration}"
         return f"{objects} loses all abilities{duration}"
     if kind is EffectKind.SET_COLOR:
         return f"{objects} becomes {effect.colors}{duration}"
@@ -373,8 +376,28 @@ def _continuous(effect: Effect, objects: str) -> str | None:
 
 def _granted(ability) -> str:
     if isinstance(ability, Ability):
+        if ability.keyword and ability.keyword.lower() in ("protection", "hexproof from"):
+            # CR 702.16a: the quality is the keyword. "Protection" alone
+            # hid whether the parse had kept "from red" or dropped it.
+            name = "Protection" if ability.keyword.lower() == "protection" else "Hexproof"
+            if ability.quality is None:
+                return f"{name} from everything"
+            return f"{name} from {_quality(ability.quality)}"
+        if ability.keyword and ability.kind is AbilityKind.ACTIVATED:
+            return f"{ability.keyword} ({explain_ability(ability).rstrip('.')})"
+        if ability.keyword and ability.kind is AbilityKind.TRIGGERED:
+            return f"{ability.keyword} ({explain_ability(ability).rstrip('.')})"
         return ability.keyword or explain_ability(ability).rstrip(".")
     return str(ability)
+
+
+def _quality(spec: ObjectFilter) -> str:
+    """A protection quality: a colour, a type, "each color"."""
+    if spec.must_be_coloured:
+        return "each color"
+    if spec.must_be_colorless:
+        return "colorless"
+    return spec.describe(quantified=False)
 
 
 def _act(restriction) -> str:
