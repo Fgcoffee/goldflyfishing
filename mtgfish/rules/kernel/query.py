@@ -158,6 +158,10 @@ class ValueKind(IntEnum):
     #: from the event that declared them - CR 702.23b counts at resolution, so
     #: a blocker removed from combat in between is not counted.
     BLOCKERS_OF_SOURCE = 18001
+    #: How many players ``players`` names, counting only those still in the
+    #: game: "for each opponent you have" (CR 702.125a-b, undaunted). Players
+    #: who have left are not opponents any more.
+    PLAYER_COUNT = 18002
 
 
 @dataclass(frozen=True, slots=True)
@@ -213,6 +217,10 @@ class Value:
             return "the mana spent to cast it"
         if self.kind is ValueKind.BLOCKERS_OF_SOURCE:
             return "the number of creatures blocking this creature"
+        if self.kind is ValueKind.PLAYER_COUNT:
+            if self.players is not None and self.players.scope is PlayerScope.EACH_OPPONENT:
+                return "the number of opponents you have"
+            return f"the number of players ({self.players}) still in the game"
         if self.kind is ValueKind.COLOURS_AMONG:
             return f"the number of colors among {self.filter}"
         if self.kind in (ValueKind.AMOUNT_THIS_WAY, ValueKind.EVENT_AMOUNT_THIS_TURN):
@@ -882,6 +890,8 @@ class ConditionKind(IntEnum):
     HAS_ENDURING_STORY = 27
     #: CR 702.186b: whether this permanent is harnessed.
     IS_HARNESSED = 28
+    #: CR 702.112b: whether this permanent is renowned.
+    IS_RENOWNED = 18001
     #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
     #: set, names the dungeon ("if you haven't completed Tomb of
     #: Annihilation" is the negation of the named form).
