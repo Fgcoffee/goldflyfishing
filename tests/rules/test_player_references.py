@@ -414,3 +414,110 @@ def test_its_controller_adds_the_mana_from_a_triggered_mana_ability(box):
 
     assert game.player(1).mana_pool.total == 1
     assert game.player(0).mana_pool.total == 0
+
+
+# ---------------------------------------------------------------------------
+# A possessive in a trigger about the source itself names some other object
+# ---------------------------------------------------------------------------
+
+
+def test_the_controller_of_the_spell_that_targeted_it(box):
+    """Forsaken Wastes: "that spell's controller" is the player whose spell
+    targeted the Wastes (CR 603.2e) - not the Wastes' own controller, which
+    is what "the object the trigger is about" would have been."""
+    _need(box, "Forsaken Wastes", "Disenchant")
+    from mtgfish.rules.kernel.enums import Color
+
+    game = box.game
+    box.put("Forsaken Wastes", "battlefield", 0)
+    wastes = _find(game, "Forsaken Wastes")
+    box.put("Disenchant", "hand", 1)
+    _mana(box, 1, 1)
+    _mana(box, 1, 1, Color.WHITE)
+    game.priority_player = 1
+    before = [p.life for p in game.players]
+
+    _cast(box, 1, "Disenchant", ((wastes.id,),))
+    settle(game)
+    assert len(game.stack) == 2, "the Wastes did not trigger"
+    box.resolve_top()
+
+    assert [p.life for p in game.players] == [before[0], before[1] - 5]
+
+
+@pytest.mark.parametrize(
+    "name, text_part",
+    [
+        # The enchanted permanent, not the Aura that left.
+        ("Reality Acid", "enchanted permanent's controller"),
+        # Each attacking creature's controller, as attackers are declared
+        # (CR 508.1h) - not the Spirit's controller.
+        ("Forbidding Spirit", "unless their controller pays"),
+        # The targeted player searches, but the land it "puts onto the
+        # battlefield" would enter under the caster's control (CR 110.2a).
+        ("Restorative Technique", "searches their library"),
+        # "Target opponent sacrifices ..., discards a card, and loses 3
+        # life": the sacrifice is not read as targeting, so the elided
+        # subject has no single player to copy - once it was *you*.
+        ("Archon of Cruelty", "discards a card"),
+    ],
+)
+def test_a_possessive_about_another_object_is_refused(box, name, text_part):
+    _need(box, name)
+    abilities = [
+        ability
+        for face in parse_card(box.db.lookup(name)).faces
+        for ability in face.abilities
+        if text_part in ability.text
+    ]
+    assert abilities and all(ability.unparsed for ability in abilities)
+
+
+# ---------------------------------------------------------------------------
+# A second verb with its subject left out (CR 608.2c)
+# ---------------------------------------------------------------------------
+
+
+def test_an_elided_subject_is_the_first_verbs(box):
+    """Gibbering Descent: "that player loses 1 life and discards a card" -
+    the player whose upkeep it is discards, not the Descent's controller."""
+    _need(box, "Gibbering Descent", "Island")
+    game = box.game
+    box.put("Island", "hand", 0)
+    box.put("Island", "hand", 1)
+    effects = _effects(box.db, "Gibbering Descent", "that player")
+    before = [p.life for p in game.players]
+
+    execute(
+        Resolution(
+            game=game,
+            source=0,
+            controller=0,
+            trigger_event=Event(EventKind.STEP_BEGAN, player=1),
+        ),
+        effects,
+    )
+
+    assert [p.life for p in game.players] == [before[0], before[1] - 1]
+    assert len(game.player(1).hand) == 0 and len(game.player(1).graveyard) == 1
+    assert len(game.player(0).hand) == 1, "the Descent's controller discarded"
+
+
+def test_an_elided_subject_after_a_target_is_the_player_chosen(box):
+    """"Target player loses 2 life and discards a card": the discard is the
+    targeted player's - not a second target, and not you."""
+    from mtgfish.parser.clauses import parse_effects
+    from mtgfish.parser.referents import bind_ability
+    from mtgfish.parser.tokens import Stream
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability
+    from mtgfish.rules.kernel.query import PlayerScope
+
+    stream = Stream.of("Target player loses 2 life and discards a card.")
+    effects = parse_effects(stream)
+    assert effects is not None and stream.done
+    bound = bind_ability(Ability.spell(*effects, text="")).effects
+    assert [e.players.scope for e in bound] == [
+        PlayerScope.TARGET_PLAYER,
+        PlayerScope.CHOSEN_PLAYER,
+    ]
+    assert not bound[1].is_targeted

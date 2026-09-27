@@ -28,6 +28,7 @@ from dataclasses import dataclass, replace
 
 from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
 from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+from ..rules.kernel.events import EventKind
 from ..rules.kernel.query import ControllerRelation, PlayerFilter, PlayerScope, Value
 
 #: The state is unknowable from the text - two candidates, or one that an
@@ -169,7 +170,21 @@ def _initial_state(ability: Ability) -> _State:
         # "Whenever a source an opponent controls deals damage to you, that
         # player ...": the event captured who controlled the source.
         state.player = PlayerFilter(PlayerScope.TRIGGER_SOURCE_CONTROLLER)
-    if trigger.subject is not None and trigger.source is not None:
+    if trigger.subject is not None and trigger.subject.source_only:
+        # "When this Aura leaves the battlefield, enchanted permanent's
+        # controller ...", "whenever this enchantment becomes the target of a
+        # spell, that spell's controller ...": a card names its own
+        # controller "you", so a possessive here is about some other object.
+        # Becoming a target is the one event that says which - the spell or
+        # ability targeting it, whose controller the event captured when it
+        # happened (CR 603.2e). Anything else is refused.
+        state.obj = (
+            TRIGGER_SOURCE
+            if trigger.source is None
+            and set(getattr(trigger, "event_kinds", ())) == {EventKind.TARGETED}
+            else AMBIGUOUS
+        )
+    elif trigger.subject is not None and trigger.source is not None:
         state.obj = AMBIGUOUS
     elif trigger.subject is not None:
         state.obj = TRIGGER_OBJECT
