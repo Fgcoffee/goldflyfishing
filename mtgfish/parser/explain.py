@@ -143,6 +143,10 @@ def _trigger(trigger) -> str:
         parts.append("(to a player)")
     if trigger.counter_kind:
         parts.append(f"({trigger.counter_kind} counters)")
+    if trigger.each_counter:
+        parts.append("(once for each counter)")
+    if trigger.batched:
+        parts.append("(once for everything that happened at the same time)")
     if trigger.phases or trigger.steps:
         from ..rules.kernel.enums import Phase, Step
 

@@ -109,6 +109,15 @@ class TriggerCondition:
     #: (CR 310.12b) is about defense counters and nothing else, and without
     #: this a Siege would fire on every -1/-1 counter too.
     counter_kind: str = ""
+    #: CR 603.2c, 122.1: "whenever *a* +1/+1 counter is put on ..." - each
+    #: counter is an occurrence of the event, so putting three at once
+    #: triggers three times. "One or more counters are put on" leaves this
+    #: false and triggers once for the placement.
+    each_counter: bool = False
+    #: CR 603.2c: "whenever *one or more* creatures die" - everything that
+    #: happened at once is one occurrence, however many objects it involved.
+    #: The ability triggers once for the batch, and "that many" counts it.
+    batched: bool = False
 
     #: CR 603.2f: some triggers fire at most once in a turn.
     once_each_turn: bool = False

@@ -100,6 +100,12 @@ def collect_triggers(game: Game, event: Event) -> None:
         # The controller is read now, while the source is still here to ask.
         pending = PendingTrigger(obj.id, ability, event, obj.controller)
         game.pending_triggers.append(pending)
+        # CR 603.2c: "whenever a +1/+1 counter is put on" - one placement of
+        # three counters holds three occurrences, and each triggers.
+        trigger = ability.trigger
+        if trigger is not None and trigger.each_counter and event.amount > 1:
+            for _ in range(event.amount - 1):
+                game.pending_triggers.append(pending)
         # CR 603.2b: something may say this ability triggers an extra time.
         # Both instances are separate triggers - they go on the stack
         # independently and can be responded to between them.
