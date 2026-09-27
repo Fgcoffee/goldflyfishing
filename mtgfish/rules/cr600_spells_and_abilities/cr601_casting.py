@@ -445,7 +445,9 @@ def _mode_is_choosable(
     for node in mode.walk():
         if not node.is_targeted:
             continue
-        if node.targets is not None and (node.targets.up_to or node.targets.includes_players):
+        if node.target_optional or (
+            node.targets is not None and node.targets.includes_players
+        ):
             # "Up to one target" is satisfiable with none, and a player is
             # always there to be targeted (CR 115.4).
             continue
@@ -458,7 +460,7 @@ def _mode_is_choosable(
         # filters alone decide.
         from ..kernel.matching import find
 
-        if node.targets is None:
+        if node.targets_a_player:
             if not _targetable_players(game, node.players, player_id):
                 return False
             continue
@@ -738,11 +740,13 @@ def _candidates_for(
     from ..kernel.ids import player_target
     from ..kernel.matching import find
 
-    if effect.targets is None:
+    if effect.targets_a_player:
         # "Target player draws two cards": the parser describes a target that
         # can only be a player with ``players`` and no object filter at all.
         # Asking ``find`` about a missing filter crashed the whole run - one
         # Prismari Command in one deck was enough to fail every simulation.
+        # "Target player sacrifices a creature" has a filter, but it says what
+        # the player will sacrifice, not what is targeted (CR 115.1).
         return [player_target(pid) for pid in _targetable_players(game, effect.players, player_id)]
 
     out = [
@@ -809,7 +813,9 @@ def ability_targets_available(
         # point at.
         return False
     for node in targeted_nodes(ability.effects, ()):
-        if node.targets is not None and (node.targets.up_to or node.targets.includes_players):
+        if node.target_optional or (
+            node.targets is not None and node.targets.includes_players
+        ):
             continue
         if not _candidates_for(game, source, node, player_id):
             return False
@@ -841,9 +847,7 @@ def choose_targets(game: Game, source: GameObject, effects: list, player_id: Pla
         offered = tuple(picked[index]) if index < len(picked) else ()
         kept = tuple(object_id for object_id in offered if object_id in legal)
         # CR 601.2c: a target is required unless the spell said "up to".
-        if not kept and legal and not (
-            effect.targets is not None and effect.targets.up_to
-        ):
+        if not kept and legal and not effect.target_optional:
             kept = (candidates[index][0],)
         cleaned.append(kept)
     return tuple(cleaned)
@@ -868,7 +872,7 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
         chosen = targets[index] if index < len(targets) else ()
         # "up to N targets" is a property of the target specification, not of
         # the effect: it is what may be chosen, not what is done with it.
-        optional = effect.targets is not None and effect.targets.up_to
+        optional = effect.target_optional
         if not chosen and not optional:
             raise CastError("a required target was not chosen")
         for object_id in chosen:
@@ -880,7 +884,12 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
 
                 if game.player(target_player(object_id)).has_lost:
                     raise CastError("that player has left the game")
+                _check_player_target(game, effect, object_id, spell.controller)
                 continue
+            if effect.targets_a_player:
+                # "Target player sacrifices a creature": the creature is the
+                # player's to choose later, and is not what is targeted.
+                raise CastError("only a player can be this target")
             candidate = game.objects.get(object_id)
             if candidate is None:
                 raise CastError("target no longer exists")
@@ -890,6 +899,17 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
                 raise CastError(f"{candidate} is not a legal target")
             if _has_protection_from(game, candidate, spell):
                 raise CastError(f"{candidate} can't be targeted by this spell")
+
+
+def _check_player_target(game: Game, effect, target: int, controller: PlayerId) -> None:
+    """CR 115.1, 601.2c: a player chosen as the target must be one the
+    instruction may target - "target opponent" is not you."""
+    from ..kernel.ids import target_player
+
+    if effect.targets_a_player and target_player(target) not in _targetable_players(
+        game, effect.players, controller
+    ):
+        raise CastError("that player is not a legal target")
 
 
 def _announce_targets(game: Game, spell: GameObject, controller: PlayerId) -> None:
@@ -1596,7 +1616,7 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
             effects = targeted_nodes(ability.effects, chosen_modes or None)
             targets = choose_targets(game, source, effects, player_id)
             for node, chosen in zip(effects, targets):
-                if not chosen and not (node.targets is not None and node.targets.up_to):
+                if not chosen and not node.target_optional:
                     raise CastError("no legal target for this ability")
         _validate_ability_targets(game, source, ability, targets, chosen_modes)
 
@@ -1672,7 +1692,12 @@ def _validate_ability_targets(
 
                 if game.player(target_player(object_id)).has_lost:
                     raise CastError("that player has left the game")
+                _check_player_target(game, effect, object_id, source.controller)
                 continue
+            if effect.targets_a_player:
+                # "Target player sacrifices a creature": the creature is the
+                # player's to choose later, and is not what is targeted.
+                raise CastError("only a player can be this target")
             candidate = game.objects.get(object_id)
             if candidate is None:
                 raise CastError("target no longer exists")

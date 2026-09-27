@@ -598,6 +598,14 @@ def _for_each_tail(stream: Stream, effect: Effect) -> Effect | None:
         # ``amount2``, which ADD_MANA does not otherwise use.
         return _replace(effect, amount2=multiplier)
 
+    if effect.kind in (EffectKind.NOTHING, EffectKind.SACRIFICE):
+        # Neither reads ``amount``: a sacrifice counts in its filter, and a
+        # consumed "of their choice" does nothing at all. "Sacrifices a
+        # creature of their choice for each black creature you control"
+        # multiplied the words "of their choice" and sacrificed one.
+        stream.reset(mark)
+        return None
+
     scaled = _multiply(effect.amount, multiplier)
     if scaled is None:
         stream.reset(mark)
@@ -1204,16 +1212,23 @@ def _exile(stream: Stream) -> Effect | None:
 
 @clause("sacrifice")
 def _sacrifice(stream: Stream) -> Effect | None:
-    players, _ = parse_player_filter(stream)
+    players, player_targeted = parse_player_filter(stream)
     if not stream.accept("sacrifice", "sacrifices"):
         return None
-    targets, _targeted = parse_target(stream)
-    if targets is None:
+    targets, targeted = parse_target(stream)
+    if targets is None or targeted:
+        # Nothing is sacrificed as a target: CR 701.21a lets a player
+        # sacrifice only what they control, chosen as the instruction is
+        # carried out.
         return None
     return Effect(
         EffectKind.SACRIFICE,
         targets=targets,
         players=players or YOU,
+        # "Target player sacrifices a creature": the *player* is the target
+        # (CR 115.1), chosen as the spell or ability goes on the stack
+        # (CR 601.2c), and the spell fizzles if they are gone (CR 608.2b).
+        is_targeted=bool(players is not None and player_targeted),
         text="sacrifice",
     )
 

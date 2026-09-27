@@ -368,8 +368,7 @@ def _advance(effect: Effect, state: _State) -> None:
             # records whom it targeted for a later "that player".
             state.player = (
                 PlayerFilter(PlayerScope.CHOSEN_PLAYER)
-                if effect.is_targeted
-                and effect.targets is None
+                if effect.targets_a_player
                 and kind in _ANSWERS_PLAYERS
                 else AMBIGUOUS
             )

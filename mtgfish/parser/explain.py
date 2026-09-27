@@ -855,9 +855,10 @@ def _objects(effect: Effect) -> str:
         if effect.players is not None:
             return _players(effect.players)
         return "this permanent"
-    if effect.is_targeted:
+    if effect.is_targeted and not effect.targets_its_player:
         # "target" already says how many; the filter's own quantity word would
-        # produce "target all creature".
+        # produce "target all creature". When the target is the player
+        # ("target player sacrifices a creature"), the objects are not.
         described = f"target {effect.targets.describe(quantified=False)}"
     else:
         described = _filter(effect.targets)

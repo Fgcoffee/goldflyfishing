@@ -1247,11 +1247,49 @@ def _finish(
     return _bound(text, build(effects), result, rule=rule)
 
 
+def _other_than_an_earlier_target(effects) -> bool:
+    """"Target creature gets +3/+3, up to one other target creature gets
+    +2/+2": after a target, "other" means other than *that target* (CR 115.3
+    lets one object be chosen for each instance of the word "target"
+    unless the card says otherwise). The filter can only say "other than
+    this object's source", which on a spell excludes nothing - so the same
+    creature could be chosen twice. Refused rather than read that way; with
+    no earlier target ("exile up to one other target creature") the word
+    means the source and is read.
+    """
+
+    def visit(nodes, seen: bool) -> tuple[bool, bool]:
+        for node in nodes:
+            if node.kind is EffectKind.CHOOSE_MODE and node.children:
+                # Each mode is its own set of instructions; the modes chosen
+                # together are not "other" than one another's targets.
+                for mode in node.children:
+                    found, _ = visit((mode,), seen)
+                    if found:
+                        return True, seen
+                continue
+            if node.is_targeted and node.targets is not None:
+                if seen and node.targets.other_than_source:
+                    return True, seen
+                seen = True
+            found, seen = visit(node.children + node.otherwise, seen)
+            if found:
+                return True, seen
+        return False, seen
+
+    return visit(effects, False)[0]
+
+
 def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:
     """The ability with "that player" and "its controller" bound to who they
     mean (``referents``), or unreadable if the text does not say."""
     from .referents import Unbound, bind_ability
 
+    if _other_than_an_earlier_target(ability.effects):
+        result.failures.append(
+            ParseFailure(text, "'other target' after another target", rule=rule)
+        )
+        return Ability.unreadable(text)
     try:
         return bind_ability(ability)
     except Unbound as reason:
