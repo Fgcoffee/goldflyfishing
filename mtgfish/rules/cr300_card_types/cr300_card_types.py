@@ -261,6 +261,9 @@ def chapter_ability(chapter: int, *effects: Effect, text: str = "") -> Ability:
         trigger=TriggerCondition(
             event_kinds=frozenset({EventKind.COUNTER_ADDED}),
             subject=SELF,
+            # Only lore counters move a Saga through its chapters: a +1/+1
+            # counter on a Saga creature is not "lore counters put onto" it.
+            counter_kind="lore",
             chapter=chapter,
             text=f"lore counters reach {chapter}",
         ),

@@ -113,6 +113,13 @@ def explain_card(parsed) -> list[dict]:
 def _trigger(trigger) -> str:
     if trigger is None:
         return "At some time"
+    if trigger.chapter:
+        # CR 714.2b: the whole trigger condition of a chapter ability.
+        return (
+            f"Chapter {trigger.chapter}: when {trigger.counter_kind or 'any'} "
+            f"counters put on this Saga bring it from fewer than "
+            f"{trigger.chapter} to {trigger.chapter} or more"
+        )
 
     events = "/".join(
         sorted(k.name.lower().replace("_", " ") for k in trigger.event_kinds)

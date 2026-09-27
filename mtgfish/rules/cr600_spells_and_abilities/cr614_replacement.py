@@ -784,6 +784,7 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
     from .abilities import AbilityKind
     from .effects import EffectKind
 
+    _saga_enters_with_lore_counters(game, obj)
     for ability in game.characteristics(obj).abilities:
         if ability.kind is not AbilityKind.STATIC or ability.unparsed:
             continue
@@ -814,6 +815,37 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
                         max(1, node.amount.constant),
                         source=obj.id,
                     )
+
+
+def _saga_enters_with_lore_counters(game: Game, obj) -> None:
+    """CR 714.3a and 714.3b: a Saga's intrinsic "enters with" lore counters.
+
+    Printed on no card - the chapter symbols imply it - so it is applied from
+    the Saga subtype rather than from a parsed ability. The counters are put
+    on with ``add_counters`` so the counter event is seen: entering with a
+    lore counter is what triggers chapter I (CR 714.2b).
+
+    Without read ahead, one counter (CR 714.3a). With read ahead (CR 702.155b,
+    714.3b), as it enters its controller chooses a number between one and its
+    final chapter number and it enters with that many. The agent is asked
+    through ``choose_read_ahead(game, player, obj, final)``; without one the
+    choice is one, which is the ordinary Saga's start.
+    """
+    from ..cr100_game_concepts.actions import add_counters
+    from ..cr300_card_types.cr300_card_types import final_chapter
+
+    chars = game.characteristics(obj)
+    if not chars.has_subtype("Saga"):
+        return
+    amount = 1
+    if chars.has_keyword("Read Ahead"):
+        final = final_chapter(chars)
+        chooser = getattr(game.agent_for(obj.controller), "choose_read_ahead", None)
+        if chooser is not None and final > 1:
+            picked = chooser(game, obj.controller, obj, final)
+            if isinstance(picked, int) and 1 <= picked <= final:
+                amount = picked
+    add_counters(game, obj, "lore", amount, source=obj.id)
 
 
 def become_chosen_characteristics(game: Game, obj, effect) -> None:
