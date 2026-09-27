@@ -3165,13 +3165,15 @@ def _single_condition(stream: Stream):
     than defaulting to true - a condition read as always-true makes the card
     do something it should only sometimes do, which is strictly worse than
     doing nothing.
+
+    Every branch reads its quantity itself and says exactly how it is
+    compared. An earlier "you have ..." branch accepted a number and then
+    skipped any of "or more", "or fewer", "life", "cards", "in hand" and
+    "this turn" as it found them, and answered with a life total: "as long as
+    you have one or fewer cards in hand" became "you have 1 or more life",
+    true for the whole game.
     """
-    from ..rules.kernel.query import (
-        Comparison,
-        Condition,
-        ConditionKind,
-        NumericConstraint,
-    )
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
 
@@ -3193,84 +3195,25 @@ def _single_condition(stream: Stream):
     if opponents is not None:
         return opponents
 
-    if stream.accept_phrase("there are") or stream.accept_phrase("there is"):
-        # "there are seven or more cards in your graveyard" - a count with no
-        # controller in it, which is why it is not the "you control" shape.
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        wanted = spec.count.constant if spec.count is not None else 1
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=spec,
-            constraint=(
-                NumericConstraint.at_most(wanted)
-                if spec.up_to
-                else NumericConstraint.at_least(wanted)
-            ),
-            text="there are ...",
-        )
-
-    if stream.accept_phrase("you control no"):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_yours(spec),
-            constraint=NumericConstraint.exactly(0),
-            text="you control no ...",
-        )
-
-    if stream.accept_phrase("you control"):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        wanted = spec.count.constant if spec.count is not None else 1
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_yours(spec),
-            constraint=NumericConstraint.at_least(wanted),
-            text="you control ...",
-        )
-
-    if stream.accept_phrase("you don't control") or stream.accept_phrase(
-        "you do not control"
-    ):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_yours(spec),
-            constraint=NumericConstraint.exactly(0),
-            text="you don't control ...",
-        )
+    there_are = _there_are(stream)
+    if there_are is not None:
+        return there_are
 
     comparison = _controls_more_than(stream)
     if comparison is not None:
         return comparison
 
-    if stream.accept_phrase("an opponent controls"):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_theirs(spec),
-            constraint=NumericConstraint.at_least(1),
-            text="an opponent controls ...",
-        )
+    controls = _player_controls(stream)
+    if controls is not None:
+        return controls
 
     # "<player> has N or more life", "<player> has no cards in hand".
     life = _life_condition(stream)
     if life is not None:
         return life
+    hand = _hand_condition(stream)
+    if hand is not None:
+        return hand
 
     # "this creature has four or more +1/+1 counters on it".
     counters = _counter_condition(stream)
@@ -3308,25 +3251,319 @@ def _single_condition(stream: Stream):
     if state is not None:
         return state
 
-    if stream.accept_phrase("you have") or stream.accept_phrase("you've gained"):
-        amount = parse_value(stream)
-        if amount is None:
-            stream.reset(mark)
-            return None
-        stream.accept("or")
-        stream.accept("more", "greater", "less", "fewer")
-        stream.accept("life", "cards")
-        stream.accept_phrase("in hand")
-        stream.accept_phrase("this turn")
-        return Condition(
-            kind=ConditionKind.LIFE,
-            players=YOU,
-            constraint=NumericConstraint(Comparison.GE, amount),
-            text="you have ...",
-        )
+    value = _value_condition(stream)
+    if value is not None:
+        return value
 
     stream.reset(mark)
     return None
+
+
+def _condition_quantity(stream: Stream):
+    """How many, in a condition: "three or more", "two or fewer", "no",
+    "exactly two", "at least five", "a", "one or more".
+
+    Read here rather than taken from the noun phrase, because the noun reader
+    folds "three or more" and a bare "three" into the same count - which is
+    right for choosing targets and wrong for a test. A bare number above one
+    is not a condition oracle text writes ("if you control three artifacts"
+    would be "three or more"), so it is declined rather than guessed at.
+    """
+    from ..rules.kernel.query import NumericConstraint
+
+    mark = stream.mark()
+    if stream.accept("no"):
+        return NumericConstraint.exactly(0)
+    if stream.at("another"):
+        # "another Goblin" - one, other than the source. The word itself is
+        # left for the noun reader, which records the exclusion.
+        return NumericConstraint.at_least(1)
+    if stream.accept("exactly"):
+        amount = stream.accept_number()
+        if amount is None:
+            stream.reset(mark)
+            return None
+        return NumericConstraint.exactly(amount)
+    if stream.accept_phrase("at least"):
+        amount = stream.accept_number()
+        if amount is None:
+            stream.reset(mark)
+            return None
+        return NumericConstraint.at_least(amount)
+    amount = stream.accept_number()
+    if amount is None:
+        return None
+    if stream.accept_phrase("or more") or stream.accept_phrase("or greater"):
+        return NumericConstraint.at_least(amount)
+    if stream.accept_phrase("or fewer") or stream.accept_phrase("or less"):
+        return NumericConstraint.at_most(amount)
+    if amount == 1:
+        # "a Forest", "an artifact", "one creature" - at least one.
+        return NumericConstraint.at_least(1)
+    stream.reset(mark)
+    return None
+
+
+def _counted_filter(stream: Stream):
+    """A quantity and the noun phrase it counts, or ``None`` for both.
+
+    The noun phrase must not carry a count of its own: the quantity was
+    already read, and a second one ("two or more three creatures") is not
+    something a condition says.
+    """
+    mark = stream.mark()
+    constraint = _condition_quantity(stream)
+    if constraint is None:
+        return None, None
+    spec = parse_object_filter(stream)
+    if spec is None or spec.count is not None:
+        stream.reset(mark)
+        return None, None
+    return constraint, spec
+
+
+def _there_are(stream: Stream):
+    """"there are seven or more cards in your graveyard", "there are no
+    creatures on the battlefield" - a count with no controller in it."""
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    mark = stream.mark()
+    if not (stream.accept_phrase("there are") or stream.accept_phrase("there is")):
+        return None
+    constraint, spec = _counted_filter(stream)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    return Condition(
+        kind=ConditionKind.OBJECT_COUNT,
+        filter=spec,
+        constraint=constraint,
+        text="there are ...",
+    )
+
+
+def _player_controls(stream: Stream):
+    """"you control three or more artifacts", "an opponent controls two or
+    more creatures", "no opponent controls a Forest", "you don't control a
+    Swamp".
+
+    Who counts matters as much as what is counted. "An opponent controls
+    three or more creatures" is about one opponent (CR 102.3), so it is asked
+    opponent by opponent; it used to be read as "an opponent controls a
+    creature", the count dropped outright.
+    """
+    from ..rules.kernel.query import (
+        Condition,
+        ConditionKind,
+        ControllerRelation,
+        NumericConstraint,
+        PlayerFilter,
+        PlayerScope,
+    )
+
+    mark = stream.mark()
+    negated = False
+    if stream.accept_phrase("you control"):
+        scope = PlayerScope.YOU
+    elif stream.accept_phrase("you don't control") or stream.accept_phrase(
+        "you do not control"
+    ):
+        scope, negated = PlayerScope.YOU, True
+    elif stream.accept_phrase("an opponent controls"):
+        scope = PlayerScope.OPPONENT
+    elif stream.accept_phrase("no opponent controls"):
+        scope, negated = PlayerScope.OPPONENT, True
+    elif stream.accept_phrase("each opponent controls"):
+        scope = PlayerScope.EACH_OPPONENT
+    else:
+        return None
+
+    constraint, spec = _counted_filter(stream)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    if negated:
+        # "you don't control a Swamp": the quantity is the indefinite article
+        # and nothing else. "You don't control three or more" is not a shape
+        # oracle text uses, and inverting it by hand is how a bound goes wrong.
+        if constraint != NumericConstraint.at_least(1):
+            stream.reset(mark)
+            return None
+        constraint = NumericConstraint.exactly(0)
+        if scope is PlayerScope.OPPONENT:
+            scope = PlayerScope.EACH_OPPONENT
+
+    if scope is PlayerScope.YOU:
+        from dataclasses import replace as _replace
+
+        return Condition(
+            kind=ConditionKind.CONTROLS_MATCHING,
+            filter=_replace(spec, controller=ControllerRelation.YOU, count=None),
+            constraint=constraint,
+            text="you control ...",
+        )
+    if spec.controller is not ControllerRelation.ANY:
+        stream.reset(mark)
+        return None
+    return Condition(
+        kind=ConditionKind.COMPARE_COUNTS,
+        players=PlayerFilter(scope),
+        filter=spec,
+        constraint=constraint,
+        text="a player controls ...",
+    )
+
+
+def _condition_player(stream: Stream):
+    """The player a "has ..." condition is about, and how it is quantified.
+
+    Returns the filters to ask and whether one of them is enough. "A player
+    has 13 or less life" is you *or* an opponent (CR 102.1), which no single
+    player scope says - the scope the noun reader gives "a player" is every
+    player, and every player at 13 life is a different condition.
+    """
+    from ..rules.kernel.query import PlayerFilter, PlayerScope
+
+    if stream.accept_phrase("a player") or stream.accept_phrase("any player"):
+        return (PlayerFilter(PlayerScope.YOU), PlayerFilter(PlayerScope.OPPONENT))
+    mark = stream.mark()
+    players, targeted = parse_player_filter(stream)
+    if players is None:
+        return None
+    if targeted or players.scope not in (
+        PlayerScope.YOU,
+        PlayerScope.OPPONENT,
+        PlayerScope.EACH_OPPONENT,
+        PlayerScope.EACH_PLAYER,
+    ):
+        # "that player", "target player", "defending player": the engine has
+        # no binding for who is meant when a condition is asked, so the
+        # question would always come out false. Declined rather than inert.
+        stream.reset(mark)
+        return None
+    if players.scope is PlayerScope.EACH_PLAYER and not stream.tokens[mark].lower == "each":
+        # "players" and "one or more players" - not a condition shape.
+        stream.reset(mark)
+        return None
+    return (players,)
+
+
+def _any_player(kind, players, constraint, text):
+    """One condition per player filter, joined by OR when there are several."""
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    parts = tuple(
+        Condition(kind=kind, players=each, constraint=constraint, text=text)
+        for each in players
+    )
+    if len(parts) == 1:
+        return parts[0]
+    return Condition(kind=ConditionKind.OR, operands=parts, text=text)
+
+
+def _hand_condition(stream: Stream):
+    """"you have seven or more cards in hand", "an opponent has no cards in
+    hand", "you have one or fewer cards in your hand"."""
+    from ..rules.kernel.query import ConditionKind
+
+    mark = stream.mark()
+    players = _condition_player(stream)
+    if players is None:
+        return None
+    if not stream.accept("has", "have"):
+        stream.reset(mark)
+        return None
+    constraint = _condition_quantity(stream)
+    if constraint is None or not stream.accept("card", "cards"):
+        stream.reset(mark)
+        return None
+    if not stream.accept("in"):
+        stream.reset(mark)
+        return None
+    stream.accept("your", "their", "his", "her")
+    if not stream.accept("hand"):
+        stream.reset(mark)
+        return None
+    return _any_player(
+        ConditionKind.CARDS_IN_HAND, players, constraint, "cards in hand"
+    )
+
+
+def _value_condition(stream: Stream):
+    """"your devotion to red is less than five", "X is 5 or more", "creatures
+    you control have total power 10 or greater", "your life total is less
+    than half your starting life total".
+
+    Only quantities whose meaning the value reader states exactly are taken:
+    devotion, X, a count, a total among a set, and your life total.
+    """
+    from ..rules.kernel.query import Condition, ConditionKind, ValueKind
+    from .nouns import parse_value
+
+    mark = stream.mark()
+    total = _total_power_among(stream)
+    if total is not None:
+        value = total
+    else:
+        value = parse_value(stream)
+        if value is None:
+            return None
+        if value.kind not in (
+            ValueKind.DEVOTION,
+            ValueKind.X,
+            ValueKind.COUNT,
+            ValueKind.TOTAL_AMONG,
+            ValueKind.LIFE_TOTAL,
+        ):
+            stream.reset(mark)
+            return None
+        if value.kind is ValueKind.LIFE_TOTAL and stream.tokens[mark].lower != "your":
+            stream.reset(mark)
+            return None
+        if not stream.accept("is", "are"):
+            stream.reset(mark)
+            return None
+    constraint = parse_comparison(stream)
+    if constraint is None:
+        stream.reset(mark)
+        return None
+    return Condition(
+        kind=ConditionKind.VALUE_COMPARE,
+        value=value,
+        constraint=constraint,
+        text="a value comparison",
+    )
+
+
+def _total_power_among(stream: Stream):
+    """"creatures you control have total power 10 or greater"."""
+    from ..rules.kernel.query import ValueKind
+
+    mark = stream.mark()
+    spec = parse_object_filter(stream)
+    if spec is None or spec.count is not None:
+        stream.reset(mark)
+        return None
+    if not stream.accept("have", "has"):
+        stream.reset(mark)
+        return None
+    if not stream.accept("total"):
+        stream.reset(mark)
+        return None
+    if stream.accept("power"):
+        inner = ValueKind.POWER
+    elif stream.accept("toughness"):
+        inner = ValueKind.TOUGHNESS
+    elif stream.accept_phrase("mana value"):
+        inner = ValueKind.MANA_VALUE
+    else:
+        stream.reset(mark)
+        return None
+    return Value(
+        kind=ValueKind.TOTAL_AMONG,
+        filter=spec,
+        operands=(Value(kind=inner, of_affected=True),),
+    )
 
 
 #: Who a "controls more X than" comparison is about, by the phrase it opens
@@ -3414,6 +3651,49 @@ def _controls_more_than(stream: Stream):
     )
 
 
+def _about_one_object(subject, narrowed, text: str):
+    """A test on one named object, by who that object is.
+
+    * "it", "that creature" - whatever the resolution last acted on, asked
+      of that object (REMEMBERED_MATCHES). Searching the board for *any*
+      object that fits - what counting the filter did - made "if it's
+      tapped" true whenever anything at all was tapped.
+    * "this creature" - the source, which ``find`` locates wherever it is.
+    * "enchanted creature", "equipped creature" and "a creature ..." - some
+      object on the battlefield that fits, which a count of one answers.
+
+    Anything else ("creatures you control are ...", "target creature is")
+    is not one known object and is declined.
+    """
+    from ..rules.kernel.query import (
+        Condition,
+        ConditionKind,
+        NumericConstraint,
+        ValueKind,
+    )
+
+    if subject.remembered:
+        return Condition(
+            kind=ConditionKind.REMEMBERED_MATCHES,
+            filter=replace(narrowed, remembered=True, count=None, zones=frozenset()),
+            text=text,
+        )
+    single = (
+        subject.count is not None
+        and subject.count.kind is ValueKind.CONSTANT
+        and subject.count.constant == 1
+        and not subject.up_to
+    )
+    if subject.source_only or subject.has_attached is not None or single:
+        return Condition(
+            kind=ConditionKind.CONTROLS_MATCHING,
+            filter=replace(narrowed, count=None),
+            constraint=NumericConstraint.at_least(1),
+            text=text,
+        )
+    return None
+
+
 def _is_supertype(stream: Stream):
     """"as long as equipped creature is legendary", "if that creature is a
     Dragon".
@@ -3422,8 +3702,6 @@ def _is_supertype(stream: Stream):
     as "does this object match" against the filter the sentence already
     built.
     """
-    from ..rules.kernel.query import Condition, ConditionKind, NumericConstraint
-
     mark = stream.mark()
     subject = parse_object_filter(stream)
     if subject is None:
@@ -3441,29 +3719,42 @@ def _is_supertype(stream: Stream):
     if narrowed is None:
         stream.reset(mark)
         return None
+    # Only the qualifiers carried across are allowed: anything else the
+    # description said would be read and then dropped.
+    carried = replace(
+        ObjectFilter(),
+        supertypes_all=narrowed.supertypes_all,
+        types_all=narrowed.types_all,
+        subtypes_all=narrowed.subtypes_all,
+        colors_any=narrowed.colors_any,
+    )
+    if replace(narrowed, count=None) != carried:
+        stream.reset(mark)
+        return None
 
-    from dataclasses import replace as _replace
-
-    return Condition(
-        kind=ConditionKind.CONTROLS_MATCHING,
-        filter=_replace(
+    condition = _about_one_object(
+        subject,
+        replace(
             subject,
             supertypes_all=subject.supertypes_all | narrowed.supertypes_all,
             types_all=subject.types_all | narrowed.types_all,
             subtypes_all=subject.subtypes_all + narrowed.subtypes_all,
             colors_any=subject.colors_any | narrowed.colors_any,
         ),
-        constraint=NumericConstraint.at_least(1),
-        text="that object is ...",
+        "that object is ...",
     )
+    if condition is None:
+        stream.reset(mark)
+    return condition
 
 
 def _life_condition(stream: Stream):
-    """"an opponent has 10 or less life", "you have 5 or more life"."""
-    from ..rules.kernel.query import Comparison, Condition, ConditionKind, NumericConstraint
+    """"an opponent has 10 or less life", "you have 5 or more life", "a
+    player has 13 or less life"."""
+    from ..rules.kernel.query import Comparison, ConditionKind, NumericConstraint
 
     mark = stream.mark()
-    players, _ = parse_player_filter(stream)
+    players = _condition_player(stream)
     if players is None:
         return None
     if not stream.accept("has", "have"):
@@ -3474,97 +3765,117 @@ def _life_condition(stream: Stream):
         stream.reset(mark)
         return None
 
-    comparison = Comparison.GE
     if stream.accept_phrase("or less") or stream.accept_phrase("or fewer"):
         comparison = Comparison.LE
     elif stream.accept_phrase("or more") or stream.accept_phrase("or greater"):
         comparison = Comparison.GE
+    else:
+        # "you have 20 life" - a bare number is not a threshold, and reading
+        # it as one would be a guess.
+        stream.reset(mark)
+        return None
 
     if not stream.accept("life"):
         stream.reset(mark)
         return None
-    return Condition(
-        kind=ConditionKind.LIFE,
-        players=players,
-        constraint=NumericConstraint(comparison, amount),
-        text="a life-total condition",
+    return _any_player(
+        ConditionKind.LIFE,
+        players,
+        NumericConstraint(comparison, amount),
+        "a life-total condition",
     )
 
 
 def _counter_condition(stream: Stream):
-    """"this creature has four or more +1/+1 counters on it"."""
-    from ..rules.kernel.query import (
-        Comparison,
-        Condition,
-        ConditionKind,
-        NumericConstraint,
-    )
+    """"this creature has four or more +1/+1 counters on it", "it has a
+    +1/+1 counter on it", "if it had no counters on it"."""
+    from ..rules.kernel.gameobject import GameObject
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
-    spec = parse_object_filter(stream)
-    if spec is None:
+    subject = parse_object_filter(stream)
+    if subject is None:
         return None
-    if not stream.accept("has", "have"):
+    if not stream.accept("has", "have", "had"):
         stream.reset(mark)
         return None
-    amount = parse_value(stream)
-    if amount is None:
+    constraint = _condition_quantity(stream)
+    if constraint is None:
         stream.reset(mark)
         return None
 
-    comparison = Comparison.GE
-    if stream.accept_phrase("or less") or stream.accept_phrase("or fewer"):
-        comparison = Comparison.LE
-    elif stream.accept_phrase("or more") or stream.accept_phrase("or greater"):
-        comparison = Comparison.GE
-
-    counter = _counter_word(stream)
-    if counter is None:
+    if stream.accept("counter", "counters"):
+        # "counters on it" with no kind named - any counter at all.
+        counter = GameObject.ANY_COUNTER
+    else:
+        counter = _counter_word(stream)
+        if counter is None:
+            stream.reset(mark)
+            return None
+    if not stream.accept("on"):
         stream.reset(mark)
         return None
-    stream.accept_phrase("on it")
+    if not stream.accept("it", "them"):
+        if not stream.accept("this"):
+            stream.reset(mark)
+            return None
+        stream.accept(*_SELF_NOUNS_FOR_COUNTERS)
 
-    return Condition(
-        kind=ConditionKind.COUNTER_COUNT,
-        filter=spec,
-        counter_type=counter,
-        constraint=NumericConstraint(comparison, amount),
-        text="a counter condition",
+    if subject.source_only or subject.remembered:
+        # "This creature has ...", and "it has ..." in a static ability of the
+        # creature itself ("has reach as long as it has a +1/+1 counter on
+        # it"), where "it" is the source. Asked of the source, as before.
+        return Condition(
+            kind=ConditionKind.COUNTER_COUNT,
+            filter=subject,
+            counter_type=counter,
+            constraint=constraint,
+            text="a counter condition",
+        )
+    condition = _about_one_object(
+        subject,
+        replace(subject, has_counter=counter, counter_constraint=constraint),
+        "a counter condition",
     )
+    if condition is None:
+        stream.reset(mark)
+    return condition
+
+
+_SELF_NOUNS_FOR_COUNTERS = (
+    "creature", "permanent", "artifact", "enchantment", "land", "card",
+    "planeswalker", "equipment", "aura", "vehicle", "saga",
+)
 
 
 def _state_condition(stream: Stream):
     """"<something> is tapped / untapped / attacking / blocking"."""
-    from dataclasses import replace
-
-    from ..rules.kernel.query import Condition, ConditionKind, NumericConstraint
-
     mark = stream.mark()
-    spec = parse_object_filter(stream)
-    if spec is None:
+    subject = parse_object_filter(stream)
+    if subject is None:
         return None
     if not stream.accept("is", "are"):
         stream.reset(mark)
         return None
 
     if stream.accept("tapped"):
-        spec = replace(spec, tapped=True)
+        narrowed = replace(subject, tapped=True)
     elif stream.accept("untapped"):
-        spec = replace(spec, tapped=False)
+        narrowed = replace(subject, tapped=False)
     elif stream.accept("attacking"):
-        spec = replace(spec, attacking=True)
+        narrowed = replace(subject, attacking=True)
     elif stream.accept("blocking"):
-        spec = replace(spec, blocking=True)
+        narrowed = replace(subject, blocking=True)
+    elif stream.accept("blocked"):
+        narrowed = replace(subject, blocked=True)
     else:
         stream.reset(mark)
         return None
 
-    return Condition(
-        kind=ConditionKind.CONTROLS_MATCHING,
-        filter=spec,
-        constraint=NumericConstraint.at_least(1),
-        text="a state condition",
-    )
+    condition = _about_one_object(subject, narrowed, "a state condition")
+    if condition is None:
+        stream.reset(mark)
+    return condition
 
 
 def _theirs(spec):
@@ -3575,24 +3886,29 @@ def _theirs(spec):
     return replace(spec, controller=ControllerRelation.OPPONENT, count=None)
 
 
-#: "<who> <did something> [N or more] this turn" - the events cards ask about
-#: after the fact, and whether the question is "how many times" or "how much".
+#: "<who> <did something> [N or more] <noun> this turn" - the events cards ask
+#: about after the fact: the verb as it can be written (past tense and
+#: participle), the event, whether the question is "how many times" or "how
+#: much", and the only nouns the verb may take.
 #:
-#: One table rather than one clause per card: the sentence is always the same
-#: shape and only the verb changes.
-_THIS_TURN_EVENTS: tuple[tuple[str, str, bool], ...] = (
-    ("lost", "LIFE_LOST", False),
-    ("lose", "LIFE_LOST", False),
-    ("gained", "LIFE_GAINED", False),
-    ("was dealt", "DAMAGE_DEALT", False),
-    ("were dealt", "DAMAGE_DEALT", False),
-    ("cast", "CAST_SPELL", True),
-    ("has cast", "CAST_SPELL", True),
-    ("drew", "DREW_CARD", True),
-    ("has drawn", "DREW_CARD", True),
-    ("attacked with", "ATTACKS", True),
-    ("sacrificed", "SACRIFICED", True),
-    ("discarded", "DISCARDED", True),
+#: The noun is part of the question and has to be one the tally can answer.
+#: The game keeps a count per event kind and player, nothing finer, so "cast
+#: a spell" can be asked and "cast a noncreature spell" cannot; a noun with
+#: any qualifier on it is declined rather than read as the bare noun. Damage
+#: is absent on purpose: the tally files damage to a creature under its
+#: controller, so "was dealt damage this turn" cannot be told apart from
+#: "controls a creature that was".
+_THIS_TURN_EVENTS: tuple[tuple[tuple[str, ...], str, bool, tuple[str, ...]], ...] = (
+    (("lost", "lose"), "LIFE_LOST", False, ("life",)),
+    (("gained",), "LIFE_GAINED", False, ("life",)),
+    (("cast",), "CAST_SPELL", True, ("spell", "spells")),
+    (("drew", "drawn"), "DREW_CARD", True, ("card", "cards")),
+    (("attacked with",), "ATTACKS", True, ("creature", "creatures")),
+    (("sacrificed",), "SACRIFICED", True, ("permanent", "permanents")),
+    (("discarded",), "DISCARDED", True, ("card", "cards")),
+    # "if you attacked this turn" (raid): one attack event per attacking
+    # creature, so having attacked at all is a count of at least one.
+    (("attacked",), "ATTACKS", True, ()),
 )
 
 
@@ -3657,47 +3973,65 @@ def _about_the_remembered(stream: Stream):
 
 
 def _happened_this_turn(stream: Stream):
-    """"if an opponent lost 2 or more life this turn" and its family.
+    """"if an opponent lost 2 or more life this turn", "if you've cast two or
+    more spells this turn", "if you attacked this turn".
 
     The trailing "this turn" is what makes it a question about history rather
-    than about the board, and the engine now keeps a per-turn tally to answer
-    it. An amount ("7 or more damage") and a count ("three or more spells") are
-    both expressible; which one is meant depends on the verb.
+    than about the board, and the engine keeps a per-turn tally to answer it.
+    An amount ("3 or more life") and a count ("two or more spells") are both
+    expressible; which one is meant depends on the verb.
     """
     from ..rules.kernel.events import EventKind
-    from ..rules.kernel.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind, PlayerScope
 
     mark = stream.mark()
-    players, _ = parse_player_filter(stream)
-    if players is None:
-        stream.reset(mark)
-        return None
+    if stream.accept("you've"):
+        players = (YOU,)
+    else:
+        players = _condition_player(stream)
+        if players is None:
+            stream.reset(mark)
+            return None
+        stream.accept("has", "have")
 
-    for phrase, event_name, counting in sorted(
-        _THIS_TURN_EVENTS, key=lambda entry: -len(entry[0].split())
-    ):
-        look = stream.mark()
-        if not stream.accept_phrase(phrase):
-            continue
-
-        constraint = parse_comparison(stream)
-        # The noun after the number is decoration - "2 or more *life*",
-        # "three or more *spells*" - and the verb already said which event.
-        while not stream.done and not stream.at_phrase("this turn"):
-            if stream.peek().text in (".", ",", ";"):
-                break
-            stream.next()
-
-        if stream.accept_phrase("this turn"):
-            return Condition(
-                kind=ConditionKind.EVENT_THIS_TURN,
-                players=players,
-                constraint=constraint,
-                counter_type="count" if counting else "",
-                event_kinds=(int(getattr(EventKind, event_name)),),
-                text=f"{phrase} ... this turn",
+    for phrases, event_name, counting, nouns in _THIS_TURN_EVENTS:
+        for phrase in phrases:
+            look = stream.mark()
+            if not stream.accept_phrase(phrase):
+                continue
+            constraint = _condition_quantity(stream)
+            if nouns:
+                if not stream.accept(*nouns):
+                    stream.reset(look)
+                    continue
+            elif constraint is not None:
+                stream.reset(look)
+                continue
+            if not stream.accept_phrase("this turn"):
+                stream.reset(look)
+                continue
+            if constraint is not None and constraint.comparison.name == "GE" and (
+                constraint.value.constant == 1
+            ):
+                # "a spell", "one or more cards": it happened at all.
+                constraint = None
+            if any(p.scope is PlayerScope.EACH_PLAYER for p in players):
+                stream.reset(mark)
+                return None
+            parts = tuple(
+                Condition(
+                    kind=ConditionKind.EVENT_THIS_TURN,
+                    players=each,
+                    constraint=constraint,
+                    counter_type="count" if counting else "",
+                    event_kinds=(int(getattr(EventKind, event_name)),),
+                    text=f"{phrase} ... this turn",
+                )
+                for each in players
             )
-        stream.reset(look)
+            if len(parts) == 1:
+                return parts[0]
+            return Condition(kind=ConditionKind.OR, operands=parts, text=phrase)
 
     stream.reset(mark)
     return None

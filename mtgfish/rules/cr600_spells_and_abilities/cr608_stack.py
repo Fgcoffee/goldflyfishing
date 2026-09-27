@@ -73,7 +73,9 @@ def _resolve_ability(game: Game, obj: GameObject) -> None:
         from .cr603_triggers import check_intervening_if
 
         source = game.objects.get(obj.source)
-        if source is not None and not check_intervening_if(game, source, ability.trigger):
+        if source is not None and not check_intervening_if(
+            game, source, ability.trigger, obj.trigger_event
+        ):
             game.log.record(game, "Intervening 'if' no longer true; ability does nothing")
             _cease(game, obj)
             return

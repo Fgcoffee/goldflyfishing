@@ -327,14 +327,35 @@ def _condition_holds(resolution: Resolution, effect: Effect) -> bool:
         return True
     from ..kernel.conditions import holds
 
+    remembered = tuple(resolution.remembered)
+    if _asks_about_affected(effect.condition) and effect.children:
+        # "Counter target instant spell if it's blue": the referent is what
+        # the guarded effect would act on. Peeked without spending the
+        # target cursor, exactly as ``execute_one`` does.
+        cursor = resolution.target_index
+        remembered = tuple(
+            obj.id for obj in _objects(resolution, effect.children[0])
+        )
+        resolution.target_index = cursor
+    stack_object = resolution.stack_object
     return holds(
         resolution.game,
         effect.condition,
         source=resolution.source,
         controller=resolution.controller,
         # What "it" means in "if it's blue" - only the resolution knows.
-        remembered=tuple(resolution.remembered),
+        remembered=remembered,
+        # And in a triggered ability, what the trigger event was about.
+        event=getattr(stack_object, "trigger_event", None),
     )
+
+
+def _asks_about_affected(condition) -> bool:
+    from ..kernel.query import ConditionKind
+
+    if condition.kind is ConditionKind.AFFECTED_MATCHES:
+        return True
+    return any(_asks_about_affected(c) for c in condition.operands)
 
 
 # ---------------------------------------------------------------------------

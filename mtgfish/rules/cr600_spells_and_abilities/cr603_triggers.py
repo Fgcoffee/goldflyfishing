@@ -538,7 +538,7 @@ def condition_met(
 
     # CR 603.4: the intervening-if clause is checked here, and again on
     # resolution. Failing either time means the ability does nothing.
-    return check_intervening_if(game, source, trigger)
+    return check_intervening_if(game, source, trigger, event)
 
 
 def _is_nth_this_turn(game: Game, trigger: TriggerCondition, event: Event) -> bool:
@@ -554,14 +554,25 @@ def _is_nth_this_turn(game: Game, trigger: TriggerCondition, event: Event) -> bo
     return total == trigger.ordinal
 
 
-def check_intervening_if(game: Game, source: GameObject, trigger: TriggerCondition) -> bool:
-    """Evaluate an intervening-if clause (CR 603.4)."""
+def check_intervening_if(
+    game: Game, source: GameObject, trigger: TriggerCondition, event=None
+) -> bool:
+    """Evaluate an intervening-if clause (CR 603.4).
+
+    ``event`` is the event the ability triggered on, which is what "it" means
+    in "whenever a creature dies, if it was a Human" - both when the ability
+    triggers and when it resolves.
+    """
     if trigger.intervening_if.is_always:
         return True
     from ..kernel.conditions import holds
 
     return holds(
-        game, trigger.intervening_if, source=source.id, controller=source.controller
+        game,
+        trigger.intervening_if,
+        source=source.id,
+        controller=source.controller,
+        event=event,
     )
 
 

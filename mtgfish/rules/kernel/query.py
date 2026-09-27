@@ -796,6 +796,27 @@ class ConditionKind(IntEnum):
     AND = 20
     OR = 21
     NOT = 22
+    #: "Whenever a creature you control dies, if it was a Human, ..." - "it"
+    #: in a triggered ability, before the ability has acted on anything, is
+    #: the object the trigger event was about (CR 603.2, 603.4). Asked of that
+    #: object as the event left it: a creature that died is asked about as it
+    #: last existed on the battlefield (CR 603.10a, 608.2h), which is the only
+    #: way "if it had counters on it" can ever be true. Distinct from
+    #: REMEMBERED_MATCHES because nothing in the resolution has touched it -
+    #: the event is the only thing that knows which object is meant.
+    TRIGGER_OBJECT_MATCHES = 2001
+    #: "Counter target instant spell if it's blue", "put a +1/+1 counter on
+    #: target creature you control if it's legendary" - a condition about the
+    #: objects the very effect it guards would act on. Asked before that
+    #: effect happens (CR 608.2c: the instruction is followed only if the
+    #: condition holds), so nothing is remembered yet: the guarded effect's
+    #: own targets are the referent.
+    AFFECTED_MATCHES = 2002
+    #: "as long as your devotion to red is less than five", "if X is 5 or
+    #: more", "if creatures you control have total power 10 or greater" - a
+    #: number the game can already compute, measured against a constraint.
+    #: ``value`` is the left-hand side and ``constraint`` the right.
+    VALUE_COMPARE = 2003
     #: The parser could not read the clause. A condition that is never true is
     #: the safe failure: the ability simply does not apply.
     UNPARSED = 99
@@ -817,6 +838,25 @@ class Condition:
     #: COMPLETED_DUNGEON: the dungeon's name, or empty for any dungeon.
     keyword: str = ""
     text: str = ""
+    #: For VALUE_COMPARE: the quantity measured against ``constraint``.
+    value: Value | None = None
+
+    def __repr__(self) -> str:
+        """The dataclass repr, leaving ``value`` out while it is unset.
+
+        Written by hand for one reason: the parse census fingerprints every
+        ability by its repr, and a new field printed as ``value=None`` on every
+        condition in the pool would make all of them look changed. Unset, the
+        repr is exactly what it was before the field existed; set, it says so.
+        """
+        from dataclasses import fields
+
+        parts = [
+            f"{f.name}={getattr(self, f.name)!r}"
+            for f in fields(self)
+            if not (f.name == "value" and self.value is None)
+        ]
+        return f"{type(self).__qualname__}({', '.join(parts)})"
 
     @property
     def is_always(self) -> bool:
@@ -885,6 +925,38 @@ class Condition:
                 return f"{verb} {what}"
             return f"{verb} {_count_phrase(self.constraint)} {what}"
 
+        if kind in (
+            ConditionKind.REMEMBERED_MATCHES,
+            ConditionKind.TRIGGER_OBJECT_MATCHES,
+            ConditionKind.AFFECTED_MATCHES,
+        ):
+            who = {
+                ConditionKind.REMEMBERED_MATCHES: "the object just referred to",
+                ConditionKind.TRIGGER_OBJECT_MATCHES: "the object the trigger was about",
+                ConditionKind.AFFECTED_MATCHES: "the object this affects",
+            }[kind]
+            if self.filter is None:
+                return f"{who} is something"
+            spec = replace(self.filter, remembered=False, zones=frozenset())
+            return f"{who} is {spec.describe(quantified=False)}"
+        if kind is ConditionKind.COMPARE_COUNTS:
+            who = str(self.players) if self.players is not None else "an opponent"
+            if self.filter is None or self.constraint is None:
+                return f"{who} controls something"
+            spec = replace(self.filter, controller=ControllerRelation.ANY)
+            return f"{who} controls {_count_phrase(self.constraint)} {spec.describe(quantified=False)}"
+        if kind is ConditionKind.VALUE_COMPARE:
+            return f"{self.value} is {self.constraint}"
+        if kind is ConditionKind.EVENT_THIS_TURN:
+            who = str(self.players) if self.players is not None else "you"
+            from .events import EventKind
+
+            what = "/".join(
+                EventKind(k).name.lower() for k in self.event_kinds
+            )
+            how = "times" if self.counter_type == "count" else "in total"
+            amount = f" {self.constraint} {how}" if self.constraint else ""
+            return f"{who}: event {what} happened this turn{amount}"
         if kind is ConditionKind.PLAYER_COUNT:
             who = str(self.players) if self.players is not None else "players"
             return f"you have {self.constraint} {who}"
