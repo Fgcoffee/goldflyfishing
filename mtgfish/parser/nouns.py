@@ -301,7 +301,17 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
 
     if count is not None:
         spec = replace(spec, count=Value.of(count), up_to=up_to)
+    elif up_to and spec.count is None:
+        # "any number of" - see ``_quantifier``.
+        spec = replace(spec, up_to=True)
     return spec
+
+
+def chosen_count(spec: ObjectFilter) -> bool:
+    """Whether a noun phrase said "any number of" (CR 107.1c): no count, and
+    the player picks how many. A reader that turns the phrase into a fixed
+    amount - a cost, a discard - has to refuse it rather than pick one."""
+    return spec.count is None and spec.up_to
 
 
 #: The ways oracle text names the pile a look, a reveal or a mill has just
@@ -530,8 +540,13 @@ def _quantifier(
         count = stream.accept_number()
         if count is None:
             count = 1
+    elif stream.accept_phrase("any number of"):
+        # A count the player picks, zero or more (CR 107.1c). It is "up to"
+        # with no ceiling: no count, and ``up_to`` set - which is not "all",
+        # and must not read as it.
+        up_to = True
     elif stream.accept("any"):
-        stream.accept_phrase("number of")
+        pass
     elif stream.accept("X"):
         # "Sacrifice X Treasures", "Exile X target creatures". X is a
         # quantity like any other; reading only literal numbers meant every
@@ -566,6 +581,14 @@ def _quantifier(
         spec = replace(spec, other_than_source=True)
     if stream.accept("another"):
         spec = replace(spec, other_than_source=True)
+        # "Sacrifice another creature" is "sacrifice a creature other than
+        # this one": the article is inside the word, and it counts one just
+        # as "a" does. Without the count the filter read as "all", and every
+        # edict and cost that says "another" took every other creature.
+        # "Another target creature" leaves the count to the targeting, as
+        # "target creature" does.
+        if count is None and stream.peek().lower != "target":
+            count = 1
     if stream.accept("target"):
         targeted = True
         # "another target creature" and "target another creature" both occur.
@@ -1553,6 +1576,14 @@ def _possessive_characteristic(stream: Stream) -> Value | None:
     consumed = {"sacrificed", "tapped", "exiled", "discarded"}
     if kind is ValueKind.POWER and consumed.intersection(words):
         return Value(kind=ValueKind.COST_PAID_POWER)
+    if consumed.intersection(words):
+        # "the sacrificed creature's mana value": only power has a reading
+        # of what the cost consumed. ``of_affected`` would ask the object the
+        # effect is applied to instead - in a filter bound, the very card
+        # being matched ("mana value X or less, where X is 2 plus the
+        # sacrificed creature's mana value" matched every creature).
+        stream.reset(mark)
+        return None
 
     return Value(kind=kind, of_affected=True)
 
@@ -2104,21 +2135,13 @@ def parse_value(stream: Stream) -> Value | None:
         return Value(kind=ValueKind.MANA_SPENT)
     stream.reset(look)
 
-    if stream.accept_phrase("any number of"):
-        # A quantity the player picks. Nothing in the game state fixes it,
-        # so it is read as "as many as there are" - which is what a player
-        # maximising the effect would choose, and what every card using the
-        # phrase is built around.
-        counter = _counter_type(stream)
-        if counter:
-            stream.accept("on")
-            if parse_object_filter(stream) is None:
-                stream.accept("it", "this", "them")
-            return Value(kind=ValueKind.COUNTERS, counter_type=counter)
-        spec = parse_object_filter(stream)
-        if spec is not None:
-            return Value(kind=ValueKind.COUNT, filter=spec)
-        stream.reset(mark)
+    if stream.at("any") and stream.peek(1).lower == "number":
+        # "Discard any number of cards", "remove any number of +1/+1
+        # counters": a quantity the player picks (CR 107.1c), zero or more.
+        # It used to be read as "as many as there are", which is "all" - a
+        # different instruction - so it is not a value at all. A clause that
+        # can carry the choice reads the phrase as an object count
+        # ("any number of target creatures") instead.
         return None
 
     if stream.accept_phrase("that many") or stream.accept_phrase("that much"):
@@ -2151,6 +2174,15 @@ def parse_value(stream: Stream) -> Value | None:
 
     amount = stream.accept_number()
     if amount is not None:
+        # "2 plus the sacrificed creature's mana value" (Eldritch Evolution,
+        # Birthing Pod): the number leads and the value follows, the other
+        # way round from ``_arithmetic_tail``'s "... plus one".
+        look = stream.mark()
+        if stream.accept("plus"):
+            operand = parse_value(stream)
+            if operand is not None and not operand.is_constant:
+                return Value(kind=ValueKind.SUM, operands=(Value.of(amount), operand))
+            stream.reset(look)
         # "discard one of them" - the count is the whole quantity and "of
         # them" says which pile, which the effect already knows.
         look = stream.mark()

@@ -29,6 +29,7 @@ from ..rules.kernel.query import (
 )
 from .nouns import (
     SELF_NOUNS,
+    chosen_count,
     parse_comparison,
     parse_description,
     parse_object_filter,
@@ -709,7 +710,7 @@ def _action_cost(stream: Stream):
     stream.next()
 
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec):
         stream.reset(mark)
         return None
 
@@ -749,7 +750,7 @@ def _bind_x(effects: list[Effect]) -> list[Effect]:
     )
     if definition is None:
         return effects
-    return [
+    bound = [
         _substitute_x(effect, definition)
         for effect in effects
         if not (
@@ -757,21 +758,76 @@ def _bind_x(effects: list[Effect]) -> list[Effect]:
             and effect.text.startswith(_X_DEFINITION)
         )
     ]
+    if any(_mentions_x(effect) for effect in bound):
+        # An X the definition could not reach ("unless that player pays
+        # {X}"): paying the announced X - zero - is not what the card says.
+        return [Effect(EffectKind.UNPARSED, text="where X is (unbound X)")]
+    return bound
 
 
 def _substitute_x(effect: Effect, value: Value) -> Effect:
-    from dataclasses import replace
+    """Every X the effect uses, wherever it sits (CR 107.3b).
 
+    Not only the top-level amounts: "-X/-X" is arithmetic with X as an
+    operand, "mana value X or less" is a bound inside a filter, "an X/X
+    token" is the token's power and toughness. Substituting only the amounts
+    left all of those at the announced X - zero for a spell without X in its
+    cost - so the card parsed and did nothing.
+
+    An X that cannot be reached this way - a mana symbol, "pays {X}" - is left
+    as it is, and ``_bind_x`` refuses the sentence rather than pay {0}.
+    """
+    return _replace_x(effect, value)
+
+
+#: Fields that hold abilities of their own - a granted ability or a token's
+#: text - whose X, if any, is theirs rather than this sentence's.
+_OWN_X_FIELDS = frozenset({"granted_abilities", "abilities", "trigger"})
+
+
+def _replace_x(node, value: Value):
+    """``node`` with each ``Value`` of kind X replaced, rebuilt only where
+    something changed."""
+    import dataclasses
+
+    if isinstance(node, Value) and node.kind is ValueKind.X:
+        return value
+    if isinstance(node, tuple):
+        rebuilt = tuple(_replace_x(item, value) for item in node)
+        return rebuilt if any(a is not b for a, b in zip(rebuilt, node)) else node
+    if not dataclasses.is_dataclass(node) or isinstance(node, type):
+        return node
     changes = {}
-    if effect.amount.kind is ValueKind.X:
-        changes["amount"] = value
-    if effect.amount2.kind is ValueKind.X:
-        changes["amount2"] = value
-    if effect.children:
-        changes["children"] = tuple(
-            _substitute_x(child, value) for child in effect.children
-        )
-    return replace(effect, **changes) if changes else effect
+    for field in dataclasses.fields(node):
+        if field.name in _OWN_X_FIELDS:
+            continue
+        current = getattr(node, field.name)
+        if not isinstance(current, tuple) and not dataclasses.is_dataclass(current):
+            continue
+        rebuilt = _replace_x(current, value)
+        if rebuilt is not current:
+            changes[field.name] = rebuilt
+    return dataclasses.replace(node, **changes) if changes else node
+
+
+def _mentions_x(node) -> bool:
+    """Whether an X is still in the sentence after substitution - a value of
+    kind X, or an {X} mana symbol, which a value cannot replace."""
+    import dataclasses
+
+    if isinstance(node, Value) and node.kind is ValueKind.X:
+        return True
+    if getattr(node, "text", None) == "{X}":
+        return True
+    if isinstance(node, tuple):
+        return any(_mentions_x(item) for item in node)
+    if not dataclasses.is_dataclass(node) or isinstance(node, type):
+        return False
+    return any(
+        _mentions_x(getattr(node, field.name))
+        for field in dataclasses.fields(node)
+        if field.name not in _OWN_X_FIELDS
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -3263,87 +3319,92 @@ _SEARCH_STEPS: tuple[tuple[str, "Zone | None"], ...] = (
     ("put that card onto the battlefield", Zone.BATTLEFIELD),
     ("put it onto the battlefield", Zone.BATTLEFIELD),
     ("put them onto the battlefield", Zone.BATTLEFIELD),
+    ("put those cards onto the battlefield", Zone.BATTLEFIELD),
     ("put that card into your hand", Zone.HAND),
     ("put it into your hand", Zone.HAND),
     ("put them into your hand", Zone.HAND),
+    ("put those cards into your hand", Zone.HAND),
     ("put that card into your graveyard", Zone.GRAVEYARD),
     ("put it into your graveyard", Zone.GRAVEYARD),
+    ("put them into your graveyard", Zone.GRAVEYARD),
+    # The tutors that leave the card on top (Vampiric Tutor, Worldly Tutor
+    # and their cycles) always shuffle *first* and then put it on top; the
+    # tail checks that order, because the other order would shuffle the card
+    # away.
     ("put that card on top of your library", Zone.LIBRARY),
     ("put it on top of your library", Zone.LIBRARY),
-    # "put that card on top" - the library is elided (Enlightened Tutor,
-    # Vampiric Tutor, Mystical Tutor and the rest of the cycle).
     ("put that card on top", Zone.LIBRARY),
+    ("put the card on top", Zone.LIBRARY),
     ("put it on top", Zone.LIBRARY),
-    # Cultivate and Kodama's Reach split the two cards between two zones.
-    # The battlefield is the half that matters for a mana curve; recording it
-    # keeps the ramp honest even though the second card's hand trip is not
-    # separately modelled.
-    (
-        "put one onto the battlefield tapped and the other into your hand",
-        Zone.BATTLEFIELD,
-    ),
-    ("put one onto the battlefield tapped", Zone.BATTLEFIELD),
-    ("put the rest into your graveyard", None),
-    ("put the rest on the bottom of your library in a random order", None),
-    ("put the rest on the bottom in a random order", None),
-    ("in any order", None),
-    ("those cards", None),
     ("exile that card", Zone.EXILE),
     ("exile it", Zone.EXILE),
+    ("exile them", Zone.EXILE),
+    ("exile those cards", Zone.EXILE),
+    # CR 701.23e: revealing is part of the instruction but changes nothing
+    # about where the card goes; the engine emits no reveal for a search.
     ("reveal that card", None),
     ("reveal those cards", None),
     ("reveal it", None),
     ("reveal them", None),
+    # The shuffle every search ends with (CR 701.23) - the executor does it.
     ("shuffle your library", None),
     ("shuffle their library", None),
     ("shuffle", None),
-    # Not a zone of its own, but not nothing either: ``_search_tail`` reads
-    # the word off any step it appears in and hands it to the effect.
-    ("tapped", None),
-    # Steps a search takes on the way that are not about where the card ends
-    # up. Each of them failed a whole tutor: Demonic Consultation, Vampiric
-    # Tutor, Worldly Tutor and their cycles.
-    ("discard a card at random", None),
-    ("discard a card", None),
-    ("put the card on top", Zone.LIBRARY),
-    ("put that card on top of your library", Zone.LIBRARY),
-    ("put it on top of your library", Zone.LIBRARY),
-    ("pay 2 life", None),
-    ("lose 2 life", None),
 )
 
+#: Cultivate and Kodama's Reach: of the (up to) two cards found, one goes onto
+#: the battlefield tapped and the other into the hand. Read as its own step,
+#: because it names two destinations, not one.
+_SEARCH_SPLIT = "put one onto the battlefield tapped and the other into your hand"
 
-def _search_tail(stream: Stream) -> tuple[Zone, bool]:
-    """Where a search puts what it finds, and whether it arrives tapped.
+
+def _search_tail(stream: Stream) -> tuple[Zone, bool, bool] | None:
+    """Where a search puts what it finds, whether it arrives tapped, and
+    whether the found cards are split between the battlefield and the hand.
 
     Defaults to the hand (CR 701.23c: a search with no stated destination
     reveals nothing and the card stays where the effect says - hand is the
-    overwhelmingly common templating).
+    overwhelmingly common templating). ``None`` when the steps are in an order
+    the executor would not follow: a card put on top and *then* shuffled is
+    not on top.
 
-    "Tapped" used to be in the step list as a word to swallow, which made
-    Rampant Growth, Cultivate, Farseek and the rest of the format's ramp put
-    their land in *untapped*. Every one of those decks came out a turn faster
-    than it plays, which is the one measurement a goldfishing tool exists to
-    make.
+    Only steps whose meaning is carried are read. "Discard a card at random",
+    "pay 2 life", "put the rest into your graveyard" were once consumed here
+    and dropped, which turned Gamble into a free Demonic Tutor; the tail now
+    stops at them and they must be read as effects of their own.
     """
     destination = Zone.HAND
     tapped = False
+    split = False
+    shuffled = False
     while True:
         before = stream.mark()
         stream.skip_punct(",")
         stream.accept("then", "and")
         stream.skip_punct(",")
 
+        if stream.accept_phrase(_SEARCH_SPLIT):
+            destination, tapped, split = Zone.BATTLEFIELD, True, True
+            continue
         for phrase, zone in _SEARCH_STEPS:
-            if stream.accept_phrase(phrase):
-                if zone is not None:
-                    destination = zone
-                if "tapped" in phrase:
-                    tapped = True
-                break
+            if not stream.accept_phrase(phrase):
+                continue
+            if zone is not None:
+                if zone is Zone.LIBRARY and not shuffled:
+                    return None
+                destination = zone
+            if phrase.startswith("shuffle"):
+                if destination is Zone.LIBRARY:
+                    return None
+                shuffled = True
+            # "put it onto the battlefield tapped" - how it arrives (CR
+            # 614.1c), a word after the step rather than a step of its own.
+            if zone is Zone.BATTLEFIELD and stream.accept("tapped"):
+                tapped = True
+            break
         else:
             stream.reset(before)
-            return destination, tapped
+            return destination, tapped, split
 
 
 @clause("search")
@@ -3361,17 +3422,31 @@ def _search(stream: Stream) -> Effect | None:
     if spec is None:
         return None
 
-    destination, tapped = _search_tail(stream)
+    tail = _search_tail(stream)
+    if tail is None:
+        return None
+    destination, tapped, split = tail
+    if split and not (spec.up_to and spec.count == Value.of(2)):
+        # "one ... and the other" names exactly two cards.
+        return None
 
+    keywords: tuple[str, ...] = ()
+    if tapped and destination is Zone.BATTLEFIELD:
+        # Carried the same way every other put-onto-the-battlefield carries
+        # it, so the executor has one thing to look for (CR 614.1c).
+        keywords += ("tapped",)
+    if split:
+        keywords += ("other to hand",)
     return Effect(
         EffectKind.SEARCH_LIBRARY,
         players=players or YOU,
         targets=spec,
         zone=destination,
-        amount=Value.of(1),
-        # Carried the same way every other put-onto-the-battlefield carries
-        # it, so the executor has one thing to look for (CR 614.1c).
-        keywords=("tapped",) if tapped and destination is Zone.BATTLEFIELD else (),
+        # "Up to two basic land cards" finds up to two: the count is the
+        # filter's, and "a card" is one. "Any number of" has no count; the
+        # executor reads that off the filter (``chosen_count``).
+        amount=spec.count if spec.count is not None else Value.of(1),
+        keywords=keywords,
         text="search library",
     )
 
@@ -4041,10 +4116,22 @@ def _counted_filter(stream: Stream):
     something a condition says.
     """
     mark = stream.mark()
+    another = stream.at("another")
     constraint = _condition_quantity(stream)
     if constraint is None:
         return None, None
     spec = parse_object_filter(stream)
+    if (
+        another
+        and spec is not None
+        and spec.other_than_source
+        and spec.count == Value.of(1)
+        and not spec.up_to
+    ):
+        # "another Goblin" carries its "one" inside the word, and the noun
+        # reader counts it; the condition has already read that "one" as
+        # its constraint, so it is not a second count.
+        spec = replace(spec, count=None)
     if spec is None or spec.count is not None:
         stream.reset(mark)
         return None, None
@@ -8369,7 +8456,25 @@ def _keyword_action(stream: Stream) -> Effect | None:
         return None
 
     amount = parse_value(stream)
+    if amount is not None and not amount.is_constant:
+        # The builders take a printed number. A computed one ("amass X",
+        # "reveal the number of ...") would be dropped to nothing, which is
+        # swallowing the quantity; left unread instead.
+        stream.reset(mark)
+        return None
     spec, targeted = parse_target(stream)
+    if (
+        spec is not None
+        and spec.up_to
+        and spec.count is None
+        and matched.lower() not in _ANY_NUMBER_ACTIONS
+    ):
+        # "Discard any number of cards": the player's chosen count (CR
+        # 107.1c) lives on the filter, and only the actions whose executor
+        # picks from the filter can honour it. Discard counts by amount and
+        # would discard one.
+        stream.reset(mark)
+        return None
     if spec is None and subject is not None:
         spec, targeted = subject, subject_targeted
     effects = build(
@@ -8393,6 +8498,13 @@ def _keyword_action(stream: Stream) -> Effect | None:
     return Effect(
         EffectKind.SEQUENCE, children=tuple(effects), text=" ".join(words)
     )
+
+
+#: Keyword actions whose executor acts on the objects its filter picks, and so
+#: can carry "any number of" as the player's choice (``resolve._objects``).
+_ANY_NUMBER_ACTIONS = frozenset(
+    {"destroy", "exile", "sacrifice", "tap", "untap", "reveal"}
+)
 
 
 def _known_action(phrase: str, builders) -> str | None:

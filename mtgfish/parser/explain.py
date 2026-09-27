@@ -416,8 +416,17 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
             event = event.replace(_filter(effect.targets), objects, 1)
         return f"prevent {how_much} {event}{_gated(effect)}{_duration(effect.duration)}"
     if kind is EffectKind.SEARCH_LIBRARY:
-        where = f" and puts it into {_zone(effect.zone)}" if effect.zone else ""
+        # The library is zone 0: compared with None, not tested for truth.
+        if effect.zone is None:
+            where = ""
+        elif effect.zone is Zone.LIBRARY:
+            where = ", shuffles, and puts it on top of their library"
+        else:
+            where = f" and puts it into {_zone(effect.zone)}"
         tapped = " tapped" if "tapped" in effect.keywords else ""
+        if "other to hand" in effect.keywords:
+            where = f" and puts one into {_zone(effect.zone)}"
+            tapped += " and the other into hand"
         # The executor takes at most ``amount`` cards whatever the filter's
         # own count says, so both are shown when they differ.
         cap = ""
