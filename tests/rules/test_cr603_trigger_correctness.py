@@ -607,3 +607,21 @@ def test_you_tap_a_land_for_mana_is_your_land_only(box):
     # One mana of a type that land produced: green again.
     assert game.player(PlayerId(0)).mana_pool.amount_of(Color.GREEN) == 2
 
+
+
+def test_an_alternative_keeps_its_own_constraints(board):
+    """Goldspan Dragon: "attacks or becomes the target of a spell". Folding
+    the halves into one set of event kinds dropped "of a spell", so an
+    activated ability targeting it made a Treasure too."""
+    text = "Whenever this creature attacks or becomes the target of a spell, draw a card."
+    me = watch(board, text)
+    _targeted(board, me, _on_stack(board, "Lightning Bolt", 1, ability=True))
+    assert fired(board, text) == 0
+    _targeted(board, me, _on_stack(board, "Lightning Bolt", 1))
+    assert fired(board, text) == 1
+    board.game.emit(Event(EventKind.ATTACKS, object_id=me.id, player=PlayerId(0)))
+    assert fired(board, text) == 1
+    other = board.play("Hill Giant", 0)
+    board.game.pending_triggers.clear()
+    board.game.emit(Event(EventKind.ATTACKS, object_id=other.id, player=PlayerId(0)))
+    assert fired(board, text) == 0

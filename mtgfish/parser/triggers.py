@@ -392,7 +392,13 @@ def _with_alternatives(reader, stream: Stream, subject):
         # one set of event kinds - the union would match combinations neither
         # half describes. It is kept whole instead, and the trigger becomes a
         # disjunction of complete conditions.
-        if alternative.subject != first.subject:
+        #
+        # Likewise one whose other constraints differ: "attacks or becomes
+        # the target *of a spell*" folded into one set of kinds dropped the
+        # spell filter, so the Dragon made Treasure off every ability that
+        # targeted it - and a filter on the first half would equally have
+        # been applied to the second.
+        if not _same_but_events(alternative, first):
             others.append(alternative)
             continue
         kinds |= alternative.event_kinds
@@ -409,6 +415,22 @@ def _with_alternatives(reader, stream: Stream, subject):
     if not others:
         return first
     return _replace(first, alternatives=(first, *others))
+
+
+def _same_but_events(one: TriggerCondition, other: TriggerCondition) -> bool:
+    """Whether two conditions differ only in what happened, so a single
+    condition watching both events says the same as the pair."""
+    from dataclasses import replace
+
+    def bare(condition):
+        return replace(
+            condition,
+            event_kinds=frozenset(),
+            uses_last_known_information=False,
+            text="",
+        )
+
+    return bare(one) == bare(other)
 
 
 def _or_another(stream: Stream) -> ObjectFilter | None:
