@@ -731,7 +731,7 @@ def _do_return_to_hand(resolution: Resolution, effect: Effect) -> None:
 def _do_move_zone(resolution: Resolution, effect: Effect) -> None:
     destination = effect.zone or Zone.GRAVEYARD
     objects = _objects(resolution, effect)
-    # "Reveal it and put it into your hand" (CR 701.16a): the reveal is part
+    # "Reveal it and put it into your hand" (CR 701.20): the reveal is part
     # of the instruction, and it is the card being moved that is shown.
     _reveal_if_said(resolution, effect, objects)
     for obj in objects:
@@ -1908,7 +1908,7 @@ def _do_shuffle(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_reveal(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.16. Revealing changes no zone; it only makes information public."""
+    """CR 701.20b. Revealing changes no zone; it only makes information public."""
     game = resolution.game
     for obj in _objects(resolution, effect):
         game.emit(Event(EventKind.REVEALED, object_id=obj.id, player=obj.owner))
@@ -2062,11 +2062,10 @@ def _do_look_at_top(resolution: Resolution, effect: Effect) -> None:
     """"Look at the top N cards of your library" / "reveal the top N cards".
 
     Looking changes nothing but what the player knows, and revealing only
-    shows the cards to everyone (CR 701.16a) - no card moves. What the
+    shows the cards to everyone (CR 701.20) - no card moves. What the
     instruction does is set the cards aside as the pile the following
     instructions choose among, and name them as "them" for a pronoun. Fewer
-    cards than asked for is all of them (CR 701.16b's "as many as possible"
-    reading of a short library).
+    cards than asked for is all of them: a short library is looked at in full.
     """
     game = resolution.game
     count = max(0, _amount(resolution, effect))

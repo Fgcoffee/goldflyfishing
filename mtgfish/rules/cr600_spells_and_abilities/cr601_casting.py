@@ -1368,7 +1368,7 @@ def cost_permanents(
 ) -> list[GameObject]:
     """The permanents that could pay a sacrifice or return cost.
 
-    CR 701.17a: a player can sacrifice only a permanent they control. "Sacrifice
+    CR 701.21a: a player can sacrifice only a permanent they control. "Sacrifice
     a creature" names no controller, and the filter alone matched every
     creature on the battlefield - so a cost could be paid with an opponent's
     creature, which is both free and removal.
@@ -1421,7 +1421,7 @@ def pick_discard(
 ) -> GameObject:
     """One card to discard for a cost, from the cards that may pay it.
 
-    CR 701.8a: a card discarded "at random" is picked by the game, not the
+    CR 701.9b: a card discarded "at random" is picked by the game, not the
     payer. Otherwise the payer chooses - and a pick the cost does not accept
     (the agent is asked about its whole hand) falls back to the deterministic
     default, the last card, which is what was always taken with no agent.

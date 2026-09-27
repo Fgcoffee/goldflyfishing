@@ -68,7 +68,7 @@ class EffectKind(IntEnum):
     CREATE_TOKEN = 35
     EXPLORE = 36
     #: "Look at the top N cards of your library" / "reveal the top N cards"
-    #: (CR 701.16a with ``keywords`` holding "reveal"). Nothing moves: the
+    #: (CR 701.20 with ``keywords`` holding "reveal"). Nothing moves: the
     #: cards are set aside, where they are, as the pile the rest of the
     #: resolution chooses among - "put one of them into your hand", "the rest
     #: on the bottom in a random order" (``ObjectFilter.from_pile``). It is

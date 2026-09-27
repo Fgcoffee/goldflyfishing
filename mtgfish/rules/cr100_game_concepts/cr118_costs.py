@@ -42,7 +42,7 @@ class CostKind(IntEnum):
     #: "Exile this artifact", "Exile a creature you control": the cost is a
     #: permanent. Not a graveyard card, which is what these were charged as.
     EXILE_FROM_BATTLEFIELD = 19
-    #: "Discard a card at random" (CR 701.8a): the same discard, except that
+    #: "Discard a card at random" (CR 701.9b): the same discard, except that
     #: the payer does not choose which card - the game does. Its own kind
     #: because a chosen discard is a different, better cost: the payer keeps
     #: the card that matters and throws away a spare land.

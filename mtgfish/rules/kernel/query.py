@@ -496,7 +496,7 @@ class ObjectFilter:
     #: "from among them", "the rest", "all cards revealed this way" - the
     #: cards an earlier instruction of this same resolution looked at or
     #: revealed (``EffectKind.LOOK_AT_TOP``), and only those not yet dealt
-    #: with. They are still in the library they were looked at in (CR 701.16a:
+    #: with. They are still in the library they were looked at in (CR 701.20:
     #: revealing moves nothing), so the filter's ``zones`` say nothing here;
     #: the rest of it narrows which of the pile may be chosen.
     from_pile: bool = False

@@ -292,7 +292,7 @@ def _discard(stream: Stream) -> CostComponent | None:
     spec = parse_object_filter(stream)
     if spec is None and not stream.accept("card", "cards"):
         return None
-    # "at random" says *how* the card is chosen (CR 701.8a): the game picks,
+    # "at random" says *how* the card is chosen (CR 701.9b): the game picks,
     # not the payer. Consumed and dropped, it made the cost a chosen discard -
     # the payer keeping the card that mattered - so it is a kind of its own.
     if stream.accept_phrase("at random"):

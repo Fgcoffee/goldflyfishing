@@ -4523,7 +4523,7 @@ def _reveal_hand(stream: Stream) -> Effect | None:
 
 @clause("reveal-top")
 def _reveal_top(stream: Stream) -> Effect | None:
-    """"Reveal the top four cards of your library." (CR 701.16a).
+    """"Reveal the top four cards of your library." (CR 701.20).
 
     The same instruction as looking at them, shown to everyone: the cards stay
     where they are and become the pile the next sentences choose among. It
@@ -5717,7 +5717,7 @@ def _library_words(stream: Stream, preposition: str) -> bool:
 def _pile_reveal_and_put(stream: Stream) -> Effect | None:
     """"Reveal a creature card from among them and put it into your hand."
 
-    CR 701.16a: the reveal shows the card; the put moves it. One card, chosen
+    CR 701.20: the reveal shows the card; the put moves it. One card, chosen
     once, does both - so the pair is one effect carrying "reveal", not a
     reveal of one choice and a move of whatever the resolution remembered.
     """
