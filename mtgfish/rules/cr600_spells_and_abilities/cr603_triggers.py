@@ -569,6 +569,16 @@ def condition_met(
         before = now - max(1, event.amount)
         if not (before < trigger.chapter <= now):
             return False
+        # CR 702.155a: with read ahead, a chapter ability can't trigger the
+        # turn the Saga entered unless it has exactly that chapter's number
+        # of lore counters - so the chapters skipped by the number chosen as
+        # it entered (CR 714.3b) never happen.
+        if (
+            source.entered_battlefield_turn == game.turn
+            and game.characteristics(source).has_keyword("Read Ahead")
+            and now != trigger.chapter
+        ):
+            return False
 
     # CR 309.4c: a room ability triggers when its owner's venture marker
     # moves into that room of that dungeon - not a room of the same number on

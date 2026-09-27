@@ -362,7 +362,56 @@ def _keyword_cost(text: str):
 # ---------------------------------------------------------------------------
 
 
+def _chapter(line: Line, result: ParsedFace) -> list[Ability]:
+    """CR 714.2b: "{rN} - [Effect]" is a triggered ability whose trigger is
+    the chapter symbol itself - the text after the symbol is only the effect,
+    so it is read with the effect grammar, never as a trigger condition.
+
+    CR 714.2c: "I, II - [Effect]" is one ability per chapter number, each with
+    the same effect.
+    """
+    stream = Stream.of(line.text)
+    effects = _modal_effects(line, stream, result) if line.modes else parse_effects(stream)
+    ability = _finish(
+        line.text,
+        stream,
+        effects,
+        result,
+        rule="chapter",
+        build=lambda body: chapter_ability(line.chapters[0], *body, text=line.text),
+    )
+    if ability.unparsed:
+        return [ability]
+    if _opens_with_a_back_reference(ability.effects):
+        # "III - Return the exiled card to the battlefield": the card is the
+        # one chapter I exiled, a link between two abilities (CR 607) that
+        # the reading "whatever this ability just acted on" does not make. A
+        # chapter ability has no triggering object to fall back on either,
+        # so it would do nothing.
+        result.failures.append(
+            ParseFailure(line.text, "refers back to another chapter", rule="chapter")
+        )
+        return [Ability.unreadable(line.text)]
+    return [
+        chapter_ability(chapter, *ability.effects, text=line.text)
+        for chapter in line.chapters
+    ]
+
+
+def _opens_with_a_back_reference(effects) -> bool:
+    """Whether the first thing an ability acts on is "whatever was just
+    referred to" - which, first thing in a resolution, is nothing."""
+    for effect in effects:
+        for node in effect.walk():
+            if node.children or node.otherwise:
+                continue
+            return node.targets is not None and node.targets.remembered
+    return False
+
+
 def _triggered(line: Line, result: ParsedFace) -> list[Ability]:
+    if line.chapters:
+        return _chapter(line, result)
     stream = Stream.of(line.text)
     trigger = parse_trigger(stream)
     if trigger is None:
@@ -393,17 +442,9 @@ def _triggered(line: Line, result: ParsedFace) -> list[Ability]:
             AbilityKind.TRIGGERED,
             effects=tuple(body),
             trigger=trigger,
-            chapter=line.chapters[0] if line.chapters else 0,
             text=line.text,
         ),
     )
-    if line.chapters and not ability.unparsed:
-        # A Saga line can carry several chapter numbers (CR 714.2c), each of
-        # which is its own ability with the same effect.
-        return [
-            chapter_ability(chapter, *ability.effects, text=line.text)
-            for chapter in line.chapters
-        ]
     return [ability]
 
 
