@@ -93,6 +93,10 @@ class Resolution:
 def execute(resolution: Resolution, effects: tuple[Effect, ...]) -> None:
     """Run a list of effects in order (CR 608.2a)."""
     for effect in effects:
+        # CR 608.2c: instructions are followed one after another, so what one
+        # does does not happen at the same time as what the next does - a
+        # "whenever one or more" ability sees them as separate (CR 603.2c).
+        resolution.game.event_batch += 1
         execute_one(resolution, effect)
 
 

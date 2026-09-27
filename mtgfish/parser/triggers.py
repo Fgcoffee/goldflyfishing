@@ -25,6 +25,7 @@ from ..rules.kernel.query import (
     ObjectFilter,
     PlayerFilter,
     PlayerScope,
+    ValueKind,
 )
 from .nouns import parse_object_filter, parse_player_filter
 from .tokens import Stream, TokenKind
@@ -84,13 +85,18 @@ def _deals_damage(stream: Stream, source, text: str) -> TriggerCondition:
     """
     stream.accept("to")
     players, _ = parse_player_filter(stream)
-    recipient = parse_object_filter(stream) if players is None else None
+    recipient, batched = (None, False)
+    if players is None:
+        recipient, batched = _event_subject(stream)
+        if recipient is _UNREADABLE:
+            return None
     return TriggerCondition(
         event_kinds=_ANY_DAMAGE,
         source=source,
         subject=recipient,
         players=players,
         to_player=players is not None,
+        batched=batched,
         text=text,
     )
 
@@ -240,6 +246,44 @@ def _step_owner(stream: Stream) -> PlayerFilter | None:
     return parse_player_filter(stream)[0]
 
 
+#: What ``_event_subject`` returns for a subject whose quantity the
+#: trigger cannot represent ("two or more creatures", "X creatures").
+_UNREADABLE = object()
+
+
+def _event_subject(stream: Stream):
+    """The noun an event is about, and whether it was "one or more".
+
+    CR 603.2c: "whenever *one or more* creatures die" triggers once for all
+    the creatures that died at the same time, where "whenever *a* creature
+    dies" triggers for each. The quantity is the whole difference, so it is
+    recorded (``batched``) and stripped from the filter, which only says what
+    kind of object counts. "Two or more creatures attack" is a threshold on
+    the batch that nothing here represents, and is refused rather than read
+    as "a creature attacks".
+
+    Returns ``(filter, batched)``, ``(None, False)`` when there is no noun,
+    or ``(_UNREADABLE, False)`` with the stream rewound.
+    """
+    from dataclasses import replace
+
+    mark = stream.mark()
+    batched = stream.accept_phrase("one or more")
+    stream.reset(mark)
+    spec = parse_object_filter(stream)
+    if spec is None:
+        return None, False
+    if batched:
+        return replace(spec, count=None), True
+    count = spec.count
+    if count is not None and (
+        count.kind is not ValueKind.CONSTANT or count.constant != 1 or spec.up_to
+    ):
+        stream.reset(mark)
+        return _UNREADABLE, False
+    return spec, False
+
+
 def _event_trigger(stream: Stream) -> TriggerCondition | None:
     """"Whenever <something> <does something>"."""
     mark = stream.mark()
@@ -271,19 +315,36 @@ def _event_trigger(stream: Stream) -> TriggerCondition | None:
     if counters is not None:
         return counters
 
-    subject = parse_object_filter(stream)
+    subject, batched = _event_subject(stream)
+    if subject is _UNREADABLE:
+        return None
     if subject is not None:
-        return (
-            _with_alternatives(_subject_event, stream, subject)
-            or _reset(stream, mark)
-        )
+        condition = _with_alternatives(_subject_event, stream, subject)
+        if condition is None:
+            return _reset(stream, mark)
+        return _batch(condition, batched)
 
+    # "Whenever one or more players discard one or more cards" is one
+    # trigger across every player's discards, where "a player discards" is
+    # one per player; nothing records the difference, so it is not read.
+    if stream.accept_phrase("one or more players"):
+        stream.reset(mark)
+        return None
     players, _ = parse_player_filter(stream)
     if players is not None:
         return _player_event(stream, players) or _reset(stream, mark)
 
     stream.reset(mark)
     return None
+
+
+def _batch(condition: TriggerCondition, batched: bool) -> TriggerCondition:
+    """Mark a condition as triggering once per batch (CR 603.2c)."""
+    if not batched:
+        return condition
+    from dataclasses import replace
+
+    return replace(condition, batched=True)
 
 
 def _with_alternatives(reader, stream: Stream, subject):
@@ -859,15 +920,18 @@ def _counters_placed(stream: Stream, subject: ObjectFilter):
         stream.reset(mark)
         return None
 
-    target = parse_object_filter(stream)
-    if target is None:
+    target, batched = _event_subject(stream)
+    if target is None or target is _UNREADABLE:
         stream.reset(mark)
         return None
     # The *subject* of the sentence is the counters; the trigger is about the
     # permanent they land on, which is what the engine's event carries.
+    # "Put on *a* creature you control" triggers for each creature that got
+    # some; "on *one or more* Humans" once for all of them (CR 603.2c).
     return TriggerCondition(
         event_kinds=frozenset({EventKind.COUNTER_ADDED}),
         subject=target,
+        batched=batched,
         text="whenever counters are put on something",
     )
 
@@ -1124,49 +1188,71 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
                 kinds.add(EventKind.SACRIFICED)
             else:
                 stream.reset(look)
-        spec = parse_object_filter(stream)
+        spec, batched = _event_subject(stream)
+        if spec is _UNREADABLE:
+            return None
         if spec is not None:
             return TriggerCondition(
                 event_kinds=frozenset(kinds),
                 subject=spec,
                 players=players,
+                batched=batched,
                 text="whenever a player creates or sacrifices something",
             )
         stream.reset(look)
 
+    look = stream.mark()
     if stream.accept("attack", "attacks"):
         # "Whenever you attack" (CR 506.2, as templated) means the declaration
         # happened, not that any particular creature did - so the trigger
-        # watches the declaration event rather than an attacker.
-        parse_object_filter(stream)
+        # watches the declaration event rather than an attacker. Whatever
+        # follows - "attacks one or more planeswalkers you control" (CR
+        # 508.3e) - narrows it in a way the declaration event cannot be
+        # asked, and is left unread rather than dropped.
+        if stream.peek().kind is not TokenKind.PUNCT:
+            stream.reset(look)
+            return None
         return TriggerCondition(
             event_kinds=frozenset({EventKind.ATTACKERS_DECLARED}),
             players=players,
             text="whenever a player attacks",
         )
     if stream.accept("discard", "discards"):
-        parse_object_filter(stream)
+        # "Whenever an opponent discards *a creature card*" - the card is the
+        # event's object, and dropping it made Waste Not's three abilities
+        # all fire on every discard.
+        spec, batched = _event_subject(stream)
+        if spec is None or spec is _UNREADABLE:
+            return None
         return TriggerCondition(
             event_kinds=frozenset({EventKind.DISCARDED}),
+            subject=spec,
             players=players,
+            batched=batched,
             text="whenever a player discards",
         )
     if stream.accept("sacrifice", "sacrifices"):
-        spec = parse_object_filter(stream)
+        spec, batched = _event_subject(stream)
+        if spec is _UNREADABLE:
+            return None
         return TriggerCondition(
             event_kinds=frozenset({EventKind.SACRIFICED}),
             subject=spec,
             players=players,
+            batched=batched,
             uses_last_known_information=True,
             text="whenever a player sacrifices something",
         )
     if stream.accept("tap", "taps"):
-        spec = parse_object_filter(stream)
+        spec, batched = _event_subject(stream)
+        if spec is _UNREADABLE:
+            return None
         stream.accept_phrase("for mana")
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TAPPED}),
             subject=spec,
             players=players,
+            batched=batched,
             text="whenever a player taps something",
         )
     if stream.accept_phrase("draws a card") or stream.accept("draws"):
