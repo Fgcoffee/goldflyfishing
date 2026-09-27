@@ -123,7 +123,7 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
     except (AttributeError, IndexError):
         return ParsedFace()
 
-    text = normalize(face.oracle_text or "", card_name=face.name)
+    text = normalize(face.oracle_text or "", card_name=face.name, **_self_names(face))
     if not text:
         return ParsedFace()
 
@@ -137,6 +137,26 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
 
     result.abilities = tuple(abilities)
     return result
+
+
+def _self_names(face) -> dict:
+    """What normalization needs to know to find a face's shortened name.
+
+    CR 201.5c: a legendary card may call itself by a shortened name, and a
+    planeswalker's shortened name is also its own planeswalker type - so a
+    face's type line decides which forms of its name are self-references.
+    """
+    from ..rules.kernel.enums import CardType, Supertype
+
+    type_line = getattr(face, "type_line", None)
+    if type_line is None:
+        return {}
+    legendary = bool(type_line.supertypes & Supertype.LEGENDARY)
+    walker = bool(type_line.types & CardType.PLANESWALKER)
+    return {
+        "legendary": legendary,
+        "planeswalker_types": tuple(type_line.subtypes) if walker else (),
+    }
 
 
 def _is_permanent(face) -> bool:
