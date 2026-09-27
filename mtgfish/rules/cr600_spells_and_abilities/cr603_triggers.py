@@ -586,6 +586,9 @@ def condition_met(
         # carries none (CR 120.3).
         return False
 
+    if trigger.from_zones and event.from_zone not in trigger.from_zones:
+        return False
+
     # A counter trigger that names a kind fires for that kind alone: the
     # event carries it in ``data``.
     if trigger.counter_kind and (

@@ -150,6 +150,11 @@ def _trigger(trigger) -> str:
         parts.append(f"(from {source})")
     if trigger.to_player:
         parts.append("(to a player)")
+    if trigger.from_zones:
+        from ..rules.kernel.enums import Zone
+
+        zones = "/".join(Zone(z).name.lower() for z in sorted(trigger.from_zones))
+        parts.append(f"(coming from {zones})")
     if trigger.counter_kind:
         parts.append(f"({trigger.counter_kind} counters)")
     if trigger.each_counter:

@@ -293,3 +293,70 @@ def test_attacking_something_in_particular_is_not_read():
     text = "Whenever an opponent attacks one or more planeswalkers you control, draw a card."
     assert parse_trigger(Stream.of(text)) is None
     assert parse_trigger(Stream.of("Whenever you attack, draw a card.")) is not None
+
+
+# ---------------------------------------------------------------------------
+# Whose graveyard, and from where (CR 400.3, 603.6c)
+# ---------------------------------------------------------------------------
+
+
+def _in_library(board, name: str, player: int):
+    from mtgfish.rules.kernel.enums import Zone
+
+    obj = board.game.create_object(board.db.lookup(name), PlayerId(player), Zone.LIBRARY)
+    board.game.invalidate_characteristics()
+    return obj
+
+
+def test_into_your_graveyard_from_the_battlefield_is_your_creatures(board):
+    """Nether Traitor fired on every opponent's creature dying."""
+    text = "Whenever another creature is put into your graveyard from the battlefield, draw a card."
+    watch(board, text)
+    _lethal(board, board.play("Hill Giant", 1))
+    assert fired(board, text) == 0
+    _lethal(board, board.play("Hill Giant", 0))
+    assert fired(board, text) == 1
+
+
+def test_from_your_library_is_a_mill_not_a_discard(board):
+    text = "Whenever a creature card is put into your graveyard from your library, draw a card."
+    watch(board, text)
+    actions.discard(board.game, board.hand("Hill Giant", 0))
+    assert fired(board, text) == 0
+    from mtgfish.rules.kernel.enums import Zone
+
+    board.game.move_object(_in_library(board, "Hill Giant", 1), Zone.GRAVEYARD)
+    assert fired(board, text) == 0
+    board.game.move_object(_in_library(board, "Hill Giant", 0), Zone.GRAVEYARD)
+    assert fired(board, text) == 1
+
+
+def test_an_opponents_graveyard_from_anywhere(board):
+    text = "Whenever a creature card is put into an opponent's graveyard from anywhere, draw a card."
+    watch(board, text)
+    actions.discard(board.game, board.hand("Hill Giant", 0))
+    assert fired(board, text) == 0
+    actions.discard(board.game, board.hand("Hill Giant", 1))
+    assert fired(board, text) == 1
+
+
+def test_leaving_your_graveyard_is_your_cards(board):
+    """Tormod fired whenever an opponent's card left their graveyard."""
+    text = "Whenever one or more cards leave your graveyard, draw a card."
+    watch(board, text)
+    actions.exile(board.game, board.graveyard("Hill Giant", 1))
+    assert fired(board, text) == 0
+    actions.exile(board.game, board.graveyard("Hill Giant", 0))
+    assert fired(board, text) == 1
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Whenever a creature card is put into your graveyard from the stack, draw a card.",
+        "Whenever a creature card is put into an opponent's graveyard from your library, draw a card.",
+        "Whenever a card leaves their graveyard, draw a card.",
+    ],
+)
+def test_unreadable_origins_and_owners_are_not_read(text):
+    assert parse_trigger(Stream.of(text)) is None

@@ -136,6 +136,11 @@ class TriggerCondition:
     #: combat damage to a blocking creature is combat damage too.
     to_player: bool = False
 
+    #: "Is put into your graveyard *from your library*": the zones the object
+    #: must have come from, read off the event's ``from_zone``. Empty means
+    #: anywhere - "from anywhere" (CR 603.6c) or no origin named.
+    from_zones: frozenset[Zone] = frozenset()
+
     #: CR 700.14: "whenever you expend N" - the EXPENDED event for total N.
     expend: int = 0
 
