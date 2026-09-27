@@ -233,6 +233,16 @@ class Game:
     #: ask about this want "how many" or "did it happen", and a 100-turn
     #: stall-out would otherwise accumulate a lot of nothing.
     turn_history: dict = field(default_factory=dict)
+    #: CR 603.2c: which events happened *at the same time*. Bumped wherever
+    #: one simultaneous action ends and the next begins - each instruction
+    #: of a resolving spell or ability (CR 608.2c), each round of
+    #: state-based actions (CR 704.3), each time triggers are put on the
+    #: stack. A "whenever one or more ..." ability triggers once per value.
+    event_batch: int = 0
+    #: The triggered abilities that said "this ability triggers only once each
+    #: turn" and have triggered this turn, as (object id, ability). Cleared
+    #: with ``turn_history``; a new object is a new id (CR 400.7).
+    triggered_once_this_turn: set = field(default_factory=set)
     #: Permissions (CR 113.6) - the mirror of restrictions. Cached the same
     #: way and invalidated by the same epoch, because both are derived from
     #: the same static abilities.

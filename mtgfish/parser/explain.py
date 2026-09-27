@@ -110,6 +110,10 @@ def explain_card(parsed) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 
+def _one_or_more(rendered: str) -> str:
+    return "one or more " + rendered[4:] if rendered.startswith("all ") else rendered
+
+
 def _trigger(trigger) -> str:
     if trigger is None:
         return "At some time"
@@ -127,6 +131,11 @@ def _trigger(trigger) -> str:
     subject = _filter(trigger.subject) if trigger.subject is not None else ""
     if trigger.subject is not None and trigger.subject.source_only:
         subject = "this permanent"
+    source = _filter(trigger.source) if trigger.source is not None else ""
+    if trigger.batched:
+        # CR 603.2c: the filter has no count - the batch is the quantity.
+        subject = _one_or_more(subject)
+        source = _one_or_more(source)
 
     if subject and events:
         parts = [f"Whenever {subject} {events}"]
@@ -138,7 +147,7 @@ def _trigger(trigger) -> str:
     if trigger.players is not None:
         parts.append(f"(player: {_players(trigger.players)})")
     if trigger.source is not None:
-        parts.append(f"(from {_filter(trigger.source)})")
+        parts.append(f"(from {source})")
     if trigger.to_player:
         parts.append("(to a player)")
     if trigger.counter_kind:
@@ -146,7 +155,7 @@ def _trigger(trigger) -> str:
     if trigger.each_counter:
         parts.append("(once for each counter)")
     if trigger.batched:
-        parts.append("(once for everything that happened at the same time)")
+        parts.append("(once for each batch of simultaneous events)")
     if trigger.phases or trigger.steps:
         from ..rules.kernel.enums import Phase, Step
 

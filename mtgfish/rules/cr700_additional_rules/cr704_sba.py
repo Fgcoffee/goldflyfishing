@@ -56,6 +56,9 @@ def check_state_based_actions(game: Game) -> bool:
         # game next looks at the board, and it runs before any player gets
         # priority, so nothing can observe the combat record in between.
         check_removal_from_combat(game)
+        # CR 704.3: one round is performed simultaneously - every creature
+        # it puts into a graveyard dies at the same time (CR 603.2c).
+        game.event_batch += 1
         if not _one_pass(game):
             break
         did_anything = True
