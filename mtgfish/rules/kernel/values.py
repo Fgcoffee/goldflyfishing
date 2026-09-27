@@ -78,6 +78,9 @@ def evaluate(
             return 0
         return len(_among(game, value.filter, source, controller, remembered))
 
+    if value.filter is not None and kind in _NAMED_OBJECT_VALUES:
+        return _of_named_objects(game, value, source, controller, remembered)
+
     if kind in (ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE):
         obj = game.objects.get(source)
         if obj is None:
@@ -170,6 +173,50 @@ def evaluate(
         remembered=remembered,
         this_way=this_way,
     )
+
+
+#: Characteristics a Value can read off an object its ``filter`` names rather
+#: than off the ability's source.
+_NAMED_OBJECT_VALUES = frozenset(
+    {ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE, ValueKind.COUNTERS}
+)
+
+
+def _of_named_objects(
+    game: Game,
+    value: Value,
+    source: ObjectId,
+    controller: PlayerId,
+    remembered: tuple[ObjectId, ...],
+) -> int:
+    """"Its power", "that card's mana value", "the number of +1/+1 counters
+    on enchanted creature" - a characteristic of the object the text names.
+
+    The object is picked out by the value's filter, so Reanimate's "you lose
+    life equal to that card's mana value" reads the card it returned and not
+    Reanimate itself. A remembered object is asked as it was when the
+    resolution acted on it (CR 608.2h): a creature exiled by Swords to
+    Plowshares is a card in exile now, and "its power" is the power it last
+    had on the battlefield - which is why the pre-move object is kept and
+    read here rather than the one it became.
+
+    Nothing named is zero, as a value about an object that is not there is
+    everywhere else. More than one is their total, which only a filter that
+    names a group can produce.
+    """
+    total = 0
+    for obj in _among(game, value.filter, source, controller, remembered):
+        if value.kind is ValueKind.COUNTERS:
+            total += obj.counter_count(value.counter_type)
+            continue
+        chars = game.characteristics(obj)
+        if value.kind is ValueKind.POWER:
+            total += chars.power or 0
+        elif value.kind is ValueKind.TOUGHNESS:
+            total += chars.toughness or 0
+        else:
+            total += chars.mana_value
+    return total
 
 
 def _among(

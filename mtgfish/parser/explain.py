@@ -424,7 +424,11 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
         # CR 601.2d: divided among the targets is a different card from the
         # same amount to each of them.
         split = " divided among" if effect.divided else " to"
-        return f"deal {amount} damage{split} {objects}"
+        # The dealer, when it is not the ability's source ("it deals damage
+        # equal to its power"): lifelink, deathtouch and "dealt by" all ask
+        # about the dealer.
+        dealer = f"{_filter(effect.damage_source)} " if effect.damage_source else ""
+        return f"{dealer}deal {amount} damage{split} {objects}"
     if kind is EffectKind.PREVENT_DAMAGE:
         # -1 is the "all" sentinel the executor reads; printing it as a number
         # made a Fog read like a card that heals one damage.
