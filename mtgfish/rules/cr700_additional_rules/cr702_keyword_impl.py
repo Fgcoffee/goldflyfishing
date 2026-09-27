@@ -616,6 +616,32 @@ def _mobilize(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Firebending")
+def _firebending(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.189a: "Whenever this creature attacks, add N {R}. Until end of
+    combat, you don't lose this mana as steps and phases end."
+
+    The mana is marked ``END_OF_COMBAT`` and the pool keeps it through the
+    ends of combat's steps. "Firebending X, where X is ..." carries its
+    amount in words no builder reads, and stays unread.
+    """
+    n = max(1, instance.amount)
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.ADD_MANA,
+                players=YOU,
+                amount=Value.of(n),
+                colors=Color.RED,
+                mana_produced=("{R}",) * n,
+                duration=int(Duration.END_OF_COMBAT),
+                text=f"add {'{R}' * n}",
+            ),
+        ),
+    )
+
+
 @register("Flanking")
 def _flanking(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.25a: "Whenever this creature becomes blocked by a creature
@@ -1539,14 +1565,13 @@ UNIMPLEMENTED_COMBAT_KEYWORDS = {
     "undaunted": "CR 702.125a: costs {1} less for each opponent",
     "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
     "provoke": "CR 702.39a: untap a creature and force it to block",
-    "firebending": "CR 702.189a: add N {R} whenever it attacks, kept until end of combat",
     "increment": "CR 702.191a: a counter when a spell cast costs more than its power or toughness",
     "intensity": "a digital intensity counter mechanic",
 }
 
 
 @register("Frenzy", "Renown", "Enlist",
-          "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke", "Firebending",
+          "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke",
           "Increment", "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
     """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""

@@ -563,6 +563,9 @@ def _add_mana(effect: Effect, who: str, amount: str) -> str:
     if effect.mana_restriction is not None:
         key = getattr(effect.mana_restriction, "key", "") or "a restricted use"
         text += f" (spend only on {key})"
+    if effect.duration == int(Duration.END_OF_COMBAT):
+        # CR 702.189a: the executor keeps this mana through combat's steps.
+        text += " (not lost as steps and phases end until end of combat)"
     return text
 
 

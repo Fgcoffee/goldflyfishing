@@ -219,3 +219,54 @@ def test_mobilize_sacrifices_the_tokens_at_the_next_end_step(board):
     board.resolve_stack()
     # Only the token goes: "them" is what the mobilize trigger created.
     assert board.alive(0) == ["Grizzly Bears", "Llanowar Elves"]
+
+
+# ---------------------------------------------------------------------------
+# Firebending (CR 702.189a)
+# ---------------------------------------------------------------------------
+
+
+def test_firebending_adds_red_mana_when_it_attacks(board):
+    board.scripts.add("Grizzly Bears", *kw("Firebending", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    _attack_in_combat(board, {bears.id: 1})
+    pool = board.game.player(PlayerId(0)).mana_pool
+    assert pool.total == 2
+    from mtgfish.rules.kernel.enums import Color
+
+    assert pool.amount_of(Color.RED) == 2
+
+
+def test_firebending_mana_lasts_until_end_of_combat_and_no_longer(board):
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.cr500_turn_structure.cr500_turn import _empty_mana_pools
+    from mtgfish.rules.kernel.enums import Color, Step
+
+    board.scripts.add("Grizzly Bears", *kw("Firebending", amount=1))
+    bears = board.play("Grizzly Bears", controller=0)
+    _attack_in_combat(board, {bears.id: 1})
+    pool = board.game.player(PlayerId(0)).mana_pool
+    # Ordinary mana made in the same step is lost as usual (CR 500.5).
+    pool.add(ManaKind(Color.GREEN), 1)
+
+    _empty_mana_pools(board.game, Step.DECLARE_ATTACKERS)
+    assert pool.amount_of(Color.RED) == 1
+    assert pool.amount_of(Color.GREEN) == 0
+    _empty_mana_pools(board.game, Step.COMBAT_DAMAGE)
+    assert pool.amount_of(Color.RED) == 1
+    _empty_mana_pools(board.game, Step.END_OF_COMBAT)
+    assert pool.total == 0
+
+
+def test_firebending_mana_spends_like_red_mana(board):
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost, can_pay
+    from mtgfish.rules.kernel.enums import Color
+
+    board.scripts.add("Grizzly Bears", *kw("Firebending", amount=1))
+    bears = board.play("Grizzly Bears", controller=0)
+    _attack_in_combat(board, {bears.id: 1})
+    pool = board.game.player(PlayerId(0)).mana_pool
+    (kind,) = pool.buckets
+    assert kind.color == Color.RED and kind.until_end_of_combat
+    assert can_pay(pool, ManaCost.parse("{R}"))
+    assert not can_pay(pool, ManaCost.parse("{G}"))
