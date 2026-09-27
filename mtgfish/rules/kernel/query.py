@@ -775,6 +775,8 @@ class ObjectFilter:
                 self.entered_this_turn,
             ),
             ("summoning sick", "not summoning sick", self.summoning_sick),
+            # On the stack: an ability, or a spell and not an ability.
+            ("that is an ability", "that is a spell", self.is_ability),
         )
         for yes, no, value in flags:
             if value is True:

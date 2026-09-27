@@ -209,6 +209,7 @@ def execute_plan(game: Game, player_id: PlayerId, plan: list[ManaOption]) -> Non
                 if option.modes
                 else (),
                 mana_color=option.color,
+                tapped_for_mana=ability.cost.requires_tapping,
             ),
             ability.effects,
         )

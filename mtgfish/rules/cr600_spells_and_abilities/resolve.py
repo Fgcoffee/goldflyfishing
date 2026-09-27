@@ -75,6 +75,10 @@ class Resolution:
     #: The event a triggered ability triggered on, for a resolution with no
     #: stack object to carry it - a triggered mana ability (CR 605.4a).
     trigger_event: object | None = None
+    #: CR 106.12: this is a mana ability with {T} in its cost resolving - its
+    #: permanent is being "tapped for mana". The first mana it adds says so
+    #: (CR 106.12a); cleared once said, so one activation is one event.
+    tapped_for_mana: bool = False
     #: The players an earlier instruction of this resolution targeted, for
     #: "that player" after "target player ..." (``PlayerScope.CHOSEN_PLAYER``).
     chosen_players: list[PlayerId] = field(default_factory=list)
@@ -1983,8 +1987,20 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
         player.mana_pool.add(
             ManaKind(snow=snow, restriction=effect.mana_restriction), amount
         )
+    # CR 106.12a: "whenever [a permanent] is tapped for mana" triggers when
+    # such a mana ability resolves and produces mana. The event is about that
+    # permanent only then; mana added any other way - a triggered ability's
+    # "adds an additional {G}", a spell - names no permanent, so it cannot
+    # set those abilities off again.
+    tapped = resolution.tapped_for_mana
+    resolution.tapped_for_mana = False
     game.emit(
-        Event(EventKind.MANA_ADDED, player=resolution.controller, source=resolution.source)
+        Event(
+            EventKind.MANA_ADDED,
+            object_id=resolution.source if tapped else NO_OBJECT,
+            player=resolution.controller,
+            source=resolution.source,
+        )
     )
 
 
