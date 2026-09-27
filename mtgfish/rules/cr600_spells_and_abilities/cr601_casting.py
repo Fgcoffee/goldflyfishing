@@ -172,15 +172,17 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         # 601.2b: choose modes and X. The caller may have announced the modes
         # already; when it has not, the controller is asked, because a modal
         # spell whose modes nobody chose does nothing at all (CR 700.2).
+        # CR 601.2b: optional additional costs are chosen here, and whether
+        # they were is a fact the spell carries for the rest of its life -
+        # kicker riders read it on resolution. It is recorded before the
+        # modes because "If this spell was kicked, choose any number
+        # instead" decides how many modes may be chosen.
+        spell.additional_costs_paid = tuple(action.additional_costs)
         spell.chosen_modes = choose_modes(
             game, spell, spell_effects(game, spell), player_id,
             announced=action.mode_choices,
         )
         spell.x_value = action.x_value
-        # CR 601.2b: optional additional costs are chosen here, and whether
-        # they were is a fact the spell carries for the rest of its life -
-        # kicker riders read it on resolution.
-        spell.additional_costs_paid = tuple(action.additional_costs)
 
         # 601.2c-d: choose targets, and divide anything that needs dividing.
         # The caller may have chosen them already - a scripted test does, and
@@ -519,6 +521,8 @@ def choose_modes(
     modal = modal_effect(effects)
     if modal is None:
         return ()
+    identifier = source.id if source is not None else source_id
+    modal = _upgraded_header(game, modal, identifier, player_id)
     available = legal_modes(game, source, modal, player_id)
     if not available:
         return ()
@@ -541,12 +545,40 @@ def choose_modes(
         (index, modal.children[index], mode_weight(modal, index))
         for index in available
     ]
-    identifier = source.id if source is not None else source_id
     return _cleaned_modes(
         chooser(game, player_id, identifier, options, budget),
         available,
         modal,
         budget,
+    )
+
+
+def _upgraded_header(
+    game: Game, modal: Effect, source_id: int, player_id: PlayerId
+) -> Effect:
+    """The header in force as the modes are chosen (CR 700.2, 601.2b).
+
+    "Choose one. If you control a commander as you cast this spell, you may
+    choose both instead" is asked now, while the spell is being cast or the
+    ability put on the stack; once chosen, the modes stay chosen whatever
+    happens to the condition afterwards (Jeska's Will's rulings).
+    """
+    if not modal.modes_instead:
+        return modal
+    from dataclasses import replace
+
+    from ..kernel.conditions import holds
+    from ..kernel.query import Value
+
+    condition, budget, up_to, at_least = modal.modes_instead
+    if not holds(game, condition, source=source_id, controller=player_id):
+        return modal
+    return replace(
+        modal,
+        amount=Value.of(budget),
+        modes_up_to=up_to,
+        modes_at_least=at_least,
+        modes_instead=(),
     )
 
 

@@ -750,7 +750,9 @@ def _activation_sentence(stream: Stream) -> None:
     stream.skip_punct(".")
 
 
-def _mode_header(stream: Stream, modes: int) -> dict | None:
+def _mode_header(
+    stream: Stream, modes: int, *, is_spell: bool = False
+) -> dict | None:
     """How many modes the instruction asks for (CR 700.2, 700.2d).
 
     Returns the CHOOSE_MODE fields the header sets, or ``None`` for a header
@@ -763,11 +765,38 @@ def _mode_header(stream: Stream, modes: int) -> dict | None:
     - "choose one or both" / "choose one or more": at least one, at most all
     - "choose any number": at most all, possibly none (Rankle's rulings)
     - then optionally "You may choose the same mode more than once." (700.2d)
+    - or an upgrade: "If <condition>, [you may] choose both instead."
     """
     from ..rules.kernel.query import Value
 
     if not stream.accept("choose"):
         return None
+    counted = _mode_count(stream, modes)
+    if counted is None:
+        return None
+    count, fields = counted
+    if count != 1 or fields:
+        fields["amount"] = Value.of(count)
+    if stream.at(".") and stream.peek(1).lower == "you":
+        stream.next()
+        if not stream.accept_phrase("you may choose the same mode more than once"):
+            return None
+        fields["modes_may_repeat"] = True
+    elif stream.at(".") and stream.peek(1).lower == "if":
+        stream.next()
+        instead = _mode_upgrade(stream, modes, count, fields, is_spell=is_spell)
+        if instead is None:
+            return None
+        fields["modes_instead"] = instead
+    stream.skip_punct(".", "-", "--")
+    if not fields.get("modes_may_repeat") and count > modes:
+        # More modes demanded than printed, with no licence to repeat one.
+        return None
+    return fields
+
+
+def _mode_count(stream: Stream, modes: int) -> tuple[int, dict] | None:
+    """The number in a modal header, as a budget and the fields it sets."""
     fields: dict = {}
     if stream.accept_phrase("up to"):
         count = stream.accept_number()
@@ -785,28 +814,82 @@ def _mode_header(stream: Stream, modes: int) -> dict | None:
     elif stream.accept_phrase("any number"):
         count = modes
         fields.update(modes_up_to=True)
+    elif stream.accept("both"):
+        if modes != 2:
+            return None
+        count = 2
     else:
         count = stream.accept_number()
         if count is None or count < 1:
             return None
-    if count != 1 or fields:
-        fields["amount"] = Value.of(count)
-    if stream.at(".") and stream.peek(1).lower == "you":
-        stream.next()
-        if not stream.accept_phrase("you may choose the same mode more than once"):
-            return None
-        fields["modes_may_repeat"] = True
-    stream.skip_punct(".", "-", "--")
-    if not fields.get("modes_may_repeat") and count > modes:
-        # More modes demanded than printed, with no licence to repeat one.
+    return count, fields
+
+
+def _mode_upgrade(
+    stream: Stream, modes: int, count: int, fields: dict, *, is_spell: bool
+) -> tuple | None:
+    """"If <condition>, [you may] choose both instead." (CR 700.2).
+
+    Returns ``(condition, budget, up_to, at_least)`` for the header that
+    replaces the printed one when the condition holds as the modes are
+    chosen - which for a spell is as it is cast, the moment "as you cast this
+    spell" names. "You may choose both instead" keeps the printed count as a
+    floor: the player may still choose one.
+
+    Only conditions this grammar reads exactly are accepted. The general
+    condition reader turns "you control an artifact and an enchantment"
+    into "... or ...", and a mode choice widened on the wrong condition is
+    a card doing something it does not allow.
+    """
+    from ..rules.kernel.query import Condition, ConditionKind
+    from .clauses import parse_condition_text
+
+    if not stream.accept("if"):
         return None
-    return fields
+    if stream.accept_phrase("this spell was kicked"):
+        if not is_spell:
+            return None
+        condition = Condition(
+            kind=ConditionKind.WAS_KICKED, text="this spell was kicked"
+        )
+    elif stream.at_phrase("you control a commander"):
+        condition = parse_condition_text(stream)
+        if condition is None:
+            return None
+        if stream.at_phrase("as you cast this spell"):
+            if not is_spell:
+                return None
+            stream.accept_phrase("as you cast this spell")
+    else:
+        return None
+    stream.skip_punct(",")
+    optional = stream.accept_phrase("you may")
+    if not stream.accept("choose"):
+        return None
+    counted = _mode_count(stream, modes)
+    if counted is None or not stream.accept("instead"):
+        return None
+    upgraded, upgraded_fields = counted
+    if fields or upgraded > modes or upgraded <= count:
+        return None
+    if optional:
+        if upgraded_fields:
+            # "you may choose any number instead" does not say whether the
+            # printed one is still owed; nothing prints it.
+            return None
+        return (condition, upgraded, True, count)
+    return (
+        condition,
+        upgraded,
+        upgraded_fields.get("modes_up_to", False),
+        upgraded_fields.get("modes_at_least", 0),
+    )
 
 
 def _modal(line: Line, result: ParsedFace) -> list[Ability]:
     """CR 700.2: a modal spell, whose modes are chosen on announcement."""
     stream = Stream.of(line.text)
-    header = _mode_header(stream, len(line.modes))
+    header = _mode_header(stream, len(line.modes), is_spell=True)
     if header is None or not stream.done:
         result.failures.append(
             ParseFailure(
