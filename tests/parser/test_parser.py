@@ -468,3 +468,102 @@ def test_a_spell_records_the_additional_costs_it_paid(card_db):
     from mtgfish.rules.kernel.gameobject import GameObject
 
     assert "additional_costs_paid" in GameObject.__slots__
+
+
+# ---------------------------------------------------------------------------
+# Self-reference (CR 201.5, 201.5c) and flavor words (CR 207.2d)
+# ---------------------------------------------------------------------------
+
+
+def test_an_alchemy_rebalance_calls_itself_by_the_original_name():
+    text = normalize("When Elderleaf Mentor enters, draw a card.", card_name="A-Elderleaf Mentor")
+    assert text == "When this enters, draw a card."
+
+
+def test_a_legend_may_shorten_its_name_from_the_front():
+    text = normalize(
+        "When Loran enters, draw a card.", card_name="Loran of the Third Path", legendary=True
+    )
+    assert text == "When this enters, draw a card."
+    two = normalize(
+        "When Rosie Cotton enters, create a Food token.",
+        card_name="Rosie Cotton of South Lane",
+        legendary=True,
+    )
+    assert two.startswith("When this enters")
+
+
+def test_a_shortened_name_is_only_for_legends():
+    text = normalize("Create a 1/1 Goblin token.", card_name="Goblin Gathering")
+    assert "Goblin" in text
+
+
+def test_a_short_name_that_starts_another_name_is_left_alone():
+    """"Tuktuk the Returned" and "Nissa's Chosen" are other cards."""
+    text = normalize(
+        "When this dies, create Tuktuk the Returned, a legendary 5/5 token.",
+        card_name="Tuktuk the Explorer",
+        legendary=True,
+    )
+    assert "Tuktuk the Returned" in text
+    text = normalize(
+        "Search your library for a card named Nissa's Chosen.",
+        card_name="Nissa Revane",
+        legendary=True,
+        planeswalker_types=("Nissa",),
+    )
+    assert "Nissa's Chosen" in text
+
+
+def test_a_short_name_used_as_a_type_is_left_alone():
+    walker = normalize(
+        "As long as you control a Gideon planeswalker, you can't lose. Gideon deals 1 damage.",
+        card_name="Gideon of the Trials",
+        legendary=True,
+        planeswalker_types=("Gideon",),
+    )
+    assert "a Gideon planeswalker" in walker
+    assert "this deals 1 damage" in walker
+    sliver = normalize(
+        "Create a 1/1 colorless Sliver creature token.", card_name="Sliver Queen", legendary=True
+    )
+    assert "Sliver creature" in sliver
+    comma = normalize(
+        'Planeswalkers you control have "+1: Put a loyalty counter on each Garruk you control."',
+        card_name="Garruk, Cursed Huntsman",
+        legendary=True,
+    )
+    assert "each Garruk you control" in comma
+
+
+def test_a_name_ending_in_punctuation_is_found():
+    text = normalize(
+        "Blood for the Blood God! deals 8 damage to each opponent.",
+        card_name="Blood for the Blood God!",
+    )
+    assert text == "this deals 8 damage to each opponent."
+
+
+def test_slashes_inside_a_name_do_not_split_it():
+    text = normalize("When SP//dr enters, draw a card.", card_name="SP//dr, Piloted by Peni", legendary=True)
+    assert text == "When this enters, draw a card."
+
+
+def test_flavor_words_are_dropped():
+    assert (
+        normalize("Keen Senses — When this creature enters, draw a card.", card_name="X")
+        == "When this creature enters, draw a card."
+    )
+    assert normalize("I — Aerospark — Exile target creature.", card_name="X") == (
+        "I - Exile target creature."
+    )
+
+
+def test_a_label_that_is_not_flavor_is_kept():
+    # Keywords with dash costs, sentences, and a label the card refers to.
+    assert normalize("Ward—Pay 2 life.", card_name="X") == "Ward - Pay 2 life."
+    assert normalize("To solve — You control seven or more lands.", card_name="X").startswith(
+        "To solve - "
+    )
+    kept = normalize("Prize — Create two Treasure tokens. Then claim the prize!", card_name="X")
+    assert kept.startswith("Prize - ")
