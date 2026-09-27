@@ -578,9 +578,13 @@ def _cleaned_modes(
             continue
         kept.append(index)
         spent += cost
-    if modal.modes_up_to:
+    if modal.modes_up_to and len(kept) >= modal.modes_at_least:
         return tuple(kept)
     for index in available:
+        if modal.modes_up_to and len(kept) >= modal.modes_at_least:
+            # CR 700.2: "choose one or more" is topped up to its floor of
+            # one, not to its ceiling - the rest was the player's to decline.
+            break
         if not modal.modes_may_repeat and index in kept:
             continue
         cost = mode_weight(modal, index)

@@ -471,6 +471,12 @@ class Effect:
     #: ceiling, not a requirement. Plain "choose one" is not up-to: a mode has
     #: to be chosen where a legal one exists.
     modes_up_to: bool = False
+    #: CR 700.2: the floor under an up-to budget. "Choose one or both" and
+    #: "choose one or more" are up-to choices that still demand one mode;
+    #: "choose any number" and "choose up to one" demand none. Zero, and
+    #: meaningless, when ``modes_up_to`` is not set: the budget is then both
+    #: the floor and the ceiling.
+    modes_at_least: int = 0
     #: The "otherwise" branch of a CONDITIONAL.
     otherwise: tuple[Effect, ...] = ()
 

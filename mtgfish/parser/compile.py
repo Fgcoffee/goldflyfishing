@@ -685,14 +685,27 @@ def _modal_effects(line: Line, stream: Stream, result: ParsedFace):
     two-thirds right - it is a card that can make a choice the engine cannot
     carry out.
     """
-    # Consume the header up to the dash rather than listing the words it may
-    # contain. "choose one or more" broke a word list that knew "one", "or"
-    # and "both" but not "more", and the next set will invent another one.
-    while not stream.done:
-        if stream.peek().text in ("-", "--"):
-            stream.next()
-            break
-        stream.next()
+    # The header is read, not skipped. Skipping to the dash made every
+    # "choose two", "choose one or both" and "choose up to one" a "choose
+    # one", and swallowed whatever else stood between the trigger and the
+    # dash ("you may pay {1}. When you do, choose one").
+    header = _mode_header(stream, len(line.modes))
+    if header is not None and line.kind is LineKind.ACTIVATED:
+        # CR 602.5b: "Choose one. Activate only once each turn." The
+        # restriction was already read off the effect text by
+        # ``_activation_condition``, which fails the ability when it cannot.
+        _activation_sentence(stream)
+    if header is None or not stream.done:
+        result.failures.append(
+            ParseFailure(
+                line.text,
+                "unreadable modal header",
+                consumed=stream.pos,
+                remaining=stream.remaining(),
+                rule="modal",
+            )
+        )
+        return None
 
     children: list[Effect] = []
     for mode in line.modes:
@@ -713,15 +726,98 @@ def _modal_effects(line: Line, stream: Stream, result: ParsedFace):
             Effect(EffectKind.SEQUENCE, children=tuple(parsed), text=mode)
         )
 
-    if not stream.done:
-        return None
     return [
-        Effect(EffectKind.CHOOSE_MODE, children=tuple(children), text=line.text)
+        Effect(
+            EffectKind.CHOOSE_MODE,
+            children=tuple(children),
+            text=line.text,
+            **header,
+        )
     ]
+
+
+def _activation_sentence(stream: Stream) -> None:
+    """Consume an "Activate only ..." sentence, which compile reads itself."""
+    mark = stream.mark()
+    if not stream.accept("activate"):
+        return
+    stream.accept_phrase("this ability")
+    if not stream.accept("only"):
+        stream.reset(mark)
+        return
+    while not stream.done and stream.peek().text != ".":
+        stream.next()
+    stream.skip_punct(".")
+
+
+def _mode_header(stream: Stream, modes: int) -> dict | None:
+    """How many modes the instruction asks for (CR 700.2, 700.2d).
+
+    Returns the CHOOSE_MODE fields the header sets, or ``None`` for a header
+    the engine cannot honour. Every word is accounted for: "choose one that
+    hasn't been chosen this turn" is not "choose one", and a header read as
+    something it does not say chooses modes the card does not allow.
+
+    - "choose one" / "choose two" / "choose three": exactly that many
+    - "choose up to N": at most N, possibly none
+    - "choose one or both" / "choose one or more": at least one, at most all
+    - "choose any number": at most all, possibly none (Rankle's rulings)
+    - then optionally "You may choose the same mode more than once." (700.2d)
+    """
+    from ..rules.kernel.query import Value
+
+    if not stream.accept("choose"):
+        return None
+    fields: dict = {}
+    if stream.accept_phrase("up to"):
+        count = stream.accept_number()
+        if count is None or count < 1:
+            return None
+        fields.update(modes_up_to=True)
+    elif stream.accept_phrase("one or both"):
+        if modes != 2:
+            return None
+        count = 2
+        fields.update(modes_up_to=True, modes_at_least=1)
+    elif stream.accept_phrase("one or more"):
+        count = modes
+        fields.update(modes_up_to=True, modes_at_least=1)
+    elif stream.accept_phrase("any number"):
+        count = modes
+        fields.update(modes_up_to=True)
+    else:
+        count = stream.accept_number()
+        if count is None or count < 1:
+            return None
+    if count != 1 or fields:
+        fields["amount"] = Value.of(count)
+    if stream.at(".") and stream.peek(1).lower == "you":
+        stream.next()
+        if not stream.accept_phrase("you may choose the same mode more than once"):
+            return None
+        fields["modes_may_repeat"] = True
+    stream.skip_punct(".", "-", "--")
+    if not fields.get("modes_may_repeat") and count > modes:
+        # More modes demanded than printed, with no licence to repeat one.
+        return None
+    return fields
 
 
 def _modal(line: Line, result: ParsedFace) -> list[Ability]:
     """CR 700.2: a modal spell, whose modes are chosen on announcement."""
+    stream = Stream.of(line.text)
+    header = _mode_header(stream, len(line.modes))
+    if header is None or not stream.done:
+        result.failures.append(
+            ParseFailure(
+                line.text,
+                "unreadable modal header",
+                consumed=stream.pos,
+                remaining=stream.remaining(),
+                rule="modal",
+            )
+        )
+        return [Ability.unreadable(line.text)]
     children: list[Effect] = []
     for mode in line.modes:
         stream = Stream.of(mode)
@@ -743,7 +839,12 @@ def _modal(line: Line, result: ParsedFace) -> list[Ability]:
 
     return [
         Ability.spell(
-            Effect(EffectKind.CHOOSE_MODE, children=tuple(children), text=line.text),
+            Effect(
+                EffectKind.CHOOSE_MODE,
+                children=tuple(children),
+                text=line.text,
+                **header,
+            ),
             text=line.text,
         )
     ]

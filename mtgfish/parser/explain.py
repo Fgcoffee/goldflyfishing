@@ -761,7 +761,13 @@ def _mode_choice(effect: Effect) -> str:
     count = _amount(effect.amount) if not (
         effect.amount.is_constant and effect.amount.constant in (0, 1)
     ) else "one"
-    text = f"choose {'up to ' if effect.modes_up_to else ''}{count}"
+    if effect.modes_up_to and effect.modes_at_least > 0:
+        # CR 700.2: a floor as well as a ceiling - "choose one or both",
+        # "choose one or more".
+        floor = _amount(Value.of(effect.modes_at_least))
+        text = f"choose at least {floor} and up to {count}"
+    else:
+        text = f"choose {'up to ' if effect.modes_up_to else ''}{count}"
     if effect.mode_weights and any(w != 1 for w in effect.mode_weights):
         text += f" (mode costs {list(effect.mode_weights)})"
     if effect.modes_may_repeat:
