@@ -12,7 +12,7 @@ from __future__ import annotations
 from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
 from ..rules.cr100_game_concepts.cr118_costs import EXILE_ZONES, Cost, CostComponent, CostKind
 from ..rules.kernel.query import ObjectFilter, Value
-from .nouns import SELF_NOUNS, parse_object_filter, parse_value
+from .nouns import SELF_NOUNS, chosen_count, parse_object_filter, parse_value
 from .tokens import Stream, TokenKind
 
 SELF = ObjectFilter(source_only=True)
@@ -112,7 +112,7 @@ def _tap_other(stream: Stream) -> CostComponent | None:
     tapping = stream.tokens[mark].lower == "tap"
 
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec):
         stream.reset(mark)
         return None
     return CostComponent(
@@ -253,7 +253,7 @@ def _sacrifice(stream: Stream) -> CostComponent | None:
             text="sacrifice this",
         )
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec):
         return None
     # "Sacrifice *two* creatures" - the count lives on the noun phrase, as it
     # does for an exile cost. Charged as one, every such cost was half price
@@ -290,6 +290,8 @@ def _discard(stream: Stream) -> CostComponent | None:
         )
     amount = parse_value(stream) or Value.of(1)
     spec = parse_object_filter(stream)
+    if spec is not None and chosen_count(spec):
+        return None
     if spec is None and not stream.accept("card", "cards"):
         return None
     # "at random" says *how* the card is chosen (CR 701.9b): the game picks,
@@ -368,7 +370,7 @@ def _exile_from_zone(stream: Stream) -> CostComponent | None:
         # disagreeing about its tail is how "Exile this card from your hand"
         # became an unreadable cost.
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec):
         stream.reset(mark)
         return None
     # The zone was hardcoded to the graveyard, so Force of Will - "exile a
@@ -411,7 +413,7 @@ def _return_to_hand(stream: Stream) -> CostComponent | None:
     if not stream.accept("return"):
         return None
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec):
         stream.reset(mark)
         return None
     if not (

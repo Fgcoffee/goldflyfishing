@@ -339,6 +339,8 @@ def _narrowed_to_count(
     keeps a replay reproducible.
     """
     spec = effect.targets
+    if spec is not None and spec.count is None and spec.up_to and matching:
+        return _any_number_of(resolution.game, resolution.controller, effect, matching)
     if spec is None or spec.count is None or len(matching) <= 1:
         return matching
     wanted = _value_of(resolution, spec.count)
@@ -359,6 +361,26 @@ def _narrowed_to_count(
         if len(kept) == wanted:
             return kept
     return matching[:wanted]
+
+
+def _any_number_of(
+    game, player_id: PlayerId, effect: Effect, matching: list[GameObject]
+) -> list[GameObject]:
+    """"Sacrifice any number of lands", "exile any number of creature cards
+    from your graveyard": the player picks how many, from none to all of them
+    (CR 107.1c), as the effect resolves (CR 608.2d).
+
+    The agent is asked with the whole matching set as the ceiling, and any
+    subset it returns - including none - is the choice. With no agent to ask,
+    all of them are taken, as the largest number "up to N" takes.
+    """
+    chooser = getattr(game.agent_for(player_id), "choose_objects", None)
+    if chooser is None:
+        return matching
+    picked = chooser(game, player_id, effect, list(matching), len(matching))
+    if picked is None:
+        return matching
+    return [obj for obj in matching if obj in picked]
 
 
 def _value_of(resolution: Resolution, value) -> int:
@@ -727,6 +749,8 @@ def _sacrifice_choice(
     mana value and then id, the default sacrifice costs use too.
     """
     spec = effect.targets
+    if spec.count is None and spec.up_to and theirs:
+        return _any_number_of(resolution.game, player_id, effect, theirs)
     if spec.count is None:
         return theirs
     wanted = _value_of(resolution, spec.count)
@@ -1960,12 +1984,27 @@ def _do_search_library(resolution: Resolution, effect: Effect) -> None:
     The library is a hidden, *ordered* zone, so a search is followed by a
     shuffle (CR 701.23) - otherwise the searcher would learn the order of what
     they left behind.
+
+    How many: the amount ("a card" is one, "up to two" is two - CR 701.23b
+    lets the searcher find fewer of a stated quality, and the default finds
+    as many as it can). "Any number of" has no amount; the player picks from
+    everything that matches (CR 107.1c).
+
+    Where to: the effect's zone. The library is zone 0, so it is compared
+    with ``None`` rather than tested for truth - a test for truth sent every
+    "then shuffle and put that card on top" tutor to the hand. A card bound
+    for the top is put there *after* the shuffle, which is the order those
+    tutors print. "Put one onto the battlefield tapped and the other into
+    your hand" (``other to hand``) sends the first card found to the
+    battlefield and the rest to the hand.
     """
     from ..kernel.matching import matches
 
     game = resolution.game
+    spec = effect.targets
+    any_number = spec is not None and spec.count is None and spec.up_to
     wanted = max(1, _amount(resolution, effect))
-    destination = effect.zone or Zone.HAND
+    destination = effect.zone if effect.zone is not None else Zone.HAND
 
     for player_id in _players(resolution, effect):
         player = game.player(player_id)
@@ -1974,27 +2013,46 @@ def _do_search_library(resolution: Resolution, effect: Effect) -> None:
             obj = game.objects.get(object_id)
             if obj is None:
                 continue
-            if effect.targets is None or matches(
-                game, obj, effect.targets, source=resolution.source, controller=player_id
+            if spec is None or matches(
+                game, obj, spec, source=resolution.source, controller=player_id
             ):
                 found.append(obj)
-            if len(found) >= wanted:
+            if not any_number and len(found) >= wanted:
                 break
+        if any_number and found:
+            found = _any_number_of(game, player_id, effect, found)
 
         # "Search your library for a basic land card, put it onto the
         # battlefield *tapped*" (CR 614.1c). Every ramp spell in the format
         # says it, and a land that arrives untapped is a full turn of mana the
         # deck does not have.
-        tapped = "tapped" in effect.keywords and destination is Zone.BATTLEFIELD
-        for obj in found:
-            moved = game.move_object(obj, destination, to_player=player_id)
-            if tapped and moved.zone is Zone.BATTLEFIELD:
+        tapped = "tapped" in effect.keywords
+        on_top: list[GameObject] = []
+        for index, obj in enumerate(found):
+            where = destination
+            if "other to hand" in effect.keywords and index > 0:
+                where = Zone.HAND
+            if where is Zone.LIBRARY:
+                on_top.append(obj)
+                continue
+            moved = game.move_object(obj, where, to_player=player_id)
+            if tapped and where is Zone.BATTLEFIELD and moved.zone is Zone.BATTLEFIELD:
                 # A replacement effect may have sent it somewhere else.
                 moved.tapped = True
         game.emit(
             Event(EventKind.SEARCHED_LIBRARY, player=player_id, amount=len(found))
         )
-        game.shuffle_library(player_id)
+        if on_top:
+            # "Then shuffle and put that card on top": set the card aside,
+            # shuffle the rest, and put it back on top.
+            for obj in on_top:
+                player.library.remove(obj.id)
+            game.shuffle_library(player_id)
+            for obj in reversed(on_top):
+                player.library.insert(0, obj.id)
+        else:
+            game.shuffle_library(player_id)
+        resolution.remembered = [obj.id for obj in found]
 
 
 def _do_shuffle(resolution: Resolution, effect: Effect) -> None:
