@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 
 from ..kernel.enums import CardType, Color, Supertype, Zone
-from ..kernel.query import ALWAYS, ZERO, Condition, ObjectFilter, PlayerFilter, Value
+from ..kernel.query import ALWAYS, ZERO, Condition, ObjectFilter, PlayerFilter, PlayerScope, Value
 
 
 class EffectKind(IntEnum):
@@ -571,6 +571,41 @@ class Effect:
     @property
     def is_continuous(self) -> bool:
         return self.kind in CONTINUOUS_KINDS
+
+    @property
+    def targets_its_player(self) -> bool:
+        """Whether the target is the *player*, with ``targets`` describing
+        what of theirs the instruction acts on.
+
+        "Target player sacrifices a creature", "exile target player's
+        graveyard", "look at target opponent's hand": the word "target"
+        belongs to the player (CR 115.1), who is chosen as the spell or
+        ability goes on the stack (CR 601.2c). The creature, graveyard or hand
+        is not a target - it is found, or chosen by that player, as the
+        instruction is carried out (CR 608.2d).
+        """
+        return (
+            self.is_targeted
+            and self.targets is not None
+            and self.players is not None
+            and self.players.scope in (PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT)
+        )
+
+    @property
+    def targets_a_player(self) -> bool:
+        """Whether this instruction's target is a player and only a player."""
+        return self.is_targeted and (self.targets is None or self.targets_its_player)
+
+    @property
+    def target_optional(self) -> bool:
+        """"Up to one target ...": the target may be left unchosen (CR 601.2c).
+        A player named as the target is never optional however many of their
+        objects the instruction then acts on."""
+        return (
+            self.targets is not None
+            and self.targets.up_to
+            and not self.targets_its_player
+        )
 
     def walk(self):
         """Yield this effect and every descendant."""

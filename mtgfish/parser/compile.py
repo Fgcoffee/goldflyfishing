@@ -1247,6 +1247,48 @@ def _finish(
     return _bound(text, build(effects), result, rule=rule)
 
 
+def _other_than_an_earlier_target(effects) -> bool:
+    """"Target creature gets +3/+3, up to one other target creature gets
+    +2/+2": after a target, "other" means other than *that target* (CR 115.3
+    lets one object be chosen for each instance of the word "target"
+    unless the card says otherwise). The filter can only say "other than
+    this object's source", which on a spell excludes nothing - so the same
+    creature could be chosen twice. Refused rather than read that way; with
+    no earlier target ("exile up to one other target creature") the word
+    means the source and is read.
+
+    One "target" word shared by several verbs ("another target creature you
+    control gains trample and gets +X/+X") is split into nodes that share
+    the one filter object, and those are one target, not two: only a filter
+    other than the ones already met counts as an earlier target. A player
+    chosen as the target ("target player sacrifices a creature") is not a
+    creature that "other" could be distinct from.
+    """
+
+    def visit(nodes, seen: tuple) -> tuple[bool, tuple]:
+        for node in nodes:
+            if node.kind is EffectKind.CHOOSE_MODE and node.children:
+                # Each mode is its own set of instructions; the modes chosen
+                # together are not "other" than one another's targets.
+                for mode in node.children:
+                    found, _ = visit((mode,), seen)
+                    if found:
+                        return True, seen
+                continue
+            if node.is_targeted and node.targets is not None and not node.targets_a_player:
+                spec = node.targets
+                if spec.other_than_source and any(earlier is not spec for earlier in seen):
+                    return True, seen
+                if not any(earlier is spec for earlier in seen):
+                    seen = seen + (spec,)
+            found, seen = visit(node.children + node.otherwise, seen)
+            if found:
+                return True, seen
+        return False, seen
+
+    return visit(effects, ())[0]
+
+
 def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:
     """The ability with its references settled: "its power" and "that
     card's mana value" to the object they mean (``object_referents``), "that
@@ -1255,6 +1297,11 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
     from .object_referents import settle_referents
     from .referents import Unbound, bind_ability
 
+    if _other_than_an_earlier_target(ability.effects):
+        result.failures.append(
+            ParseFailure(text, "'other target' after another target", rule=rule)
+        )
+        return Ability.unreadable(text)
     settled = settle_referents(ability)
     if settled is None:
         # "Its power" with no object the engine can read it off - the target

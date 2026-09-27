@@ -968,7 +968,7 @@ def _choose_trigger_targets(
             return _candidates_for(game, source, effect, controller)
         # The source is gone and nothing kept it: no protection to check
         # against it, so the filters alone decide.
-        if effect.targets is None:
+        if effect.targets_a_player:
             return [
                 player_target(pid)
                 for pid in _targetable_players(game, effect.players, controller)
