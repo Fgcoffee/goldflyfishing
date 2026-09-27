@@ -361,6 +361,33 @@ class PlayerScope(IntEnum):
     #: Captured on the event (``Event.source_controller``) when it happened,
     #: so it is right even if the spell has left the stack by resolution.
     TRIGGER_SOURCE_CONTROLLER = 4001
+    #: "That player", "they", "them" as the parser first reads them: a player
+    #: the sentence has already named, not yet worked out which. The parser
+    #: binds it to one of the scopes below (``mtgfish.parser.referents``) or
+    #: refuses the ability; the engine resolves it to nobody.
+    REFERRED_PLAYER = 13001
+    #: The player the triggering event is about - "whenever an opponent draws
+    #: a card, *that player* ...". ``Event.player`` is the player the
+    #: trigger's player filter matched (CR 603.2), so it is read off the event.
+    TRIGGER_PLAYER = 13002
+    #: The controller / owner of the object(s) the resolution last acted on -
+    #: "Destroy target creature. *Its controller* ...". CR 608.2h: an object
+    #: that has left its zone is asked about as it last existed there.
+    REMEMBERED_CONTROLLER = 13003
+    REMEMBERED_OWNER = 13004
+    #: The controller / owner of the object the triggering event is about -
+    #: "whenever enchanted land becomes tapped, *its controller* ..." - as it
+    #: last existed (CR 603.10, 608.2h).
+    TRIGGER_OBJECT_CONTROLLER = 13005
+    TRIGGER_OBJECT_OWNER = 13006
+    #: For UNLESS_PAYS: the player the guarded instruction acts on - its
+    #: target player, or the controller of its object: "counter target spell
+    #: unless *its controller* pays {3}", "target player loses 3 life unless
+    #: *they* sacrifice a nonland permanent".
+    AFFECTED_CONTROLLER = 13007
+    #: The player an earlier instruction of the same resolution targeted -
+    #: "Target player mills three cards. *That player* ..." (CR 115.1, 608.2c).
+    CHOSEN_PLAYER = 13008
 
 
 @dataclass(frozen=True, slots=True)
@@ -396,6 +423,16 @@ class PlayerFilter:
             PlayerScope.TRIGGER_SOURCE_CONTROLLER: (
                 "the controller of the spell or ability that triggered this"
             ),
+            PlayerScope.REFERRED_PLAYER: "that player (unresolved)",
+            PlayerScope.TRIGGER_PLAYER: "the player the trigger is about",
+            PlayerScope.REMEMBERED_CONTROLLER: "the controller of that object",
+            PlayerScope.REMEMBERED_OWNER: "the owner of that object",
+            PlayerScope.TRIGGER_OBJECT_CONTROLLER: (
+                "the controller of the object the trigger is about"
+            ),
+            PlayerScope.TRIGGER_OBJECT_OWNER: "the owner of the object the trigger is about",
+            PlayerScope.AFFECTED_CONTROLLER: "the player it acts on (or its controller)",
+            PlayerScope.CHOSEN_PLAYER: "the player targeted earlier",
         }
         base = names.get(self.scope, self.scope.name.lower().replace("_", " "))
         if self.controls is not None:

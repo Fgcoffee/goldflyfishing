@@ -175,6 +175,7 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
     effects: list[Effect] = []
     used_or = False
     while True:
+        gap = stream.mark()
         stream.skip_punct(",", ".", ";")
         if stream.done:
             break
@@ -194,6 +195,20 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
             # back and its shallower give-up says less.
             stream.blocked = max(stream.blocked, stuck)
             return None
+        same_sentence = not any(
+            token.text == "." for token in stream.tokens[gap:stuck]
+        )
+        # The elided subject is the last one the sentence expressed. An
+        # instruction with no player of its own - the NOTHING that "of their
+        # choice" reads as, the "put it onto the battlefield" of a search -
+        # did not express one.
+        spoken = [e for e in effects if e.players is not None]
+        if spoken and same_sentence:
+            effect = _elided_subject(stream.tokens[stuck], effect, spoken[-1])
+            if effect is None:
+                stream.reset(stuck)
+                stream.blocked = max(stream.blocked, stuck)
+                return None
         effects.append(effect)
 
         # Some clauses modify the effect just read rather than following it.
@@ -235,6 +250,57 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
         # Nothing changed, so let the caller keep the ordinary reading.
         return None
     return _bind_x(_attach_mana_restriction(effects))
+
+
+#: Verbs in the third person that open a clause with no subject of its own:
+#: "that player loses 1 life *and mills a card*". An imperative ("mill a
+#: card") is the ability's controller; this form is the previous subject.
+_THIRD_PERSON_VERBS = frozenset(
+    {
+        "adds", "creates", "discards", "draws", "gains", "gets", "loses",
+        "mills", "pays", "reveals", "sacrifices", "scries", "shuffles",
+        "surveils",
+    }
+)
+
+#: Third-person verbs that move cards, which the sentence then goes on to put
+#: somewhere with no subject at all ("searches their library for a basic land
+#: card, puts it onto the battlefield tapped"). The engine carries those
+#: follow-ups out as the ability's controller, so the land would enter under
+#: the wrong player's control (CR 110.2a) - refused rather than half-read.
+_THIRD_PERSON_MOVERS = frozenset({"exiles", "puts", "searches"})
+
+
+def _elided_subject(first, effect: Effect, previous: Effect) -> Effect | None:
+    """"That player loses 1 life and discards a card" - the second verb's
+    subject is the first's, left out, not the ability's controller.
+
+    The clause grammar reads a subjectless verb as "you", which gave Gibbering
+    Descent's discard to the Descent's controller. A targeted subject is not
+    copied - that would be a second target - but named as "that player", for
+    ``referents`` to bind to the player chosen (CR 608.2c). None refuses
+    the sentence.
+    """
+    if first.kind is not TokenKind.WORD:
+        return effect
+    word = first.lower
+    if word not in _THIRD_PERSON_VERBS and word not in _THIRD_PERSON_MOVERS:
+        return effect
+    if effect.players is None or effect.players.scope is not PlayerScope.YOU:
+        return effect
+    subject = previous.players
+    if subject is None or subject.scope is PlayerScope.YOU:
+        return effect
+    if word in _THIRD_PERSON_MOVERS:
+        return None
+    if previous.is_targeted or subject.scope in (
+        PlayerScope.TARGET_PLAYER,
+        PlayerScope.TARGET_OPPONENT,
+    ):
+        # Even an instruction the grammar did not mark as targeting: copied,
+        # "target opponent" untargeted is read as every opponent.
+        subject = PlayerFilter(PlayerScope.REFERRED_PLAYER)
+    return replace(effect, players=subject)
 
 
 #: Instructions that set a pile aside for "from among them" and "the rest".
@@ -3121,8 +3187,28 @@ def _you_may(stream: Stream) -> Effect | None:
     if not stream.accept("may"):
         stream.reset(mark)
         return None
+    body = stream.mark()
     inner = parse_effect(stream)
     if inner is None:
+        stream.reset(mark)
+        return None
+    if players.scope not in (
+        PlayerScope.YOU,
+        # Still decided by the controller in the engine; see
+        # ``resolve._CONTROLLER_CHOOSES``.
+        PlayerScope.EACH_PLAYER,
+        PlayerScope.EACH_OPPONENT,
+        PlayerScope.OPPONENT,
+    ) and any(
+        token.lower in ("you", "your", "yours", "you've", "you're")
+        for token in stream.tokens[body : stream.mark()]
+    ):
+        # The engine carries out another player's "may" with that player as
+        # its "you" (CR 608.2d) - which is what the sentence's own subject-
+        # less verbs and "their" mean. A "you" inside it is the ability's
+        # controller, a second player the IR cannot tell apart from the
+        # first, so the sentence is refused rather than handed to the wrong
+        # one.
         stream.reset(mark)
         return None
     return Effect(
@@ -5692,6 +5778,7 @@ def _top_cards_pile(
         if subject is None or subject.scope not in (
             PlayerScope.TARGET_PLAYER,
             PlayerScope.TARGET_OPPONENT,
+            PlayerScope.REFERRED_PLAYER,
         ):
             stream.reset(mark)
             return None

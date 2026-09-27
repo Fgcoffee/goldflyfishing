@@ -20,7 +20,7 @@ from ..cr100_game_concepts import actions
 from ..kernel.enums import Duration, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from ..kernel.query import PlayerScope, ValueKind
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 
@@ -72,6 +72,12 @@ class Resolution:
     #: (``ObjectFilter.from_pile``). A card leaves the pile when something is
     #: done with it; what is left when the last instruction runs is "the rest".
     pile: list[ObjectId] = field(default_factory=list)
+    #: The event a triggered ability triggered on, for a resolution with no
+    #: stack object to carry it - a triggered mana ability (CR 605.4a).
+    trigger_event: object | None = None
+    #: The players an earlier instruction of this resolution targeted, for
+    #: "that player" after "target player ..." (``PlayerScope.CHOSEN_PLAYER``).
+    chosen_players: list[PlayerId] = field(default_factory=list)
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -113,6 +119,9 @@ _REMEMBERING = frozenset(
         # whole pile the look before it remembered.
         EffectKind.MOVE_ZONE,
         EffectKind.PUT_ON_LIBRARY,
+        # "Counter target spell. Its controller mills three cards" - the
+        # spell, as it was on the stack (CR 608.2h), is who "its" asks about.
+        EffectKind.COUNTER_SPELL,
     }
 )
 
@@ -415,7 +424,112 @@ def _targeted_players(resolution: Resolution, effect: Effect, chosen) -> list[Pl
 def _trigger_event(resolution: Resolution):
     """The event a resolving triggered ability triggered on, if it has one."""
     stack_object = resolution.stack_object
-    return getattr(stack_object, "trigger_event", None) if stack_object else None
+    if stack_object is None:
+        return resolution.trigger_event
+    return getattr(stack_object, "trigger_event", None)
+
+
+def _last_known(resolution: Resolution, object_id: ObjectId, *, owner: bool):
+    """The controller or owner of an object as it last existed (CR 608.2h).
+
+    The object a zone change left behind keeps its old controller - that is
+    what ``superseded_by`` preserves - so it is read as it is, not followed
+    to the card it became, whose controller is its owner (CR 400.7).
+    """
+    obj = resolution.game.objects.get(object_id)
+    if obj is None:
+        return NO_PLAYER
+    return obj.owner if owner else obj.controller
+
+
+def _defending_players(resolution: Resolution) -> list[PlayerId]:
+    """"Defending player" (CR 506.2, 802.2a).
+
+    An ability of an attacking creature - or one that refers to an attacking
+    creature, such as the creature whose attack triggered it - means the
+    player that creature is attacking, or the controller or protector of the
+    permanent it attacks. Otherwise, with a single defending player, that
+    player. With several and nothing to say which, nobody: guessing one would
+    be a different card.
+    """
+    game = resolution.game
+    combat = getattr(game, "combat", None)
+    attacking = getattr(combat, "attacking", None) or {}
+    if not attacking:
+        return []
+    event = _trigger_event(resolution)
+    for object_id in (resolution.source, getattr(event, "object_id", NO_OBJECT)):
+        if object_id in attacking:
+            return [attacking[object_id]]
+    defenders = list(dict.fromkeys(attacking.values()))
+    return defenders if len(defenders) == 1 else []
+
+
+def _referred_players(resolution: Resolution, effect: Effect) -> list[PlayerId] | None:
+    """Players named by reference to something else the ability mentioned.
+
+    ``None`` when the effect's scope is not one of these, so the caller goes
+    on to the ordinary scopes. Each is answered from what this resolution
+    knows - the triggering event, the objects acted on so far, the targets
+    chosen for an earlier instruction - which is why ``resolve_players``,
+    which knows only the game, cannot answer them.
+    """
+    spec = effect.players
+    if spec is None:
+        return None
+    scope = spec.scope
+    if scope is PlayerScope.REFERRED_PLAYER:
+        # Never bound by the parser: nobody, rather than a guess.
+        return []
+    if scope is PlayerScope.DEFENDING_PLAYER:
+        return _defending_players(resolution)
+    if scope is PlayerScope.CHOSEN_PLAYER:
+        return [
+            pid for pid in resolution.chosen_players
+            if not resolution.game.player(pid).has_lost
+        ]
+    event = _trigger_event(resolution)
+    if scope is PlayerScope.TRIGGER_PLAYER:
+        if event is None or event.player == NO_PLAYER:
+            return []
+        return [event.player]
+    if scope in (PlayerScope.TRIGGER_OBJECT_CONTROLLER, PlayerScope.TRIGGER_OBJECT_OWNER):
+        if event is None or event.object_id == NO_OBJECT:
+            return []
+        found = _last_known(
+            resolution,
+            event.object_id,
+            owner=scope is PlayerScope.TRIGGER_OBJECT_OWNER,
+        )
+        return [] if found == NO_PLAYER else [found]
+    if scope in (PlayerScope.REMEMBERED_CONTROLLER, PlayerScope.REMEMBERED_OWNER):
+        owner = scope is PlayerScope.REMEMBERED_OWNER
+        found = [_last_known(resolution, oid, owner=owner) for oid in resolution.remembered]
+        return [pid for pid in dict.fromkeys(found) if pid != NO_PLAYER]
+    if scope is PlayerScope.AFFECTED_CONTROLLER:
+        # "Counter target spell unless its controller pays {3}": the payer is
+        # asked before the guarded instruction runs, so its object is peeked
+        # at without spending the target cursor it will read.
+        # "Target player loses 3 life unless they ...": a player target of
+        # the guarded instruction is the player it acts on.
+        if not effect.children:
+            return []
+        guarded = effect.children[0]
+        cursor = resolution.target_index
+        players: list[PlayerId] = []
+        if guarded.is_targeted:
+            chosen = resolution.targets_for(guarded)
+            objects = _objects(resolution, guarded, chosen=chosen)
+            players = _targeted_players(resolution, guarded, chosen)
+        else:
+            objects = _objects(resolution, guarded)
+        resolution.target_index = cursor
+        found = players + [obj.controller for obj in objects]
+        return [
+            pid for pid in dict.fromkeys(found)
+            if not resolution.game.player(pid).has_lost
+        ]
+    return None
 
 
 def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
@@ -432,12 +546,20 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
         # players cannot tell those apart, which is how it went unseen.
         game = resolution.game
         chosen = resolution.targets_for(effect)
-        return [
+        picked = [
             player_id
             for player_id in _targeted_players(resolution, effect, chosen)
             # CR 608.2b: a player who has left the game is no longer legal.
             if not game.player(player_id).has_lost
         ]
+        # "Target player mills three cards. That player ..." - the later
+        # sentence means the player chosen here (CR 608.2c).
+        resolution.chosen_players = list(picked)
+        return picked
+
+    referred = _referred_players(resolution, effect)
+    if referred is not None:
+        return referred
 
     if effect.players is not None and effect.players.scope is PlayerScope.THAT_PLAYER:
         return [] if resolution.that_player == NO_PLAYER else [resolution.that_player]
@@ -537,9 +659,47 @@ def _do_optional(resolution: Resolution, effect: Effect) -> None:
     Routed through the agent so a bot can decline; with no agent the default is
     to take the option, which is right far more often than not.
     """
+    if effect.players is not None and effect.players.scope not in _CONTROLLER_CHOOSES:
+        _another_player_may(resolution, effect)
+        return
     agent = resolution.game.agent_for(resolution.controller)
     if agent is None or agent.choose_optional(resolution.game, resolution.controller, effect):
         execute(resolution, effect.children)
+
+
+#: "May" scopes still decided by the ability's controller: "you may", and the
+#: plural forms, whose per-player handling is not built yet.
+_CONTROLLER_CHOOSES = frozenset(
+    {
+        PlayerScope.YOU,
+        PlayerScope.EACH_PLAYER,
+        PlayerScope.EACH_OPPONENT,
+        PlayerScope.OPPONENT,
+    }
+)
+
+
+def _another_player_may(resolution: Resolution, effect: Effect) -> None:
+    """"That player may pay {2}", "its controller may search their library".
+
+    CR 608.2d: the player the instruction names makes the choice, and the
+    instruction is theirs to carry out - the sentence has no other subject,
+    so its "search", "pay" and "put" are done by that player (the parser
+    refuses such a sentence if it also says "you"). Carried out by making
+    them the resolution's "you" for the length of it. Nobody named - a
+    referent that no longer exists - means nothing happens.
+    """
+    game = resolution.game
+    for player_id in _players(resolution, effect):
+        agent = game.agent_for(player_id)
+        if agent is not None and not agent.choose_optional(game, player_id, effect):
+            continue
+        saved = resolution.controller
+        resolution.controller = player_id
+        try:
+            execute(resolution, effect.children)
+        finally:
+            resolution.controller = saved
 
 
 def _do_unless_pays(resolution: Resolution, effect: Effect) -> None:
@@ -876,23 +1036,50 @@ def _do_restriction(resolution: Resolution, effect: Effect) -> None:
     here is what made every "this turn" prohibition permanent - one Falter
     and those creatures could never block again.
     """
-    from ..cr500_turn_structure.restrictions import Restriction, register_standing
+    from ..kernel.query import PlayerFilter
 
     for restriction in effect.restrictions:
-        register_standing(
-            resolution.game,
-            Restriction(
-                act=restriction.act,
-                subject=restriction.subject or effect.targets,
-                players=restriction.players or effect.players,
-                source=resolution.source,
-                controller=resolution.controller,
-                counterpart=restriction.counterpart,
-                text=restriction.text or effect.text,
-                duration=effect.duration,
-                created_turn=resolution.game.turn,
-            ),
+        players = restriction.players or effect.players
+        pinned = (
+            _referred_players(resolution, replace(effect, players=players))
+            if players is not None
+            else None
         )
+        if pinned is not None:
+            # "Defending player can't cast spells this turn", "that player
+            # can't ...": who is meant is known only now, so the standing
+            # prohibition names them rather than keeping a reference nothing
+            # will be able to answer later.
+            for player_id in pinned:
+                _register_restriction(
+                    resolution,
+                    effect,
+                    replace(
+                        restriction,
+                        players=PlayerFilter(PlayerScope.SPECIFIC, specific=player_id),
+                    ),
+                )
+            continue
+        _register_restriction(resolution, effect, restriction)
+
+
+def _register_restriction(resolution: Resolution, effect: Effect, restriction) -> None:
+    from ..cr500_turn_structure.restrictions import Restriction, register_standing
+
+    register_standing(
+        resolution.game,
+        Restriction(
+            act=restriction.act,
+            subject=restriction.subject or effect.targets,
+            players=restriction.players or effect.players,
+            source=resolution.source,
+            controller=resolution.controller,
+            counterpart=restriction.counterpart,
+            text=restriction.text or effect.text,
+            duration=effect.duration,
+            created_turn=resolution.game.turn,
+        ),
+    )
 
 
 def _do_suspend_rule(resolution: Resolution, effect: Effect) -> None:
@@ -1385,6 +1572,10 @@ def _do_damage(resolution: Resolution, effect: Effect) -> None:
             lifelink=lifelink,
         )
     recipients = _targeted_players(resolution, effect, chosen)
+    if recipients:
+        # "... deals 2 damage to target player. That player discards two
+        # cards" (``PlayerScope.CHOSEN_PLAYER``).
+        resolution.chosen_players = list(recipients)
     if not recipients and effect.players is not None and not effect.is_targeted:
         recipients = _players(resolution, effect)
     for player_id in recipients:
@@ -1699,6 +1890,19 @@ def mana_color_choices(game, controller: PlayerId, effect: Effect):
 
 def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     """CR 106.1: add mana to a player's pool."""
+    if effect.players is not None and effect.players.scope is not PlayerScope.YOU:
+        # "Its controller adds an additional {G}", "that player adds {C}":
+        # the mana goes to the player named (CR 106.4), who is the "you" of
+        # the rest of the instruction. Adding it to the ability's controller
+        # put Wild Growth's extra mana in the aura's controller's pool.
+        saved = resolution.controller
+        try:
+            for player_id in _players(resolution, effect):
+                resolution.controller = player_id
+                _do_add_mana(resolution, replace(effect, players=None))
+        finally:
+            resolution.controller = saved
+        return
     from ..cr100_game_concepts.cr106_mana import ManaKind
     from ..kernel.enums import Supertype
 

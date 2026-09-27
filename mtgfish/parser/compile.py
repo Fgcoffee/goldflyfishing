@@ -962,14 +962,19 @@ def _modal(line: Line, result: ParsedFace) -> list[Ability]:
         )
 
     return [
-        Ability.spell(
-            Effect(
-                EffectKind.CHOOSE_MODE,
-                children=tuple(children),
+        _bound(
+            line.text,
+            Ability.spell(
+                Effect(
+                    EffectKind.CHOOSE_MODE,
+                    children=tuple(children),
+                    text=line.text,
+                    **header,
+                ),
                 text=line.text,
-                **header,
             ),
-            text=line.text,
+            result,
+            rule="modal",
         )
     ]
 
@@ -1239,7 +1244,19 @@ def _finish(
             ParseFailure(text, "pile reference without a pile", rule=rule)
         )
         return Ability.unreadable(text)
-    return build(effects)
+    return _bound(text, build(effects), result, rule=rule)
+
+
+def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:
+    """The ability with "that player" and "its controller" bound to who they
+    mean (``referents``), or unreadable if the text does not say."""
+    from .referents import Unbound, bind_ability
+
+    try:
+        return bind_ability(ability)
+    except Unbound as reason:
+        result.failures.append(ParseFailure(text, str(reason), rule=rule))
+        return Ability.unreadable(text)
 
 
 # ---------------------------------------------------------------------------
