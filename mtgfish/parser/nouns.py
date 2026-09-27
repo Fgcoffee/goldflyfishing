@@ -1298,7 +1298,7 @@ _PLAYER_PHRASES: tuple[tuple[str, PlayerScope], ...] = (
     ("target opponent's", PlayerScope.TARGET_OPPONENT),
     ("each player's", PlayerScope.EACH_PLAYER),
     ("each opponent's", PlayerScope.EACH_OPPONENT),
-    ("that player's", PlayerScope.TARGET_PLAYER),
+    ("that player's", PlayerScope.REFERRED_PLAYER),
     # "That creature's controller", "That land's controller" - the possessive
     # names an object the sentence already referred to, and the tokenizer
     # keeps it whole, so each form has to be listed.
@@ -1310,11 +1310,13 @@ _PLAYER_PHRASES: tuple[tuple[str, PlayerScope], ...] = (
     ("that creature's owner", PlayerScope.OWNER_OF),
     ("that permanent's owner", PlayerScope.OWNER_OF),
     ("an opponent", PlayerScope.OPPONENT),
-    ("that player", PlayerScope.TARGET_PLAYER),
+    ("that player", PlayerScope.REFERRED_PLAYER),
     # The pronoun for a player the same sentence has already named. Read the
-    # same way as "that player", which is what it stands in for.
-    ("they", PlayerScope.TARGET_PLAYER),
-    ("them", PlayerScope.TARGET_PLAYER),
+    # same way as "that player", which is what it stands in for. Which player
+    # that is depends on the rest of the ability, so it is left unresolved
+    # here and bound by ``referents`` - or the ability is refused.
+    ("they", PlayerScope.REFERRED_PLAYER),
+    ("them", PlayerScope.REFERRED_PLAYER),
     ("its controller", PlayerScope.CONTROLLER_OF),
     ("its owner", PlayerScope.OWNER_OF),
     ("their controller", PlayerScope.CONTROLLER_OF),
