@@ -353,11 +353,17 @@ def _bind(effect: Effect, players: PlayerFilter, state: _State) -> PlayerFilter:
 def _advance(effect: Effect, state: _State) -> None:
     """What a later pronoun means once this instruction has been read."""
     from ..rules.cr600_spells_and_abilities.resolve import (
+        _NAMING_ONLY,
         _REMEMBERING,
         _is_per_player_sacrifice,
     )
 
     kind = effect.kind
+    # "This creature gets +X/+X": describing the source changes nothing the
+    # resolution remembers (``resolve._execute_one``), so nor does it here.
+    naming_self = (
+        kind in _NAMING_ONLY and effect.targets is not None and effect.targets.source_only
+    )
     players = effect.players
     if players is not None:
         scope = players.scope
@@ -381,7 +387,9 @@ def _advance(effect: Effect, state: _State) -> None:
             # from its child: nothing "that player" could safely copy.
             state.player = AMBIGUOUS
 
-    if kind in _REMEMBERING and effect.targets is not None:
+    if naming_self:
+        pass
+    elif kind in _REMEMBERING and effect.targets is not None:
         if _is_per_player_sacrifice(effect):
             state.obj = AMBIGUOUS
         elif _single(effect):

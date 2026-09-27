@@ -1539,7 +1539,9 @@ def _possessive_characteristic(stream: Stream) -> Value | None:
     engine can actually read.
     """
     mark = stream.mark()
-    stream.accept("the", "a", "an", "each", "that", "this")
+    lead = stream.peek().lower
+    if not stream.accept("the", "a", "an", "each", "that", "this"):
+        lead = ""
 
     words: list[str] = []
     while not stream.done and len(words) < 5:
@@ -1587,7 +1589,32 @@ def _possessive_characteristic(stream: Stream) -> Value | None:
         stream.reset(mark)
         return None
 
-    return Value(kind=kind, of_affected=True)
+    if lead == "this" and len(words) == 1:
+        # "this creature's power" is the source's, wherever it is read - in
+        # a continuous effect as much as in a one-shot one ("creatures you
+        # control get +X/+X, where X is this creature's power").
+        return Value(kind=kind)
+    if lead in ("that", "the"):
+        # "that creature's toughness", "the revealed card's mana value" point back at an object already
+        # mentioned; which one is settled with the rest of the ability
+        # (``referents``).
+        return Value(kind=kind, filter=ObjectFilter(remembered=True))
+    if lead:
+        stream.reset(mark)
+        return None
+    # "enchanted creature's power", "your commander's mana value": the owner
+    # is a noun phrase of its own, read as one. A targeted owner is not -
+    # its target is chosen by some other instruction - and neither is one
+    # the object grammar cannot read whole.
+    owner = " ".join([*words[:-1], words[-1][:-2]])
+    inner = Stream.of(owner)
+    spec = None if "target" in words else parse_object_filter(inner)
+    if spec is None or not inner.done or spec.remembered or spec.count is not None:
+        stream.reset(mark)
+        return None
+    if spec.source_only:
+        return Value(kind=kind)
+    return Value(kind=kind, filter=spec)
 
 
 def _arithmetic_tail(stream: Stream, value: Value) -> Value:
@@ -1637,12 +1664,19 @@ def _remembered_characteristic(stream: Stream) -> Value | None:
     else:
         return None
 
+    # "Its" and "that card's" are settled against the rest of the ability
+    # (``referents``), and differently: "its" may be the dealer of the
+    # damage or the source, "that card's" only something already mentioned.
+    if owner.startswith("that "):
+        reference = {"filter": ObjectFilter(remembered=True)}
+    else:
+        reference = {"of_affected": True}
     if stream.accept_phrase("mana value"):
-        return Value(kind=ValueKind.MANA_VALUE, of_affected=True)
+        return Value(kind=ValueKind.MANA_VALUE, **reference)
     word = stream.peek().lower
     if word in _CHARACTERISTIC_OF:
         stream.next()
-        return Value(kind=_CHARACTERISTIC_OF[word], of_affected=True)
+        return Value(kind=_CHARACTERISTIC_OF[word], **reference)
 
     stream.reset(mark)
     return None

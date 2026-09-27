@@ -231,6 +231,18 @@ class Value:
             what = str(self.operands[0]) if self.operands else "value"
             what = what.replace("this permanent's ", "").replace("its ", "")
             return f"the {word} {what} among {self.filter}"
+        if self.filter is not None and self.kind in (
+            ValueKind.POWER,
+            ValueKind.TOUGHNESS,
+            ValueKind.MANA_VALUE,
+            ValueKind.COUNTERS,
+        ):
+            # A characteristic of the object the filter names ("that card's
+            # mana value"), not of the source or of the affected object.
+            if self.kind is ValueKind.COUNTERS:
+                return f"the number of {self.counter_type or '+1/+1'} counters on {self.filter}"
+            what = self.kind.name.lower().replace("_", " ")
+            return f"the {what} of {self.filter}"
         if self.kind is ValueKind.COUNTERS:
             whose = "its" if self.of_affected else "this permanent's"
             return f"the number of {self.counter_type or '+1/+1'} counters on {whose}"

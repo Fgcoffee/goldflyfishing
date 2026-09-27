@@ -1002,9 +1002,24 @@ def _damage(stream: Stream) -> Effect | None:
         dealer, _dealer_targeted = parse_target(stream)
         if dealer is None:
             stream.reset(look)
-    if not (stream.accept("deals", "deal") or stream.accept_phrase("it deals")):
+    if stream.accept_phrase("it deals"):
+        dealer, _dealer_targeted = ObjectFilter(remembered=True), False
+    elif not stream.accept("deals", "deal"):
         stream.reset(mark)
         return None
+    if dealer is not None:
+        # The dealer is part of the event (CR 120.1): its lifelink and
+        # deathtouch apply, and "damage dealt by" watches it. Only a dealer
+        # the engine can name is kept - the source, or the object the
+        # resolution is talking about. A *targeted* dealer ("target
+        # creature you control deals damage equal to its power") needs a
+        # target of its own, and any other dealer ("each creature deals 1
+        # damage to its controller") a per-object loop; both were read as
+        # the spell dealing the damage, so they stay unread instead.
+        if dealer.source_only:
+            dealer = None
+        elif _dealer_targeted or not dealer.remembered:
+            return None
 
     amount = parse_value(stream)
     if not stream.accept("damage"):
@@ -1027,6 +1042,7 @@ def _damage(stream: Stream) -> Effect | None:
             targets=ANY_TARGET,
             amount=amount or after or Value.of(1),
             is_targeted=True,
+            damage_source=dealer,
             text="deal damage to any target",
         )
 
@@ -1049,6 +1065,7 @@ def _damage(stream: Stream) -> Effect | None:
             targets=targets,
             amount=_scaled(stream, amount or Value.of(1)),
             is_targeted=targeted,
+            damage_source=dealer,
             text="deal damage",
         )
     players, player_targeted = parse_player_filter(stream)
@@ -1059,6 +1076,7 @@ def _damage(stream: Stream) -> Effect | None:
         players=players,
         amount=_scaled(stream, amount or Value.of(1)),
         is_targeted=player_targeted,
+        damage_source=dealer,
         text="deal damage",
     )
 
