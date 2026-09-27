@@ -266,6 +266,14 @@ def _reached_elsewhere(game: Game, scope: list[GameObject]) -> list[GameObject]:
         for player in game.players:
             for object_id in player.zone(zone):
                 admit(game.objects.get(object_id))
+
+    # MTG Arena's "perpetually": a card changed perpetually carries the change
+    # into every zone, so it is computed wherever it is.
+    if game.perpetual:
+        from ..cr700_additional_rules.digital_mechanics import perpetually_changed
+
+        for obj in perpetually_changed(game):
+            admit(obj)
     return out
 
 
@@ -415,6 +423,14 @@ def _live_effects(
     out = [
         ce for ce in game.continuous_effects if not ce.expired and ce.effect.kind in EFFECT_LAYERS
     ]
+    # MTG Arena's "perpetually": each card's perpetual changes, applied to that
+    # card alone and in every zone it can be in.
+    if game.perpetual:
+        from ..cr700_additional_rules.digital_mechanics import (
+            perpetual_continuous_effects,
+        )
+
+        out.extend(perpetual_continuous_effects(game, by_id))
 
     for object_id, obj in by_id.items():
         if obj.phased_out:

@@ -454,6 +454,49 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
         return f"{who} creates {amount} {_token(effect.token)} token(s)"
     if kind is EffectKind.ADD_MANA:
         return _add_mana(effect, who, amount)
+    digital = _digital(effect, who, amount, objects)
+    if digital is not None:
+        return digital
+    return None
+
+
+def _digital(effect: Effect, who: str, amount: str, objects: str) -> str | None:
+    """MTG Arena's seek, conjure and perpetually, from the opcodes."""
+    kind = effect.kind
+    if kind is EffectKind.SEEK:
+        what = _filter(effect.targets) if effect.targets is not None else "card"
+        return (
+            f"{who} seeks {amount} (at random from their library, among: {what})"
+            f" into {_zone((Zone.HAND if effect.zone is None else effect.zone))}"
+        )
+    if kind is EffectKind.CONJURE:
+        from ..rules.cr700_additional_rules.digital_mechanics import conjured_name
+
+        if conjured_name(effect):
+            what = f"{amount} card(s) named {conjured_name(effect)}"
+        elif "duplicate" in effect.keywords:
+            what = f"{amount} duplicate(s) (with perpetual changes) of {objects}"
+        else:
+            what = f"{amount} card(s) that are the same card as {objects}"
+        where = _zone((Zone.HAND if effect.zone is None else effect.zone))
+        if "tapped" in effect.keywords:
+            where += " tapped"
+        if not (effect.amount2.is_constant and not effect.amount2.constant):
+            where += f", {effect.amount2} from the top"
+        return f"{who} conjures {what} into {where}"
+    if kind is EffectKind.PERPETUALLY:
+        from ..rules.cr700_additional_rules.digital_mechanics import PERPETUAL_KINDS
+
+        if "at random" in effect.keywords:
+            objects = f"{objects}, picked at random"
+        changes = [
+            _continuous(node, objects) or f"[{node.kind.name.lower()}]"
+            for node in effect.walk()
+            if node.kind in PERPETUAL_KINDS
+        ]
+        body = ", and ".join(changes) or f"{objects} (no change)"
+        duration = _duration(effect.duration)
+        return f"perpetually (in every zone, for the rest of the game): {body}{duration}"
     return None
 
 

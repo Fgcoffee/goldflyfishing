@@ -1789,6 +1789,226 @@ def _trailing_pump(stream: Stream, targets, targeted):
     )
 
 
+# ---------------------------------------------------------------------------
+# MTG Arena's "perpetually" (see rules/cr700_additional_rules/digital_mechanics)
+# ---------------------------------------------------------------------------
+
+
+@clause("perpetually")
+def _perpetually(stream: Stream) -> Effect | None:
+    """"Creature cards in your hand perpetually get +1/+1", "It perpetually
+    gains flash", "A random land card in your library perpetually gains ...".
+
+    The subject is read here; what happens to it is read by the ordinary
+    continuous-effect clauses, applied to "this" - the same words, minus the
+    adverb, are a pump or a grant the grammar already knows. The result is
+    accepted only if every part is a layered change aimed at that "this" with
+    no duration of its own, which is what a perpetual change can be. Anything
+    else - "perpetually ... until end of turn", a change the clauses read
+    with a target of their own, a "for each" or "as long as" after it - is
+    left unread rather than re-aimed.
+
+    Also reads the two-sentence form "Choose a nonland card in your hand. It
+    perpetually gains flash." - the choice is the subject.
+    """
+    mark = stream.mark()
+    subject = _perpetual_subject(stream)
+    if subject is None:
+        stream.reset(mark)
+        return None
+    targets, targeted, at_random = subject
+    if not stream.accept("perpetually"):
+        stream.reset(mark)
+        return None
+
+    changes = _perpetual_changes(stream)
+    if changes is None:
+        stream.reset(mark)
+        return None
+    # "... and perpetually gains 'This spell costs {1} less to cast.'"
+    while True:
+        look = stream.mark()
+        stream.skip_punct(",")
+        if not stream.accept_phrase("and perpetually"):
+            stream.reset(look)
+            break
+        more = _perpetual_changes(stream)
+        if more is None:
+            stream.reset(mark)
+            return None
+        changes += more
+
+    # A trailing modifier would be applied to the wrapper rather than to the
+    # change: "for each" would scale nothing, and "as long as"/"during" would
+    # turn a continuous condition into a one-off check.
+    look = stream.mark()
+    stream.skip_punct(",")
+    if stream.at("for", "as", "during", "until", "this"):
+        if (
+            stream.at_phrase("for each")
+            or stream.at_phrase("as long as")
+            or stream.at("during", "until")
+            or stream.at_phrase("this turn")
+        ):
+            stream.reset(mark)
+            return None
+    stream.reset(look)
+
+    return Effect(
+        EffectKind.PERPETUALLY,
+        targets=targets,
+        is_targeted=targeted,
+        keywords=("at random",) if at_random else (),
+        children=tuple(changes),
+        text="perpetually",
+    )
+
+
+#: "The duplicate", "those duplicates": what a conjure just made.
+_DUPLICATE_PHRASES = (
+    "the duplicates", "the duplicate", "that duplicate", "those duplicates",
+)
+
+
+def _perpetual_subject(stream: Stream):
+    """(filter, targeted, at random) for the thing a perpetual change is on."""
+    mark = stream.mark()
+    for phrase in _DUPLICATE_PHRASES:
+        if stream.accept_phrase(phrase):
+            return ObjectFilter(remembered=True), False, False
+
+    # "Choose a creature card in your hand. It perpetually gets +1/+1."
+    if stream.accept("choose"):
+        start = stream.mark()
+        if not stream.accept("a", "an"):
+            stream.reset(mark)
+            return None
+        spec = parse_object_filter(stream)
+        if spec is None or not _cards_elsewhere(stream, start, spec):
+            stream.reset(mark)
+            return None
+        stream.skip_punct(".")
+        if not (
+            stream.accept("it")
+            or stream.accept_phrase("that card")
+            or stream.accept_phrase("that creature card")
+        ):
+            stream.reset(mark)
+            return None
+        spec = _owned_zone(stream, start, spec)
+        if spec is None:
+            stream.reset(mark)
+            return None
+        return replace(spec, count=Value.of(1), up_to=False), False, False
+
+    # "a random nonland card in your hand"
+    if stream.accept("a", "an") and stream.accept("random"):
+        start = stream.mark()
+        spec = parse_object_filter(stream)
+        if spec is None or spec.count is not None or spec.remembered:
+            stream.reset(mark)
+            return None
+        spec = _owned_zone(stream, start, spec)
+        if spec is None:
+            stream.reset(mark)
+            return None
+        return replace(spec, count=Value.of(1), up_to=False), False, True
+    stream.reset(mark)
+
+    start = stream.mark()
+    targets, targeted = parse_target(stream)
+    if targets is None or targets.includes_players:
+        stream.reset(mark)
+        return None
+    targets = _owned_zone(stream, start, targets)
+    if targets is None:
+        stream.reset(mark)
+        return None
+    return targets, targeted, False
+
+
+def _cards_elsewhere(stream: Stream, start: int, spec: ObjectFilter) -> bool:
+    """A chosen card must be named as a card in a zone - "a creature card in
+    your hand" - since "choose a creature" alone would be a permanent."""
+    return bool(spec.zones) and Zone.BATTLEFIELD not in spec.zones
+
+
+def _owned_zone(stream: Stream, start: int, spec: ObjectFilter):
+    """Hold "in your hand/graveyard/library" to *your* zone, or decline.
+
+    The noun reader reads "cards in your graveyard" as cards in any graveyard
+    - the "your" is dropped (reported; it is not this construct's to fix) -
+    and a perpetual change on every player's cards is not the card. So the
+    words consumed are checked here: "in your <zone>" pins the owner, and any
+    other player's zone ("in that player's hand") is declined outright, as is
+    a "permanent card" off the battlefield, which the noun reader reads as a
+    card of any type at all.
+    """
+    from ..rules.kernel.query import ControllerRelation
+
+    words = [token.lower for token in stream.tokens[start : stream.mark()]]
+    offboard = spec.zones and Zone.BATTLEFIELD not in spec.zones
+    if offboard and any(w in ("permanent", "permanents") for w in words):
+        return None
+    for index, word in enumerate(words):
+        if word != "in" or index + 1 >= len(words):
+            continue
+        owner_word = words[index + 1]
+        if owner_word == "your":
+            if spec.owner is ControllerRelation.ANY:
+                spec = replace(spec, owner=ControllerRelation.YOU)
+        elif owner_word in ("the",):
+            continue
+        else:
+            return None
+    return spec
+
+
+def _perpetual_changes(stream: Stream) -> list[Effect] | None:
+    """The change after "perpetually", read as if it were said of "this".
+
+    Returns the layered changes, re-aimed at the object they will be bound to
+    (``targets`` None), or ``None`` if what follows is not purely that.
+    """
+    from ..rules.cr700_additional_rules.digital_mechanics import PERPETUAL_KINDS
+    from .tokens import Token
+
+    start = stream.mark()
+    this = Token(TokenKind.WORD, "this")
+    sub = Stream([this, *stream.tokens[start:]])
+    inner = parse_effect(sub)
+    if inner is None or sub.mark() <= 1:
+        return None
+
+    out: list[Effect] = []
+    for node in inner.walk():
+        if node.kind is EffectKind.SEQUENCE:
+            if node.duration or not node.condition.is_always:
+                return None
+            continue
+        if node.kind not in PERPETUAL_KINDS:
+            return None
+        if node.duration or node.is_targeted or not node.condition.is_always:
+            return None
+        if node.text.startswith(CDA_MARK):
+            return None
+        if node.targets is not None and replace(
+            node.targets, zones=ObjectFilter().zones
+        ) != SELF:
+            return None
+        if node.kind is EffectKind.GRANT_ABILITY and any(
+            ability.keyword == "Ward" for ability in node.granted_abilities
+        ):
+            # "gains ward {1}" is read without its cost; granting a Ward that
+            # asks for nothing is not the card.
+            return None
+        out.append(replace(node, targets=None))
+    if not out:
+        return None
+    stream.reset(start + sub.mark() - 1)
+    return out
+
+
 @clause("create-token")
 def _create_token(stream: Stream) -> Effect | None:
     """"Create a 1/1 white Soldier creature token."
@@ -3153,6 +3373,285 @@ def _search(stream: Stream) -> Effect | None:
         # it, so the executor has one thing to look for (CR 614.1c).
         keywords=("tapped",) if tapped and destination is Zone.BATTLEFIELD else (),
         text="search library",
+    )
+
+
+# ---------------------------------------------------------------------------
+# MTG Arena's conjure and seek (see rules/cr700_additional_rules/digital_mechanics)
+# ---------------------------------------------------------------------------
+
+
+@clause("conjure")
+def _conjure(stream: Stream) -> Effect | None:
+    """"Conjure a card named Lightning Bolt into your hand", "conjure four
+    cards named Volcanic Geyser into your library, then shuffle", "conjure a
+    duplicate of it onto the battlefield", "conjure a card named this ...".
+
+    The name is everything between "named" and the destination, as printed -
+    the engine looks it up when the effect happens. Only the destinations the
+    engine can place a card in are read; "into the top five cards of your
+    library at random", "onto the battlefield attached to ...", and a library
+    with no position and no shuffle after it are left unread.
+    """
+    mark = stream.mark()
+    stream.accept("you")
+    if not stream.accept("conjure"):
+        stream.reset(mark)
+        return None
+
+    amount = _conjure_count(stream)
+    if amount is None:
+        stream.reset(mark)
+        return None
+
+    card_name = ""
+    targets = None
+    keywords: list[str] = []
+    if stream.accept("duplicate", "duplicates"):
+        if not stream.accept("of"):
+            stream.reset(mark)
+            return None
+        start = stream.mark()
+        targets, targeted = parse_target(stream)
+        if targets is None or targets.includes_players or targets.count is not None:
+            stream.reset(mark)
+            return None
+        if not _conjure_source_ok(stream, start, targets):
+            stream.reset(mark)
+            return None
+        keywords.append("duplicate")
+    elif stream.accept("card", "cards"):
+        if not stream.accept("named"):
+            stream.reset(mark)
+            return None
+        if stream.accept("this"):
+            # Normalisation wrote the card's own name as "this": a card with
+            # this card's name, which is this card's own definition.
+            targets, targeted = SELF, False
+        else:
+            card_name = _conjured_name(stream)
+            if not card_name:
+                stream.reset(mark)
+                return None
+            targeted = False
+    else:
+        stream.reset(mark)
+        return None
+
+    destination = _conjure_destination(stream)
+    if destination is None:
+        stream.reset(mark)
+        return None
+    zone, tapped, from_top = destination
+    if tapped:
+        keywords.append("tapped")
+    if card_name:
+        from ..rules.cr700_additional_rules.digital_mechanics import named
+
+        keywords.append(named(card_name))
+    return Effect(
+        EffectKind.CONJURE,
+        players=YOU,
+        targets=targets,
+        is_targeted=targeted,
+        zone=zone,
+        amount=amount,
+        amount2=Value.of(from_top),
+        keywords=tuple(keywords),
+        text="conjure",
+    )
+
+
+def _conjure_count(stream: Stream) -> Value | None:
+    number = stream.accept_number()
+    if number is not None:
+        return Value.of(number)
+    if stream.accept("X"):
+        return Value(kind=ValueKind.X)
+    return None
+
+
+def _conjure_source_ok(stream: Stream, start: int, spec: ObjectFilter) -> bool:
+    """A duplicate of a card elsewhere must name whose zone it is in."""
+    from ..rules.kernel.query import ControllerRelation
+
+    words = [token.lower for token in stream.tokens[start : stream.mark()]]
+    if "random" in words:
+        return False
+    offboard = spec.zones and Zone.BATTLEFIELD not in spec.zones
+    if offboard and "in" in words:
+        # "a duplicate of target card in an opponent's graveyard" is read with
+        # the opponent; "in your graveyard" loses its "your" in the noun
+        # reader, so only the opponent form is trusted.
+        return spec.controller is ControllerRelation.OPPONENT or spec.owner is not ControllerRelation.ANY
+    return True
+
+
+#: What may follow a conjured card's name.
+_CONJURE_DESTINATIONS = (
+    ("onto the battlefield tapped", Zone.BATTLEFIELD, True),
+    ("onto the battlefield", Zone.BATTLEFIELD, False),
+    ("into your hand", Zone.HAND, False),
+    ("into your graveyard", Zone.GRAVEYARD, False),
+    ("into your library", Zone.LIBRARY, False),
+    ("into exile", Zone.EXILE, False),
+    ("on top of your library", Zone.LIBRARY, False),
+)
+
+
+def _at_conjure_destination(stream: Stream) -> bool:
+    return any(stream.at_phrase(phrase) for phrase, _, _ in _CONJURE_DESTINATIONS)
+
+
+def _conjured_name(stream: Stream) -> str:
+    """The printed name after "named", up to the destination.
+
+    A name starts with a capital and runs to the first word that begins a
+    destination; commas and apostrophes are part of names ("Fblthp, the
+    Lost"). Nothing is guessed: no destination, no name.
+    """
+    words: list[str] = []
+    first = stream.peek()
+    if first.kind is not TokenKind.WORD or not first.text[:1].isupper():
+        return ""
+    while not stream.done:
+        if words and _at_conjure_destination(stream):
+            break
+        token = stream.peek()
+        if token.text in (".", ";", '"'):
+            return ""
+        words.append(token.text)
+        stream.next()
+        if len(words) > 10:
+            return ""
+    if stream.done:
+        return ""
+    name = ""
+    for word in words:
+        if word == ",":
+            name += ","
+        elif not name:
+            name = word
+        else:
+            name += " " + word
+    return name
+
+
+def _conjure_destination(stream: Stream):
+    """(zone, tapped, position from the top) - or ``None``."""
+    for phrase, zone, tapped in _CONJURE_DESTINATIONS:
+        if not stream.accept_phrase(phrase):
+            continue
+        if zone is Zone.BATTLEFIELD and stream.at("attached", "and", "under"):
+            if stream.at_phrase("and attacking") or stream.at("attached", "under"):
+                return None
+        if phrase == "on top of your library":
+            return zone, False, 1
+        if zone is Zone.LIBRARY:
+            ordinal = stream.peek().lower
+            from .tokens import ORDINALS
+
+            if ordinal in ORDINALS and stream.peek(1).lower == "from":
+                stream.next()
+                if not stream.accept_phrase("from the top"):
+                    return None
+                return zone, False, ORDINALS[ordinal]
+            # No position: only a library about to be shuffled is fine.
+            look = stream.mark()
+            stream.skip_punct(",", ".")
+            stream.accept("then")
+            shuffled = stream.accept("shuffle")
+            stream.reset(look)
+            if not shuffled:
+                return None
+            return zone, False, 0
+        return zone, tapped, 0
+    return None
+
+
+@clause("seek")
+def _seek(stream: Stream) -> Effect | None:
+    """"Seek a land card", "seek two nonland cards", "seek a land card and a
+    nonland card", "seek that many nonland cards".
+
+    Only from your own library, which is the only kind printed without a
+    subject; "seek ... from among the top ten cards" is a different pool and
+    is left unread.
+    """
+    mark = stream.mark()
+    stream.accept("you")
+    if not stream.accept("seek"):
+        stream.reset(mark)
+        return None
+
+    seeks = []
+    while True:
+        one = _one_seek(stream)
+        if one is None:
+            stream.reset(mark)
+            return None
+        seeks.append(one)
+        look = stream.mark()
+        if stream.accept("and") and stream.peek().kind is TokenKind.NUMBER:
+            continue
+        stream.reset(look)
+        break
+    if len(seeks) == 1:
+        return seeks[0]
+    return Effect(EffectKind.SEQUENCE, children=tuple(seeks), text="seek")
+
+
+def _one_seek(stream: Stream) -> Effect | None:
+    start = stream.mark()
+    # "seeks that many nonland cards" counts whatever the sentence before did
+    # ("discards all the cards in their hand"), which no value here can name.
+    amount = _conjure_count(stream)
+    if amount is None:
+        stream.reset(start)
+        return None
+    noun_start = stream.mark()
+    # "a land card *and a nonland card*" is two seeks; the noun reader would
+    # read both as one filter (a card that is land and nonland), so it is
+    # given only the words up to the second count.
+    end = noun_start
+    while end < len(stream.tokens) and stream.tokens[end].text not in (".", ";"):
+        if (
+            stream.tokens[end].lower == "and"
+            and end + 1 < len(stream.tokens)
+            and stream.tokens[end + 1].kind is TokenKind.NUMBER
+        ):
+            break
+        end += 1
+    sub = Stream(stream.tokens[:end], pos=noun_start)
+    spec = parse_object_filter(sub)
+    if spec is None:
+        stream.reset(start)
+        return None
+    stream.reset(sub.mark())
+    words = [t.lower for t in stream.tokens[noun_start : stream.mark()]]
+    if "card" not in words and "cards" not in words:
+        stream.reset(start)
+        return None
+    if (
+        spec.count is not None
+        or spec.remembered
+        or spec.source_only
+        or spec.zones not in (frozenset(), ObjectFilter().zones)
+        or spec.controller is not ObjectFilter().controller
+        or spec.owner is not ObjectFilter().owner
+        or any(w in ("permanent", "permanents") for w in words)
+    ):
+        # A zone, owner or controller of its own is a different pool; and
+        # "permanent card" is read as a card of any type by the noun reader.
+        stream.reset(start)
+        return None
+    return Effect(
+        EffectKind.SEEK,
+        players=YOU,
+        targets=replace(spec, zones=frozenset({Zone.LIBRARY})),
+        amount=amount,
+        zone=Zone.HAND,
+        text="seek",
     )
 
 

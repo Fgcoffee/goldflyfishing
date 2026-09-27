@@ -1907,6 +1907,149 @@ def _do_shuffle(resolution: Resolution, effect: Effect) -> None:
         resolution.game.shuffle_library(player_id)
 
 
+# ---------------------------------------------------------------------------
+# MTG Arena's digital-only mechanics (see digital_mechanics.py)
+# ---------------------------------------------------------------------------
+
+
+def _do_seek(resolution: Resolution, effect: Effect) -> None:
+    """Seek: cards at random from the library that match, into the hand.
+
+    The cards found are what a following "it" or "that card" means - "seek a
+    land card, then put it onto the battlefield tapped". Nothing found is
+    remembered as nothing, so a following sentence about "it" cannot fall
+    back on something an earlier sentence did.
+    """
+    from ..cr700_additional_rules.digital_mechanics import seek
+
+    game = resolution.game
+    count = _count(resolution, effect)
+    found: list[ObjectId] = []
+    for player_id in _players(resolution, effect):
+        found.extend(
+            obj.id
+            for obj in seek(
+                game,
+                player_id,
+                effect.targets,
+                count,
+                source=resolution.source,
+                controller=resolution.controller,
+                to_zone=(Zone.HAND if effect.zone is None else effect.zone),
+            )
+        )
+    resolution.remembered = found
+
+
+def _do_conjure(resolution: Resolution, effect: Effect) -> None:
+    """Conjure: cards created from outside the game, owned by who conjures.
+
+    By name, the card comes from the game's catalogue; as a duplicate or as
+    "a card named [this]", it is the card of the object named - and only a
+    duplicate keeps that object's perpetual changes. What was conjured is
+    what a following "it" means ("It perpetually gains flash").
+    """
+    from ..cr700_additional_rules.digital_mechanics import (
+        catalog_card,
+        conjure,
+        conjure_duplicate,
+        conjured_name,
+    )
+
+    game = resolution.game
+    zone = (Zone.HAND if effect.zone is None else effect.zone)
+    count = _count(resolution, effect)
+    tapped = "tapped" in effect.keywords
+    from_top = 0 if effect.amount2.is_constant and not effect.amount2.constant else _amount2(
+        resolution, effect
+    )
+    made: list[ObjectId] = []
+    players = _players(resolution, effect)
+    card_name = conjured_name(effect)
+    if card_name:
+        card = catalog_card(game, card_name)
+        if card is not None:
+            for player_id in players:
+                for _ in range(count):
+                    obj = conjure(
+                        game,
+                        player_id,
+                        card,
+                        zone,
+                        tapped=tapped,
+                        from_top=from_top,
+                        source=resolution.source,
+                    )
+                    if obj is not None:
+                        made.append(obj.id)
+    elif effect.targets is not None:
+        originals = _objects(resolution, effect)
+        duplicate = "duplicate" in effect.keywords
+        for player_id in players:
+            for original in originals:
+                for _ in range(count):
+                    obj = conjure_duplicate(
+                        game,
+                        player_id,
+                        original,
+                        zone,
+                        keep_perpetual=duplicate,
+                        tapped=tapped,
+                        source=resolution.source,
+                    )
+                    if obj is not None:
+                        made.append(obj.id)
+    resolution.remembered = made
+
+
+def _do_perpetually(resolution: Resolution, effect: Effect) -> None:
+    """Perpetually: bind each change to each of the objects, for good.
+
+    The objects are settled now, as any effect that changes characteristics
+    settles its set (CR 611.2c) - "creature cards in your hand" means the ones
+    there as this resolves, not cards drawn later. "A random" one is picked
+    from ``Game.rng``. Amounts are worked out now and fixed.
+    """
+    from ..cr700_additional_rules.digital_mechanics import PERPETUAL_KINDS, perpetually
+
+    game = resolution.game
+    objects = _perpetual_objects(resolution, effect)
+    changes = [node for node in effect.walk() if node.kind in PERPETUAL_KINDS]
+    for obj in objects:
+        for change in changes:
+            amounts = None
+            if change.kind in (EffectKind.MODIFY_PT, EffectKind.SET_PT):
+                amounts = (
+                    _amount(resolution, change),
+                    _amount(resolution, change, second=True),
+                )
+            perpetually(game, obj, change, resolution.controller, amounts=amounts)
+    if objects:
+        resolution.remembered = [obj.id for obj in objects]
+
+
+def _perpetual_objects(resolution: Resolution, effect: Effect) -> list[GameObject]:
+    if "at random" not in effect.keywords or effect.targets is None:
+        return _objects(resolution, effect)
+    from dataclasses import replace as _replace
+
+    from ..kernel.matching import find
+
+    spec = effect.targets
+    pool = find(
+        resolution.game,
+        _replace(spec, count=None, up_to=False),
+        source=resolution.source,
+        controller=resolution.controller,
+    )
+    wanted = _value_of(resolution, spec.count) if spec.count is not None else 1
+    picked: list[GameObject] = []
+    rng = resolution.game.rng
+    while pool and len(picked) < wanted:
+        picked.append(pool.pop(rng.randrange(len(pool))))
+    return picked
+
+
 def _do_reveal(resolution: Resolution, effect: Effect) -> None:
     """CR 701.20b. Revealing changes no zone; it only makes information public."""
     game = resolution.game
@@ -2903,6 +3046,9 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.EXTRA_TURN: _do_extra_turn,
     EffectKind.SEARCH_LIBRARY: _do_search_library,
     EffectKind.SHUFFLE: _do_shuffle,
+    EffectKind.SEEK: _do_seek,
+    EffectKind.CONJURE: _do_conjure,
+    EffectKind.PERPETUALLY: _do_perpetually,
     EffectKind.REVEAL: _do_reveal,
     EffectKind.SCRY: _do_scry,
     EffectKind.SURVEIL: _do_surveil,
