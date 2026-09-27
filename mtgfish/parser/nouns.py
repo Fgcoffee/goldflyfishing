@@ -463,14 +463,15 @@ def _peek_targeted(stream: Stream) -> bool:
     """Whether the coming noun phrase is a target, without consuming it."""
     mark = stream.mark()
     found = False
-    for _ in range(4):  # "up to two target creatures" - target is never deeper
+    # "up to one other target creature" - target is never deeper than this.
+    for _ in range(5):
         token = stream.peek()
         if token.kind is TokenKind.END:
             break
         if token.lower == "target":
             found = True
             break
-        if token.lower in ("up", "to", "another", "each", "all", "any") or (
+        if token.lower in ("up", "to", "another", "other", "each", "all", "any") or (
             token.kind is TokenKind.NUMBER
         ):
             stream.next()

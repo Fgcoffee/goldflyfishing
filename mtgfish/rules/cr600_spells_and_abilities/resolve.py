@@ -264,6 +264,31 @@ def _objects(
         zones = effect.targets.zones
         return [obj] if not zones or obj.zone in zones else []
 
+    if effect.targets_its_player:
+        # "Exile target player's graveyard", "look at target opponent's
+        # hand": the player was the target (CR 115.1), and the objects are
+        # theirs - found now, as the instruction is carried out.
+        from ..kernel.matching import find
+
+        if chosen is None:
+            players = set(_players(resolution, effect))
+        else:
+            # The caller already read the targets; the cursor is not moved
+            # twice for one instruction.
+            players = {
+                pid
+                for pid in _targeted_players(resolution, effect, chosen)
+                if not game.player(pid).has_lost
+            }
+            resolution.chosen_players = list(players)
+        found = find(
+            game, effect.targets, source=resolution.source, controller=resolution.controller
+        )
+        return [
+            obj for obj in found
+            if (obj.controller if obj.zone is Zone.BATTLEFIELD else obj.owner) in players
+        ]
+
     if effect.is_targeted:
         from ..kernel.matching import matches
 
@@ -536,7 +561,7 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
     from ..kernel.matching import resolve_players
     from ..kernel.query import YOU
 
-    if effect.is_targeted and effect.targets is None:
+    if effect.targets_a_player:
         # "Target player draws two cards", "target opponent loses that much
         # life": the player was chosen as the spell or ability went on the
         # stack (CR 601.2c, 603.3d), and that choice is who it happens to.
@@ -869,7 +894,9 @@ def _is_per_player_sacrifice(effect: Effect) -> bool:
     return (
         effect.kind is EffectKind.SACRIFICE
         and effect.players is not None
-        and not effect.is_targeted
+        # "Target player sacrifices a creature" (CR 115.1): the player is
+        # the target, and chooses what to sacrifice like any other.
+        and (not effect.is_targeted or effect.targets_its_player)
         and spec is not None
         and not spec.source_only
         and not spec.specific
@@ -1397,7 +1424,7 @@ def _bound_recipients(resolution: Resolution, effect: Effect, *, each: bool = Fa
 
     spec = effect.targets
     if effect.is_targeted:
-        if spec is None:
+        if effect.targets_a_player:
             return [player(pid) for pid in _players(resolution, effect)]
         chosen = resolution.targets_for(effect)
         objects = _objects(resolution, effect, chosen=chosen)

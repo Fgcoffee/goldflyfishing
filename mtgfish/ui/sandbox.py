@@ -594,7 +594,7 @@ class Sandbox:
             groups.append(
                 {
                     "description": effect.text or effect.kind.name.lower(),
-                    "optional": bool(effect.targets and effect.targets.up_to),
+                    "optional": effect.target_optional,
                     "candidates": [
                         self._candidate(target) for target in candidates
                     ],
