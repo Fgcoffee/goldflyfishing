@@ -173,6 +173,12 @@ class EventKind(IntEnum):
     #: the Attraction and ``amount`` the result that lit it.
     ATTRACTION_VISITED = 352
 
+    #: CR 701.37b: a permanent became monstrous. ``object_id`` is the
+    #: permanent. Its own event, because "when this becomes monstrous" is not
+    #: "whenever a counter is put on this" - the +1/+1 counters of the same
+    #: monstrosity are, and so is every other counter it ever gets.
+    BECAME_MONSTROUS = 19001
+
 
 #: Events that mean a permanent left the battlefield in some form. Abilities
 #: that trigger on these use last-known information (CR 603.6e, 608.2g).

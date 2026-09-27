@@ -2707,6 +2707,16 @@ def _do_monstrosity(resolution: Resolution, effect: Effect) -> None:
             continue
         actions.add_counters(resolution.game, obj, "+1/+1", amount, source=resolution.source)
         obj.add_counters("monstrous", 1)
+        # CR 701.37b: "when this becomes monstrous" watches this, not the
+        # counters that came with it.
+        resolution.game.emit(
+            Event(
+                EventKind.BECAME_MONSTROUS,
+                object_id=obj.id,
+                player=obj.controller,
+                source=resolution.source,
+            )
+        )
 
 
 def _do_adapt(resolution: Resolution, effect: Effect) -> None:

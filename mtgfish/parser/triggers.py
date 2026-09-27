@@ -182,18 +182,32 @@ def _step_trigger(stream: Stream) -> TriggerCondition | None:
     # forms are the same player phrases with an apostrophe-s, which the
     # tokenizer keeps attached to the word.
     players = _step_owner(stream)
-    if players is None:
+    owned = players is not None
+    if not owned:
+        # CR 513.1, 507.1: "at the beginning of the end step" and "at the
+        # beginning of combat" name no player, and every turn has one - so
+        # the trigger fires on every turn, not only its controller's (Ball
+        # Lightning's sacrifice happens on whichever turn it was cast). "The
+        # next end step" is a delayed trigger (CR 603.7) that this recurring
+        # reader cannot represent, and neither is "your next upkeep"; both
+        # are left for ``parse_delayed_when`` or fail honestly.
         stream.accept("the")
-        if stream.accept_phrase("next end step"):
-            return TriggerCondition(
-                event_kinds=frozenset({EventKind.END_STEP}),
-                text="at the beginning of the next end step",
-            )
-        players = YOU
-    stream.accept("next")
+    if stream.peek().lower == "next":
+        stream.reset(mark)
+        return None
 
     for phrase, kind in _STEP_TRIGGERS:
         if stream.accept_phrase(phrase):
+            if not owned:
+                # "at the beginning of combat *on your turn*" names the owner
+                # after the step. The words are left for the effect grammar,
+                # which reads them as its own turn condition; the owner is
+                # recorded here as well so the trigger itself is not wider.
+                look = stream.mark()
+                players = (
+                    YOU if stream.accept_phrase("on your turn") else None
+                )
+                stream.reset(look)
             return TriggerCondition(
                 event_kinds=frozenset({kind}),
                 players=players,
@@ -518,7 +532,7 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
         )
     if stream.accept_phrase("becomes monstrous"):
         return TriggerCondition(
-            event_kinds=frozenset({EventKind.COUNTER_ADDED}),
+            event_kinds=frozenset({EventKind.BECAME_MONSTROUS}),
             subject=SELF,
             text="when this becomes monstrous",
         )
@@ -754,10 +768,26 @@ def _counter_subject(stream: Stream):
     """"Whenever one or more +1/+1 counters are put on <something>"."""
     from .tokens import TokenKind
 
-    mark = stream.mark()
-    stream.accept_number()
-    stream.accept_phrase("or more")
+    from dataclasses import replace
 
+    mark = stream.mark()
+    # "a +1/+1 counter is put on" and "one or more +1/+1 counters are put
+    # on" are different triggers (CR 603.2c): the first fires once for each
+    # counter, the second once for the placement. Any other count ("two
+    # counters", "the twelfth counter", CR 122.7) is neither and is left
+    # unread rather than widened to one of them.
+    token = stream.peek()
+    if stream.accept_phrase("one or more"):
+        each_counter = False
+    elif token.kind is TokenKind.NUMBER and token.lower in ("a", "an"):
+        stream.next()
+        each_counter = True
+    else:
+        stream.reset(mark)
+        return None
+
+    # The kind is kept: "+1/+1 counters are put on" does not fire for a
+    # -1/-1 counter. Only "one or more counters", naming no kind, is any.
     kind = ""
     token = stream.peek()
     if token.kind is TokenKind.PT:
@@ -768,9 +798,12 @@ def _counter_subject(stream: Stream):
         "counters",
     ):
         stream.next()
-        kind = token.text
+        kind = token.lower
+    elif not (not each_counter and token.lower == "counters"):
+        stream.reset(mark)
+        return None
 
-    if not kind or not stream.accept("counter", "counters"):
+    if not stream.accept("counter", "counters"):
         stream.reset(mark)
         return None
 
@@ -778,7 +811,7 @@ def _counter_subject(stream: Stream):
     if result is None:
         stream.reset(mark)
         return None
-    return result
+    return replace(result, counter_kind=kind, each_counter=each_counter)
 
 
 def _leaves_zone(stream: Stream, subject: ObjectFilter):
@@ -870,7 +903,7 @@ _SIMPLE_EVENTS: tuple[tuple[str, tuple[EventKind, ...], bool], ...] = (
     ("phases out", (EventKind.PHASED_OUT,), False),
     ("phases in", (EventKind.PHASED_IN,), False),
     ("is returned to its owner's hand", (EventKind.RETURNED_TO_HAND,), True),
-    ("becomes monstrous", (EventKind.COUNTER_ADDED,), False),
+    ("becomes monstrous", (EventKind.BECAME_MONSTROUS,), False),
     ("untaps", (EventKind.UNTAPPED,), False),
     ("taps", (EventKind.TAPPED,), False),
     ("attacks or blocks", (EventKind.ATTACKS, EventKind.BLOCKS), False),
