@@ -62,6 +62,13 @@ def evaluate(
         tally = this_way or {}
         return sum(tally.get(int(event_kind), 0) for event_kind in value.event_kinds)
 
+    # CR 702.23a-b: the creatures blocking the source as this is evaluated.
+    if kind is ValueKind.BLOCKERS_OF_SOURCE:
+        combat = getattr(game, "combat", None)
+        if combat is None:
+            return 0
+        return len(combat.blockers.get(source, ()))
+
     if kind is ValueKind.X:
         obj = game.objects.get(source)
         return obj.x_value if obj is not None else x_value

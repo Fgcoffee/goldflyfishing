@@ -97,6 +97,10 @@ class EventKind(IntEnum):
     BLOCKERS_DECLARED = 102
     BLOCKS = 103
     BECOMES_BLOCKED = 104
+    #: CR 509.3d: "becomes blocked by a creature" triggers once for each
+    #: creature blocking it, so this is emitted once per (attacker, blocker)
+    #: pair: ``object_id`` is the attacker and ``source`` the blocker.
+    BECOMES_BLOCKED_BY = 18001
     REMOVED_FROM_COMBAT = 105
 
     # -- turn structure (CR 500) -------------------------------------------
