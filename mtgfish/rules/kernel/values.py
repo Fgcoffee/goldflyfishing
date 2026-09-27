@@ -79,7 +79,15 @@ def evaluate(
         return len(_among(game, value.filter, source, controller, remembered))
 
     if kind in (ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE):
-        obj = game.objects.get(source)
+        # "Its controller gains life equal to its power", "then gains life
+        # equal to that creature's toughness": in a resolving instruction
+        # "its" is the object the previous instruction acted on, as it last
+        # existed (CR 608.2h) - not the spell or ability's source. Reading the
+        # source made Swords to Plowshares gain its controller 0 life, and
+        # Solitude gain them Solitude's own power. A continuous effect
+        # (CR 613) names its own subject and passes no ``remembered``.
+        subject = remembered[0] if value.of_affected and remembered else source
+        obj = game.objects.get(subject)
         if obj is None:
             return 0
         chars = game.characteristics(obj)

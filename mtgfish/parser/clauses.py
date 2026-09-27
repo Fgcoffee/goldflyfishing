@@ -5231,6 +5231,11 @@ def _becomes_type(stream: Stream) -> Effect | None:
                 amount=_pt_value(left),
                 amount2=_pt_value(right),
                 duration=Duration.PERMANENT,
+                # The same "target" as the type change: without it "up to one
+                # other target creature ... becomes a Lizard with base power
+                # and toughness 4/4" set the base of whichever creature the
+                # filter found, not the one targeted (CR 115.1).
+                is_targeted=targeted,
                 text=f"base {token.text}",
             )
         )

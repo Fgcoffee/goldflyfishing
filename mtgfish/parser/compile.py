@@ -1256,9 +1256,16 @@ def _other_than_an_earlier_target(effects) -> bool:
     creature could be chosen twice. Refused rather than read that way; with
     no earlier target ("exile up to one other target creature") the word
     means the source and is read.
+
+    One "target" word shared by several verbs ("another target creature you
+    control gains trample and gets +X/+X") is split into nodes that share
+    the one filter object, and those are one target, not two: only a filter
+    other than the ones already met counts as an earlier target. A player
+    chosen as the target ("target player sacrifices a creature") is not a
+    creature that "other" could be distinct from.
     """
 
-    def visit(nodes, seen: bool) -> tuple[bool, bool]:
+    def visit(nodes, seen: tuple) -> tuple[bool, tuple]:
         for node in nodes:
             if node.kind is EffectKind.CHOOSE_MODE and node.children:
                 # Each mode is its own set of instructions; the modes chosen
@@ -1268,16 +1275,18 @@ def _other_than_an_earlier_target(effects) -> bool:
                     if found:
                         return True, seen
                 continue
-            if node.is_targeted and node.targets is not None:
-                if seen and node.targets.other_than_source:
+            if node.is_targeted and node.targets is not None and not node.targets_a_player:
+                spec = node.targets
+                if spec.other_than_source and any(earlier is not spec for earlier in seen):
                     return True, seen
-                seen = True
+                if not any(earlier is spec for earlier in seen):
+                    seen = seen + (spec,)
             found, seen = visit(node.children + node.otherwise, seen)
             if found:
                 return True, seen
         return False, seen
 
-    return visit(effects, False)[0]
+    return visit(effects, ())[0]
 
 
 def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:

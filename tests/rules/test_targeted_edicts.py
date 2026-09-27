@@ -361,19 +361,22 @@ def _cast_solitude(box):
 
 
 def test_solitude_exiles_and_its_controller_gains_life(box):
-    _need(box, "Solitude", "Hill Giant")
+    """"That creature's controller gains life equal to its power": the
+    exiled creature's power as it last existed (CR 608.2h) - Grizzly Bears'
+    2, not Solitude's own 3."""
+    _need(box, "Solitude", "Grizzly Bears")
     game = box.game
-    box.put("Hill Giant", "battlefield", 1)
+    box.put("Grizzly Bears", "battlefield", 1)
     life = [p.life for p in game.players]
 
     _cast_solitude(box)
     trigger = game.objects[game.stack[-1]]
-    giant = _on_battlefield(game, "Hill Giant", 1)[0]
-    assert trigger.targets == ((giant.id,),)
+    bears = _on_battlefield(game, "Grizzly Bears", 1)[0]
+    assert trigger.targets == ((bears.id,),)
     box.resolve_top()
 
-    assert _on_battlefield(game, "Hill Giant") == []
-    assert [p.life for p in game.players] == [life[0], life[1] + 3]
+    assert _on_battlefield(game, "Grizzly Bears") == []
+    assert [p.life for p in game.players] == [life[0], life[1] + 2]
 
 
 def test_solitude_fizzles_when_its_target_is_gone(box):
@@ -388,3 +391,130 @@ def test_solitude_fizzles_when_its_target_is_gone(box):
     box.resolve_top()
 
     assert [p.life for p in game.players] == life
+
+
+def test_tribute_to_hunger_you_gain_the_sacrificed_toughness(box):
+    _need(box, "Tribute to Hunger", "Hill Giant")
+    game = box.game
+    box.put("Hill Giant", "battlefield", 1)
+    box.put("Tribute to Hunger", "hand", 0)
+    _mana(box, 0, 2)
+    _mana(box, 0, 1, Color.BLACK)
+    life = [p.life for p in game.players]
+
+    _cast(box, 0, "Tribute to Hunger", ((player_target(1),),))
+    box.resolve_top()
+
+    assert _on_battlefield(game, "Hill Giant") == []
+    assert [p.life for p in game.players] == [life[0] + 3, life[1]]
+
+
+def test_swords_to_plowshares_gains_the_exiled_creatures_power(box):
+    """"Its controller gains life equal to its power" is the exiled
+    creature's power (CR 608.2h). Read off the source - an instant - it was
+    always 0."""
+    _need(box, "Swords to Plowshares", "Hill Giant")
+    game = box.game
+    box.put("Hill Giant", "battlefield", 1)
+    giant = _on_battlefield(game, "Hill Giant", 1)[0]
+    box.put("Swords to Plowshares", "hand", 0)
+    _mana(box, 0, 1, Color.WHITE)
+    life = [p.life for p in game.players]
+
+    _cast(box, 0, "Swords to Plowshares", ((giant.id,),))
+    box.resolve_top()
+
+    assert _on_battlefield(game, "Hill Giant") == []
+    assert [p.life for p in game.players] == [life[0], life[1] + 3]
+
+
+def test_devour_flesh_the_target_player_gains_the_sacrificed_toughness(box):
+    """"Target player sacrifices a creature of their choice, then gains life
+    equal to that creature's toughness": the player who sacrificed gains."""
+    _need(box, "Devour Flesh", "Hill Giant")
+    game = box.game
+    box.put("Hill Giant", "battlefield", 1)
+    box.put("Devour Flesh", "hand", 0)
+    _mana(box, 0, 1)
+    _mana(box, 0, 1, Color.BLACK)
+    life = [p.life for p in game.players]
+
+    _cast(box, 0, "Devour Flesh", ((player_target(1),),))
+    box.resolve_top()
+
+    assert _on_battlefield(game, "Hill Giant") == []
+    assert [p.life for p in game.players] == [life[0], life[1] + 3]
+
+
+# ---------------------------------------------------------------------------
+# "Becomes a Frog with base power and toughness 1/1": the base is the target's
+# ---------------------------------------------------------------------------
+
+
+def test_turn_to_frog_sets_the_base_of_its_target_only(box):
+    """The base power and toughness half used to be untargeted, so every
+    creature on the battlefield became 1/1 (CR 115.1, 613.4b)."""
+    _need(box, "Turn to Frog", "Hill Giant")
+    game = box.game
+    box.put("Hill Giant", "battlefield", 1)
+    box.put("Hill Giant", "battlefield", 0)
+    target = _on_battlefield(game, "Hill Giant", 1)[0]
+    mine = _on_battlefield(game, "Hill Giant", 0)[0]
+    box.put("Turn to Frog", "hand", 0)
+    _mana(box, 0, 1)
+    _mana(box, 0, 1, Color.BLUE)
+
+    _cast(box, 0, "Turn to Frog", ((target.id,), (target.id,), (target.id,)))
+    box.resolve_top()
+
+    frog = game.characteristics(target)
+    giant = game.characteristics(mine)
+    assert (frog.power, frog.toughness) == (1, 1)
+    assert (giant.power, giant.toughness) == (3, 3)
+
+
+# ---------------------------------------------------------------------------
+# What stays unread
+# ---------------------------------------------------------------------------
+
+
+def _readable(db, name, fragment):
+    for face in parse_card(db.lookup(name)).faces:
+        for ability in face.abilities:
+            if fragment in ability.text:
+                return not ability.unparsed
+    raise AssertionError(f"{name} has no ability with {fragment!r}")
+
+
+@pytest.mark.parametrize(
+    "name, fragment",
+    [
+        # "Another target creature" after a target means other than that
+        # target (CR 115.3); the filter can only say "other than the source".
+        ("Consume Strength", "Another target creature"),
+        ("Deadshot", "another target creature"),
+        # Two objects, one of each - not "an artifact or a land".
+        ("Structural Collapse", "an artifact and a land"),
+        ("Perilous Predicament", "an artifact creature and"),
+        # "A permanent of their choice for each soot counter": a sacrifice
+        # has no amount to multiply, and one permanent was sacrificed.
+        ("Smokestack", "for each soot counter"),
+    ],
+)
+def test_what_the_engine_cannot_say_stays_unread(box, name, fragment):
+    _need(box, name)
+    assert not _readable(box.db, name, fragment)
+
+
+@pytest.mark.parametrize(
+    "name, fragment",
+    [
+        # One "target" shared by two verbs is one target, not an earlier one.
+        ("Ashroot Animist", "another target creature"),
+        ("Lizard, Connors's Curse", "up to one other target creature"),
+        ("Solitude", "exile up to one other target creature"),
+    ],
+)
+def test_one_target_shared_by_two_verbs_is_read(box, name, fragment):
+    _need(box, name)
+    assert _readable(box.db, name, fragment)
