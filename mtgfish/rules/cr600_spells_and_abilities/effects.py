@@ -410,6 +410,21 @@ class Effect:
     #: doubles; Hardened Scales adds. Both exist, so both are expressible, and
     #: the multiplier applies before the addition.
     multiplier: int = 1
+    #: For PREVENT_DAMAGE and a damage REPLACEMENT: whose damage is caught -
+    #: "dealt by non-Spider creatures", "if a source you control would deal
+    #: damage". ``targets`` and ``players`` are the *recipient*, which is a
+    #: different object entirely.
+    damage_source: ObjectFilter | None = None
+    #: For PREVENT_DAMAGE: "dealt to *and dealt by*" ``targets`` (CR 615) -
+    #: the shield catches damage whichever way round the object is involved.
+    both_ways: bool = False
+    #: For REPLACEMENT: the player doing the replaced thing - "if *you* would
+    #: put one or more counters", "if an opponent would".
+    actor: PlayerFilter | None = None
+    #: For a zone-change REPLACEMENT: where the replaced move was headed
+    #: ("would be put into a graveyard"). ``zone`` is where it goes instead,
+    #: and ``from_zone`` narrows where it was coming from.
+    event_zone: Zone | None = None
     #: CR 610.3c: an object returned to the battlefield by the second one-shot
     #: effect of an "until" exile returns under its owner's control, not under
     #: the control of whoever is returning it.

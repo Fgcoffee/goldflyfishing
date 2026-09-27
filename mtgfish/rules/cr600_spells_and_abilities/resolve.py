@@ -1079,7 +1079,10 @@ def _do_replacement(resolution: Resolution, effect: Effect) -> None:
         or spec is None
         or not spec.source_only
     ):
-        _register_continuous(resolution, effect)
+        if effect.replacement_kind:
+            _register_replacement(resolution, effect)
+        else:
+            _register_continuous(resolution, effect)
         return
 
     for obj in _objects(resolution, effect):
@@ -1098,6 +1101,77 @@ def _do_replacement(resolution: Resolution, effect: Effect) -> None:
                 text=effect.text,
             ),
         )
+
+
+def _register_replacement(resolution: Resolution, effect: Effect) -> None:
+    """CR 611.2, 614: a replacement effect a resolving spell or ability makes.
+
+    "Until end of turn, if one or more tokens would be created under your
+    control, twice that many are created instead." Such an effect was handed
+    to the layer system as a continuous effect, where nothing ever consulted
+    it - the replacement layer reads only its own registry and permanents'
+    static abilities - so every one of them did nothing at all.
+
+    It lasts for its stated duration (CR 611.2b), whether or not its source
+    is still around. What it applies to is settled here when the effect names
+    particular objects - a target, or "it" - because those objects are what
+    the words mean (CR 608.2c), and a filter left live would catch others.
+    """
+    from dataclasses import replace as _replace
+
+    from .cr614_replacement import register, replacement_from_effect
+
+    game = resolution.game
+    for targets, players in _bound_recipients(resolution, effect):
+        built = replacement_from_effect(
+            _replace(effect, targets=targets, players=players, is_targeted=False),
+            source=resolution.source,
+            controller=resolution.controller,
+            duration=int(effect.duration),
+            created_turn=game.turn,
+        )
+        if built is not None:
+            register(game, built)
+
+
+def _bound_recipients(resolution: Resolution, effect: Effect, *, each: bool = False):
+    """What a resolving replacement or prevention effect is about, as
+    ``(object filter, player filter)`` pairs - one pair per shield.
+
+    Targets and pronouns become the specific objects and players they name.
+    ``each`` asks for one pair per object or player a mass filter matches
+    right now: "prevent the next 1 damage that would be dealt to each creature
+    you control" is a shield on each creature, not one shield shared among
+    them that the first point of damage uses up. Otherwise a mass filter is
+    kept live, as the rules keep it - "prevent all damage that would be dealt
+    to creatures this turn" protects a creature that arrives later too.
+    """
+    from ..kernel.query import ObjectFilter, PlayerFilter, PlayerScope
+
+    def one(obj_id):
+        return ObjectFilter(specific=(obj_id,), zones=frozenset()), None
+
+    def player(pid):
+        return None, PlayerFilter(PlayerScope.SPECIFIC, specific=pid)
+
+    spec = effect.targets
+    if effect.is_targeted:
+        if spec is None:
+            return [player(pid) for pid in _players(resolution, effect)]
+        chosen = resolution.targets_for(effect)
+        objects = _objects(resolution, effect, chosen=chosen)
+        players = _targeted_players(resolution, effect, chosen)
+        return [one(obj.id) for obj in objects] + [player(pid) for pid in players]
+    if spec is not None and spec.remembered:
+        return [one(obj.id) for obj in _objects(resolution, effect)]
+    if each and spec is not None and not spec.source_only:
+        pairs = [one(obj.id) for obj in _objects(resolution, effect)]
+        if effect.players is not None:
+            pairs += [player(pid) for pid in _players(resolution, effect)]
+        return pairs
+    if each and spec is None and effect.players is not None:
+        return [player(pid) for pid in _players(resolution, effect)]
+    return [(spec, effect.players)]
 
 
 def _do_control_player(resolution: Resolution, effect: Effect) -> None:
@@ -2404,27 +2478,36 @@ def _do_prevent_damage(resolution: Resolution, effect: Effect) -> None:
     names a player, which a shield with no subject and no players applies to
     everyone - a one-sided Fog that quietly protected the whole table.
     """
-    from .cr614_replacement import ReplacementEffect, ReplacementKind, register
+    from dataclasses import replace as _replace
 
-    if "combat" in effect.keywords:
-        watched = frozenset({EventKind.COMBAT_DAMAGE_DEALT})
-    else:
-        watched = frozenset({EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT})
+    from .cr614_replacement import register, replacement_from_effect
 
-    register(
-        resolution.game,
-        ReplacementEffect(
-            kind=ReplacementKind.PREVENT_DAMAGE,
-            event_kinds=watched,
-            subject=effect.targets,
-            players=effect.players,
+    game = resolution.game
+    # -1 is "all"; anything else is a shield of that size, worked out now
+    # (CR 608.2h) and spent as it prevents (CR 615.7). A size that came out
+    # at zero prevents nothing - it must not fall through to meaning "all".
+    everything = effect.amount.is_constant and effect.amount.constant < 0
+    size = -1 if everything else _amount(resolution, effect)
+    if not everything and size <= 0:
+        return
+
+    # The shield protects what the words name. A targeted shield used to be
+    # registered with the *targeting filter* as its subject, so "prevent all
+    # damage that would be dealt to target creature this turn" protected
+    # every creature on the battlefield.
+    for targets, players in _bound_recipients(resolution, effect, each=not everything):
+        built = replacement_from_effect(
+            _replace(effect, targets=targets, players=players, is_targeted=False),
             source=resolution.source,
             controller=resolution.controller,
-            amount=_amount(resolution, effect),
-            one_shot=effect.amount.constant > 0,
-            text=effect.text or "prevent damage",
-        ),
-    )
+            duration=int(effect.duration),
+            created_turn=game.turn,
+        )
+        if built is None:
+            continue
+        built.amount = size
+        built.one_shot = not everything
+        register(game, built)
 
 
 def _do_redirect_damage(resolution: Resolution, effect: Effect) -> None:

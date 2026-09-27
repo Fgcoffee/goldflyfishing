@@ -403,11 +403,11 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
     if kind is EffectKind.PREVENT_DAMAGE:
         # -1 is the "all" sentinel the executor reads; printing it as a number
         # made a Fog read like a card that heals one damage.
-        how_much = "all" if effect.amount.constant < 0 else amount
-        what = "combat damage" if "combat" in effect.keywords else "damage"
-        if effect.targets is None and effect.players is None:
-            return f"prevent {how_much} {what}"
-        return f"prevent {how_much} {what} to {objects}"
+        how_much = "all" if effect.amount.constant < 0 else f"the next {amount}"
+        event = _damage_event(effect)
+        if effect.is_targeted and effect.targets is not None:
+            event = event.replace(_filter(effect.targets), objects, 1)
+        return f"prevent {how_much} {event}{_gated(effect)}{_duration(effect.duration)}"
     if kind is EffectKind.SEARCH_LIBRARY:
         where = f" and puts it into {_zone(effect.zone)}" if effect.zone else ""
         tapped = " tapped" if "tapped" in effect.keywords else ""
@@ -584,19 +584,77 @@ def _continuous(effect: Effect, objects: str) -> str | None:
         return f"{objects} costs {_signed(effect.amount)} to cast{duration}"
     if kind is EffectKind.REPLACEMENT:
         if effect.replacement_kind:
-            what = {
-                7: f"{_counter(effect)} counters put on {objects}",
-                8: "cards drawn",
-                13: "tokens created",
-                5: "damage dealt",
-            }.get(effect.replacement_kind, "the amount")
-            return f"replacement - {what} become {_scaled(effect)}"
+            return f"replacement - {_replacement(effect)}{_gated(effect)}{duration}"
         if not effect.children:
             # Kind zero with nothing to do instead is never registered
             # (``static_replacements`` skips it): the ability is inert.
             return "replacement of a shape the engine has no kind for (does nothing)"
         return f"replacement - instead, {_effects(effect.children)}{duration}"
     return None
+
+
+def _replacement(effect: Effect) -> str:
+    """A replacement effect, from every field that decides which events it
+    catches - the recipient, the source, the counter kind, the actor, combat
+    or not - so a dropped qualifier shows as missing rather than implied."""
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+
+    kind = ReplacementKind(effect.replacement_kind)
+    scaled = _scaled(effect)
+    if kind is ReplacementKind.MODIFY_COUNTERS:
+        what = f"{effect.counter_type} counters" if effect.counter_type else "counters of any kind"
+        by = ""
+        if effect.actor is not None:
+            by = f" by {_players(effect.actor)}"
+        elif "an effect" in effect.keywords:
+            by = " by an effect"
+        return f"{what} put{by} on {_filter(effect.targets)} become {scaled}"
+    if kind is ReplacementKind.MODIFY_TOKENS:
+        what = f"{_filter(effect.targets)} tokens" if effect.targets else "tokens"
+        whose = f" for {_players(effect.players)}" if effect.players else " for any player"
+        return f"{what} created{whose} become {scaled}"
+    if kind in (ReplacementKind.MODIFY_DAMAGE, ReplacementKind.PREVENT_DAMAGE):
+        return f"{_damage_event(effect)} becomes {scaled}"
+    if kind is ReplacementKind.MODIFY_LIFE_CHANGE:
+        return f"life gained by {_players(effect.players)} becomes {scaled}"
+    if kind is ReplacementKind.MODIFY_LIFE_LOSS:
+        return f"life lost by {_players(effect.players)} becomes {scaled}"
+    if kind is ReplacementKind.LIFE_GAIN_BECOMES_LOSS:
+        return f"life {_players(effect.players)} would gain is lost instead"
+    if kind is ReplacementKind.REDIRECT_ZONE_CHANGE:
+        where = f" to {_zone(effect.event_zone)}" if effect.event_zone else ""
+        origin = f" from {_zone(effect.from_zone)}" if effect.from_zone else ""
+        return (
+            f"{_filter(effect.targets)} that would move{origin}{where} "
+            f"goes to {_zone(effect.zone)} instead"
+        )
+    if kind in (ReplacementKind.ENTERS_TAPPED, ReplacementKind.ENTERS_UNTAPPED):
+        state = "tapped" if kind is ReplacementKind.ENTERS_TAPPED else "untapped"
+        return f"{_filter(effect.targets)} enter {state}"
+    return f"[{kind.name.lower()}] {scaled}"
+
+
+def _damage_event(effect: Effect) -> str:
+    """"combat damage dealt by <source> to <recipient>"."""
+    what = "damage"
+    if "combat" in effect.keywords:
+        what = "combat damage"
+    elif "noncombat" in effect.keywords:
+        what = "noncombat damage"
+    by = f" by {_filter(effect.damage_source)}" if effect.damage_source else ""
+    recipients = []
+    if effect.targets is not None:
+        recipients.append(_filter(effect.targets))
+    if effect.players is not None:
+        recipients.append(_players(effect.players))
+    to = f" to {' or '.join(recipients)}" if recipients else ""
+    if effect.both_ways:
+        return f"{what} dealt to or by {_filter(effect.targets)}"
+    return f"{what} dealt{by}{to}"
+
+
+def _gated(effect: Effect) -> str:
+    return "" if effect.condition.is_always else f" (only while {effect.condition})"
 
 
 # ---------------------------------------------------------------------------

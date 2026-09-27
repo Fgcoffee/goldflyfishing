@@ -494,7 +494,8 @@ def _damage_player(
             gain_life(game, source_controller, amount, source=source)
         return amount
 
-    player.lose_life(amount)
+    life_lost = replaced_life_loss(game, player_id, amount, source=source)
+    player.lose_life(life_lost)
 
     # CR 903.10: combat damage from a commander is tracked separately, and 21
     # from any single commander is lethal on its own.
@@ -520,7 +521,10 @@ def _damage_player(
             amount=amount,
         )
     )
-    game.emit(Event(EventKind.LIFE_LOST, player=player_id, amount=amount, source=source))
+    if life_lost > 0:
+        game.emit(
+            Event(EventKind.LIFE_LOST, player=player_id, amount=life_lost, source=source)
+        )
     if lifelink and source_controller != NO_PLAYER:
         gain_life(game, source_controller, amount, source=source)
     return amount
@@ -565,9 +569,30 @@ def gain_life(
     return gained
 
 
+def replaced_life_loss(
+    game: Game, player_id: PlayerId, amount: int, *, source: ObjectId = NO_OBJECT
+) -> int:
+    """How much life a player actually loses, after replacement (CR 614).
+
+    Life loss is an event like any other, and "if an opponent would lose life
+    during your turn, they lose twice that much life instead" replaces it -
+    including the loss that damage causes (CR 120.3a), which changes how much
+    life is lost and not how much damage was dealt.
+    """
+    if amount <= 0 or not game.has_replacements:
+        return amount
+    prospective = game.replace(
+        Event(EventKind.LIFE_LOST, player=player_id, amount=amount, source=source)
+    )
+    if prospective is None:
+        return 0
+    return prospective.amount
+
+
 def lose_life(
     game: Game, player_id: PlayerId, amount: int, *, source: ObjectId = NO_OBJECT
 ) -> int:
+    amount = replaced_life_loss(game, player_id, amount, source=source)
     lost = game.player(player_id).lose_life(amount)
     if lost:
         game.emit(Event(EventKind.LIFE_LOST, player=player_id, amount=lost, source=source))

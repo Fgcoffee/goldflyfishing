@@ -134,7 +134,7 @@ def build_token_card(game: Game, spec: TokenSpec, source: ObjectId) -> Synthetic
 
 
 def _replaced_count(
-    game: Game, controller: PlayerId, count: int, source: ObjectId
+    game: Game, controller: PlayerId, count: int, source: ObjectId, spec=None
 ) -> int:
     """How many tokens are actually created, after replacement (CR 614.1c).
 
@@ -156,6 +156,10 @@ def _replaced_count(
             player=controller,
             source=source,
             amount=count,
+            # What the tokens would be, so "if one or more *creature* tokens
+            # would be created" can tell a Treasure from a Soldier before
+            # either exists.
+            data=(spec,) if spec is not None else (),
         )
     )
     # Replaced out of existence entirely: the tokens are simply never created.
@@ -192,7 +196,7 @@ def create_tokens(
     # Replacements apply to the number asked for, before any token exists.
     # A doubler raises it; "creates no tokens instead" takes it to zero, and
     # then there is nothing left to build a card for.
-    count = _replaced_count(game, controller, count, source)
+    count = _replaced_count(game, controller, count, source, spec)
     if count <= 0:
         return []
 
