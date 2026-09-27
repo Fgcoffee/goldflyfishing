@@ -1376,40 +1376,41 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
 # ---------------------------------------------------------------------------
 
 
+#: Combat keywords the engine does not implement yet, with what each really
+#: does. They were once built by one shared helper as "put a +1/+1 counter on
+#: this when it attacks" or "+N/+N when it attacks or blocks" - a card that
+#: looked understood while doing something its keyword does not say (myriad
+#: makes token copies, undaunted reduces a cost, flanking shrinks blockers).
+#: Each is inert until it has a builder of its own.
+UNIMPLEMENTED_COMBAT_KEYWORDS = {
+    "bushido": "CR 702.45a: +N/+N whenever it blocks or becomes blocked",
+    "rampage": "CR 702.23a: +N/+N for each creature blocking it beyond the first",
+    "flanking": "CR 702.25a: a blocking creature without flanking gets -1/-1",
+    "frenzy": "CR 702.68a: +N/+0 whenever it attacks and isn't blocked",
+    "renown": "CR 702.112a: counters when it deals combat damage to a player, if not renowned",
+    "enlist": "CR 702.154a: tap a creature as it attacks to add that creature's power",
+    "mobilize": "CR 702.181a: attacking Warrior tokens, sacrificed at end step",
+    "myriad": "CR 702.116a: token copies attacking each other opponent",
+    "double team": "a digital keyword: conjure a copy into hand when it attacks",
+    "undaunted": "CR 702.125a: costs {1} less for each opponent",
+    "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
+    "provoke": "CR 702.39a: untap a creature and force it to block",
+    "firebending": "CR 702.189a: add N {R} whenever it attacks, kept until end of combat",
+    "increment": "CR 702.191a: a counter when a spell cast costs more than its power or toughness",
+    "intensity": "a digital intensity counter mechanic",
+}
+
+
 @register("Bushido", "Rampage", "Flanking", "Frenzy", "Renown", "Enlist", "Mobilize",
           "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke", "Firebending",
           "Increment", "Intensity")
-def _misc_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """Combat keywords that all reduce to "when this attacks or blocks, do N".
-
-    Grouped because the engine hook is identical; the differences between them
-    live in the amount and in which event they watch, both carried by the
-    instance.
-    """
-    amount = Value.of(max(1, instance.amount))
-    if instance.key in ("renown", "mobilize", "myriad", "double team", "teamwork"):
-        return (
-            _attack_trigger(
-                instance,
-                Effect(
-                    EffectKind.ADD_COUNTERS, counter_type="+1/+1", amount=amount
-                ),
-            ),
-        )
+def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""
     return (
-        Ability.triggered(
-            TriggerCondition(
-                event_kinds=frozenset({EventKind.ATTACKS, EventKind.BLOCKS}),
-                subject=ObjectFilter(source_only=True),
-                functions_in=BATTLEFIELD,
-                text=f"whenever this attacks or blocks ({instance.name})",
-            ),
-            Effect(
-                EffectKind.MODIFY_PT,
-                amount=amount,
-                amount2=amount,
-                duration=int(Duration.END_OF_TURN),
-            ),
+        Ability(
+            AbilityKind.STATIC,
+            effects=(Effect(EffectKind.UNPARSED, text=instance.text or instance.name),),
+            keyword=instance.name,
             text=instance.text or instance.name,
         ),
     )

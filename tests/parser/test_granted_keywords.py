@@ -76,8 +76,20 @@ def test_granted_cost_keyword_keeps_its_cost(card_db):
     assert ability.kind is AbilityKind.ACTIVATED and "{1}" in str(ability.cost)
 
 
-def test_granted_ward_is_not_read_while_ward_is_inert():
-    assert _read("Other creatures you control have ward {2}.") is None
+def test_granted_ward_is_the_real_ward_trigger():
+    """CR 702.21a: a granted ward is the triggered ability ward is, with its
+    cost - not an inert ability named Ward."""
+    effects = _read("Other creatures you control have ward {2}.")
+    assert effects is not None
+    (ability,) = _grants(effects)
+    assert ability.kind is AbilityKind.TRIGGERED
+    assert not any(node.is_unparsed for effect in ability.effects for node in effect.walk())
+
+
+def test_a_combat_keyword_the_engine_cannot_run_is_not_granted():
+    """Myriad makes attacking token copies (CR 702.116a). Until it has a
+    builder, granting it must fail rather than grant a stand-in."""
+    assert _read("Equipped creature has myriad.") is None
 
 
 # -- losing named keywords -------------------------------------------------------
