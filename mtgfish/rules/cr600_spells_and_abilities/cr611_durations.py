@@ -96,6 +96,12 @@ def _expire(game: Game, moment: Duration) -> None:
         game.restrictions_cache = None
         changed = True
 
+    kept_requirements = [
+        r for r in game.standing_requirements if not _is_over(game, r, moment)
+    ]
+    if len(kept_requirements) != len(game.standing_requirements):
+        game.standing_requirements = kept_requirements
+
     kept_permissions = [
         p for p in game.standing_permissions if not _is_over(game, p, moment)
     ]

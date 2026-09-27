@@ -742,6 +742,49 @@ def _increment(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Provoke")
+def _provoke(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.39a: "Whenever this creature attacks, you may choose to have
+    target creature defending player controls block this creature this
+    combat if able. If you do, untap that creature." Each instance triggers
+    separately (702.39b).
+
+    The target is chosen as the trigger is put on the stack; the choice to
+    use it is made on resolution, and only then is the creature bound to
+    block and untapped. "This combat" ends with the combat phase (CR 511.2).
+    """
+    defenders_creature = ObjectFilter(
+        types_all=CardType.CREATURE,
+        controller=ControllerRelation.DEFENDING_PLAYER,
+    )
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.OPTIONAL,
+                players=YOU,
+                children=(
+                    Effect(
+                        EffectKind.BLOCKS_SOURCE_IF_ABLE,
+                        targets=defenders_creature,
+                        is_targeted=True,
+                        duration=int(Duration.END_OF_COMBAT),
+                        text="target creature defending player controls blocks"
+                        " this creature this combat if able",
+                    ),
+                    Effect(
+                        EffectKind.UNTAP,
+                        targets=ObjectFilter(remembered=True),
+                        text="untap that creature",
+                    ),
+                ),
+                text="you may choose to have target creature defending player"
+                " controls block this creature this combat if able",
+            ),
+        ),
+    )
+
+
 @register("Renown")
 def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.112a: "When this creature deals combat damage to a player, if
@@ -1666,13 +1709,12 @@ UNIMPLEMENTED_COMBAT_KEYWORDS = {
     "myriad": "CR 702.116a: token copies attacking each other opponent",
     "double team": "a digital keyword: conjure a copy into hand when it attacks",
     "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
-    "provoke": "CR 702.39a: untap a creature and force it to block",
     "intensity": "a digital intensity counter mechanic",
 }
 
 
 @register("Enlist",
-          "Myriad", "Double team", "Teamwork", "Provoke",
+          "Myriad", "Double team", "Teamwork",
           "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
     """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""

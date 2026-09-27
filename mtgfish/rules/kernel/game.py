@@ -256,6 +256,10 @@ class Game:
     #: Prohibitions from resolved spells, which outlive their source
     #: (CR 611.2b). Those from static abilities are rebuilt each epoch instead.
     standing_restrictions: list = field(default_factory=list)
+    #: Blocking requirements from resolved effects ("target creature blocks
+    #: this creature this combat if able"), which outlive the resolution and
+    #: end with their duration (CR 611.2b). ``restrictions.Requirement``.
+    standing_requirements: list = field(default_factory=list)
     #: CR 101.1: rules a card has switched off, and for whom. See
     #: ``cr100_game_concepts/cr101_rule_overrides.py`` - the golden rule's
     #: seam for the rules that are about the game rather than about an object.

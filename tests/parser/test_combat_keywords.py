@@ -74,8 +74,18 @@ def test_flanking_triggers_once_per_blocker_and_shrinks_the_blocker(card_db):
 
 def test_an_unimplemented_combat_keyword_is_still_unread(card_db):
     """Owner's rule 1: a keyword with no faithful builder reports as unread."""
-    (ability,) = _keyword_abilities(card_db, "Goblin Grappler", "Provoke")
+    (ability,) = _keyword_abilities(card_db, "Goldlust Triad", "Myriad")
     assert [e.kind for e in ability.effects] == [EffectKind.UNPARSED]
+
+
+def test_provoke_is_an_optional_targeted_attack_trigger(card_db):
+    (ability,) = _keyword_abilities(card_db, "Goblin Grappler", "Provoke")
+    assert ability.trigger.event_kinds == frozenset({EventKind.ATTACKS})
+    (optional,) = ability.effects
+    assert optional.kind is EffectKind.OPTIONAL
+    block, untap = optional.children
+    assert block.kind is EffectKind.BLOCKS_SOURCE_IF_ABLE and block.is_targeted
+    assert untap.kind is EffectKind.UNTAP and untap.targets.remembered
 
 
 # ---------------------------------------------------------------------------

@@ -460,3 +460,82 @@ def test_increment_rechecks_as_it_resolves(board):
     bears = board.play("Grizzly Bears", controller=0)
     _cast(board, "Divination")
     assert bears.counter_count("+1/+1") == 1
+
+
+# ---------------------------------------------------------------------------
+# Provoke (CR 702.39)
+# ---------------------------------------------------------------------------
+
+
+class _Declines(FixedAgent):
+    def choose_optional(self, game, player, effect):
+        return False
+
+
+def test_provoke_untaps_the_target_and_makes_it_block(board):
+    """CR 702.39a: the defending player declares no blocks, but the provoked
+    creature - tapped until the trigger untapped it - must block."""
+    board.scripts.add("Grizzly Bears", *kw("Provoke"))
+    bears = board.play("Grizzly Bears", controller=0)
+    giant = board.play("Hill Giant", controller=1, tapped=True)
+    _combat(board, {bears.id: 1}, {})
+    assert not giant.tapped
+    assert board.game.combat.blocking.get(giant.id) == [bears.id]
+
+
+def test_provoke_makes_it_block_this_creature_not_another(board):
+    board.scripts.add("Grizzly Bears", *kw("Provoke"))
+    bears = board.play("Grizzly Bears", controller=0)
+    other = board.play("Hill Giant", controller=0)
+    giant = board.play("Hill Giant", controller=1)
+    _combat(board, {bears.id: 1, other.id: 1}, {giant.id: [other.id]})
+    assert board.game.combat.blocking.get(giant.id) == [bears.id]
+
+
+def test_provoke_declined_does_nothing(board):
+    board.scripts.add("Grizzly Bears", *kw("Provoke"))
+    bears = board.play("Grizzly Bears", controller=0)
+    giant = board.play("Hill Giant", controller=1, tapped=True)
+    game = board.game
+    game.active_player = PlayerId(0)
+    game.agents[PlayerId(0)] = _Declines(attackers={bears.id: 1})
+    game.agents[PlayerId(1)] = FixedAgent()
+    declare_attackers(game)
+    board.settle()
+    board.resolve_stack()
+    assert giant.tapped
+    assert not game.standing_requirements
+
+
+def test_provoke_lasts_only_this_combat(board):
+    from mtgfish.rules.cr600_spells_and_abilities.cr611_durations import (
+        expire_at_end_of_combat,
+    )
+
+    board.scripts.add("Grizzly Bears", *kw("Provoke"))
+    bears = board.play("Grizzly Bears", controller=0)
+    board.play("Hill Giant", controller=1)
+    _combat(board, {bears.id: 1}, {})
+    assert board.game.standing_requirements
+    expire_at_end_of_combat(board.game)
+    assert not board.game.standing_requirements
+
+
+def test_provoke_targets_only_the_defending_players_creatures(card_db):
+    """"Target creature defending player controls": with two opponents, a
+    creature of the one not being attacked is not a legal target."""
+    from mtgfish.rules.kernel.matching import matches
+    from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter
+
+    board = make_board(card_db, ScriptedAbilities(), players=3)
+    bears = board.play("Grizzly Bears", controller=0)
+    attacked = board.play("Hill Giant", controller=1)
+    bystander = board.play("Hill Giant", controller=2)
+    game = board.game
+    game.active_player = PlayerId(0)
+    game.agents[PlayerId(0)] = FixedAgent(attackers={bears.id: 1})
+    declare_attackers(game)
+    spec = ObjectFilter(controller=ControllerRelation.DEFENDING_PLAYER)
+    kwargs = dict(source=bears.id, controller=PlayerId(0))
+    assert matches(game, attacked, spec, **kwargs)
+    assert not matches(game, bystander, spec, **kwargs)
