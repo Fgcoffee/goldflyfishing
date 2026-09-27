@@ -293,6 +293,32 @@ def test_each_player_edict_is_unaffected(box):
     assert _on_battlefield(game, "Grizzly Bears") == []
 
 
+def test_archon_of_cruelty_takes_everything_from_the_one_opponent_it_targets(box):
+    """"Target opponent sacrifices ..., discards a card, and loses 3 life":
+    the elided subjects are the targeted opponent (CR 608.2c) - it was
+    refused while the sacrifice did not target, having no player to copy."""
+    _need(box, "Archon of Cruelty", "Grizzly Bears", "Forest")
+    game = box.game
+    box.put("Grizzly Bears", "battlefield", 1)
+    box.put("Forest", "hand", 1)
+    box.put("Forest", "library", 0)
+    box.put("Archon of Cruelty", "hand", 0)
+    _mana(box, 0, 6)
+    _mana(box, 0, 2, Color.BLACK)
+    life = [p.life for p in game.players]
+
+    _cast(box, 0, "Archon of Cruelty", ())
+    box.resolve_top()  # the Archon enters, and its trigger targets player 1
+    trigger = game.objects[game.stack[-1]]
+    assert trigger.targets == ((player_target(1),),)
+    box.resolve_top()
+
+    assert _on_battlefield(game, "Grizzly Bears") == []
+    assert game.player(1).hand == []
+    assert [p.life for p in game.players] == [life[0] + 3, life[1] - 3]
+    assert len(game.player(0).hand) == 1
+
+
 # ---------------------------------------------------------------------------
 # "Exile target player's graveyard": the other half of the same construct
 # ---------------------------------------------------------------------------

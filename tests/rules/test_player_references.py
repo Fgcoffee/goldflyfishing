@@ -456,10 +456,6 @@ def test_the_controller_of_the_spell_that_targeted_it(box):
         # The targeted player searches, but the land it "puts onto the
         # battlefield" would enter under the caster's control (CR 110.2a).
         ("Restorative Technique", "searches their library"),
-        # "Target opponent sacrifices ..., discards a card, and loses 3
-        # life": the sacrifice is not read as targeting, so the elided
-        # subject has no single player to copy - once it was *you*.
-        ("Archon of Cruelty", "discards a card"),
     ],
 )
 def test_a_possessive_about_another_object_is_refused(box, name, text_part):
