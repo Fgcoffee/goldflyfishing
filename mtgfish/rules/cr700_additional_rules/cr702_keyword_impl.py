@@ -501,6 +501,154 @@ def _afflict(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Bushido")
+def _bushido(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.45a: "Whenever this creature blocks or becomes blocked, it gets
+    +N/+N until end of turn." Each instance triggers separately (702.45b),
+    which one ability per instance gives for free."""
+    n = max(1, instance.amount)
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.BLOCKS, EventKind.BECOMES_BLOCKED}),
+                subject=ObjectFilter(source_only=True),
+                functions_in=BATTLEFIELD,
+                text="whenever this blocks or becomes blocked",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                amount=Value.of(n),
+                amount2=Value.of(n),
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or f"Bushido {n}",
+        ),
+    )
+
+
+@register("Rampage")
+def _rampage(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.23a: "Whenever this creature becomes blocked, it gets +N/+N
+    until end of turn for each creature blocking it beyond the first."
+
+    CR 702.23b: the bonus is worked out once, as the ability resolves, from
+    the creatures blocking it then - so the count is read from the combat at
+    resolution, not taken from the declaration. "Beyond the first" never goes
+    below zero: with every blocker gone there is no bonus, not a penalty.
+    """
+    n = max(1, instance.amount)
+    beyond_first = Value(
+        ValueKind.MAXIMUM,
+        operands=(
+            Value.of(0),
+            Value(
+                ValueKind.DIFFERENCE,
+                operands=(Value(ValueKind.BLOCKERS_OF_SOURCE), Value.of(1)),
+            ),
+        ),
+    )
+    bonus = Value(ValueKind.PRODUCT, constant=n, operands=(beyond_first,))
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.BECOMES_BLOCKED}),
+                subject=ObjectFilter(source_only=True),
+                functions_in=BATTLEFIELD,
+                text="whenever this becomes blocked",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                amount=bonus,
+                amount2=bonus,
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or f"Rampage {n}",
+        ),
+    )
+
+
+@register("Mobilize")
+def _mobilize(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.181a: "Whenever this creature attacks, create N 1/1 red Warrior
+    creature tokens. Those tokens enter tapped and attacking. Sacrifice them
+    at the beginning of the next end step."
+
+    "Them" is the tokens just made (CR 608.2c), which the token executor
+    remembers; the sacrifice is a delayed trigger (CR 603.7) so it happens
+    even if this creature has left by then.
+    """
+    from ..cr600_spells_and_abilities.effects import TokenSpec
+
+    n = max(1, instance.amount)
+    warrior = TokenSpec(
+        types=CardType.CREATURE,
+        subtypes=("Warrior",),
+        colors=Color.RED,
+        power=Value.of(1),
+        toughness=Value.of(1),
+        enters_tapped=True,
+        enters_attacking=True,
+    )
+    sacrifice_them = Effect(
+        EffectKind.SACRIFICE,
+        targets=ObjectFilter(remembered=True),
+        players=YOU,
+        text="sacrifice them",
+    )
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.CREATE_TOKEN,
+                token=warrior,
+                amount=Value.of(n),
+                players=YOU,
+            ),
+            _delayed(
+                TriggerCondition(
+                    event_kinds=frozenset({EventKind.END_STEP}),
+                    text="at the beginning of the next end step",
+                ),
+                sacrifice_them,
+                text="sacrifice them at the beginning of the next end step",
+            ),
+        ),
+    )
+
+
+@register("Flanking")
+def _flanking(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.25a: "Whenever this creature becomes blocked by a creature
+    without flanking, the blocking creature gets -1/-1 until end of turn."
+
+    "Becomes blocked by a creature" triggers once per blocker (CR 509.3d),
+    and "without flanking" is part of the trigger condition, checked as the
+    blocker is declared (CR 509.3f). "The blocking creature" is the one whose
+    block triggered it: the event's ``source``.
+    """
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.BECOMES_BLOCKED_BY}),
+                subject=ObjectFilter(source_only=True),
+                source=ObjectFilter(
+                    types_all=CardType.CREATURE, lacks_keyword=("Flanking",)
+                ),
+                functions_in=BATTLEFIELD,
+                text="whenever this becomes blocked by a creature without flanking",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                targets=ObjectFilter(trigger_source=True),
+                amount=Value.of(-1),
+                amount2=Value.of(-1),
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or "Flanking",
+        ),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Death triggers
 # ---------------------------------------------------------------------------
@@ -1383,13 +1531,9 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: makes token copies, undaunted reduces a cost, flanking shrinks blockers).
 #: Each is inert until it has a builder of its own.
 UNIMPLEMENTED_COMBAT_KEYWORDS = {
-    "bushido": "CR 702.45a: +N/+N whenever it blocks or becomes blocked",
-    "rampage": "CR 702.23a: +N/+N for each creature blocking it beyond the first",
-    "flanking": "CR 702.25a: a blocking creature without flanking gets -1/-1",
     "frenzy": "CR 702.68a: +N/+0 whenever it attacks and isn't blocked",
     "renown": "CR 702.112a: counters when it deals combat damage to a player, if not renowned",
     "enlist": "CR 702.154a: tap a creature as it attacks to add that creature's power",
-    "mobilize": "CR 702.181a: attacking Warrior tokens, sacrificed at end step",
     "myriad": "CR 702.116a: token copies attacking each other opponent",
     "double team": "a digital keyword: conjure a copy into hand when it attacks",
     "undaunted": "CR 702.125a: costs {1} less for each opponent",
@@ -1401,7 +1545,7 @@ UNIMPLEMENTED_COMBAT_KEYWORDS = {
 }
 
 
-@register("Bushido", "Rampage", "Flanking", "Frenzy", "Renown", "Enlist", "Mobilize",
+@register("Frenzy", "Renown", "Enlist",
           "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke", "Firebending",
           "Increment", "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:

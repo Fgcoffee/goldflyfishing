@@ -241,7 +241,11 @@ def _keyword_line(paragraph: str) -> list[str] | None:
                 return [stripped]
         return None
 
-    parts = [part.strip() for part in paragraph.split(",") if part.strip()]
+    # Older printings kept in the oracle separate keywords with a semicolon
+    # ("Flying; flanking", "Protection from black; flanking") - the same list,
+    # so the same split. Left whole, the line either failed or, worse, handed
+    # "black; flanking" to protection's quality and lost the flanking.
+    parts = [part.strip() for part in re.split(r"[,;]", paragraph) if part.strip()]
     if not parts:
         return None
 

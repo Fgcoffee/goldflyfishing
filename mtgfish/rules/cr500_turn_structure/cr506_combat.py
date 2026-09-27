@@ -514,6 +514,16 @@ def declare_blockers(game: Game) -> None:
             game.emit(
                 Event(EventKind.BECOMES_BLOCKED, object_id=attacker_id, amount=len(blockers))
             )
+            # CR 509.3d: once for each creature that blocks it.
+            for blocker_id in blockers:
+                game.emit(
+                    Event(
+                        EventKind.BECOMES_BLOCKED_BY,
+                        object_id=attacker_id,
+                        source=blocker_id,
+                        source_controller=combat.controllers.get(blocker_id, NO_PLAYER),
+                    )
+                )
     for blocker_id in sorted(combat.blocking):
         game.emit(Event(EventKind.BLOCKS, object_id=blocker_id))
 

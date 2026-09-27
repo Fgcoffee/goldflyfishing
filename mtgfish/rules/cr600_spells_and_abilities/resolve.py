@@ -1000,6 +1000,7 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
     from ..cr100_game_concepts.cr111_tokens import create_tokens
 
     count = _count(resolution, effect)
+    made: list = []
     for player_id in _players(resolution, effect):
         created = create_tokens(
             resolution.game,
@@ -1013,6 +1014,14 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
             actions.record_link(
                 resolution.game, resolution.source, token.id, _link_of(resolution)
             )
+        made.extend(token.id for token in created)
+    # CR 608.2c: "Create two 1/1 tokens. Sacrifice them at the beginning of
+    # the next end step" - "them" is the tokens this instruction made. The
+    # generic capture in ``_execute_one`` only sees an effect's *targets*,
+    # and creating a token has none, so without this the pronoun still meant
+    # whatever an earlier instruction acted on.
+    if made:
+        resolution.remembered = made
 
 
 def _do_create_emblem(resolution: Resolution, effect: Effect) -> None:

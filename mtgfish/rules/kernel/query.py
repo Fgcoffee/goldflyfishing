@@ -153,6 +153,11 @@ class ValueKind(IntEnum):
     #: EVENT_COUNT_THIS_TURN counts how many times they happened. Gaining 2
     #: life twice is 4 life and two events.
     EVENT_AMOUNT_THIS_TURN = 7002
+    #: "Each creature blocking it" (CR 702.23a, rampage): how many creatures
+    #: are blocking the ability's source right now. Read from the combat, not
+    #: from the event that declared them - CR 702.23b counts at resolution, so
+    #: a blocker removed from combat in between is not counted.
+    BLOCKERS_OF_SOURCE = 18001
 
 
 @dataclass(frozen=True, slots=True)
@@ -206,6 +211,8 @@ class Value:
             return f"the number of {self.filter}"
         if self.kind is ValueKind.MANA_SPENT:
             return "the mana spent to cast it"
+        if self.kind is ValueKind.BLOCKERS_OF_SOURCE:
+            return "the number of creatures blocking this creature"
         if self.kind is ValueKind.COLOURS_AMONG:
             return f"the number of colors among {self.filter}"
         if self.kind in (ValueKind.AMOUNT_THIS_WAY, ValueKind.EVENT_AMOUNT_THIS_TURN):
