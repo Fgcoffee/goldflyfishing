@@ -143,8 +143,9 @@ def project(game: Game, player_id: PlayerId, action: Action) -> Projection:
 def clone(game: Game, player_id: PlayerId) -> Game:
     """A private copy of ``game`` in which ``player_id`` knows only what they may.
 
-    Shared with the original: the card-ability provider, which holds a
-    database connection, and every piece of frozen card data (see
+    Shared with the original: the card-ability provider and the card
+    catalogue (conjure's name lookup), which both hold a database
+    connection, and every piece of frozen card data (see
     ``_immutable_types``). Replaced: the log (its running hash is the replay's
     determinism check) and the statistics observer. Everything else is copied,
     including the agents, so a decision made inside the projection leaves the
@@ -160,6 +161,8 @@ def clone(game: Game, player_id: PlayerId) -> Game:
     replaced = {id(game.log): GameLog(), id(game.observer): None}
     if game.ability_provider is not None:
         replaced[id(game.ability_provider)] = game.ability_provider
+    if game.card_catalog is not None:
+        replaced[id(game.card_catalog)] = game.card_catalog
     shared: list[object] = []
 
     class _Pickler(pickle.Pickler):

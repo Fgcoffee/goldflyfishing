@@ -44,10 +44,15 @@ def _on(box, name, player=0):
 
 def _resolve(box, name, *, controller=ME, targets=(), source=None, ability=0):
     """Carry out a card's spell text (or one ability's effects) directly."""
+    from mtgfish.parser.compile import understood
+
     card = box.db.lookup(name)
     parsed = parse_card(card)
-    assert parsed.fully_parsed, [f.reason for f in parsed.failures]
-    effects = parsed.faces[0].abilities[ability].effects
+    # The ability under test must be read; the card's others need not be
+    # (Deftblade Elite's provoke is not implemented yet).
+    chosen = parsed.faces[0].abilities[ability]
+    assert understood(chosen), [f.reason for f in parsed.failures]
+    effects = chosen.effects
     execute(
         Resolution(
             game=box.game,

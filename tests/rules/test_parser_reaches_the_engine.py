@@ -156,9 +156,9 @@ def test_a_fog_watches_combat_damage_only(game):
 
 
 def test_an_unqualified_shield_still_watches_both(game):
-    shield = _shield(
-        game, "Prevent all damage that would be dealt to target creature this turn."
-    )
+    # Untargeted: a targeted shield covers only its chosen targets, and this
+    # test chooses none.
+    shield = _shield(game, "Prevent all damage that would be dealt to creatures this turn.")
     assert EventKind.DAMAGE_DEALT in shield.event_kinds
     assert EventKind.COMBAT_DAMAGE_DEALT in shield.event_kinds
 
