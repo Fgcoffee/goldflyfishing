@@ -166,33 +166,56 @@ def test_another_players_may_is_theirs_to_decide_and_carry_out(box):
 # ---------------------------------------------------------------------------
 
 
+def _mana(box, player, amount, color=None):
+    """Exactly ``amount`` mana - ``Sandbox.give_mana`` adds that much of
+    *every* colour, which would leave a player able to pay a tax the test
+    means them to be unable to pay."""
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import Color
+
+    box.game.player(player).mana_pool.add(ManaKind(color or Color.NONE), amount)
+
+
+def _opponent_casts_bears(box):
+    """The opponent casts Grizzly Bears in their own main phase - a creature
+    spell is cast only by the active player, in a main phase, with an empty
+    stack (CR 117.1a) - keeps priority (CR 117.3c) and passes it to you
+    (CR 117.3d), and you respond. Their pool is empty afterwards."""
+    from mtgfish.rules.kernel.enums import Color
+
+    game = box.game
+    game.active_player = game.priority_player = 1
+    box.put("Grizzly Bears", "hand", 1)
+    _mana(box, 1, 1)
+    _mana(box, 1, 1, Color.GREEN)
+    _cast(box, 1, "Grizzly Bears", ())
+    game.priority_player = 0
+    assert game.player(1).mana_pool.total == 0
+    return _find(game, "Grizzly Bears", Zone.STACK)
+
+
 def test_mana_leak_asks_the_spells_controller(box):
     _need(box, "Mana Leak", "Grizzly Bears")
     game = box.game
     opponent = Agreeable()
     game.agents[1] = opponent
-    box.put("Grizzly Bears", "hand", 1)
-    box.give_mana(2, 1)
-    _cast(box, 1, "Grizzly Bears", ())
-    spell = _find(game, "Grizzly Bears", Zone.STACK)
+    spell = _opponent_casts_bears(box)
     box.put("Mana Leak", "hand", 0)
     box.give_mana(2, 0)
-    box.give_mana(3, 1)
+    _mana(box, 1, 3)
 
     _cast(box, 0, "Mana Leak", ((spell.id,),))
     box.resolve_top()
 
     assert opponent.asked == ["pay"]
+    assert game.player(1).mana_pool.total == 0, "the spell's controller did not pay"
     assert spell.zone is Zone.STACK and not spell.superseded_by, "paid, yet countered"
 
 
 def test_mana_leak_counters_when_its_controller_cannot_pay(box):
     _need(box, "Mana Leak", "Grizzly Bears")
     game = box.game
-    box.put("Grizzly Bears", "hand", 1)
-    box.give_mana(2, 1)
-    _cast(box, 1, "Grizzly Bears", ())
-    spell = _find(game, "Grizzly Bears", Zone.STACK)
+    spell = _opponent_casts_bears(box)
     box.put("Mana Leak", "hand", 0)
     box.give_mana(2, 0)
 
@@ -228,8 +251,8 @@ def test_smothering_tithe_asks_the_player_who_drew(box):
     game.agents[1] = opponent
     box.put("Smothering Tithe", "battlefield", 0)
     box.put("Forest", "library", 1)
-    box.give_mana(2, 1)
-    box.give_mana(2, 0)
+    _mana(box, 1, 2)
+    _mana(box, 0, 2)
 
     game.draw(1)
     settle(game)
@@ -247,11 +270,16 @@ def test_that_creatures_controller_in_a_dies_trigger(box):
     _need(box, "Massacre Wurm", "Grizzly Bears")
     game = box.game
     box.put("Massacre Wurm", "battlefield", 0)
+    settle(game)
+    while game.stack:
+        # The Wurm's own enters trigger, resolved before the bear arrives:
+        # its -2/-2 would otherwise kill the bear first. It does not reach a
+        # creature that arrives later (CR 611.2c).
+        box.resolve_top()
     box.put("Grizzly Bears", "battlefield", 1)
     bear = _find(game, "Grizzly Bears")
     settle(game)
-    while game.stack:
-        box.resolve_top()  # the Wurm's own enters trigger, if any
+    assert not bear.superseded_by and not game.stack
     life = game.player(1).life
 
     from mtgfish.rules.cr100_game_concepts import actions
@@ -269,10 +297,10 @@ def test_that_creatures_controller_in_a_dies_trigger(box):
 
 
 def test_that_player_is_the_player_targeted_earlier(box):
-    _need(box, "Compulsive Research", "Forest", "Island")
+    _need(box, "Compulsive Research", "Grizzly Bears")
     game = box.game
     for _ in range(4):
-        box.put("Island", "library", 1)
+        box.put("Grizzly Bears", "library", 1)
     effects = _effects(box.db, "Compulsive Research", "Target player")
 
     execute(
@@ -284,6 +312,25 @@ def test_that_player_is_the_player_targeted_earlier(box):
     assert len(game.player(1).hand) == 1
     assert len(game.player(1).graveyard) == 2
     assert game.player(0).hand == []
+
+
+def test_they_in_the_unless_is_the_same_targeted_player(box):
+    """"... unless they discard a land card": with lands drawn, the targeted
+    player discards just one land - and you, with nothing, discard nothing."""
+    _need(box, "Compulsive Research", "Island")
+    game = box.game
+    for _ in range(4):
+        box.put("Island", "library", 1)
+    effects = _effects(box.db, "Compulsive Research", "Target player")
+
+    execute(
+        Resolution(game=game, source=0, controller=0, targets=((player_target(1),),)),
+        effects,
+    )
+
+    assert len(game.player(1).hand) == 2
+    assert len(game.player(1).graveyard) == 1
+    assert game.player(0).hand == [] and game.player(0).graveyard == []
 
 
 # ---------------------------------------------------------------------------
