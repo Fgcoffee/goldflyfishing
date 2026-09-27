@@ -1239,7 +1239,20 @@ def _finish(
             ParseFailure(text, "pile reference without a pile", rule=rule)
         )
         return Ability.unreadable(text)
-    return build(effects)
+    from .referents import settle_referents
+
+    ability = build(effects)
+    settled = settle_referents(ability)
+    if settled is None:
+        # "Its power" with no object the engine can read it off - the target
+        # of the very instruction being carried out, or an object a delayed
+        # ability no longer remembers. Answered off the source instead, it
+        # would be a different card.
+        result.failures.append(
+            ParseFailure(text, "characteristic of an object it cannot name", rule=rule)
+        )
+        return Ability.unreadable(text)
+    return settled
 
 
 # ---------------------------------------------------------------------------
