@@ -86,6 +86,7 @@ def collect_triggers(game: Game, event: Event) -> None:
 
     if event.looks_back_in_time:
         _collect_departed_token(game, event, found)
+        _collect_departed_card(game, event, found)
 
     if not found:
         return
@@ -132,6 +133,50 @@ def _collect_departed_token(
             continue
         if condition_met(game, token, trigger, event):
             found.append((token, ability))
+
+
+def _collect_departed_card(
+    game: Game, event: Event, found: list[tuple[GameObject, Ability]]
+) -> None:
+    """A card's own leaves-the-battlefield abilities (CR 603.10a, 603.6c).
+
+    CR 603.10a: the game "looks back in time" for these, using the existence
+    of the abilities immediately before the event. A card that leaves is a new
+    object in its new zone (CR 400.7), and that object's abilities function
+    only where they say - a "when this dies" ability works on the battlefield,
+    so the graveyard card never answered for it and every such ability in the
+    format did nothing. The pre-move object is kept as last-known information
+    and still reads the zone it left, so it is asked instead.
+
+    Only the departed object's *own* abilities are looked for here: every
+    other permanent is still on the battlefield and the index already has it.
+    An ability that also functions where the card went has been found through
+    the new object already, and is not counted twice.
+    """
+    if not event.data:
+        return
+    departed = game.objects.get(event.data[0])
+    if departed is None or departed.id == event.object_id:
+        return  # A token is its own record (CR 111.7); see above.
+    if departed.zone is not Zone.BATTLEFIELD or departed.phased_out:
+        return
+    # CR 708.2: a face-down permanent has no abilities of its own to trigger.
+    if departed.face_down:
+        return
+    for ability in game.printed_characteristics(departed).abilities:
+        if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
+            continue
+        trigger = ability.trigger
+        if trigger is None or event.kind not in _kinds_watched(trigger):
+            continue
+        if Zone.BATTLEFIELD not in trigger.functions_in:
+            continue
+        if any(
+            obj.id == event.object_id and other == ability for obj, other in found
+        ):
+            continue
+        if condition_met(game, departed, trigger, event):
+            found.append((departed, ability))
 
 
 def _extra_triggers(game: Game, obj: GameObject, event: Event) -> int:
