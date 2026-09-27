@@ -1417,8 +1417,12 @@ def _quoted_run(stream: Stream) -> tuple:
         # keywords that take an argument. The run reader only knew bare names,
         # so a list stopped dead at the first one that carried a parameter.
         parameterised = _keyword_with_argument(stream)
+        if parameterised == ():
+            # A parameterised keyword whose argument cannot be read: the whole
+            # grant fails rather than granting the keyword unqualified.
+            return ()
         if parameterised is not None:
-            granted.append(parameterised)
+            granted.extend(parameterised)
         elif stream.peek().text == '"':
             inner = _read_quotation(stream)
             if inner is None:
@@ -1432,21 +1436,75 @@ def _quoted_run(stream: Stream) -> tuple:
             if is_known(pair):
                 stream.next()
                 stream.next()
-                granted.append(
-                    Ability(AbilityKind.STATIC, keyword=pair, text=pair)
-                )
+                name = pair
             elif is_known(token.text):
                 stream.next()
-                granted.append(
-                    Ability(
-                        AbilityKind.STATIC, keyword=token.text, text=token.text
-                    )
-                )
+                name = token.text
             else:
                 break
+            built = _granted_keyword(name, stream)
+            if built is None:
+                return ()
+            granted.extend(built)
         if not _another_keyword_follows(stream):
             break
     return tuple(granted)
+
+
+def _granted_keyword(name: str, stream: Stream):
+    """A keyword named in a grant, expanded exactly as a printed one would be.
+
+    "Creatures you control have prowess" grants prowess - the triggered
+    ability CR 702.108a defines - not an inert ability that happens to be
+    called Prowess. Granted keywords used to be built as a bare name, which is
+    right for flying (the engine asks for it by name) and silently wrong for
+    every keyword that is really a trigger or carries a quality: granted
+    prowess, exalted, annihilator 2 and swampwalk all did nothing while the
+    card read as understood. So the keyword registry expands it, and the grant
+    fails when the registry's expansion is itself not understood - a keyword
+    the engine cannot run is not granted as if it could.
+
+    A numeric argument ("afflict 3", "toxic 1") or a mana cost ("ninjutsu
+    {2}{U}{B}") is read here; nothing else is. Where the expansion is just the
+    named static ability, the bare form is kept, which is the same ability.
+    """
+    from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from .compile import understood
+
+    amount = 0
+    cost = None
+    look = stream.mark()
+    number = stream.accept_number()
+    if number is not None:
+        # "mobilize X, where X is ..." is not read here; a plain number is.
+        amount = number
+    elif stream.peek().kind is TokenKind.SYMBOL:
+        from ..rules.cr100_game_concepts.cr118_costs import Cost
+
+        symbols = _mana_run(stream)
+        if not symbols:
+            stream.reset(look)
+            return None
+        cost = Cost.mana("".join(symbols))
+    elif stream.peek().text == "X":
+        return None
+
+    built = build(KeywordInstance(name, amount=amount, cost=cost, text=name))
+    if not built or not all(understood(ability) for ability in built):
+        stream.reset(look)
+        return None
+    if (
+        len(built) == 1
+        and amount == 0
+        and cost is None
+        and built[0].kind is AbilityKind.STATIC
+        and not built[0].effects
+        and built[0].quality is None
+        and built[0].trigger is None
+    ):
+        return (Ability(AbilityKind.STATIC, keyword=name, text=name),)
+    return built
 
 
 def _another_keyword_follows(stream: Stream) -> bool:
@@ -1488,57 +1546,138 @@ _PARAMETERISED_KEYWORDS = ("protection", "ward", "hexproof", "landwalk")
 def _keyword_with_argument(stream: Stream):
     """"protection from black and from green", "ward {2}", "hexproof from blue".
 
-    The argument narrows the keyword rather than adding another one, so the
-    whole phrase is read here and kept as a single ability - "protection from
-    black and from green" is one keyword mentioned twice, not two keywords.
+    Returns the abilities the phrase grants; ``None`` when the next words are
+    not one of these keywords; and ``()`` when they are but the argument
+    cannot be read, which fails the grant.
+
+    CR 702.16g: "protection from black and from green" is two protection
+    abilities, one per quality. The quality is the whole point of the keyword.
+    Read as a bare "Protection", which is what this used to produce, every
+    Sword granted protection from *everything*; and the argument reader ate
+    up to fourteen words, so "gains protection from the color of your choice
+    until end of turn" lost its duration as well, and Mother of Runes handed
+    out permanent protection from everything.
     """
-    from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from .compile import understood
 
     mark = stream.mark()
     word = stream.peek().lower
     if word not in _PARAMETERISED_KEYWORDS:
         return None
     stream.next()
-    name = word.capitalize()
 
-    # "ward {2}" and "ward - pay 3 life".
+    # "ward {2}". Built by the registry, so a granted ward is the same ability
+    # as a printed one - and, while the registry's ward cannot collect its
+    # payment, not understood either. It used to be a bare "Ward" that did
+    # nothing and counted as read.
     if word == "ward":
+        from ..rules.cr100_game_concepts.cr118_costs import Cost
+
         symbols = _mana_run(stream)
         if not symbols:
-            stream.skip_punct("-")
-            parse_value(stream)
-        return Ability(AbilityKind.STATIC, keyword=name, text=f"{name} ...")
+            stream.reset(mark)
+            return ()
+        built = build(
+            KeywordInstance("Ward", cost=Cost.mana("".join(symbols)), text="Ward")
+        )
+        if not all(understood(ability) for ability in built):
+            stream.reset(mark)
+            return ()
+        return built
 
-    if not stream.accept("from"):
+    if word == "landwalk" or not stream.at("from"):
         stream.reset(mark)
         return None
+    qualities = _protection_qualities(stream)
+    if qualities is None:
+        stream.reset(mark)
+        return ()
+    name = "Protection" if word == "protection" else "Hexproof from"
+    out: list = []
+    for quality in qualities:
+        out.extend(build(KeywordInstance(name, filter=quality, text=name)))
+    return tuple(out)
 
-    # "from each color", "from black and from green", "from the color of your
-    # choice", "from each color that's not in your commander's color
-    # identity". All of them narrow the same keyword.
-    steps = 0
-    while not stream.done:
-        token = stream.peek()
-        if token.text in (".", ";", '"'):
-            break
-        look = stream.mark()
-        # A following "and has ..." starts a new keyword, not more argument.
-        if stream.accept("and"):
-            if stream.at("has", "have", "gains", "gain") or stream.at(*_PARAMETERISED_KEYWORDS):
-                if not stream.accept("from"):
-                    stream.reset(look)
-                    break
-            elif not stream.accept("from"):
-                stream.reset(look)
-                break
-            continue
-        stream.next()
-        steps += 1
-        if steps > 14:
-            stream.reset(mark)
+
+#: The colour words a protection quality can name (CR 105.1).
+_COLOUR_QUALITIES = ("white", "blue", "black", "red", "green")
+
+#: "Protection from everything" (CR 702.16j): the keyword with no quality,
+#: which ``protected_from`` treats as matching any source.
+_EVERYTHING = object()
+
+
+def _protection_qualities(stream: Stream):
+    """"from red", "from red and from blue", "from everything", "from Humans".
+
+    One filter per quality, ``None`` standing for everything, or ``None``
+    overall for a quality that cannot be expressed. The filters carry no zone,
+    because a quality is asked of a source wherever it is - a spell on the
+    stack, an ability's source, an attacking creature.
+
+    Declined: "the color of your choice" and "the chosen color", which need a
+    choice this reader cannot make; qualities that name players ("from your
+    opponents"); and any noun phrase narrowing more than type and subtype.
+    """
+    qualities: list = []
+    while True:
+        if not stream.accept("from"):
             return None
+        quality = _one_quality(stream)
+        if quality is None:
+            return None
+        qualities.append(None if quality is _EVERYTHING else quality)
+        look = stream.mark()
+        stream.skip_punct(",")
+        stream.accept("and")
+        if stream.at("from"):
+            continue
+        stream.reset(look)
+        return qualities
 
-    return Ability(AbilityKind.STATIC, keyword=name, text=f"{name} from ...")
+
+def _one_quality(stream: Stream):
+    from ..rules.kernel.enums import Color
+
+    word = stream.peek().lower
+    if word == "everything":
+        stream.next()
+        return _EVERYTHING
+    if word in _COLOUR_QUALITIES:
+        stream.next()
+        return ObjectFilter(colors_any=Color[word.upper()], zones=frozenset())
+    if word == "multicolored":
+        stream.next()
+        return ObjectFilter(must_be_multicolored=True, zones=frozenset())
+    if word == "monocolored":
+        stream.next()
+        return ObjectFilter(must_be_monocolored=True, zones=frozenset())
+    if word == "colorless":
+        stream.next()
+        return ObjectFilter(must_be_colorless=True, zones=frozenset())
+    if stream.accept_phrase("all colors") or stream.accept_phrase("each color"):
+        # "Protection from all colors" is protection from each color: a
+        # source is stopped by it exactly when it has at least one.
+        if stream.at("that's", "that", "not"):
+            return None
+        return ObjectFilter(must_be_coloured=True, zones=frozenset())
+
+    look = stream.mark()
+    spec = parse_object_filter(stream)
+    if spec is None:
+        stream.reset(look)
+        return None
+    simple = ObjectFilter(
+        types_any=spec.types_any,
+        types_all=spec.types_all,
+        subtypes_any=spec.subtypes_any,
+        zones=spec.zones,
+    )
+    if spec != simple or not (spec.types_any or spec.types_all or spec.subtypes_any):
+        stream.reset(look)
+        return None
+    return replace(spec, zones=frozenset())
 
 
 def _read_quotation(stream: Stream):
@@ -1768,7 +1907,9 @@ def _token_abilities(stream: Stream) -> tuple[tuple[str, ...], tuple]:
         stream.reset(mark)
         return (), ()
 
-    keywords = tuple(a.keyword for a in granted if a.keyword)
+    # One keyword can expand to several abilities (CR 702.16g: protection
+    # from two colours is two abilities), and the token spec keeps names.
+    keywords = tuple(dict.fromkeys(a.keyword for a in granted if a.keyword))
     written = tuple(a for a in granted if not a.keyword)
     return keywords, written
 
@@ -4307,7 +4448,13 @@ def _loses_keyword(stream: Stream) -> Effect | None:
         return None
     if not stream.accept("loses", "lose"):
         return None
-    stream.accept_phrase("your choice of")
+    # "loses your choice of flying, first strike, or trample" and "loses
+    # first strike or swampwalk" take away *one* of the list, chosen as the
+    # effect resolves. Read as a list both lost every keyword named - a
+    # stronger card - so the choice is declined until there is an opcode
+    # that chooses.
+    if stream.at_phrase("your choice of"):
+        return None
 
     names: list[str] = []
     while True:
@@ -4324,8 +4471,13 @@ def _loses_keyword(stream: Stream) -> Effect | None:
             names.append(token.text)
         else:
             break
+        look = stream.mark()
         stream.skip_punct(",")
-        stream.accept("and", "or")
+        if stream.accept("or"):
+            return None
+        stream.reset(look)
+        stream.skip_punct(",")
+        stream.accept("and")
 
     if not names:
         return None

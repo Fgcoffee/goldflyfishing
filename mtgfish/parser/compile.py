@@ -966,9 +966,10 @@ def parse_inner_ability(text: str) -> Ability | None:
     if scratch.failures or len(abilities) != 1:
         return None
     ability = abilities[0]
-    if ability.unparsed or any(
-        node.is_unparsed for effect in ability.effects for node in effect.walk()
-    ):
+    # ``understood`` rather than a walk for UNPARSED nodes: a quoted "Ward -
+    # Pay 2 life" builds a trigger whose *condition* is unread, which the walk
+    # never looked at, so the grant counted as read while granting nothing.
+    if not understood(ability):
         return None
     return ability
 
