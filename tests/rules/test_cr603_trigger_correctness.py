@@ -360,3 +360,181 @@ def test_leaving_your_graveyard_is_your_cards(board):
 )
 def test_unreadable_origins_and_owners_are_not_read(text):
     assert parse_trigger(Stream.of(text)) is None
+
+
+# ---------------------------------------------------------------------------
+# What acted: "of a spell", "by a source you control", "by a creature"
+# ---------------------------------------------------------------------------
+
+
+def _on_stack(board, name: str, player: int, *, ability: bool = False):
+    from mtgfish.rules.kernel.enums import Zone
+    from mtgfish.rules.kernel.gameobject import ObjectKind
+
+    kind = ObjectKind.ABILITY if ability else ObjectKind.CARD
+    obj = board.game.create_object(board.db.lookup(name), PlayerId(player), Zone.STACK, kind=kind)
+    board.game.invalidate_characteristics()
+    return obj
+
+
+def _targeted(board, target, by):
+    board.game.emit(
+        Event(EventKind.TARGETED, object_id=target.id, player=target.controller, source=by.id)
+    )
+
+
+def test_the_target_of_a_spell_is_not_the_target_of_an_ability(board):
+    text = "Whenever this creature becomes the target of a spell, draw a card."
+    me = watch(board, text)
+    _targeted(board, me, _on_stack(board, "Lightning Bolt", 1, ability=True))
+    assert fired(board, text) == 0
+    _targeted(board, me, _on_stack(board, "Lightning Bolt", 1))
+    assert fired(board, text) == 1
+
+
+def test_a_spell_or_ability_an_opponent_controls(board):
+    text = "Whenever a creature you control becomes the target of a spell or ability an opponent controls, draw a card."
+    watch(board, text)
+    bear = board.play("Hill Giant", 0)
+    _targeted(board, bear, _on_stack(board, "Lightning Bolt", 0))
+    assert fired(board, text) == 0
+    _targeted(board, bear, _on_stack(board, "Lightning Bolt", 1, ability=True))
+    assert fired(board, text) == 1
+
+
+def test_targeting_your_own_creature_is_an_event(board):
+    """CR 115.1: becoming a target does not depend on whose spell it is -
+    the engine announced only opponents' targets, so "becomes the target of
+    a spell you control" could never fire."""
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import _announce_targets
+
+    text = "Whenever this creature becomes the target of a spell you control, draw a card."
+    me = watch(board, text)
+    spell = _on_stack(board, "Giant Growth", 0)
+    spell.targets = ((me.id,),)
+    _announce_targets(board.game, spell, PlayerId(0))
+    assert fired(board, text) == 1
+
+
+def test_dealt_damage_by_a_source_you_control(board):
+    text = "Whenever this creature is dealt damage by a source you control, draw a card."
+    me = watch(board, text)
+    theirs = board.play("Hill Giant", 1)
+    mine = board.play("Hill Giant", 0)
+    actions.deal_damage(board.game, me, 1, source=theirs.id, source_controller=PlayerId(1))
+    assert fired(board, text) == 0
+    actions.deal_damage(board.game, me, 1, source=mine.id, source_controller=PlayerId(0))
+    assert fired(board, text) == 1
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Whenever this creature becomes blocked by one or more black creatures, draw a card.",
+        "Whenever this creature becomes blocked by a creature, draw a card.",
+        "Whenever a creature you control becomes blocked by a creature, draw a card.",
+        "Whenever a creature you control becomes the target of an ability that targets only it, draw a card.",
+        "Whenever this creature is dealt damage by one or more creatures, draw a card.",
+        "Whenever this creature becomes tapped by a spell, draw a card.",
+    ],
+)
+def test_unreadable_actors_are_not_read(text):
+    stream = Stream.of(text)
+    trigger = parse_trigger(stream)
+    assert trigger is None or not stream.at(",")
+
+
+# ---------------------------------------------------------------------------
+# CR 106.12a: "is tapped for mana" - the real cards, through real activation
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def box(card_db, tmp_path):
+    from mtgfish.parser.verdicts import VerdictStore
+    from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
+
+    card_db.registry()
+    table = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))
+    table.game.agents[0] = PassiveOpponent()
+    table.game.agents[1] = PassiveOpponent()
+    return table
+
+
+def _only(game, name):
+    from mtgfish.rules.kernel.enums import Zone
+
+    return next(
+        o for o in game.objects.values()
+        if o.card is not None and o.card.name == name
+        and o.zone is Zone.BATTLEFIELD and not o.superseded_by
+    )
+
+
+def _tap_for_mana(game, land):
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import activate_ability
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+
+    index = next(
+        i for i, a in enumerate(game.characteristics(land).abilities) if a.is_mana_ability
+    )
+    activate_ability(
+        game,
+        land.controller,
+        Action(ActionKind.ACTIVATE_ABILITY, source=land.id, ability_index=index),
+    )
+
+
+def test_an_enchanted_land_tapped_for_mana_adds_more(box):
+    """Wild Growth never fired: the mana event named no permanent."""
+    from mtgfish.rules.kernel.enums import Color
+
+    if box.db.lookup("Wild Growth") is None:
+        pytest.skip("Wild Growth is not in this card pool")
+    game = box.game
+    box.put("Forest", "battlefield", 0)
+    box.put("Forest", "battlefield", 0)
+    first, second = [
+        o for o in game.objects.values()
+        if o.card is not None and o.card.name == "Forest" and o.zone.name == "BATTLEFIELD"
+    ]
+    box.put("Wild Growth", "battlefield", 0)
+    actions.attach(game, _only(game, "Wild Growth"), first)
+    game.invalidate_characteristics()
+    pool = game.player(PlayerId(0)).mana_pool
+
+    _tap_for_mana(game, second)
+    assert pool.amount_of(Color.GREEN) == 1, "an unenchanted land set it off"
+    _tap_for_mana(game, first)
+    # One extra {G}, and the extra mana does not set it off again.
+    assert pool.amount_of(Color.GREEN) == 3
+
+
+def test_mana_added_without_tapping_is_not_tapping_for_mana(board):
+    """A spell or trigger that adds mana taps nothing (CR 106.12), and one
+    activation that adds mana twice was tapped once."""
+    text = "Whenever a land is tapped for mana, draw a card."
+    watch(board, text)
+    land = board.play("Forest", 0)
+    add = Effect(EffectKind.ADD_MANA, mana_produced=("G",), text="Add {G}.")
+    execute(Resolution(game=board.game, source=land.id, controller=PlayerId(0)), (add,))
+    assert fired(board, text) == 0
+    execute(
+        Resolution(game=board.game, source=land.id, controller=PlayerId(0), tapped_for_mana=True),
+        (add, add),
+    )
+    assert fired(board, text) == 1
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Whenever you tap a permanent for {C}, add an additional {C}.",
+        "Whenever a basic land is tapped for mana of the chosen color, draw a card.",
+    ],
+)
+def test_tapped_for_a_kind_of_mana_is_not_read(text):
+    """CR 106.12a: only that mana counts, which the event does not record."""
+    stream = Stream.of(text)
+    trigger = parse_trigger(stream)
+    assert trigger is None or not stream.at(",")

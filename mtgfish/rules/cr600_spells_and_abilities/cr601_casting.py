@@ -907,7 +907,10 @@ def _announce_targets(game: Game, spell: GameObject, controller: PlayerId) -> No
     for group in spell.targets:
         for object_id in group:
             target = game.objects.get(object_id)
-            if target is None or target.controller == controller:
+            # Every target, including one's own: "becomes the target of a
+            # spell or ability *you control*" is an event too (CR 115.1).
+            # Ward's trigger names an opponent's spell itself.
+            if target is None:
                 continue
             game.emit(
                 Event(
@@ -1616,6 +1619,7 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
                 source=source.id,
                 controller=player_id,
                 chosen_modes=chosen_modes,
+                tapped_for_mana=ability.cost.requires_tapping,
             ),
             ability.effects,
         )
