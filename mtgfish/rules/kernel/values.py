@@ -8,7 +8,7 @@ tests can compare two Values for equality.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Mapping
 
 from .ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from .query import Value, ValueKind
@@ -26,8 +26,17 @@ def evaluate(
     x_value: int = 0,
     event_amount: int = 0,
     die_results: tuple[int, ...] = (),
+    remembered: tuple[ObjectId, ...] = (),
+    this_way: Mapping[int, int] | None = None,
 ) -> int:
-    """Work out what a Value currently is."""
+    """Work out what a Value currently is.
+
+    ``remembered`` and ``this_way`` are the resolving spell or ability's own
+    memory: the objects it last acted on ("each creature destroyed this
+    way") and how much it has done so far ("the life lost this way"). Only a
+    resolution has them; everywhere else they are empty, and a value that
+    needs them is zero rather than a guess.
+    """
     kind = value.kind
 
     if kind is ValueKind.CONSTANT:
@@ -44,6 +53,15 @@ def evaluate(
     if kind is ValueKind.EVENT_COUNT_THIS_TURN:
         return _this_turn(game, value, controller)
 
+    if kind is ValueKind.EVENT_AMOUNT_THIS_TURN:
+        return _this_turn(game, value, controller, amounts=True)
+
+    # CR 608.2c: what this resolution has itself done so far. Totalled by
+    # event amount, not by event: an opponent losing 5 life is 5.
+    if kind is ValueKind.AMOUNT_THIS_WAY:
+        tally = this_way or {}
+        return sum(tally.get(int(event_kind), 0) for event_kind in value.event_kinds)
+
     if kind is ValueKind.X:
         obj = game.objects.get(source)
         return obj.x_value if obj is not None else x_value
@@ -51,9 +69,7 @@ def evaluate(
     if kind is ValueKind.COUNT:
         if value.filter is None:
             return 0
-        from .matching import find
-
-        return len(find(game, value.filter, source=source, controller=controller))
+        return len(_among(game, value.filter, source, controller, remembered))
 
     if kind in (ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE):
         obj = game.objects.get(source)
@@ -77,10 +93,8 @@ def evaluate(
     if kind is ValueKind.COLOURS_AMONG:
         if value.filter is None:
             return 0
-        from .matching import find
-
         colours = 0
-        for obj in find(game, value.filter, controller=controller):
+        for obj in _among(game, value.filter, source, controller, remembered):
             colours |= int(game.characteristics(obj).colors)
         return bin(colours).count("1")
 
@@ -127,7 +141,7 @@ def evaluate(
         ValueKind.LEAST_AMONG,
         ValueKind.TOTAL_AMONG,
     ):
-        return _superlative(game, value, kind, source, controller, x_value)
+        return _superlative(game, value, kind, source, controller, x_value, remembered)
 
     if kind in (
         ValueKind.LIFE_TOTAL,
@@ -137,14 +151,69 @@ def evaluate(
     ):
         return _player_value(game, value, kind, controller)
 
-    return _arithmetic(game, value, kind, source, controller, x_value, event_amount)
+    return _arithmetic(
+        game,
+        value,
+        kind,
+        source,
+        controller,
+        x_value,
+        event_amount,
+        die_results=die_results,
+        remembered=remembered,
+        this_way=this_way,
+    )
 
 
-def _this_turn(game: Game, value: Value, controller: PlayerId) -> int:
-    """How many times an event happened this turn, for the named players.
+def _among(
+    game: Game,
+    spec,
+    source: ObjectId,
+    controller: PlayerId,
+    remembered: tuple[ObjectId, ...],
+) -> list:
+    """The objects a value's filter ranges over.
 
-    Counts occurrences rather than totalling amounts: every card in this
-    family asks "how many spells", "how many times", never "how much".
+    An ordinary filter is matched against the game. A *remembered* one -
+    "each creature destroyed this way", "cards discarded this way", "those
+    cards" - names what the resolution acted on, and nothing else: matched
+    against the whole game it counted every permanent on the battlefield,
+    so Fumigate gained a life for each creature that *survived* it.
+
+    The remembered objects are asked about as they were when acted on
+    (CR 608.2h and last-known information, CR 608.2g): a creature that was
+    destroyed is a card in a graveyard now, and "creature destroyed this
+    way" is still about it. Their zones are not asked either, for the same
+    reason - the filter's zone describes where they were, not where they are.
+    """
+    from dataclasses import replace
+
+    from .matching import find, matches
+
+    if not spec.remembered:
+        return find(game, spec, source=source, controller=controller)
+    described = replace(spec, remembered=False, zones=frozenset(), count=None, up_to=False)
+    found = []
+    for object_id in remembered:
+        obj = game.objects.get(object_id)
+        if obj is None or obj in found:
+            continue
+        if matches(
+            game, obj, described, source=source, controller=controller, allow_stale=True
+        ):
+            found.append(obj)
+    return found
+
+
+def _this_turn(
+    game: Game, value: Value, controller: PlayerId, *, amounts: bool = False
+) -> int:
+    """How many times an event happened this turn, for the named players -
+    or, with ``amounts``, how much of it.
+
+    Counting occurrences answers "how many spells", "how many times";
+    totalling amounts answers "how much life" (EVENT_AMOUNT_THIS_TURN). The
+    game keeps both tallies, keyed apart, for every event.
     """
     from .matching import resolve_players
     from .query import PlayerFilter, PlayerScope
@@ -157,7 +226,12 @@ def _this_turn(game: Game, value: Value, controller: PlayerId) -> int:
     total = 0
     for event_kind in value.event_kinds:
         for player in players:
-            total += game.turn_history.get((int(event_kind), int(player), "count"), 0)
+            key = (
+                (int(event_kind), int(player))
+                if amounts
+                else (int(event_kind), int(player), "count")
+            )
+            total += game.turn_history.get(key, 0)
     return total
 
 
@@ -200,6 +274,7 @@ def _superlative(
     source: ObjectId,
     controller: PlayerId,
     x_value: int,
+    remembered: tuple[ObjectId, ...] = (),
 ) -> int:
     """"the greatest mana value among permanents you control".
 
@@ -211,9 +286,7 @@ def _superlative(
     """
     if value.filter is None or not value.operands:
         return 0
-    from .matching import find
-
-    found = find(game, value.filter, source=source, controller=controller)
+    found = _among(game, value.filter, source, controller, remembered)
     if not found:
         return 0
     inner = value.operands[0]
@@ -258,6 +331,10 @@ def _arithmetic(
     controller: PlayerId,
     x_value: int,
     event_amount: int = 0,
+    *,
+    die_results: tuple[int, ...] = (),
+    remembered: tuple[ObjectId, ...] = (),
+    this_way: Mapping[int, int] | None = None,
 ) -> int:
     operands = [
         evaluate(
@@ -267,6 +344,9 @@ def _arithmetic(
             controller=controller,
             x_value=x_value,
             event_amount=event_amount,
+            die_results=die_results,
+            remembered=remembered,
+            this_way=this_way,
         )
         for operand in value.operands
     ]

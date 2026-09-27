@@ -51,12 +51,15 @@ def test_a_refreshed_dump_marks_the_database_stale(tmp_path, monkeypatch):
 
     from mtgfish.data import scryfall
 
+    from mtgfish.data.db import SCHEMA_VERSION
+
     database = tmp_path / "cards.sqlite"
     conn = sqlite3.connect(database)
     conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
     older = "oracle_cards-20260810T090154.015_0000.jsonl.gz"
     newer = "oracle_cards-20260916T090153.684_0000.jsonl.gz"
     conn.execute("INSERT INTO meta VALUES ('oracle_file', ?)", (older,))
+    conn.execute("INSERT INTO meta VALUES ('schema_version', ?)", (str(SCHEMA_VERSION),))
     conn.commit()
     conn.close()
 
@@ -71,3 +74,27 @@ def test_a_refreshed_dump_marks_the_database_stale(tmp_path, monkeypatch):
     # sorts last - which is how the cache knows which one is current.
     (dumps / newer).write_bytes(b"")
     assert pool_is_stale(database) is True, "a refreshed dump means rebuild"
+
+
+def test_a_database_from_an_older_schema_is_stale(tmp_path, monkeypatch):
+    """A database missing columns the code now reads must be rebuilt, even
+    when it was built from the dump that is here."""
+    import sqlite3
+
+    from mtgfish.data import scryfall
+    from mtgfish.data.db import SCHEMA_VERSION
+
+    database = tmp_path / "cards.sqlite"
+    dump = "oracle_cards-20260916T090153.684_0000.jsonl.gz"
+    conn = sqlite3.connect(database)
+    conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+    conn.execute("INSERT INTO meta VALUES ('oracle_file', ?)", (dump,))
+    conn.execute("INSERT INTO meta VALUES ('schema_version', ?)", (str(SCHEMA_VERSION - 1),))
+    conn.commit()
+    conn.close()
+
+    dumps = tmp_path / "scryfall"
+    dumps.mkdir()
+    monkeypatch.setattr(scryfall, "scryfall_cache", lambda: dumps)
+    (dumps / dump).write_bytes(b"")
+    assert pool_is_stale(database) is True

@@ -63,6 +63,10 @@ class Resolution:
     #: The player a per-player instruction is currently being carried out for
     #: - what ``PlayerScope.THAT_PLAYER`` means (CR 701.55a).
     that_player: PlayerId = NO_PLAYER
+    #: CR 608.2c: how much this resolution has itself done so far, by event
+    #: kind - life lost, life gained, damage dealt - so "you gain life equal
+    #: to the life lost this way" can read it. Totals, not counts.
+    this_way: dict = field(default_factory=dict)
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -103,7 +107,57 @@ _REMEMBERING = frozenset(
 )
 
 
+#: Opcodes whose amounts "this way" can refer back to, and the events that
+#: measure them. Only leaves: a SEQUENCE is tallied through its children, so
+#: wrapping it too would count everything twice.
+_TALLIED = frozenset(
+    {
+        EffectKind.DAMAGE,
+        EffectKind.LOSE_LIFE,
+        EffectKind.GAIN_LIFE,
+        EffectKind.FIGHT,
+    }
+)
+
+
+def _tally_events(game) -> dict[int, int]:
+    """Running totals of the amounts "this way" can ask about, this turn.
+
+    Read off the turn's event history, which every life change and every
+    damage event already feeds - so damage that became life loss, lifelink
+    that became life gain and a replacement that changed an amount are all
+    counted as what actually happened rather than as what was asked for.
+    """
+    from ..kernel.events import EventKind as _EK
+
+    wanted = (
+        int(_EK.LIFE_LOST),
+        int(_EK.LIFE_GAINED),
+        int(_EK.DAMAGE_DEALT),
+        int(_EK.COMBAT_DAMAGE_DEALT),
+    )
+    totals = dict.fromkeys(wanted, 0)
+    for key, amount in game.turn_history.items():
+        if len(key) == 2 and key[0] in totals:
+            totals[key[0]] += amount
+    return totals
+
+
 def execute_one(resolution: Resolution, effect: Effect) -> None:
+    if effect.kind in _TALLIED:
+        before = _tally_events(resolution.game)
+        _execute_one(resolution, effect)
+        after = _tally_events(resolution.game)
+        for kind, total in after.items():
+            if total > before[kind]:
+                resolution.this_way[kind] = (
+                    resolution.this_way.get(kind, 0) + total - before[kind]
+                )
+        return
+    _execute_one(resolution, effect)
+
+
+def _execute_one(resolution: Resolution, effect: Effect) -> None:
     executor = EXECUTORS.get(effect.kind)
     if executor is None:
         # No executor: either UNPARSED, or an opcode the engine has declared
@@ -263,6 +317,8 @@ def _value_of(resolution: Resolution, value) -> int:
         x_value=resolution.x_value,
         event_amount=resolution.event_amount,
         die_results=resolution.die_results,
+        remembered=tuple(resolution.remembered),
+        this_way=resolution.this_way,
     )
 
 
@@ -319,6 +375,8 @@ def _amount(resolution: Resolution, effect: Effect, *, second: bool = False) -> 
         x_value=resolution.x_value,
         event_amount=resolution.event_amount,
         die_results=resolution.die_results,
+        remembered=tuple(resolution.remembered),
+        this_way=resolution.this_way,
     )
 
 
@@ -1395,6 +1453,8 @@ def _amount2(resolution: Resolution, effect: Effect) -> int:
         controller=resolution.controller,
         event_amount=resolution.event_amount,
         die_results=resolution.die_results,
+        remembered=tuple(resolution.remembered),
+        this_way=resolution.this_way,
     )
 
 
@@ -1498,6 +1558,40 @@ def _settles_its_set(effect: Effect) -> bool:
     return effect.kind in EFFECT_LAYERS or effect.kind is EffectKind.GAIN_CONTROL
 
 
+def _locked_amounts(resolution: Resolution, effect: Effect) -> Effect:
+    """CR 608.2h: a resolving effect's numbers are worked out once, now.
+
+    "Creatures you control get +X/+X until end of turn, where X is the
+    number of Forests you control" is +3/+3 for the rest of the turn if
+    there were three Forests when it resolved - playing a fourth changes
+    nothing. Left as a live Value, the layer system re-counted it on every
+    recomputation, and a value that only the resolution can answer ("for
+    each Plains returned this way", "the life lost this way") came out
+    zero afterwards, because nothing but the resolution remembers.
+
+    A value that reads the *affected* object ("gets +X/+0, where X is its
+    power") has one answer per object, and the layer system is what applies
+    it object by object, so it is left for the layers to evaluate.
+    """
+    from dataclasses import replace as _replace
+
+    from ..kernel.matching import value_subjects
+    from ..kernel.query import Value, ValueKind
+
+    changes = {}
+    for name in ("amount", "amount2"):
+        value = getattr(effect, name)
+        if value.kind in (ValueKind.CONSTANT, ValueKind.UNCHANGED):
+            continue
+        affected, _from_source, _contextual = value_subjects(value)
+        if affected:
+            continue
+        changes[name] = Value.of(
+            _amount(resolution, effect, second=(name == "amount2"))
+        )
+    return _replace(effect, **changes) if changes else effect
+
+
 def _register_continuous(resolution: Resolution, effect: Effect) -> None:
     """Create a continuous effect from a resolving spell or ability (CR 611.2).
 
@@ -1550,6 +1644,8 @@ def _register_continuous(resolution: Resolution, effect: Effect) -> None:
             ),
             is_targeted=False,
         )
+
+    resolved_effect = _locked_amounts(resolution, resolved_effect)
 
     game.continuous_effects.append(
         ContinuousEffect(

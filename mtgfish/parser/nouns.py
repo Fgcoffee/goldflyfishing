@@ -1382,22 +1382,89 @@ _CHARACTERISTIC_OF = {
 def _amount_this_way(stream: Stream) -> Value | None:
     """"the life lost this way", "the damage dealt this way".
 
-    A quantity the sentence before it produced, which the resolution already
-    remembers. Gray Merchant of Asphodel is the shape: drain each opponent,
-    then gain that much.
+    A quantity the sentence before it produced, which the resolution tallies
+    as it goes (CR 608.2c). Gray Merchant of Asphodel is the shape: drain
+    each opponent, then gain that much.
+
+    It is an *amount*, not a count of objects. It was read as "the number of
+    whatever was just referred to", which counted every permanent on the
+    battlefield - so Gray Merchant gained a life for each land in play.
+    Only the amounts the resolution tallies are read; "the cards drawn this
+    way" and "the mana spent this way" have no tally and stay unread.
     """
+    from ..rules.kernel.events import EventKind
+
     mark = stream.mark()
     stream.accept("the")
-    if not stream.accept("life", "damage", "mana", "cards"):
+    measured = {
+        ("life", "lost"): (EventKind.LIFE_LOST,),
+        ("life", "gained"): (EventKind.LIFE_GAINED,),
+        ("damage", "dealt"): (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT),
+    }
+    key = (stream.peek().lower, stream.peek(1).lower)
+    if key not in measured:
         stream.reset(mark)
         return None
-    if not stream.accept("lost", "dealt", "gained", "drawn", "spent", "added"):
-        stream.reset(mark)
-        return None
+    stream.next()
+    stream.next()
     if not stream.accept_phrase("this way"):
         stream.reset(mark)
         return None
-    return Value(kind=ValueKind.COUNT, filter=ObjectFilter(remembered=True))
+    return Value(
+        kind=ValueKind.AMOUNT_THIS_WAY,
+        event_kinds=tuple(int(kind) for kind in measured[key]),
+    )
+
+
+def _life_this_turn(stream: Stream) -> Value | None:
+    """"the amount of life you gained this turn", "the total amount of life
+    your opponents have lost this turn", "the life you've lost this turn".
+
+    How *much* life, totalled over the turn - not the life total, which is
+    what it was read as, so every "where X is the amount of life you gained
+    this turn" card used the whole of your life total instead.
+
+    Only players whose identity the value can settle on its own are read:
+    you, and your opponents taken together. "The amount of life *they* lost"
+    names a player some other part of the sentence chose, and stays unread.
+    """
+    from ..rules.kernel.events import EventKind
+
+    mark = stream.mark()
+    stream.accept("the")
+    stream.accept("total")
+    stream.accept_phrase("amount of")
+    if not stream.accept("life"):
+        stream.reset(mark)
+        return None
+
+    if stream.accept("you've"):
+        players = PlayerFilter(PlayerScope.YOU)
+    elif stream.accept_phrase("your opponents"):
+        players = PlayerFilter(PlayerScope.EACH_OPPONENT)
+        stream.accept("have")
+    elif stream.accept("you"):
+        players = PlayerFilter(PlayerScope.YOU)
+        stream.accept("have")
+    else:
+        stream.reset(mark)
+        return None
+
+    if stream.accept("gained"):
+        kind = EventKind.LIFE_GAINED
+    elif stream.accept("lost"):
+        kind = EventKind.LIFE_LOST
+    else:
+        stream.reset(mark)
+        return None
+    if not stream.accept_phrase("this turn"):
+        stream.reset(mark)
+        return None
+    return Value(
+        kind=ValueKind.EVENT_AMOUNT_THIS_TURN,
+        players=players,
+        event_kinds=(int(kind),),
+    )
 
 
 #: Words that never appear inside a possessive owner phrase, and so end the
@@ -2085,8 +2152,9 @@ def parse_value(stream: Stream) -> Value | None:
                 return None
             return Value(kind=kind)
 
-    if stream.accept_phrase("the amount of life you gained this turn"):
-        return Value(kind=ValueKind.LIFE_TOTAL)
+    life_this_turn = _life_this_turn(stream)
+    if life_this_turn is not None:
+        return life_this_turn
 
     if stream.accept_phrase("its power") or stream.accept_phrase("that creature's power"):
         return Value(kind=ValueKind.POWER)

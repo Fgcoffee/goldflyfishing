@@ -71,7 +71,11 @@ def main(argv: list[str] | None = None) -> int:
     with CardDatabase(path) as db:
         write_fingerprint(db)
         legal = sum(1 for _ in db.iter_cards(commander_legal_only=True))
-        print(f"\n{db.card_count} cards ({legal} Commander-legal) in {elapsed:.1f}s")
+        anywhere = sum(1 for _ in db.iter_cards(format_legal_only=True))
+        print(
+            f"\n{db.card_count} cards ({anywhere} legal in some format,"
+            f" {legal} Commander-legal) in {elapsed:.1f}s"
+        )
         print(f"snapshot hash: {db.content_hash[:16]}")
         print(f"database: {path} ({path.stat().st_size / 1e6:.1f} MB)")
 
