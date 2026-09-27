@@ -1829,7 +1829,7 @@ def _do_counter_spell(resolution: Resolution, effect: Effect) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _mana_kind(symbol: str, *, snow: bool, restriction=None):
+def _mana_kind(symbol: str, *, snow: bool, restriction=None, until_end_of_combat=False):
     """One printed mana symbol, as a unit of mana in a pool.
 
     Hybrid symbols in a mana-*production* ability ("Add {G/U}") are a choice;
@@ -1841,7 +1841,10 @@ def _mana_kind(symbol: str, *, snow: bool, restriction=None):
     parsed = parse_mana_symbol(symbol.strip("{}"))
     colors = list(parsed.colors)
     return ManaKind(
-        colors[0] if colors else Color.NONE, snow=snow, restriction=restriction
+        colors[0] if colors else Color.NONE,
+        snow=snow,
+        restriction=restriction,
+        until_end_of_combat=until_end_of_combat,
     )
 
 
@@ -1935,10 +1938,17 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
         # instead - which is what this did - turned "Add {G}{U}" into two
         # green *and* two blue, doubling the output of every dual land in the
         # format and quietly inflating every ramp statistic downstream.
+        # CR 702.189a: "until end of combat, you don't lose this mana".
+        combat_mana = effect.duration == int(Duration.END_OF_COMBAT)
         for _ in range(repeat):
             for symbol in effect.mana_produced:
                 player.mana_pool.add(
-                    _mana_kind(symbol, snow=snow, restriction=effect.mana_restriction),
+                    _mana_kind(
+                        symbol,
+                        snow=snow,
+                        restriction=effect.mana_restriction,
+                        until_end_of_combat=combat_mana,
+                    ),
                     1,
                 )
     elif effect.colors_chosen:

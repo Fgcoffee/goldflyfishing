@@ -515,11 +515,17 @@ class ManaKind:
     color: Color = Color.NONE
     snow: bool = False
     restriction: ManaRestriction | None = None
+    #: CR 702.189a (firebending): "Until end of combat, you don't lose this
+    #: mana as steps and phases end." Kept through the combat phase's step
+    #: ends, and lost with everything else when combat is over.
+    until_end_of_combat: bool = False
 
     def __str__(self) -> str:
         base = color_letters(self.color) if self.color else "C"
         if self.snow:
             base += "(snow)"
+        if self.until_end_of_combat:
+            base += "(until end of combat)"
         if self.restriction is not None:
             base += f"[{self.restriction.key}]"
         return base
@@ -528,7 +534,12 @@ class ManaKind:
 #: Sort key giving a stable, colour-canonical bucket order. Payment must be
 #: deterministic across runs for replay to reconstruct a game from its seed.
 def _kind_sort_key(kind: ManaKind) -> tuple:
-    return (int(kind.color), kind.snow, kind.restriction.key if kind.restriction else "")
+    return (
+        int(kind.color),
+        kind.snow,
+        kind.restriction.key if kind.restriction else "",
+        kind.until_end_of_combat,
+    )
 
 
 @dataclass(slots=True)
@@ -576,14 +587,22 @@ class ManaPool:
     def amount_of(self, color: Color) -> int:
         return sum(n for k, n in self.buckets.items() if k.color == color)
 
-    def clear(self) -> int:
+    def clear(self, *, keep_combat_mana: bool = False) -> int:
         """Empty the pool, returning how much was lost (CR 500.4).
 
         Mana emptying is not a cost or a payment; unspent mana simply ceases to
-        exist at the end of each step and phase.
+        exist at the end of each step and phase. ``keep_combat_mana`` spares
+        the mana an effect said is not lost until end of combat (CR 702.189a),
+        for a step that ends while combat goes on.
         """
-        lost = self.total
-        self.buckets.clear()
+        if not keep_combat_mana:
+            lost = self.total
+            self.buckets.clear()
+            return lost
+        lost = 0
+        for kind in list(self.buckets):
+            if not kind.until_end_of_combat:
+                lost += self.buckets.pop(kind)
         return lost
 
     def copy(self) -> ManaPool:
