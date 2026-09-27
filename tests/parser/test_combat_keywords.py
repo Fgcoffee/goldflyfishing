@@ -124,3 +124,24 @@ def test_firebending_x_is_left_unread(card_db):
     ability stays unread rather than adding some other amount."""
     parsed = parse_face(card_db.lookup("Fire Lord Zuko"), 0)
     assert not parsed.fully_parsed
+
+
+# ---------------------------------------------------------------------------
+# Renown
+# ---------------------------------------------------------------------------
+
+
+def test_renown_reads_its_amount(card_db):
+    (ability,) = _keyword_abilities(card_db, "Constable of the Realm", "Renown")
+    assert ability.trigger.event_kinds == frozenset({EventKind.COMBAT_DAMAGE_DEALT})
+    assert ability.trigger.to_player
+    counters, renowned = ability.effects
+    assert counters.kind is EffectKind.ADD_COUNTERS and counters.amount.constant == 2
+    assert renowned.kind is EffectKind.BECOME_RENOWNED
+
+
+def test_becomes_renowned_is_a_trigger(card_db):
+    parsed = parse_face(card_db.lookup("Relic Seeker"), 0)
+    assert parsed.fully_parsed
+    (seeker,) = [a for a in parsed.abilities if not a.keyword]
+    assert seeker.trigger.event_kinds == frozenset({EventKind.BECAME_RENOWNED})

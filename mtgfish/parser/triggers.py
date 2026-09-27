@@ -536,6 +536,13 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
             subject=SELF,
             text="when this becomes monstrous",
         )
+    if stream.accept_phrase("becomes renowned"):
+        # CR 702.112b: its own event, not the renown counters.
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.BECAME_RENOWNED}),
+            subject=SELF,
+            text="when this becomes renowned",
+        )
     if stream.accept_phrase("transforms into this"):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TRANSFORMED}),
@@ -904,6 +911,7 @@ _SIMPLE_EVENTS: tuple[tuple[str, tuple[EventKind, ...], bool], ...] = (
     ("phases in", (EventKind.PHASED_IN,), False),
     ("is returned to its owner's hand", (EventKind.RETURNED_TO_HAND,), True),
     ("becomes monstrous", (EventKind.BECAME_MONSTROUS,), False),
+    ("becomes renowned", (EventKind.BECAME_RENOWNED,), False),
     ("untaps", (EventKind.UNTAPPED,), False),
     ("taps", (EventKind.TAPPED,), False),
     ("attacks or blocks", (EventKind.ATTACKS, EventKind.BLOCKS), False),

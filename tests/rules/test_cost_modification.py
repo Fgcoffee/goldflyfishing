@@ -157,3 +157,56 @@ def test_the_card_reads_completely(card_db, name):
     if card is None:
         pytest.skip(f"{name} not in this pool")
     assert parse_card(card).fully_parsed
+
+
+# ---------------------------------------------------------------------------
+# Undaunted (CR 702.125)
+# ---------------------------------------------------------------------------
+
+
+def _undaunted_board(card_db, players):
+    from harness import ScriptedAbilities, make_board
+
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
+        KeywordInstance,
+        build,
+    )
+
+    scripts = ScriptedAbilities().add("Hill Giant", *build(KeywordInstance("Undaunted")))
+    board = make_board(card_db, scripts, players=players)
+    spell = board.hand("Hill Giant", controller=0)
+    return board, spell
+
+
+@pytest.mark.parametrize("players, reduction", [(2, 1), (4, 3)])
+def test_undaunted_costs_one_less_for_each_opponent(card_db, players, reduction):
+    """CR 702.125a: {1} less for each opponent - not for each player, and not
+    a flat {1}."""
+    board, spell = _undaunted_board(card_db, players)
+    assert sum(cost_reductions(board.game, spell, spell.controller)) == reduction
+    assert sum(cost_increases(board.game, spell, spell.controller)) == 0
+
+
+def test_undaunted_does_not_count_an_opponent_who_has_left(card_db):
+    """CR 702.125b: players who have left the game are not counted."""
+    from mtgfish.rules.kernel.ids import PlayerId
+
+    board, spell = _undaunted_board(card_db, 4)
+    board.game.player(PlayerId(2)).has_lost = True
+    board.game.invalidate_characteristics()
+    assert sum(cost_reductions(board.game, spell, spell.controller)) == 2
+
+
+def test_undaunted_reduces_only_its_own_spell(card_db):
+    """A static ability of the spell itself: other spells cost what they cost."""
+    board, _ = _undaunted_board(card_db, 4)
+    other = board.hand("Grizzly Bears", controller=0)
+    assert cost_reductions(board.game, other, other.controller) == []
+
+
+def test_undaunted_cards_read_completely(card_db):
+    from mtgfish.parser import parse_card
+
+    for name in ("Curtains' Call", "Coastal Breach", "Sublime Exhalation"):
+        card = card_db.lookup(name)
+        assert card is not None and parse_card(card).fully_parsed, name

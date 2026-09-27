@@ -178,6 +178,10 @@ class EventKind(IntEnum):
     #: "whenever a counter is put on this" - the +1/+1 counters of the same
     #: monstrosity are, and so is every other counter it ever gets.
     BECAME_MONSTROUS = 19001
+    #: CR 702.112a-b: a permanent became renowned. ``object_id`` is the
+    #: permanent. Its own event for the reason BECAME_MONSTROUS is: "when this
+    #: becomes renowned" is not the counters that came with it.
+    BECAME_RENOWNED = 18002
 
 
 #: Events that mean a permanent left the battlefield in some form. Abilities

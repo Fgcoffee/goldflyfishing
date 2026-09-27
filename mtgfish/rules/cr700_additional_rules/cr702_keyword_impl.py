@@ -675,6 +675,44 @@ def _flanking(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Renown")
+def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.112a: "When this creature deals combat damage to a player, if
+    it isn't renowned, put N +1/+1 counters on it and it becomes renowned."
+
+    "If it isn't renowned" is an intervening if (CR 603.4), so with several
+    instances the first to resolve makes it renowned and the rest do nothing
+    (702.112c). Renowned is a designation on the permanent (702.112b), not a
+    counter: it is not copied and nothing that moves counters touches it.
+    """
+    n = max(1, instance.amount)
+    not_renowned = Condition(
+        ConditionKind.NOT,
+        operands=(Condition(ConditionKind.IS_RENOWNED, text="it is renowned"),),
+        text="if it isn't renowned",
+    )
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
+                source=ObjectFilter(source_only=True),
+                to_player=True,
+                intervening_if=not_renowned,
+                functions_in=BATTLEFIELD,
+                text="when this deals combat damage to a player, if it isn't renowned",
+            ),
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(n),
+                text=f"put {n} +1/+1 counters on it",
+            ),
+            Effect(EffectKind.BECOME_RENOWNED, text="it becomes renowned"),
+            text=instance.text or f"Renown {n}",
+        ),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Death triggers
 # ---------------------------------------------------------------------------
@@ -1558,11 +1596,9 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: Each is inert until it has a builder of its own.
 UNIMPLEMENTED_COMBAT_KEYWORDS = {
     "frenzy": "CR 702.68a: +N/+0 whenever it attacks and isn't blocked",
-    "renown": "CR 702.112a: counters when it deals combat damage to a player, if not renowned",
     "enlist": "CR 702.154a: tap a creature as it attacks to add that creature's power",
     "myriad": "CR 702.116a: token copies attacking each other opponent",
     "double team": "a digital keyword: conjure a copy into hand when it attacks",
-    "undaunted": "CR 702.125a: costs {1} less for each opponent",
     "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
     "provoke": "CR 702.39a: untap a creature and force it to block",
     "increment": "CR 702.191a: a counter when a spell cast costs more than its power or toughness",
@@ -1570,8 +1606,8 @@ UNIMPLEMENTED_COMBAT_KEYWORDS = {
 }
 
 
-@register("Frenzy", "Renown", "Enlist",
-          "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke",
+@register("Frenzy", "Enlist",
+          "Myriad", "Double team", "Teamwork", "Provoke",
           "Increment", "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
     """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""
@@ -1745,6 +1781,33 @@ def _affinity(instance: KeywordInstance) -> tuple[Ability, ...]:
                             ),
                         ),
                     ),
+                ),
+                text=instance.text or instance.name,
+            ),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Undaunted")
+def _undaunted(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.125a: "This spell costs {1} less to cast for each opponent you
+    have."
+
+    The Affinity shape with players counted instead of permanents. Players
+    who have left the game are not counted (702.125b), which the count asks
+    as it is evaluated; each instance is its own reduction (702.125c).
+    """
+    return (
+        Ability.static(
+            Effect(
+                EffectKind.MODIFY_COST,
+                targets=ObjectFilter(source_only=True, zones=frozenset({Zone.STACK})),
+                # Negative is cheaper (see Affinity).
+                amount=Value(
+                    ValueKind.PRODUCT,
+                    constant=-1,
+                    operands=(Value(ValueKind.PLAYER_COUNT, players=EACH_OPPONENT),),
                 ),
                 text=instance.text or instance.name,
             ),

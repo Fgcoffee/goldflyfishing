@@ -270,3 +270,85 @@ def test_firebending_mana_spends_like_red_mana(board):
     assert kind.color == Color.RED and kind.until_end_of_combat
     assert can_pay(pool, ManaCost.parse("{R}"))
     assert not can_pay(pool, ManaCost.parse("{G}"))
+
+
+# ---------------------------------------------------------------------------
+# Renown (CR 702.112)
+# ---------------------------------------------------------------------------
+
+
+def _fight(board, attackers: dict, blockers: dict | None = None) -> None:
+    """Attack, block, deal combat damage, and resolve what triggered."""
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import deal_combat_damage
+
+    _combat(board, attackers, blockers or {})
+    deal_combat_damage(board.game)
+    board.settle()
+    board.resolve_stack()
+    board.refresh()
+
+
+def test_renown_adds_counters_and_makes_it_renowned(board):
+    board.scripts.add("Grizzly Bears", *kw("Renown", amount=2))
+    bears = board.play("Grizzly Bears", controller=0)
+    _fight(board, {bears.id: 1})
+    assert bears.counter_count("+1/+1") == 2
+    assert bears.renowned
+    assert board.pt(bears) == (4, 4)
+
+
+def test_renown_does_nothing_once_renowned(board):
+    """The intervening if: a renowned creature gets no more counters."""
+    board.scripts.add("Grizzly Bears", *kw("Renown", amount=1))
+    bears = board.play("Grizzly Bears", controller=0)
+    bears.renowned = True
+    _fight(board, {bears.id: 1})
+    assert bears.counter_count("+1/+1") == 0
+
+
+def test_two_renown_instances_only_the_first_resolves(board):
+    """CR 702.112c: both trigger; the first to resolve makes it renowned and
+    the second then does nothing - so 1 or 2 counters, never 3."""
+    board.scripts.add(
+        "Grizzly Bears", *kw("Renown", amount=1), *kw("Renown", amount=2)
+    )
+    bears = board.play("Grizzly Bears", controller=0)
+    _fight(board, {bears.id: 1})
+    assert bears.counter_count("+1/+1") in (1, 2)
+    assert bears.renowned
+
+
+def test_renown_needs_combat_damage_to_a_player(board):
+    """Blocked, it deals its combat damage to a creature: no renown."""
+    board.scripts.add("Grizzly Bears", *kw("Renown", amount=1))
+    bears = board.play("Grizzly Bears", controller=0)
+    wall = board.play("Wall of Stone", controller=1)
+    _fight(board, {bears.id: 1}, {wall.id: [bears.id]})
+    assert bears.counter_count("+1/+1") == 0
+    assert not bears.renowned
+
+
+def test_renowned_is_a_designation_not_a_counter(board):
+    """CR 702.112b: nothing that counts counters sees it."""
+    board.scripts.add("Grizzly Bears", *kw("Renown", amount=1))
+    bears = board.play("Grizzly Bears", controller=0)
+    _fight(board, {bears.id: 1})
+    assert {k for k, n in bears.counters.items() if n} == {"+1/+1"}
+
+
+def test_becoming_renowned_triggers_when_this_becomes_renowned(board):
+    """Relic Seeker's "When this creature becomes renowned" watches the
+    designation, which the renown ability sets."""
+    from mtgfish.parser.tokens import Stream
+    from mtgfish.parser.triggers import parse_trigger
+    from mtgfish.rules.cr600_spells_and_abilities.cr603_triggers import condition_met
+    from mtgfish.rules.kernel.events import Event, EventKind
+
+    trigger = parse_trigger(
+        Stream.of("When this creature becomes renowned, draw a card.")
+    )
+    bears = board.play("Grizzly Bears", controller=0)
+    event = Event(EventKind.BECAME_RENOWNED, object_id=bears.id, player=bears.controller)
+    assert condition_met(board.game, bears, trigger, event)
+    counters = Event(EventKind.COUNTER_ADDED, object_id=bears.id, player=bears.controller)
+    assert not condition_met(board.game, bears, trigger, counters)

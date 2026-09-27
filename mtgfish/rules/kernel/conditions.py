@@ -357,6 +357,10 @@ def holds(
         obj = game.objects.get(source)
         return bool(obj is not None and obj.harnessed and obj.zone is Zone.BATTLEFIELD)
 
+    if kind is ConditionKind.IS_RENOWNED:
+        obj = game.objects.get(source)
+        return bool(obj is not None and obj.renowned and obj.zone is Zone.BATTLEFIELD)
+
     if kind is ConditionKind.HAS_ENDURING_STORY:
         return controller != NO_PLAYER and game.player(controller).has_enduring_story
 
