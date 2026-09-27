@@ -76,7 +76,9 @@ def _replacement(text):
         (
             "If an opponent would lose life during your turn, "
             "they lose twice that much life instead.",
-            ReplacementKind.MODIFY_LIFE_CHANGE,
+            # Life lost, not gained: under the life-change kind, which
+            # watches life gained, this doubled the wrong event.
+            ReplacementKind.MODIFY_LIFE_LOSS,
         ),
     ],
 )

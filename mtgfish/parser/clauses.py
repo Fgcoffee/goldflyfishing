@@ -6402,56 +6402,87 @@ def _prevent_damage(stream: Stream) -> Effect | None:
     if not stream.accept("damage"):
         return None
     marker = ("combat",) if combat_only else ()
-    stream.accept_phrase("that would be dealt")
+    if not stream.accept_phrase("that would be dealt"):
+        return None
+    # "that would be dealt *by* non-Spider creatures" - whose damage, rather
+    # than to whom. It can sit before the recipient or after the duration.
+    source = _dealt_by(stream)
     # "that would be dealt *to and dealt by* that creature" - the shield runs
-    # both ways round one object. Read before the recipient because that is
-    # where the card writes it.
-    look = stream.mark()
-    both_ways = bool(
-        stream.accept("to") and stream.accept_phrase("and dealt by")
-    )
-    if not both_ways:
-        stream.reset(look)
-    if not both_ways and not stream.accept("to"):
-        # "Prevent all combat damage that would be dealt this turn" - no
-        # recipient named, so it protects everything.
-        duration = _duration(stream)
-        return Effect(
-            EffectKind.PREVENT_DAMAGE,
-            amount=amount,
-            duration=duration,
-            keywords=marker,
-            text="prevent damage",
-        )
-
-    targets, targeted = parse_target(stream)
-    players = None
-    if targets is None:
-        players, targeted = parse_player_filter(stream)
-        if players is None:
+    # both ways round one object (CR 615). Read before the recipient because
+    # that is where the card writes it. It used to be consumed and dropped,
+    # so Maze of Ith stopped the damage dealt *to* the attacker and let the
+    # attacker's own damage through.
+    both_ways = source is None and stream.accept_phrase("to and dealt by")
+    targets = players = None
+    targeted = False
+    if both_ways or stream.accept("to"):
+        if stream.accept_phrase("any target"):
+            targets, targeted = ANY_TARGET, True
+        else:
+            targets, targeted = parse_target(stream)
+        if targets is None:
+            players, targeted = parse_player_filter(stream)
+            if players is None:
+                return None
+        elif stream.accept_phrase("and each player"):
+            # "to each creature and each player" (Kitsune Palliator).
+            players = PlayerFilter(PlayerScope.EACH_PLAYER)
+        # "dealt to that creature *and dealt by* it" - the trailing form.
+        if not both_ways and targets is not None and source is None:
+            look = stream.mark()
+            if stream.accept_phrase("and dealt by") and stream.accept_phrase(
+                "that creature"
+            ) or _accepted_pronoun(stream, look):
+                both_ways = True
+            else:
+                stream.reset(look)
+        if both_ways and (targets is None or players is not None):
             return None
-    # "dealt to *and dealt by* that creature" - the same shield in both
-    # directions, which is one prevention over one object either way.
-    look = stream.mark()
-    if stream.accept("and"):
-        if not (
-            stream.accept_phrase("dealt by that creature")
-            or stream.accept_phrase("dealt by it")
-            or stream.accept_phrase("dealt by")
-        ):
-            stream.reset(look)
-    else:
-        stream.reset(look)
     duration = _duration(stream)
+    if source is None and not both_ways:
+        source = _dealt_by(stream)
+        if duration is Duration.PERMANENT:
+            duration = _duration(stream)
+    if targets is None and players is None and source is None and targeted:
+        return None
     return Effect(
         EffectKind.PREVENT_DAMAGE,
         targets=targets,
         players=players,
+        damage_source=source,
+        both_ways=both_ways,
         amount=amount,
         duration=duration,
         is_targeted=targeted,
         keywords=marker,
         text="prevent damage",
+    )
+
+
+def _dealt_by(stream: Stream):
+    """"by <sources>" after "damage that would be dealt" - ``None`` if absent.
+
+    The filter is kept as the noun reader gives it: "by creatures" means
+    creatures on the battlefield, "by this artifact" the source itself.
+    """
+    mark = stream.mark()
+    if not stream.accept("by"):
+        return None
+    if stream.at("a", "an") and stream.at_phrase("a source of your choice"):
+        stream.reset(mark)
+        return None
+    spec = parse_object_filter(stream)
+    if spec is None or spec.includes_players:
+        stream.reset(mark)
+        return None
+    return replace(spec, count=None, up_to=False)
+
+
+def _accepted_pronoun(stream: Stream, look: int) -> bool:
+    """"and dealt by it" / "and dealt by them" - the recipient again."""
+    stream.reset(look)
+    return stream.accept_phrase("and dealt by it") or stream.accept_phrase(
+        "and dealt by them"
     )
 
 
@@ -7083,182 +7114,509 @@ def _amount_replacement(stream: Stream) -> Effect | None:
     each produce a second batch rather than a bigger one: a card that still
     runs and does the wrong thing.
 
-    So the event half chooses the ReplacementKind and the substitute half
-    supplies a multiplier and an addend, and both are written once for the
-    family rather than once per card.
+    So the event half chooses the ReplacementKind and says exactly which
+    events it catches - whose damage, dealt to whom, which kind of counter,
+    which tokens, whose life - and the substitute half supplies a multiplier
+    and an addend. Every word of the substitute is either the number or a
+    restatement of the event ("to that permanent or player", "of those
+    tokens"); anything else declines. The first version of this clause
+    skipped up to 24 words before "instead", and with them "plus 1", "minus
+    1", "draw ... cards" and "that many 4/4 Angel tokens" - so Lich gained
+    life instead of drawing and every "+1" damage and life card was a no-op.
     """
     mark = stream.mark()
     if not stream.accept("if"):
-        stream.reset(mark)
         return None
 
     event = _replaced_event(stream)
-    if event is None:
+    if event is None or not stream.accept(","):
         stream.reset(mark)
         return None
-    kind, subject, players, counter = event
-    stream.skip_punct(",")
 
-    scale = _replacement_amount(stream)
-    if scale is None:
+    resized = _resized_event(stream, event)
+    if resized is None or not stream.accept("instead"):
         stream.reset(mark)
         return None
-    multiplier, extra = scale
-
-    # Whatever spells out where the new number lands - "of those counters are
-    # put on it", "to that permanent or player" - up to "instead".
-    steps = 0
-    while not stream.done and not stream.at("instead"):
-        if stream.peek().text in (".", ";"):
-            break
-        stream.next()
-        steps += 1
-        if steps > 24:
-            stream.reset(mark)
-            return None
-    if not stream.accept("instead"):
-        stream.reset(mark)
-        return None
+    kind, multiplier, extra = resized
 
     return Effect(
         EffectKind.REPLACEMENT,
-        targets=subject,
-        players=players,
-        counter_type=counter,
+        targets=event.subject,
+        players=event.players,
+        counter_type=event.counter,
         amount=Value.of(extra),
         multiplier=multiplier,
         replacement_kind=int(kind),
+        damage_source=event.damage_source,
+        actor=event.actor,
+        keywords=event.keywords,
+        condition=event.condition,
         duration=Duration.PERMANENT,
         text="replacement: change the amount",
     )
 
 
+class _ReplacedEvent:
+    """What the "if ... would ..." half of an amount replacement catches."""
+
+    __slots__ = (
+        "kind", "family", "subject", "players", "counter", "actor",
+        "damage_source", "keywords", "condition", "recipient_words",
+    )
+
+    def __init__(self, kind, family, **fields) -> None:
+        from ..rules.kernel.query import ALWAYS
+
+        self.kind = kind
+        self.family = family
+        self.subject = fields.get("subject")
+        self.players = fields.get("players")
+        self.counter = fields.get("counter", "")
+        self.actor = fields.get("actor")
+        self.damage_source = fields.get("damage_source")
+        self.keywords = fields.get("keywords", ())
+        self.condition = fields.get("condition", ALWAYS)
+        self.recipient_words = fields.get("recipient_words", ())
+
+
 def _replaced_event(stream: Stream):
-    """Which event a replacement catches.
+    """Which event a replacement catches, or ``None``.
 
-    Returns ``(kind, object subject, player subject, counter type)``. One
-    reader for the whole family: the events are written to a template and the
-    differences between them are two or three words.
+    Four families, each with its own reader because each names different
+    participants: counters (a kind and a recipient), tokens (a kind of token
+    and whose control), damage (a source and a recipient) and life (a player).
+    Draws are not here: the engine does not replace draws event by event.
     """
-    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
-
-    mark = stream.mark()
-
-    # English puts the subject of the replaced event in one of two places,
-    # and both are common:
-    #
-    #   "If ONE OR MORE COUNTERS would be put on ..."   - the thing itself
-    #   "If A SOURCE YOU CONTROL would deal damage ..." - whoever acts
-    #
-    # Trying the first shape before the second matters, because "one or more
-    # +1/+1 counters" is not a noun phrase the object grammar can read, so the
-    # second reader gets no subject and then fails on the word "would".
-    subject_led = _subject_led_event(stream)
-    if subject_led is not None:
-        return subject_led
-
-    actor_objects = None
-    actor_players, _ = parse_player_filter(stream)
-    if actor_players is None:
-        actor_objects = parse_object_filter(stream)
-    stream.accept_phrase("an effect")
-
-    if not stream.accept("would"):
+    for reader in (_counter_event, _token_event, _damage_event, _life_event):
+        mark = stream.mark()
+        event = reader(stream)
+        if event is not None:
+            return event
         stream.reset(mark)
-        return None
-    after_would = stream.mark()
-
-    # -- counters ----------------------------------------------------------
-    stream.accept("put", "be")
-    stream.accept("put")
-    stream.accept_number()
-    stream.accept_phrase("or more")
-    counter = _any_counter(stream)
-    if counter is not None and stream.accept("on"):
-        spec = parse_object_filter(stream)
-        stream.accept("or")
-        stream.accept("player", "players")
-        if spec is not None:
-            return ReplacementKind.MODIFY_COUNTERS, spec, None, counter
-    stream.reset(after_would)
-
-    # -- tokens ------------------------------------------------------------
-    # The token count may have been eaten as the actor ("one or more tokens
-    # would be created"), so both shapes end up here.
-    if _token_event(stream, actor_objects):
-        return ReplacementKind.MODIFY_TOKENS, None, YOU, ""
-    stream.reset(after_would)
-
-    # -- damage ------------------------------------------------------------
-    if stream.accept("deal", "deals"):
-        stream.accept("noncombat", "combat")
-        if stream.accept("damage"):
-            stream.accept("to")
-            parse_object_filter(stream)
-            stream.accept("or")
-            parse_player_filter(stream)
-            stream.accept("player", "players")
-            return ReplacementKind.MODIFY_DAMAGE, actor_objects, None, ""
-    stream.reset(after_would)
-
-    # -- life --------------------------------------------------------------
-    if stream.accept("gain", "gains", "lose", "loses"):
-        if stream.accept("life"):
-            stream.accept_phrase("during your turn")
-            return ReplacementKind.MODIFY_LIFE_CHANGE, None, actor_players, ""
-    stream.reset(after_would)
-
-    # -- cards -------------------------------------------------------------
-    if stream.accept("draw", "draws"):
-        stream.accept("a", "an")
-        if stream.accept("card", "cards"):
-            return ReplacementKind.MODIFY_DRAW, None, actor_players, ""
-
-    stream.reset(mark)
     return None
 
 
-def _subject_led_event(stream: Stream):
-    """"If one or more <counters|tokens> would be <put|created> ...".
-
-    The counters or tokens are the grammatical subject rather than whoever
-    causes them, which is why this cannot go through the object grammar: "one
-    or more +1/+1 counters" is a quantity of a thing that is not a permanent.
-    """
+def _counter_event(stream: Stream):
+    """"one or more +1/+1 counters would be put on a creature you control",
+    "an effect / you / an opponent would put one or more counters on ..."."""
     from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
 
-    mark = stream.mark()
-    stream.accept_number()
-    if not stream.accept_phrase("or more"):
-        stream.reset(mark)
-        return None
-
-    counter = _any_counter(stream)
-    if counter is not None:
-        if stream.accept_phrase("would be put on") or stream.accept_phrase(
-            "would be placed on"
+    actor = None
+    keywords: tuple[str, ...] = ()
+    if stream.accept_phrase("one or more"):
+        counter = _any_counter(stream)
+        if counter is None:
+            return None
+        if not (
+            stream.accept_phrase("would be put on")
+            or stream.accept_phrase("would be placed on")
         ):
-            spec = parse_object_filter(stream)
-            stream.accept("or")
-            stream.accept("player", "players")
-            if spec is not None:
-                return ReplacementKind.MODIFY_COUNTERS, spec, None, counter
-        stream.reset(mark)
-        return None
+            return None
+    else:
+        if stream.accept_phrase("an effect"):
+            # CR 118: counters put as a *cost* are not put by an effect, and
+            # neither are the turn-based lore counters of CR 714.3b.
+            keywords = ("an effect",)
+        elif stream.accept("you"):
+            actor = YOU
+        elif stream.accept_phrase("an opponent"):
+            actor = PlayerFilter(PlayerScope.OPPONENT)
+        else:
+            return None
+        if not stream.accept_phrase("would put one or more"):
+            return None
+        counter = _any_counter(stream)
+        if counter is None or not stream.accept("on"):
+            return None
 
-    # "one or more creature tokens would be created under your control".
-    # The noun reader may take the word "tokens" itself, in which case the
-    # filter says so and there is nothing left here to accept.
+    start = stream.mark()
+    spec = parse_object_filter(stream)
+    if spec is None:
+        return None
+    if stream.at("or"):
+        # "on a permanent or player", "or on yourself": the counters a player
+        # gets (poison, energy, experience) do not pass through the
+        # replacement layer, so a card that multiplies them cannot be
+        # represented and is left unread rather than half-applied.
+        return None
+    return _ReplacedEvent(
+        ReplacementKind.MODIFY_COUNTERS,
+        "counters",
+        subject=replace(spec, count=None, up_to=False),
+        counter=counter,
+        actor=actor,
+        keywords=keywords,
+        recipient_words=_words_since(stream, start),
+    )
+
+
+def _token_event(stream: Stream):
+    """"one or more [creature] tokens would be created [under your control]",
+    "an effect would create one or more tokens", "you would create ..."."""
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+
+    players = None
+    passive = stream.accept_phrase("one or more")
+    if not passive:
+        # CR 111.1: tokens are only ever created by effects, so "an effect
+        # would create" says nothing "would be created" does not.
+        if stream.accept("you"):
+            players = YOU
+        elif not stream.accept_phrase("an effect"):
+            return None
+        if not stream.accept_phrase("would create one or more"):
+            return None
+
     spec = parse_object_filter(stream)
     took_token = spec is not None and spec.is_token
-    if (stream.accept("token", "tokens") or took_token) and stream.accept_phrase(
-        "would be created"
-    ):
-        stream.accept_phrase("under your control")
-        return ReplacementKind.MODIFY_TOKENS, None, YOU, ""
+    if not (stream.accept("token", "tokens") or took_token):
+        return None
+    wanted = _token_kind(spec)
+    if wanted is False:
+        return None
 
+    if passive and not stream.accept_phrase("would be created"):
+        return None
+    if stream.accept_phrase("under your control"):
+        players = YOU
+    return _ReplacedEvent(
+        ReplacementKind.MODIFY_TOKENS, "tokens", subject=wanted, players=players
+    )
+
+
+def _token_kind(spec):
+    """The kind of token a token replacement names - ``None`` for any token,
+    or ``False`` when the description says something a token definition that
+    does not exist yet cannot answer ("tokens you control with flying")."""
+    if spec is None:
+        return None
+    blank = ObjectFilter()
+    kind = ObjectFilter(
+        types_any=spec.types_any,
+        types_all=spec.types_all,
+        types_none=spec.types_none,
+        subtypes_any=spec.subtypes_any,
+        subtypes_all=spec.subtypes_all,
+        subtypes_none=spec.subtypes_none,
+        colors_any=spec.colors_any,
+        colors_all=spec.colors_all,
+        colors_none=spec.colors_none,
+    )
+    rest = replace(
+        spec,
+        types_any=blank.types_any,
+        types_all=blank.types_all,
+        types_none=blank.types_none,
+        subtypes_any=(),
+        subtypes_all=(),
+        subtypes_none=(),
+        colors_any=blank.colors_any,
+        colors_all=blank.colors_all,
+        colors_none=blank.colors_none,
+        is_token=None,
+        count=None,
+        up_to=False,
+        zones=blank.zones,
+    )
+    if rest != blank:
+        return False
+    return None if kind == blank else kind
+
+
+def _damage_event(stream: Stream):
+    """"a source you control would deal [combat|noncombat] damage [to ...]"."""
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+
+    start = stream.mark()
+    source = parse_object_filter(stream)
+    if source is None:
+        return None
+    named = {w.lower() for w in _words_since(stream, start)}
+    if not stream.accept_phrase("would deal"):
+        return None
+    keywords: tuple[str, ...] = ()
+    if stream.accept("combat"):
+        keywords = ("combat",)
+    elif stream.accept("noncombat"):
+        keywords = ("noncombat",)
+    if not stream.accept("damage"):
+        return None
+
+    source = replace(source, count=None, up_to=False)
+    if named & {"source", "sources"}:
+        # CR 609.7: a source of damage is an object wherever it is - a spell
+        # on the stack as much as a permanent - so the noun "source" carries
+        # no zone. Left at the battlefield, "a source you control" never
+        # caught a Lightning Bolt.
+        source = replace(source, zones=frozenset())
+    if source == ObjectFilter(zones=frozenset()):
+        source = None  # "a source": any damage at all.
+
+    subject = players = None
+    words: tuple[str, ...] = ()
+    if stream.accept("to"):
+        recipient = _damage_recipient(stream)
+        if recipient is None:
+            return None
+        subject, players, words = recipient
+    return _ReplacedEvent(
+        ReplacementKind.MODIFY_DAMAGE,
+        "damage",
+        subject=subject,
+        players=players,
+        damage_source=source,
+        keywords=keywords,
+        recipient_words=words,
+    )
+
+
+#: The players a damage or prevention recipient can name, as the words say
+#: them. "an opponent" is any one of them: the replacement asks whether the
+#: player being dealt damage is an opponent.
+_RECIPIENT_PLAYERS = (
+    ("you", PlayerScope.YOU),
+    ("an opponent", PlayerScope.OPPONENT),
+    ("a player", PlayerScope.EACH_PLAYER),
+    ("player", PlayerScope.EACH_PLAYER),
+)
+
+
+def _damage_recipient(stream: Stream):
+    """Who is dealt the damage: an object, a player, or "X or Y" of the two.
+
+    Returns ``(object filter, player filter, the words read)``. More than one
+    object description or more than one kind of player declines - the shield
+    and the replacement hold one of each.
+    """
+    start = stream.mark()
+    subject = players = None
+    while True:
+        for phrase, scope in _RECIPIENT_PLAYERS:
+            if stream.accept_phrase(phrase):
+                if players is not None:
+                    return None
+                players = PlayerFilter(scope)
+                break
+        else:
+            spec = parse_object_filter(stream)
+            if spec is None or subject is not None:
+                return None
+            if spec.includes_players:
+                # "a permanent or player" - the noun reader folds the player
+                # into the filter as it does for "any target".
+                if players is not None:
+                    return None
+                players = PlayerFilter(PlayerScope.EACH_PLAYER)
+                spec = replace(spec, includes_players=False)
+            subject = replace(spec, count=None, up_to=False)
+        if not stream.accept("or"):
+            break
+    return subject, players, _words_since(stream, start)
+
+
+def _life_event(stream: Stream):
+    """"you would gain life", "an opponent would lose life during your turn"."""
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    players = None
+    for phrase, scope in (
+        ("you", PlayerScope.YOU),
+        ("an opponent", PlayerScope.OPPONENT),
+        ("a player", PlayerScope.EACH_PLAYER),
+    ):
+        if stream.accept_phrase(phrase):
+            players = PlayerFilter(scope)
+            break
+    if players is None or not stream.accept("would"):
+        return None
+    if stream.accept("gain"):
+        kind, family = ReplacementKind.MODIFY_LIFE_CHANGE, "gain"
+    elif stream.accept("lose"):
+        kind, family = ReplacementKind.MODIFY_LIFE_LOSS, "loss"
+    else:
+        return None
+    if not stream.accept("life"):
+        return None
+    condition = None
+    if stream.accept_phrase("during your turn"):
+        condition = Condition(kind=ConditionKind.IS_YOUR_TURN, text="during your turn")
+    event = _ReplacedEvent(kind, family, players=players)
+    if condition is not None:
+        event.condition = condition
+    return event
+
+
+def _words_since(stream: Stream, start: int) -> tuple[str, ...]:
+    return tuple(token.lower for token in stream.tokens[start : stream.mark()])
+
+
+#: What each family's substitute may say it does, and who may say it.
+_RESIZE_VERBS = {
+    "counters": ("put", "puts"),
+    "tokens": ("create", "creates"),
+    "damage": ("deal", "deals"),
+    "gain": ("gain", "gains"),
+    "loss": ("lose", "loses"),
+}
+_RESIZE_SUBJECTS = {
+    "counters": ("it", "they", "you"),
+    "tokens": ("it", "they", "you"),
+    "damage": ("it", "that source"),
+}
+
+#: Pronouns that point back at the event's own recipient. Each is only a
+#: restatement when the event named that kind of recipient.
+_ANAPHORA = {
+    "that permanent or player": ("object", "player"),
+    "that player or permanent": ("object", "player"),
+    "that player": ("player",),
+    "that permanent": ("object",),
+    "that creature": ("object",),
+    "it": ("object",),
+    "them": ("object",),
+}
+
+
+def _resized_event(stream: Stream, event):
+    """The substitute half: the same event with a different number.
+
+    Returns ``(kind, multiplier, addend)``, or ``None`` when the substitute is
+    anything other than the event resized.
+    """
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+
+    family = event.family
+    kind = event.kind
+
+    # Who does it: a pronoun for the actor or the source, or for a life event
+    # the player it happens to.
+    if family in ("gain", "loss"):
+        scope = event.players.scope
+        if scope is PlayerScope.YOU:
+            if not stream.accept("you"):
+                return None
+        elif not (stream.accept("they") or stream.accept_phrase("that player")):
+            return None
+    else:
+        for word in _RESIZE_SUBJECTS.get(family, ()):
+            if stream.accept_phrase(word):
+                break
+
+    verb = stream.accept(*_RESIZE_VERBS[family])
+    if family == "gain" and not verb and stream.accept("lose", "loses"):
+        # CR 614.1a: "that player loses that much life instead" - the gain
+        # becomes a loss of the same size (Tainted Remedy).
+        if not (stream.accept_phrase("that much life")):
+            return None
+        return ReplacementKind.LIFE_GAIN_BECOMES_LOSS, 1, 0
+    if family in ("gain", "loss", "damage") and not verb:
+        return None
+
+    multiplier = 1
+    if stream.accept("twice", "double"):
+        multiplier = 2
+    elif stream.accept("triple"):
+        multiplier = 3
+    else:
+        mark = stream.mark()
+        count = stream.accept_number()
+        if count is not None and stream.accept("times"):
+            multiplier = count
+        else:
+            stream.reset(mark)
+    if not stream.accept("that"):
+        return None
+    stream.accept("many", "much")
+
+    extra = _plus_minus(stream)
+    if not _resized_noun(stream, event):
+        return None
+    if extra is None:
+        extra = _plus_minus(stream)
+    if extra is None:
+        extra = 0
+
+    if not verb:
+        passive = {"counters": ("are put", "are placed"), "tokens": ("are created",)}
+        if not any(stream.accept_phrase(p) for p in passive.get(family, ())):
+            return None
+    if not _restated_recipient(stream, event):
+        return None
+    if multiplier == 1 and extra == 0:
+        return None  # "that many" and nothing else changes nothing.
+    return kind, multiplier, extra
+
+
+def _plus_minus(stream: Stream) -> int | None:
+    mark = stream.mark()
+    sign = 1 if stream.accept("plus") else -1 if stream.accept("minus") else 0
+    if not sign:
+        return None
+    number = stream.accept_number()
+    if number is None:
+        stream.reset(mark)
+        return None
+    return sign * number
+
+
+def _resized_noun(stream: Stream, event) -> bool:
+    """The thing counted, restated: "+1/+1 counters", "of those tokens"."""
+    family = event.family
+    if family == "counters":
+        for phrase in (
+            "of each of those kinds of counters",
+            "of those kinds of counters",
+            "of those counters",
+        ):
+            if stream.accept_phrase(phrase):
+                return True
+        mark = stream.mark()
+        named = _counter_word(stream)
+        if named is None:
+            stream.reset(mark)
+            return True  # "that many plus one are put on it"
+        # A named kind has to be the kind the event caught.
+        return bool(event.counter) and named == event.counter
+    if family == "tokens":
+        stream.accept_phrase("of those tokens")
+        return True
+    if family == "damage":
+        stream.accept("damage")
+        return True
+    stream.accept("life")
+    return True
+
+
+def _restated_recipient(stream: Stream, event) -> bool:
+    """"on that permanent", "to that permanent or player", "to you" - where
+    the resized event lands, which must be where it was going anyway."""
+    family = event.family
+    if family == "counters":
+        preposition = "on"
+    elif family == "damage":
+        preposition = "to"
+    else:
+        return True
+    mark = stream.mark()
+    if not stream.accept(preposition):
+        return True
+    has = set()
+    if event.subject is not None:
+        has.add("object")
+    if event.players is not None:
+        has.add("player")
+    for phrase, needs in _ANAPHORA.items():
+        if stream.accept_phrase(phrase):
+            if set(needs) <= has:
+                return True
+            stream.reset(mark)
+            return False
+    words = event.recipient_words
+    if words and stream.accept_phrase(" ".join(words)):
+        return True
     stream.reset(mark)
-    return None
+    return False
 
 
 def _any_counter(stream: Stream) -> str | None:
@@ -7276,84 +7634,6 @@ def _any_counter(stream: Stream) -> str | None:
     stream.reset(mark)
     if stream.accept("counter", "counters"):
         return ""
-    stream.reset(mark)
-    return None
-
-
-def _token_event(stream: Stream, actor: object) -> bool:
-    """Whether this is "one or more tokens would be created"."""
-    if actor is not None and getattr(actor, "is_token", None):
-        stream.accept("be")
-        if stream.accept("created", "create"):
-            stream.accept_phrase("under your control")
-            return True
-        return False
-
-    stream.accept("create", "be")
-    stream.accept("created", "create")
-    stream.accept_number()
-    stream.accept_phrase("or more")
-    # The noun reader takes the word "tokens" itself when nothing follows it,
-    # so the filter is where to look for it rather than the stream.
-    spec = parse_object_filter(stream)
-    if stream.accept("token", "tokens") or (spec is not None and spec.is_token):
-        stream.accept_phrase("under your control")
-        return True
-    return False
-
-
-def _replacement_amount(stream: Stream):
-    """"twice that many", "double that damage", "that many plus one".
-
-    Returns ``(multiplier, addend)``, or ``None`` when the substitute is a
-    fresh effect rather than a resized event - which the general replacement
-    clause handles instead.
-    """
-    mark = stream.mark()
-    # Deliberately not a bare "that": "that many" and "that much" are read as
-    # phrases below, and eating the "that" here left them unmatchable.
-    stream.accept("it", "they", "you")
-    stream.accept_phrase("that player")
-    stream.accept(
-        "creates", "create", "are", "is", "puts", "put", "deals", "deal",
-        "gain", "gains", "lose", "loses", "draw", "draws",
-    )
-
-    for word, factor in (("twice", 2), ("double", 2), ("triple", 3)):
-        if stream.accept(word):
-            stream.accept("that")
-            if stream.accept("many", "much", "damage", "life"):
-                return factor, 0
-            stream.reset(mark)
-            return None
-
-    count = stream.accept_number()
-    if count is not None and stream.accept("times"):
-        if not (
-            stream.accept_phrase("that many") or stream.accept_phrase("that much")
-        ):
-            stream.reset(mark)
-            return None
-        return count, 0
-    if count is not None:
-        stream.reset(mark)
-        return None
-
-    if stream.accept_phrase("that many") or stream.accept_phrase("that much"):
-        if stream.accept("plus"):
-            extra = stream.accept_number()
-            if extra is None:
-                stream.reset(mark)
-                return None
-            return 1, extra
-        if stream.accept("minus"):
-            extra = stream.accept_number()
-            if extra is None:
-                stream.reset(mark)
-                return None
-            return 1, -extra
-        return 1, 0
-
     stream.reset(mark)
     return None
 

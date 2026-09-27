@@ -104,6 +104,18 @@ def _expire(game: Game, moment: Duration) -> None:
         game.permissions_epoch = -1
         changed = True
 
+    # CR 611.2b, 615: a replacement or prevention effect a resolving spell
+    # made lasts as long as it says and no longer. Nothing ever removed one,
+    # so a Fog - "prevent all combat damage that would be dealt this turn" -
+    # went on preventing combat damage for the rest of the game.
+    kept_replacements = [
+        r
+        for r in game.replacement_effects
+        if not r.used and not _is_over(game, r, moment)
+    ]
+    if len(kept_replacements) != len(game.replacement_effects):
+        game.replacement_effects = kept_replacements
+
     if changed:
         game.invalidate_characteristics()
 

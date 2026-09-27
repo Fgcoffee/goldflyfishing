@@ -81,8 +81,14 @@ class ReplacementKind(IntEnum):
     #: controller to gain life, that player loses that much life instead".
     #: The gain never happens, so nothing that watches for life gain sees it.
     LIFE_GAIN_BECOMES_LOSS = 10
-    #: Life gain or loss by a different amount (doubling, halving).
+    #: Life *gain* by a different amount ("you gain twice that much life
+    #: instead"). It watches gains only: a life-gain doubler that also doubled
+    #: its controller's life loss is a different card.
     MODIFY_LIFE_CHANGE = 11
+    #: Life *loss* by a different amount ("they lose twice that much life
+    #: instead"). Its own kind for the same reason - the two events are
+    #: different words on the card and different events in the game.
+    MODIFY_LIFE_LOSS = 3000
     #: CR 614.1: "if an effect would create one or more tokens, it creates
     #: twice that many instead".
     MODIFY_TOKENS = 13
@@ -123,6 +129,37 @@ class ReplacementEffect:
     #: CR 615.5: a shield that is used up once it applies.
     one_shot: bool = False
     used: bool = False
+
+    #: Damage events: which *sources'* damage is caught - "if a source you
+    #: control would deal damage", "prevent all damage that would be dealt by
+    #: non-Spider creatures". ``subject``/``players`` are the recipient, which
+    #: is a different object: reading the source filter against the damaged
+    #: permanent tripled the damage Fiery Emancipation's controller *took*.
+    damage_source: object | None = None
+    #: CR 615: "dealt to and dealt by" one object - the shield catches damage
+    #: whose recipient *or* whose source matches ``subject``.
+    both_ways: bool = False
+    #: Counter and token events: the player doing the putting or creating -
+    #: "if *you* would put one or more counters", "if an opponent would".
+    #: Matched against the controller of the event's source.
+    actor: object | None = None
+    #: "If an *effect* would put counters": counters that are part of a cost
+    #: (CR 118) are not put by an effect, and neither are the turn-based lore
+    #: counters of CR 714.3b. Both reach the event with no source object.
+    effects_only: bool = False
+    #: Zone changes: where the object would have gone, and where from, for
+    #: "if a card would be put into a graveyard from anywhere" (``None`` is
+    #: any zone). ``destination`` is where it goes instead.
+    watched_to_zone: Zone | None = None
+    watched_from_zone: Zone | None = None
+    #: A gate on the replacement as a whole: "during your turn", "as long as
+    #: ...". ``None`` is always.
+    condition: object | None = None
+    #: CR 611.2b: how long a replacement made by a resolving spell lasts, and
+    #: the turn it began, which the "next turn" durations need. Zero is until
+    #: used - or, for a static ability's, while the permanent has it.
+    duration: int = 0
+    created_turn: int = 0
 
     text: str = ""
 
@@ -180,7 +217,9 @@ def apply_replacements(game: Game, event: Event) -> Event | None:
 
         applied.add(id(chosen))
         current = _perform(game, chosen, current)
-        if chosen.one_shot:
+        if chosen.one_shot and chosen.kind is not ReplacementKind.PREVENT_DAMAGE:
+            # A prevention shield of a stated size is used up by amount, not
+            # by the first event it touches (CR 615.7) - ``_perform`` spends it.
             chosen.used = True
         if current is None:
             return None
@@ -210,7 +249,6 @@ def static_replacements(game: Game) -> list[ReplacementEffect]:
         return cached
 
     from .abilities import AbilityKind
-    from .effects import EffectKind
 
     out: list[ReplacementEffect] = []
     for object_id in list(game.battlefield):
@@ -220,30 +258,147 @@ def static_replacements(game: Game) -> list[ReplacementEffect]:
         for ability in game.characteristics(obj).abilities:
             if ability.kind is not AbilityKind.STATIC or ability.unparsed:
                 continue
-            for effect in ability.effects:
-                if effect.kind is not EffectKind.REPLACEMENT:
-                    continue
-                if not effect.replacement_kind:
-                    continue  # A shape the engine has no kind for.
-                out.append(
-                    ReplacementEffect(
-                        kind=ReplacementKind(effect.replacement_kind),
-                        event_kinds=_events_for(
-                            ReplacementKind(effect.replacement_kind)
-                        ),
-                        subject=effect.targets,
-                        players=effect.players,
-                        source=obj.id,
-                        controller=obj.controller,
-                        amount=effect.amount.constant,
-                        multiplier=effect.multiplier,
-                        text=effect.text,
-                    )
+            if any(effect.is_unparsed for effect in ability.effects):
+                # Partly read: none of it applies, rather than the half that was.
+                continue
+            gate = None if ability.static_condition.is_always else ability.static_condition
+            for effect, condition in _replacement_parts(ability.effects, gate):
+                built = replacement_from_effect(
+                    effect,
+                    source=obj.id,
+                    controller=obj.controller,
+                    condition=condition,
                 )
+                if built is not None:
+                    out.append(built)
 
     game.static_replacements_cache = out
     game.static_replacements_epoch = game.epoch
     return out
+
+
+def _replacement_parts(effects, gate):
+    """The replacement and prevention effects inside a static ability, with
+    whatever condition guards each.
+
+    SEQUENCEs are walked for the same reason the layer system walks them, and
+    a CONDITIONAL with no "otherwise" is a gate on what it wraps: "During your
+    turn, prevent all damage that would be dealt to this creature" parses to a
+    CONDITIONAL around a PREVENT_DAMAGE, and the prevention applies exactly
+    while the condition holds (CR 604.1: a static ability is always "on", and
+    what it says is checked continuously).
+    """
+    from ..kernel.query import Condition, ConditionKind
+    from .effects import EffectKind
+
+    for effect in effects:
+        if effect.kind in (EffectKind.REPLACEMENT, EffectKind.PREVENT_DAMAGE):
+            yield effect, gate
+        elif effect.kind is EffectKind.SEQUENCE:
+            yield from _replacement_parts(effect.children, gate)
+        elif effect.kind is EffectKind.CONDITIONAL and not effect.otherwise:
+            inner = effect.condition
+            if gate is not None:
+                inner = Condition(
+                    kind=ConditionKind.AND, operands=(gate, inner), text="and"
+                )
+            yield from _replacement_parts(effect.children, inner)
+
+
+#: Event kinds that are damage being dealt (CR 120).
+_DAMAGE_EVENTS = frozenset({EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT})
+
+
+def replacement_from_effect(
+    effect,
+    *,
+    source: ObjectId,
+    controller: PlayerId,
+    condition=None,
+    duration: int = 0,
+    created_turn: int = 0,
+) -> ReplacementEffect | None:
+    """The replacement effect an ``Effect`` describes, or ``None``.
+
+    One builder for both places a replacement comes from - a permanent's
+    static ability (CR 614.1, 615.1) and a resolving spell or ability that
+    creates one for a duration (CR 611.2) - so the two cannot read the same
+    words into different events. ``None`` for a REPLACEMENT the engine has no
+    kind for, which is never registered.
+    """
+    from .effects import EffectKind
+
+    if effect.kind is EffectKind.PREVENT_DAMAGE:
+        return ReplacementEffect(
+            kind=ReplacementKind.PREVENT_DAMAGE,
+            event_kinds=_damage_events(effect.keywords),
+            subject=effect.targets,
+            players=effect.players,
+            damage_source=effect.damage_source,
+            both_ways=effect.both_ways,
+            source=source,
+            controller=controller,
+            # A stated amount is a shield that is used up (CR 615.7); "all"
+            # is the -1 sentinel, which never is.
+            amount=effect.amount.constant,
+            condition=_gate(condition, effect),
+            duration=duration,
+            created_turn=created_turn,
+            text=effect.text or "prevent damage",
+        )
+    if effect.kind is not EffectKind.REPLACEMENT or not effect.replacement_kind:
+        return None
+    kind = ReplacementKind(effect.replacement_kind)
+    events = _events_for(kind)
+    if kind in (ReplacementKind.MODIFY_DAMAGE, ReplacementKind.PREVENT_DAMAGE):
+        events = _damage_events(effect.keywords)
+    return ReplacementEffect(
+        kind=kind,
+        event_kinds=events,
+        subject=effect.targets,
+        players=effect.players,
+        damage_source=effect.damage_source,
+        both_ways=effect.both_ways,
+        actor=effect.actor,
+        effects_only="an effect" in effect.keywords,
+        source=source,
+        controller=controller,
+        amount=effect.amount.constant,
+        multiplier=effect.multiplier,
+        counter_type=effect.counter_type,
+        destination=effect.zone,
+        watched_to_zone=effect.event_zone,
+        watched_from_zone=effect.from_zone,
+        condition=_gate(condition, effect),
+        duration=duration,
+        created_turn=created_turn,
+        text=effect.text,
+    )
+
+
+def _gate(condition, effect):
+    """The ability's gate and the effect's own condition, together."""
+    from ..kernel.query import Condition, ConditionKind
+
+    own = None if effect.condition.is_always else effect.condition
+    if condition is None:
+        return own
+    if own is None:
+        return condition
+    return Condition(kind=ConditionKind.AND, operands=(condition, own), text="and")
+
+
+def _damage_events(keywords) -> frozenset:
+    """"combat damage" and "noncombat damage" are narrower than "damage".
+
+    Dropping the qualifier made every Fog also stop a Lightning Bolt, and made
+    a noncombat-damage doubler double combat damage as well.
+    """
+    if "combat" in keywords:
+        return frozenset({EventKind.COMBAT_DAMAGE_DEALT})
+    if "noncombat" in keywords:
+        return frozenset({EventKind.DAMAGE_DEALT})
+    return _DAMAGE_EVENTS
 
 
 def _events_for(kind: ReplacementKind) -> frozenset:
@@ -262,11 +417,13 @@ def _events_for(kind: ReplacementKind) -> frozenset:
     if kind is ReplacementKind.ENTERS_WITH_COUNTERS:
         return frozenset({EventKind.ENTERS_BATTLEFIELD})
     if kind in (ReplacementKind.MODIFY_DAMAGE, ReplacementKind.PREVENT_DAMAGE):
-        return frozenset(
-            {EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT}
-        )
-    if kind is ReplacementKind.MODIFY_LIFE_CHANGE:
-        return frozenset({EventKind.LIFE_GAINED, EventKind.LIFE_LOST})
+        return _DAMAGE_EVENTS
+    if kind in (ReplacementKind.MODIFY_LIFE_CHANGE, ReplacementKind.LIFE_GAIN_BECOMES_LOSS):
+        return frozenset({EventKind.LIFE_GAINED})
+    if kind is ReplacementKind.MODIFY_LIFE_LOSS:
+        return frozenset({EventKind.LIFE_LOST})
+    if kind is ReplacementKind.REDIRECT_ZONE_CHANGE:
+        return frozenset({EventKind.ZONE_CHANGE})
     return frozenset()
 
 
@@ -308,6 +465,38 @@ def _applies(game: Game, effect: ReplacementEffect, event: Event) -> bool:
     if event.kind not in effect.event_kinds:
         return False
 
+    if effect.condition is not None and not effect.condition.is_always:
+        from ..kernel.conditions import holds
+
+        if not holds(game, effect.condition, source=effect.source, controller=effect.controller):
+            return False
+
+    # Each family of event says who is involved in its own fields, so each is
+    # asked its own question. One generic test read "the object" of a damage
+    # event - the permanent being damaged - against a filter describing the
+    # damage's *source*.
+    if event.kind in _DAMAGE_EVENTS:
+        return _damage_applies(game, effect, event)
+    if event.kind is EventKind.TOKEN_CREATED:
+        return _token_applies(game, effect, event)
+    if event.kind is EventKind.COUNTER_ADDED:
+        # "+1/+1 counters" names a kind; Hardened Scales does not add a -1/-1
+        # counter. An empty kind is "one or more counters" of any kind.
+        if effect.counter_type and (not event.data or event.data[0] != effect.counter_type):
+            return False
+        if effect.effects_only and event.source == NO_OBJECT:
+            return False
+        if not _actor_matches(game, effect, event):
+            return False
+    if event.kind is EventKind.ZONE_CHANGE:
+        if effect.watched_to_zone is not None and event.to_zone is not effect.watched_to_zone:
+            return False
+        if (
+            effect.watched_from_zone is not None
+            and event.from_zone is not effect.watched_from_zone
+        ):
+            return False
+
     if effect.subject is not None:
         obj = game.objects.get(event.object_id)
         if obj is None:
@@ -336,6 +525,147 @@ def _applies(game: Game, effect: ReplacementEffect, event: Event) -> bool:
     return True
 
 
+def _damage_applies(game: Game, effect: ReplacementEffect, event: Event) -> bool:
+    """CR 120, 614.9, 615: a damage event has a recipient and a source.
+
+    ``subject`` and ``players`` describe the recipient - an object, a player,
+    or either - and ``damage_source`` the source. A shield "dealt to and dealt
+    by" one object catches the damage whichever way round it is.
+    """
+    if effect.both_ways:
+        return _recipient_matches(game, effect, event) or _source_matches(
+            game, effect, effect.subject, event
+        )
+    if not _recipient_matches(game, effect, event):
+        return False
+    if effect.damage_source is not None and not _source_matches(
+        game, effect, effect.damage_source, event
+    ):
+        return False
+    return True
+
+
+def _recipient_matches(game: Game, effect: ReplacementEffect, event: Event) -> bool:
+    """Who is being dealt the damage: nothing named means anyone."""
+    subject, players = effect.subject, effect.players
+    if subject is None and players is None:
+        return True
+    if event.object_id != NO_OBJECT:
+        if subject is None:
+            # "Damage that would be dealt to you" names a player and no
+            # object. The event's ``player`` for damage to a permanent is its
+            # controller, which is not who is being dealt the damage.
+            return False
+        obj = game.objects.get(event.object_id)
+        if obj is None:
+            return False
+        from ..kernel.matching import matches
+
+        return matches(
+            game, obj, subject, source=effect.source, controller=effect.controller
+        )
+    if event.player == NO_PLAYER:
+        return False
+    if players is not None:
+        from ..kernel.matching import resolve_players
+
+        return event.player in resolve_players(
+            game, players, controller=effect.controller
+        )
+    return bool(getattr(subject, "includes_players", False))
+
+
+def _source_matches(game: Game, effect: ReplacementEffect, spec, event: Event) -> bool:
+    """Whether the damage's source fits ``spec``.
+
+    Last-known information is allowed (CR 609.7b): a source that has left the
+    battlefield by the time its damage is dealt is still the source, as it
+    last existed.
+    """
+    if spec is None:
+        return True
+    obj = game.objects.get(event.source)
+    if obj is None:
+        return False
+    from ..kernel.matching import matches
+
+    return matches(
+        game,
+        obj,
+        spec,
+        source=effect.source,
+        controller=effect.controller,
+        allow_stale=True,
+    )
+
+
+def _actor_matches(game: Game, effect: ReplacementEffect, event: Event) -> bool:
+    """"If *you* would put ..." - the controller of what is doing it."""
+    if effect.actor is None:
+        return True
+    obj = game.objects.get(event.source)
+    if obj is None:
+        return False
+    from ..kernel.matching import resolve_players
+
+    return obj.controller in resolve_players(
+        game, effect.actor, controller=effect.controller
+    )
+
+
+def _token_applies(game: Game, effect: ReplacementEffect, event: Event) -> bool:
+    """CR 111.1: who the tokens would be created for, and what they are.
+
+    ``players`` is "under your control"; ``subject`` narrows the tokens
+    ("creature tokens", "one or more Treasure tokens"), read against the
+    definition the tokens are about to be made from, because none of them
+    exists yet.
+    """
+    if not _actor_matches(game, effect, event):
+        return False
+    if effect.players is not None:
+        from ..kernel.matching import resolve_players
+
+        if event.player not in resolve_players(
+            game, effect.players, controller=effect.controller
+        ):
+            return False
+    if effect.subject is not None:
+        spec = event.data[0] if event.data else None
+        if spec is None or not token_spec_matches(spec, effect.subject):
+            return False
+    return True
+
+
+def token_spec_matches(spec, wanted) -> bool:
+    """Whether a token about to be created fits a type description.
+
+    Only the constraints a token definition can answer are asked - card types,
+    subtypes and colours. The grammar only builds token filters out of those,
+    so nothing a filter says is left unasked.
+    """
+    types = int(spec.types)
+    if wanted.types_all and types & int(wanted.types_all) != int(wanted.types_all):
+        return False
+    if wanted.types_any and not types & int(wanted.types_any):
+        return False
+    if wanted.types_none and types & int(wanted.types_none):
+        return False
+    subtypes = set(spec.subtypes)
+    if wanted.subtypes_all and not set(wanted.subtypes_all) <= subtypes:
+        return False
+    if wanted.subtypes_any and not set(wanted.subtypes_any) & subtypes:
+        return False
+    if wanted.subtypes_none and set(wanted.subtypes_none) & subtypes:
+        return False
+    colors = int(spec.colors)
+    if wanted.colors_all and colors & int(wanted.colors_all) != int(wanted.colors_all):
+        return False
+    if wanted.colors_any and not colors & int(wanted.colors_any):
+        return False
+    return not (wanted.colors_none and colors & int(wanted.colors_none))
+
+
 def _perform(game: Game, effect: ReplacementEffect, event: Event) -> Event | None:
     """Carry out one replacement, returning the modified event."""
     kind = effect.kind
@@ -347,6 +677,12 @@ def _perform(game: Game, effect: ReplacementEffect, event: Event) -> Event | Non
     if kind is ReplacementKind.PREVENT_DAMAGE:
         prevented = event.amount if effect.amount <= 0 else min(event.amount, effect.amount)
         remaining = event.amount - prevented
+        if effect.one_shot and effect.amount > 0:
+            # CR 615.7: "the next 3 damage" is a shield of three, spent a
+            # point at a time across however many events it takes.
+            effect.amount -= prevented
+            if effect.amount <= 0:
+                effect.used = True
         game.emit_raw(
             Event(
                 EventKind.DAMAGE_PREVENTED,
@@ -360,10 +696,6 @@ def _perform(game: Game, effect: ReplacementEffect, event: Event) -> Event | Non
             return None
         return event.with_amount(remaining)
 
-    if kind is ReplacementKind.MODIFY_DAMAGE:
-        new_amount = max(0, event.amount + effect.amount)
-        return None if new_amount == 0 else event.with_amount(new_amount)
-
     if kind is ReplacementKind.REDIRECT_DAMAGE:
         return event.replaced(object_id=effect.redirect_to, player=NO_PLAYER)
 
@@ -373,11 +705,15 @@ def _perform(game: Game, effect: ReplacementEffect, event: Event) -> Event | Non
         ReplacementKind.MODIFY_TOKENS,
         ReplacementKind.MODIFY_DAMAGE,
         ReplacementKind.MODIFY_LIFE_CHANGE,
+        ReplacementKind.MODIFY_LIFE_LOSS,
     ):
         # One arithmetic for the whole family: multiply, then add. Every
         # amount-changing replacement in the game is one or the other -
         # "twice that many", "that many plus one", "double that damage" - and
         # giving each event kind its own formula is how they drifted apart.
+        # Damage had drifted: it had a branch of its own, above this one,
+        # that added and never multiplied, so every damage doubler in the
+        # format dealt the damage it would have dealt anyway.
         return event.with_amount(
             max(0, event.amount * effect.multiplier + effect.amount)
         )
