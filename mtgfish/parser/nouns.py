@@ -463,14 +463,15 @@ def _peek_targeted(stream: Stream) -> bool:
     """Whether the coming noun phrase is a target, without consuming it."""
     mark = stream.mark()
     found = False
-    for _ in range(4):  # "up to two target creatures" - target is never deeper
+    # "up to one other target creature" - target is never deeper than this.
+    for _ in range(5):
         token = stream.peek()
         if token.kind is TokenKind.END:
             break
         if token.lower == "target":
             found = True
             break
-        if token.lower in ("up", "to", "another", "each", "all", "any") or (
+        if token.lower in ("up", "to", "another", "other", "each", "all", "any") or (
             token.kind is TokenKind.NUMBER
         ):
             stream.next()
@@ -843,6 +844,14 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         # "and", "or", and Scryfall's "and/or" all mean the same thing here:
         # an object matching any of the listed types qualifies. "Instant and
         # sorcery cards" is not asking for a card that is both.
+        if stream.at("and") and stream.peek(1).lower in ("a", "an"):
+            # "Sacrifices an artifact *and a* land": two objects, one of each,
+            # not one object that may be either. A second determiner after
+            # "and" starts a second noun phrase, which this filter cannot be;
+            # the list ends here and whoever reads on must say what the rest
+            # means, or fail.
+            stream.reset(look)
+            break
         joined = stream.accept("or") or stream.accept("and")
         if joined:
             stream.accept("or")
@@ -1760,6 +1769,11 @@ def _whole_phrase_disjunction(stream: Stream, spec: ObjectFilter) -> ObjectFilte
     halves and is read once, on the second.
     """
     mark = stream.mark()
+    if stream.at("and") and stream.peek(1).lower in ("a", "an"):
+        # "Sacrifices an artifact *and a* land": one of each, two objects.
+        # Merged into one filter it read "an artifact or a land", and a player
+        # with both sacrificed one.
+        return spec
     if not stream.accept("or", "and"):
         return spec
     if stream.at("or", "and"):

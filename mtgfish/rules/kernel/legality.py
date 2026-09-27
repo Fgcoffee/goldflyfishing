@@ -447,11 +447,13 @@ def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool
             nodes.insert(0, enchant)
 
     for node in nodes:
-        if node.targets is None:
+        # A player is always there to be targeted - "target player
+        # sacrifices a creature" is castable at a player with none.
+        if node.targets_a_player:
             continue
         # "Up to N" can legally be cast with none, so an empty board
         # is no obstacle.
-        if node.targets.up_to:
+        if node.target_optional:
             continue
         # CR 115.4: a spell that can target a player always has one,
         # so an empty board never makes it uncastable. Without this,
