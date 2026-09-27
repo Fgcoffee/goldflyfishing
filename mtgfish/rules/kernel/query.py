@@ -12,7 +12,7 @@ compare them, and the whole structure serialises for the native port.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from enum import IntEnum
 
 from .enums import CardType, Color, Supertype, Zone
@@ -355,6 +355,12 @@ class PlayerScope(IntEnum):
     #: in turn - facing a villainous choice (CR 701.55a) above all. Resolved
     #: by the resolution, which knows whose turn in the sequence it is.
     THAT_PLAYER = 12
+    #: The player who controls the spell or ability that caused the event a
+    #: triggered ability fired on - ward's "that player" (CR 702.21a), who
+    #: controls the spell or ability that targeted the warded permanent.
+    #: Captured on the event (``Event.source_controller``) when it happened,
+    #: so it is right even if the spell has left the stack by resolution.
+    TRIGGER_SOURCE_CONTROLLER = 4001
 
 
 @dataclass(frozen=True, slots=True)
@@ -387,6 +393,9 @@ class PlayerFilter:
             PlayerScope.OWNER_OF: "its owner",
             PlayerScope.MONARCH: "the monarch",
             PlayerScope.DEFENDING_PLAYER: "the defending player",
+            PlayerScope.TRIGGER_SOURCE_CONTROLLER: (
+                "the controller of the spell or ability that triggered this"
+            ),
         }
         base = names.get(self.scope, self.scope.name.lower().replace("_", " "))
         if self.controls is not None:
@@ -469,6 +478,13 @@ class ObjectFilter:
     #: objects: "Destroy target creature. Its controller loses 2 life" means
     #: the *target's* controller, not this card's.
     remembered: bool = False
+    #: "That spell or ability" in a triggered ability: the object that caused
+    #: the event the ability triggered on (``Event.source``) - the spell or
+    #: ability that targeted a warded permanent (CR 702.21a). Answered from
+    #: the triggered ability's own event at resolution, never by searching.
+    #: Left out of ``repr`` so that adding it did not change the census hash
+    #: of every ability that carries a filter.
+    trigger_source: bool = field(default=False, repr=False)
     specific: tuple[ObjectId, ...] = ()
     #: CR 607.2a-c: "the exiled cards", "cards exiled with this", "creatures
     #: put onto the battlefield with this" - what the source's linked ability
@@ -587,7 +603,11 @@ class ObjectFilter:
 
     def _quantity(self) -> list[str]:
         if self.count is None:
-            return ["all"] if not self.source_only and not self.remembered else []
+            return (
+                ["all"]
+                if not self.source_only and not self.remembered and not self.trigger_source
+                else []
+            )
         return [f"up to {self.count}"] if self.up_to else [str(self.count)]
 
     def _colors(self) -> list[str]:
@@ -632,6 +652,8 @@ class ObjectFilter:
             parts.append("(this permanent itself)")
         if self.remembered:
             parts.append("(whatever was just referred to)")
+        if self.trigger_source:
+            parts.append("(the spell or ability that triggered this)")
         if self.linked_to_source:
             parts.append("(affected by this object's linked ability)")
         if self.named:

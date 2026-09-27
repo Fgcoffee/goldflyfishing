@@ -42,6 +42,11 @@ class CostKind(IntEnum):
     #: "Exile this artifact", "Exile a creature you control": the cost is a
     #: permanent. Not a graveyard card, which is what these were charged as.
     EXILE_FROM_BATTLEFIELD = 19
+    #: "Discard a card at random" (CR 701.8a): the same discard, except that
+    #: the payer does not choose which card - the game does. Its own kind
+    #: because a chosen discard is a different, better cost: the payer keeps
+    #: the card that matters and throws away a spare land.
+    DISCARD_AT_RANDOM = 4001
 
     PAY_LIFE = 30
     #: CR 107.14: {E} is one energy counter, paid by removing it from the
@@ -89,10 +94,59 @@ class CostComponent:
             return "{T}"
         if self.kind is CostKind.UNTAP_SELF:
             return "{Q}"
+        described = self._describe()
+        if described:
+            return described
         if self.text:
             return self.text
         base = self.kind.name.lower().replace("_", " ")
         return f"{base} {self.amount}" if not self.amount.is_constant or self.amount.constant else base
+
+    def _describe(self) -> str:
+        """The component said back from its fields, for the round-trip.
+
+        ``text`` is a fixed label ("sacrifice", "pay life"), so rendering it
+        showed "sacrifice" for a cost of three nonland permanents and for one
+        of a single Food alike - the difference a reviewer is looking for was
+        exactly the part left out. Empty for a kind with no rendering here.
+        """
+        kind = self.kind
+        amount = str(self.amount)
+        spec = self.filter
+        if spec is not None and spec.source_only:
+            what = "this"
+        elif spec is not None:
+            what = spec.describe(quantified=False)
+        else:
+            what = ""
+        if kind is CostKind.PAY_LIFE:
+            return f"pay {amount} life"
+        if kind is CostKind.PAY_ENERGY:
+            return f"pay {amount} {{E}}"
+        if kind is CostKind.SACRIFICE:
+            return "sacrifice this" if what == "this" else f"sacrifice {amount} {what}".rstrip()
+        if kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+            if what == "this":
+                return "discard this card"
+            random = " at random" if kind is CostKind.DISCARD_AT_RANDOM else ""
+            return f"discard {amount} {what or 'card'}{random}"
+        if kind in EXILE_ZONES:
+            zone = EXILE_ZONES[kind].name.lower()
+            if what == "this":
+                return f"exile this from {zone}"
+            return f"exile {amount} {what or 'card'} from {zone}"
+        if kind is CostKind.REMOVE_COUNTERS:
+            return f"remove {amount} {self.counter_type} counter(s) from {what or 'this'}"
+        if kind is CostKind.PUT_COUNTERS:
+            return f"put {amount} {self.counter_type} counter(s) on {what or 'this'}"
+        if kind is CostKind.MILL:
+            return f"mill {amount}"
+        if kind in (CostKind.TAP_OTHER, CostKind.UNTAP_OTHER):
+            verb = "tap" if kind is CostKind.TAP_OTHER else "untap"
+            return f"{verb} {amount} {what}".rstrip()
+        if kind is CostKind.RETURN_TO_HAND:
+            return f"return {amount} {what} to its owner's hand"
+        return ""
 
 
 #: Costs paid by consuming something - a permanent, a card, a counter. An
@@ -106,6 +160,7 @@ CONSUMING_COSTS = frozenset(
     {
         CostKind.SACRIFICE,
         CostKind.DISCARD,
+        CostKind.DISCARD_AT_RANDOM,
         CostKind.EXILE_FROM_BATTLEFIELD,
         CostKind.EXILE_FROM_GRAVEYARD,
         CostKind.EXILE_FROM_HAND,

@@ -1142,33 +1142,69 @@ def _protection(instance: KeywordInstance) -> tuple[Ability, ...]:
 def _ward(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.21a: ward is a *triggered* ability, not a targeting ban.
 
-    "Whenever this becomes the target of a spell or ability an opponent
-    controls, counter it unless that player pays [cost]." Modelling it as a
-    targeting restriction would wrongly stop the spell being cast at all,
-    rather than taxing it - and would make an unpaid ward uncounterable.
-    """
-    ward = Ability.triggered(
-        TriggerCondition(
-            event_kinds=frozenset({EventKind.TARGETED}),
-            subject=ObjectFilter(source_only=True),
-            functions_in=BATTLEFIELD,
-            text="whenever this becomes the target of an opponent's spell",
-        ),
-            Effect(
-                EffectKind.COUNTER_SPELL,
-                targets=ObjectFilter(zones=frozenset({Zone.STACK})),
-                condition=Condition(
-                    ConditionKind.UNPARSED, text="unless that player pays the ward cost"
-                ),
-            text="counter it unless its controller pays the ward cost",
-        ),
-        text=instance.text or "Ward",
-    )
-    # The cost rides on the ability even though this is a trigger, because the
-    # "unless that player pays" clause has to be able to read it.
-    from dataclasses import replace as _replace
+    "Whenever this permanent becomes the target of a spell or ability an
+    opponent controls, counter that spell or ability unless that player pays
+    [cost]." Modelling it as a targeting restriction would wrongly stop the
+    spell being cast at all, rather than taxing it - and would make an unpaid
+    ward uncounterable.
 
-    return (_replace(ward, cost=instance.cost or Cost(()), keyword="Ward"),)
+    Three references carry the rule, and each is read off the event the
+    ability triggered on rather than guessed: "an opponent controls" is a
+    constraint on the event's source, "that spell or ability" is that source
+    (``ObjectFilter.trigger_source``), and "that player" is its controller
+    (``PlayerScope.TRIGGER_SOURCE_CONTROLLER``) - not ward's controller, who
+    is the one player who never pays.
+
+    The cost is paid by a player with no activation behind it, so it has to be
+    one ``can_pay_cost`` can charge. Any other ("Ward - Collect evidence 4",
+    "Ward - Waterbend {4}") is left UNPARSED rather than built: a ward nobody
+    could pay counters everything, and one that is never charged counters
+    nothing.
+    """
+    from ..cr600_spells_and_abilities.cr601_casting import PLAYER_PAYABLE_KINDS
+
+    cost = instance.cost
+    payable = (
+        cost is not None
+        and bool(cost.components)
+        and not cost.choices
+        and all(c.kind in PLAYER_PAYABLE_KINDS for c in cost.components)
+    )
+    trigger = TriggerCondition(
+        event_kinds=frozenset({EventKind.TARGETED}),
+        subject=ObjectFilter(source_only=True),
+        source=ObjectFilter(
+            zones=frozenset({Zone.STACK}), controller=ControllerRelation.OPPONENT
+        ),
+        functions_in=BATTLEFIELD,
+        text="whenever this becomes the target of a spell or ability an opponent controls",
+    )
+    if not payable:
+        return (
+            Ability.triggered(
+                trigger,
+                Effect(EffectKind.UNPARSED, text=instance.text or "Ward"),
+                text=instance.text or "Ward",
+            ),
+        )
+    counter = Effect(
+        EffectKind.COUNTER_SPELL,
+        targets=ObjectFilter(trigger_source=True, zones=frozenset({Zone.STACK})),
+        text="counter that spell or ability",
+    )
+    return (
+        Ability.triggered(
+            trigger,
+            Effect(
+                EffectKind.UNLESS_PAYS,
+                players=PlayerFilter(PlayerScope.TRIGGER_SOURCE_CONTROLLER),
+                pay_cost=cost,
+                children=(counter,),
+                text="unless that player pays the ward cost",
+            ),
+            text=instance.text or "Ward",
+        ),
+    )
 
 
 #: CR 702.14: landwalk, one per basic land type plus the general forms. Each is

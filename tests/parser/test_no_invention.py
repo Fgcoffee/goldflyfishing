@@ -425,7 +425,10 @@ def test_an_ability_gated_by_an_unreadable_condition_is_not_understood():
     """
     from mtgfish.parser.compile import understood
 
-    made, failures = abilities_of("Ward {2}")
+    # Ward itself is modelled now (see tests/rules/test_cr702_ward.py); a ward
+    # whose cost no player can be charged still builds the shape and is the
+    # same honest "not understood".
+    made, failures = abilities_of("Ward - Collect evidence 4")
     assert not failures, "the keyword itself reads fine - that is the point"
     assert made and not any(understood(ability) for ability in made)
 
