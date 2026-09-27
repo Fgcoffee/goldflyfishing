@@ -101,3 +101,26 @@ def test_mobilize_x_is_left_unread(card_db):
     """"Mobilize X, where X is ..." has a definition of X no builder reads."""
     parsed = parse_face(card_db.lookup("Avenger of the Fallen"), 0)
     assert not parsed.fully_parsed
+
+
+# ---------------------------------------------------------------------------
+# Firebending
+# ---------------------------------------------------------------------------
+
+
+def test_firebending_adds_red_mana_kept_until_end_of_combat(card_db):
+    from mtgfish.rules.kernel.enums import Duration
+
+    (ability,) = _keyword_abilities(card_db, "Mai and Zuko", "Firebending")
+    assert ability.trigger.event_kinds == frozenset({EventKind.ATTACKS})
+    (effect,) = ability.effects
+    assert effect.kind is EffectKind.ADD_MANA
+    assert effect.mana_produced == ("{R}", "{R}", "{R}")
+    assert effect.duration == int(Duration.END_OF_COMBAT)
+
+
+def test_firebending_x_is_left_unread(card_db):
+    """"Firebending X, where X is its power": the X is not read, so the
+    ability stays unread rather than adding some other amount."""
+    parsed = parse_face(card_db.lookup("Fire Lord Zuko"), 0)
+    assert not parsed.fully_parsed

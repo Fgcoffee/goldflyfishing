@@ -343,7 +343,7 @@ def _run_step(
     _end_of_step_actions(game, step)
 
     # CR 500.5: unspent mana empties as the step or phase ends.
-    _empty_mana_pools(game)
+    _empty_mana_pools(game, step)
     game.emit(Event(EventKind.STEP_ENDED, player=game.active_player, amount=int(step)))
 
 
@@ -407,14 +407,21 @@ def _end_of_step_actions(game: Game, step: Step) -> None:
         _end_of_combat(game)
 
 
-def _empty_mana_pools(game: Game) -> None:
+def _empty_mana_pools(game: Game, step: Step | None = None) -> None:
     # CR 500.5, unless a bench has suspended it - see rules.kernel.relaxations.
     # (Not CR 500.4, which is now the rule about effects that last until a step
     # or phase expiring as it begins.)
     if game.relaxations.mana_pools_persist:
         return
+    # CR 702.189a: mana kept "until end of combat" survives the ends of the
+    # combat phase's steps, and goes when the end of combat step ends.
+    keep_combat_mana = (
+        step is not None
+        and game.phase is Phase.COMBAT
+        and step is not Step.END_OF_COMBAT
+    )
     for player in game.players:
-        lost = player.mana_pool.clear()
+        lost = player.mana_pool.clear(keep_combat_mana=keep_combat_mana)
         if lost:
             game.emit(Event(EventKind.MANA_EMPTIED, player=player.id, amount=lost))
 
