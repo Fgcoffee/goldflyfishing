@@ -496,6 +496,10 @@ def _readable(db, name, fragment):
         # Two objects, one of each - not "an artifact or a land".
         ("Structural Collapse", "an artifact and a land"),
         ("Perilous Predicament", "an artifact creature and"),
+        # The same in a cost and a condition: three creatures, not one of
+        # three colours; both permanents, not either.
+        ("Angel's Herald", "a white creature, and a blue creature"),
+        ("Kami of Terrible Secrets", "an artifact and an enchantment"),
         # "A permanent of their choice for each soot counter": a sacrifice
         # has no amount to multiply, and one permanent was sacrificed.
         ("Smokestack", "for each soot counter"),
