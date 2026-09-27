@@ -133,7 +133,7 @@ def evaluate(
         return party_size(game, controller) if controller != NO_PLAYER else 0
 
     if kind is ValueKind.DEVOTION:
-        return _devotion(game, value, controller)
+        return _devotion(game, value, controller, source)
 
     if kind is ValueKind.COST_PAID_POWER:
         obj = game.objects.get(source)
@@ -144,6 +144,28 @@ def evaluate(
             paid = game.objects.get(object_id)
             if paid is not None:
                 total += game.characteristics(paid).power or 0
+        return total
+
+    if kind is ValueKind.COST_PAID:
+        # "The sacrificed creature's toughness": each object the cost
+        # consumed, as it last existed (CR 608.2h) - the record keeps the
+        # object from before it moved.
+        obj = game.objects.get(source)
+        if obj is None or not value.operands:
+            return 0
+        wanted = value.operands[0].kind
+        total = 0
+        for object_id in getattr(obj, "cost_paid_objects", ()):
+            paid = game.objects.get(object_id)
+            if paid is None:
+                continue
+            chars = game.characteristics(paid)
+            if wanted is ValueKind.TOUGHNESS:
+                total += chars.toughness or 0
+            elif wanted is ValueKind.MANA_VALUE:
+                total += chars.mana_value
+            elif wanted is ValueKind.POWER:
+                total += chars.power or 0
         return total
 
     if kind in (
@@ -178,7 +200,13 @@ def evaluate(
 #: Characteristics a Value can read off an object its ``filter`` names rather
 #: than off the ability's source.
 _NAMED_OBJECT_VALUES = frozenset(
-    {ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE, ValueKind.COUNTERS}
+    {
+        ValueKind.POWER,
+        ValueKind.TOUGHNESS,
+        ValueKind.MANA_VALUE,
+        ValueKind.COUNTERS,
+        ValueKind.MANA_SPENT,
+    }
 )
 
 
@@ -208,6 +236,10 @@ def _of_named_objects(
     for obj in _among(game, value.filter, source, controller, remembered):
         if value.kind is ValueKind.COUNTERS:
             total += obj.counter_count(value.counter_type)
+            continue
+        if value.kind is ValueKind.MANA_SPENT:
+            # CR 601.2g: recorded on the spell as it was cast.
+            total += getattr(obj, "mana_spent", 0)
             continue
         chars = game.characteristics(obj)
         if value.kind is ValueKind.POWER:
@@ -289,7 +321,7 @@ def _this_turn(
     return total
 
 
-def _devotion(game: Game, value: Value, controller: PlayerId) -> int:
+def _devotion(game: Game, value: Value, controller: PlayerId, source: ObjectId = NO_OBJECT) -> int:
     """CR 700.5: coloured mana symbols among permanents a player controls.
 
     Counted per *symbol*, not per permanent - a card costing {B}{B} adds two -
@@ -300,6 +332,13 @@ def _devotion(game: Game, value: Value, controller: PlayerId) -> int:
     from .query import YOU
 
     wanted = value.colors
+    if value.filter is not None and value.filter.of_chosen_color:
+        # "Your devotion to that color": the colour the source chose. None
+        # chosen is devotion to nothing.
+        from .enums import Color
+
+        chooser = game.objects.get(source)
+        wanted = Color(getattr(chooser, "chosen_color", 0) or 0) if chooser else Color.NONE
     if not wanted:
         return 0
 

@@ -484,6 +484,9 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
         return f"remove {amount} {_counter(effect)} counter(s) from {objects}"
     if kind is EffectKind.PROLIFERATE:
         return "proliferate"
+    if kind is EffectKind.DOUBLE_COUNTERS:
+        what = f"{effect.counter_type} counters" if effect.counter_type else "each kind of counter"
+        return f"double the number of {what} on {objects}"
     if kind is EffectKind.PAY_COST:
         return f"{who} pays {effect.pay_cost}"
     if kind is EffectKind.START_ENGINES:

@@ -185,9 +185,18 @@ def test_a_consumed_objects_mana_value_is_not_read_as_the_affected_objects():
         "plus the sacrificed creature's mana value."
     )
     effects = parse_effects(stream)
-    assert not (effects and stream.done) or any(
+    if not (effects and stream.done) or any(
         node.kind is EffectKind.UNPARSED for effect in effects for node in effect.walk()
-    )
+    ):
+        return
+    # Read, it is what the cost consumed - settled against the rest of the
+    # ability (``object_referents``) - and never the card being matched.
+    from mtgfish.rules.kernel.query import ValueKind
+
+    bound = effects[0].targets.mana_value.value
+    assert bound.kind is ValueKind.SUM
+    consumed = bound.operands[1]
+    assert consumed.kind is ValueKind.COST_PAID and not consumed.of_affected
 
 
 def test_a_number_plus_a_value_is_a_sum():

@@ -439,7 +439,7 @@ _PER_OBJECT_VALUES = frozenset(
 #: any object a filter ranges over: the X chosen as the spell was cast, the
 #: mana actually spent on it, whatever its cost consumed.
 _SOURCE_VALUES = frozenset(
-    {ValueKind.X, ValueKind.MANA_SPENT, ValueKind.COST_PAID_POWER}
+    {ValueKind.X, ValueKind.MANA_SPENT, ValueKind.COST_PAID_POWER, ValueKind.COST_PAID}
 )
 #: Arithmetic over other values. These ask the game nothing themselves, so
 #: they read whatever their operands read and need whatever their operands

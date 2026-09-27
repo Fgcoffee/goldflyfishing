@@ -250,6 +250,24 @@ def _produced(game: Game, obj, effects, player_id: PlayerId):
         return
     from .resolve import mana_color_choices
 
+    if _chooses_colour(effects) and any(effect.colors_chosen for effect in adds):
+        # "Choose a color. Add an amount of mana of that color equal to your
+        # devotion to that color": the colour is chosen as the ability
+        # resolves, and both the mana and the amount follow it. Each choice
+        # is predicted with that colour recorded, as resolving would leave
+        # it; the object's own record is put back afterwards.
+        before = getattr(obj, "chosen_color", 0)
+        try:
+            for color in (c for c in Color if c and c.count == 1):
+                obj.chosen_color = int(color)
+                produced: list[ManaKind] = []
+                for effect in adds:
+                    produced.extend(_predict(game, obj, effect, player_id, color))
+                yield color, tuple(produced)
+        finally:
+            obj.chosen_color = before
+        return
+
     menu = Color.NONE
     for effect in adds:
         if not effect.mana_produced and not effect.colors_chosen and effect.colors:
@@ -263,6 +281,15 @@ def _produced(game: Game, obj, effects, player_id: PlayerId):
         for effect in adds:
             produced.extend(_predict(game, obj, effect, player_id, color))
         yield color, tuple(produced)
+
+
+def _chooses_colour(effects) -> bool:
+    for effect in effects:
+        if effect.kind is EffectKind.CHOOSE_QUALITY and "color" in effect.keywords:
+            return True
+        if effect.kind is EffectKind.SEQUENCE and _chooses_colour(effect.children):
+            return True
+    return False
 
 
 def _add_mana_effects(effects):

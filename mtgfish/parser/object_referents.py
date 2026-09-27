@@ -32,6 +32,7 @@ object's own, which the layer system evaluates object by object.
 
 from __future__ import annotations
 
+from contextvars import ContextVar
 from dataclasses import replace
 
 from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
@@ -46,8 +47,17 @@ from ..rules.kernel.query import ConditionKind, ObjectFilter, Value, ValueKind
 REMEMBERED = ObjectFilter(remembered=True)
 
 _CHARACTERISTICS = frozenset(
-    {ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE, ValueKind.COUNTERS}
+    {
+        ValueKind.POWER,
+        ValueKind.TOUGHNESS,
+        ValueKind.MANA_VALUE,
+        ValueKind.COUNTERS,
+        ValueKind.MANA_SPENT,
+    }
 )
+#: "The sacrificed creature's power", "the exiled card's mana value": an
+#: object that was consumed - by the cost, or by an earlier instruction.
+_CONSUMED = frozenset({ValueKind.COST_PAID_POWER, ValueKind.COST_PAID})
 #: Values whose operands are read once per object they range over: "its" in
 #: there is each of those objects, not a reference to settle.
 _PER_OBJECT = frozenset(
@@ -68,6 +78,7 @@ _REMEMBERS = frozenset(
         EffectKind.PUT_ONTO_BATTLEFIELD,
         EffectKind.CREATE_TOKEN,
         EffectKind.ADD_COUNTERS,
+        EffectKind.DOUBLE_COUNTERS,
         EffectKind.GAIN_CONTROL,
         EffectKind.COPY_PERMANENT,
         EffectKind.SEARCH_LIBRARY,
@@ -114,16 +125,71 @@ _LOST = 3  # inside a delayed ability, which remembers only what survived
 _AMBIGUOUS = 4  # a trigger about two objects at once
 _SELF = 5  # the last instruction acted on the source itself
 _COST = 6  # a cost consumed an object the text goes on to talk about
+# An earlier instruction acted on several objects ("create three Hamster
+# tokens"). "Their power" and "those creatures" are them; a singular "it"
+# cannot be, and is the source only when nothing else was mentioned before.
+_MANY_AFTER_NOTHING = 7
+_MANY = 8
 
 
 class Unsettled(Exception):
     """A reference with no object the engine can read it off."""
 
 
+#: Whether the ability being settled may have consumed an object to pay its
+#: cost - which is what "the sacrificed creature's toughness" asks about when
+#: no instruction of its own sacrificed one.
+_PAID: ContextVar[bool] = ContextVar("_PAID", default=False)
+
+#: Cost components that consume an object the text can go on to describe.
+_CONSUMING_COSTS = frozenset(
+    {
+        "TAP_OTHER",
+        "SACRIFICE",
+        "DISCARD",
+        "DISCARD_AT_RANDOM",
+        "EXILE_FROM_GRAVEYARD",
+        "EXILE_FROM_HAND",
+        "EXILE_FROM_LIBRARY",
+        "EXILE_FROM_BATTLEFIELD",
+        "RETURN_TO_HAND",
+    }
+)
+
+
+def _may_have_paid(ability: Ability) -> bool:
+    """Whether the ability's cost may consume an object.
+
+    Only an activated ability's cost is paid with a record of what it
+    consumed. A spell's "As an additional cost to cast this spell, sacrifice
+    a creature" is read as an instruction the spell carries out as it
+    resolves, not as a cost paid while casting (CR 601.2h), so nothing is
+    on the record for "the sacrificed creature's power" to read and Fling
+    dealt no damage. A triggered ability has no cost at all.
+    """
+    if ability.kind is not AbilityKind.ACTIVATED:
+        return False
+    costs = [ability.cost, *getattr(ability.cost, "choices", ())]
+    return any(
+        component.kind.name in _CONSUMING_COSTS
+        for cost in costs
+        for component in getattr(cost, "components", ())
+    )
+
+
 def settle_referents(ability: Ability) -> Ability | None:
     """The ability with every one-shot "its"/"that <noun>'s" settled, or
     None when one of them cannot be."""
     if ability.kind not in (AbilityKind.SPELL, AbilityKind.ACTIVATED, AbilityKind.TRIGGERED):
+        if any(
+            _mentions_cost(effect.amount) or _mentions_cost(effect.amount2)
+            for top in ability.effects
+            for effect in top.walk()
+        ):
+            # "Equipped creature gets +X/+0, where X is the exiled card's
+            # power": a static ability pays no cost, and what was exiled by
+            # some other ability is nothing it can read.
+            return None
         return ability
     state = _NOTHING
     if ability.kind is AbilityKind.TRIGGERED and ability.trigger is not None:
@@ -147,10 +213,13 @@ def settle_referents(ability: Ability) -> Ability | None:
         # life equal to its toughness": "its" is the object the cost
         # consumed, which only its power can be read off.
         state = _COST
+    token = _PAID.set(_may_have_paid(ability))
     try:
         effects, _ = _settle_all(ability.effects, state)
     except Unsettled:
         return None
+    finally:
+        _PAID.reset(token)
     return ability if effects == ability.effects else replace(ability, effects=effects)
 
 
@@ -221,7 +290,24 @@ def _settle(effect: Effect, state: int, it_is_source: bool = False) -> tuple[Eff
             if effect.kind not in (EffectKind.MODIFY_PT, EffectKind.GRANT_ABILITY):
                 after = _SELF
         elif own is not None or effect.kind in _RECORDS_ITSELF:
-            after = _ACTED_ON
+            if not _plural(effect):
+                after = _ACTED_ON
+            elif after in (_NOTHING, _MANY_AFTER_NOTHING):
+                after = _MANY_AFTER_NOTHING
+            else:
+                after = _MANY
+    elif (
+        not effect.children
+        and effect.targets is not None
+        and not effect.targets.source_only
+        and not effect.targets.remembered
+    ):
+        # "Attach it to target creature you control. That creature deals
+        # damage equal to its power": the instruction names an object the
+        # resolution does not remember, and that object is the nearer
+        # antecedent. Whatever a later reference is settled to, it is not
+        # that one.
+        after = _AMBIGUOUS
     settled = replace(effect, **changes) if changes else effect
     return settled, after
 
@@ -252,6 +338,24 @@ def _settle_leaf(effect: Effect, state: int, it_is_source: bool = False) -> dict
     return changes
 
 
+def _plural(effect: Effect) -> bool:
+    """Whether an instruction may have acted on more than one object, which
+    a singular "it" then cannot mean."""
+    if effect.kind is EffectKind.CREATE_TOKEN:
+        amount = effect.amount
+        return not (amount is not None and amount.is_constant and amount.constant <= 1)
+    spec = effect.targets
+    if spec is None or spec.remembered or spec.source_only:
+        return False
+    count = spec.count
+    if isinstance(count, int):
+        count = Value.of(count)
+    if count is None:
+        # "Target creature" is one; "all creatures" is every one there is.
+        return not effect.is_targeted
+    return not (count.is_constant and count.constant <= 1)
+
+
 def _bound_points_back(spec: ObjectFilter) -> bool:
     """Whether a numeric bound in the filter is about a remembered object."""
     from dataclasses import fields
@@ -276,13 +380,21 @@ def _condition_points_back(condition) -> bool:
 
 
 def _mentions_remembered(value: Value) -> bool:
+    """Whether a value needs the resolution's memory - which bounds and
+    conditions are evaluated without."""
     if value.kind in _CHARACTERISTICS and value.filter is not None and value.filter.remembered:
+        return True
+    if value.kind in _CONSUMED and not _PAID.get():
+        # "A creature card with mana value equal to 1 plus the sacrificed
+        # creature's mana value" after "you may sacrifice a creature": the
+        # instruction's object is only in the resolution's memory, and with
+        # no cost there is no record to read instead.
         return True
     return any(_mentions_remembered(op) for op in value.operands)
 
 
 def _mentions_cost(value: Value) -> bool:
-    if value.kind is ValueKind.COST_PAID_POWER:
+    if value.kind in _CONSUMED:
         return True
     return any(_mentions_cost(op) for op in value.operands)
 
@@ -301,8 +413,10 @@ def _settle_continuous(effect: Effect, state: int) -> dict:
     def settle(value: Value) -> Value:
         if value.kind in _PER_OBJECT:
             return value
+        if value.kind in _CONSUMED:
+            return _consumed(value, state)
         if value.kind in _CHARACTERISTICS and value.filter == REMEMBERED:
-            if state in (_ACTED_ON, _TRIGGER):
+            if state in (_ACTED_ON, _TRIGGER, _MANY, _MANY_AFTER_NOTHING):
                 return value
             own = effect.targets
             if state == _NOTHING and own is not None and not (own.source_only or own.remembered):
@@ -323,9 +437,32 @@ def _settle_continuous(effect: Effect, state: int) -> dict:
     return changes
 
 
+def _consumed(value: Value, state: int) -> Value:
+    """"The sacrificed creature's toughness": the object an earlier
+    instruction of this ability consumed, or else the one its cost did.
+
+    Read off the cost only when nothing else was acted on first - with both
+    a cost and an instruction in play the words do not say which - and only
+    when there is a cost that consumes anything: a triggered ability's "you
+    may sacrifice a creature. If you do, ..." names what it sacrificed
+    itself, and the ability has no cost record to read.
+    """
+    characteristic = (
+        ValueKind.POWER if value.kind is ValueKind.COST_PAID_POWER else value.operands[0].kind
+    )
+    acted = state in (_ACTED_ON, _MANY, _MANY_AFTER_NOTHING)
+    if acted and not _PAID.get():
+        return Value(kind=characteristic, filter=REMEMBERED)
+    if state in (_NOTHING, _COST, _SELF) and _PAID.get():
+        return value
+    raise Unsettled
+
+
 def _settle_value(value: Value, effect: Effect, state: int, dealer) -> Value:
     if value.kind in _PER_OBJECT:
         return value
+    if value.kind in _CONSUMED:
+        return _consumed(value, state)
     if value.kind in _CHARACTERISTICS:
         if value.of_affected:
             pronoun = True
@@ -368,6 +505,15 @@ def _referent(
         raise Unsettled
     if state in (_ACTED_ON, _TRIGGER):
         return REMEMBERED
+    if state in (_MANY, _MANY_AFTER_NOTHING):
+        # "Create three Hamster tokens, then it deals X damage": "it" is not
+        # the tokens, and it can be the source only if the source was all
+        # there was to refer to before them.
+        if not pronoun:
+            return REMEMBERED
+        if state == _MANY:
+            raise Unsettled
+        return None
     if state == _SELF:
         # "Sacrifice this creature and it deals 3 damage": the remembered
         # object is the source. "That creature" is not.

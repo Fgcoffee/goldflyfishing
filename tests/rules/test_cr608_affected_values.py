@@ -200,3 +200,172 @@ def test_a_countered_spell_is_remembered(card_db):
     from mtgfish.rules.cr600_spells_and_abilities.resolve import _REMEMBERING
 
     assert EffectKind.COUNTER_SPELL in _REMEMBERING
+
+
+# ---------------------------------------------------------------------------
+# What a cost or an instruction consumed
+# ---------------------------------------------------------------------------
+
+
+def _target_opponent(box, needle):
+    from mtgfish.rules.kernel.ids import player_target
+
+    box.give_mana(10)
+    offered = [a for a in box.legal() if needle in a["description"]]
+    assert offered, f"{needle} cannot be activated"
+    result = box.perform(offered[0]["index"], targets=[[player_target(1)]])
+    assert not result.get("error"), result.get("error")
+    _drain(box)
+
+
+def test_the_sacrificed_creatures_toughness_is_read_off_the_cost(box):
+    """Diamond Valley: "{T}, Sacrifice a creature: You gain life equal to the
+    sacrificed creature's toughness" - the creature as it last existed on
+    the battlefield (CR 608.2h). It was unread."""
+    box.put("Diamond Valley", "battlefield", 0)
+    box.put("Colossal Dreadmaw", "battlefield", 0)
+    me = box.game.player(ME)
+    before = me.life
+    box.give_mana(10)
+    offered = [a for a in box.legal() if "Diamond Valley" in a["description"]]
+    assert offered
+    assert not box.perform(offered[0]["index"]).get("error")
+    _drain(box)
+    assert me.life == before + 6
+
+
+def test_the_sacrificed_artifacts_mana_value(box):
+    """Bosh: "Sacrifice an artifact: this deals damage equal to the
+    sacrificed artifact's mana value to any target"."""
+    box.put("Bosh, Iron Golem", "battlefield", 0)
+    box.put("Wurmcoil Engine", "battlefield", 0)
+    them = box.game.player(PlayerId(1))
+    before = them.life
+    _target_opponent(box, "Bosh")
+    assert them.life == before - 6
+
+
+def test_the_sacrificed_creatures_power_is_on_the_record(box):
+    """Altar of Dementia's sacrifice cost was never recorded, so "the
+    sacrificed creature's power" read nothing and milled nothing."""
+    box.put("Altar of Dementia", "battlefield", 0)
+    box.put("Colossal Dreadmaw", "battlefield", 0)
+    box.put("Island", "library", 1, count=10)
+    them = box.game.player(PlayerId(1))
+    before = len(them.library)
+    _target_opponent(box, "Altar of Dementia")
+    assert len(them.library) == before - 6
+
+
+def test_the_exiled_card_an_instruction_exiled(box):
+    """Morbid Bloom: "Exile target creature card from a graveyard, then
+    create X 1/1 Saprolings, where X is the exiled card's toughness"."""
+    box.put("Colossal Dreadmaw", "graveyard", 1)
+    box.put("Morbid Bloom", "hand", 0)
+    card = _named(box, "Colossal Dreadmaw", "GRAVEYARD")
+    _cast(box, "Morbid Bloom", targets=[[card.id]])
+    saprolings = [
+        obj
+        for obj in box.game.permanents()
+        if "Saproling" in str(box.game.characteristics(obj).type_line)
+    ]
+    assert len(saprolings) == 6
+
+
+def _reads(card_db, name):
+    from mtgfish.parser import parse_card
+
+    card_db.registry()
+    return parse_card(card_db.lookup(name))
+
+
+def test_a_consumed_value_with_nothing_to_read_stays_unread(card_db):
+    """Fling's sacrifice is carried out as the spell resolves, not paid as
+    it is cast, so there is no record of it to read: the damage stays
+    unread rather than dealing nothing. Drach'Nyen's static bonus asks
+    about a card exiled by a different ability."""
+    for name in ("Fling", "Drach'Nyen"):
+        assert not _reads(card_db, name).fully_parsed, name
+
+
+# ---------------------------------------------------------------------------
+# The object phrase in "the power of X", "counters on X", "mana spent to cast X"
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("the power of this creature", Value(kind=ValueKind.POWER)),
+        ("the power of that creature", Value(kind=ValueKind.POWER, filter=REMEMBERED)),
+        (
+            "the number of +1/+1 counters on that creature",
+            Value(kind=ValueKind.COUNTERS, counter_type="+1/+1", filter=REMEMBERED),
+        ),
+        (
+            "the number of +1/+1 counters on it",
+            Value(kind=ValueKind.COUNTERS, counter_type="+1/+1", of_affected=True),
+        ),
+        ("the amount of mana spent to cast this spell", Value(kind=ValueKind.MANA_SPENT)),
+        (
+            "the amount of mana spent to cast that spell",
+            Value(kind=ValueKind.MANA_SPENT, filter=REMEMBERED),
+        ),
+    ],
+)
+def test_the_object_phrase_is_read(card_db, text, expected):
+    from mtgfish.parser.nouns import parse_value
+    from mtgfish.parser.tokens import Stream
+
+    card_db.registry()
+    stream = Stream.of(text)
+    assert parse_value(stream) == expected
+    assert stream.done
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["the power of target creature", "the number of +1/+1 counters on target creature"],
+)
+def test_a_targeted_object_phrase_is_not_the_source(card_db, text):
+    """Its target is chosen by some other instruction; read as the source's
+    power it was a different card."""
+    from mtgfish.parser.nouns import parse_value
+    from mtgfish.parser.tokens import Stream
+
+    card_db.registry()
+    stream = Stream.of(text)
+    value = parse_value(stream)
+    assert value is None or not stream.done
+
+
+def test_mana_spent_on_the_spell_a_trigger_saw(box):
+    """Aberrant Manawurm: "+X/+0, where X is the amount of mana spent to cast
+    that spell" - the instant's, not the Manawurm's own."""
+    box.put("Aberrant Manawurm", "battlefield", 0)
+    box.put("Divination", "hand", 0)
+    box.put("Island", "library", 0, count=5)
+    _cast(box, "Divination")
+    assert box.game.characteristics(_named(box, "Aberrant Manawurm")).power == 2 + 3
+
+
+# ---------------------------------------------------------------------------
+# Antecedents the resolution cannot name
+# ---------------------------------------------------------------------------
+
+
+def test_it_after_several_tokens_is_not_one_of_them(card_db):
+    """Rolling Hamsphere: "create three Hamster tokens, then it deals X
+    damage" - "it" is the Vehicle, not the first Hamster."""
+    ability = _reads(card_db, "Rolling Hamsphere").faces[0].abilities[1]
+    damage = [e for top in ability.effects for e in top.walk() if e.kind is EffectKind.DAMAGE]
+    assert damage and damage[0].damage_source is None
+
+
+def test_that_creature_after_an_unremembered_instruction_stays_unread(card_db):
+    """Hunter's Bow: "attach it to target creature you control. That creature
+    deals damage equal to its power" - the attached creature, which the
+    resolution does not remember. Read as the Equipment's power it did
+    nothing."""
+    ability = _reads(card_db, "Hunter's Bow").faces[0].abilities[0]
+    assert ability.unparsed

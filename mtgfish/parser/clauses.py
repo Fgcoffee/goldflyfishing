@@ -2457,8 +2457,16 @@ def _amount_of_mana(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
-    colours = _mana_colour_source(stream)
-    if colours is None:
+    # "of that color", "of the chosen color": the one colour the source
+    # chose, not a menu - Nykthos makes mana of the colour it chose.
+    chosen = (
+        stream.accept_phrase("of that color")
+        or stream.accept_phrase("of that colour")
+        or stream.accept_phrase("of the chosen color")
+        or stream.accept_phrase("of the chosen colour")
+    )
+    colours = None if chosen else _mana_colour_source(stream)
+    if colours is None and not chosen:
         stream.reset(mark)
         return None
     if not stream.accept_phrase("equal to"):
@@ -2470,6 +2478,14 @@ def _amount_of_mana(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
+    if chosen:
+        return Effect(
+            EffectKind.ADD_MANA,
+            players=YOU,
+            amount=amount,
+            colors_chosen=True,
+            text="add an amount of mana of the chosen colour",
+        )
     return Effect(
         EffectKind.ADD_MANA,
         players=YOU,
@@ -6515,6 +6531,40 @@ def _double_pt(stream: Stream) -> Effect | None:
         duration=duration,
         is_targeted=targeted,
         text="double power and toughness",
+    )
+
+
+@clause("double-counters")
+def _double_counters(stream: Stream) -> Effect | None:
+    """"Double the number of +1/+1 counters on each creature you control",
+    "double the number of each kind of counter on target permanent"
+    (CR 701.10e).
+    """
+    from .nouns import _counter_type
+
+    mark = stream.mark()
+    if not stream.accept_phrase("double the number of"):
+        return None
+    if stream.accept_phrase("each kind of counter"):
+        counter = ""
+    else:
+        counter = _counter_type(stream)
+        if not counter:
+            stream.reset(mark)
+            return None
+    if not stream.accept("on"):
+        stream.reset(mark)
+        return None
+    targets, targeted = parse_target(stream)
+    if targets is None:
+        stream.reset(mark)
+        return None
+    return Effect(
+        EffectKind.DOUBLE_COUNTERS,
+        targets=targets,
+        counter_type=counter,
+        is_targeted=targeted,
+        text="double counters",
     )
 
 

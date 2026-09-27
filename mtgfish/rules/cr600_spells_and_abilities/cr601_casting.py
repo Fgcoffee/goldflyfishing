@@ -1225,6 +1225,11 @@ def _pay_component(
     elif kind in (CostKind.SACRIFICE, CostKind.RETURN_TO_HAND, CostKind.UNATTACH):
         for obj in _choose_permanents(game, player_id, component, amount, context):
             if kind is CostKind.SACRIFICE:
+                # "The sacrificed creature's power" (Fling, Altar of
+                # Dementia): the object as it last existed on the
+                # battlefield (CR 608.2h), which only this record can name
+                # once it is in the graveyard.
+                context.cost_paid_objects.append(obj.id)
                 game_actions.sacrifice(game, obj, source=context.id)
             elif kind is CostKind.RETURN_TO_HAND:
                 # Recorded before it goes, as tapping another permanent is:
@@ -1263,6 +1268,8 @@ def _pay_component(
         for _ in range(amount):
             obj = pick_discard(game, player_id, component, candidates)
             candidates.remove(obj)
+            # "The discarded card's mana value" (Mercurial Chemister).
+            context.cost_paid_objects.append(obj.id)
             game_actions.discard(game, obj, source=context.id)
 
     elif kind in EXILE_ZONES:
@@ -1272,6 +1279,8 @@ def _pay_component(
         # and kept the artifact. "Exile this card from your graveyard" is the
         # source paying for itself, and only from there.
         for obj in _choose_exiled(game, player_id, component, amount, context):
+            # "The exiled card's power" (Dread Defiler, Corpse Explosion).
+            context.cost_paid_objects.append(obj.id)
             game_actions.exile(game, obj, source=context.id)
 
     elif kind is CostKind.MILL:

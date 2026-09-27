@@ -132,6 +132,7 @@ _REMEMBERING = frozenset(
         # to that creature's toughness" - the object named, whatever was done
         # to it.
         EffectKind.REGENERATE,
+        EffectKind.DOUBLE_COUNTERS,
         EffectKind.CHANGE_TARGETS,
         EffectKind.MODIFY_PT,
         EffectKind.GRANT_ABILITY,
@@ -1236,6 +1237,15 @@ def _do_choose_quality(resolution: Resolution, effect: Effect) -> None:
         return
 
     kind = effect.keywords[0] if effect.keywords else "creature type"
+    wanted = resolution.mana_color
+    if kind == "color" and wanted and bin(int(wanted)).count("1") == 1:
+        # A mana ability activated by the payment planner for a colour it
+        # needs ("Choose a color. Add ... mana of that color"): the colour
+        # chosen is the one the payment was planned around (CR 605.3b - the
+        # player activating it makes the choice).
+        obj.chosen_color = int(wanted)
+        game.invalidate_characteristics()
+        return
     agent = game.agent_for(resolution.controller)
     if agent is not None and hasattr(agent, "choose_quality"):
         picked = agent.choose_quality(game, resolution.controller, kind)
@@ -1775,6 +1785,24 @@ def _do_add_counters(resolution: Resolution, effect: Effect) -> None:
         actions.add_counters(
             resolution.game, obj, effect.counter_type, amount, source=resolution.source
         )
+
+
+def _do_double_counters(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.10e: give each object as many of those counters as it already
+    has.
+
+    Counted per object as the effect reaches it, and put on as an ordinary
+    placing of counters, so a replacement that modifies how many are put
+    (Doubling Season, CR 614.1a) applies to the doubling too.
+    """
+    for obj in _objects(resolution, effect):
+        kinds = [effect.counter_type] if effect.counter_type else list(obj.counters)
+        for kind in kinds:
+            present = obj.counter_count(kind)
+            if present > 0:
+                actions.add_counters(
+                    resolution.game, obj, kind, present, source=resolution.source
+                )
 
 
 def _do_remove_counters(resolution: Resolution, effect: Effect) -> None:
@@ -3493,6 +3521,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.ADD_COUNTERS: _do_add_counters,
     EffectKind.REMOVE_COUNTERS: _do_remove_counters,
     EffectKind.PROLIFERATE: _do_proliferate,
+    EffectKind.DOUBLE_COUNTERS: _do_double_counters,
     EffectKind.ATTACH: _do_attach,
     EffectKind.UNATTACH: _do_unattach,
     EffectKind.GAIN_CONTROL: _do_gain_control,
