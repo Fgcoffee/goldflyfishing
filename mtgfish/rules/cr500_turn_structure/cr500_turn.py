@@ -206,6 +206,7 @@ def take_turn(game: Game, options: TurnOptions | None = None) -> None:
     # "This turn" starts again here, for everyone. Cleared with the players'
     # own per-turn state so the two can never disagree about which turn it is.
     game.turn_history.clear()
+    game.triggered_once_this_turn.clear()
     # A loop shortcut last turn may be run again this turn - the untap step
     # has given it back its fuel.
     game.exhausted_loop_steps.clear()

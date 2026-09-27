@@ -46,6 +46,9 @@ class PendingTrigger(NamedTuple):
     ability: Ability
     event: Event
     controller: PlayerId
+    #: ``Game.event_batch`` when it triggered - which "one or more" ability
+    #: triggers a later event of the same batch folds into (CR 603.2c).
+    batch: int = -1
 
 
 #: Zones scanned for triggered abilities. The library is deliberately excluded:
@@ -97,13 +100,36 @@ def collect_triggers(game: Game, event: Event) -> None:
     found.sort(key=lambda pair: (order.get(pair[0].controller, 99), pair[0].timestamp))
 
     for obj, ability in found:
+        trigger = ability.trigger
+        if trigger is not None and trigger.batched and _fold_into_batch(
+            game, obj, ability, event
+        ):
+            continue
+        if trigger is not None and trigger.once_each_turn:
+            # "This ability triggers only once each turn" (CR 603.2): the
+            # object's second trigger this turn does not happen.
+            key = (obj.id, ability)
+            if key in game.triggered_once_this_turn:
+                continue
+            game.triggered_once_this_turn.add(key)
+        noted = event
+        if trigger is not None and trigger.batched:
+            # "That many" counts the batch: one object for an object event,
+            # the counters of a counter event (CR 603.2c).
+            noted = event.with_amount(max(1, event.amount))
         # The controller is read now, while the source is still here to ask.
-        pending = PendingTrigger(obj.id, ability, event, obj.controller)
+        pending = PendingTrigger(
+            obj.id, ability, noted, obj.controller, game.event_batch
+        )
         game.pending_triggers.append(pending)
         # CR 603.2c: "whenever a +1/+1 counter is put on" - one placement of
         # three counters holds three occurrences, and each triggers.
-        trigger = ability.trigger
-        if trigger is not None and trigger.each_counter and event.amount > 1:
+        if (
+            trigger is not None
+            and trigger.each_counter
+            and not trigger.once_each_turn
+            and event.amount > 1
+        ):
             for _ in range(event.amount - 1):
                 game.pending_triggers.append(pending)
         # CR 603.2b: something may say this ability triggers an extra time.
@@ -111,6 +137,39 @@ def collect_triggers(game: Game, event: Event) -> None:
         # independently and can be responded to between them.
         for _ in range(_extra_triggers(game, obj, event)):
             game.pending_triggers.append(pending)
+
+
+def _fold_into_batch(game: Game, obj: GameObject, ability: Ability, event: Event) -> bool:
+    """CR 603.2c: "whenever one or more creatures die" triggers once for
+    everything that happened at the same time.
+
+    If this ability of this object already triggered on an earlier event of
+    the same batch, that one pending trigger stands for both: its event's
+    amount grows by this event's share, which is what "that many" reads, and
+    no second trigger is made.
+    """
+    folded = False
+    # Every copy, so an ability that triggers an additional time (CR 603.2d)
+    # sees the same batch in each instance.
+    for index, pending in enumerate(game.pending_triggers):
+        if (
+            pending.batch == game.event_batch
+            and pending.source == obj.id
+            and pending.ability == ability
+            # "Deal combat damage to *a player*" is about each player dealt
+            # damage, and "an opponent discards one or more cards" about
+            # each opponent: two players at once are two occurrences.
+            and (
+                pending.event.player == event.player
+                or not (ability.trigger.to_player or ability.trigger.players)
+            )
+        ):
+            grown = pending.event.with_amount(
+                pending.event.amount + max(1, event.amount)
+            )
+            game.pending_triggers[index] = pending._replace(event=grown)
+            folded = True
+    return folded
 
 
 def _collect_departed_token(
@@ -527,6 +586,9 @@ def condition_met(
         # carries none (CR 120.3).
         return False
 
+    if trigger.from_zones and event.from_zone not in trigger.from_zones:
+        return False
+
     # A counter trigger that names a kind fires for that kind alone: the
     # event carries it in ``data``.
     if trigger.counter_kind and (
@@ -750,6 +812,9 @@ def put_triggers_on_stack(game: Game) -> int:
     pending = game.pending_triggers
     game.pending_triggers = []
     count = 0
+    # What happens from here on happens after these triggered, never at the
+    # same time as what triggered them (CR 603.2c).
+    game.event_batch += 1
 
     for entry in pending:
         ability = entry.ability

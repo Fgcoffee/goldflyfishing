@@ -156,3 +156,207 @@ def test_becoming_monstrous_fires_once_and_counters_do_not(board):
     # Already monstrous: monstrosity does nothing, and nothing triggers.
     execute(Resolution(game=board.game, source=me.id, controller=PlayerId(0)), (monstrosity,))
     assert fired(board, text) == 0
+
+
+# ---------------------------------------------------------------------------
+# CR 603.2c: "one or more" triggers once for what happened at the same time
+# ---------------------------------------------------------------------------
+
+
+def _lethal(board, *objs):
+    for obj in objs:
+        obj.damage = 100
+    board.game.invalidate_characteristics()
+    board.sba()
+
+
+def test_one_or_more_deaths_at_once_trigger_once(board):
+    """Morbid Opportunist, Chainsaw: a board wipe is one occurrence."""
+    text = "Whenever one or more other creatures die, draw a card."
+    watch(board, text, holder="Llanowar Elves")
+    a = board.play("Hill Giant", 1)
+    b = board.play("Hill Giant", 1)
+    _lethal(board, a, b)
+    (pending,) = [p for p in board.game.pending_triggers if p.ability.text == text]
+    # "That many" counts the batch.
+    assert pending.event.amount == 2
+    board.game.pending_triggers.clear()
+
+    c = board.play("Hill Giant", 1)
+    _lethal(board, c)
+    assert fired(board, text) == 1
+
+
+def test_a_creature_dying_still_triggers_for_each(board):
+    text = "Whenever another creature dies, draw a card."
+    watch(board, text, holder="Llanowar Elves")
+    a = board.play("Hill Giant", 1)
+    b = board.play("Hill Giant", 1)
+    _lethal(board, a, b)
+    assert fired(board, text) == 2
+
+
+def test_separate_instructions_are_separate_batches(board):
+    """CR 608.2c: "destroy it, then destroy that one" happens twice."""
+    text = "Whenever one or more other creatures die, draw a card."
+    watch(board, text, holder="Llanowar Elves")
+    a = board.play("Hill Giant", 1)
+    b = board.play("Hill Giant", 1)
+    kill = (
+        Effect(EffectKind.DESTROY, targets=ObjectFilter(specific=(a.id,))),
+        Effect(EffectKind.DESTROY, targets=ObjectFilter(specific=(b.id,))),
+    )
+    execute(Resolution(game=board.game, source=a.id, controller=PlayerId(0)), kill)
+    assert fired(board, text) == 2
+
+
+def test_combat_damage_to_two_players_is_two_occurrences(card_db):
+    """Professional Face-Breaker: "to a player" is per player hit."""
+    board = make_board(card_db, ScriptedAbilities(), players=3)
+    text = "Whenever one or more creatures you control deal combat damage to a player, draw a card."
+    watch(board, text)
+    x = board.play("Hill Giant", 0)
+    y = board.play("Hill Giant", 0)
+    game = board.game
+    game.event_batch += 1
+    for attacker, victim in ((x, 1), (y, 1)):
+        game.emit(Event(EventKind.COMBAT_DAMAGE_DEALT, player=PlayerId(victim), source=attacker.id, amount=3))
+    assert fired(board, text) == 1
+    game.event_batch += 1
+    for attacker, victim in ((x, 1), (y, 2)):
+        game.emit(Event(EventKind.COMBAT_DAMAGE_DEALT, player=PlayerId(victim), source=attacker.id, amount=3))
+    assert fired(board, text) == 2
+
+
+def test_one_or_more_discards_count_the_cards(board):
+    text = "Whenever you discard one or more cards, draw a card."
+    watch(board, text)
+    first = board.hand("Hill Giant", 0)
+    second = board.hand("Forest", 0)
+    board.game.event_batch += 1
+    actions.discard(board.game, first)
+    actions.discard(board.game, second)
+    (pending,) = board.game.pending_triggers
+    assert pending.event.amount == 2
+
+
+def test_two_or_more_is_not_read_as_one():
+    """Argent Dais: a threshold on the batch, which nothing here records."""
+    assert parse_trigger(Stream.of("Whenever two or more creatures attack, draw a card.")) is None
+
+
+# ---------------------------------------------------------------------------
+# "This ability triggers only once each turn"
+# ---------------------------------------------------------------------------
+
+
+def test_once_each_turn_is_enforced(board):
+    from dataclasses import replace
+
+    text = "Whenever another creature dies, draw a card."
+    trigger = replace(parse_trigger(Stream.of(text)), once_each_turn=True)
+    ability = Ability.triggered(trigger, Effect(EffectKind.NOTHING, text=text), text=text)
+    board.scripts.add("Llanowar Elves", ability)
+    board.play("Llanowar Elves", 0)
+    a = board.play("Hill Giant", 1)
+    b = board.play("Hill Giant", 1)
+    _lethal(board, a)
+    assert fired(board, text) == 1
+    _lethal(board, b)
+    assert fired(board, text) == 0
+    board.game.triggered_once_this_turn.clear()  # what a new turn does
+    c = board.play("Hill Giant", 1)
+    _lethal(board, c)
+    assert fired(board, text) == 1
+
+
+# ---------------------------------------------------------------------------
+# Filters on a player's action
+# ---------------------------------------------------------------------------
+
+
+def test_a_discard_trigger_keeps_its_card_filter(board):
+    """Waste Not's three abilities each fired on every discard."""
+    text = "Whenever an opponent discards a creature card, draw a card."
+    watch(board, text)
+    actions.discard(board.game, board.hand("Forest", 1))
+    assert fired(board, text) == 0
+    actions.discard(board.game, board.hand("Hill Giant", 1))
+    assert fired(board, text) == 1
+    actions.discard(board.game, board.hand("Hill Giant", 0))
+    assert fired(board, text) == 0
+
+
+def test_attacking_something_in_particular_is_not_read():
+    """Mila: "an opponent attacks one or more planeswalkers you control" is
+    not "an opponent attacks" (CR 508.3e)."""
+    text = "Whenever an opponent attacks one or more planeswalkers you control, draw a card."
+    assert parse_trigger(Stream.of(text)) is None
+    assert parse_trigger(Stream.of("Whenever you attack, draw a card.")) is not None
+
+
+# ---------------------------------------------------------------------------
+# Whose graveyard, and from where (CR 400.3, 603.6c)
+# ---------------------------------------------------------------------------
+
+
+def _in_library(board, name: str, player: int):
+    from mtgfish.rules.kernel.enums import Zone
+
+    obj = board.game.create_object(board.db.lookup(name), PlayerId(player), Zone.LIBRARY)
+    board.game.invalidate_characteristics()
+    return obj
+
+
+def test_into_your_graveyard_from_the_battlefield_is_your_creatures(board):
+    """Nether Traitor fired on every opponent's creature dying."""
+    text = "Whenever another creature is put into your graveyard from the battlefield, draw a card."
+    watch(board, text)
+    _lethal(board, board.play("Hill Giant", 1))
+    assert fired(board, text) == 0
+    _lethal(board, board.play("Hill Giant", 0))
+    assert fired(board, text) == 1
+
+
+def test_from_your_library_is_a_mill_not_a_discard(board):
+    text = "Whenever a creature card is put into your graveyard from your library, draw a card."
+    watch(board, text)
+    actions.discard(board.game, board.hand("Hill Giant", 0))
+    assert fired(board, text) == 0
+    from mtgfish.rules.kernel.enums import Zone
+
+    board.game.move_object(_in_library(board, "Hill Giant", 1), Zone.GRAVEYARD)
+    assert fired(board, text) == 0
+    board.game.move_object(_in_library(board, "Hill Giant", 0), Zone.GRAVEYARD)
+    assert fired(board, text) == 1
+
+
+def test_an_opponents_graveyard_from_anywhere(board):
+    text = "Whenever a creature card is put into an opponent's graveyard from anywhere, draw a card."
+    watch(board, text)
+    actions.discard(board.game, board.hand("Hill Giant", 0))
+    assert fired(board, text) == 0
+    actions.discard(board.game, board.hand("Hill Giant", 1))
+    assert fired(board, text) == 1
+
+
+def test_leaving_your_graveyard_is_your_cards(board):
+    """Tormod fired whenever an opponent's card left their graveyard."""
+    text = "Whenever one or more cards leave your graveyard, draw a card."
+    watch(board, text)
+    actions.exile(board.game, board.graveyard("Hill Giant", 1))
+    assert fired(board, text) == 0
+    actions.exile(board.game, board.graveyard("Hill Giant", 0))
+    assert fired(board, text) == 1
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Whenever a creature card is put into your graveyard from the stack, draw a card.",
+        "Whenever a creature card is put into an opponent's graveyard from your library, draw a card.",
+        "Whenever a card leaves their graveyard, draw a card.",
+    ],
+)
+def test_unreadable_origins_and_owners_are_not_read(text):
+    assert parse_trigger(Stream.of(text)) is None
