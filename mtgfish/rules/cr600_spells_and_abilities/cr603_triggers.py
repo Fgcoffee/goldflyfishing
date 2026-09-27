@@ -680,6 +680,9 @@ def resolve_mana_triggers(game: Game) -> int:
                 game=game,
                 source=pending.source,
                 controller=controller,
+                # No stack object carries the event here, and "its
+                # controller adds an additional {G}" is read off it.
+                trigger_event=pending.event,
                 chosen_modes=choose_modes(
                     game,
                     game.objects.get(pending.source),

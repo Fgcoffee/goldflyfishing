@@ -3065,8 +3065,28 @@ def _you_may(stream: Stream) -> Effect | None:
     if not stream.accept("may"):
         stream.reset(mark)
         return None
+    body = stream.mark()
     inner = parse_effect(stream)
     if inner is None:
+        stream.reset(mark)
+        return None
+    if players.scope not in (
+        PlayerScope.YOU,
+        # Still decided by the controller in the engine; see
+        # ``resolve._CONTROLLER_CHOOSES``.
+        PlayerScope.EACH_PLAYER,
+        PlayerScope.EACH_OPPONENT,
+        PlayerScope.OPPONENT,
+    ) and any(
+        token.lower in ("you", "your", "yours", "you've", "you're")
+        for token in stream.tokens[body : stream.mark()]
+    ):
+        # The engine carries out another player's "may" with that player as
+        # its "you" (CR 608.2d) - which is what the sentence's own subject-
+        # less verbs and "their" mean. A "you" inside it is the ability's
+        # controller, a second player the IR cannot tell apart from the
+        # first, so the sentence is refused rather than handed to the wrong
+        # one.
         stream.reset(mark)
         return None
     return Effect(
@@ -5605,6 +5625,7 @@ def _top_cards_pile(
         if subject is None or subject.scope not in (
             PlayerScope.TARGET_PLAYER,
             PlayerScope.TARGET_OPPONENT,
+            PlayerScope.REFERRED_PLAYER,
         ):
             stream.reset(mark)
             return None
