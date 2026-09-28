@@ -50,8 +50,8 @@ def _reads(text):
             {"DIES", "EXILED"},
         ),
         (
-            "Whenever this creature attacks or becomes the target of a spell, "
-            "draw a card",
+            "Whenever this creature attacks or becomes the target of a spell "
+            "or ability, draw a card",
             {"ATTACKS", "TARGETED"},
         ),
         (
@@ -64,6 +64,17 @@ def test_a_trigger_may_watch_several_events(text, expected):
     trigger = parse_trigger(Stream.of(text))
     assert trigger is not None
     assert {k.name for k in trigger.event_kinds} == expected
+
+
+def test_an_alternative_with_its_own_constraint_is_not_widened():
+    """"attacks or becomes the target of a *spell*": one trigger condition
+    cannot hold a source constraint for only one of its alternatives, and
+    dropping it would fire on abilities too. The phrase is not read whole."""
+    stream = Stream.of(
+        "Whenever this creature attacks or becomes the target of a spell, draw a card"
+    )
+    trigger = parse_trigger(stream)
+    assert trigger is None or "TARGETED" not in {k.name for k in trigger.event_kinds}
 
 
 def test_a_single_event_trigger_is_unchanged():
