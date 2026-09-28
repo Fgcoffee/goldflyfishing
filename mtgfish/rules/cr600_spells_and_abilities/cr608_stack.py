@@ -97,11 +97,46 @@ def _resolve_ability(game: Game, obj: GameObject) -> None:
         # CR 603.7c: a delayed ability's "it" was fixed when it was created.
         remembered=_still_where_expected(game, ability, obj.trigger_event),
     )
+    if not resolution.remembered and not ability.remembered:
+        resolution.remembered = _trigger_subject(game, ability, obj.trigger_event)
     execute(resolution, ability.effects)
     game.emit(
         Event(EventKind.ABILITY_RESOLVED, object_id=obj.id, player=obj.controller)
     )
     _cease(game, obj)
+
+
+def _trigger_subject(game: Game, ability, event) -> list[ObjectId]:
+    """What "it" and "that creature" mean in a triggered ability: the object
+    its trigger event was about (CR 603.2, 608.2h).
+
+    "Whenever a creature enters, this deals 2 damage to it"; "whenever
+    another creature you control enters, you gain life equal to that
+    creature's toughness". Nothing else in the resolution names that object,
+    and without it every such pronoun referred to nothing - Aether Flash
+    dealt its damage to no one.
+
+    The object is the one the trigger looked at (``_subject_of``), which for
+    a leaves-the-battlefield event is the permanent as it last existed, so a
+    value asks about it with last-known information (CR 608.2h) while an
+    effect that moves "it" follows it to where the event put it.
+    """
+    if ability.kind is not AbilityKind.TRIGGERED or event is None:
+        return []
+    from .cr603_triggers import _subject_of
+
+    if event.kind is EventKind.ABILITY_TRIGGERED and event.data:
+        # A reflexive ability (CR 603.12) is about what the resolution that
+        # created it had just acted on, which its event carries.
+        return [object_id for object_id in event.data if isinstance(object_id, int)]
+    trigger = ability.trigger
+    if trigger is not None and trigger.subject is None and trigger.source is not None:
+        # "Whenever a creature you control deals combat damage to a player,
+        # ... that creature": the event's cause, not the player it hit.
+        cause = game.objects.get(event.source) if event.source else None
+        return [cause.id] if cause is not None else []
+    subject = _subject_of(game, event)
+    return [subject.id] if subject is not None else []
 
 
 def _still_where_expected(game: Game, ability, event) -> list[ObjectId]:

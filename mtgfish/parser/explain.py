@@ -424,7 +424,11 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
         # CR 601.2d: divided among the targets is a different card from the
         # same amount to each of them.
         split = " divided among" if effect.divided else " to"
-        return f"deal {amount} damage{split} {objects}"
+        # The dealer, when it is not the ability's source ("it deals damage
+        # equal to its power"): lifelink, deathtouch and "dealt by" all ask
+        # about the dealer.
+        dealer = f"{_filter(effect.damage_source)} " if effect.damage_source else ""
+        return f"{dealer}deal {amount} damage{split} {objects}"
     if kind is EffectKind.PREVENT_DAMAGE:
         # -1 is the "all" sentinel the executor reads; printing it as a number
         # made a Fog read like a card that heals one damage.
@@ -480,6 +484,9 @@ def _one_shot(effect: Effect, who: str, amount: str, objects: str) -> str | None
         return f"remove {amount} {_counter(effect)} counter(s) from {objects}"
     if kind is EffectKind.PROLIFERATE:
         return "proliferate"
+    if kind is EffectKind.DOUBLE_COUNTERS:
+        what = f"{effect.counter_type} counters" if effect.counter_type else "each kind of counter"
+        return f"double the number of {what} on {objects}"
     if kind is EffectKind.PAY_COST:
         return f"{who} pays {effect.pay_cost}"
     if kind is EffectKind.START_ENGINES:

@@ -125,11 +125,27 @@ _REMEMBERING = frozenset(
         # whole pile the look before it remembered.
         EffectKind.MOVE_ZONE,
         EffectKind.PUT_ON_LIBRARY,
-        # "Counter target spell. Its controller mills three cards" - the
-        # spell, as it was on the stack (CR 608.2h), is who "its" asks about.
+        # "Counter target spell. Its controller mills three cards", "create
+        # X Treasure tokens, where X is that spell's mana value" - the spell,
+        # as it was on the stack (CR 608.2h), is who "its" asks about.
         EffectKind.COUNTER_SPELL,
+        # "Regenerate target creature. You gain life equal to that creature's
+        # toughness"; "target creature gains hexproof ... you gain life equal
+        # to that creature's toughness" - the object named, whatever was done
+        # to it.
+        EffectKind.REGENERATE,
+        EffectKind.DOUBLE_COUNTERS,
+        EffectKind.CHANGE_TARGETS,
+        EffectKind.MODIFY_PT,
+        EffectKind.GRANT_ABILITY,
     }
 )
+
+
+#: Remembering opcodes that do nothing to the object but describe it, so
+#: one about the source itself ("this creature gets +X/+X, where X is that
+#: spell's mana value") leaves "that spell" as it was.
+_NAMING_ONLY = frozenset({EffectKind.MODIFY_PT, EffectKind.GRANT_ABILITY})
 
 
 #: Opcodes whose amounts "this way" can refer back to, and the events that
@@ -199,6 +215,7 @@ def _execute_one(resolution: Resolution, effect: Effect) -> None:
         effect.kind in _REMEMBERING
         and effect.targets is not None
         and not _is_per_player_sacrifice(effect)
+        and not (effect.kind in _NAMING_ONLY and effect.targets.source_only)
     ):
         # Captured *before* the effect runs: an object that dies to it is
         # exactly the one the next sentence wants to talk about, and after
@@ -1033,11 +1050,12 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
     from ..cr100_game_concepts.cr111_tokens import create_tokens
 
     count = _count(resolution, effect)
+    spec = _token_size_now(resolution, effect.token)
     made: list = []
     for player_id in _players(resolution, effect):
         created = create_tokens(
             resolution.game,
-            effect.token,
+            spec,
             player_id,
             count,
             source=resolution.source,
@@ -1055,6 +1073,26 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
     # whatever an earlier instruction acted on.
     if made:
         resolution.remembered = made
+
+
+def _token_size_now(resolution: Resolution, spec):
+    """CR 608.2h: "create an X/X Shark, where X is that spell's mana value"
+    - the size is worked out as the effect resolves, with everything the
+    resolution knows, and does not change afterwards.
+
+    Token creation evaluates a size against the source alone, which cannot
+    answer a value about the object the resolution is talking about.
+    """
+    from dataclasses import replace as _replace
+
+    from ..kernel.query import Value
+
+    changes = {}
+    for name in ("power", "toughness"):
+        value = getattr(spec, name)
+        if not value.is_constant:
+            changes[name] = Value.of(_value_of(resolution, value))
+    return _replace(spec, **changes) if changes else spec
 
 
 def _do_create_emblem(resolution: Resolution, effect: Effect) -> None:
@@ -1228,6 +1266,15 @@ def _do_choose_quality(resolution: Resolution, effect: Effect) -> None:
         return
 
     kind = effect.keywords[0] if effect.keywords else "creature type"
+    wanted = resolution.mana_color
+    if kind == "color" and wanted and bin(int(wanted)).count("1") == 1:
+        # A mana ability activated by the payment planner for a colour it
+        # needs ("Choose a color. Add ... mana of that color"): the colour
+        # chosen is the one the payment was planned around (CR 605.3b - the
+        # player activating it makes the choice).
+        obj.chosen_color = int(wanted)
+        game.invalidate_characteristics()
+        return
     agent = game.agent_for(resolution.controller)
     if agent is not None and hasattr(agent, "choose_quality"):
         picked = agent.choose_quality(game, resolution.controller, kind)
@@ -1538,7 +1585,15 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
         PendingTrigger(
             resolution.source,
             ability,
-            Event(EventKind.ABILITY_TRIGGERED, object_id=resolution.source),
+            # "You may sacrifice another creature. When you do, this deals
+            # damage equal to that creature's power": what the reflexive
+            # ability refers to is what this resolution just acted on
+            # (CR 603.12), carried to it on the event it triggers on.
+            Event(
+                EventKind.ABILITY_TRIGGERED,
+                object_id=resolution.source,
+                data=tuple(resolution.remembered),
+            ),
             resolution.controller,
         )
     )
@@ -1592,10 +1647,33 @@ def create_delayed_trigger(
 # ---------------------------------------------------------------------------
 
 
+def _damage_dealer(resolution: Resolution, effect: Effect):
+    """Which object deals an effect's damage, and who controls it.
+
+    The ability's source unless the text names another dealer. "It deals
+    damage equal to its power to any target" in Warstorm Surge's trigger is
+    the creature that entered (CR 120.1: the damage is dealt by that
+    object), so its lifelink and deathtouch are what apply, not the
+    enchantment's. A named dealer that is gone and left no last-known
+    object deals nothing - there is no one to deal it.
+    """
+    if effect.damage_source is None or not effect.damage_source.remembered:
+        return resolution.source, resolution.controller
+    game = resolution.game
+    for object_id in resolution.remembered:
+        obj = game.objects.get(object_id)
+        if obj is not None:
+            return obj.id, obj.controller
+    return None, resolution.controller
+
+
 def _do_damage(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     amount = _amount(resolution, effect)
-    source_obj = game.objects.get(resolution.source)
+    dealer, dealer_controller = _damage_dealer(resolution, effect)
+    if dealer is None:
+        return
+    source_obj = game.objects.get(dealer)
     chars = game.characteristics(source_obj) if source_obj is not None else None
     deathtouch = bool(chars and chars.has_keyword("Deathtouch"))
     lifelink = bool(chars and chars.has_keyword("Lifelink"))
@@ -1608,8 +1686,8 @@ def _do_damage(resolution: Resolution, effect: Effect) -> None:
             game,
             obj,
             amount,
-            source=resolution.source,
-            source_controller=resolution.controller,
+            source=dealer,
+            source_controller=dealer_controller,
             deathtouch=deathtouch,
             lifelink=lifelink,
         )
@@ -1625,8 +1703,8 @@ def _do_damage(resolution: Resolution, effect: Effect) -> None:
             game,
             player_id,
             amount,
-            source=resolution.source,
-            source_controller=resolution.controller,
+            source=dealer,
+            source_controller=dealer_controller,
             lifelink=lifelink,
         )
 
@@ -1736,6 +1814,24 @@ def _do_add_counters(resolution: Resolution, effect: Effect) -> None:
         actions.add_counters(
             resolution.game, obj, effect.counter_type, amount, source=resolution.source
         )
+
+
+def _do_double_counters(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.10e: give each object as many of those counters as it already
+    has.
+
+    Counted per object as the effect reaches it, and put on as an ordinary
+    placing of counters, so a replacement that modifies how many are put
+    (Doubling Season, CR 614.1a) applies to the doubling too.
+    """
+    for obj in _objects(resolution, effect):
+        kinds = [effect.counter_type] if effect.counter_type else list(obj.counters)
+        for kind in kinds:
+            present = obj.counter_count(kind)
+            if present > 0:
+                actions.add_counters(
+                    resolution.game, obj, kind, present, source=resolution.source
+                )
 
 
 def _do_remove_counters(resolution: Resolution, effect: Effect) -> None:
@@ -3562,6 +3658,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.ADD_COUNTERS: _do_add_counters,
     EffectKind.REMOVE_COUNTERS: _do_remove_counters,
     EffectKind.PROLIFERATE: _do_proliferate,
+    EffectKind.DOUBLE_COUNTERS: _do_double_counters,
     EffectKind.ATTACH: _do_attach,
     EffectKind.UNATTACH: _do_unattach,
     EffectKind.GAIN_CONTROL: _do_gain_control,

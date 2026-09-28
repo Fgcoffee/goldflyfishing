@@ -1290,8 +1290,11 @@ def _other_than_an_earlier_target(effects) -> bool:
 
 
 def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:
-    """The ability with "that player" and "its controller" bound to who they
-    mean (``referents``), or unreadable if the text does not say."""
+    """The ability with its references settled: "its power" and "that
+    card's mana value" to the object they mean (``object_referents``), "that
+    player" and "its controller" to the player (``referents``) - or
+    unreadable if the text does not say."""
+    from .object_referents import settle_referents
     from .referents import Unbound, bind_ability
 
     if _other_than_an_earlier_target(ability.effects):
@@ -1299,8 +1302,18 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
             ParseFailure(text, "'other target' after another target", rule=rule)
         )
         return Ability.unreadable(text)
+    settled = settle_referents(ability)
+    if settled is None:
+        # "Its power" with no object the engine can read it off - the target
+        # of the very instruction being carried out, or an object a delayed
+        # ability no longer remembers. Answered off the source instead, it
+        # would be a different card.
+        result.failures.append(
+            ParseFailure(text, "characteristic of an object it cannot name", rule=rule)
+        )
+        return Ability.unreadable(text)
     try:
-        return bind_ability(ability)
+        return bind_ability(settled)
     except Unbound as reason:
         result.failures.append(ParseFailure(text, str(reason), rule=rule))
         return Ability.unreadable(text)

@@ -98,6 +98,12 @@ class EffectKind(IntEnum):
     GAIN_CONTROL = 77
     EXCHANGE_CONTROL = 78
     TRANSFORM = 79
+    #: CR 701.10e: "double the number of +1/+1 counters on ..." - each object
+    #: gets as many more of that kind as it already has. ``counter_type``
+    #: empty means each kind of counter on it ("double the number of each
+    #: kind of counter"). Not ADD_COUNTERS with an amount: the amount is a
+    #: different number for every object.
+    DOUBLE_COUNTERS = 88
     TURN_FACE_UP = 80
     TURN_FACE_DOWN = 81
     PHASE_OUT = 82

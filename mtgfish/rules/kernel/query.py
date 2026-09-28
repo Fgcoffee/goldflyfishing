@@ -115,6 +115,11 @@ class ValueKind(IntEnum):
     #: power" asks about the creature the cost tapped, which nothing else in
     #: the resolution has any way to name.
     COST_PAID_POWER = 21
+    #: Any other characteristic of what the cost consumed: "the sacrificed
+    #: creature's toughness", "the exiled card's mana value". ``operands[0]``
+    #: says which characteristic, read off each consumed object as it last
+    #: existed (CR 608.2h) and totalled. Power keeps its own kind above.
+    COST_PAID = 30
     #: How big the event that triggered this ability was. "Whenever this deals
     #: combat damage to a player, create that many Treasure tokens" has no
     #: other way to ask - the number is a fact about the event, not about any
@@ -209,12 +214,15 @@ class Value:
             return "unchanged"
         if self.kind is ValueKind.COST_PAID_POWER:
             return "the power of the creature tapped to pay for this"
+        if self.kind is ValueKind.COST_PAID:
+            what = self.operands[0].kind.name.lower().replace("_", " ") if self.operands else "?"
+            return f"the {what} of what was consumed to pay for this"
         if self.kind is ValueKind.X:
             return "X"
         if self.kind is ValueKind.COUNT:
             return f"the number of {self.filter}"
-        if self.kind is ValueKind.MANA_SPENT:
-            return "the mana spent to cast it"
+        if self.kind is ValueKind.MANA_SPENT and self.filter is None:
+            return "the mana spent to cast " + ("it" if self.of_affected else "this")
         if self.kind is ValueKind.BLOCKERS_OF_SOURCE:
             return "the number of creatures blocking this creature"
         if self.kind is ValueKind.PLAYER_COUNT:
@@ -229,6 +237,8 @@ class Value:
                 return f"the {what} this way"
             who = str(self.players) if self.players is not None else "you"
             return f"the total {what} this turn (by {who})"
+        if self.kind is ValueKind.DEVOTION and self.filter is not None:
+            return "your devotion to the chosen colour"
         if self.kind is ValueKind.DEVOTION:
             names = " and ".join(c.name.lower() for c in self.colors) or "nothing"
             return f"your devotion to {names}"
@@ -239,6 +249,21 @@ class Value:
             what = str(self.operands[0]) if self.operands else "value"
             what = what.replace("this permanent's ", "").replace("its ", "")
             return f"the {word} {what} among {self.filter}"
+        if self.filter is not None and self.kind in (
+            ValueKind.POWER,
+            ValueKind.TOUGHNESS,
+            ValueKind.MANA_VALUE,
+            ValueKind.COUNTERS,
+            ValueKind.MANA_SPENT,
+        ):
+            # A characteristic of the object the filter names ("that card's
+            # mana value"), not of the source or of the affected object.
+            if self.kind is ValueKind.COUNTERS:
+                return f"the number of {self.counter_type or '+1/+1'} counters on {self.filter}"
+            if self.kind is ValueKind.MANA_SPENT:
+                return f"the mana spent to cast {self.filter}"
+            what = self.kind.name.lower().replace("_", " ")
+            return f"the {what} of {self.filter}"
         if self.kind is ValueKind.COUNTERS:
             whose = "its" if self.of_affected else "this permanent's"
             return f"the number of {self.counter_type or '+1/+1'} counters on {whose}"
