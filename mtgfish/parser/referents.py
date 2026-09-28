@@ -179,9 +179,10 @@ def _initial_state(ability: Ability) -> _State:
         # ability targeting it, whose controller the event captured when it
         # happened (CR 603.2e). Anything else is refused.
         state.obj = (
+            # A source filter here ("of a spell") only narrows that same
+            # targeting object, so "that spell" is still it.
             TRIGGER_SOURCE
-            if trigger.source is None
-            and set(getattr(trigger, "event_kinds", ())) == {EventKind.TARGETED}
+            if set(getattr(trigger, "event_kinds", ())) == {EventKind.TARGETED}
             else AMBIGUOUS
         )
     elif trigger.subject is not None and trigger.source is not None:

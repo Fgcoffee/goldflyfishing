@@ -586,6 +586,12 @@ def condition_met(
         # carries none (CR 120.3).
         return False
 
+    # CR 508.3d: "whenever [a player] attacks" triggers if one or more
+    # creatures that player controls are declared as attackers - not on a
+    # declaration of none.
+    if event.kind is EventKind.ATTACKERS_DECLARED and event.amount <= 0:
+        return False
+
     if trigger.from_zones and event.from_zone not in trigger.from_zones:
         return False
 
@@ -710,7 +716,10 @@ def is_triggered_mana_ability(game: Game, source_id: int, ability: Ability) -> b
     """
     if ability.trigger is None:
         return False
-    if EventKind.MANA_ADDED not in ability.trigger.event_kinds:
+    if not ability.trigger.event_kinds & {
+        EventKind.MANA_ADDED,
+        EventKind.TAPPED_FOR_MANA,
+    }:
         return False
     if ability.is_targeted:
         return False

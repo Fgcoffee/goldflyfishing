@@ -190,7 +190,7 @@ def execute_plan(game: Game, player_id: PlayerId, plan: list[ManaOption]) -> Non
     """Activate the planned mana abilities, in order (CR 605.3b: no stack)."""
     from .cr601_casting import CastError, _pay_activation, choose_modes
     from .cr603_triggers import resolve_mana_triggers
-    from .resolve import Resolution, execute
+    from .resolve import Resolution, resolve_mana_ability
 
     for option in plan:
         obj = game.objects.get(option.source)
@@ -198,7 +198,7 @@ def execute_plan(game: Game, player_id: PlayerId, plan: list[ManaOption]) -> Non
             raise CastError("a planned mana source is gone")
         ability = game.characteristics(obj).abilities[option.ability_index]
         _pay_activation(game, obj, ability)
-        execute(
+        resolve_mana_ability(
             Resolution(
                 game=game,
                 source=obj.id,
@@ -211,6 +211,7 @@ def execute_plan(game: Game, player_id: PlayerId, plan: list[ManaOption]) -> Non
                 mana_color=option.color,
             ),
             ability.effects,
+            tapped=ability.cost.requires_tapping,
         )
         resolve_mana_triggers(game)
 

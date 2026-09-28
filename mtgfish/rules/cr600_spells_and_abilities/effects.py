@@ -533,6 +533,10 @@ class Effect:
     #: For ADD_MANA: produce the colour this permanent's controller chose,
     #: rather than a colour fixed when the card was parsed.
     colors_chosen: bool = False
+    #: For ADD_MANA: "of any type that land produced" - one of the types
+    #: the tapping this ability triggered on produced (the TAPPED_FOR_MANA
+    #: event's ``data``, CR 106.12a); none without one (CR 106.5).
+    colors_from_trigger: bool = False
     #: For ADD_MANA: "of any color in your commander's color identity" - the
     #: colours on offer are narrowed to that identity (CR 903.4), and there
     #: are none without a commander (CR 903.4f).

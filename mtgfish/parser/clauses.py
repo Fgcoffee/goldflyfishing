@@ -2390,7 +2390,6 @@ _COLOUR_SOURCES = (
     "of any colour",
     "of any one color",
     "of any type that a land you control could produce",
-    "of any type that land produced",
     "of any color that a land you control could produce",
     "of any of the exiled card's colors",
     "of any of the exiled cards' colors",
@@ -2477,9 +2476,21 @@ def _amount_of_mana(stream: Stream) -> Effect | None:
 
 
 def _chosen_colour_mana(stream: Stream):
-    """"mana of the chosen color" - the colour this permanent recorded."""
+    """"mana of the chosen color" - the colour this permanent recorded - and
+    "mana of any type that land produced", the types the tapping that
+    triggered the ability produced (CR 106.12a, 106.1b)."""
     mark = stream.mark()
     stream.accept("mana")
+    if stream.accept_phrase("of any type that land produced"):
+        # Not "any color": colorless is a type too, and a Forest's tapping
+        # offers green alone. Read off the triggering event at resolution.
+        return Effect(
+            EffectKind.ADD_MANA,
+            players=YOU,
+            amount=Value.of(1),
+            colors_from_trigger=True,
+            text="add mana of a type that land produced",
+        )
     if not (
         stream.accept_phrase("of the chosen color")
         or stream.accept_phrase("of the chosen colour")

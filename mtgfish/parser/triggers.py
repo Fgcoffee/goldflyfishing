@@ -392,7 +392,13 @@ def _with_alternatives(reader, stream: Stream, subject):
         # one set of event kinds - the union would match combinations neither
         # half describes. It is kept whole instead, and the trigger becomes a
         # disjunction of complete conditions.
-        if alternative.subject != first.subject:
+        #
+        # Likewise one whose other constraints differ: "attacks or becomes
+        # the target *of a spell*" folded into one set of kinds dropped the
+        # spell filter, so the Dragon made Treasure off every ability that
+        # targeted it - and a filter on the first half would equally have
+        # been applied to the second.
+        if not _same_but_events(alternative, first):
             others.append(alternative)
             continue
         kinds |= alternative.event_kinds
@@ -409,6 +415,22 @@ def _with_alternatives(reader, stream: Stream, subject):
     if not others:
         return first
     return _replace(first, alternatives=(first, *others))
+
+
+def _same_but_events(one: TriggerCondition, other: TriggerCondition) -> bool:
+    """Whether two conditions differ only in what happened, so a single
+    condition watching both events says the same as the pair."""
+    from dataclasses import replace
+
+    def bare(condition):
+        return replace(
+            condition,
+            event_kinds=frozenset(),
+            uses_last_known_information=False,
+            text="",
+        )
+
+    return bare(one) == bare(other)
 
 
 def _or_another(stream: Stream) -> ObjectFilter | None:
@@ -565,18 +587,30 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
         # nothing after it at all. The recipient narrows the trigger, so it is
         # read if it is there and left general if it is not.
         return _deals_damage(stream, SELF, "when this deals damage")
-    if stream.accept_phrase("becomes the target of a spell or ability"):
+    # Only when nothing follows: "... a spell or ability *an opponent
+    # controls*" and "becomes blocked *by a creature*" narrow the event, and
+    # the shared table below reads those tails.
+    look = stream.mark()
+    if (
+        stream.accept_phrase("becomes the target of a spell or ability")
+        and stream.peek().kind is TokenKind.PUNCT
+    ):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TARGETED}),
             subject=SELF,
             text="when this becomes the target of a spell or ability",
         )
-    if stream.accept_phrase("becomes blocked"):
+    stream.reset(look)
+    if (
+        stream.accept_phrase("becomes blocked")
+        and stream.peek().kind is TokenKind.PUNCT
+    ):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.BECOMES_BLOCKED}),
             subject=SELF,
             text="when this becomes blocked",
         )
+    stream.reset(look)
     if stream.accept_phrase("attacks or blocks"):
         # Two events in one trigger, which the engine handles natively -
         # ``event_kinds`` is a set precisely so an "or" costs nothing.
@@ -615,10 +649,11 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
     # is this permanent or any other, and two copies drift.
     simple = _simple_event(stream)
     if simple is not None:
-        kinds, last_known = simple
+        kinds, last_known, acting = simple
         return TriggerCondition(
             event_kinds=kinds,
             subject=SELF,
+            source=acting,
             uses_last_known_information=last_known,
             text="when this has something happen to it",
         )
@@ -736,10 +771,11 @@ def _subject_event(stream: Stream, subject: ObjectFilter) -> TriggerCondition | 
 
     simple = _simple_event(stream)
     if simple is not None:
-        kinds, last_known = simple
+        kinds, last_known, acting = simple
         return TriggerCondition(
             event_kinds=kinds,
             subject=subject,
+            source=acting,
             uses_last_known_information=last_known,
             text="whenever something happens to it",
         )
@@ -765,27 +801,25 @@ def _entry_state(stream: Stream, subject):
 def _tapped_for_mana(stream: Stream, subject):
     """"is tapped for mana", "you tap a permanent for {C}".
 
-    Both are the same event - mana was produced by tapping something - and
-    the engine emits it already. The mana-doubling lands and every "adds an
-    additional" enchantment in the format depend on it.
+    Both are the same event (CR 106.12a): a mana ability with {T} in its
+    cost resolved and produced mana. The mana-doubling lands and every "adds
+    an additional" enchantment in the format depend on it.
     """
     mark = stream.mark()
     if not (
         stream.accept_phrase("is tapped for mana")
         or stream.accept_phrase("are tapped for mana")
-        or stream.accept_phrase("is tapped for")
-        or stream.accept_phrase("are tapped for")
     ):
         stream.reset(mark)
         return None
-    # "tapped for {C}" names which mana; the trigger fires on the production
-    # either way and the symbol narrows nothing the engine records.
-    while stream.peek().kind is TokenKind.SYMBOL:
-        stream.next()
-    stream.accept("mana")
+    # "Tapped for {C}" and "for mana of the chosen color" trigger only on
+    # that mana (CR 106.12a), which the event does not record: not read.
+    if stream.at("of"):
+        stream.reset(mark)
+        return None
 
     return TriggerCondition(
-        event_kinds=frozenset({EventKind.MANA_ADDED}),
+        event_kinds=frozenset({EventKind.TAPPED_FOR_MANA}),
         subject=subject,
         text="whenever something is tapped for mana",
     )
@@ -1035,6 +1069,7 @@ _SIMPLE_EVENTS: tuple[tuple[str, tuple[EventKind, ...], bool], ...] = (
     ("is dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
     ("are dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
     ("becomes the target", (EventKind.TARGETED,), False),
+    ("become the target", (EventKind.TARGETED,), False),
     ("is targeted", (EventKind.TARGETED,), False),
     ("becomes blocked", (EventKind.BECOMES_BLOCKED,), False),
     ("becomes untapped", (EventKind.UNTAPPED,), False),
@@ -1073,36 +1108,104 @@ def _simple_event(stream: Stream):
     Longest first because "attacks or blocks" and "attacks" both start the
     same way, and matching the short one would leave "or blocks" stranded and
     fail the whole ability.
+
+    Returns ``(kinds, last_known, source)``: ``source`` is what acted, from
+    an "of"/"by" tail - "becomes the target *of a spell*", "is dealt damage
+    *by a source you control*" - or None.
     """
     for phrase, kinds, last_known in sorted(
         _SIMPLE_EVENTS, key=lambda entry: -len(entry[0])
     ):
+        mark = stream.mark()
         if not stream.accept_phrase(phrase):
             continue
-        # "becomes the target *of a spell or ability*", "is dealt damage *by a
-        # source you control*". The tail says what acted; consumed rather than
-        # modelled, because narrowing it needs a source constraint the event
-        # does not always carry.
-        look = stream.mark()
-        if stream.accept("of", "by"):
-            if parse_object_filter(stream) is None and not _ability_words(stream):
-                stream.reset(look)
-        return frozenset(kinds), last_known
+        tail = _TAILS.get(phrase)
+        if tail is None or not stream.at(tail):
+            # Any other "of"/"by" is left where it is, and fails the ability
+            # rather than being read as nothing.
+            return frozenset(kinds), last_known, None
+        stream.next()
+        acting = _acting_source(stream, spells=tail == "of")
+        if acting is None:
+            stream.reset(mark)
+            return None
+        if acting is _ANY_SOURCE:
+            acting = None
+        return frozenset(kinds), last_known, acting
     return None
 
 
-def _ability_words(stream: Stream) -> bool:
-    """"a spell or ability" written out, which is not an object filter."""
+#: The events whose "of"/"by" tail names what acted, and which word it is.
+#: The engine puts that actor in the event's ``source``: the spell or ability
+#: that targeted (CR 115.1), the source of the damage (CR 120.1).
+#:
+#: Not "becomes blocked by a creature": that is once per blocker (CR 509.3d),
+#: a different event from becoming blocked (CR 509.3c), and its "that
+#: creature" is the blocker rather than the object the event is about, which
+#: the effect's pronouns cannot yet say - so it stays unread.
+_TAILS = {
+    "becomes the target": "of",
+    "become the target": "of",
+    "is dealt damage": "by",
+    "are dealt damage": "by",
+}
+
+#: What ``_acting_source`` returns for "a spell or ability" with no owner:
+#: every targeting object, so no constraint at all.
+_ANY_SOURCE = object()
+
+
+def _acting_source(stream: Stream, spells: bool):
+    """The actor after "of"/"by": exactly one of something (CR 603.2c - a
+    count would be a threshold nothing here records).
+
+    With ``spells`` (a targeting tail) the actor is on the stack: "a spell or
+    ability [you control]" is any of them, "an ability" only abilities and
+    "a spell" only spells - a spell is not an ability (CR 113.1), and reading
+    "the target of a spell" as either made those cards fire on activated
+    abilities too. Returns None, rewound, for anything unread.
+    """
+    from dataclasses import replace
+
+    from .nouns import _ownership
+
     mark = stream.mark()
-    stream.accept("a", "an")
-    if stream.accept("spell"):
-        if stream.accept("or"):
-            stream.accept("ability")
-        return True
-    if stream.accept("ability"):
-        return True
-    stream.reset(mark)
-    return False
+    on_stack = ObjectFilter(zones=frozenset({Zone.STACK}))
+    if spells:
+        stream.accept("a", "an")
+        if stream.accept_phrase("spell or ability"):
+            spec = _ownership(stream, on_stack)
+            return _ANY_SOURCE if spec == on_stack else spec
+        if stream.accept("ability"):
+            return _ownership(stream, replace(on_stack, is_ability=True))
+        stream.reset(mark)
+
+    # "a"/"an" and nothing else: "by one or more black creatures" and "by
+    # two or more creatures" (CR 509.3e) are counts the filter does not keep.
+    if not stream.at("a", "an"):
+        return None
+    spec = parse_object_filter(stream)
+    count = spec.count if spec is not None else None
+    if (
+        spec is None
+        or spec.up_to
+        or count is None
+        or count.kind is not ValueKind.CONSTANT
+        or count.constant != 1
+    ):
+        stream.reset(mark)
+        return None
+    words = {token.lower for token in stream.tokens[mark : stream.pos]}
+    if spells:
+        if not words & {"spell", "spells"} or words & {"ability", "abilities"}:
+            stream.reset(mark)
+            return None
+        return replace(spec, is_ability=False)
+    if "source" in words:
+        # A source of damage may be a spell on the stack, a card, or a
+        # permanent (CR 120.1): "a source you control" names no zone.
+        return replace(spec, zones=frozenset())
+    return spec
 
 
 #: "their second spell", "their first noncreature spell" - the ordinal words
@@ -1243,13 +1346,18 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
     if stream.accept("tap", "taps"):
         # "Whenever you tap a permanent for {C}" - the player is the one
         # doing the tapping and the permanent is what produced the mana.
-        tapped = parse_object_filter(stream)
-        if tapped is not None and stream.accept("for"):
-            while stream.peek().kind is TokenKind.SYMBOL:
-                stream.next()
-            stream.accept("mana")
+        # "for {C}" is only that mana (CR 106.12a), which the event does
+        # not record, so only "for mana" is read.
+        tapped, batched = _event_subject(stream)
+        if (
+            tapped is not None
+            and tapped is not _UNREADABLE
+            and not batched
+            and stream.accept_phrase("for mana")
+            and not stream.at("of")
+        ):
             return TriggerCondition(
-                event_kinds=frozenset({EventKind.MANA_ADDED}),
+                event_kinds=frozenset({EventKind.TAPPED_FOR_MANA}),
                 subject=tapped,
                 players=players,
                 text="whenever a player taps something for mana",
@@ -1298,6 +1406,31 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
         # follows - "attacks one or more planeswalkers you control" (CR
         # 508.3e) - narrows it in a way the declaration event cannot be
         # asked, and is left unread rather than dropped.
+        if stream.accept("with"):
+            # "Whenever you attack with one or more Elves" (CR 508.3c): an
+            # attacker of that kind - the attacking player's own creature -
+            # was declared, once for the declaration (CR 603.2c). Only the
+            # batch: "with two or more creatures" is a threshold nothing
+            # here records, and "with a creature" is not templated.
+            if not stream.at_phrase("one or more"):
+                stream.reset(look)
+                return None
+            attackers, batched = _event_subject(stream)
+            if (
+                attackers is None
+                or attackers is _UNREADABLE
+                or not batched
+                or stream.peek().kind is not TokenKind.PUNCT
+            ):
+                stream.reset(look)
+                return None
+            return TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTACKS}),
+                subject=attackers,
+                players=players,
+                batched=True,
+                text="whenever a player attacks with one or more creatures",
+            )
         if stream.peek().kind is not TokenKind.PUNCT:
             stream.reset(look)
             return None
@@ -1334,9 +1467,10 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
         )
     if stream.accept("tap", "taps"):
         spec, batched = _event_subject(stream)
-        if spec is _UNREADABLE:
+        if spec is _UNREADABLE or stream.at("for"):
+            # "for mana" that the reader above did not take is not read here
+            # as a plain tap: tapping for mana is its own event (CR 106.12).
             return None
-        stream.accept_phrase("for mana")
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TAPPED}),
             subject=spec,
