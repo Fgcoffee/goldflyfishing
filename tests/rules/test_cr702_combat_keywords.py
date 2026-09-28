@@ -539,3 +539,94 @@ def test_provoke_targets_only_the_defending_players_creatures(card_db):
     kwargs = dict(source=bears.id, controller=PlayerId(0))
     assert matches(game, attacked, spec, **kwargs)
     assert not matches(game, bystander, spec, **kwargs)
+
+
+# ---------------------------------------------------------------------------
+# Enlist (CR 702.154)
+# ---------------------------------------------------------------------------
+
+
+class _Enlister(FixedAgent):
+    """Enlists ``choice`` and records what it was offered."""
+
+    def __init__(self, choice=None, **kwargs):
+        super().__init__(**kwargs)
+        self.choice = choice
+        self.offered: list = []
+
+    def choose_enlist(self, game, player, attacker, eligible):
+        self.offered.append(sorted(obj.id for obj in eligible))
+        return self.choice
+
+
+def _enlist_attack(board, agent, *, resolve: bool = True) -> None:
+    game = board.game
+    game.active_player = PlayerId(0)
+    game.agents[PlayerId(0)] = agent
+    declare_attackers(game)
+    board.settle()
+    if resolve:
+        board.resolve_stack()
+        board.refresh()
+
+
+def test_enlist_taps_a_creature_and_adds_its_power(board):
+    """CR 702.154a: +X/+0, X the tapped creature's power."""
+    board.scripts.add("Grizzly Bears", *kw("Enlist"))
+    bears = board.play("Grizzly Bears", controller=0)
+    giant = board.play("Hill Giant", controller=0)
+    agent = _Enlister(giant.id, attackers={bears.id: 1})
+    _enlist_attack(board, agent)
+    assert giant.tapped
+    assert giant.id not in board.game.combat.attacking
+    assert board.pt(bears) == (5, 2)
+    assert board.pt(giant) == (3, 3)
+
+
+def test_enlist_is_optional(board):
+    board.scripts.add("Grizzly Bears", *kw("Enlist"))
+    bears = board.play("Grizzly Bears", controller=0)
+    giant = board.play("Hill Giant", controller=0)
+    _enlist_attack(board, _Enlister(None, attackers={bears.id: 1}))
+    assert not giant.tapped
+    assert board.pt(bears) == (2, 2)
+
+
+def test_enlist_offers_only_untapped_non_attackers_that_could_have_attacked(board):
+    """Not an attacker, not tapped, and not summoning sick unless it has
+    haste (CR 702.154a)."""
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+
+    board.scripts.add("Grizzly Bears", *kw("Enlist"))
+    board.scripts.add("Raging Goblin", Ability(AbilityKind.STATIC, keyword="Haste"))
+    bears = board.play("Grizzly Bears", controller=0)
+    other_attacker = board.play("Hill Giant", controller=0)
+    home = board.play("Hill Giant", controller=0)
+    board.play("Hill Giant", controller=0, tapped=True)
+    board.play("Hill Giant", controller=0, summoning_sick=True)
+    hasty = board.play("Raging Goblin", controller=0, summoning_sick=True)
+    board.play("Hill Giant", controller=1)
+    agent = _Enlister(None, attackers={bears.id: 1, other_attacker.id: 1})
+    _enlist_attack(board, agent)
+    assert agent.offered == [sorted([home.id, hasty.id])]
+
+
+def test_enlist_uses_the_power_as_the_trigger_resolves(board):
+    """CR 608.2h: X is read on resolution, not when the cost is paid."""
+    board.scripts.add("Grizzly Bears", *kw("Enlist"))
+    bears = board.play("Grizzly Bears", controller=0)
+    giant = board.play("Hill Giant", controller=0)
+    _enlist_attack(board, _Enlister(giant.id, attackers={bears.id: 1}), resolve=False)
+    giant.add_counters("+1/+1", 2)
+    board.refresh()
+    board.resolve_stack()
+    board.refresh()
+    assert board.pt(bears) == (7, 2)
+
+
+def test_enlist_without_an_enlist_ability_is_never_offered(board):
+    bears = board.play("Grizzly Bears", controller=0)
+    board.play("Hill Giant", controller=0)
+    agent = _Enlister(None, attackers={bears.id: 1})
+    _enlist_attack(board, agent)
+    assert agent.offered == []

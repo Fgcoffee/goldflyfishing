@@ -91,7 +91,13 @@ def evaluate(
         return len(_among(game, value.filter, source, controller, remembered))
 
     if kind in (ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE):
-        obj = game.objects.get(source)
+        # A filter naming one specific object asks about that object rather
+        # than the source - "the tapped creature's power" (enlist). Asked of
+        # the object as it is, or as it last was if it has moved (CR 608.2h).
+        if value.filter is not None and value.filter.specific:
+            obj = game.objects.get(value.filter.specific[0])
+        else:
+            obj = game.objects.get(source)
         if obj is None:
             return 0
         chars = game.characteristics(obj)

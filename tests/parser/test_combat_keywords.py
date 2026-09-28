@@ -155,3 +155,11 @@ def test_becomes_renowned_is_a_trigger(card_db):
     assert parsed.fully_parsed
     (seeker,) = [a for a in parsed.abilities if not a.keyword]
     assert seeker.trigger.event_kinds == frozenset({EventKind.BECAME_RENOWNED})
+
+
+def test_enlist_is_a_static_cost_marker(card_db):
+    """CR 702.154b: the static half is an optional cost to attack, which the
+    engine pays as attackers are declared; its trigger comes from paying it."""
+    (ability,) = _keyword_abilities(card_db, "Yavimaya Steelcrusher", "Enlist")
+    assert ability.kind is AbilityKind.STATIC
+    assert not ability.effects and not ability.unparsed
