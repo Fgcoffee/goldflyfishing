@@ -187,6 +187,7 @@ def declare_attackers(game: Game) -> None:
             obj.tapped = True
 
     game.invalidate_characteristics()
+    _pay_enlist_costs(game, combat, active, agent)
     for attacker_id in sorted(combat.attacking):
         game.emit(
             Event(
@@ -199,6 +200,88 @@ def declare_attackers(game: Game) -> None:
     game.emit(
         Event(EventKind.ATTACKERS_DECLARED, player=active, amount=len(combat.attacking))
     )
+
+
+def _pay_enlist_costs(game: Game, combat, active: PlayerId, agent) -> None:
+    """CR 702.154a-b, 508.1g-h: enlist is an optional cost to attack.
+
+    For each instance of enlist on each attacker, the attacking player may tap
+    up to one untapped creature they control that was not chosen to attack
+    and that has haste or has been under their control continuously since
+    the turn began (not summoning sick, CR 302.6). A creature can't enlist
+    itself (702.154c) - it is attacking - and one tapped for one enlist is not
+    untapped for another.
+
+    Paying it makes the linked "when you do" ability trigger (CR 603.9,
+    607.2h), once for that payment and no other (702.154d): the attacker gets
+    +X/+0 until end of turn, X the enlisted creature's power as the ability
+    resolves (CR 608.2h). The choice is the agent's ``choose_enlist``; an
+    agent without one never enlists.
+    """
+    chooser = getattr(agent, "choose_enlist", None)
+    if chooser is None:
+        return
+    from ..cr100_game_concepts.actions import tap
+    from ..cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from ..cr600_spells_and_abilities.cr603_triggers import PendingTrigger
+    from ..cr600_spells_and_abilities.effects import Effect, EffectKind
+    from ..kernel.enums import Duration
+    from ..kernel.query import ObjectFilter, Value, ValueKind
+
+    for attacker_id in sorted(combat.attacking):
+        attacker = game.objects.get(attacker_id)
+        if attacker is None:
+            continue
+        instances = sum(
+            1
+            for ability in game.characteristics(attacker).abilities
+            if ability.keyword.lower() == "enlist" and ability.kind is AbilityKind.STATIC
+        )
+        for _ in range(instances):
+            eligible = [
+                obj
+                for obj in game.permanents(active)
+                if obj.id not in combat.attacking
+                and not obj.tapped
+                and game.characteristics(obj).is_creature
+                and (
+                    not obj.summoning_sick
+                    or game.characteristics(obj).has_keyword("Haste")
+                )
+            ]
+            if not eligible:
+                break
+            chosen = chooser(game, active, attacker, eligible)
+            enlisted = next((obj for obj in eligible if obj.id == chosen), None)
+            if enlisted is None or not tap(game, enlisted, source=attacker_id):
+                continue
+            game.log.record(game, f"{attacker} enlists {enlisted}", kind="cost")
+            power = Value(
+                ValueKind.POWER,
+                filter=ObjectFilter(specific=(enlisted.id,), zones=frozenset()),
+            )
+            game.pending_triggers.append(
+                PendingTrigger(
+                    attacker_id,
+                    Ability(
+                        AbilityKind.TRIGGERED,
+                        effects=(
+                            Effect(
+                                EffectKind.MODIFY_PT,
+                                amount=power,
+                                amount2=Value.of(0),
+                                duration=int(Duration.END_OF_TURN),
+                                text="this creature gets +X/+0 until end of turn,"
+                                " where X is the tapped creature's power",
+                            ),
+                        ),
+                        keyword="Enlist",
+                        text="when you do (enlist)",
+                    ),
+                    Event(EventKind.ABILITY_TRIGGERED, object_id=attacker_id),
+                    active,
+                )
+            )
 
 
 def can_attack(game: Game, obj: GameObject) -> bool:
