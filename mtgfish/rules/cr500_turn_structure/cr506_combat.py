@@ -529,6 +529,11 @@ def declare_blockers(game: Game) -> None:
                 )
     for blocker_id in sorted(combat.blocking):
         game.emit(Event(EventKind.BLOCKS, object_id=blocker_id))
+    # CR 509.3g: an attacker with no blocker declared for it - including one
+    # that was put onto the battlefield attacking.
+    for attacker_id in sorted(combat.attacking):
+        if not combat.blockers.get(attacker_id):
+            game.emit(Event(EventKind.ATTACKS_UNBLOCKED, object_id=attacker_id))
 
     game.emit(Event(EventKind.BLOCKERS_DECLARED, player=game.active_player))
 

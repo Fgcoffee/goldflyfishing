@@ -69,6 +69,18 @@ def evaluate(
             return 0
         return len(combat.blockers.get(source, ()))
 
+    # CR 702.125b: players who have left the game are not counted.
+    if kind is ValueKind.PLAYER_COUNT:
+        from .matching import resolve_players
+
+        if value.players is None:
+            return 0
+        return sum(
+            1
+            for player in resolve_players(game, value.players, controller=controller)
+            if game.player(player).is_active_in_game
+        )
+
     if kind is ValueKind.X:
         obj = game.objects.get(source)
         return obj.x_value if obj is not None else x_value

@@ -233,6 +233,13 @@ class EffectKind(IntEnum):
     VILLAINOUS_CHOICE = 223
     #: CR 701.64a: "harness [this permanent]" - it becomes harnessed.
     HARNESS = 224
+    #: CR 702.112a-b: the permanents in ``targets`` (the source, if none)
+    #: become renowned.
+    BECOME_RENOWNED = 18001
+    #: "[target creature] blocks this creature [this combat] if able" - each
+    #: object in ``targets`` is under a blocking requirement (CR 509.1c)
+    #: naming the source as what it must block, for ``duration``.
+    BLOCKS_SOURCE_IF_ABLE = 18002
     #: CR 208.2b: "as this enters [or is turned face up], it becomes your
     #: choice of" - ``children`` are the options, each the continuous effects
     #: that make it that choice. Applied as a self-entry replacement.

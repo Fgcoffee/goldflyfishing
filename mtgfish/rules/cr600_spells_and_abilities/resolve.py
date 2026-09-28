@@ -110,6 +110,8 @@ _REMEMBERING = frozenset(
         EffectKind.SACRIFICE,
         EffectKind.TAP,
         EffectKind.UNTAP,
+        # Provoke's "if you do, untap that creature" (CR 702.39a).
+        EffectKind.BLOCKS_SOURCE_IF_ABLE,
         EffectKind.RETURN_TO_HAND,
         EffectKind.PUT_ONTO_BATTLEFIELD,
         EffectKind.CREATE_TOKEN,
@@ -2997,6 +2999,58 @@ def _do_harness(resolution: Resolution, effect: Effect) -> None:
             resolution.game.log.record(resolution.game, f"{obj} becomes harnessed", kind="designation")
 
 
+def _do_become_renowned(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.112b: only a permanent can be or become renowned, and one that
+    is stays so until it leaves the battlefield."""
+    for obj in _objects(resolution, effect):
+        if obj.zone is Zone.BATTLEFIELD and not obj.renowned:
+            obj.renowned = True
+            resolution.game.invalidate_characteristics()
+            resolution.game.log.record(resolution.game, f"{obj} becomes renowned", kind="designation")
+            resolution.game.emit(
+                Event(
+                    EventKind.BECAME_RENOWNED,
+                    object_id=obj.id,
+                    player=obj.controller,
+                    source=resolution.source,
+                )
+            )
+
+
+def _do_blocks_source_if_able(resolution: Resolution, effect: Effect) -> None:
+    """A requirement (CR 509.1c) that each creature acted on blocks the source
+    if able, for the effect's duration. Pinned to these objects: a creature
+    or source that leaves and returns is a new object (CR 400.7) and no
+    longer under it."""
+    from ..cr500_turn_structure.restrictions import (
+        Act,
+        Requirement,
+        register_standing_requirement,
+    )
+    from ..kernel.query import ObjectFilter
+
+    game = resolution.game
+    source = game.objects.get(resolution.source)
+    if source is None or source.zone is not Zone.BATTLEFIELD:
+        return
+    for obj in _objects(resolution, effect):
+        if obj.zone is not Zone.BATTLEFIELD:
+            continue
+        register_standing_requirement(
+            game,
+            Requirement(
+                act=Act.BLOCK,
+                subject=ObjectFilter(specific=(obj.id,)),
+                counterpart=ObjectFilter(specific=(source.id,)),
+                source=source.id,
+                controller=resolution.controller,
+                text=effect.text or f"{obj} blocks {source} if able",
+                duration=effect.duration,
+                created_turn=game.turn,
+            ),
+        )
+
+
 def _do_enters_as_choice(resolution: Resolution, effect: Effect) -> None:
     """CR 208.2b, reached by resolution rather than by entering: the choice
     is made for the permanent the effect refers to. As a printed "as this
@@ -3559,6 +3613,8 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.DISCOVER: _do_discover,
     EffectKind.VILLAINOUS_CHOICE: _do_villainous_choice,
     EffectKind.HARNESS: _do_harness,
+    EffectKind.BECOME_RENOWNED: _do_become_renowned,
+    EffectKind.BLOCKS_SOURCE_IF_ABLE: _do_blocks_source_if_able,
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,

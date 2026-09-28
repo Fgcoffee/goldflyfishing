@@ -101,6 +101,11 @@ class EventKind(IntEnum):
     #: creature blocking it, so this is emitted once per (attacker, blocker)
     #: pair: ``object_id`` is the attacker and ``source`` the blocker.
     BECOMES_BLOCKED_BY = 18001
+    #: CR 509.3g: "attacks and isn't blocked" - emitted as blockers are
+    #: declared for each attacking creature no blocker was declared for
+    #: (``object_id``). Not emitted later, so an attacker whose blockers are
+    #: all removed from combat does not trigger it.
+    ATTACKS_UNBLOCKED = 18003
     REMOVED_FROM_COMBAT = 105
 
     # -- turn structure (CR 500) -------------------------------------------
@@ -183,6 +188,10 @@ class EventKind(IntEnum):
     #: "whenever a counter is put on this" - the +1/+1 counters of the same
     #: monstrosity are, and so is every other counter it ever gets.
     BECAME_MONSTROUS = 19001
+    #: CR 702.112a-b: a permanent became renowned. ``object_id`` is the
+    #: permanent. Its own event for the reason BECAME_MONSTROUS is: "when this
+    #: becomes renowned" is not the counters that came with it.
+    BECAME_RENOWNED = 18002
 
 
 #: Events that mean a permanent left the battlefield in some form. Abilities

@@ -504,6 +504,11 @@ class Requirement:
     controller: PlayerId = NO_PLAYER
     condition: Condition = ALWAYS
     text: str = ""
+    #: For a standing requirement from a resolved effect: how long it lasts
+    #: (``Duration`` as an int) and the turn it began, which CR 611.2b's
+    #: expiry reads the same way it reads a standing restriction's.
+    duration: int = 0
+    created_turn: int = 0
 
     def __str__(self) -> str:
         return self.text or f"must {self.act.name.lower().replace('_', ' ')}"
@@ -590,7 +595,7 @@ def requirements(game: Game) -> list[Requirement]:
     """
     from dataclasses import replace
 
-    out: list[Requirement] = list(getattr(game, "standing_requirements", ()))
+    out: list[Requirement] = list(game.standing_requirements)
     for object_id in list(game.battlefield):
         obj = game.objects.get(object_id)
         if obj is None or obj.phased_out:

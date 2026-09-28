@@ -210,6 +210,10 @@ class GameObject:
     #: CR 701.64b: the harnessed designation. It lasts until the permanent
     #: leaves the battlefield, which CR 400.7 gives by making a new object.
     harnessed: bool = False
+    #: CR 702.112b: the renowned designation. Not copiable, and it lasts until
+    #: the permanent leaves the battlefield, which CR 400.7 gives by making a
+    #: new object.
+    renowned: bool = False
     #: CR 702.190b: a spell whose alternative cost puts it onto the battlefield
     #: tapped and attacking, and the objects paid for it, whose attack it
     #: joins (CR 506.3a).

@@ -675,6 +675,154 @@ def _flanking(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Frenzy")
+def _frenzy(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.68a: "Whenever this creature attacks and isn't blocked, it gets
+    +N/+0 until end of turn." Each instance triggers separately (702.68b).
+
+    "Attacks and isn't blocked" triggers as blockers are declared, if none is
+    declared for it (CR 509.3g) - not when it attacks, and not if it is
+    blocked and its blockers later leave combat.
+    """
+    n = max(1, instance.amount)
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTACKS_UNBLOCKED}),
+                subject=ObjectFilter(source_only=True),
+                functions_in=BATTLEFIELD,
+                text="whenever this attacks and isn't blocked",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                amount=Value.of(n),
+                amount2=Value.of(0),
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or f"Frenzy {n}",
+        ),
+    )
+
+
+@register("Increment")
+def _increment(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.191a: "Whenever you cast a spell, if this permanent is a
+    creature and the amount of mana spent to cast that spell is greater than
+    this creature's power or this creature's toughness, put a +1/+1 counter
+    on this creature." Each instance triggers separately (702.191b).
+
+    The whole "if" is an intervening if (CR 603.4): checked as the spell is
+    cast and again as the ability resolves, against the creature as it is
+    then - so a counter from one instance can stop another.
+    """
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.CAST_SPELL}),
+                subject=ObjectFilter(zones=frozenset({Zone.STACK})),
+                players=YOU,
+                intervening_if=Condition(
+                    ConditionKind.SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS,
+                    text=(
+                        "if this is a creature and the mana spent to cast that"
+                        " spell is greater than its power or toughness"
+                    ),
+                ),
+                functions_in=BATTLEFIELD,
+                text="whenever you cast a spell, if ...",
+            ),
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(1),
+                text="put a +1/+1 counter on this creature",
+            ),
+            text=instance.text or "Increment",
+        ),
+    )
+
+
+@register("Provoke")
+def _provoke(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.39a: "Whenever this creature attacks, you may choose to have
+    target creature defending player controls block this creature this
+    combat if able. If you do, untap that creature." Each instance triggers
+    separately (702.39b).
+
+    The target is chosen as the trigger is put on the stack; the choice to
+    use it is made on resolution, and only then is the creature bound to
+    block and untapped. "This combat" ends with the combat phase (CR 511.2).
+    """
+    defenders_creature = ObjectFilter(
+        types_all=CardType.CREATURE,
+        controller=ControllerRelation.DEFENDING_PLAYER,
+    )
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.OPTIONAL,
+                players=YOU,
+                children=(
+                    Effect(
+                        EffectKind.BLOCKS_SOURCE_IF_ABLE,
+                        targets=defenders_creature,
+                        is_targeted=True,
+                        duration=int(Duration.END_OF_COMBAT),
+                        text="target creature defending player controls blocks"
+                        " this creature this combat if able",
+                    ),
+                    Effect(
+                        EffectKind.UNTAP,
+                        targets=ObjectFilter(remembered=True),
+                        text="untap that creature",
+                    ),
+                ),
+                text="you may choose to have target creature defending player"
+                " controls block this creature this combat if able",
+            ),
+        ),
+    )
+
+
+@register("Renown")
+def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.112a: "When this creature deals combat damage to a player, if
+    it isn't renowned, put N +1/+1 counters on it and it becomes renowned."
+
+    "If it isn't renowned" is an intervening if (CR 603.4), so with several
+    instances the first to resolve makes it renowned and the rest do nothing
+    (702.112c). Renowned is a designation on the permanent (702.112b), not a
+    counter: it is not copied and nothing that moves counters touches it.
+    """
+    n = max(1, instance.amount)
+    not_renowned = Condition(
+        ConditionKind.NOT,
+        operands=(Condition(ConditionKind.IS_RENOWNED, text="it is renowned"),),
+        text="if it isn't renowned",
+    )
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
+                source=ObjectFilter(source_only=True),
+                to_player=True,
+                intervening_if=not_renowned,
+                functions_in=BATTLEFIELD,
+                text="when this deals combat damage to a player, if it isn't renowned",
+            ),
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(n),
+                text=f"put {n} +1/+1 counters on it",
+            ),
+            Effect(EffectKind.BECOME_RENOWNED, text="it becomes renowned"),
+            text=instance.text or f"Renown {n}",
+        ),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Death triggers
 # ---------------------------------------------------------------------------
@@ -1557,22 +1705,17 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: makes token copies, undaunted reduces a cost, flanking shrinks blockers).
 #: Each is inert until it has a builder of its own.
 UNIMPLEMENTED_COMBAT_KEYWORDS = {
-    "frenzy": "CR 702.68a: +N/+0 whenever it attacks and isn't blocked",
-    "renown": "CR 702.112a: counters when it deals combat damage to a player, if not renowned",
     "enlist": "CR 702.154a: tap a creature as it attacks to add that creature's power",
     "myriad": "CR 702.116a: token copies attacking each other opponent",
     "double team": "a digital keyword: conjure a copy into hand when it attacks",
-    "undaunted": "CR 702.125a: costs {1} less for each opponent",
     "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
-    "provoke": "CR 702.39a: untap a creature and force it to block",
-    "increment": "CR 702.191a: a counter when a spell cast costs more than its power or toughness",
     "intensity": "a digital intensity counter mechanic",
 }
 
 
-@register("Frenzy", "Renown", "Enlist",
-          "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke",
-          "Increment", "Intensity")
+@register("Enlist",
+          "Myriad", "Double team", "Teamwork",
+          "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
     """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""
     return (
@@ -1745,6 +1888,33 @@ def _affinity(instance: KeywordInstance) -> tuple[Ability, ...]:
                             ),
                         ),
                     ),
+                ),
+                text=instance.text or instance.name,
+            ),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Undaunted")
+def _undaunted(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.125a: "This spell costs {1} less to cast for each opponent you
+    have."
+
+    The Affinity shape with players counted instead of permanents. Players
+    who have left the game are not counted (702.125b), which the count asks
+    as it is evaluated; each instance is its own reduction (702.125c).
+    """
+    return (
+        Ability.static(
+            Effect(
+                EffectKind.MODIFY_COST,
+                targets=ObjectFilter(source_only=True, zones=frozenset({Zone.STACK})),
+                # Negative is cheaper (see Affinity).
+                amount=Value(
+                    ValueKind.PRODUCT,
+                    constant=-1,
+                    operands=(Value(ValueKind.PLAYER_COUNT, players=EACH_OPPONENT),),
                 ),
                 text=instance.text or instance.name,
             ),
