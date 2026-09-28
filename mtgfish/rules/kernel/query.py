@@ -213,7 +213,7 @@ class Value:
         if self.kind is ValueKind.UNCHANGED:
             return "unchanged"
         if self.kind is ValueKind.COST_PAID_POWER:
-            return "the power of the creature tapped to pay for this"
+            return "the power of what was used to pay for this"
         if self.kind is ValueKind.COST_PAID:
             what = self.operands[0].kind.name.lower().replace("_", " ") if self.operands else "?"
             return f"the {what} of what was consumed to pay for this"

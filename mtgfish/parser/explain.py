@@ -61,6 +61,10 @@ def explain_ability(ability: Ability) -> str:
         return f"{' '.join(parts)}: {body}."
 
     if ability.kind is AbilityKind.STATIC:
+        if ability.additional_cost is not None and not ability.keyword:
+            extra = ability.additional_cost
+            optional = "may also pay" if extra.optional else "also pays"
+            return f"Casting this spell {optional} {extra.cost}."
         if ability.keyword and not ability.effects:
             return f"Has {ability.keyword}."
         if not body:

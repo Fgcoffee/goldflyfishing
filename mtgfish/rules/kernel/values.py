@@ -164,9 +164,9 @@ def evaluate(
             return 0
         total = 0
         for object_id in getattr(obj, "cost_paid_objects", ()):
-            paid = game.objects.get(object_id)
-            if paid is not None:
-                total += game.characteristics(paid).power or 0
+            chars = _paid_as_it_was(game, object_id)
+            if chars is not None:
+                total += chars.power or 0
         return total
 
     if kind is ValueKind.COST_PAID:
@@ -179,10 +179,9 @@ def evaluate(
         wanted = value.operands[0].kind
         total = 0
         for object_id in getattr(obj, "cost_paid_objects", ()):
-            paid = game.objects.get(object_id)
-            if paid is None:
+            chars = _paid_as_it_was(game, object_id)
+            if chars is None:
                 continue
-            chars = game.characteristics(paid)
             if wanted is ValueKind.TOUGHNESS:
                 total += chars.toughness or 0
             elif wanted is ValueKind.MANA_VALUE:
@@ -272,6 +271,24 @@ def _of_named_objects(
         else:
             total += chars.mana_value
     return total
+
+
+def _paid_as_it_was(game: Game, object_id):
+    """An object a cost used, as it is now or as it last existed (CR 608.2h).
+
+    One still where it was - a creature tapped to pay - is read as it is
+    now. One the payment moved is read from the record taken as it was paid
+    (``Game.cost_paid_last_known``): the object kept after the move is off
+    the board and would read as printed.
+    """
+    paid = game.objects.get(object_id)
+    if paid is None:
+        return None
+    if paid.superseded_by:
+        known = game.cost_paid_last_known.get(object_id)
+        if known is not None:
+            return known
+    return game.characteristics(paid)
 
 
 def _among(

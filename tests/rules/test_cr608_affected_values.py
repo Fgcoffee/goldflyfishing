@@ -280,12 +280,10 @@ def _reads(card_db, name):
 
 
 def test_a_consumed_value_with_nothing_to_read_stays_unread(card_db):
-    """Fling's sacrifice is carried out as the spell resolves, not paid as
-    it is cast, so there is no record of it to read: the damage stays
-    unread rather than dealing nothing. Drach'Nyen's static bonus asks
-    about a card exiled by a different ability."""
-    for name in ("Fling", "Drach'Nyen"):
-        assert not _reads(card_db, name).fully_parsed, name
+    """Drach'Nyen's static bonus asks about a card exiled by a different
+    ability, which no cost of its own recorded. (Fling's sacrifice is paid as
+    it is cast and read off that record: test_cr601_additional_cost_record.)"""
+    assert not _reads(card_db, "Drach'Nyen").fully_parsed
 
 
 # ---------------------------------------------------------------------------

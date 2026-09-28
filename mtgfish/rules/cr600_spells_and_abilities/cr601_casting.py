@@ -1166,6 +1166,18 @@ _PAYABLE_KINDS = frozenset(
 )
 
 
+def _record_paid(game: Game, context: GameObject, obj: GameObject) -> None:
+    """Note an object a cost is about to consume, and what it was.
+
+    "The sacrificed creature's power" is the power it had on the
+    battlefield, counters and pumps included (CR 608.2h). The object kept
+    after the move is no longer on the board the layer system computes, so
+    it reads as printed; its characteristics are taken now, before it moves.
+    """
+    context.cost_paid_objects.append(obj.id)
+    game.cost_paid_last_known[obj.id] = game.characteristics(obj)
+
+
 def _pay_component(
     game: Game, player_id: PlayerId, component: CostComponent, context: GameObject
 ) -> None:
@@ -1236,7 +1248,7 @@ def _pay_component(
             raise CastError("not enough permanents to tap")
         for obj in candidates[:wanted]:
             obj.tapped = tapping
-            context.cost_paid_objects.append(obj.id)
+            _record_paid(game, context, obj)
             game.emit(
                 Event(
                     EventKind.TAPPED if tapping else EventKind.UNTAPPED,
@@ -1252,14 +1264,14 @@ def _pay_component(
                 # Dementia): the object as it last existed on the
                 # battlefield (CR 608.2h), which only this record can name
                 # once it is in the graveyard.
-                context.cost_paid_objects.append(obj.id)
+                _record_paid(game, context, obj)
                 game_actions.sacrifice(game, obj, source=context.id)
             elif kind is CostKind.RETURN_TO_HAND:
                 # Recorded before it goes, as tapping another permanent is:
                 # ninjutsu's Ninja attacks whatever *this* creature was
                 # attacking (CR 702.49c), and once it is back in hand nothing
                 # else in the resolution can name it.
-                context.cost_paid_objects.append(obj.id)
+                _record_paid(game, context, obj)
                 game_actions.bounce(game, obj, source=context.id)
             else:
                 game_actions.detach(game, obj)
@@ -1292,7 +1304,7 @@ def _pay_component(
             obj = pick_discard(game, player_id, component, candidates)
             candidates.remove(obj)
             # "The discarded card's mana value" (Mercurial Chemister).
-            context.cost_paid_objects.append(obj.id)
+            _record_paid(game, context, obj)
             game_actions.discard(game, obj, source=context.id)
 
     elif kind in EXILE_ZONES:
@@ -1303,7 +1315,7 @@ def _pay_component(
         # source paying for itself, and only from there.
         for obj in _choose_exiled(game, player_id, component, amount, context):
             # "The exiled card's power" (Dread Defiler, Corpse Explosion).
-            context.cost_paid_objects.append(obj.id)
+            _record_paid(game, context, obj)
             game_actions.exile(game, obj, source=context.id)
 
     elif kind is CostKind.MILL:

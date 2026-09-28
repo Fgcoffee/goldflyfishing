@@ -341,6 +341,11 @@ class Game:
     #: ``cr700_additional_rules/digital_mechanics.py``). A zone change carries
     #: them to the new object, which is the whole of what "perpetually" adds.
     perpetual: dict = field(default_factory=dict)
+    #: CR 608.2h: what each object a cost consumed was as it was paid,
+    #: keyed by the object's id (``cr601_casting._record_paid``). "The
+    #: sacrificed creature's power" reads it; the object itself, once moved,
+    #: is off the board and reads as printed.
+    cost_paid_last_known: dict = field(default_factory=dict)
 
     def is_controlled(self, player_id: PlayerId) -> bool:
         """CR 723.1: whether someone else is making this player's decisions."""

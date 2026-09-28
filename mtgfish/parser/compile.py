@@ -69,6 +69,10 @@ class ParsedFace:
 
     abilities: tuple[Ability, ...] = ()
     failures: list[ParseFailure] = field(default_factory=list)
+    #: Whether a line read so far is a mandatory additional cost that
+    #: consumes an object (CR 601.2h), whose record the spell's own text may
+    #: go on to read ("the sacrificed creature's power").
+    pays_with_objects: bool = field(default=False, repr=False, compare=False)
 
     @property
     def total(self) -> int:
@@ -980,6 +984,23 @@ def _modal(line: Line, result: ParsedFace) -> list[Ability]:
 
 
 def _plain(line: Line, result: ParsedFace, *, is_permanent: bool) -> list[Ability]:
+    additional = _additional_cost_line(line.text)
+    if additional is not None:
+        # CR 601.2f-h: "As an additional cost to cast this spell, sacrifice a
+        # creature" is paid while the spell is cast, alongside its mana
+        # cost - not carried out on resolution, where a countered spell kept
+        # its creature. The engine pays ``Ability.additional_cost`` at CR
+        # 601.2h and records on the spell what the payment consumed.
+        if _consumes_an_object(additional.cost):
+            result.pays_with_objects = True
+        return [
+            Ability(
+                AbilityKind.STATIC,
+                additional_cost=additional,
+                functions_in=frozenset({Zone.HAND, Zone.STACK}),
+                text=line.text,
+            )
+        ]
     alternative = _alternative_cost_line(line.text)
     if alternative is not None:
         # CR 118.9: an alternative cost is a property of the *ability*, not an
@@ -1054,6 +1075,90 @@ def _lift_static_condition(body):
     if not all(child.kind in CONTINUOUS_KINDS for child in node.children):
         return ALWAYS, body
     return node.condition, list(node.children)
+
+
+#: Cost components the engine records the object of (``cr601_casting``), so
+#: that "the sacrificed creature's power" can be read off the spell.
+_CONSUMING_COSTS = frozenset(
+    {
+        "SACRIFICE",
+        "DISCARD",
+        "DISCARD_AT_RANDOM",
+        "EXILE_FROM_GRAVEYARD",
+        "EXILE_FROM_HAND",
+        "EXILE_FROM_LIBRARY",
+        "EXILE_FROM_BATTLEFIELD",
+        "RETURN_TO_HAND",
+        "TAP_OTHER",
+    }
+)
+
+
+def _consumes_an_object(cost) -> bool:
+    return any(component.kind.name in _CONSUMING_COSTS for component in cost.components)
+
+
+def _mentions_x(thing, depth: int = 0) -> bool:
+    """Whether a cost component anywhere asks for X.
+
+    A cost component's amount is evaluated against the board alone when it
+    is paid, so "pay X life" or "sacrifice X creatures" would be charged as
+    zero. Such a line stays with the clause grammar.
+    """
+    from dataclasses import fields, is_dataclass
+
+    from ..rules.kernel.query import Value, ValueKind
+
+    if depth > 6:
+        return False
+    if isinstance(thing, Value) and thing.kind is ValueKind.X:
+        return True
+    if isinstance(thing, (tuple, list)):
+        return any(_mentions_x(item, depth + 1) for item in thing)
+    if is_dataclass(thing) and not isinstance(thing, type):
+        return any(_mentions_x(getattr(thing, f.name), depth + 1) for f in fields(thing))
+    return False
+
+
+def _additional_cost_line(text: str):
+    """"As an additional cost to cast this spell, sacrifice a creature."
+
+    A mandatory additional cost (CR 118.8), read with the cost grammar so it
+    is charged exactly as an activated ability's cost is. ``None`` for
+    anything else - an optional one ("you may sacrifice"), a choice between
+    two ("sacrifice a creature or pay 3 life"), one whose amount depends on
+    X - which the clause grammar goes on to read as before.
+    """
+    from ..rules.cr100_game_concepts.cr118_costs import AdditionalCost, CostKind
+    from .costs import parse_cost
+
+    stream = Stream.of(text)
+    if not (
+        stream.accept("as")
+        and stream.accept_phrase("an additional cost to cast this spell")
+    ):
+        return None
+    stream.skip_punct(",")
+    words: list[str] = []
+    while not stream.done:
+        token = stream.next()
+        if token.text in (".", ";"):
+            break
+        words.append(token.text)
+    if not stream.done or not words:
+        return None
+    cost, _reason = parse_cost(" ".join(words))
+    if cost is None or _mentions_x(cost.components):
+        return None
+    if any(
+        component.kind in (CostKind.MANA, CostKind.TAP_SELF, CostKind.UNTAP_SELF)
+        or getattr(component.filter, "source_only", False)
+        for component in cost.components
+    ):
+        # "{T}" or "sacrifice this" names nothing a spell on the stack can
+        # pay with, and a mana additional cost stays with the clause grammar.
+        return None
+    return AdditionalCost(cost=cost, text="as an additional cost")
 
 
 def _alternative_cost_line(text: str):
@@ -1302,7 +1407,7 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
             ParseFailure(text, "'other target' after another target", rule=rule)
         )
         return Ability.unreadable(text)
-    settled = settle_referents(ability)
+    settled = settle_referents(ability, spell_paid=result.pays_with_objects)
     if settled is None:
         # "Its power" with no object the engine can read it off - the target
         # of the very instruction being carried out, or an object a delayed
