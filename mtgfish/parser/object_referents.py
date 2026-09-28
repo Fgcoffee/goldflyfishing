@@ -351,8 +351,10 @@ def _plural(effect: Effect) -> bool:
     if isinstance(count, int):
         count = Value.of(count)
     if count is None:
-        # "Target creature" is one; "all creatures" is every one there is.
-        return not effect.is_targeted
+        # No number written: "target creature", "enchanted creature" and
+        # "all creatures" alike. Only a number says there are several;
+        # "all creatures ... it" is not something cards write.
+        return False
     return not (count.is_constant and count.constant <= 1)
 
 
@@ -511,7 +513,9 @@ def _referent(
         # there was to refer to before them.
         if not pronoun:
             return REMEMBERED
-        if state == _MANY:
+        if state == _MANY or not is_dealer:
+            # A value's "it" may be "them" ("for each counter on them"),
+            # which is the objects just made; which one is not said.
             raise Unsettled
         return None
     if state == _SELF:

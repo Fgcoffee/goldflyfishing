@@ -1645,7 +1645,10 @@ def _of_object(stream: Stream, kind: ValueKind, *, counter_type: str = "") -> Va
     which names no particular object.
     """
     mark = stream.mark()
-    if stream.accept("it"):
+    if stream.accept("it", "them"):
+        # "For each counter on them" in "creatures you don't control get
+        # -1/-1 for each slime counter on them" is each affected creature,
+        # as "it" is; a one-shot "it" is settled like "its power".
         return Value(kind=kind, counter_type=counter_type, of_affected=True)
     if stream.at("target") or stream.at("another"):
         return None
@@ -1655,6 +1658,19 @@ def _of_object(stream: Stream, kind: ValueKind, *, counter_type: str = "") -> Va
         return None
     if spec.source_only:
         return Value(kind=kind, counter_type=counter_type)
+    if spec.remembered and spec.zones == frozenset({Zone.EXILE}):
+        # "The power of the exiled card" is "the exiled card's power": what a
+        # cost or an earlier instruction exiled (``_possessive_characteristic``),
+        # not whatever the sentence mentioned last.
+        stream.reset(mark)
+        if kind is ValueKind.POWER:
+            consumed = Value(kind=ValueKind.COST_PAID_POWER)
+        elif kind in (ValueKind.TOUGHNESS, ValueKind.MANA_VALUE):
+            consumed = Value(kind=ValueKind.COST_PAID, operands=(Value(kind=kind),))
+        else:
+            return None
+        parse_object_filter(stream)
+        return consumed
     if spec.remembered:
         return Value(
             kind=kind, counter_type=counter_type, filter=ObjectFilter(remembered=True)

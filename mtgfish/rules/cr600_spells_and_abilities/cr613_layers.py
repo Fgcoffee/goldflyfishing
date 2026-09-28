@@ -1050,9 +1050,17 @@ def _value(game: Game, value, ce: ContinuousEffect, obj: GameObject | None = Non
     ``of_affected`` decides whose characteristics "it" means: the object being
     modified, or the ability's source.
     """
+    from ..kernel.matching import value_subjects
     from ..kernel.values import evaluate
 
-    subject = obj.id if (value.of_affected and obj is not None) else ce.source
+    # Anywhere in the value, not only at its top: "-1/-1 for each slime
+    # counter on them" is -1 times a count of the affected creature's
+    # counters, and the product was asked of the source instead.
+    # A value that also reads the source is asked of the source, as before:
+    # one ``source`` cannot answer both halves.
+    reads_affected, reads_source, _ = value_subjects(value)
+    affected = value.of_affected or (reads_affected and not reads_source)
+    subject = obj.id if (affected and obj is not None) else ce.source
     return evaluate(game, value, source=subject, controller=ce.controller)
 
 
