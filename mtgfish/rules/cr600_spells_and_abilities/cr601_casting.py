@@ -640,6 +640,11 @@ def targeted_nodes(effects, chosen_modes: tuple[int, ...] | None = None) -> list
 
     ``None`` means no choice has been made yet - which is the question
     legality asks of a card in hand - and then every mode is included.
+
+    An instruction that shares the target of the one before it
+    (``Effect.same_target``: one word "target", two verbs) holds no slot of
+    its own (CR 115.3): there is one choice, and the resolver hands it to
+    both.
     """
     out: list = []
 
@@ -649,7 +654,7 @@ def targeted_nodes(effects, chosen_modes: tuple[int, ...] | None = None) -> list
                 if 0 <= index < len(node.children):
                     visit(node.children[index])
             return
-        if node.is_targeted:
+        if node.is_targeted and not node.same_target:
             out.append(node)
         for child in node.children + node.otherwise:
             visit(child)

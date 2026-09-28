@@ -58,6 +58,11 @@ SELF = ObjectFilter(source_only=True)
 #: CR 115.4: "any target" means a creature, player, planeswalker or battle.
 #: Modelled as the object types, because the engine's damage executor already
 #: handles a player target through ``players``.
+#:
+#: Handed out as a fresh copy (``replace(ANY_TARGET)``) each time it is
+#: read: two instructions holding the *same* filter object are one word
+#: "target" read as two verbs (``compile._share_targets``), and two separate
+#: "any target"s sharing this constant would be merged into one choice.
 ANY_TARGET = ObjectFilter(
     types_any=CardType.CREATURE | CardType.PLANESWALKER | CardType.BATTLE,
     includes_players=True,
@@ -1047,7 +1052,7 @@ def _damage(stream: Stream) -> Effect | None:
         after = parse_value(stream) if amount is None else None
         return Effect(
             EffectKind.DAMAGE,
-            targets=ANY_TARGET,
+            targets=replace(ANY_TARGET),
             amount=amount or after or Value.of(1),
             is_targeted=True,
             damage_source=dealer,
@@ -8024,7 +8029,7 @@ def _prevent_damage(stream: Stream) -> Effect | None:
     targeted = False
     if both_ways or stream.accept("to"):
         if stream.accept_phrase("any target"):
-            targets, targeted = ANY_TARGET, True
+            targets, targeted = replace(ANY_TARGET), True
         else:
             targets, targeted = parse_target(stream)
         if targets is None:

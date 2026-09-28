@@ -16,7 +16,7 @@ quietly doing less than the card says.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable
 
 from ..cr100_game_concepts.cr106_mana import ManaCost
@@ -871,6 +871,10 @@ def _not_yet_modelled_action(instance: ActionInstance) -> tuple[Effect, ...]:
 #: that does first.
 IT = ObjectFilter(remembered=True)
 
+#: Handed out as fresh copies (``replace``): two instructions holding the
+#: same filter object are one word "target" read as two verbs
+#: (``parser.compile._share_targets``), and "earthbend 3, then earthbend 3"
+#: is two targets.
 ONE_LAND_YOU_CONTROL = ObjectFilter(
     types_all=CardType.LAND,
     controller=ControllerRelation.YOU,
@@ -907,7 +911,7 @@ def _earthbend(instance: ActionInstance) -> tuple[Effect, ...]:
     return (
         Effect(
             EffectKind.ADD_COUNTERS,
-            targets=ONE_LAND_YOU_CONTROL,
+            targets=replace(ONE_LAND_YOU_CONTROL),
             is_targeted=True,
             counter_type="+1/+1",
             amount=_amount(instance),
@@ -986,7 +990,7 @@ def _blight(instance: ActionInstance) -> tuple[Effect, ...]:
     return (
         Effect(
             EffectKind.ADD_COUNTERS,
-            targets=instance.filter or ONE_CREATURE_YOU_CONTROL,
+            targets=instance.filter or replace(ONE_CREATURE_YOU_CONTROL),
             is_targeted=True,
             counter_type="-1/-1",
             amount=_amount(instance),
