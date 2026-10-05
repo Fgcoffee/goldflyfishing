@@ -299,6 +299,20 @@ def _among(
 
     from .matching import find, matches
 
+    if spec.specific and not spec.zones and not spec.remembered:
+        # Named by id, anywhere: "the tapped creature's power" (enlist,
+        # CR 702.154a) is about that one object, as it is or - if it has
+        # since left the battlefield - as it last existed (CR 608.2h). The
+        # superseded object is exactly that last-known state.
+        described = replace(spec, specific=(), zones=frozenset(), count=None, up_to=False)
+        return [
+            obj
+            for object_id in spec.specific
+            if (obj := game.objects.get(object_id)) is not None
+            and matches(
+                game, obj, described, source=source, controller=controller, allow_stale=True
+            )
+        ]
     if not spec.remembered:
         return find(game, spec, source=source, controller=controller)
     described = replace(spec, remembered=False, zones=frozenset(), count=None, up_to=False)

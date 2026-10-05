@@ -785,6 +785,23 @@ def _provoke(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Enlist")
+def _enlist(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.154a: "As this creature attacks, you may tap up to one untapped
+    creature you control that you didn't choose to attack with and that
+    either has haste or has been under your control continuously since this
+    turn began. When you do, this creature gets +X/+0 until end of turn,
+    where X is the tapped creature's power."
+
+    The static ability is an optional cost to attack (702.154b, CR 508.1g),
+    paid as attackers are declared; this is its marker, one per instance.
+    The linked "when you do" trigger is created by paying that cost
+    (``cr506_combat._pay_enlist_costs``), so each instance's trigger fires
+    only for its own payment (702.154d).
+    """
+    return (Ability(AbilityKind.STATIC, keyword="Enlist", text=instance.text or "Enlist"),)
+
+
 @register("Renown")
 def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.112a: "When this creature deals combat damage to a player, if
@@ -1705,7 +1722,6 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
 #: makes token copies, undaunted reduces a cost, flanking shrinks blockers).
 #: Each is inert until it has a builder of its own.
 UNIMPLEMENTED_COMBAT_KEYWORDS = {
-    "enlist": "CR 702.154a: tap a creature as it attacks to add that creature's power",
     "myriad": "CR 702.116a: token copies attacking each other opponent",
     "double team": "a digital keyword: conjure a copy into hand when it attacks",
     "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
@@ -1713,9 +1729,7 @@ UNIMPLEMENTED_COMBAT_KEYWORDS = {
 }
 
 
-@register("Enlist",
-          "Myriad", "Double team", "Teamwork",
-          "Intensity")
+@register("Myriad", "Double team", "Teamwork", "Intensity")
 def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
     """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""
     return (
