@@ -817,14 +817,19 @@ def ability_targets_available(
         # would hide a charm behind whichever of its modes had nothing to
         # point at.
         return False
-    for node in targeted_nodes(ability.effects, ()):
+    nodes = targeted_nodes(ability.effects, ())
+    for node in nodes:
         if node.target_optional or (
             node.targets is not None and node.targets.includes_players
         ):
             continue
         if not _candidates_for(game, source, node, player_id):
             return False
-    return True
+    if not any(node.distinct_from_earlier_targets for node in nodes):
+        return True
+    return distinct_targets_available(
+        nodes, [_candidates_for(game, source, node, player_id) for node in nodes]
+    )
 
 
 def choose_targets(game: Game, source: GameObject, effects: list, player_id: PlayerId) -> tuple:
@@ -846,16 +851,124 @@ def choose_targets(game: Game, source: GameObject, effects: list, player_id: Pla
     else:
         picked = chooser(game, player_id, source.id, candidates)
 
-    cleaned = []
+    return settle_target_choices(effects, candidates, picked, fill_required=True)
+
+
+def _required(effect) -> bool:
+    """Whether a target slot must be filled when anything can fill it."""
+    return not effect.target_optional
+
+
+def distinct_assignment(effects, candidates) -> list | None:
+    """One target for each required slot, obeying "another target", or None.
+
+    CR 601.2c: targets must fit the targeting criteria, and "another target
+    creature" after an earlier target is a criterion about the earlier
+    choices (``Effect.distinct_from_earlier_targets``). Whether a spell with
+    such a target can be cast is a joint question: two slots may each have a
+    candidate while the only candidate for both is the same creature. Solved
+    by a small search - a spell has a handful of targets.
+    """
+    slots = [
+        (index, effect)
+        for index, effect in enumerate(effects)
+        if _required(effect) and index < len(candidates) and candidates[index]
+    ]
+    chosen: dict[int, int] = {}
+
+    def place(position: int) -> bool:
+        if position == len(slots):
+            return True
+        index, effect = slots[position]
+        earlier = {chosen[i] for i in chosen if i < index}
+        for candidate in candidates[index]:
+            if effect.distinct_from_earlier_targets and candidate in earlier:
+                continue
+            # A later "another" slot must not be one this choice collides with.
+            if any(
+                effects[j].distinct_from_earlier_targets and chosen[j] == candidate
+                for j in chosen
+                if j > index
+            ):
+                continue
+            chosen[index] = candidate
+            if place(position + 1):
+                return True
+            del chosen[index]
+        return False
+
+    if not place(0):
+        return None
+    return [chosen.get(index) for index in range(len(effects))]
+
+
+def distinct_targets_available(effects, candidates) -> bool:
+    """Whether every required slot can be filled at once (CR 601.2c).
+
+    Slots with no candidate at all are the caller's to judge (a player
+    target, an "any target" with players); this answers only whether the
+    "another target" slots can be told apart."""
+    if not any(effect.distinct_from_earlier_targets for effect in effects):
+        return True
+    return distinct_assignment(effects, candidates) is not None
+
+
+def settle_target_choices(effects, candidates, picked, *, fill_required: bool) -> tuple:
+    """What an agent chose, cut down to what the rules allow.
+
+    Anything not offered is dropped. CR 115.3: the same object can't be
+    chosen twice for one instance of "target". An "another target" slot
+    drops anything chosen for an earlier target. With ``fill_required``, a
+    required slot left empty is filled deterministically (CR 601.2c) - from
+    a joint assignment when the agent's own choices boxed a slot in.
+    """
+    cleaned: list[tuple] = []
+    earlier: set = set()
     for index, effect in enumerate(effects):
         legal = set(candidates[index]) if index < len(candidates) else set()
         offered = tuple(picked[index]) if index < len(picked) else ()
-        kept = tuple(object_id for object_id in offered if object_id in legal)
-        # CR 601.2c: a target is required unless the spell said "up to".
-        if not kept and legal and not effect.target_optional:
-            kept = (candidates[index][0],)
+        kept = tuple(
+            dict.fromkeys(
+                object_id
+                for object_id in offered
+                if object_id in legal
+                and not (effect.distinct_from_earlier_targets and object_id in earlier)
+            )
+        )
+        if fill_required and not kept and legal and _required(effect):
+            free = [
+                object_id
+                for object_id in candidates[index]
+                if not (effect.distinct_from_earlier_targets and object_id in earlier)
+            ]
+            if free:
+                kept = (free[0],)
         cleaned.append(kept)
+        earlier.update(kept)
+    if fill_required and any(
+        not kept and _required(effect) and index < len(candidates) and candidates[index]
+        for index, (effect, kept) in enumerate(zip(effects, cleaned))
+    ):
+        assignment = distinct_assignment(effects, candidates)
+        if assignment is not None:
+            cleaned = [
+                (assignment[index],) if assignment[index] is not None else kept
+                for index, kept in enumerate(cleaned)
+            ]
     return tuple(cleaned)
+
+
+def check_distinct_targets(effects, targets) -> None:
+    """CR 115.3, 601.2c: no object twice for one "target"; nothing chosen
+    for an earlier target in an "another target" slot."""
+    earlier: set = set()
+    for index, effect in enumerate(effects):
+        chosen = tuple(targets[index]) if index < len(targets) else ()
+        if len(set(chosen)) != len(chosen):
+            raise CastError("the same target was chosen twice for one target")
+        if effect.distinct_from_earlier_targets and earlier & set(chosen):
+            raise CastError("another target must differ from the earlier targets")
+        earlier.update(chosen)
 
 
 def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
@@ -872,6 +985,7 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
 
     if len(targets) < len(effects):
         raise CastError("not every required target was chosen")
+    check_distinct_targets(effects, targets)
 
     for index, effect in enumerate(effects):
         chosen = targets[index] if index < len(targets) else ()
@@ -1700,6 +1814,7 @@ def _validate_ability_targets(
     effects = targeted_nodes(ability.effects, chosen_modes or None)
     if len(targets) < len(effects):
         raise CastError("not every required target was chosen")
+    check_distinct_targets(effects, targets)
     for index, effect in enumerate(effects):
         for object_id in targets[index] if index < len(targets) else ():
             if object_id < 0:

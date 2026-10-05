@@ -1006,10 +1006,13 @@ def _choose_trigger_targets(
 
     # The agent is not trusted to return something legal: an illegal choice is
     # dropped rather than allowed through, and the ability fizzles later if
-    # nothing is left (CR 608.2b).
-    cleaned: list[tuple] = []
-    for index, effect in enumerate(effects):
-        legal = set(candidates[index]) if index < len(candidates) else set()
-        picked = tuple(chosen[index]) if index < len(chosen) else ()
-        cleaned.append(tuple(object_id for object_id in picked if object_id in legal))
-    return tuple(cleaned)
+    # nothing is left (CR 608.2b). The same cut spells get: no object twice
+    # for one "target", nothing chosen earlier in an "another target" slot
+    # (CR 115.3, 601.2c).
+    from .cr601_casting import settle_target_choices
+
+    # With no agent the engine chose for it, and a collision of its own
+    # making is its own to repair.
+    return settle_target_choices(
+        effects, candidates, chosen, fill_required=chooser is None
+    )

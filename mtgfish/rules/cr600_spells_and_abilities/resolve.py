@@ -235,9 +235,18 @@ def _execute_one(resolution: Resolution, effect: Effect) -> None:
         cursor = resolution.target_index
         acted_on = [obj.id for obj in _objects(resolution, effect)]
         resolution.target_index = cursor
+        # An object chosen as this instruction's target that is no longer
+        # legal is still what a following "it" names, and CR 608.2b says
+        # information about it can't be determined: "Tap target creature. It
+        # deals damage equal to its power" deals none. Keeping whatever was
+        # remembered before would hand "it" to a different object.
+        chosen_objects = effect.is_targeted and any(
+            object_id >= 0 for object_id in resolution.targets_for(effect)
+        )
+        resolution.target_index = cursor
 
         executor(resolution, effect)
-        if acted_on:
+        if acted_on or chosen_objects:
             resolution.remembered = acted_on
         return
 
@@ -1678,16 +1687,20 @@ def _do_damage(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     amount = _amount(resolution, effect)
     dealer, dealer_controller = _damage_dealer(resolution, effect)
+    # The chosen targets are read once, here, and split by kind. Both halves
+    # come out of the same list (CR 115.4) and the cursor only moves forward
+    # - even when there is no dealer, or every later instruction would read
+    # the targets meant for this one.
+    chosen = resolution.targets_for(effect) if effect.is_targeted else ()
     if dealer is None:
+        # CR 608.2b: the dealer was an illegal target, so nothing can be
+        # determined about it and no damage is dealt.
         return
     source_obj = game.objects.get(dealer)
     chars = game.characteristics(source_obj) if source_obj is not None else None
     deathtouch = bool(chars and chars.has_keyword("Deathtouch"))
     lifelink = bool(chars and chars.has_keyword("Lifelink"))
 
-    # The chosen targets are read once, here, and split by kind. Both halves
-    # come out of the same list (CR 115.4) and the cursor only moves forward.
-    chosen = resolution.targets_for(effect) if effect.is_targeted else ()
     for obj in _objects(resolution, effect, chosen=chosen):
         actions.deal_damage(
             game,

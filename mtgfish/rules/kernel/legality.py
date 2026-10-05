@@ -462,6 +462,18 @@ def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool
             continue
         if not find(game, node.targets, source=obj.id, controller=player_id):
             return False
+    if any(node.distinct_from_earlier_targets for node in nodes):
+        # "Another target creature": each slot having a candidate is not
+        # enough when the only candidate for two of them is one creature
+        # (CR 601.2c).
+        from ..cr600_spells_and_abilities.cr601_casting import (
+            _candidates_for,
+            distinct_targets_available,
+        )
+
+        return distinct_targets_available(
+            nodes, [_candidates_for(game, obj, node, player_id) for node in nodes]
+        )
     return True
 
 

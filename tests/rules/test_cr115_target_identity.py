@@ -129,3 +129,139 @@ def test_two_separate_actions_are_two_targets(box):
     _need(box, "Cracked Earth Technique")
     ability = _spell(box.db, "Cracked Earth Technique")
     assert len(targeted_nodes(ability.effects)) == 2
+
+
+# ---------------------------------------------------------------------------
+# "Another target" after an earlier target
+# ---------------------------------------------------------------------------
+
+
+def test_another_target_is_marked_distinct_not_other_than_the_source(box):
+    _need(box, "Consume Strength")
+    ability = _spell(box.db, "Consume Strength")
+    first, second = targeted_nodes(ability.effects)
+    assert not first.distinct_from_earlier_targets
+    assert second.distinct_from_earlier_targets
+    assert not second.targets.other_than_source
+
+
+def test_consume_strength_pumps_one_and_shrinks_another(box):
+    _need(box, "Consume Strength", "Grizzly Bears", "Hill Giant")
+    game = box.game
+    bears = _creature(box, "Grizzly Bears", 0)
+    giant = _creature(box, "Hill Giant", 1)
+    box.put("Consume Strength", "hand", 0)
+    _mana(box, 0, 1)
+    _mana(box, 0, 1, Color.GREEN)
+    _mana(box, 0, 1, Color.BLACK)
+
+    _cast(box, 0, "Consume Strength", ((bears.id,), (giant.id,)))
+    box.resolve_top()
+
+    assert (game.characteristics(bears).power, game.characteristics(bears).toughness) == (4, 4)
+    assert (game.characteristics(giant).power, game.characteristics(giant).toughness) == (1, 1)
+
+
+def test_the_same_creature_cannot_be_both_targets(box):
+    """CR 601.2c: "another" is a targeting criterion the choice must meet."""
+    _need(box, "Consume Strength", "Grizzly Bears", "Hill Giant")
+    bears = _creature(box, "Grizzly Bears", 0)
+    _creature(box, "Hill Giant", 1)
+    box.put("Consume Strength", "hand", 0)
+    _mana(box, 0, 1)
+    _mana(box, 0, 1, Color.GREEN)
+    _mana(box, 0, 1, Color.BLACK)
+    game = box.game
+    action = next(
+        action
+        for action in legal_actions(game, 0)
+        if action.kind.name.startswith("CAST")
+        and game.objects[action.source].card.name == "Consume Strength"
+    )
+    assert not _perform(game, 0, replace(action, targets=((bears.id,), (bears.id,))))
+    assert not game.stack
+
+
+def test_one_creature_is_not_enough_for_two_distinct_targets(box):
+    _need(box, "Consume Strength", "Grizzly Bears")
+    _creature(box, "Grizzly Bears", 0)
+    box.put("Consume Strength", "hand", 0)
+    _mana(box, 0, 1)
+    _mana(box, 0, 1, Color.GREEN)
+    _mana(box, 0, 1, Color.BLACK)
+    assert not _castable(box, 0, "Consume Strength")
+    _creature(box, "Grizzly Bears", 1)
+    assert _castable(box, 0, "Consume Strength")
+
+
+def test_a_chooser_that_picks_one_creature_twice_is_corrected(box):
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+        choose_targets,
+        targeting_effects,
+    )
+
+    _need(box, "Consume Strength", "Grizzly Bears", "Hill Giant")
+    game = box.game
+    bears = _creature(box, "Grizzly Bears", 0)
+    giant = _creature(box, "Hill Giant", 1)
+    box.put("Consume Strength", "hand", 0)
+    spell = next(
+        obj for obj in game.objects.values()
+        if obj.zone is Zone.HAND and obj.card.name == "Consume Strength"
+    )
+
+    class Stubborn(PassiveOpponent):
+        def choose_targets(self, game, player, source, candidates):
+            return tuple((bears.id,) for _ in candidates)
+
+    game.agents[0] = Stubborn()
+    chosen = choose_targets(game, spell, targeting_effects(game, spell), 0)
+    assert chosen == ((bears.id,), (giant.id,))
+
+
+def test_deadshot_taps_one_creature_and_it_deals_its_power_to_another(box):
+    _need(box, "Deadshot", "Hill Giant", "Grizzly Bears")
+    game = box.game
+    giant = _creature(box, "Hill Giant", 0)
+    bears = _creature(box, "Grizzly Bears", 1)
+    box.put("Deadshot", "hand", 0)
+    _mana(box, 0, 3)
+    _mana(box, 0, 1, Color.RED)
+
+    _cast(box, 0, "Deadshot", ((giant.id,), (bears.id,)))
+    box.resolve_top()
+
+    assert giant.tapped
+    assert not _alive(game, bears)  # 3 damage from the Giant
+    assert _alive(game, giant)
+
+
+def test_deadshot_deals_nothing_when_its_first_target_is_gone(box):
+    """CR 608.2b: the power of an illegal target can't be determined, and
+    the part of the effect that needs it doesn't happen - no damage, and no
+    other object stands in for "it"."""
+    from mtgfish.rules.cr100_game_concepts import actions
+
+    _need(box, "Deadshot", "Hill Giant", "Grizzly Bears")
+    game = box.game
+    giant = _creature(box, "Hill Giant", 0)
+    bears = _creature(box, "Grizzly Bears", 1)
+    box.put("Deadshot", "hand", 0)
+    _mana(box, 0, 3)
+    _mana(box, 0, 1, Color.RED)
+    _cast(box, 0, "Deadshot", ((giant.id,), (bears.id,)))
+    actions.bounce(game, giant)
+    box.resolve_top()
+
+    assert _alive(game, bears)
+    assert bears.damage == 0
+
+
+@pytest.mark.parametrize("name", ["Jilt", "Arm the Cathars"])
+def test_another_target_the_engine_cannot_place_stays_unread(box, name):
+    """Jilt's second target exists only if the spell was kicked (CR 601.2c);
+    Arm the Cathars' "those creatures" means all three targets, and the
+    resolution remembers only the last."""
+    _need(box, name)
+    face = parse_card(box.db.lookup(name)).faces[0]
+    assert any(a.unparsed for a in face.abilities)
