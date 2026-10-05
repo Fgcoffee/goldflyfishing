@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
 from ..rules.cr100_game_concepts.cr118_costs import EXILE_ZONES, Cost, CostComponent, CostKind
-from ..rules.kernel.query import ObjectFilter, Value
+from ..rules.kernel.query import ObjectFilter, Value, ValueKind
 from .nouns import SELF_NOUNS, chosen_count, parse_object_filter, parse_value
 from .tokens import Stream, TokenKind
 
@@ -237,6 +237,19 @@ def _loyalty(stream: Stream) -> CostComponent | None:
         stream.accept("+")
 
     amount = stream.accept_number()
+    if amount is None and sign < 0 and stream.accept("x"):
+        # CR 107.7: a negative loyalty symbol may show an X, "[-X]". The
+        # controller announces X as the ability is activated (CR 107.3a) and
+        # the cost removes that many counters; CR 606.6 forbids announcing
+        # more than the permanent has. Only the minus symbol carries one.
+        if not stream.done:
+            stream.reset(mark)
+            return None
+        return CostComponent(
+            CostKind.LOYALTY,
+            amount=Value(ValueKind.DIFFERENCE, operands=(Value.of(0), Value(ValueKind.X))),
+            text="-X",
+        )
     if amount is None:
         stream.reset(mark)
         return None

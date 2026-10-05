@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 
 from ..kernel.enums import Zone
-from ..kernel.query import ZERO, ObjectFilter, Value
+from ..kernel.query import ZERO, ObjectFilter, Value, ValueKind
 from .cr106_mana import ZERO_COST, ManaCost
 from .cr107_numbers import effect_result, is_undeterminable
 
@@ -264,6 +264,20 @@ class Cost:
     @property
     def is_unparsed(self) -> bool:
         return any(c.kind is CostKind.UNPARSED for c in self.components)
+
+    @property
+    def asks_for_x(self) -> bool:
+        """CR 107.3a: an {X} or a [-X] in the cost, whose value the controller
+        announces as the ability is activated."""
+        if self.mana_component.variable_count:
+            return True
+        pending = [c.amount for c in self.components]
+        while pending:
+            value = pending.pop()
+            if value.kind is ValueKind.X:
+                return True
+            pending.extend(value.operands)
+        return False
 
     @property
     def is_free(self) -> bool:
