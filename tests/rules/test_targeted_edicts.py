@@ -489,10 +489,8 @@ def _readable(db, name, fragment):
 @pytest.mark.parametrize(
     "name, fragment",
     [
-        # "Another target creature" after a target means other than that
-        # target (CR 115.3); the filter can only say "other than the source".
-        ("Consume Strength", "Another target creature"),
-        ("Deadshot", "another target creature"),
+        # ("Another target creature" after a target, once here, is read now:
+        # tests/rules/test_cr115_target_identity.py.)
         # Two objects, one of each - not "an artifact or a land".
         ("Structural Collapse", "an artifact and a land"),
         ("Perilous Predicament", "an artifact creature and"),

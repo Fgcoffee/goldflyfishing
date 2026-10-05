@@ -1484,10 +1484,7 @@ def _other_than_earlier_targets(effects):
                     node = replace(node, targets=rewritten[id(spec)])
             else:
                 if spec.other_than_source and seen:
-                    if guarded or node.kind is EffectKind.FIGHT:
-                        # A fight's own subject is not held by the
-                        # instruction, so what it is "other" than is not
-                        # either.
+                    if guarded:
                         refused = True
                     else:
                         new = replace(spec, other_than_source=False)
@@ -1505,6 +1502,39 @@ def _other_than_earlier_targets(effects):
 
     out = tuple(visit(effect) for effect in effects)
     return None if refused else out
+
+
+def _actor_behind_a_condition(effects) -> bool:
+    """"Put a +1/+1 counter on target creature you control if it's
+    legendary. Then it fights target creature an opponent controls": the
+    fighter (or dealer) is what the resolution remembers, and the only
+    instruction that would have it remembered sits under a condition. When
+    the condition fails nothing is remembered, and the fight the card
+    promises regardless would not happen. Refused rather than read so.
+    """
+
+    def visit(siblings) -> bool:
+        gated = False
+        for node in siblings:
+            dealer = node.damage_source
+            if (
+                gated
+                and node.kind in (EffectKind.FIGHT, EffectKind.DAMAGE)
+                and dealer is not None
+                and dealer.remembered
+            ):
+                return True
+            if visit(node.children) or visit(node.otherwise):
+                return True
+            if node.kind is EffectKind.CONDITIONAL and not node.condition.is_always:
+                gated = True
+            elif node.is_targeted and node.kind is not EffectKind.SEQUENCE:
+                # A target of its own, acted on whatever the condition did,
+                # is what the next "it" names.
+                gated = False
+        return False
+
+    return visit(effects)
 
 
 def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:
@@ -1541,6 +1571,11 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
         # would be a different card.
         result.failures.append(
             ParseFailure(text, "characteristic of an object it cannot name", rule=rule)
+        )
+        return Ability.unreadable(text)
+    if _actor_behind_a_condition(settled.effects):
+        result.failures.append(
+            ParseFailure(text, "the one who acts was named under a condition", rule=rule)
         )
         return Ability.unreadable(text)
     try:

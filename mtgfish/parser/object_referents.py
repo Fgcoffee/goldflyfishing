@@ -93,6 +93,7 @@ _REMEMBERS = frozenset(
         EffectKind.CHANGE_TARGETS,
         EffectKind.MODIFY_PT,
         EffectKind.GRANT_ABILITY,
+        EffectKind.DESIGNATE,
         # These record what they found or looked at themselves.
         EffectKind.LOOK_AT_TOP,
         EffectKind.SEEK,
@@ -330,6 +331,16 @@ def _settle_leaf(effect: Effect, state: int, it_is_source: bool = False) -> dict
         ) is None:
             changes["damage_source"] = None
             dealer = None
+    if effect.kind is EffectKind.FIGHT and dealer is not None and dealer.remembered:
+        # "It fights up to one target creature": the creature told to fight
+        # is a reference like a dealer, and with nothing mentioned before it
+        # is the source. A fight has no implicit fighter, so the source is
+        # written out rather than left empty.
+        pronoun = dealer == REMEMBERED
+        if (pronoun and it_is_source) or _referent(
+            effect, state, pronoun=pronoun, is_dealer=True
+        ) is None:
+            changes["damage_source"] = ObjectFilter(source_only=True)
     for name in ("amount", "amount2"):
         value = getattr(effect, name)
         new = _settle_value(value, effect, state, dealer)

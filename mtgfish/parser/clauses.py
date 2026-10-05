@@ -1003,6 +1003,86 @@ def _shuffle(stream: Stream) -> Effect | None:
 def _damage(stream: Stream) -> Effect | None:
     """"[Source] deals N damage to [target]."."""
     mark = stream.mark()
+    found = _damage_body(stream)
+    if found is None:
+        stream.reset(mark)
+        return None
+    designated, effect = found
+    if designated is None:
+        return effect
+    if not _bite_recipient_ok(effect):
+        stream.reset(mark)
+        return None
+    # "Target creature you control deals damage equal to its power to
+    # target creature you don't control": two targets (CR 115.1), the first
+    # the damage's source (CR 120.3) and the owner of "its power". The
+    # first is chosen and remembered, and the damage names what was
+    # remembered - so when it has become an illegal target, nothing can be
+    # learned about it and no damage is dealt (CR 608.2b).
+    return Effect(
+        EffectKind.SEQUENCE, children=(designated, effect), text="deal damage"
+    )
+
+
+def _is_one(count) -> bool:
+    """Whether a filter's count is the number one ("up to one")."""
+    if isinstance(count, int):
+        return count == 1
+    return count.is_constant and count.constant == 1
+
+
+def _designate(spec: ObjectFilter) -> Effect | None:
+    """The instruction choosing one target to act next ("*target creature
+    you control* deals damage ...", "... fights ..."), or None where the
+    words chose more than one or maybe none."""
+    if spec.count is not None or spec.up_to or spec.includes_players:
+        return None
+    return Effect(
+        EffectKind.DESIGNATE, targets=spec, is_targeted=True, text="choose a target"
+    )
+
+
+def _bite_recipient_ok(effect: Effect) -> bool:
+    """Whether what a designated target deals damage to is read faithfully.
+
+    After a targeted dealer, "each *other* creature" means other than the
+    dealer, and an untargeted filter's "other" can only say "other than
+    the source" - wrong on a spell. ("Another *target* creature" is a
+    target, settled against the earlier one by ``compile``.) "That player"
+    names the dealer's controller, which nothing here binds, and "that
+    creature" something the choice of dealer has replaced.
+    """
+    from ..rules.kernel.query import ControllerRelation, PlayerScope
+
+    spec = effect.targets
+    if spec is not None:
+        if spec.remembered:
+            # "Target land deals 3 damage to that creature": choosing the
+            # dealer replaces what the resolution remembers, so "that
+            # creature" would name the dealer.
+            return False
+        if spec.other_than_source and not effect.is_targeted:
+            return False
+        if spec.controller == ControllerRelation.SPECIFIC:
+            return False
+        if spec.count is not None:
+            # "Each of two other target creatures", "each of X targets": a
+            # slot of several targets, whose number the engine does not
+            # enforce when they are chosen.
+            return False
+    players = effect.players
+    if players is not None and players.scope in (
+        PlayerScope.REFERRED_PLAYER,
+        PlayerScope.CONTROLLER_OF,
+    ):
+        return False
+    return True
+
+
+def _damage_body(stream: Stream):
+    """The damage clause, and the instruction designating its dealer when
+    the dealer is a target."""
+    mark = stream.mark()
     # Who deals it. "This creature deals ..." is the common case, but any
     # noun phrase can be the dealer - "Each creature deals 1 damage to its
     # controller", "Target creature you control deals damage equal to its
@@ -1020,18 +1100,22 @@ def _damage(stream: Stream) -> Effect | None:
     elif not stream.accept("deals", "deal"):
         stream.reset(mark)
         return None
+    designated = None
     if dealer is not None:
         # The dealer is part of the event (CR 120.1): its lifelink and
         # deathtouch apply, and "damage dealt by" watches it. Only a dealer
-        # the engine can name is kept - the source, or the object the
-        # resolution is talking about. A *targeted* dealer ("target
-        # creature you control deals damage equal to its power") needs a
-        # target of its own, and any other dealer ("each creature deals 1
-        # damage to its controller") a per-object loop; both were read as
-        # the spell dealing the damage, so they stay unread instead.
+        # the engine can name is kept - the source, the object the
+        # resolution is talking about, or one target chosen to deal it. Any
+        # other dealer ("each creature deals 1 damage to its controller")
+        # needs a per-object loop, and stays unread.
         if dealer.source_only:
             dealer = None
-        elif _dealer_targeted or not dealer.remembered:
+        elif _dealer_targeted:
+            designated = _designate(dealer)
+            if designated is None:
+                return None
+            dealer = ObjectFilter(remembered=True)
+        elif not dealer.remembered:
             return None
 
     amount = parse_value(stream)
@@ -1050,7 +1134,7 @@ def _damage(stream: Stream) -> Effect | None:
     # CR 115.4: "any target" is a creature, player, planeswalker or battle.
     if stream.accept_phrase("any target"):
         after = parse_value(stream) if amount is None else None
-        return Effect(
+        return designated, Effect(
             EffectKind.DAMAGE,
             targets=replace(ANY_TARGET),
             amount=amount or after or Value.of(1),
@@ -1073,7 +1157,7 @@ def _damage(stream: Stream) -> Effect | None:
                 stream.reset(look)
         else:
             stream.reset(look)
-        return Effect(
+        return designated, Effect(
             EffectKind.DAMAGE,
             targets=targets,
             amount=_scaled(stream, amount or Value.of(1)),
@@ -1084,7 +1168,7 @@ def _damage(stream: Stream) -> Effect | None:
     players, player_targeted = parse_player_filter(stream)
     if players is None:
         return None
-    return Effect(
+    return designated, Effect(
         EffectKind.DAMAGE,
         players=players,
         amount=_scaled(stream, amount or Value.of(1)),
@@ -8597,6 +8681,69 @@ def _attraction_action(stream: Stream) -> Effect | None:
     return None
 
 
+@clause("fight")
+def _fight(stream: Stream) -> Effect | None:
+    """"[Creature] fights [another creature]" (CR 701.14a).
+
+    The creature told to fight is held as the instruction's
+    ``damage_source`` and the one it fights as its object. A fighter that
+    is a target ("target creature you control fights target creature you
+    don't control") is chosen by a ``DESIGNATE`` instruction first, so it
+    is a target of its own (CR 115.1) and the fight names what was
+    remembered of it. Read for the source ("this creature fights"), a
+    pronoun ("it fights", "then that creature fights"), and the permanent
+    an Aura or Equipment is attached to; any other fighter - "creatures you
+    control fight", "each of those creatures fights" - stays unread.
+    """
+    mark = stream.mark()
+    fighter, fighter_targeted = parse_target(stream)
+    if fighter is None or not stream.accept("fights", "fight"):
+        stream.reset(mark)
+        return None
+    designated = None
+    if fighter_targeted:
+        designated = _designate(fighter)
+        if designated is None:
+            stream.reset(mark)
+            return None
+        fighter = ObjectFilter(remembered=True)
+    elif not (
+        fighter.source_only
+        or fighter.remembered
+        or (
+            fighter.has_attached is not None
+            and fighter.has_attached.source_only
+            and fighter.count is None
+        )
+    ):
+        stream.reset(mark)
+        return None
+    opponent, targeted = parse_target(stream)
+    if (
+        opponent is None
+        or opponent.includes_players
+        or (opponent.count is not None and not (opponent.up_to and _is_one(opponent.count)))
+        or (opponent.other_than_source and not targeted)
+        or (designated is not None and opponent.remembered)
+    ):
+        # One creature to fight; "each other creature" or two of them would
+        # be several fights, and an untargeted "other" after the fighter
+        # means other than the fighter, which a filter cannot say. After a
+        # designated fighter, "that creature" would name the fighter.
+        stream.reset(mark)
+        return None
+    fight = Effect(
+        EffectKind.FIGHT,
+        targets=opponent,
+        is_targeted=targeted,
+        damage_source=fighter,
+        text="fight",
+    )
+    if designated is None:
+        return fight
+    return Effect(EffectKind.SEQUENCE, children=(designated, fight), text="fight")
+
+
 @clause("keyword-action")
 def _keyword_action(stream: Stream) -> Effect | None:
     """A bare keyword action: "proliferate", "investigate", "populate".
@@ -8642,7 +8789,10 @@ def _keyword_action(stream: Stream) -> Effect | None:
             break
         words.pop()
 
-    if matched is None:
+    if matched is None or matched == "fight":
+        # Fights are read by ``_fight``, which keeps the creature told to
+        # fight; read here, the subject was dropped and the fight had one
+        # creature in it.
         stream.reset(mark)
         return None
 

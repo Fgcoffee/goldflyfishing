@@ -253,6 +253,7 @@ _OBJECT_VERBS = {
     EffectKind.COPY_SPELL: "copy",
     EffectKind.CHANGE_TARGETS: "change the targets of",
     EffectKind.FIGHT: "fight",
+    EffectKind.DESIGNATE: "choose",
     EffectKind.EXPLORE: "explore with",
     EffectKind.REVEAL: "reveal",
 }
@@ -336,7 +337,12 @@ def _object_verb(effect: Effect, objects: str) -> str:
         # reveals their hand": no object filter, a zone and a player instead.
         # Rendered as "this permanent" it read like the card exiling itself.
         objects = _zone_of_players(effect)
-    if effect.players is not None and effect.kind in _PLAYER_ACTED_VERBS:
+    if effect.kind is EffectKind.FIGHT and effect.damage_source is not None:
+        # The creature told to fight, and whether the one it fights may be
+        # left unchosen ("fights up to one target creature").
+        optional = "up to one " if effect.target_optional else ""
+        text = f"{_filter(effect.damage_source)} fights {optional}{objects}"
+    elif effect.players is not None and effect.kind in _PLAYER_ACTED_VERBS:
         text = f"{_who(effect)} {_PLAYER_ACTED_VERBS[effect.kind]} {objects}"
     else:
         text = f"{verb} {objects}"
