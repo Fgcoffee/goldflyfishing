@@ -3018,20 +3018,36 @@ def _player_cant(stream: Stream) -> Effect | None:
     of spells. Distinct from the bare "this creature can't block" form: the
     filter is the whole card, and reading it as a blanket "can't cast" would
     turn a tax effect into a lock.
+
+    The players are the whole point (CR 101.2): "your opponents can't cast
+    spells" leaves its caster free, and "target player can't ..." is one
+    player chosen as the spell is cast (CR 601.2c) - a target, not whoever
+    the engine could find later.
     """
     from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
+    opening = stream.peek().lower
     players, _ = parse_player_filter(stream)
     if players is None:
+        return None
+    if (
+        players.scope in (PlayerScope.CONTROLLER_OF, PlayerScope.OWNER_OF)
+        and opening != "its"
+    ):
+        # "Enchanted creature's controller can't ...": the object it is the
+        # controller of is not carried, so the restriction could only guess.
+        # "Its controller" is a back-reference the referent pass binds to
+        # what the ability acted on (Render Silent), and stays.
         return None
     if not (stream.accept("can't") or stream.accept("cannot")):
         return None
 
     # "can't cast spells *or activate abilities of* artifacts, creatures, or
     # enchantments" - one prohibition covering two acts, and reading only the
-    # first turned Grand Abolisher into half a card.
+    # first turned Grand Abolisher into half a card. Each act keeps its own
+    # object: the abilities are of artifacts, creatures or enchantments, the
+    # spells are any spells.
     acts: list = []
-    subject = None
     while True:
         if stream.accept("cast"):
             act = Act.CAST_SPELL
@@ -3052,21 +3068,59 @@ def _player_cant(stream: Stream) -> Effect | None:
         else:
             break
 
+        start = stream.mark()
         found = parse_object_filter(stream)
         stream.accept("card", "cards", "spell", "spells", "life")
-        if subject is None:
-            subject = found
-        acts.append(act)
+        if found is not None and _names_the_prohibited_player(stream, start):
+            # "... with mana value greater than the number of lands *that
+            # player* controls": that player is whoever is casting, and the
+            # restriction evaluates its numbers for its own controller.
+            return None
+        if act in (Act.SEARCH_LIBRARY, Act.WIN_GAME):
+            # Nothing in the engine asks whether a search or a win is
+            # forbidden, so reading one would be a prohibition that stops
+            # nothing.
+            return None
+        if act in (Act.DRAW_CARD, Act.GAIN_LIFE):
+            # "can't draw cards", "can't gain life": the noun names what is
+            # drawn, not which draws. Anything narrower ("can't draw more
+            # than one card each turn") is a different rule.
+            if found is not None and found != ObjectFilter(zones=found.zones):
+                return None
+            found = None
+        if act is Act.CAST_SPELL and found is not None and found.source_only:
+            # "You can't cast this unless ...": a rule about a card in a hand,
+            # which the restrictions in force - read from the battlefield and
+            # the stack - never see.
+            return None
+        if act is Act.ACTIVATE_ABILITY:
+            # CR 602.1: mana abilities and loyalty abilities are activated
+            # abilities too, and the engine asks about each as its own act.
+            acts.extend(
+                (each, found)
+                for each in (
+                    Act.ACTIVATE_ABILITY,
+                    Act.ACTIVATE_MANA_ABILITY,
+                    Act.ACTIVATE_LOYALTY_ABILITY,
+                )
+            )
+        else:
+            acts.append((act, found))
 
         look = stream.mark()
         stream.skip_punct(",")
         if not stream.accept("or", "and"):
             stream.reset(look)
             break
+        if not stream.at(*_PROHIBITED_VERBS):
+            # "from graveyards *or exile*" is a second zone, not a second
+            # act: leave it for the caller to fail on rather than letting
+            # it start a sentence of its own.
+            stream.reset(look)
+            break
 
     if not acts:
         return None
-    act = acts[0]
     # "Your opponents can't cast spells *this turn*." A prohibition from a
     # resolved spell nearly always carries a duration, and reading it as
     # permanent turns a one-turn Silence into a lock.
@@ -3074,7 +3128,11 @@ def _player_cant(stream: Stream) -> Effect | None:
     return Effect(
         EffectKind.RESTRICTION,
         players=players,
-        targets=subject,
+        targets=acts[0][1],
+        # "Target player can't cast spells this turn": the player is chosen
+        # as the spell is cast (CR 601.2c) and the objects are not targets.
+        is_targeted=players.scope
+        in (PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT),
         restrictions=tuple(
             Restriction(
                 act=each,
@@ -3082,10 +3140,23 @@ def _player_cant(stream: Stream) -> Effect | None:
                 players=players,
                 text=f"can't {each.name.lower()}",
             )
-            for each in acts
+            for each, subject in acts
         ),
         duration=duration,
         text="a player can't ...",
+    )
+
+
+#: The verbs ``_player_cant`` reads, for telling "or <another act>" apart
+#: from an "or" inside the object phrase.
+_PROHIBITED_VERBS = ("cast", "play", "search", "draw", "gain", "win", "activate")
+
+
+def _names_the_prohibited_player(stream: Stream, start) -> bool:
+    """Whether the words read since ``start`` say "that player"."""
+    words = [token.lower for token in stream.tokens[start : stream.mark()]]
+    return any(
+        words[i : i + 2] == ["that", "player"] for i in range(len(words) - 1)
     )
 
 

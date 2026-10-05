@@ -1137,13 +1137,19 @@ def _do_restriction(resolution: Resolution, effect: Effect) -> None:
     """
     from ..kernel.query import PlayerFilter
 
+    # "Target player can't cast spells this turn": the player chosen as the
+    # spell was cast (CR 601.2c). Read once - the target cursor moves on.
+    chosen = _players(resolution, effect) if effect.targets_a_player else None
     for restriction in effect.restrictions:
         players = restriction.players or effect.players
-        pinned = (
-            _referred_players(resolution, replace(effect, players=players))
-            if players is not None
-            else None
-        )
+        if chosen is not None:
+            pinned = chosen
+        else:
+            pinned = (
+                _referred_players(resolution, replace(effect, players=players))
+                if players is not None
+                else None
+            )
         if pinned is not None:
             # "Defending player can't cast spells this turn", "that player
             # can't ...": who is meant is known only now, so the standing

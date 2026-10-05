@@ -1176,8 +1176,14 @@ class Game:
         On a bench with no library behind the board, the flag is not even set
         - see ``rules.relaxations``.
         """
+        from ..cr500_turn_structure.restrictions import Act, prohibited
+
         player = self.players[player_id]
         drawn: list[GameObject] = []
+        # "Players can't draw cards" (CR 101.2): the draw does not happen, and
+        # an empty library is not drawn from either.
+        if count > 0 and prohibited(self, Act.DRAW_CARD, player=player_id) is not None:
+            return drawn
         for _ in range(count):
             if not player.library:
                 if not self.relaxations.draws_from_an_empty_library_do_nothing:
