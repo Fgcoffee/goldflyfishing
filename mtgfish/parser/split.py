@@ -210,8 +210,9 @@ def _looks_like_cost(text: str) -> bool:
         return True
     if lower.startswith(_COST_VERBS):
         return True
-    # "Level up {2}" style: a keyword followed by its cost.
-    return bool(re.match(r"^[+-]?\d+$", lower))
+    # A loyalty symbol (CR 107.7): "+1", "-3", "0", and the minus symbol
+    # with an X, "-X".
+    return bool(re.match(r"^([+-]?\d+|-x)$", lower))
 
 
 def _keyword_line(paragraph: str) -> list[str] | None:

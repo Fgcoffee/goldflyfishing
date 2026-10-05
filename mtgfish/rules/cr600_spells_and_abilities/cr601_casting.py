@@ -26,6 +26,7 @@ responded to, and may be activated during cost payment (CR 605.3).
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -1721,9 +1722,6 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     one important divergence: a mana ability never goes on the stack and
     resolves immediately (CR 605.3).
     """
-    from .cr608_stack import push_ability
-    from .resolve import Resolution, resolve_mana_ability
-
     source = game.objects.get(action.source)
     if source is None:
         raise CastError("no such permanent")
@@ -1741,8 +1739,42 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
         raise CastError(refusal)
     if activation_limit_reached(source, ability, action.ability_index):
         raise CastError("that ability has already been activated as often as it may be")
-    if not _can_pay_activation(game, source, ability):
-        raise CastError("cannot pay the activation cost")
+    # CR 107.3a, 601.2b: X in an activation cost is announced first, and
+    # CR 107.3k makes it this activation's own. With no X to announce there
+    # is nothing to choose, so a stray value on the action is ignored.
+    x_value = max(0, action.x_value) if ability.cost.asks_for_x else 0
+    with announced_x(game, source.id, ability, x_value):
+        if not _can_pay_activation(game, source, ability, x_value):
+            raise CastError("cannot pay the activation cost")
+        return _activate(game, player_id, action, source, ability, x_value)
+
+
+@contextmanager
+def announced_x(game: Game, source_id: ObjectId, ability: Ability, x_value: int):
+    """CR 107.3a, 107.3k: while an activated ability whose activation cost
+    has an X is being activated and while it resolves, every X in it is the
+    value announced for that activation - not the X its source was cast with.
+
+    X in an effect or in a filter bound ("mana value X or less") is read off
+    the source object, which for a permanent is the X of the spell it was
+    (CR 107.3m). For the length of this activation or resolution that object
+    answers with the announced value instead, and is put back afterwards.
+    """
+    source = game.objects.get(source_id)
+    if source is None or ability.kind is not AbilityKind.ACTIVATED or not ability.cost.asks_for_x:
+        yield
+        return
+    was = source.x_value
+    source.x_value = x_value
+    try:
+        yield
+    finally:
+        source.x_value = was
+
+
+def _activate(game, player_id, action, source, ability, x_value) -> GameObject | None:
+    from .cr608_stack import push_ability
+    from .resolve import Resolution, resolve_mana_ability
 
     # CR 602.2b: activating an ability follows CR 601.2b-i, so the modes are
     # chosen here, before the targets and before anything is paid. A modal
@@ -1766,7 +1798,7 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     # A fresh record per activation: what the *last* activation tapped must
     # not leak into this one.
     source.cost_paid_objects = []
-    _pay_activation(game, source, ability)
+    _pay_activation(game, source, ability, x_value)
     record_activation(source, ability, action.ability_index)
 
     if ability.is_mana_ability:
@@ -1800,7 +1832,7 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
         source,
         ability,
         targets=targets,
-        x_value=action.x_value,
+        x_value=x_value,
         chosen_modes=chosen_modes,
     )
     # CR 602.2b applies CR 601.2c: an ability's targets are chosen as it is
@@ -2158,8 +2190,11 @@ def _is_this_card(component: CostComponent) -> bool:
     return component.filter is not None and component.filter.source_only
 
 
-def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> bool:
-    """Whether an ability's cost could be paid right now."""
+def _can_pay_activation(
+    game: Game, source: GameObject, ability: Ability, x_value: int = 0
+) -> bool:
+    """Whether an ability's cost could be paid right now, for an announced X
+    (CR 107.3a; zero when the cost has none)."""
     cost = ability.cost
     if cost.is_unparsed:
         return False
@@ -2187,7 +2222,11 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
             # it - that is the whole shape of planeswalker resource management.
             from ..kernel.values import evaluate
 
-            change = evaluate(game, component.amount, controller=player.id)
+            # CR 606.6: with [-X], X more than the loyalty it has cannot be
+            # announced at all.
+            change = evaluate(
+                game, component.amount, controller=player.id, x_value=x_value
+            )
             if change < 0 and source.counter_count("loyalty") < -change:
                 return False
         elif component.kind in (CostKind.TAP_OTHER, CostKind.UNTAP_OTHER):
@@ -2221,7 +2260,7 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
             except CastError:
                 return False
 
-    mana_cost = activation_mana_cost(game, source, ability)
+    mana_cost = activation_mana_cost(game, source, ability).substitute_x(x_value)
     if mana_cost:
         if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
             return True
@@ -2255,8 +2294,10 @@ def _could_produce(game: Game, player_id: PlayerId, cost) -> bool:
     return available >= cost.mana_value
 
 
-def _pay_activation(game: Game, source: GameObject, ability: Ability) -> None:
-
+def _pay_activation(
+    game: Game, source: GameObject, ability: Ability, x_value: int = 0
+) -> None:
+    """Pay an activation cost, with X as announced (CR 107.3a, 601.2f-h)."""
     cost = ability.cost
     player = game.player(source.controller)
 
@@ -2266,7 +2307,7 @@ def _pay_activation(game: Game, source: GameObject, ability: Ability) -> None:
             Event(EventKind.TAPPED, object_id=source.id, player=source.controller)
         )
 
-    mana_cost = activation_mana_cost(game, source, ability)
+    mana_cost = activation_mana_cost(game, source, ability).substitute_x(x_value)
     if mana_cost:
         payment = find_payment(player.mana_pool, mana_cost, life_available=player.life - 1)
         if payment is None:
@@ -2287,7 +2328,9 @@ def _pay_activation(game: Game, source: GameObject, ability: Ability) -> None:
         if component.kind is CostKind.LOYALTY:
             from ..kernel.values import evaluate
 
-            change = evaluate(game, component.amount, controller=source.controller)
+            change = evaluate(
+                game, component.amount, controller=source.controller, x_value=x_value
+            )
             if change >= 0:
                 source.add_counters("loyalty", change)
             elif source.remove_counters("loyalty", -change) < -change:

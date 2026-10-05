@@ -99,7 +99,12 @@ def _resolve_ability(game: Game, obj: GameObject) -> None:
     )
     if not resolution.remembered and not ability.remembered:
         resolution.remembered = _trigger_subject(game, ability, obj.trigger_event)
-    execute(resolution, ability.effects)
+    from .cr601_casting import announced_x
+
+    # CR 107.3a: while an activated ability is on the stack, an X in its
+    # activation cost is the value announced for it.
+    with announced_x(game, obj.source, ability, obj.x_value):
+        execute(resolution, ability.effects)
     game.emit(
         Event(EventKind.ABILITY_RESOLVED, object_id=obj.id, player=obj.controller)
     )
