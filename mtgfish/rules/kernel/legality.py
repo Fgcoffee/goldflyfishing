@@ -223,6 +223,12 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                 continue
             if not _affordable_alternative(game, player_id, alternative, obj, zone):
                 continue
+            # CR 601.2c holds whatever is paid: a Force of Will or a Fierce
+            # Guardianship with no spell to counter cannot be cast at all, and
+            # offering it anyway paid the life and exiled the card for a cast
+            # the engine then had to rewind.
+            if not _targets_available(game, obj, player_id):
+                continue
             out.append(
                 Action(ActionKind.CAST_SPELL, source=object_id, alternative_cost=index)
             )

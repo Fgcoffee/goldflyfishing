@@ -284,3 +284,33 @@ def test_a_mode_count_is_rendered():
     two = _say(Effect(EffectKind.CHOOSE_MODE, children=modes, amount=Value.of(2)))
     assert "choose one" in one.lower()
     assert "choose 2" in two.lower()
+
+
+# ---------------------------------------------------------------------------
+# Alternative costs (CR 118.9)
+# ---------------------------------------------------------------------------
+
+
+def test_a_free_cast_says_what_it_needs(card_db):
+    """Fierce Guardianship. The line has no effects - its meaning is the
+    alternative cost and its condition - and it used to read "Has no effect"."""
+    said = explain_ability(_abilities(card_db, "Fierce Guardianship")[0])
+    assert "no effect" not in said
+    assert "without paying its mana cost" in said
+    assert "commander" in said
+    assert "hand" in said
+
+
+def test_an_alternative_cost_says_what_is_paid_instead(card_db):
+    said = explain_ability(_abilities(card_db, "Force of Will")[0])
+    assert "instead of the mana cost" in said
+    assert "1 life" in said and "blue" in said
+
+
+def test_no_read_alternative_cost_explains_as_nothing(card_db):
+    """Every card whose only meaning is an alternative cost, checked at once
+    for the explainer saying it does nothing."""
+    for name in ("Daze", "Snuff Out", "Mindbreak Trap", "Deflecting Swat"):
+        for ability in _abilities(card_db, name):
+            if ability.alternative_cost is not None:
+                assert "no effect" not in explain_ability(ability), name
