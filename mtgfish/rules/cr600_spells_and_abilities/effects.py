@@ -86,6 +86,12 @@ class EffectKind(IntEnum):
     REDIRECT_DAMAGE = 56
     ADD_POISON = 57
     FIGHT = 58
+    #: "*Target creature you control* deals damage equal to its power to
+    #: ...", "*target creature you control* fights ...": a target chosen
+    #: only to be the one who acts (CR 115.1). Nothing is done to it; the
+    #: resolution remembers it, legal or not (CR 608.2b), for the
+    #: instruction that follows to name as its dealer or fighter.
+    DESIGNATE = 59
 
     # -- permanents ---------------------------------------------------------
     TAP = 70

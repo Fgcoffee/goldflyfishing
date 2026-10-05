@@ -1404,46 +1404,137 @@ def _share_targets(effects):
     return None if refused else shared
 
 
-def _other_than_an_earlier_target(effects) -> bool:
-    """"Target creature gets +3/+3, up to one other target creature gets
-    +2/+2": after a target, "other" means other than *that target* (CR 115.3
-    lets one object be chosen for each instance of the word "target"
-    unless the card says otherwise). The filter can only say "other than
-    this object's source", which on a spell excludes nothing - so the same
-    creature could be chosen twice. Refused rather than read that way; with
-    no earlier target ("exile up to one other target creature") the word
-    means the source and is read.
+def _refers_back(node) -> bool:
+    """Whether an instruction names an object by what the resolution
+    remembers: "it", "those creatures", "that creature's power"."""
 
-    One "target" word shared by several verbs ("another target creature you
-    control gains trample and gets +X/+X") is split into nodes that share
-    the one filter object, and those are one target, not two: only a filter
-    other than the ones already met counts as an earlier target. A player
-    chosen as the target ("target player sacrifices a creature") is not a
-    creature that "other" could be distinct from.
+    def value_refers(value) -> bool:
+        if value is None:
+            return False
+        spec = getattr(value, "filter", None)
+        if spec is not None and spec.remembered:
+            return True
+        return any(value_refers(op) for op in getattr(value, "operands", ()))
+
+    return bool(
+        (node.targets is not None and node.targets.remembered)
+        or (node.damage_source is not None and node.damage_source.remembered)
+        or value_refers(node.amount)
+        or value_refers(node.amount2)
+    )
+
+
+def _other_than_earlier_targets(effects):
+    """"Target creature gets +2/+2. Another target creature gets -2/-2":
+    after a target, "other" means other than *that target* (CR 115.3 lets
+    one object be chosen for each instance of the word "target" unless the
+    card says otherwise). The parser's filter says "other than this
+    object's source", which on a spell excludes nothing - the same creature
+    could be chosen twice - and on a permanent's ability excludes the wrong
+    object. Such a target is rewritten to one that must differ from every
+    earlier target of the ability (``Effect.distinct_from_earlier_targets``,
+    enforced as targets are chosen, CR 601.2c) and no longer excludes the
+    source. With no earlier target ("exile up to one other target
+    creature") the word means the source and is left alone.
+
+    Returns the rewritten effects, the effects unchanged, or ``None`` to
+    refuse. Refused, as before, where the engine cannot say which earlier
+    targets are meant:
+
+    * inside a modal ability - which earlier targets exist depends on the
+      modes chosen;
+    * under a condition - "if this spell was kicked, ... another target
+      creature" is a target only a kicked spell has (CR 601.2c), and the
+      engine asks for every target whether or not the condition holds.
+
+    A verb sharing the target of the one before it (``same_target``) is not
+    a new target; it is rewritten along with the one whose choice it shares.
+    A player chosen as the target is not an object "other" could be
+    distinct from.
+    """
+    from dataclasses import replace
+
+    if not any(
+        node.kind is EffectKind.CHOOSE_MODE or node.kind is EffectKind.CONDITIONAL
+        for effect in effects
+        for node in effect.walk()
+    ):
+        guarded = False
+    else:
+        guarded = True
+
+    seen = 0
+    rewritten: dict[int, object] = {}
+    refused = False
+    distinct_so_far = False
+
+    def visit(node):
+        nonlocal seen, refused, distinct_so_far
+        if distinct_so_far and _refers_back(node):
+            # "... up to one other target creature gets +1/+1. Those
+            # creatures gain vigilance": the resolution remembers only what
+            # the last instruction acted on, and "those creatures" means
+            # every target. A singular "it" and a plural "those" read the
+            # same here, so neither is read.
+            refused = True
+        if node.is_targeted and node.targets is not None and not node.targets_a_player:
+            spec = node.targets
+            if node.same_target:
+                if id(spec) in rewritten:
+                    node = replace(node, targets=rewritten[id(spec)])
+            else:
+                if spec.other_than_source and seen:
+                    if guarded:
+                        refused = True
+                    else:
+                        new = replace(spec, other_than_source=False)
+                        rewritten[id(spec)] = new
+                        node = replace(
+                            node, targets=new, distinct_from_earlier_targets=True
+                        )
+                        distinct_so_far = True
+                seen += 1
+        children = tuple(visit(child) for child in node.children)
+        otherwise = tuple(visit(child) for child in node.otherwise)
+        if any(a is not b for a, b in zip(children + otherwise, node.children + node.otherwise)):
+            node = replace(node, children=children, otherwise=otherwise)
+        return node
+
+    out = tuple(visit(effect) for effect in effects)
+    return None if refused else out
+
+
+def _actor_behind_a_condition(effects) -> bool:
+    """"Put a +1/+1 counter on target creature you control if it's
+    legendary. Then it fights target creature an opponent controls": the
+    fighter (or dealer) is what the resolution remembers, and the only
+    instruction that would have it remembered sits under a condition. When
+    the condition fails nothing is remembered, and the fight the card
+    promises regardless would not happen. Refused rather than read so.
     """
 
-    def visit(nodes, seen: tuple) -> tuple[bool, tuple]:
-        for node in nodes:
-            if node.kind is EffectKind.CHOOSE_MODE and node.children:
-                # Each mode is its own set of instructions; the modes chosen
-                # together are not "other" than one another's targets.
-                for mode in node.children:
-                    found, _ = visit((mode,), seen)
-                    if found:
-                        return True, seen
-                continue
-            if node.is_targeted and node.targets is not None and not node.targets_a_player:
-                spec = node.targets
-                if spec.other_than_source and any(earlier is not spec for earlier in seen):
-                    return True, seen
-                if not any(earlier is spec for earlier in seen):
-                    seen = seen + (spec,)
-            found, seen = visit(node.children + node.otherwise, seen)
-            if found:
-                return True, seen
-        return False, seen
+    def visit(siblings) -> bool:
+        gated = False
+        for node in siblings:
+            dealer = node.damage_source
+            if (
+                gated
+                and node.kind in (EffectKind.FIGHT, EffectKind.DAMAGE)
+                and dealer is not None
+                and dealer.remembered
+            ):
+                return True
+            if visit(node.children) or visit(node.otherwise):
+                return True
+            if node.kind is EffectKind.CONDITIONAL and not node.condition.is_always:
+                gated = True
+            elif node.is_targeted and node.kind is not EffectKind.SEQUENCE:
+                # A target of its own, acted on whatever the condition did,
+                # is what the next "it" names.
+                gated = False
+        return False
 
-    return visit(effects, ())[0]
+    return visit(effects)
 
 
 def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:
@@ -1460,11 +1551,14 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
             ParseFailure(text, "one target shared across another", rule=rule)
         )
         return Ability.unreadable(text)
-    if any(a is not b for a, b in zip(shared, ability.effects)):
-        from dataclasses import replace
+    from dataclasses import replace
 
+    if any(a is not b for a, b in zip(shared, ability.effects)):
         ability = replace(ability, effects=shared)
-    if _other_than_an_earlier_target(ability.effects):
+    distinct = _other_than_earlier_targets(ability.effects)
+    if distinct is not None and any(a is not b for a, b in zip(distinct, ability.effects)):
+        ability = replace(ability, effects=distinct)
+    if distinct is None:
         result.failures.append(
             ParseFailure(text, "'other target' after another target", rule=rule)
         )
@@ -1477,6 +1571,11 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
         # would be a different card.
         result.failures.append(
             ParseFailure(text, "characteristic of an object it cannot name", rule=rule)
+        )
+        return Ability.unreadable(text)
+    if _actor_behind_a_condition(settled.effects):
+        result.failures.append(
+            ParseFailure(text, "the one who acts was named under a condition", rule=rule)
         )
         return Ability.unreadable(text)
     try:

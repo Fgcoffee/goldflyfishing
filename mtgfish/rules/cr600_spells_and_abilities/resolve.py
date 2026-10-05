@@ -145,6 +145,9 @@ _REMEMBERING = frozenset(
         EffectKind.CHANGE_TARGETS,
         EffectKind.MODIFY_PT,
         EffectKind.GRANT_ABILITY,
+        # "Target creature you control deals damage equal to its power ...":
+        # the target is chosen to be named next, and nothing else.
+        EffectKind.DESIGNATE,
     }
 )
 
@@ -235,9 +238,18 @@ def _execute_one(resolution: Resolution, effect: Effect) -> None:
         cursor = resolution.target_index
         acted_on = [obj.id for obj in _objects(resolution, effect)]
         resolution.target_index = cursor
+        # An object chosen as this instruction's target that is no longer
+        # legal is still what a following "it" names, and CR 608.2b says
+        # information about it can't be determined: "Tap target creature. It
+        # deals damage equal to its power" deals none. Keeping whatever was
+        # remembered before would hand "it" to a different object.
+        chosen_objects = effect.is_targeted and any(
+            object_id >= 0 for object_id in resolution.targets_for(effect)
+        )
+        resolution.target_index = cursor
 
         executor(resolution, effect)
-        if acted_on:
+        if acted_on or chosen_objects:
             resolution.remembered = acted_on
         return
 
@@ -1678,16 +1690,20 @@ def _do_damage(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     amount = _amount(resolution, effect)
     dealer, dealer_controller = _damage_dealer(resolution, effect)
+    # The chosen targets are read once, here, and split by kind. Both halves
+    # come out of the same list (CR 115.4) and the cursor only moves forward
+    # - even when there is no dealer, or every later instruction would read
+    # the targets meant for this one.
+    chosen = resolution.targets_for(effect) if effect.is_targeted else ()
     if dealer is None:
+        # CR 608.2b: the dealer was an illegal target, so nothing can be
+        # determined about it and no damage is dealt.
         return
     source_obj = game.objects.get(dealer)
     chars = game.characteristics(source_obj) if source_obj is not None else None
     deathtouch = bool(chars and chars.has_keyword("Deathtouch"))
     lifelink = bool(chars and chars.has_keyword("Lifelink"))
 
-    # The chosen targets are read once, here, and split by kind. Both halves
-    # come out of the same list (CR 115.4) and the cursor only moves forward.
-    chosen = resolution.targets_for(effect) if effect.is_targeted else ()
     for obj in _objects(resolution, effect, chosen=chosen):
         actions.deal_damage(
             game,
@@ -1745,17 +1761,61 @@ def _do_add_poison(resolution: Resolution, effect: Effect) -> None:
         actions.add_poison(resolution.game, player_id, amount)
 
 
+def _do_designate(resolution: Resolution, effect: Effect) -> None:
+    """A target chosen to act in the next instruction (``EffectKind.DESIGNATE``).
+
+    Nothing happens to it. Reading its targets moves the cursor past them,
+    and ``_execute_one`` remembers the object if it is still a legal target
+    and nothing if it is not (CR 608.2b), so the dealer or fighter named next
+    is this object or no object - never something remembered before."""
+    _objects(resolution, effect)
+
+
+def _fighter(resolution: Resolution, effect: Effect) -> list[GameObject]:
+    """The creature told to fight (``damage_source`` on a FIGHT): the
+    source ("this creature fights"), the object the resolution remembers
+    ("it fights", or a designated target), or the one a description names
+    ("enchanted creature fights")."""
+    game = resolution.game
+    spec = effect.damage_source
+    if spec.source_only:
+        obj = game.objects.get(resolution.source)
+        return [obj] if obj is not None else []
+    if spec.remembered:
+        return _objects(resolution, Effect(EffectKind.FIGHT, targets=spec))
+    from ..kernel.matching import find
+
+    return list(find(game, spec, source=resolution.source, controller=resolution.controller))
+
+
 def _do_fight(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.12: each creature deals damage equal to its power to the other.
+    """CR 701.14a: each creature deals damage equal to its power to the other.
 
     Both deal damage even if the first one dies doing it, because the damage is
-    simultaneous.
+    simultaneous. With a ``damage_source`` the first creature is the one
+    told to fight and the second the instruction's object; without one, the
+    instruction's objects are the two creatures.
+
+    CR 701.14b: if either is no longer on the battlefield or no longer a
+    creature, or either is an illegal target, neither fights. CR 701.14c: a
+    creature that fights itself deals damage to itself twice.
     """
     game = resolution.game
-    combatants = _objects(resolution, effect)
-    if len(combatants) != 2:
-        return
+    if effect.damage_source is not None:
+        # The opponent is read first: the cursor moves past this
+        # instruction's targets whether or not the fight happens.
+        opponents = _objects(resolution, effect)
+        fighters = _fighter(resolution, effect)
+        if len(fighters) != 1 or len(opponents) != 1:
+            return
+        combatants = [fighters[0], opponents[0]]
+    else:
+        combatants = _objects(resolution, effect)
+        if len(combatants) != 2:
+            return
     first, second = combatants
+    if first.zone is not Zone.BATTLEFIELD or second.zone is not Zone.BATTLEFIELD:
+        return
     first_chars = game.characteristics(first)
     second_chars = game.characteristics(second)
     if not (first_chars.is_creature and second_chars.is_creature):
@@ -3660,6 +3720,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.SET_LIFE: _do_set_life,
     EffectKind.ADD_POISON: _do_add_poison,
     EffectKind.FIGHT: _do_fight,
+    EffectKind.DESIGNATE: _do_designate,
     EffectKind.TAP: _do_tap,
     EffectKind.UNTAP: _do_untap,
     EffectKind.ADD_COUNTERS: _do_add_counters,
