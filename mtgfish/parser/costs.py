@@ -33,7 +33,7 @@ def parse_cost(text: str) -> tuple[Cost | None, str]:
         stream.skip_punct(",")
         if stream.done:
             break
-        component = _component(stream)
+        component = _pronoun_for_this(stream, components) or _component(stream)
         if component is None:
             return None, f"unreadable cost component at {stream.peek().text!r}"
         components.append(component)
@@ -41,6 +41,33 @@ def parse_cost(text: str) -> tuple[Cost | None, str]:
     if not components:
         return None, "empty cost"
     return Cost(tuple(components)), ""
+
+
+def _pronoun_for_this(stream: Stream, components: list[CostComponent]):
+    """"Remove three quest counters from this enchantment and sacrifice it."
+
+    After a component that acts on this permanent, "it" is that permanent:
+    no other object has been named. Read only there - elsewhere a pronoun in a
+    cost has no referent the payment can charge, and the cost stays unread.
+    """
+    last = components[-1].filter if components else None
+    if last is None or not last.source_only:
+        return None
+    mark = stream.mark()
+    if stream.accept_phrase("sacrifice it"):
+        return CostComponent(
+            CostKind.SACRIFICE, filter=SELF, amount=Value.of(1), text="sacrifice this"
+        )
+    if stream.accept_phrase("exile it"):
+        return CostComponent(
+            CostKind.EXILE_FROM_BATTLEFIELD, filter=SELF, amount=Value.of(1), text="exile this"
+        )
+    if stream.accept_phrase("return it to its owner's hand"):
+        return CostComponent(
+            CostKind.RETURN_TO_HAND, filter=SELF, amount=Value.of(1), text="return this to hand"
+        )
+    stream.reset(mark)
+    return None
 
 
 def _skip_keyword_prefix(stream: Stream) -> None:
@@ -83,8 +110,17 @@ def _component(stream: Stream) -> CostComponent | None:
 def _uncounted(spec) -> bool:
     """"Sacrifice all permanents you control": no number of objects, which
     a cost charged per object would pay with one. Unread rather than
-    charged as the cheapest reading."""
-    return spec.count is None and not spec.source_only
+    charged as the cheapest reading.
+
+    "Enchanted creature" / "equipped creature" names exactly one object -
+    the permanent this one is attached to - so it is counted, not "all".
+    """
+    if spec.source_only:
+        return False
+    attached = spec.has_attached
+    if attached is not None and attached.source_only:
+        return False
+    return spec.count is None
 
 
 def _exert(stream: Stream) -> CostComponent | None:
