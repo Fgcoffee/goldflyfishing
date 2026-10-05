@@ -570,10 +570,15 @@ def condition_met(
         # is a complete condition, so this is one recursion rather than a
         # union of constraints that would match combinations of them that no
         # half describes.
+        #
+        # CR 603.4: an intervening-if written after the disjunction ("whenever
+        # a creature dies or a creature card leaves your graveyard, if ...")
+        # belongs to the whole trigger, not to either half, so it is asked
+        # here as well.
         return any(
             condition_met(game, source, alternative, event)
             for alternative in trigger.alternatives
-        )
+        ) and check_intervening_if(game, source, trigger, event)
 
     if event.kind not in trigger.event_kinds:
         return False
