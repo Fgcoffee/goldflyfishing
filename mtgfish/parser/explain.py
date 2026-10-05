@@ -869,6 +869,11 @@ def _objects(effect: Effect) -> str:
         # produce "target all creature". When the target is the player
         # ("target player sacrifices a creature"), the objects are not.
         described = f"target {effect.targets.describe(quantified=False)}"
+        if effect.same_target:
+            # One word "target" for two verbs (CR 115.3): no second choice.
+            described = f"that same {described}"
+        if effect.distinct_from_earlier_targets:
+            described += " other than the earlier targets"
     else:
         described = _filter(effect.targets)
     if effect.players is not None and effect.targets.includes_players:

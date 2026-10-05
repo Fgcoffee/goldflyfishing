@@ -83,6 +83,13 @@ class Resolution:
         """The targets chosen for this effect at announcement."""
         if not effect.is_targeted:
             return ()
+        if effect.same_target:
+            # One word "target" governing this verb and the one before it
+            # (CR 115.3): the choice already handed out, not a new one.
+            index = self.target_index - 1
+            if 0 <= index < len(self.targets):
+                return tuple(self.targets[index])
+            return ()
         if self.target_index < len(self.targets):
             chosen = self.targets[self.target_index]
             self.target_index += 1

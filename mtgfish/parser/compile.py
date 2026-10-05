@@ -1247,6 +1247,58 @@ def _finish(
     return _bound(text, build(effects), result, rule=rule)
 
 
+def _share_targets(effects):
+    """Mark the verbs that share one word "target" (CR 115.3, 601.2c).
+
+    "Target creature gets +2/+0 and gains first strike" is read as two
+    instructions, and the clause readers build both around the *same*
+    filter object - one noun phrase, read once. Each targeted instruction
+    held a target of its own, so the spell asked for two choices and could
+    pump one creature and give first strike to another. The second of such
+    a pair is marked ``same_target``: it holds no target and acts on the
+    one chosen for the first.
+
+    Only the targeted instruction just before counts, in the order the
+    targets are chosen (``targeted_nodes``), because that is the choice the
+    resolver has just handed out. A filter shared with an earlier target
+    across a different one is not something the engine can line up, and
+    ``None`` refuses the ability.
+    """
+    from dataclasses import replace
+
+    slots: list = []  # the filter of every target slot so far, in order
+    refused = False
+
+    def visit(node):
+        nonlocal refused
+        if node.kind is EffectKind.CHOOSE_MODE and node.children:
+            # Each mode's targets follow those before the modal instruction
+            # (CR 700.2c); no mode's verbs share another mode's target.
+            before = list(slots)
+            modes = []
+            for mode in node.children:
+                slots[:] = before
+                modes.append(visit(mode))
+            slots[:] = before + [object()]
+            return replace(node, children=tuple(modes))
+        if node.is_targeted and not node.same_target:
+            spec = node.targets
+            if spec is not None and not node.targets_its_player and slots and slots[-1] is spec:
+                node = replace(node, same_target=True)
+            else:
+                if spec is not None and any(earlier is spec for earlier in slots):
+                    refused = True
+                slots.append(spec if spec is not None else object())
+        children = tuple(visit(child) for child in node.children)
+        otherwise = tuple(visit(child) for child in node.otherwise)
+        if any(a is not b for a, b in zip(children + otherwise, node.children + node.otherwise)):
+            node = replace(node, children=children, otherwise=otherwise)
+        return node
+
+    shared = tuple(visit(effect) for effect in effects)
+    return None if refused else shared
+
+
 def _other_than_an_earlier_target(effects) -> bool:
     """"Target creature gets +3/+3, up to one other target creature gets
     +2/+2": after a target, "other" means other than *that target* (CR 115.3
@@ -1297,6 +1349,16 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
     from .object_referents import settle_referents
     from .referents import Unbound, bind_ability
 
+    shared = _share_targets(ability.effects)
+    if shared is None:
+        result.failures.append(
+            ParseFailure(text, "one target shared across another", rule=rule)
+        )
+        return Ability.unreadable(text)
+    if any(a is not b for a, b in zip(shared, ability.effects)):
+        from dataclasses import replace
+
+        ability = replace(ability, effects=shared)
     if _other_than_an_earlier_target(ability.effects):
         result.failures.append(
             ParseFailure(text, "'other target' after another target", rule=rule)

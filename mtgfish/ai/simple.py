@@ -523,7 +523,8 @@ def _targeted_effects(game: Game, source: ObjectId) -> list:
         for ability in abilities
         for effect in ability.effects
         for node in effect.walk()
-        if node.is_targeted
+        # A verb sharing the previous one's "target" holds no slot.
+        if node.is_targeted and not node.same_target
     ]
 
 

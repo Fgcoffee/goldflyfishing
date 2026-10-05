@@ -407,6 +407,20 @@ class Effect:
     #: described at resolution. This distinction decides whether the spell can
     #: be cast with no legal object, and whether it fizzles (CR 608.2b).
     is_targeted: bool = False
+    #: CR 115.3, 601.2c: one word "target" governing two verbs - "target
+    #: creature gets +2/+0 *and gains* first strike". The second instruction
+    #: acts on the target chosen for the targeted instruction just before it
+    #: and holds no target of its own, so the two can never be pointed at
+    #: different objects. Checked for legality on its own filter as it
+    #: resolves (CR 608.2b), exactly as the first half is.
+    same_target: bool = False
+    #: "Target creature gets +2/+2. *Another* target creature gets -2/-2":
+    #: after an earlier target, "other" is other than that target. CR 115.3
+    #: would let one object be chosen for each instance of the word
+    #: "target"; the text forbids it here, so nothing chosen for this target
+    #: may be something chosen for an earlier target of the same spell or
+    #: ability (CR 601.2c: targets must fit the targeting criteria).
+    distinct_from_earlier_targets: bool = False
 
     duration: int = 0  # rules.kernel.enums.Duration; int to avoid a circular import
     zone: Zone | None = None
