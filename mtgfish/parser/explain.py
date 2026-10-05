@@ -65,6 +65,8 @@ def explain_ability(ability: Ability) -> str:
             extra = ability.additional_cost
             optional = "may also pay" if extra.optional else "also pays"
             return f"Casting this spell {optional} {extra.cost}."
+        if ability.alternative_cost is not None and not ability.keyword:
+            return _alternative_cost(ability.alternative_cost)
         if ability.keyword and not ability.effects:
             return f"Has {ability.keyword}."
         if not body:
@@ -80,6 +82,36 @@ def explain_ability(ability: Ability) -> str:
         return f"Continuously{gate}: {body}."
 
     return f"{body[:1].upper()}{body[1:]}." if body else "(nothing)."
+
+
+def _alternative_cost(alternative) -> str:
+    """An alternative cost (CR 118.9), from the fields the engine offers it by.
+
+    What is paid instead of the mana cost, when the option exists at all
+    (CR 601.2b), and where the card has to be for it - the three things
+    ``legality`` reads. Rendering a static ability with no effects as "has no
+    effect" said Force of Will and Fierce Guardianship were blank lines.
+    """
+    cost = alternative.cost
+    if cost.is_unparsed:
+        text = "Alternative cost: an unreadable cost instead of the mana cost"
+    elif not cost.components:
+        text = "Alternative cost: you may cast this spell without paying its mana cost"
+    else:
+        text = f"Alternative cost, paid instead of the mana cost: {cost}"
+    if alternative.condition is not None:
+        text += f" (only if {alternative.condition})"
+    # ``from_zone`` None is the hand or the command zone in ``legality``: the
+    # zones a spell is cast from for its ordinary cost (CR 601.3, 903.8).
+    where = (
+        _zone(alternative.from_zone)
+        if alternative.from_zone is not None
+        else "hand or command zone"
+    )
+    text += f" (cast from {where})"
+    if alternative.instant_speed:
+        text += " (any time you could cast an instant)"
+    return text + "."
 
 
 def explain_card(parsed) -> list[dict]:
