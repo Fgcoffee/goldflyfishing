@@ -27,7 +27,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from ..rules.cr200_parts_of_a_card.cr205_typeline import active_registry
-from ..rules.kernel.enums import CardType, Color, Supertype, Zone
+from ..rules.kernel.enums import PERMANENT_TYPES, CardType, Color, Supertype, Zone
 from ..rules.kernel.query import (
     Comparison,
     ControllerRelation,
@@ -784,6 +784,20 @@ def _noun(stream: Stream, spec: ObjectFilter) -> tuple[ObjectFilter, bool]:
 
         if base in GENERIC_NOUNS:
             stream.next()
+            if base in ("permanent", "permanents") and (
+                negated or stream.peek().lower in ("spell", "spells", "card", "cards")
+            ):
+                # "permanent spell", "permanent card", "nonpermanent spell":
+                # off the battlefield "permanent" is a constraint - one of the
+                # permanent types (CR 110.4a) - and not a bare noun. Dropped,
+                # Codie's "you can't cast permanent spells" forbade every spell
+                # and "whenever you cast a nonpermanent spell" fired on all.
+                if negated:
+                    spec = replace(spec, types_none=spec.types_none | PERMANENT_TYPES)
+                elif spec.types_any == CardType.NONE:
+                    spec = replace(spec, types_any=PERMANENT_TYPES)
+                saw = True
+                continue
             if base in ("spell", "spells"):
                 spec = replace(spec, zones=frozenset({Zone.STACK}))
             elif base in ("card", "cards") and spec.zones == frozenset(
@@ -994,7 +1008,19 @@ def _zone(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         stream.reset(mark)
         return spec
 
-    spec = replace(spec, zones=frozenset({zone}))
+    zones = {zone}
+    # "cast noncreature spells from graveyards *or exile*": two zones, either
+    # of which matches. Only where the second zone word ends the phrase -
+    # "from your graveyard or exile target creature" is a second instruction
+    # whose verb happens to name a zone.
+    look = stream.mark()
+    if stream.accept("or"):
+        other = parse_zone(stream)
+        if other is not None and (stream.done or stream.peek().text in (".", ",", ";")):
+            zones.add(other)
+        else:
+            stream.reset(look)
+    spec = replace(spec, zones=frozenset(zones))
     if owner is not None:
         spec = replace(spec, owner=owner)
     return spec

@@ -80,6 +80,10 @@ def _land_plays(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Ac
     out: list[Action] = []
     for object_id in player.hand:
         obj = game.objects[object_id]
+        # "Players can't play lands": a prohibition with a subject is asked
+        # of the card, and the check above (no card) skips every one of them.
+        if prohibited(game, Act.PLAY_LAND, obj=obj, player=player_id) is not None:
+            continue
         # CR 712.12: a modal double-faced card with a land on the back is a
         # land drop for that face, and it enters with that face up.
         for face_index in playable_land_face_indices(game, obj):

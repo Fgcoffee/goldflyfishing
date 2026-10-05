@@ -659,6 +659,16 @@ def _continuous(effect: Effect, objects: str) -> str | None:
         return f"{objects} {verb} {effect.types}{duration}"
     if kind is EffectKind.REMOVE_TYPE:
         return f"{objects} loses {effect.types}{duration}"
+    if kind is EffectKind.RESTRICTION and any(
+        _player_scoped(effect, r) for r in effect.restrictions
+    ):
+        # "Your opponents can't cast spells": who is forbidden is the
+        # meaning. Rendering the object filter alone said "all object in
+        # stack can't cast_spell", which is a different card - one that stops
+        # its own caster too.
+        return "; ".join(
+            _player_prohibition(effect, r) for r in effect.restrictions
+        ) + duration
     if kind in (EffectKind.RESTRICTION, EffectKind.PERMISSION):
         rules = ", ".join(_act(r) for r in effect.restrictions)
         if not rules and effect.keywords:
@@ -774,6 +784,32 @@ def _quality(spec: ObjectFilter) -> str:
     if spec.must_be_colorless:
         return "colorless"
     return spec.describe(quantified=False)
+
+
+def _player_scoped(effect: Effect, restriction) -> bool:
+    from ..rules.cr500_turn_structure.restrictions import PLAYER_ACTS
+
+    return restriction.act in PLAYER_ACTS and (
+        restriction.players is not None or effect.players is not None
+    )
+
+
+def _player_prohibition(effect: Effect, restriction) -> str:
+    """"each opponent can't cast spells matching noncreature", from the fields
+    ``restrictions.prohibited`` reads: the players, the act, the subject."""
+    from ..rules.cr500_turn_structure.restrictions import _as_proposed
+
+    players = restriction.players or effect.players
+    who = _players(players)
+    act = restriction.act.name.lower()
+    subject = restriction.subject
+    if subject is None:
+        return f"{who} can't {act}"
+    described = _as_proposed(restriction.act, subject).describe(quantified=False)
+    if described == "object":
+        # "Can't cast spells": any spell at all, said without a filter.
+        return f"{who} can't {act}"
+    return f"{who} can't {act} of {described}"
 
 
 def _act(restriction) -> str:

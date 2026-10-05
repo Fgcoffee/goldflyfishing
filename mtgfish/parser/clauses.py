@@ -21,6 +21,7 @@ from typing import Callable
 from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
 from ..rules.kernel.enums import CardType, Duration, Zone
 from ..rules.kernel.query import (
+    ControllerRelation,
     ObjectFilter,
     PlayerFilter,
     PlayerScope,
@@ -3018,20 +3019,40 @@ def _player_cant(stream: Stream) -> Effect | None:
     of spells. Distinct from the bare "this creature can't block" form: the
     filter is the whole card, and reading it as a blanket "can't cast" would
     turn a tax effect into a lock.
+
+    The players are the whole point (CR 101.2): "your opponents can't cast
+    spells" leaves its caster free, and "target player can't ..." is one
+    player chosen as the spell is cast (CR 601.2c) - a target, not whoever
+    the engine could find later.
     """
     from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
+    opening = stream.peek().lower
     players, _ = parse_player_filter(stream)
     if players is None:
+        return None
+    if (
+        players.scope in (PlayerScope.CONTROLLER_OF, PlayerScope.OWNER_OF)
+        and opening != "its"
+    ):
+        # "Enchanted creature's controller can't ...": the object it is the
+        # controller of is not carried, so the restriction could only guess.
+        # "Its controller" is a back-reference the referent pass binds to
+        # what the ability acted on (Render Silent), and stays.
         return None
     if not (stream.accept("can't") or stream.accept("cannot")):
         return None
 
     # "can't cast spells *or activate abilities of* artifacts, creatures, or
     # enchantments" - one prohibition covering two acts, and reading only the
-    # first turned Grand Abolisher into half a card.
+    # first turned Grand Abolisher into half a card. Each act keeps its own
+    # object: the abilities are of artifacts, creatures or enchantments, the
+    # spells are any spells.
     acts: list = []
-    subject = None
+    #: Per act read: whether its object phrase named where from ("from your
+    #: hand"). Activations add three acts for one phrase; only the last
+    #: phrase's entry is consulted.
+    from_zone: list[bool] = []
     while True:
         if stream.accept("cast"):
             act = Act.CAST_SPELL
@@ -3052,21 +3073,75 @@ def _player_cant(stream: Stream) -> Effect | None:
         else:
             break
 
+        start = stream.mark()
         found = parse_object_filter(stream)
         stream.accept("card", "cards", "spell", "spells", "life")
-        if subject is None:
-            subject = found
-        acts.append(act)
+        if act is Act.CAST_SPELL and stream.accept_phrase("from anywhere other than"):
+            # Drannith Magistrate: "can't cast spells from anywhere other than
+            # their hands" - every zone a card can be cast from but the hand
+            # (CR 601.2a: the card is cast from where it is). "Their" is the
+            # prohibited players, and the hand is whichever one the card is in.
+            if found is None or not (
+                stream.accept_phrase("their hands")
+                or stream.accept_phrase("their hand")
+                or stream.accept_phrase("your hand")
+            ):
+                return None
+            found = replace(found, zones=_CAST_FROM_ELSEWHERE)
+        if found is not None and _names_the_prohibited_player(stream, start):
+            # "... with mana value greater than the number of lands *that
+            # player* controls": that player is whoever is casting, and the
+            # restriction evaluates its numbers for its own controller.
+            return None
+        if act in (Act.SEARCH_LIBRARY, Act.WIN_GAME):
+            # Nothing in the engine asks whether a search or a win is
+            # forbidden, so reading one would be a prohibition that stops
+            # nothing.
+            return None
+        if act in (Act.DRAW_CARD, Act.GAIN_LIFE):
+            # "can't draw cards", "can't gain life": the noun names what is
+            # drawn, not which draws. Anything narrower ("can't draw more
+            # than one card each turn") is a different rule.
+            if found is not None and found != ObjectFilter(zones=found.zones):
+                return None
+            found = None
+        if act is Act.CAST_SPELL and found is not None and found.source_only:
+            # "You can't cast this unless ...": a rule about a card in a hand,
+            # which the restrictions in force - read from the battlefield and
+            # the stack - never see.
+            return None
+        if act is Act.ACTIVATE_ABILITY:
+            # CR 602.1: mana abilities and loyalty abilities are activated
+            # abilities too, and the engine asks about each as its own act.
+            acts.extend(
+                (each, found)
+                for each in (
+                    Act.ACTIVATE_ABILITY,
+                    Act.ACTIVATE_MANA_ABILITY,
+                    Act.ACTIVATE_LOYALTY_ABILITY,
+                )
+            )
+        else:
+            acts.append((act, found))
+        from_zone.append(
+            any(t.lower == "from" for t in stream.tokens[start : stream.mark()])
+        )
 
         look = stream.mark()
         stream.skip_punct(",")
         if not stream.accept("or", "and"):
             stream.reset(look)
             break
+        if not stream.at(*_PROHIBITED_VERBS):
+            # "from graveyards *or exile*" is a second zone, not a second
+            # act: leave it for the caller to fail on rather than letting
+            # it start a sentence of its own.
+            stream.reset(look)
+            break
 
     if not acts:
         return None
-    act = acts[0]
+    acts = _share_the_origin(acts, from_zone)
     # "Your opponents can't cast spells *this turn*." A prohibition from a
     # resolved spell nearly always carries a duration, and reading it as
     # permanent turns a one-turn Silence into a lock.
@@ -3074,7 +3149,11 @@ def _player_cant(stream: Stream) -> Effect | None:
     return Effect(
         EffectKind.RESTRICTION,
         players=players,
-        targets=subject,
+        targets=acts[0][1],
+        # "Target player can't cast spells this turn": the player is chosen
+        # as the spell is cast (CR 601.2c) and the objects are not targets.
+        is_targeted=players.scope
+        in (PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT),
         restrictions=tuple(
             Restriction(
                 act=each,
@@ -3082,10 +3161,57 @@ def _player_cant(stream: Stream) -> Effect | None:
                 players=players,
                 text=f"can't {each.name.lower()}",
             )
-            for each in acts
+            for each, subject in acts
         ),
         duration=duration,
         text="a player can't ...",
+    )
+
+
+def _share_the_origin(acts: list, from_zone: list[bool]) -> list:
+    """"You can't play lands or cast spells *from your hand*": the zone at the
+    end of the list belongs to every play and cast in it, as it does in
+    English (Experimental Frenzy lets lands be played from the top of the
+    library and from nowhere else). Read as belonging to the casts alone, the
+    first prohibition stopped the very land plays the card permits.
+
+    Only a play or cast with no origin of its own takes it; a list whose last
+    act names none is left alone.
+    """
+    from ..rules.cr500_turn_structure.restrictions import Act
+
+    if len(from_zone) < 2 or not from_zone[-1] or any(from_zone[:-1]):
+        return acts
+    last_act, last = acts[-1]
+    if last_act not in (Act.CAST_SPELL, Act.PLAY_LAND) or last is None:
+        return acts
+    out = []
+    for act, subject in acts:
+        if act in (Act.CAST_SPELL, Act.PLAY_LAND) and subject is not None and subject is not last:
+            subject = replace(subject, zones=last.zones, owner=last.owner)
+        elif act not in (Act.CAST_SPELL, Act.PLAY_LAND):
+            # "can't activate abilities or cast spells from graveyards": the
+            # zone would have to say where the abilities' sources are too.
+            return acts
+        out.append((act, subject))
+    return out
+
+
+#: Every zone a card can be cast from except the hand.
+_CAST_FROM_ELSEWHERE = frozenset(
+    {Zone.LIBRARY, Zone.GRAVEYARD, Zone.EXILE, Zone.COMMAND}
+)
+
+#: The verbs ``_player_cant`` reads, for telling "or <another act>" apart
+#: from an "or" inside the object phrase.
+_PROHIBITED_VERBS = ("cast", "play", "search", "draw", "gain", "win", "activate")
+
+
+def _names_the_prohibited_player(stream: Stream, start) -> bool:
+    """Whether the words read since ``start`` say "that player"."""
+    words = [token.lower for token in stream.tokens[start : stream.mark()]]
+    return any(
+        words[i : i + 2] == ["that", "player"] for i in range(len(words) - 1)
     )
 
 
@@ -3105,24 +3231,47 @@ def _cant(stream: Stream) -> Effect | None:
         return None
 
     acts: list[Act] = []
+    #: Who or what an "attack" is forbidden against, per act: the player for
+    #: ATTACK_PLAYER, the planeswalker filter for ATTACK_PLANESWALKER.
+    protected_by_act: dict[Act, object] = {}
     while True:
         if stream.accept("block"):
             acts.append(Act.BLOCK)
         elif stream.accept("attack"):
-            acts.append(Act.ATTACK)
             # "can't attack *you*" / "can't attack you or planeswalkers you
             # control". Who the prohibition protects is the whole point of
-            # Propaganda and Ghostly Prison; without it the restriction reads
-            # as "can't attack at all", which is a far stronger card.
+            # Propaganda and Blazing Archon (CR 508.1c: a restriction on
+            # whom a creature attacks); read as "can't attack at all" it
+            # also stopped its controller's own creatures, and every attack
+            # on another opponent.
             look = stream.mark()
             protected, _ = parse_player_filter(stream)
             if protected is None:
                 stream.reset(look)
+                acts.append(Act.ATTACK)
             else:
+                if protected.scope is not PlayerScope.YOU:
+                    # "its owner", "that player", "a player it has already
+                    # attacked": a defender the restriction cannot name on
+                    # its own.
+                    return None
+                acts.append(Act.ATTACK_PLAYER)
+                protected_by_act[Act.ATTACK_PLAYER] = protected
                 look = stream.mark()
                 if stream.accept("or"):
-                    if parse_object_filter(stream) is None:
+                    walkers = parse_object_filter(stream)
+                    if walkers is None:
                         stream.reset(look)
+                    elif (
+                        walkers.types_all != CardType.PLANESWALKER
+                        or walkers.controller is not ControllerRelation.YOU
+                    ):
+                        # "you or permanents you control", "or block
+                        # creatures you control": not the planeswalkers.
+                        return None
+                    else:
+                        acts.append(Act.ATTACK_PLANESWALKER)
+                        protected_by_act[Act.ATTACK_PLANESWALKER] = walkers
         elif stream.accept_phrase("be blocked"):
             acts.append(Act.BE_BLOCKED)
         elif stream.accept_phrase("be countered"):
@@ -3169,10 +3318,7 @@ def _cant(stream: Stream) -> Effect | None:
     forbidden = Effect(
         EffectKind.RESTRICTION,
         targets=subject,
-        restrictions=tuple(
-            Restriction(act=act, subject=subject, text=f"can't {act.name.lower()}")
-            for act in acts
-        ),
+        restrictions=tuple(_cant_restriction(act, subject, protected_by_act) for act in acts),
         duration=duration,
         text="can't",
     )
@@ -3192,6 +3338,28 @@ def _cant(stream: Stream) -> Effect | None:
         ),
         text="can't, and has abilities",
     )
+
+
+def _cant_restriction(act, subject, protected_by_act):
+    """One act of a "can't" sentence, carrying whom an attack may not be
+    made against: the attacked player for ``ATTACK_PLAYER`` (asked with the
+    defending player), the attacked planeswalker for ``ATTACK_PLANESWALKER``
+    (asked with it as the counterpart)."""
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
+
+    protected = protected_by_act.get(act)
+    if act is Act.ATTACK_PLAYER:
+        return Restriction(
+            act=act, subject=subject, players=protected, text="can't attack you"
+        )
+    if act is Act.ATTACK_PLANESWALKER:
+        return Restriction(
+            act=act,
+            subject=subject,
+            counterpart=protected,
+            text="can't attack planeswalkers you control",
+        )
+    return Restriction(act=act, subject=subject, text=f"can't {act.name.lower()}")
 
 
 #: The words that begin a prohibited act, for deciding whether a conjunction

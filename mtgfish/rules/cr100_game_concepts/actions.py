@@ -547,6 +547,11 @@ def gain_life(
     """
     if amount <= 0:
         return 0
+    # CR 119.7: a player who can't gain life doesn't, and a replacement of
+    # the gain has nothing to replace. "Your life total can't change" forbids
+    # the gain as well as the loss.
+    if _life_change_prohibited(game, player_id, gain=True):
+        return 0
 
     if game.has_replacements:
         prospective = game.replace(
@@ -579,6 +584,10 @@ def replaced_life_loss(
     including the loss that damage causes (CR 120.3a), which changes how much
     life is lost and not how much damage was dealt.
     """
+    if amount > 0 and _life_change_prohibited(game, player_id, gain=False):
+        # "Your life total can't change": damage is still dealt, but no life
+        # is lost to it (CR 120.3a asks for a loss the life total refuses).
+        return 0
     if amount <= 0 or not game.has_replacements:
         return amount
     prospective = game.replace(
@@ -587,6 +596,16 @@ def replaced_life_loss(
     if prospective is None:
         return 0
     return prospective.amount
+
+
+def _life_change_prohibited(game: Game, player_id: PlayerId, *, gain: bool) -> bool:
+    """Whether a prohibition stops this player's life total moving this way
+    (CR 101.2, 119.7, 119.8): "can't gain life" stops a gain, "can't lose
+    life" a loss, and "your life total can't change" either."""
+    from ..cr500_turn_structure.restrictions import Act, prohibited
+
+    acts = (Act.LIFE_TOTAL_CHANGE, Act.GAIN_LIFE if gain else Act.LOSE_LIFE)
+    return any(prohibited(game, act, player=player_id) is not None for act in acts)
 
 
 def lose_life(
