@@ -210,3 +210,123 @@ def test_silence_round_trip_names_the_players(card_db):
     said = explain_ability(ability)
     assert "each opponent can't cast" in said.lower()
     assert "until end of turn" in said
+
+
+def _card(box, name, zone, player):
+    return next(
+        o for o in box.game.objects.values()
+        if o.card is not None and o.card.name == name and o.zone is zone
+        and o.owner == player
+    )
+
+
+def test_silence_stops_a_cast_an_effect_makes(box):
+    """CR 601.3: the prohibition is asked of every cast, not only of the
+    casts offered at priority - a cascade or "you may cast it" is a cast."""
+    from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import (
+        CastError,
+        cast_spell,
+    )
+
+    box.put("Silence", "hand", 0)
+    _bolts_in_hand(box)
+    _cast(box, "Silence")
+    bolt = _card(box, "Lightning Bolt", Zone.HAND, PlayerId(1))
+    bolt.cast_without_paying = True
+    with pytest.raises(CastError):
+        cast_spell(box.game, PlayerId(1), Action(ActionKind.CAST_SPELL, source=bolt.id))
+    assert bolt.zone is Zone.HAND
+
+
+def test_orims_chant_ends_at_end_of_turn(box):
+    box.put("Orim's Chant", "hand", 0)
+    _bolts_in_hand(box)
+    _cast(box, "Orim's Chant", target_player=1)
+    assert "Lightning Bolt" not in _casts(box, 1)
+    box.next_turn()
+    box.give_mana(5, 1)
+    assert "Lightning Bolt" in _casts(box, 1)
+
+
+def test_grand_abolisher_only_during_its_controllers_turn(box):
+    box.put("Grand Abolisher", "battlefield", 0)
+    _bolts_in_hand(box)
+    assert "Lightning Bolt" in _casts(box, 0)
+    assert "Lightning Bolt" not in _casts(box, 1)
+    box.next_turn()  # player 1's turn
+    box.give_mana(5, 1)
+    assert "Lightning Bolt" in _casts(box, 1)
+
+
+def test_drannith_magistrate_stops_casting_from_anywhere_but_the_hand(box):
+    """"Your opponents can't cast spells from anywhere other than their
+    hands": a flashback card in an opponent's graveyard stays there, their
+    hand is open, and the Magistrate's controller is not touched."""
+    box.put("Drannith Magistrate", "battlefield", 0)
+    for player in (0, 1):
+        box.put("Think Twice", "graveyard", player)
+    _bolts_in_hand(box)
+    box.next_turn()  # player 1's turn, so sorcery-speed timing is no factor
+    for player in (0, 1):
+        box.give_mana(5, player)
+
+    assert "Lightning Bolt" in _casts(box, 1)
+    assert "Think Twice" not in _casts(box, 1)
+    assert "Think Twice" in _casts(box, 0)
+
+
+def _attack_allowed(box, name, owner, defender):
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import _attack_is_permitted
+
+    attacker = _card(box, name, Zone.BATTLEFIELD, PlayerId(owner))
+    return _attack_is_permitted(box.game, attacker, defender)
+
+
+def test_creatures_cant_attack_you_protects_only_you(box):
+    """Blazing Archon: "Creatures can't attack you" (CR 508.1c). Read as
+    "can't attack" it also kept its controller's own creatures home."""
+    box.put("Blazing Archon", "battlefield", 0)
+    box.put("Grizzly Bears", "battlefield", 0)
+    box.put("Grizzly Bears", "battlefield", 1)
+
+    assert not _attack_allowed(box, "Grizzly Bears", 1, 0)
+    assert _attack_allowed(box, "Grizzly Bears", 0, 1)
+
+
+def test_or_planeswalkers_you_control(box):
+    """Sandwurm Convergence: fliers can't attack you or your planeswalkers;
+    a creature without flying can attack either."""
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import AttackPermanent
+
+    box.put("Sandwurm Convergence", "battlefield", 0)
+    box.put("Jace Beleren", "battlefield", 0)
+    box.put("Serra Angel", "battlefield", 1)
+    box.put("Grizzly Bears", "battlefield", 1)
+    jace = _card(box, "Jace Beleren", Zone.BATTLEFIELD, PlayerId(0))
+
+    assert not _attack_allowed(box, "Serra Angel", 1, 0)
+    assert not _attack_allowed(box, "Serra Angel", 1, AttackPermanent(jace.id))
+    assert _attack_allowed(box, "Grizzly Bears", 1, 0)
+    assert _attack_allowed(box, "Grizzly Bears", 1, AttackPermanent(jace.id))
+
+
+def test_from_your_hand_belongs_to_the_land_play_too(box):
+    """Experimental Frenzy: "You can't play lands or cast spells from your
+    hand" - the hand is where neither may come from; a land on top of the
+    library is what the card is for."""
+    box.put("Experimental Frenzy", "battlefield", 0)
+    box.put("Forest", "hand", 0)
+    assert "Forest" not in _plays(box, 0)
+    from mtgfish.parser import parse_card
+    from mtgfish.rules.cr500_turn_structure.restrictions import Act
+    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
+
+    ability = next(
+        a for a in parse_card(box.db.lookup("Experimental Frenzy")).faces[0].abilities
+        if any(e.kind is EffectKind.RESTRICTION for e in a.effects)
+    )
+    plays = [
+        r for e in ability.effects for r in e.restrictions if r.act is Act.PLAY_LAND
+    ]
+    assert plays and all(r.subject.zones == frozenset({Zone.HAND}) for r in plays)

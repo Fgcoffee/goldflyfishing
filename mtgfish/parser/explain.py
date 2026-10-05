@@ -801,13 +801,14 @@ def _player_prohibition(effect: Effect, restriction) -> str:
 
     players = restriction.players or effect.players
     who = _players(players)
-    if effect.is_targeted and who.startswith("target"):
-        who = f"{who} (chosen as it is cast)"
     act = restriction.act.name.lower()
     subject = restriction.subject
     if subject is None:
         return f"{who} can't {act}"
     described = _as_proposed(restriction.act, subject).describe(quantified=False)
+    if described == "object":
+        # "Can't cast spells": any spell at all, said without a filter.
+        return f"{who} can't {act}"
     return f"{who} can't {act} of {described}"
 
 

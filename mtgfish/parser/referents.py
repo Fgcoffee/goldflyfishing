@@ -133,7 +133,31 @@ def bind_ability(ability: Ability) -> Ability:
         ability = replace(ability, effects=effects)
     if _mentions_referred(ability):
         raise Unbound("unbound player reference")
+    if ability.kind is AbilityKind.STATIC and _static_prohibits_the_referred(ability):
+        raise Unbound("a standing prohibition on whatever was just referred to")
     return ability
+
+
+def _static_prohibits_the_referred(ability: Ability) -> bool:
+    """Whether a static ability forbids something to "they" or "it" as a
+    back-reference ("Survivors your opponents control can't block, and *they*
+    can't attack you").
+
+    Nothing resolves in a static ability, so there is no "what was just acted
+    on" for the reference to mean; the restrictions in force match it against
+    every object, which forbids the act to all of them.
+    """
+    stack = list(ability.effects)
+    while stack:
+        effect = stack.pop()
+        stack.extend(effect.children)
+        if effect.kind is not EffectKind.RESTRICTION:
+            continue
+        for restriction in effect.restrictions:
+            subject = restriction.subject or effect.targets
+            if subject is not None and subject.remembered:
+                return True
+    return False
 
 
 def _initial_state(ability: Ability) -> _State:

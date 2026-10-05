@@ -77,6 +77,12 @@ def play_land(game: Game, player_id: PlayerId, action: Action) -> bool:
         raise CastError("no such card")
     if player.lands_played >= player.max_lands:
         raise CastError("land drop already used this turn")
+    # CR 101.2: "players can't play lands" stops a land played by an effect
+    # as well as the land drop offered at priority.
+    from ..cr500_turn_structure.restrictions import Act, prohibited
+
+    if prohibited(game, Act.PLAY_LAND, obj=obj, player=player_id) is not None:
+        raise CastError("an effect prohibits playing that land")
 
     permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=player_id)
     permanent.controller = player_id
@@ -127,6 +133,15 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
 
     origin_zone = card_object.zone
     from_command_zone = origin_zone is Zone.COMMAND
+    # CR 601.3: a player may begin to cast a spell only if nothing prohibits
+    # it. Asked here, and not only of the casts offered at priority, so that
+    # Silence or Drannith Magistrate also stops a cascade, a discover, or a
+    # card cast by another spell's instruction - the casts those cards are
+    # most often printed against.
+    from ..cr500_turn_structure.restrictions import Act, prohibited
+
+    if prohibited(game, Act.CAST_SPELL, obj=card_object, player=player_id) is not None:
+        raise CastError("an effect prohibits casting that spell")
 
     # CR 601.2b: an alternative cost offered by a granted ability is read off
     # the card before CR 400.7 separates the spell from the grant.

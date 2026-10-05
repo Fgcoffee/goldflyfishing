@@ -383,6 +383,25 @@ def _attack_is_permitted(game: Game, obj: GameObject, defender: int) -> bool:
         return False
     if not _may_be_attacked(game, obj, defender):
         return False
+    # CR 508.1c: a restriction on whom a creature attacks - "creatures can't
+    # attack you or planeswalkers you control" - is asked of this attacker
+    # and this defender, and leaves every other attack open.
+    from .restrictions import Act, prohibited
+
+    player, permanent = _resolve_defender(game, defender)
+    if permanent == NO_OBJECT:
+        if prohibited(game, Act.ATTACK_PLAYER, obj=obj, player=player) is not None:
+            return False
+    elif (
+        prohibited(
+            game,
+            Act.ATTACK_PLANESWALKER,
+            obj=obj,
+            counterpart=game.objects.get(permanent),
+        )
+        is not None
+    ):
+        return False
     chars = game.characteristics(obj)
     if chars.has_keyword("Can't attack"):
         return False
