@@ -1494,6 +1494,13 @@ def _check_payable(
         raise CastError(f"cannot pay a {kind.name.lower()} cost")
     if kind is CostKind.PAY_LIFE and player.life < amount:
         raise CastError("not enough life")
+    if kind is CostKind.PAY_LIFE and amount > 0:
+        # CR 119.8: a cost that has a player who can't lose life pay life
+        # can't be paid (CR 119.4b: paying 0 always can).
+        from ..cr100_game_concepts.actions import _life_change_prohibited
+
+        if _life_change_prohibited(game, player_id, gain=False):
+            raise CastError("that player's life total can't change")
     if kind is CostKind.PAY_ENERGY and player.energy < amount:
         raise CastError("not enough energy")
     if kind is CostKind.DISCARD and _is_this_card(component):

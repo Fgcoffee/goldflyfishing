@@ -994,7 +994,19 @@ def _zone(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         stream.reset(mark)
         return spec
 
-    spec = replace(spec, zones=frozenset({zone}))
+    zones = {zone}
+    # "cast noncreature spells from graveyards *or exile*": two zones, either
+    # of which matches. Only where the second zone word ends the phrase -
+    # "from your graveyard or exile target creature" is a second instruction
+    # whose verb happens to name a zone.
+    look = stream.mark()
+    if stream.accept("or"):
+        other = parse_zone(stream)
+        if other is not None and (stream.done or stream.peek().text in (".", ",", ";")):
+            zones.add(other)
+        else:
+            stream.reset(look)
+    spec = replace(spec, zones=frozenset(zones))
     if owner is not None:
         spec = replace(spec, owner=owner)
     return spec
