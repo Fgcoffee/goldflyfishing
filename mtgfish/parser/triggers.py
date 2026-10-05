@@ -112,19 +112,23 @@ def parse_trigger(stream: Stream) -> TriggerCondition | None:
 
     intervening = _intervening_if(stream)
     if intervening is not None:
-        condition = TriggerCondition(
-            event_kinds=condition.event_kinds,
-            subject=condition.subject,
-            source=condition.source,
-            players=condition.players,
-            intervening_if=intervening,
-            functions_in=condition.functions_in,
-            uses_last_known_information=condition.uses_last_known_information,
-            phases=condition.phases,
-            to_player=condition.to_player,
-            text=condition.text,
-        )
+        # CR 603.4 adds a check to the trigger; it takes nothing away. The
+        # condition used to be rebuilt field by field, and every field the
+        # rebuild did not name was lost: "one or more creatures die, if ..."
+        # stopped being one trigger per batch (CR 603.2c), "your second spell
+        # each turn, if ..." fired on every spell, and a counter kind, an
+        # origin zone or an expend total fell away the same way.
+        from dataclasses import replace
 
+        # "When this Class becomes level 2" already carries its level as an
+        # intervening-if; a written one is checked as well, not instead.
+        if not condition.intervening_if.is_always:
+            intervening = Condition(
+                kind=ConditionKind.AND,
+                operands=(condition.intervening_if, intervening),
+                text=f"{condition.intervening_if.text} and {intervening.text}",
+            )
+        condition = replace(condition, intervening_if=intervening)
     stream.skip_punct(",")
     return condition
 

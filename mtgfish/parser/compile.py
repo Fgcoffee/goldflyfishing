@@ -200,6 +200,14 @@ def _gate_on_max_speed(ability: Ability) -> Ability:
     gate = Condition(kind=ConditionKind.AT_MAX_SPEED, text="at max speed")
 
     if ability.kind is AbilityKind.TRIGGERED and ability.trigger is not None:
+        written = ability.trigger.intervening_if
+        if not written.is_always:
+            # "Max speed - Whenever ..., if ...": both are checked (CR 603.4).
+            gate = Condition(
+                kind=ConditionKind.AND,
+                operands=(gate, written),
+                text=f"at max speed and {written.text}",
+            )
         return replace(
             ability, trigger=replace(ability.trigger, intervening_if=gate)
         )
