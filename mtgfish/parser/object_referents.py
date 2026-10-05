@@ -58,6 +58,9 @@ _CHARACTERISTICS = frozenset(
 #: "The sacrificed creature's power", "the exiled card's mana value": an
 #: object that was consumed - by the cost, or by an earlier instruction.
 _CONSUMED = frozenset({ValueKind.COST_PAID_POWER, ValueKind.COST_PAID})
+#: The characteristics ``ValueKind.COST_PAID`` can read off what a cost
+#: consumed (``kernel.values``).
+_READ_OFF_THE_COST = frozenset({ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE})
 #: Values whose operands are read once per object they range over: "its" in
 #: there is each of those objects, not a reference to settle.
 _PER_OBJECT = frozenset(
@@ -157,16 +160,19 @@ _CONSUMING_COSTS = frozenset(
 )
 
 
-def _may_have_paid(ability: Ability) -> bool:
+def _may_have_paid(ability: Ability, spell_paid: bool = False) -> bool:
     """Whether the ability's cost may consume an object.
 
-    Only an activated ability's cost is paid with a record of what it
-    consumed. A spell's "As an additional cost to cast this spell, sacrifice
-    a creature" is read as an instruction the spell carries out as it
-    resolves, not as a cost paid while casting (CR 601.2h), so nothing is
-    on the record for "the sacrificed creature's power" to read and Fling
-    dealt no damage. A triggered ability has no cost at all.
+    An activated ability's cost, and a spell's mandatory additional cost
+    ("As an additional cost to cast this spell, sacrifice a creature"), are
+    paid with a record of what they consumed (CR 601.2h), which "the
+    sacrificed creature's power" reads as the object last existed (CR
+    608.2h). ``spell_paid`` says the spell's face carries such a cost - a
+    line of its own, not part of this ability. A triggered ability has no
+    cost at all.
     """
+    if ability.kind is AbilityKind.SPELL:
+        return spell_paid
     if ability.kind is not AbilityKind.ACTIVATED:
         return False
     costs = [ability.cost, *getattr(ability.cost, "choices", ())]
@@ -177,7 +183,7 @@ def _may_have_paid(ability: Ability) -> bool:
     )
 
 
-def settle_referents(ability: Ability) -> Ability | None:
+def settle_referents(ability: Ability, *, spell_paid: bool = False) -> Ability | None:
     """The ability with every one-shot "its"/"that <noun>'s" settled, or
     None when one of them cannot be."""
     if ability.kind not in (AbilityKind.SPELL, AbilityKind.ACTIVATED, AbilityKind.TRIGGERED):
@@ -213,7 +219,7 @@ def settle_referents(ability: Ability) -> Ability | None:
         # life equal to its toughness": "its" is the object the cost
         # consumed, which only its power can be read off.
         state = _COST
-    token = _PAID.set(_may_have_paid(ability))
+    token = _PAID.set(_may_have_paid(ability, spell_paid))
     try:
         effects, _ = _settle_all(ability.effects, state)
     except Unsettled:
@@ -351,8 +357,10 @@ def _plural(effect: Effect) -> bool:
     if isinstance(count, int):
         count = Value.of(count)
     if count is None:
-        # "Target creature" is one; "all creatures" is every one there is.
-        return not effect.is_targeted
+        # No number written: "target creature", "enchanted creature" and
+        # "all creatures" alike. Only a number says there are several;
+        # "all creatures ... it" is not something cards write.
+        return False
     return not (count.is_constant and count.constant <= 1)
 
 
@@ -474,6 +482,19 @@ def _settle_value(value: Value, effect: Effect, state: int, dealer) -> Value:
             # "This creature deals damage equal to its power": "its" is the
             # dealer's, whoever else has been mentioned.
             found = REMEMBERED if dealer is not None else None
+        elif (
+            pronoun
+            and state == _COST
+            and _PAID.get()
+            and value.kind in _READ_OFF_THE_COST
+            and not value.counter_type
+            and (effect.targets is None or effect.targets.source_only)
+        ):
+            # "Draw cards equal to the sacrificed creature's power, then you
+            # gain life equal to its toughness": nothing but the consumed
+            # creature has been mentioned, and its toughness is on the same
+            # record, as it last existed (CR 608.2h).
+            return Value(kind=ValueKind.COST_PAID, operands=(Value(kind=value.kind),))
         else:
             found = _referent(effect, state, pronoun=pronoun)
         return replace(value, of_affected=False, filter=found)
@@ -511,7 +532,9 @@ def _referent(
         # there was to refer to before them.
         if not pronoun:
             return REMEMBERED
-        if state == _MANY:
+        if state == _MANY or not is_dealer:
+            # A value's "it" may be "them" ("for each counter on them"),
+            # which is the objects just made; which one is not said.
             raise Unsettled
         return None
     if state == _SELF:

@@ -370,6 +370,20 @@ def _affordable(
     chars = chars if chars is not None else game.characteristics(obj)
     cost = chars.mana_cost
 
+    # CR 601.2h: a mandatory additional cost is paid with the rest, so a Bone
+    # Splinters with no creature to sacrifice is not a spell that can be
+    # cast. Asked of the dry run payment itself uses.
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _check_payable
+
+    for additional in chars.additional_costs:
+        if additional.optional:
+            continue
+        for component in additional.cost.non_mana_components:
+            try:
+                _check_payable(game, player_id, component, obj, spell=obj)
+            except CastError:
+                return False
+
     increase = sum(cost_increases(game, obj, player_id))
     if zone is Zone.COMMAND and obj.is_commander:
         increase += player.commander_tax(game.commander_identity(obj.id))

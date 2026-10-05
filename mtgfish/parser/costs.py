@@ -80,6 +80,13 @@ def _component(stream: Stream) -> CostComponent | None:
     )
 
 
+def _uncounted(spec) -> bool:
+    """"Sacrifice all permanents you control": no number of objects, which
+    a cost charged per object would pay with one. Unread rather than
+    charged as the cheapest reading."""
+    return spec.count is None and not spec.source_only
+
+
 def _exert(stream: Stream) -> CostComponent | None:
     """"Exert this land" as a cost (CR 701.39).
 
@@ -112,7 +119,7 @@ def _tap_other(stream: Stream) -> CostComponent | None:
     tapping = stream.tokens[mark].lower == "tap"
 
     spec = parse_object_filter(stream)
-    if spec is None or chosen_count(spec):
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         stream.reset(mark)
         return None
     return CostComponent(
@@ -253,7 +260,7 @@ def _sacrifice(stream: Stream) -> CostComponent | None:
             text="sacrifice this",
         )
     spec = parse_object_filter(stream)
-    if spec is None or chosen_count(spec):
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         return None
     # "Sacrifice *two* creatures" - the count lives on the noun phrase, as it
     # does for an exile cost. Charged as one, every such cost was half price
@@ -370,7 +377,7 @@ def _exile_from_zone(stream: Stream) -> CostComponent | None:
         # disagreeing about its tail is how "Exile this card from your hand"
         # became an unreadable cost.
     spec = parse_object_filter(stream)
-    if spec is None or chosen_count(spec):
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         stream.reset(mark)
         return None
     # The zone was hardcoded to the graveyard, so Force of Will - "exile a
@@ -413,7 +420,7 @@ def _return_to_hand(stream: Stream) -> CostComponent | None:
     if not stream.accept("return"):
         return None
     spec = parse_object_filter(stream)
-    if spec is None or chosen_count(spec):
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         stream.reset(mark)
         return None
     if not (

@@ -280,12 +280,10 @@ def _reads(card_db, name):
 
 
 def test_a_consumed_value_with_nothing_to_read_stays_unread(card_db):
-    """Fling's sacrifice is carried out as the spell resolves, not paid as
-    it is cast, so there is no record of it to read: the damage stays
-    unread rather than dealing nothing. Drach'Nyen's static bonus asks
-    about a card exiled by a different ability."""
-    for name in ("Fling", "Drach'Nyen"):
-        assert not _reads(card_db, name).fully_parsed, name
+    """Drach'Nyen's static bonus asks about a card exiled by a different
+    ability, which no cost of its own recorded. (Fling's sacrifice is paid as
+    it is cast and read off that record: test_cr601_additional_cost_record.)"""
+    assert not _reads(card_db, "Drach'Nyen").fully_parsed
 
 
 # ---------------------------------------------------------------------------
@@ -368,4 +366,33 @@ def test_that_creature_after_an_unremembered_instruction_stays_unread(card_db):
     resolution does not remember. Read as the Equipment's power it did
     nothing."""
     ability = _reads(card_db, "Hunter's Bow").faces[0].abilities[0]
+    assert ability.unparsed
+
+
+def test_counters_on_them_are_each_affected_creatures(box):
+    """Toxrill: "Creatures you don't control get -1/-1 for each slime counter
+    on them" - each creature's own counters, not the source's."""
+    box.put("Toxrill, the Corrosive", "battlefield", 0)
+    box.put("Colossal Dreadmaw", "battlefield", 1, count=2)
+    _drain(box)
+    slimed, clean = list(box.game.permanents(PlayerId(1)))
+    slimed.add_counters("slime", 2)
+    box.game.invalidate_characteristics()
+    assert box.game.characteristics(slimed).power == 4
+    assert box.game.characteristics(clean).power == 6
+
+
+def test_it_after_a_singular_untargeted_object_is_that_object(card_db):
+    """Bind the Monster: "tap enchanted creature. It deals damage to you equal
+    to its power" - the enchanted creature deals it."""
+    ability = _reads(card_db, "Bind the Monster").faces[0].abilities[1]
+    damage = [e for top in ability.effects for e in top.walk() if e.kind is EffectKind.DAMAGE]
+    assert damage[0].damage_source == REMEMBERED
+    assert damage[0].amount == Value(kind=ValueKind.POWER, filter=REMEMBERED)
+
+
+def test_the_power_of_the_exiled_card_is_not_the_target(card_db):
+    """Bishop of Binding: "target Vampire gets +X/+X, where X is the power of
+    the exiled card" - a card another ability exiled, not the Vampire."""
+    ability = _reads(card_db, "Bishop of Binding").faces[0].abilities[-1]
     assert ability.unparsed
