@@ -1948,6 +1948,12 @@ def _in_a_players_zone(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     mark = stream.mark()
     if not stream.accept("in"):
         return spec
+    if stream.at("your"):
+        # "cards in your hand" is ``_zone``'s, which keeps the owner. Read
+        # here, "your" fell to ``parse_zone`` - which accepts it as an
+        # article - and the count was of every player's hand.
+        stream.reset(mark)
+        return spec
     owner, _ = parse_player_filter(stream)
     zone = parse_zone(stream)
     if zone is None:

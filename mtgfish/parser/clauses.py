@@ -838,11 +838,52 @@ def _bind_x(effects: list[Effect]) -> list[Effect]:
             and effect.text.startswith(_X_DEFINITION)
         )
     ]
+    bound = [_bind_combat_tax_x(effect, definition) for effect in bound]
     if any(_mentions_x(effect) for effect in bound):
         # An X the definition could not reach ("unless that player pays
         # {X}"): paying the announced X - zero - is not what the card says.
         return [Effect(EffectKind.UNPARSED, text="where X is (unbound X)")]
     return bound
+
+
+def _bind_combat_tax_x(effect: Effect, value: Value) -> Effect:
+    """"Can't attack you unless their controller pays {X} for each of those
+    creatures, where X is the number of enchantments you control."
+
+    A cost to attack (CR 508.1h) is determined by the combat step, not
+    announced, so its {X} is the definition's number: {X} of generic mana is
+    exactly X times {1} (CR 107.3, 107.4b). Rewritten so - the definition
+    becomes a factor of the cost's scale - only for a lone generic {X} in a
+    cost that lifts a restriction; any other {X} stays unbound and the
+    sentence is refused.
+    """
+    import dataclasses
+
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost
+    from ..rules.cr100_game_concepts.cr118_costs import Cost, CostKind
+
+    if effect.kind is EffectKind.UNLESS_PAYS and any(
+        child.kind is EffectKind.RESTRICTION for child in effect.children
+    ):
+        cost = effect.pay_cost
+        if cost is None or cost.choices or len(cost.components) != 1:
+            return effect
+        component = cost.components[0]
+        symbols = tuple(component.mana) if component.kind is CostKind.MANA else ()
+        if len(symbols) != 1 or symbols[0].text != "{X}":
+            return effect
+        scale = (
+            value
+            if component.scale is None
+            else Value(kind=ValueKind.PRODUCT, operands=(component.scale, value))
+        )
+        component = dataclasses.replace(component, mana=ManaCost.generic(1), scale=scale)
+        return dataclasses.replace(effect, pay_cost=Cost((component,)))
+    if effect.kind is EffectKind.CONDITIONAL and effect.children:
+        children = tuple(_bind_combat_tax_x(child, value) for child in effect.children)
+        if any(a is not b for a, b in zip(children, effect.children)):
+            return dataclasses.replace(effect, children=children)
+    return effect
 
 
 def _substitute_x(effect: Effect, value: Value) -> Effect:
