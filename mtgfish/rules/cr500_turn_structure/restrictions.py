@@ -184,68 +184,87 @@ def prohibited(
     allowed, which matters enormously when a simulated game does something
     surprising.
     """
-    from ..kernel.conditions import holds
-    from ..kernel.matching import matches, resolve_players
-
     for restriction in _active(game):
-        if restriction.act is not act:
-            continue
-
-        player_scoped = act in PLAYER_ACTS and restriction.players is not None
-        if restriction.subject is not None:
-            if obj is None:
-                continue
-            if not matches(
-                game,
-                obj,
-                _as_proposed(act, restriction.subject),
-                source=restriction.source,
-                controller=restriction.controller,
-            ):
-                continue
-        elif restriction.source != NO_OBJECT and obj is not None and not player_scoped:
-            # No subject means the restriction's own source ("this spell
-            # can't be countered") - unless it names players instead.
-            # "Players can't cast spells" (split second, epic, Silence)
-            # forbids an act to those players whatever card they would cast,
-            # and reading it as being about its source made it stop nothing.
-            if obj.id != restriction.source:
-                continue
-
-        if restriction.players is not None:
-            target_player = player
-            if target_player == NO_PLAYER and obj is not None:
-                target_player = obj.controller
-            if target_player == NO_PLAYER:
-                continue
-            allowed = _restricted_players(game, restriction)
-            if target_player not in allowed:
-                continue
-
-        if restriction.counterpart is not None:
-            if counterpart is None:
-                continue
-            if not matches(
-                game,
-                counterpart,
-                restriction.counterpart,
-                source=restriction.source,
-                controller=restriction.controller,
-            ):
-                continue
-
-        if not restriction.condition.is_always:
-            if not holds(
-                game,
-                restriction.condition,
-                source=restriction.source,
-                controller=restriction.controller,
-            ):
-                continue
-
-        return restriction
-
+        if restriction_applies(
+            game, restriction, act, obj=obj, player=player, counterpart=counterpart
+        ):
+            return restriction
     return None
+
+
+def restriction_applies(
+    game: Game,
+    restriction: Restriction,
+    act: Act,
+    *,
+    obj: GameObject | None = None,
+    player: PlayerId = NO_PLAYER,
+    counterpart: GameObject | None = None,
+) -> bool:
+    """Whether one restriction covers ``act`` by ``obj`` / ``player``.
+
+    Split out of ``prohibited`` so that a restriction that is lifted by paying
+    a cost (CR 508.1h, 509.1d: "can't attack you unless their controller pays
+    {2}") is matched by exactly the same rules as one that is absolute.
+    """
+    from ..kernel.conditions import holds
+    from ..kernel.matching import matches
+
+    if restriction.act is not act:
+        return False
+
+    player_scoped = act in PLAYER_ACTS and restriction.players is not None
+    if restriction.subject is not None:
+        if obj is None:
+            return False
+        if not matches(
+            game,
+            obj,
+            _as_proposed(act, restriction.subject),
+            source=restriction.source,
+            controller=restriction.controller,
+        ):
+            return False
+    elif restriction.source != NO_OBJECT and obj is not None and not player_scoped:
+        # No subject means the restriction's own source ("this spell
+        # can't be countered") - unless it names players instead.
+        # "Players can't cast spells" (split second, epic, Silence)
+        # forbids an act to those players whatever card they would cast,
+        # and reading it as being about its source made it stop nothing.
+        if obj.id != restriction.source:
+            return False
+
+    if restriction.players is not None:
+        target_player = player
+        if target_player == NO_PLAYER and obj is not None:
+            target_player = obj.controller
+        if target_player == NO_PLAYER:
+            return False
+        allowed = _restricted_players(game, restriction)
+        if target_player not in allowed:
+            return False
+
+    if restriction.counterpart is not None:
+        if counterpart is None:
+            return False
+        if not matches(
+            game,
+            counterpart,
+            restriction.counterpart,
+            source=restriction.source,
+            controller=restriction.controller,
+        ):
+            return False
+
+    if not restriction.condition.is_always:
+        if not holds(
+            game,
+            restriction.condition,
+            source=restriction.source,
+            controller=restriction.controller,
+        ):
+            return False
+    return True
 
 
 #: Acts a *player* performs. A restriction on one of these that names players

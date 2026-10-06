@@ -1587,10 +1587,20 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
         )
         return Ability.unreadable(text)
     try:
-        return bind_ability(settled)
+        bound = bind_ability(settled)
     except Unbound as reason:
         result.failures.append(ParseFailure(text, str(reason), rule=rule))
         return Ability.unreadable(text)
+    # "Can't attack you unless their controller pays {2}" is charged as
+    # attackers are declared (CR 508.1h), and only in the shapes the combat
+    # step can charge. Any other is refused, not read and never charged.
+    from ..rules.cr500_turn_structure.combat_costs import tax_refusal
+
+    refusal = tax_refusal(bound)
+    if refusal is not None:
+        result.failures.append(ParseFailure(text, refusal, rule=rule))
+        return Ability.unreadable(text)
+    return bound
 
 
 # ---------------------------------------------------------------------------
