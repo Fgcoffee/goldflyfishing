@@ -150,6 +150,35 @@ def test_baird_taxes_attacks_on_planeswalkers_too(card_db):
     assert tapped(forests) == 2
 
 
+def test_sphere_of_safety_charges_x_per_attacker(card_db):
+    """{X} for each of those creatures, X the number of enchantments its
+    controller has: two enchantments and two attackers is {4}."""
+    board = board_for(card_db)
+    board.play("Sphere of Safety", controller=1)
+    board.play("Propaganda", controller=0)  # the attacker's enchantment: not counted
+    board.play("Pacifism", controller=1)
+    forests = lands(board, "Forest", 5)
+    bears = [board.play("Grizzly Bears"), board.play("Grizzly Bears")]
+
+    combat = attack(board, *bears)
+
+    assert set(combat.attacking) == {b.id for b in bears}
+    assert tapped(forests) == 4
+
+
+def test_sphere_of_safety_leaves_an_attacker_it_cannot_pay_for_home(card_db):
+    board = board_for(card_db)
+    board.play("Sphere of Safety", controller=1)
+    board.play("Pacifism", controller=1)
+    forests = lands(board, "Forest", 3)
+    bears = [board.play("Grizzly Bears"), board.play("Grizzly Bears")]
+
+    combat = attack(board, *bears)
+
+    assert len(combat.attacking) == 1
+    assert tapped(forests) == 2
+
+
 def test_a_goaded_creature_is_not_forced_to_pay(card_db):
     """CR 508.1d: a player is not required to pay a cost to attack, even to
     obey a requirement."""
@@ -303,5 +332,11 @@ def test_a_tax_scaled_by_creatures_it_does_not_cover_is_refused(card_db):
 
 
 def test_the_taxes_the_engine_charges_are_read(card_db):
-    for name in ("Propaganda", "Ghostly Prison", "Baird, Steward of Argive", "Brainwash"):
+    for name in (
+        "Propaganda",
+        "Ghostly Prison",
+        "Baird, Steward of Argive",
+        "Brainwash",
+        "Sphere of Safety",
+    ):
         assert _read(card_db, name, "unless"), name

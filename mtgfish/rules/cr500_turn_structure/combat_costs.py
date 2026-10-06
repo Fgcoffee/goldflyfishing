@@ -174,6 +174,24 @@ def _subject(restriction, child):
 
 _PER_CREATURE = "per creature"
 _INDEPENDENT = "independent"
+#: A product of one per-creature factor and independent ones.
+_PRODUCT = "per creature, times"
+
+
+def _independent_part(scale: Value, restrictions) -> Value | None:
+    """The multiplier left once the per-creature factor is charged by
+    counting creatures: ``None`` for a plain per-creature count."""
+    kind = _scale_kind(scale, restrictions)
+    if kind == _PER_CREATURE:
+        return None
+    if kind == _INDEPENDENT:
+        return scale
+    rest = tuple(
+        operand
+        for operand in scale.operands
+        if _scale_kind(operand, restrictions) != _PER_CREATURE
+    )
+    return rest[0] if len(rest) == 1 else replace(scale, operands=rest)
 
 
 def _scale_kind(scale: Value, restrictions) -> str | None:
@@ -189,6 +207,13 @@ def _scale_kind(scale: Value, restrictions) -> str | None:
     """
     from ..kernel.query import ValueKind
 
+    if scale.kind is ValueKind.PRODUCT and scale.constant in (0, 1):
+        # "{X} for each of those creatures, where X is ...": one factor per
+        # creature covered, the rest independent of the combat.
+        kinds = [_scale_kind(operand, restrictions) for operand in scale.operands]
+        if None in kinds or kinds.count(_PER_CREATURE) > 1:
+            return None
+        return _PRODUCT if _PER_CREATURE in kinds else _INDEPENDENT
     filt = scale.filter
     if scale.kind is ValueKind.COUNT and filt is not None and not scale.operands:
         if filt.remembered:
@@ -259,8 +284,8 @@ def combat_taxes(game: Game) -> list[CombatTax]:
                     for restriction in child.restrictions
                 ]
                 scale = component.scale
-                if scale is not None and _scale_kind(scale, restrictions) == _PER_CREATURE:
-                    scale = None
+                if scale is not None:
+                    scale = _independent_part(scale, restrictions)
                 out.append(
                     CombatTax(
                         restrictions=tuple(
