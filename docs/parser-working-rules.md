@@ -67,6 +67,10 @@ python -m mtgfish.tools.census --out /tmp/before.jsonl.gz
 # the work queue: failures clustered by where the parse gave up
 python -m mtgfish.tools.census --load /tmp/before.jsonl.gz --clusters 80 --words 3
 
+# every card as fully read / partially read (by words unread, and by words
+# no read ability uses) / nothing read / read but not tied to an engine action
+python -m mtgfish.tools.census --load /tmp/before.jsonl.gz --clusters 0 --breakdown
+
 # every failing ability matching a pattern
 python -m mtgfish.tools.census --load /tmp/before.jsonl.gz --grep "would die"
 
