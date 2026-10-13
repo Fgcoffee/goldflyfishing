@@ -14,7 +14,7 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 |---|---|---|---|
 | `claude/lucid-einstein-dml803` @ 043206d | parser | BLOCK (process) | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
 | `wip-misbuilt-keywords` (local, unpushed) | parser | not received | |
-| rules session branch | rules | not received | |
+| `main-n8yjai` @ a0c91e7 | rules | OK for this commit; BLOCK (process) | Flashback exile verified on the board. PR #10 is already MERGED, so this needs a new PR. |
 
 ## Verified on the sandbox (parser branch @ 043206d)
 
@@ -37,7 +37,10 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 | # | Sev | Owner | Finding | Evidence |
 |---|---|---|---|---|
-| F4 | **BLOCK** | rules | Crew N taps N creatures instead of any number with total power N or more (CR 702.122a). `_crew` in `cr702_keyword_impl.py` builds `TAP_OTHER amount=N` but its text says "total power". Wrong reading counted as understood. Pre-existing on main. | Cultivator's Caravan (Crew 3): 3x Llanowar Elves can crew; one Hill Giant can't; Bears + Elves can't |
+| F4 | **BLOCK** | parser (keyword builder) | Crew N taps N creatures instead of any number with total power N or more (CR 702.122a). `_crew` in `cr702_keyword_impl.py` builds `TAP_OTHER amount=N` but its text says "total power". Wrong reading counted as understood. Pre-existing on main. | Cultivator's Caravan (Crew 3): 3x Llanowar Elves can crew; one Hill Giant can't; Bears + Elves can't |
+| F5 | **BLOCK** | parser (builder) + rules (legality) | Jump-start is cast from the graveyard for FREE with no discard (702.133a: pay the mana cost and discard a card as an additional cost). It's built as a graveyard *alternative* cost with no cost. On main it then goes back to the graveyard: a free spell, recast forever. On a0c91e7 it's exiled, but still free. | Radical Idea: offered with no mana and an empty hand; pool unchanged after the cast |
+| F6 | **BLOCK** | parser (builder) + rules (legality) | Aftermath is inverted (702.127a): the aftermath half (Dawn) is cast FROM HAND for its mana cost, and can't be cast from the graveyard even with mana. | Dusk // Dawn: face_index 1 offered from hand and resolved; nothing offered from the graveyard with 60 mana |
+| F7 | WARN | rules | `_EXILED_WHEN_IT_LEAVES_THE_STACK` keys aftermath on an alternative cost, but 702.127a exiles it whenever it "was cast from a graveyard", whatever cost was paid. Harmonize's entry is dead, because Harmonize is built as a +1/+1-counter ability (class A6). | a0c91e7 game.py |
 | F1 | WARN | sandbox | `Sandbox.put` places planeswalkers with no loyalty counters (CR 306.5b); casting gives 7. Tests built with `put` see a 0-loyalty walker. | Ugin via put: counters `{}` |
 | F2 | WARN | rules | Enlist (an optional cost to attack, 702.154a) is paid after the attack tax rather than being part of one locked-in total cost (508.1g-h). | `cr506_combat.declare_attackers` |
 | F3 | WARN | parser | "cards in that player's hand" (Sudden Impact) counts every hand, the same defect as "their hand". The fix must cover "that player's" and "its owner's" too. Pre-existing on main. | Sudden Impact: "the number of all object in hand" |
@@ -77,3 +80,23 @@ Class C:
 - Fully read: 17578 of 32402 (54.25%). Gained 983, lost 379.
 - **LOST 379**: every cluster sampled was a wrong reading on main that is now refused, as rule 1 requires. Main read "gains protection from the color of your choice" as bare Protection, "discard X" as discard 1, "incubate X" as 0 tokens, Double team as a +1/+1 counter, "one that hasn't been chosen" as a plain choose one, "two or more creatures attack" as exactly 2, and "its controller"/"that player" with no antecedent. Accepted as corrections. The PR must still list them.
 - **CHANGED**: every ability hash changed (the IR dataclass changed shape), so I diffed the rendered IR text instead: 8953 abilities. The top clusters are fuller renderings (zones, "(once)", "you own", payment counts) or explained corrections ("another X" trigger is one, not all; scry → look at the top; "you" → "the player targeted earlier"). One cluster exposed F4 (Crew): the explainer now honestly renders the engine's N-creatures reading.
+
+## Rules session: fixes verified (main-n8yjai @ a0c91e7)
+
+- Flashback (702.34a), Think Twice: from the graveyard it is exiled on resolution; countered by Counterspell, it is still exiled; cast from hand, it goes to the graveyard (control). Force of Will's pitch cost from hand still goes to the graveyard (other alternative costs are unaffected). **OK.**
+- Library redirect (`or` on Zone.LIBRARY = 0): the code is correct. No parsed card in the pool has a "would be put into a graveyard ... library instead" replacement (Legacy Weapon's is honestly unread), so only the unit test covers it. **OK.**
+
+## Known issues reported by the rules session (2026-10-13)
+
+A. No engine state: Saddle, Soulbond, Haunt, Sunburst, Amplify, Compleated, Craft, Specialize, Harmonize's power reduction, Demonstrate, Dethrone, Myriad, Double team, Teamwork, piles (~45 cards); reveal/exile can't name a player; attack costs are mana only.
+B. ~30 cost keywords paid but maybe never read (same list as the parser's B). Note F5/F6: jump-start and aftermath are worse than "never read".
+C. CR 208.2b P/T choices are continuous effects, not copiable values.
+D. Bots see hidden information (708.5, hands, libraries).
+E. Attractions never visited (no attraction_lights data); prize and Visit modes not done.
+F. Companion conditions not checked.
+G. 201.3 interchangeable names: no data.
+H. Dungeons: Baldur's Gate Wilderness never offered; Hama Pashar not done.
+I. Linked abilities (607): no link ids from the parser; 607.1d not modelled.
+J. "Same name as" filters missing (Guardian Project, Maelstrom Pulse).
+K. The bots' mana-plan lookahead hasn't been audited.
+L. keywords.py Status field stale.
