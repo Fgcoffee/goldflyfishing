@@ -65,6 +65,14 @@ class UnparsedAbilityProvider:
 
 
 
+
+#: Alternative costs whose payment exiles the spell, instead of letting it go
+#: anywhere else, when it leaves the stack - lower-cased keyword names, as
+#: ``GameObject.alternative_cost_paid`` records them.
+_EXILED_WHEN_IT_LEAVES_THE_STACK = frozenset(
+    {"flashback", "jump-start", "aftermath", "harmonize"}
+)
+
 #: Events that can amount to a CR 700 happening - descending, a crime,
 #: expending - which ``cr700_general`` announces in turn.
 _GENERAL_TERM_EVENTS = frozenset(
@@ -537,6 +545,17 @@ class Game:
             # put on and meant nothing, so "return it with a finality counter"
             # was a plain reanimation that could be repeated.
             prospective = prospective.replaced(to_zone=Zone.EXILE)
+        if (
+            from_zone is Zone.STACK
+            and prospective.to_zone is not Zone.EXILE
+            and obj.alternative_cost_paid.lower() in _EXILED_WHEN_IT_LEAVES_THE_STACK
+        ):
+            # CR 702.34a flashback, 702.133a jump-start, 702.127a aftermath,
+            # 702.180a harmonize: a spell cast that way is exiled instead of
+            # going anywhere else as it leaves the stack - resolved, countered
+            # or bounced alike. Without this a flashed-back card went back to
+            # the graveyard and could be flashed back again for ever.
+            prospective = prospective.replaced(to_zone=Zone.EXILE)
         if self.has_replacements:
             replaced = apply_replacements(self, prospective)
             if replaced is None:
@@ -548,7 +567,10 @@ class Game:
         from ..cr700_additional_rules.cr717_attractions import junkyard_replacement
 
         prospective = junkyard_replacement(self, obj, prospective)
-        to_zone = prospective.to_zone or to_zone
+        # Compared against None: Zone.LIBRARY is 0, and "or" read a
+        # replacement sending a card to its library as no replacement at all.
+        if prospective.to_zone is not None:
+            to_zone = prospective.to_zone
         if to_zone is Zone.COMMAND:
             to_player = owner
         elif to_zone in (Zone.LIBRARY, Zone.GRAVEYARD, Zone.HAND):
