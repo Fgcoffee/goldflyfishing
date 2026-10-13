@@ -216,6 +216,100 @@ FINDINGS: tuple[Finding, ...] = (
 )
 
 
+ENGINE, PARSER = "engine", "parser"
+
+#: Where the fault most likely lies, and why. *engine*: the rules engine is
+#: missing a piece the card needs (a state, a value, a rule it does not
+#: apply). *parser*: the engine has every piece, and the text or keyword was
+#: allocated to the wrong ones - a dropped count, a dropped condition, the
+#: wrong opcode. Checked by looking for the primitive in mtgfish/rules.
+CAUSES: dict[str, tuple[str, str]] = {
+    # engine
+    "Flashback": (ENGINE, "casting from the graveyard works; the rule that exiles the"
+                  " spell afterwards (CR 702.34a) is not applied"),
+    "Soulbond": (ENGINE, "no paired state between two creatures"),
+    "Saddle": (ENGINE, "no saddled state"),
+    "Haunt": (ENGINE, "no haunting relation between a card in exile and a creature"),
+    "Sunburst": (ENGINE, "no record of the colors of mana spent to cast a spell"),
+    "Amplify": (ENGINE, "no 'reveal any number of cards from hand' step"),
+    "Compleated": (ENGINE, "no record of Phyrexian mana paid with life"),
+    "Craft": (ENGINE, "no craft cost (exiling materials) or return-transformed"),
+    "Specialize": (ENGINE, "no specialize faces (digital)"),
+    "Demonstrate": (ENGINE, "no way to copy a spell for another player"),
+    "Dethrone": (ENGINE, "no 'player with the most life' comparison"),
+    "Harmonize": (ENGINE, "no harmonize cost (tap a creature to reduce it)"),
+    "Plot": (ENGINE, "no plotted cards"),
+    "Myriad": (ENGINE, "no token copies attacking each other opponent"),
+    "Double team": (ENGINE, "no conjure-on-attack (digital)"),
+    "Teamwork": (ENGINE, "no tap-creatures-by-total-power additional cost"),
+    "Intensity": (ENGINE, "no intensity value (digital)"),
+    # parser allocation
+    "Annihilator": (PARSER, "per-player sacrifices of N exist (edicts use them); the"
+                    " keyword dropped the count and named every opponent"),
+    "Exploit": (PARSER, "optional single sacrifices exist; the keyword dropped the count"),
+    "Champion": (PARSER, "exile-until-it-leaves exists; the keyword dropped 'another'"
+                 " and the count"),
+    "Living weapon": (PARSER, "create token and attach exist; the token count was 0"),
+    "For Mirrodin!": (PARSER, "create token and attach exist; the token count was 0"),
+    "Job select": (PARSER, "create token and attach exist; built as a counter instead"),
+    "Fabricate": (PARSER, "choose-one modes exist; the token mode was dropped"),
+    "Devour": (PARSER, "any-number sacrifices exist; built as a flat counter count"),
+    "Backup": (PARSER, "targeted counters and granted abilities exist; aimed at itself"),
+    "Boast": (PARSER, "attacked-this-turn exists; the printed ability was replaced by a"
+              " counter"),
+    "Fading": (PARSER, "upkeep triggers, counter removal and sacrifice exist; only the"
+               " counters were built"),
+    "Vanishing": (PARSER, "upkeep triggers, counter removal and sacrifice exist; only the"
+                  " counters were built"),
+    "Recover": (PARSER, "graveyard triggers and pay-or-else exist; wrong trigger, no cost"),
+    "Storm": (PARSER, "the spells-cast-this-turn count exists; one copy was built"),
+    "Ripple": (PARSER, "reveal and cast-free exist; the same-name filter was dropped"),
+    "Evolve": (PARSER, "power/toughness comparisons exist; the condition was dropped"),
+    "Training": (PARSER, "attack triggers with conditions exist; the condition was dropped"),
+    "Unleash": (PARSER, "can't-block restrictions exist; the restriction was dropped"),
+    "Graft": (PARSER, "triggers exist; moving counters may also need engine work"),
+    "Modular": (PARSER, "dies triggers exist; moving counters may also need engine work"),
+    "Hideaway": (PARSER, "look-at-top and exile exist; playing the hidden card later may"
+                 " also need engine work"),
+    "Gravestorm": (PARSER, "one copy was built; a permanents-to-graveyard count may also"
+                   " need engine work"),
+}
+#: The suspect cost keywords: the cost is paid, nothing reads it afterwards.
+SUSPECT_CAUSE = (ENGINE, "the cost can be paid; the casting code never applies what"
+                 " paying it means (Buyback's return to hand, Dash's return, ...)")
+
+#: Refusals the parser makes after reading every word.
+REFUSAL_CAUSES: dict[str, tuple[str, str]] = {
+    "pile reference without a pile": (ENGINE, "the engine has no piles"),
+    "player reference on REVEAL": (ENGINE, "the reveal opcode cannot name who reveals"),
+    "player reference on EXILE": (ENGINE, "the exile opcode cannot name a player"),
+    "a combat cost other than mana": (ENGINE, "attack costs can only be mana"),
+    "a combat cost scaled by something the engine cannot count": (
+        ENGINE, "the attack cost needs a count the engine has no value for"),
+    "'its controller' with no single antecedent": (
+        PARSER, "the parser cannot decide whose controller is meant"),
+    "'that player' with no single antecedent": (
+        PARSER, "the parser cannot decide which player is meant"),
+    "characteristic of an object it cannot name": (
+        PARSER, "the parser cannot bind 'its power' (etc.) to an object"),
+    "'other target' after another target": (PARSER, "two targets the parser cannot keep apart"),
+    "unbound player reference": (PARSER, "a player reference bound to nothing"),
+    "the one who acts was named under a condition": (
+        PARSER, "the actor is named inside a condition"),
+    "refers back to another chapter": (PARSER, "a Saga chapter referring to another chapter"),
+    "a standing prohibition on whatever was just referred to": (
+        PARSER, "a lasting 'can't' on an object the parser cannot keep hold of"),
+}
+
+
+def _cause(mechanic: str, verdict: str) -> tuple[str, str]:
+    if mechanic.startswith("refused: "):
+        return REFUSAL_CAUSES.get(mechanic[len("refused: "):], (PARSER, "unclassified refusal"))
+    if verdict == SUSPECT:
+        return SUSPECT_CAUSE
+    return CAUSES.get(mechanic, (ENGINE, "unclassified"))
+
+
 def _keyword_line(keyword: str):
     """Whether an ability is a keyword line carrying this keyword: the keyword
     first, or an item of a keyword list ("Flying, annihilator 2")."""
@@ -256,12 +350,15 @@ def build(records: list[dict]) -> tuple[list[dict], dict[str, str]]:
 
 
 def _row(record: dict, mechanic: str, verdict: str, note: str) -> dict:
+    cause, why = _cause(mechanic, verdict)
     return {
         "card": record["name"],
         "rank": record.get("rank") or "",
         "counted_as_read": record["status"] == "ok",
+        "cause": cause,
         "mechanic": mechanic,
         "verdict": verdict,
+        "why": why,
         "note": note,
     }
 
@@ -275,64 +372,78 @@ def render(rows: list[dict]) -> str:
     def rank(row):
         return row["rank"] if row["rank"] != "" else 10**9
 
-    def section(verdict: str) -> list[str]:
-        names = [m for m in by_mechanic if by_mechanic[m][0]["verdict"] == verdict]
-        names.sort(key=lambda m: -len(by_mechanic[m]))
-        return names
+    def cards(cause: str, verdict: str) -> set[str]:
+        return {
+            r["card"] for r in rows
+            if r["cause"] == cause and r["verdict"] == verdict
+            and (verdict == MISSING or r["counted_as_read"])
+        }
 
-    wrong_cards = {r["card"] for r in rows if r["verdict"] == WRONG and r["counted_as_read"]}
-    missing_cards = {r["card"] for r in rows if r["verdict"] == MISSING}
-    suspect_cards = {r["card"] for r in rows if r["verdict"] == SUSPECT and r["counted_as_read"]}
     out = [
         "# Cards that don't work because of the rules engine",
         "",
         "Generated by `python -m mtgfish.tools.engine_gaps` from a census of every card",
         "legal in at least one format. Regenerated as the work changes it; do not edit by hand.",
         "",
-        "| | Cards |",
-        "|---|---|",
-        f"| **Engine does it wrong**, card currently counted as read | **{len(wrong_cards)}** |",
-        f"| **Engine lacks it**, card honestly reported as not understood | **{len(missing_cards)}** |",
-        f"| **Suspected, not yet proved**, card counted as read | {len(suspect_cards)} |",
+        "Split by where the fault most likely lies:",
         "",
-        "A card can appear under more than one mechanic. Within each mechanic, cards are",
-        "listed most played first; *read* marks a card the parser currently counts as",
-        "fully read.",
+        "- **Rules engine bugs** - the engine is missing a piece the card needs (a state,",
+        "  a value, a rule it never applies). Fixing them means engine work.",
+        "- **Parser allocation bugs** - the engine has every piece the card needs, and the",
+        "  text or keyword was wired to the wrong ones (a dropped count, a dropped",
+        "  condition, the wrong operation). Fixing them means changing what the text",
+        "  is compiled to.",
+        "",
+        "Within each, three severities: **wrong** (counted as read, plays differently from",
+        "the card - the worst case), **missing** (honestly reported as not understood) and",
+        "**suspected** (counted as read, not yet proved wrong on a board).",
+        "",
+        "| | Rules engine | Parser allocation |",
+        "|---|---|---|",
+    ]
+    for verdict, label in ((WRONG, "Wrong, counted as read"), (MISSING, "Missing, not understood"),
+                           (SUSPECT, "Suspected, counted as read")):
+        out.append(
+            f"| {label} | {len(cards(ENGINE, verdict))} | {len(cards(PARSER, verdict))} |"
+        )
+    out += [
+        "",
+        "A card can appear under more than one mechanic. Cards are listed most played",
+        "first; *(read)* marks a card the parser currently counts as fully read.",
         "",
     ]
-    titles = {
-        WRONG: "## 1. The engine does it wrong",
-        MISSING: "## 2. The engine lacks it",
-        SUSPECT: "## 3. Suspected, not yet proved",
-    }
-    blurbs = {
-        WRONG: "Each was checked on a real board or from the ability the keyword builds. "
-        "These cards look understood and play differently from the card.",
-        MISSING: "Honest failures: the words were read, and there is nothing in the engine "
-        "to tie them to.",
-        SUSPECT: "The cost can be paid, but nothing in the engine reads the keyword "
-        "afterwards (Buyback's return to hand, Dash's return at end of turn, ...). "
-        "Each needs a board test before it moves to section 1 or is cleared.",
-    }
-    for verdict in (WRONG, MISSING, SUSPECT):
-        out += [titles[verdict], "", blurbs[verdict], ""]
-        for mechanic in section(verdict):
-            group = sorted(by_mechanic[mechanic], key=rank)
-            finding = findings.get(mechanic)
-            read = sum(1 for r in group if r["counted_as_read"])
-            out.append(f"### {mechanic} ({len(group)} cards, {read} counted as read)")
-            out.append("")
-            if finding is not None:
-                cr = f"CR {finding.cr}: " if finding.cr[:1].isdigit() else ""
-                out.append(f"- **Card says:** {cr}{finding.card_says}")
-                out.append(f"- **Engine does:** {finding.engine_does}")
-                out.append(f"- **Evidence:** {finding.evidence}")
-                out.append("")
+    titles = {WRONG: "Wrong", MISSING: "Missing", SUSPECT: "Suspected, not yet proved"}
+    for number, (cause, heading) in enumerate(
+        ((ENGINE, "Could be rules engine bugs"), (PARSER, "Could be parser allocation bugs")),
+        start=1,
+    ):
+        out += [f"## {number}. {heading}", ""]
+        for verdict in (WRONG, MISSING, SUSPECT):
             names = [
-                f"{r['card']}{' *(read)*' if r['counted_as_read'] else ''}" for r in group
+                m for m, group in by_mechanic.items()
+                if group[0]["cause"] == cause and group[0]["verdict"] == verdict
             ]
-            out.append(", ".join(names))
-            out.append("")
+            if not names:
+                continue
+            names.sort(key=lambda m: -len(by_mechanic[m]))
+            out += [f"### {number}.{'abc'[(WRONG, MISSING, SUSPECT).index(verdict)]} {titles[verdict]}", ""]
+            for mechanic in names:
+                group = sorted(by_mechanic[mechanic], key=rank)
+                finding = findings.get(mechanic)
+                read = sum(1 for r in group if r["counted_as_read"])
+                out.append(f"#### {mechanic} ({len(group)} cards, {read} counted as read)")
+                out.append("")
+                out.append(f"- **Likely cause:** {group[0]['why']}")
+                if finding is not None:
+                    cr = f"CR {finding.cr}: " if finding.cr[:1].isdigit() else ""
+                    out.append(f"- **Card says:** {cr}{finding.card_says}")
+                    out.append(f"- **Engine does:** {finding.engine_does}")
+                    out.append(f"- **Evidence:** {finding.evidence}")
+                out.append("")
+                out.append(", ".join(
+                    f"{r['card']}{' *(read)*' if r['counted_as_read'] else ''}" for r in group
+                ))
+                out.append("")
     return "\n".join(out)
 
 
@@ -348,7 +459,7 @@ def main(argv: list[str] | None = None) -> int:
     with args.out.with_suffix(".csv").open("w", newline="", encoding="utf8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()) if rows else ["card"])
         writer.writeheader()
-        writer.writerows(sorted(rows, key=lambda r: (r["verdict"], r["mechanic"], r["card"])))
+        writer.writerows(sorted(rows, key=lambda r: (r["cause"], r["verdict"], r["mechanic"], r["card"])))
     counts = collections.Counter(r["verdict"] for r in rows)
     print(f"wrote {args.out} ({json.dumps(dict(counts))} card-mechanic rows)")
     return 0
