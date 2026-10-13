@@ -22,6 +22,19 @@ if TYPE_CHECKING:
     from .game import Game
 
 
+def _attacking_the_most_life(game, source) -> bool:
+    """CR 702.105a: the creature attacks a player, and no player still in the
+    game has more life than that one (a tie for the most counts)."""
+    combat = getattr(game, "combat", None)
+    if combat is None or source not in combat.attacking:
+        return False
+    if combat.attacking_permanent.get(source, NO_OBJECT) != NO_OBJECT:
+        return False  # attacking a planeswalker or a battle
+    defender = combat.attacking[source]
+    living = [p.life for p in game.players if not p.has_lost]
+    return bool(living) and game.player(defender).life >= max(living)
+
+
 def _remembered_matches(game, condition, remembered, controller) -> bool:
     """Whether the object the resolution last acted on fits the description.
 
@@ -259,6 +272,9 @@ def holds(
         if spell is None:
             return False
         return not spell.mana_spent
+
+    if kind is ConditionKind.ATTACKING_PLAYER_WITH_MOST_LIFE:
+        return _attacking_the_most_life(game, source)
 
     if kind is ConditionKind.IS_HARNESSED:
         obj = game.objects.get(source)

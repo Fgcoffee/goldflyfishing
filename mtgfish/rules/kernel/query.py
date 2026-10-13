@@ -127,6 +127,9 @@ class ValueKind(IntEnum):
     EVENT_COUNT_THIS_TURN = 26
     #: CR 700.8: the size of the player's party.
     PARTY_SIZE = 60
+    #: CR 702.44a: how many colours of mana were spent casting this object -
+    #: sunburst and the converge ability word.
+    COLORS_OF_MANA_SPENT = 61
     #: A characteristic summed across every object matching a filter: "the
     #: total power of creatures you control". The third way to ask about a
     #: set, alongside GREATEST_AMONG and LEAST_AMONG, and read the same way -
@@ -767,6 +770,9 @@ class ConditionKind(IntEnum):
     HAS_ENDURING_STORY = 27
     #: CR 702.186b: whether this permanent is harnessed.
     IS_HARNESSED = 28
+    #: CR 702.105a: this creature is attacking the player with the most life
+    #: or tied for the most life - a player, not a planeswalker or battle.
+    ATTACKING_PLAYER_WITH_MOST_LIFE = 85
     #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
     #: set, names the dungeon ("if you haven't completed Tomb of
     #: Annihilation" is the negation of the named form).

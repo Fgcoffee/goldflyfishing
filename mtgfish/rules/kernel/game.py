@@ -623,6 +623,16 @@ class Game:
             from ..cr300_card_types.cr300_characteristics import entering_counters
 
             entering = entering_counters(self.characteristics(obj))
+            if obj.phyrexian_paid_with_life and self.characteristics(obj).has_keyword(
+                "Compleated"
+            ):
+                # CR 702.150a: two fewer loyalty counters for each Phyrexian
+                # symbol its caster paid with life.
+                fewer = 2 * obj.phyrexian_paid_with_life
+                entering = tuple(
+                    (kind, max(0, amount - fewer) if kind == "loyalty" else amount)
+                    for kind, amount in entering
+                )
 
         destination_player = to_player if to_player is not None else owner
 

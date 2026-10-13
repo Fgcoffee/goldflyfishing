@@ -739,6 +739,7 @@
     "702.3b": "A creature with defender can’t attack.",
     "702.41": "Affinity",
     "702.43a": "Modular represents both a static ability and a triggered ability. “Modular N” means “This permanent enters with N +1/+1 counters on it” and “When this permanent is put into a graveyard from the battlefield, you may put a +1/+1 counter on target artifact creature for each +1/+1 counter on this permanent.”",
+    "702.44a": "Sunburst is a static ability that functions as an object is entering the battlefield. “Sunburst” means “If this object is entering as a creature, ignoring any type-changing effects that would affect it, it enters with a +1/+1 counter on it for each color of mana spent to cast it. Otherwise, it enters with a charge counter on it for each color of mana spent to cast it.”",
     "702.46a": "Soulshift is a triggered ability. “Soulshift N” means “When this permanent is put into a graveyard from the battlefield, you may return target Spirit card with mana value N or less from your graveyard to your hand.”",
     "702.49a": "Ninjutsu is an activated ability that functions only while the card with ninjutsu is in a player’s hand. “Ninjutsu [cost]” means “[Cost], Reveal this card from your hand, Return an unblocked attacking creature you control to its owner’s hand: Put this card onto the battlefield from your hand tapped and attacking.”",
     "702.49c": "The creature put onto the battlefield with the ninjutsu ability enters attacking the same player, planeswalker, or battle as the creature that was returned to its owner’s hand.",

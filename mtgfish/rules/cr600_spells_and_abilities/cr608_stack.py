@@ -173,6 +173,8 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # of them read the new object's defaults and was never true.
         permanent.additional_costs_paid = obj.additional_costs_paid
         permanent.mana_spent = obj.mana_spent
+        permanent.mana_spent_colors = obj.mana_spent_colors
+        permanent.phyrexian_paid_with_life = obj.phyrexian_paid_with_life
         permanent.alternative_cost_paid = obj.alternative_cost_paid
         # It got here by resolving as a spell, which is what "if you cast it"
         # asks. A permanent put onto the battlefield never passes through

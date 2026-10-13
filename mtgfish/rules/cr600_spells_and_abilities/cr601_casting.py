@@ -952,8 +952,15 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
 
         for kind, amount in payment.mana:
             player.mana_pool.remove(kind, amount)
+            # CR 702.44a and "converge": which colours were spent casting it -
+            # a spell only, not a permanent paying to turn face up.
+            if amount > 0 and context is not None and context.zone is Zone.STACK:
+                context.mana_spent_colors |= int(kind.color)
         if payment.life:
             player.lose_life(payment.life)
+            # CR 702.150a: each Phyrexian symbol paid with life costs 2.
+            if context is not None and context.zone is Zone.STACK:
+                context.phyrexian_paid_with_life += payment.life // 2
         game.emit(Event(EventKind.MANA_SPENT, player=player_id, amount=payment.total_mana))
 
     for component in total.additional:

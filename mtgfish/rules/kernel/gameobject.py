@@ -218,6 +218,11 @@ class GameObject:
     #: How much mana was actually spent casting this spell (CR 601.2g). Zero
     #: for a free cast, which is what Lavinia and friends key off.
     mana_spent: int = 0
+    #: CR 702.44a: the colours of the mana actually spent casting this spell,
+    #: as Color flags - what sunburst and converge count.
+    mana_spent_colors: int = 0
+    #: CR 702.150a: how many Phyrexian symbols in its cost were paid with life.
+    phyrexian_paid_with_life: int = 0
 
     # -- Commander (CR 903.3) -----------------------------------------------
     is_commander: bool = False
