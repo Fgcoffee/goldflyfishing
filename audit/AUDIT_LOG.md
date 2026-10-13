@@ -12,7 +12,7 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 | Branch | Owner | Verdict | Notes |
 |---|---|---|---|
-| `claude/lucid-einstein-dml803` @ 043206d | parser | pending | 105 commits not in main. PR #15 is already MERGED, so this work needs a new PR. Tests and census diff running. |
+| `claude/lucid-einstein-dml803` @ 043206d | parser | BLOCK (process) | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
 | `wip-misbuilt-keywords` (local, unpushed) | parser | not received | |
 | rules session branch | rules | not received | |
 
@@ -37,6 +37,7 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 | # | Sev | Owner | Finding | Evidence |
 |---|---|---|---|---|
+| F4 | **BLOCK** | rules | Crew N taps N creatures instead of any number with total power N or more (CR 702.122a). `_crew` in `cr702_keyword_impl.py` builds `TAP_OTHER amount=N` but its text says "total power". Wrong reading counted as understood. Pre-existing on main. | Cultivator's Caravan (Crew 3): 3x Llanowar Elves can crew; one Hill Giant can't; Bears + Elves can't |
 | F1 | WARN | sandbox | `Sandbox.put` places planeswalkers with no loyalty counters (CR 306.5b); casting gives 7. Tests built with `put` see a 0-loyalty walker. | Ugin via put: counters `{}` |
 | F2 | WARN | rules | Enlist (an optional cost to attack, 702.154a) is paid after the attack tax rather than being part of one locked-in total cost (508.1g-h). | `cr506_combat.declare_attackers` |
 | F3 | WARN | parser | "cards in that player's hand" (Sudden Impact) counts every hand, the same defect as "their hand". The fix must cover "that player's" and "its owner's" too. Pre-existing on main. | Sudden Impact: "the number of all object in hand" |
@@ -70,3 +71,9 @@ Class C:
 - "cards in their hand"/"its" counts every hand (see F3: also "that player's").
 - Bot always pays attack taxes (strategy, not rules).
 - Unread so far: War Tax-style one-turn taxes, Station N+, "up to two target artifacts".
+
+## Census diff: parser branch @ 043206d vs main @ ab752fa
+
+- Fully read: 17578 of 32402 (54.25%). Gained 983, lost 379.
+- **LOST 379**: every cluster sampled was a wrong reading on main that is now refused, as rule 1 requires. Main read "gains protection from the color of your choice" as bare Protection, "discard X" as discard 1, "incubate X" as 0 tokens, Double team as a +1/+1 counter, "one that hasn't been chosen" as a plain choose one, "two or more creatures attack" as exactly 2, and "its controller"/"that player" with no antecedent. Accepted as corrections. The PR must still list them.
+- **CHANGED**: every ability hash changed (the IR dataclass changed shape), so I diffed the rendered IR text instead: 8953 abilities. The top clusters are fuller renderings (zones, "(once)", "you own", payment counts) or explained corrections ("another X" trigger is one, not all; scry → look at the top; "you" → "the player targeted earlier"). One cluster exposed F4 (Crew): the explainer now honestly renders the engine's N-creatures reading.
