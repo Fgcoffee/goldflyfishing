@@ -2118,6 +2118,19 @@ def _do_harness(resolution: Resolution, effect: Effect) -> None:
             resolution.game.log.record(resolution.game, f"{obj} becomes harnessed", kind="designation")
 
 
+def _do_become_saddled(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.171a/c: the permanent becomes saddled until end of turn, and
+    the creatures tapped to pay for it are what saddled it."""
+    game = resolution.game
+    for obj in _objects(resolution, effect):
+        if obj.zone is not Zone.BATTLEFIELD:
+            continue
+        obj.saddled_turn = game.turn
+        obj.saddled_by = tuple(obj.cost_paid_objects)
+        game.log.record(game, f"{obj} becomes saddled", kind="designation")
+        game.emit(Event(EventKind.BECAME_SADDLED, object_id=obj.id, player=obj.controller))
+
+
 def _do_enters_as_choice(resolution: Resolution, effect: Effect) -> None:
     """CR 208.2b, reached by resolution rather than by entering: the choice
     is made for the permanent the effect refers to. As a printed "as this
@@ -2677,6 +2690,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.VILLAINOUS_CHOICE: _do_villainous_choice,
     EffectKind.HARNESS: _do_harness,
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
+    EffectKind.BECOME_SADDLED: _do_become_saddled,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.

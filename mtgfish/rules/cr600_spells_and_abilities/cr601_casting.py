@@ -1176,9 +1176,15 @@ def _pay_component(
             )
             if obj.tapped is not tapping
         ]
-        if len(candidates) < wanted:
+        if component.total_power and tapping:
+            chosen = creatures_with_total_power(game, candidates, amount)
+            if chosen is None:
+                raise CastError(f"not enough total power to tap ({amount})")
+        elif len(candidates) < wanted:
             raise CastError("not enough permanents to tap")
-        for obj in candidates[:wanted]:
+        else:
+            chosen = candidates[:wanted]
+        for obj in chosen:
             obj.tapped = tapping
             context.cost_paid_objects.append(obj.id)
             game.emit(
@@ -1833,6 +1839,32 @@ def activation_mana_cost(game: Game, source: GameObject, ability: Ability) -> Ma
     return mana.reduced_by_mana(own) if own else mana
 
 
+def creatures_with_total_power(game: Game, candidates: list, needed: int) -> list | None:
+    """Untapped creatures whose total power is at least ``needed`` (crew, CR
+    702.122a; saddle, CR 702.171a), or None if every one together falls short.
+
+    Which ones is the player's choice; without an agent, the fewest and
+    weakest that suffice: the smallest single creature that is enough on its
+    own, otherwise the strongest first until the total is reached - so a
+    3-power cost taps one 3/3 rather than three 1/1s and a 5/5.
+    """
+    power = {obj.id: max(0, game.characteristics(obj).power or 0) for obj in candidates}
+    if needed <= 0:
+        return []
+    if sum(power.values()) < needed:
+        return None
+    alone = sorted((o for o in candidates if power[o.id] >= needed), key=lambda o: (power[o.id], o.id))
+    if alone:
+        return [alone[0]]
+    chosen, total = [], 0
+    for obj in sorted(candidates, key=lambda o: (-power[o.id], o.id)):
+        chosen.append(obj)
+        total += power[obj.id]
+        if total >= needed:
+            return chosen
+    return None
+
+
 def _is_this_card(component: CostComponent) -> bool:
     """"Discard this card", "Exile this card from your hand" - paid by the source."""
     return component.filter is not None and component.filter.source_only
@@ -1885,7 +1917,11 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
                 )
                 if obj.tapped is not tapping
             ]
-            if len(available) < wanted:
+            if component.total_power and tapping:
+                needed = evaluate(game, component.amount, controller=player.id)
+                if creatures_with_total_power(game, available, needed) is None:
+                    return False
+            elif len(available) < wanted:
                 return False
         elif component.kind is CostKind.UNPARSED:
             return False

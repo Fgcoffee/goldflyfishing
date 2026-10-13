@@ -210,6 +210,11 @@ class GameObject:
     #: CR 701.64b: the harnessed designation. It lasts until the permanent
     #: leaves the battlefield, which CR 400.7 gives by making a new object.
     harnessed: bool = False
+    #: CR 702.171b: the turn this permanent became saddled (0: never). It is
+    #: saddled until that turn ends or it leaves the battlefield, which CR
+    #: 400.7 gives by making a new object. CR 702.171c: what saddled it.
+    saddled_turn: int = 0
+    saddled_by: tuple = ()
     #: CR 702.190b: a spell whose alternative cost puts it onto the battlefield
     #: tapped and attacking, and the objects paid for it, whose attack it
     #: joins (CR 506.3a).

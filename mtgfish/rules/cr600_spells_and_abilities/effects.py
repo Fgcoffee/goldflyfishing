@@ -229,6 +229,8 @@ class EffectKind(IntEnum):
     #: choice of" - ``children`` are the options, each the continuous effects
     #: that make it that choice. Applied as a self-entry replacement.
     ENTERS_AS_CHOICE = 280
+    #: CR 702.171a: "this permanent becomes saddled until end of turn".
+    BECOME_SADDLED = 285
     #: CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread -
     #: ``keywords[0]`` says which. Put the ``targets`` cards onto the
     #: battlefield face down, one at a time; for manifest dread, look at the

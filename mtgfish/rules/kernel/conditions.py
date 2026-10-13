@@ -273,6 +273,15 @@ def holds(
             return False
         return not spell.mana_spent
 
+    if kind is ConditionKind.IS_SADDLED:
+        obj = game.objects.get(source)
+        return bool(
+            obj is not None
+            and obj.zone is Zone.BATTLEFIELD
+            and obj.saddled_turn == game.turn
+            and obj.saddled_turn
+        )
+
     if kind is ConditionKind.ATTACKING_PLAYER_WITH_MOST_LIFE:
         return _attacking_the_most_life(game, source)
 

@@ -76,6 +76,10 @@ class CostComponent:
     scale: Value | None = None
     filter: ObjectFilter | None = None
     counter_type: str = ""
+    #: For TAP_OTHER: ``amount`` is a total power to reach, not a number of
+    #: permanents - crew (CR 702.122a) and saddle (CR 702.171a) tap "any
+    #: number of untapped creatures with total power N or greater".
+    total_power: bool = False
     text: str = ""
 
     @property

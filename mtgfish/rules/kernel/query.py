@@ -773,6 +773,9 @@ class ConditionKind(IntEnum):
     #: CR 702.105a: this creature is attacking the player with the most life
     #: or tied for the most life - a player, not a planeswalker or battle.
     ATTACKING_PLAYER_WITH_MOST_LIFE = 85
+    #: CR 702.171b: whether this permanent is saddled ("attacks while
+    #: saddled").
+    IS_SADDLED = 86
     #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
     #: set, names the dungeon ("if you haven't completed Tomb of
     #: Annihilation" is the negation of the named form).

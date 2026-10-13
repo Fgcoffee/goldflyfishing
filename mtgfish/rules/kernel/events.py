@@ -142,6 +142,9 @@ class EventKind(IntEnum):
     CRIME_COMMITTED = 331
     #: CR 700.14: a player's mana spent on spells this turn reached ``amount``.
     EXPENDED = 332
+    #: CR 702.171a: a permanent became saddled ("whenever this becomes
+    #: saddled").
+    BECAME_SADDLED = 380
 
     # -- dungeons (CR 309) --------------------------------------------------
     #: CR 309.4c: a venture marker moved into a room. ``object_id`` is the
