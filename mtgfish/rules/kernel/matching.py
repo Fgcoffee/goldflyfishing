@@ -158,6 +158,15 @@ def matches(
         if obj.entered_this_turn(game.turn) != spec.entered_this_turn:
             return False
 
+    if spec.in_pair_with_source is not None:
+        from ..cr700_additional_rules.cr702_soulbond import partner_of
+
+        anchor = game.objects.get(source)
+        partner = partner_of(game, anchor) if anchor is not None else None
+        in_pair = partner is not None and obj.id in (anchor.id, partner.id)
+        if in_pair != spec.in_pair_with_source:
+            return False
+
     if spec.modified is not None or spec.activated_this_turn is not None:
         from ..cr700_additional_rules.cr700_general import (
             is_modified,

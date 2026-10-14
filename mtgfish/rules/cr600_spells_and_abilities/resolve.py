@@ -2118,6 +2118,36 @@ def _do_harness(resolution: Resolution, effect: Effect) -> None:
             resolution.game.log.record(resolution.game, f"{obj} becomes harnessed", kind="designation")
 
 
+def _do_pair(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.95a/c: pair the soulbond creature with "that creature" - the
+    one whose entering triggered this - or, when the soulbond creature itself
+    entered, with an unpaired creature its controller chooses."""
+    from ..cr700_additional_rules.cr702_soulbond import is_still_paired, pair
+
+    game = resolution.game
+    source = game.objects.get(resolution.source)
+    if source is None:
+        return
+    event = getattr(resolution.stack_object, "trigger_event", None)
+    other = game.objects.get(event.object_id) if event is not None else None
+    if other is None or other.id == source.id:
+        candidates = [
+            obj
+            for obj in game.permanents(resolution.controller)
+            if obj.id != source.id
+            and game.characteristics(obj).is_creature
+            and not is_still_paired(game, obj)
+        ]
+        if not candidates:
+            return
+        chooser = getattr(game.agent_for(resolution.controller), "choose_pair", None)
+        other = chooser(game, resolution.controller, source, candidates) if chooser else None
+        if other not in candidates:
+            other = max(candidates, key=lambda o: (game.characteristics(o).power or 0, -o.id))
+    if _wants(resolution, effect):
+        pair(game, source, other, resolution.controller)
+
+
 def _do_become_saddled(resolution: Resolution, effect: Effect) -> None:
     """CR 702.171a/c: the permanent becomes saddled until end of turn, and
     the creatures tapped to pay for it are what saddled it."""
@@ -2691,6 +2721,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.HARNESS: _do_harness,
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
     EffectKind.BECOME_SADDLED: _do_become_saddled,
+    EffectKind.PAIR: _do_pair,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.

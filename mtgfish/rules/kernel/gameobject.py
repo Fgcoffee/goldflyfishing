@@ -214,6 +214,10 @@ class GameObject:
     #: saddled until that turn ends or it leaves the battlefield, which CR
     #: 400.7 gives by making a new object. CR 702.171c: what saddled it.
     saddled_turn: int = 0
+    #: CR 702.95b: the creature this one is paired with, and the player it
+    #: was paired under (CR 702.95e ends it if control changes).
+    paired_with: ObjectId = NO_OBJECT
+    pair_controller: PlayerId = NO_PLAYER
     saddled_by: tuple = ()
     #: CR 702.190b: a spell whose alternative cost puts it onto the battlefield
     #: tapped and attacking, and the objects paid for it, whose attack it

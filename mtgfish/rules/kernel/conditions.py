@@ -273,6 +273,12 @@ def holds(
             return False
         return not spell.mana_spent
 
+    if kind is ConditionKind.IS_PAIRED:
+        from ..cr700_additional_rules.cr702_soulbond import is_still_paired
+
+        obj = game.objects.get(source)
+        return obj is not None and is_still_paired(game, obj)
+
     if kind is ConditionKind.IS_SADDLED:
         obj = game.objects.get(source)
         return bool(

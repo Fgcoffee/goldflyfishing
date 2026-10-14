@@ -464,6 +464,9 @@ class ObjectFilter:
     #: CR 700.9: modified - counters, equipped, or enchanted by its
     #: controller's Aura.
     modified: bool | None = None
+    #: CR 702.95b: this creature and the creature it is paired with - "each
+    #: of those creatures has ...". Matches nothing while it is unpaired.
+    in_pair_with_source: bool | None = None
     #: CR 700.10: the source of an ability activated this turn.
     activated_this_turn: bool | None = None
     face_down: bool | None = None
@@ -776,6 +779,8 @@ class ConditionKind(IntEnum):
     #: CR 702.171b: whether this permanent is saddled ("attacks while
     #: saddled").
     IS_SADDLED = 86
+    #: CR 702.95b: whether this creature is paired.
+    IS_PAIRED = 87
     #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
     #: set, names the dungeon ("if you haven't completed Tomb of
     #: Annihilation" is the negation of the named form).

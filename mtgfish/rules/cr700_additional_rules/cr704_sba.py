@@ -84,6 +84,11 @@ def _one_pass(game: Game) -> bool:
     commander_moves = _check_commander_zone_choice(game)
 
     _grant_enduring_stories(game)
+    # CR 702.95e: a pair ends the moment either creature stops qualifying;
+    # checked here, where the board is looked at before each priority.
+    from .cr702_soulbond import end_broken_pairs
+
+    end_broken_pairs(game)
     _check_players(game, losers)
     _check_permanents(
         game,
