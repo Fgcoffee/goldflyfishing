@@ -194,6 +194,7 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             # below.
             may_cast_from_here = zone in (Zone.HAND, Zone.COMMAND) or (
                 obj.playable_from_here_by == player_id
+                and game.turn >= obj.playable_from_turn
             )
             if may_cast_from_here and chars.has_mana_cost:
                 if _affordable(game, player_id, obj, zone, chars):
@@ -303,6 +304,10 @@ def _affordable_alternative(
         cost = cost.increased_by(
             player.commander_tax(game.commander_identity(obj.id))
         )
+    # CR 702.119a: an emerge cost is cheaper by what is sacrificed for it.
+    from ..cr700_additional_rules.cr702_paid_costs import emerge_discount
+
+    cost = cost.reduced_by(emerge_discount(game, player_id, alternative))
     if find_payment(player.mana_pool, cost, life_available=player.life - 1):
         return True
 

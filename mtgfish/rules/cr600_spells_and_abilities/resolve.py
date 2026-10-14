@@ -448,6 +448,8 @@ def _do_exile(resolution: Resolution, effect: Effect) -> None:
         # never exiled.
         return
 
+    from ..cr700_additional_rules.cr702_paid_costs import WARPED
+
     returning: list[ObjectId] = []
     # CR 406.3: "exile it face down".
     face_down = "face down" in effect.keywords
@@ -461,6 +463,12 @@ def _do_exile(resolution: Resolution, effect: Effect) -> None:
         )
         if until_source_leaves and exiled is not None:
             returning.append(exiled.id)
+        if exiled is not None and WARPED in effect.keywords:
+            # CR 702.185a: its owner may cast it once this turn has ended,
+            # for as long as it remains exiled - which CR 400.7 bounds.
+            exiled.playable_from_here_by = exiled.owner
+            exiled.playable_face = exiled.face_index
+            exiled.playable_from_turn = game.turn + 1
     if returning:
         _return_when_the_source_leaves(resolution, tuple(returning))
 
