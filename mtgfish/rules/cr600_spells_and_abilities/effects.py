@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 
 from ..kernel.enums import CardType, Color, Supertype, Zone
-from ..kernel.query import ALWAYS, ZERO, Condition, ObjectFilter, PlayerFilter, Value
+from ..kernel.query import ALWAYS, ZERO, Condition, ObjectFilter, PlayerFilter, PlayerScope, Value
 
 
 class EffectKind(IntEnum):
@@ -67,6 +67,14 @@ class EffectKind(IntEnum):
     PUT_ON_LIBRARY = 34
     CREATE_TOKEN = 35
     EXPLORE = 36
+    #: "Look at the top N cards of your library" / "reveal the top N cards"
+    #: (CR 701.20 with ``keywords`` holding "reveal"). Nothing moves: the
+    #: cards are set aside, where they are, as the pile the rest of the
+    #: resolution chooses among - "put one of them into your hand", "the rest
+    #: on the bottom in a random order" (``ObjectFilter.from_pile``). It is
+    #: not scry: looking puts nothing anywhere, and a scry that the default
+    #: agent used to bottom cards with was how "look at the top card" dug.
+    LOOK_AT_TOP = 10001
 
     # -- life and damage ----------------------------------------------------
     DAMAGE = 50
@@ -78,6 +86,12 @@ class EffectKind(IntEnum):
     REDIRECT_DAMAGE = 56
     ADD_POISON = 57
     FIGHT = 58
+    #: "*Target creature you control* deals damage equal to its power to
+    #: ...", "*target creature you control* fights ...": a target chosen
+    #: only to be the one who acts (CR 115.1). Nothing is done to it; the
+    #: resolution remembers it, legal or not (CR 608.2b), for the
+    #: instruction that follows to name as its dealer or fighter.
+    DESIGNATE = 59
 
     # -- permanents ---------------------------------------------------------
     TAP = 70
@@ -90,6 +104,12 @@ class EffectKind(IntEnum):
     GAIN_CONTROL = 77
     EXCHANGE_CONTROL = 78
     TRANSFORM = 79
+    #: CR 701.10e: "double the number of +1/+1 counters on ..." - each object
+    #: gets as many more of that kind as it already has. ``counter_type``
+    #: empty means each kind of counter on it ("double the number of each
+    #: kind of counter"). Not ADD_COUNTERS with an amount: the amount is a
+    #: different number for every object.
+    DOUBLE_COUNTERS = 88
     TURN_FACE_UP = 80
     TURN_FACE_DOWN = 81
     PHASE_OUT = 82
@@ -225,6 +245,13 @@ class EffectKind(IntEnum):
     VILLAINOUS_CHOICE = 223
     #: CR 701.64a: "harness [this permanent]" - it becomes harnessed.
     HARNESS = 224
+    #: CR 702.112a-b: the permanents in ``targets`` (the source, if none)
+    #: become renowned.
+    BECOME_RENOWNED = 18001
+    #: "[target creature] blocks this creature [this combat] if able" - each
+    #: object in ``targets`` is under a blocking requirement (CR 509.1c)
+    #: naming the source as what it must block, for ``duration``.
+    BLOCKS_SOURCE_IF_ABLE = 18002
     #: CR 208.2b: "as this enters [or is turned face up], it becomes your
     #: choice of" - ``children`` are the options, each the continuous effects
     #: that make it that choice. Applied as a self-entry replacement.
@@ -249,6 +276,31 @@ class EffectKind(IntEnum):
     #: CR 701.52a: each of ``players`` rolls a six-sided die to visit their
     #: Attractions.
     ROLL_TO_VISIT = 271
+
+    # -- digital-only mechanics (MTG Arena) ---------------------------------
+    #: These are not in the Comprehensive Rules at all; they exist only on MTG
+    #: Arena, whose own published descriptions are the rules they follow. See
+    #: ``cr700_additional_rules/digital_mechanics.py`` for each one's source.
+    #:
+    #: "[objects] perpetually [change]": ``targets`` names the objects, settled
+    #: as the effect resolves; ``children`` are the layered changes (MODIFY_PT,
+    #: GRANT_ABILITY, SET_PT, ADD_TYPE ...), each aimed at its own object
+    #: (``targets`` None). The change is bound to each card for the rest of the
+    #: game, following it from zone to zone. ``keywords`` holds "at random"
+    #: when the objects are a random pick among those matching.
+    PERPETUALLY = 6000
+    #: "conjure [N] card(s) named X [into a zone]": create cards from outside
+    #: the game, owned by ``players``. a ``keywords`` entry "named:X" names the card (see
+    #: ``digital_mechanics.conjured_name``); or
+    #: ``targets`` gives objects whose card is used - a "duplicate" (marked in
+    #: ``keywords``) also keeps the original's perpetual changes. ``zone`` is
+    #: where they go, ``amount`` how many, and ``amount2`` a library position
+    #: counted from the top (zero for none).
+    CONJURE = 6001
+    #: "seek [N] [filter] card(s)": each of ``players`` puts ``amount`` cards
+    #: at random from among the cards in their library matching ``targets``
+    #: into their hand (``zone``, which defaults to the hand).
+    SEEK = 6002
 
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the
@@ -367,6 +419,20 @@ class Effect:
     #: described at resolution. This distinction decides whether the spell can
     #: be cast with no legal object, and whether it fizzles (CR 608.2b).
     is_targeted: bool = False
+    #: CR 115.3, 601.2c: one word "target" governing two verbs - "target
+    #: creature gets +2/+0 *and gains* first strike". The second instruction
+    #: acts on the target chosen for the targeted instruction just before it
+    #: and holds no target of its own, so the two can never be pointed at
+    #: different objects. Checked for legality on its own filter as it
+    #: resolves (CR 608.2b), exactly as the first half is.
+    same_target: bool = False
+    #: "Target creature gets +2/+2. *Another* target creature gets -2/-2":
+    #: after an earlier target, "other" is other than that target. CR 115.3
+    #: would let one object be chosen for each instance of the word
+    #: "target"; the text forbids it here, so nothing chosen for this target
+    #: may be something chosen for an earlier target of the same spell or
+    #: ability (CR 601.2c: targets must fit the targeting criteria).
+    distinct_from_earlier_targets: bool = False
 
     duration: int = 0  # rules.kernel.enums.Duration; int to avoid a circular import
     zone: Zone | None = None
@@ -383,6 +449,21 @@ class Effect:
     #: doubles; Hardened Scales adds. Both exist, so both are expressible, and
     #: the multiplier applies before the addition.
     multiplier: int = 1
+    #: For PREVENT_DAMAGE and a damage REPLACEMENT: whose damage is caught -
+    #: "dealt by non-Spider creatures", "if a source you control would deal
+    #: damage". ``targets`` and ``players`` are the *recipient*, which is a
+    #: different object entirely.
+    damage_source: ObjectFilter | None = None
+    #: For PREVENT_DAMAGE: "dealt to *and dealt by*" ``targets`` (CR 615) -
+    #: the shield catches damage whichever way round the object is involved.
+    both_ways: bool = False
+    #: For REPLACEMENT: the player doing the replaced thing - "if *you* would
+    #: put one or more counters", "if an opponent would".
+    actor: PlayerFilter | None = None
+    #: For a zone-change REPLACEMENT: where the replaced move was headed
+    #: ("would be put into a graveyard"). ``zone`` is where it goes instead,
+    #: and ``from_zone`` narrows where it was coming from.
+    event_zone: Zone | None = None
     #: CR 610.3c: an object returned to the battlefield by the second one-shot
     #: effect of an "until" exile returns under its owner's control, not under
     #: the control of whoever is returning it.
@@ -429,6 +510,18 @@ class Effect:
     #: ceiling, not a requirement. Plain "choose one" is not up-to: a mode has
     #: to be chosen where a legal one exists.
     modes_up_to: bool = False
+    #: CR 700.2: the floor under an up-to budget. "Choose one or both" and
+    #: "choose one or more" are up-to choices that still demand one mode;
+    #: "choose any number" and "choose up to one" demand none. Zero, and
+    #: meaningless, when ``modes_up_to`` is not set: the budget is then both
+    #: the floor and the ceiling.
+    modes_at_least: int = 0
+    #: CR 700.2: a header that changes when a condition holds as the modes
+    #: are chosen - "Choose one. If this spell was kicked, choose any number
+    #: instead." Empty, or ``(condition, budget, up_to, at_least)``: the
+    #: budget, ``modes_up_to`` and ``modes_at_least`` that replace this
+    #: effect's own when ``condition`` is true.
+    modes_instead: tuple = ()
     #: The "otherwise" branch of a CONDITIONAL.
     otherwise: tuple[Effect, ...] = ()
 
@@ -479,6 +572,10 @@ class Effect:
     #: For ADD_MANA: produce the colour this permanent's controller chose,
     #: rather than a colour fixed when the card was parsed.
     colors_chosen: bool = False
+    #: For ADD_MANA: "of any type that land produced" - one of the types
+    #: the tapping this ability triggered on produced (the TAPPED_FOR_MANA
+    #: event's ``data``, CR 106.12a); none without one (CR 106.5).
+    colors_from_trigger: bool = False
     #: For ADD_MANA: "of any color in your commander's color identity" - the
     #: colours on offer are narrowed to that identity (CR 903.4), and there
     #: are none without a commander (CR 903.4f).
@@ -511,6 +608,41 @@ class Effect:
     @property
     def is_continuous(self) -> bool:
         return self.kind in CONTINUOUS_KINDS
+
+    @property
+    def targets_its_player(self) -> bool:
+        """Whether the target is the *player*, with ``targets`` describing
+        what of theirs the instruction acts on.
+
+        "Target player sacrifices a creature", "exile target player's
+        graveyard", "look at target opponent's hand": the word "target"
+        belongs to the player (CR 115.1), who is chosen as the spell or
+        ability goes on the stack (CR 601.2c). The creature, graveyard or hand
+        is not a target - it is found, or chosen by that player, as the
+        instruction is carried out (CR 608.2d).
+        """
+        return (
+            self.is_targeted
+            and self.targets is not None
+            and self.players is not None
+            and self.players.scope in (PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT)
+        )
+
+    @property
+    def targets_a_player(self) -> bool:
+        """Whether this instruction's target is a player and only a player."""
+        return self.is_targeted and (self.targets is None or self.targets_its_player)
+
+    @property
+    def target_optional(self) -> bool:
+        """"Up to one target ...": the target may be left unchosen (CR 601.2c).
+        A player named as the target is never optional however many of their
+        objects the instruction then acts on."""
+        return (
+            self.targets is not None
+            and self.targets.up_to
+            and not self.targets_its_player
+        )
 
     def walk(self):
         """Yield this effect and every descendant."""

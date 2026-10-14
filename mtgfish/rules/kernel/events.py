@@ -97,6 +97,15 @@ class EventKind(IntEnum):
     BLOCKERS_DECLARED = 102
     BLOCKS = 103
     BECOMES_BLOCKED = 104
+    #: CR 509.3d: "becomes blocked by a creature" triggers once for each
+    #: creature blocking it, so this is emitted once per (attacker, blocker)
+    #: pair: ``object_id`` is the attacker and ``source`` the blocker.
+    BECOMES_BLOCKED_BY = 18001
+    #: CR 509.3g: "attacks and isn't blocked" - emitted as blockers are
+    #: declared for each attacking creature no blocker was declared for
+    #: (``object_id``). Not emitted later, so an attacker whose blockers are
+    #: all removed from combat does not trigger it.
+    ATTACKS_UNBLOCKED = 18003
     REMOVED_FROM_COMBAT = 105
 
     # -- turn structure (CR 500) -------------------------------------------
@@ -121,6 +130,11 @@ class EventKind(IntEnum):
     MANA_EMPTIED = 145
     PRIORITY_RECEIVED = 146
     LAND_PLAYED = 147
+    #: CR 106.12a: a mana ability with {T} in its cost resolved and produced
+    #: mana, so its permanent was "tapped for mana". ``object_id`` is that
+    #: permanent and ``player`` who activated it. Emitted once per
+    #: activation, beside the ``MANA_ADDED`` of the mana itself.
+    TAPPED_FOR_MANA = 148
 
     # -- Commander (CR 903) -------------------------------------------------
     COMMANDER_CAST = 160
@@ -171,6 +185,16 @@ class EventKind(IntEnum):
     #: CR 701.52a: one Attraction was visited by that roll. ``object_id`` is
     #: the Attraction and ``amount`` the result that lit it.
     ATTRACTION_VISITED = 352
+
+    #: CR 701.37b: a permanent became monstrous. ``object_id`` is the
+    #: permanent. Its own event, because "when this becomes monstrous" is not
+    #: "whenever a counter is put on this" - the +1/+1 counters of the same
+    #: monstrosity are, and so is every other counter it ever gets.
+    BECAME_MONSTROUS = 19001
+    #: CR 702.112a-b: a permanent became renowned. ``object_id`` is the
+    #: permanent. Its own event for the reason BECAME_MONSTROUS is: "when this
+    #: becomes renowned" is not the counters that came with it.
+    BECAME_RENOWNED = 18002
 
 
 #: Events that mean a permanent left the battlefield in some form. Abilities
@@ -246,6 +270,11 @@ class Event:
     @property
     def looks_back_in_time(self) -> bool:
         """CR 603.10: whether this event's triggers see the pre-event game."""
+        if self.kind is EventKind.ZONE_CHANGE:
+            # CR 603.10a: "abilities that trigger when a card leaves a
+            # graveyard" look back too - the card is asked about as it was
+            # in the graveyard, not as whatever it became where it went.
+            return self.from_zone is Zone.GRAVEYARD
         return self.kind in LOOK_BACK_KINDS
 
     def __str__(self) -> str:

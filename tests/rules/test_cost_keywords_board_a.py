@@ -594,11 +594,22 @@ def test_a_bestowed_spell_is_an_aura_spell(card_db):
     assert "Aura" in board.chars(spell).type_line.subtypes
 
 
-@pytest.mark.parametrize("name", ["Embalm", "Eternalize", "Encore"])
-@pytest.mark.xfail(strict=True, reason=(
+_TOKEN_KEYWORD_BUILDER_BUG = pytest.mark.xfail(strict=True, reason=(
     "BUILDER BUG: built as an alternative cost to cast the card from the "
     "graveyard; the rule is an activated ability that exiles the card and "
     "creates token copies"))
+
+
+# Encore is built inert (MISBUILT_KEYWORDS) until it can be built faithfully,
+# so it is already not castable from the graveyard.
+@pytest.mark.parametrize(
+    "name",
+    [
+        pytest.param("Embalm", marks=_TOKEN_KEYWORD_BUILDER_BUG),
+        pytest.param("Eternalize", marks=_TOKEN_KEYWORD_BUILDER_BUG),
+        "Encore",
+    ],
+)
 def test_graveyard_token_keywords_are_activated_not_cast(card_db, name):
     board = setup(card_db, {"Hill Giant": keyword(name, "{1}")})
     card = board.graveyard("Hill Giant")

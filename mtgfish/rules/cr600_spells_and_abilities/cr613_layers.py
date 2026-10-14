@@ -266,6 +266,14 @@ def _reached_elsewhere(game: Game, scope: list[GameObject]) -> list[GameObject]:
         for player in game.players:
             for object_id in player.zone(zone):
                 admit(game.objects.get(object_id))
+
+    # MTG Arena's "perpetually": a card changed perpetually carries the change
+    # into every zone, so it is computed wherever it is.
+    if game.perpetual:
+        from ..cr700_additional_rules.digital_mechanics import perpetually_changed
+
+        for obj in perpetually_changed(game):
+            admit(obj)
     return out
 
 
@@ -415,6 +423,14 @@ def _live_effects(
     out = [
         ce for ce in game.continuous_effects if not ce.expired and ce.effect.kind in EFFECT_LAYERS
     ]
+    # MTG Arena's "perpetually": each card's perpetual changes, applied to that
+    # card alone and in every zone it can be in.
+    if game.perpetual:
+        from ..cr700_additional_rules.digital_mechanics import (
+            perpetual_continuous_effects,
+        )
+
+        out.extend(perpetual_continuous_effects(game, by_id))
 
     for object_id, obj in by_id.items():
         if obj.phased_out:
@@ -835,6 +851,17 @@ def apply_effect(
         return current.with_abilities(current.abilities + granted)
 
     if kind is EffectKind.REMOVE_ABILITIES:
+        # CR 613.1f: "loses flying" removes flying and nothing else. The
+        # parser names the lost keywords in ``keywords``; "*" (or nothing
+        # named at all) is "loses all abilities". Removing everything for a
+        # named keyword made Colossus Hammer's "loses flying" a Humility on
+        # the equipped creature and Shadowspear's "lose hexproof and
+        # indestructible" strip every ability an opponent's permanents had.
+        names = {name.lower() for name in effect.keywords}
+        if names and "*" not in names:
+            return current.with_abilities(
+                tuple(a for a in current.abilities if a.keyword.lower() not in names)
+            )
         # Intrinsic land mana abilities are abilities too, and Humility takes
         # them (CR 613.1f applies to all abilities, printed or granted).
         return current.with_abilities(())
@@ -1023,9 +1050,17 @@ def _value(game: Game, value, ce: ContinuousEffect, obj: GameObject | None = Non
     ``of_affected`` decides whose characteristics "it" means: the object being
     modified, or the ability's source.
     """
+    from ..kernel.matching import value_subjects
     from ..kernel.values import evaluate
 
-    subject = obj.id if (value.of_affected and obj is not None) else ce.source
+    # Anywhere in the value, not only at its top: "-1/-1 for each slime
+    # counter on them" is -1 times a count of the affected creature's
+    # counters, and the product was asked of the source instead.
+    # A value that also reads the source is asked of the source, as before:
+    # one ``source`` cannot answer both halves.
+    reads_affected, reads_source, _ = value_subjects(value)
+    affected = value.of_affected or (reads_affected and not reads_source)
+    subject = obj.id if (affected and obj is not None) else ce.source
     return evaluate(game, value, source=subject, controller=ce.controller)
 
 

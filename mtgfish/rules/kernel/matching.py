@@ -93,7 +93,7 @@ def matches(
     if obj.phased_out and spec.phased_out is not True:
         return False
 
-    if not _controller_matches(game, obj, spec, controller):
+    if not _controller_matches(game, obj, spec, controller, source):
         return False
 
     if not _owner_matches(game, obj, spec, controller):
@@ -338,7 +338,11 @@ def _is_same_object(game: Game, object_id: ObjectId, source: ObjectId) -> bool:
 
 
 def _controller_matches(
-    game: Game, obj: GameObject, spec: ObjectFilter, controller: PlayerId
+    game: Game,
+    obj: GameObject,
+    spec: ObjectFilter,
+    controller: PlayerId,
+    source: ObjectId = NO_OBJECT,
 ) -> bool:
     relation = spec.controller
     if relation is ControllerRelation.ANY:
@@ -351,7 +355,24 @@ def _controller_matches(
         return obj.controller == spec.controller_specific
     if relation is ControllerRelation.SAME_AS_SOURCE:
         return obj.controller == controller
+    if relation is ControllerRelation.DEFENDING_PLAYER:
+        return obj.controller in _defending_players(game, source)
     return True
+
+
+def _defending_players(game: Game, source: ObjectId) -> tuple[PlayerId, ...]:
+    """"Defending player controls" (CR 506.2): the player the source is
+    attacking, or the controller or protector of what it attacks. A source
+    that is not attacking means the defending player only when there is just
+    one. With several and nothing to say which - or no combat - nobody:
+    matching every player's creatures would be a different card.
+    """
+    combat = getattr(game, "combat", None)
+    attacking = getattr(combat, "attacking", None) or {}
+    if source in attacking:
+        return (attacking[source],)
+    defenders = tuple(dict.fromkeys(attacking.values()))
+    return defenders if len(defenders) == 1 else ()
 
 
 def _owner_matches(
@@ -448,7 +469,7 @@ _PER_OBJECT_VALUES = frozenset(
 #: any object a filter ranges over: the X chosen as the spell was cast, the
 #: mana actually spent on it, whatever its cost consumed.
 _SOURCE_VALUES = frozenset(
-    {ValueKind.X, ValueKind.MANA_SPENT, ValueKind.COST_PAID_POWER}
+    {ValueKind.X, ValueKind.MANA_SPENT, ValueKind.COST_PAID_POWER, ValueKind.COST_PAID}
 )
 #: Arithmetic over other values. These ask the game nothing themselves, so
 #: they read whatever their operands read and need whatever their operands
