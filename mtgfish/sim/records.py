@@ -107,7 +107,16 @@ class GameRecord:
 
     index: int
     seed: int
+    #: The engine's global player-turn counter: every player's turn advances
+    #: it, so a four-player game's fourth round is turn thirteen. Almost never
+    #: the number to show a person - see ``rounds``.
     turns: int
+    #: How many turns the hero had begun when the game ended. This is what a
+    #: player means by "turn": the highest numbered turn they took. Counted
+    #: rather than divided out of ``turns``, because players who are
+    #: eliminated stop taking turns and the division drifts from the truth the
+    #: moment anybody dies.
+    rounds: int = 0
     winner: int | None = None
     win_reason: WinReason = WinReason.STALL_OUT
     #: Elimination order, earliest first, with the reason each player lost.

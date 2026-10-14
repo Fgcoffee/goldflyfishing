@@ -15,6 +15,7 @@ one.
 
 from __future__ import annotations
 
+from .board import BoardCard, BoardFilm, BoardRecorder, BoardSeat, BoardSnapshot
 from .records import GameRecord, RemovalEvent, TurnSnapshot, WinReason
 from .replay import (
     DETAIL_LEVELS,
@@ -30,6 +31,11 @@ from .stats import CardImpact, RemovalTarget, Report, TurnSeries, render, summar
 
 __all__ = [
     "DETAIL_LEVELS",
+    "BoardCard",
+    "BoardFilm",
+    "BoardRecorder",
+    "BoardSeat",
+    "BoardSnapshot",
     "CardImpact",
     "GameRecord",
     "RemovalEvent",

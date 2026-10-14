@@ -31,6 +31,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..rules.kernel.ids import NO_PLAYER
+from .board import BoardFilm, BoardRecorder
 from .runner import RunConfig, replay
 
 #: The kinds that carry the story of a game: what was played, what happened to
@@ -165,6 +166,10 @@ class ReplayView:
     final_board: str = ""
     #: Why the game ended, in a few words, when the log said.
     outcome: str = ""
+    #: The board over time, sampled while the game was replayed. Empty when
+    #: the replay was asked for without it - the text log alone is a good deal
+    #: cheaper, and the command line has no use for pictures.
+    film: BoardFilm = field(default_factory=BoardFilm)
 
     def at_turn(self, turn: int) -> int:
         """The first frame of a turn, or the closest earlier one."""
@@ -181,9 +186,15 @@ class ReplayView:
         return [f for f in self.frames if shown_at(f.kind, level)]
 
 
-def replay_game(config: RunConfig, index: int) -> ReplayView:
-    """Replay one game of a run with full logging."""
-    record, game = replay(config, index)
+def replay_game(config: RunConfig, index: int, *, boards: bool = True) -> ReplayView:
+    """Replay one game of a run with full logging.
+
+    ``boards`` also records the visible position over time (see ``sim.board``),
+    which is what the viewer draws. It costs one comparison per interesting
+    event and is worth it there; the command line asks for it off.
+    """
+    recorder = BoardRecorder() if boards else None
+    record, game = replay(config, index, watch=recorder)
 
     view = ReplayView(
         game_index=index,
@@ -206,6 +217,11 @@ def replay_game(config: RunConfig, index: int) -> ReplayView:
 
     view.final_board = game.describe_board()
     view.outcome = _outcome(view, game)
+    if recorder is not None:
+        # One last sample: the game ended on whatever its final event was, and
+        # the board a viewer most wants to see is the one it ended on.
+        recorder.sample(game)
+        view.film = recorder.film
     return view
 
 

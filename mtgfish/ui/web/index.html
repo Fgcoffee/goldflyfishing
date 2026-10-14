@@ -221,6 +221,28 @@
 
   <div id="replayheader" class="replay-header"></div>
 
+  <!-- The board. Text is exact and unreadable; this is the same game, looked
+       at rather than read. -->
+  <div id="boardpanel" hidden>
+    <div class="boardbar">
+      <button id="boardprev" class="ghost small" title="Previous board">&#9664;</button>
+      <input id="boardscrub" type="range" min="0" max="0" value="0"
+             aria-label="Scrub through the game">
+      <button id="boardnext" class="ghost small" title="Next board">&#9654;</button>
+      <span id="boardwhere" class="dim"></span>
+      <label class="toggle small" title="Move the log to wherever the board is">
+        <input id="boardfollow" type="checkbox" checked> log follows
+      </label>
+    </div>
+    <div id="replayboardview"></div>
+    <p class="hint small">
+      Click a card to see it whole. A gold border is a commander, a yellow one a
+      card the parser only partly read, and a red one a card it could not read at
+      all &mdash; those do nothing, however good they look on the board.
+    </p>
+  </div>
+  <div id="boardzoom" class="boardzoom" hidden></div>
+
   <div class="split replay-split">
     <div id="replayturns" class="sidebar"></div>
     <div id="replaylog" class="replay-log"></div>
@@ -426,6 +448,7 @@
 <script src="transport.js"></script>
 <script src="app.js"></script>
 <script src="deck.js"></script>
+<script src="board.js"></script>
 <script src="shell.js"></script>
 </body>
 </html>

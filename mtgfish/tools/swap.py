@@ -106,12 +106,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{row['label'].ljust(width)}  {row['error']}")
             continue
         delta_rate = row.get("delta_win_rate")
-        delta_turn = row.get("delta_win_turn")
+        delta_turn = row.get("delta_win_round")
         print(
             f"{row['label'].ljust(width)}  "
             f"{row['win_rate'] * 100:6.2f}%  "
             f"{'' if delta_rate is None else f'{delta_rate * 100:+6.2f}%':>7}  "
-            f"{row['average_win_turn']:8.2f}  "
+            f"{row['average_win_round']:8.2f}  "
             f"{'' if delta_turn is None else f'{delta_turn:+7.2f}':>7}"
         )
 

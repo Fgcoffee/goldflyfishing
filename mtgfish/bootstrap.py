@@ -47,16 +47,25 @@ def pool_is_stale(target: Path) -> bool:
     newest = ScryfallClient(offline=True).cached_bulk("oracle_cards")
     if newest is None:
         return False  # Nothing to rebuild from; what is there is what there is.
+    from .data.db import SCHEMA_VERSION
+
     try:
         conn = sqlite3.connect(f"file:{target}?mode=ro", uri=True)
         try:
             row = conn.execute(
                 "SELECT value FROM meta WHERE key = 'oracle_file'"
             ).fetchone()
+            schema = conn.execute(
+                "SELECT value FROM meta WHERE key = 'schema_version'"
+            ).fetchone()
         finally:
             conn.close()
     except sqlite3.Error:
         return True  # Unreadable or half-written: rebuilding is the answer.
+    # A database built by an older schema is missing columns the code now
+    # reads, so it is as stale as one built from an older dump.
+    if not schema or schema[0] != str(SCHEMA_VERSION):
+        return True
     return not row or row[0] != newest.name
 
 

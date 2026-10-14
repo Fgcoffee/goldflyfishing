@@ -65,6 +65,7 @@ class Observer:
         "_seen_names",
         "_counted",
         "_own_turns",
+        "_turns_begun",
     )
 
     def __init__(self, record: GameRecord, hero: int) -> None:
@@ -77,6 +78,10 @@ class Observer:
         #: How many turns each player has taken, so a series is indexed by a
         #: player's own turn rather than the global counter.
         self._own_turns: dict[int, int] = {}
+        #: How many turns each player has *begun*. The same count one step
+        #: earlier, and the one a person means: a game won on your fifth turn
+        #: was won on your fifth turn, whether or not that turn got to end.
+        self._turns_begun: dict[int, int] = {}
         #: Which player the run is about. Everything card-level is recorded
         #: for this player only - a 10,000-game run that stored every card
         #: event for four players would be four times the size and three
@@ -96,6 +101,9 @@ class Observer:
             self._last_combat_damage_turn = game.turn
         elif kind in _REMOVAL_WORDS:
             self._removal(game, event)
+        elif kind is EventKind.TURN_BEGAN:
+            player = int(event.player)
+            self._turns_begun[player] = self._turns_begun.get(player, 0) + 1
         elif kind is EventKind.TURN_ENDED:
             self._end_of_turn(game)
         elif kind is EventKind.PLAYER_LEFT_GAME:
@@ -177,6 +185,10 @@ class Observer:
             (game.turn, int(event.player), reason.name if reason else "unknown")
         )
 
+    def turns_begun(self, player: int) -> int:
+        """The highest numbered turn this player took - what they call "turn N"."""
+        return self._turns_begun.get(int(player), 0)
+
     def _end_of_turn(self, game: Game) -> None:
         """Sample the active player only, at the end of their own turn.
 
@@ -254,9 +266,11 @@ class Observer:
         return name
 
 
-def finish(game: Game, record: GameRecord) -> GameRecord:
+def finish(game: Game, record: GameRecord, observer: Observer | None = None) -> GameRecord:
     """Fill in everything only knowable once the game is over."""
     record.turns = game.turn
+    if observer is not None:
+        record.rounds = observer.turns_begun(observer.hero)
     record.digest = game.log.digest()
     record.commander_casts = [
         sum(player.commander_casts.values()) for player in game.players
