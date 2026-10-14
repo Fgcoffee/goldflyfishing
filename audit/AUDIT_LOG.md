@@ -12,7 +12,7 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 | Branch | Owner | Verdict | Notes |
 |---|---|---|---|
-| `claude/lucid-einstein-dml803` @ 745e50e (PR #17) | parser | BLOCK: F6b, F10 (merge order) | Census verified: 426 lost, all carrying a listed keyword; 0 gained, 0 changed. F9 fixed. Earlier @ 043206d: | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
+| `claude/lucid-einstein-dml803` @ 745e50e (PR #17) | parser | BLOCK: F6b, F10 (merge order), F15 | Tests GREEN: 2488 passed (parser+rules+tools). Census verified: 426 lost, all carrying a listed keyword; 0 gained, 0 changed. F9 fixed. Earlier @ 043206d: | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
 | `wip-misbuilt-keywords` (local, unpushed) | parser | not received | |
 | `main-n8yjai` @ 599bdb1 (PR #18) | rules | BLOCK: F5 still free on this PR alone, F11 Vehicle crews itself (before wiring), F10 (merge order) | Aftermath, flashback, dash, blitz, buyback (when chosen) and sandbox loyalty verified. Jump-start and soulbond are primitives only. |
 
