@@ -173,15 +173,20 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         # 601.2b: choose modes and X. The caller may have announced the modes
         # already; when it has not, the controller is asked, because a modal
         # spell whose modes nobody chose does nothing at all (CR 700.2).
-        spell.chosen_modes = choose_modes(
-            game, spell, spell_effects(game, spell), player_id,
-            announced=action.mode_choices,
-        )
-        spell.x_value = action.x_value
         # CR 601.2b: optional additional costs are chosen here, and whether
         # they were is a fact the spell carries for the rest of its life -
         # kicker riders read it on resolution.
         spell.additional_costs_paid = tuple(action.additional_costs)
+        # CR 702.42a: a paid entwine cost chooses every mode.
+        from ..cr700_additional_rules.cr702_paid_costs import entwined_modes
+
+        spell.chosen_modes = entwined_modes(
+            game, spell, modal_effect(spell_effects(game, spell))
+        ) or choose_modes(
+            game, spell, spell_effects(game, spell), player_id,
+            announced=action.mode_choices,
+        )
+        spell.x_value = action.x_value
 
         # 601.2c-d: choose targets, and divide anything that needs dividing.
         # The caller may have chosen them already - a scripted test does, and
@@ -242,6 +247,10 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     game.spells_cast_this_turn += 1
     # 601.2i: the spell has been cast; only now do cast triggers fire.
     game.emit(Event(EventKind.CAST_SPELL, object_id=spell.id, player=player_id))
+    # CR 702.56a: replicate's cast trigger, counted from the payments.
+    from ..cr700_additional_rules.cr702_paid_costs import put_cast_triggers
+
+    put_cast_triggers(game, spell)
     return spell
 
 
@@ -313,6 +322,11 @@ def compute_total_cost(
         )
         for component in alternative.cost.non_mana_components:
             total.add_additional(component)
+        if alternative.keyword.lower() == "emerge":
+            # CR 702.119a: reduced by the sacrificed creature's mana value.
+            from ..cr700_additional_rules.cr702_paid_costs import apply_emerge
+
+            apply_emerge(game, spell, player_id, total)
     else:
         total = TotalCost(base=chars.mana_cost, x_value=action.x_value)
         # CR 118.6: no mana cost at all is an *unpayable* cost, not zero. Only
@@ -323,11 +337,10 @@ def compute_total_cost(
     # optional ones as announced. CR 118.9d applies them to the alternative
     # cost too, so an alternative cost is never a way to dodge a tax.
     for index, additional in enumerate(chars.additional_costs):
-        if additional.optional and index not in action.additional_costs:
-            continue
-        total.base = total.base.plus(additional.cost.mana_component)
-        for component in additional.cost.non_mana_components:
-            total.add_additional(component)
+        for _ in range(_times_charged(spell, additional, index, action)):
+            total.base = total.base.plus(additional.cost.mana_component)
+            for component in additional.cost.non_mana_components:
+                total.add_additional(component)
 
     if from_command_zone and spell.is_commander:
         # CR 903.8: {2} for each previous cast of this commander from the
@@ -342,6 +355,26 @@ def compute_total_cost(
         total.reduction += amount
 
     return total
+
+
+#: CR 702.56a replicate, 702.33c multikicker: optional additional costs that
+#: may be paid any number of times, once for each time they are announced.
+_PAID_ANY_NUMBER_OF_TIMES = frozenset({"replicate", "multikicker"})
+
+
+def _times_charged(spell: GameObject, additional, index: int, action: Action) -> int:
+    """How many times an additional cost is part of this spell's total cost."""
+    keyword = additional.keyword.lower()
+    if keyword == "escalate":
+        # CR 702.120a: once for each mode beyond the first. Not a choice: it
+        # is charged whether or not it was announced.
+        return max(0, len(spell.chosen_modes) - 1)
+    if not additional.optional:
+        return 1
+    announced = action.additional_costs.count(index)
+    if keyword in _PAID_ANY_NUMBER_OF_TIMES:
+        return announced
+    return min(announced, 1)
 
 
 def _matches_being_cast(game, spell, effect, obj) -> bool:

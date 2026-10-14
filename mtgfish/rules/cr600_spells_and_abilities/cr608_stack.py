@@ -185,6 +185,11 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         _record_resolution(game, obj, chars)
         if obj.enters_tapped_and_attacking:
             _enter_tapped_and_attacking(game, obj, permanent)
+        # CR 702.109a dash, 702.152a blitz, 702.185a warp: what the paid
+        # alternative cost does to the permanent the spell became.
+        from ..cr700_additional_rules.cr702_paid_costs import on_permanent_spell_resolved
+
+        on_permanent_spell_resolved(game, permanent)
         game.emit(
             Event(EventKind.SPELL_RESOLVED, object_id=permanent.id, player=obj.controller)
         )
@@ -220,6 +225,11 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
     # Compared against None rather than tested for truth: Zone.LIBRARY is 0,
     # so "or Zone.GRAVEYARD" silently sends every Omen to the graveyard.
     destination = resolution_zone(CastMode(obj.cast_mode))
+    if destination is None:
+        # CR 702.27a: a paid buyback cost puts it into its owner's hand.
+        from ..cr700_additional_rules.cr702_paid_costs import resolution_destination
+
+        destination = resolution_destination(game, obj)
     if destination is None:
         destination = Zone.GRAVEYARD
     moved = game.move_object(obj, destination, to_player=obj.owner)

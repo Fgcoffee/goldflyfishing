@@ -186,6 +186,10 @@ class GameObject:
     #: cast, not the Adventure again, so a permission that offered every face
     #: would let a player loop the Adventure half for ever.
     playable_face: int = 0
+    #: The first turn that permission may be used on. CR 702.185a lets a
+    #: warped card be cast "after the current turn has ended"; zero is any
+    #: turn.
+    playable_from_turn: int = 0
     #: Modes chosen at announcement (CR 700.2).
     chosen_modes: tuple[int, ...] = ()
     #: The value chosen for X (CR 601.2b).
