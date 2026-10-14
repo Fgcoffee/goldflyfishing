@@ -18,9 +18,9 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 
 | | Rules engine | Parser allocation |
 |---|---|---|
-| Wrong, counted as read | 177 | 250 |
+| Wrong, counted as read | 117 | 12 |
 | Missing, not understood | 141 | 135 |
-| Suspected, counted as read | 320 | 0 |
+| Suspected, counted as read | 319 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
 first; *(read)* marks a card the parser currently counts as fully read.
@@ -56,41 +56,41 @@ The Gitrog, Ravenous Ride, Ornery Tumblewagg, Calamity, Galloping Inferno, Caust
 
 Deadeye Navigator, Tandem Lookout, Mirage Phalanx, Wingcrafter, Breathkeeper Seraph, Doom Weaver, Silverblade Paladin, Donna Noble, Thundering Mightmare, Druid's Familiar, Wolfir Silverheart, Imperious Mindbreaker, Nightshade Peddler, Lightning Mauler, Elgaud Shieldmate, Galvanic Alchemist, Pathbreaker Wurm, Nearheath Pilgrim, Hanweir Lancer, Stonewright, Stern Mentor, Spectral Gateguards, Diregraf Escort, Geist Trappers, Trusted Forcemage
 
-#### Craft (24 cards, 8 counted as read)
+#### Craft (24 cards, 0 counted as read)
 
 - **Likely cause:** no craft cost (exiling materials) or return-transformed
 - **Card says:** CR 702.167a: exile this and the named materials: return it transformed
 - **Engine does:** pay nothing: put a +1/+1 counter on this
 - **Evidence:** IR: ADD_COUNTERS +1/+1, empty cost
 
-Tithing Blade // Consuming Sepulcher *(read)*, The Enigma Jewel // Locus of Enlightenment, Altar of the Wretched // Wretched Bonemass, Unstable Glyphbridge // Sandswirl Wanderglyph, Clay-Fired Bricks // Cosmium Kiln *(read)*, Braided Net // Braided Quipu, Eye of Ojer Taq // Apex Observatory, Sunbird Standard // Sunbird Effigy, Master's Guide-Mural // Master's Manufactory, Ore-Rich Stalactite // Cosmium Catalyst, Dire Flail // Dire Blunderbuss, Inverted Iceberg // Iceberg Titan *(read)*, Spring-Loaded Sawblades // Bladewheel Chariot *(read)*, Lodestone Needle // Guidestone Compass *(read)*, Saheeli's Lattice // Mastercraft Raptor, Tetzin, Gnome Champion // The Golden-Gear Colossus, Throne of the Grim Captain // The Grim Captain, Waterlogged Hulk // Watertight Gondola, Oteclan Landmark // Oteclan Levitator *(read)*, Paleontologist's Pick-Axe // Dinosaur Headdress, Visage of Dread // Dread Osseosaur, Idol of the Deep King // Sovereign's Macuahuitl *(read)*, Jade Seedstones // Jadeheart Attendant, Kaslem's Stonetree // Kaslem's Strider *(read)*
+Tithing Blade // Consuming Sepulcher, The Enigma Jewel // Locus of Enlightenment, Altar of the Wretched // Wretched Bonemass, Unstable Glyphbridge // Sandswirl Wanderglyph, Clay-Fired Bricks // Cosmium Kiln, Braided Net // Braided Quipu, Eye of Ojer Taq // Apex Observatory, Sunbird Standard // Sunbird Effigy, Master's Guide-Mural // Master's Manufactory, Ore-Rich Stalactite // Cosmium Catalyst, Dire Flail // Dire Blunderbuss, Inverted Iceberg // Iceberg Titan, Spring-Loaded Sawblades // Bladewheel Chariot, Lodestone Needle // Guidestone Compass, Saheeli's Lattice // Mastercraft Raptor, Tetzin, Gnome Champion // The Golden-Gear Colossus, Throne of the Grim Captain // The Grim Captain, Waterlogged Hulk // Watertight Gondola, Oteclan Landmark // Oteclan Levitator, Paleontologist's Pick-Axe // Dinosaur Headdress, Visage of Dread // Dread Osseosaur, Idol of the Deep King // Sovereign's Macuahuitl, Jade Seedstones // Jadeheart Attendant, Kaslem's Stonetree // Kaslem's Strider
 
-#### Specialize (19 cards, 12 counted as read)
+#### Specialize (19 cards, 0 counted as read)
 
 - **Likely cause:** no specialize faces (digital)
 - **Card says:** CR 702.172a: discard a card of a color: perpetually specialize into another face
 - **Engine does:** pay the cost: put a +1/+1 counter on this
 - **Evidence:** IR: ADD_COUNTERS +1/+1
 
-Alora, Rogue Companion *(read)*, Ambergris, Citadel Agent *(read)*, Gale, Conduit of the Arcane *(read)*, Gut, Fanatical Priestess, Imoen, Trickster Friend, Jaheira, Harper Emissary *(read)*, Karlach, Raging Tiefling, Klement, Novice Acolyte *(read)*, Lae'zel, Githyanki Warrior *(read)*, Lukamina, Moon Druid, Lulu, Forgetful Hollyphant, Rasaad, Monk of Selûne *(read)*, Sarevok the Usurper *(read)*, Shadowheart, Sharran Cleric, Skanos, Dragon Vassal *(read)*, Vhal, Eager Scholar *(read)*, Viconia, Nightsinger's Disciple *(read)*, Wilson, Bear Comrade *(read)*, Wyll, Pact-Bound Duelist
+Alora, Rogue Companion, Ambergris, Citadel Agent, Gale, Conduit of the Arcane, Gut, Fanatical Priestess, Imoen, Trickster Friend, Jaheira, Harper Emissary, Karlach, Raging Tiefling, Klement, Novice Acolyte, Lae'zel, Githyanki Warrior, Lukamina, Moon Druid, Lulu, Forgetful Hollyphant, Rasaad, Monk of Selûne, Sarevok the Usurper, Shadowheart, Sharran Cleric, Skanos, Dragon Vassal, Vhal, Eager Scholar, Viconia, Nightsinger's Disciple, Wilson, Bear Comrade, Wyll, Pact-Bound Duelist
 
-#### Sunburst (15 cards, 13 counted as read)
+#### Sunburst (15 cards, 0 counted as read)
 
 - **Likely cause:** no record of the colors of mana spent to cast a spell
 - **Card says:** CR 702.44a: a counter for each color of mana spent to cast it
 - **Engine does:** always exactly one +1/+1 counter
 - **Evidence:** IR: flat ADD_COUNTERS 1
 
-Pentad Prism *(read)*, Etched Oracle *(read)*, Engineered Explosives *(read)*, Suntouched Myr *(read)*, Clearwater Goblet *(read)*, Solarion *(read)*, Suncrusher *(read)*, Skyreach Manta *(read)*, Infused Arrows *(read)*, Lunar Avenger, Opaline Bracers *(read)*, Spinal Parasite, Heliophial *(read)*, Sawtooth Thresher *(read)*, Baton of Courage *(read)*
+Pentad Prism, Etched Oracle, Engineered Explosives, Suntouched Myr, Clearwater Goblet, Solarion, Suncrusher, Skyreach Manta, Infused Arrows, Lunar Avenger, Opaline Bracers, Spinal Parasite, Heliophial, Sawtooth Thresher, Baton of Courage
 
-#### Harmonize (12 cards, 10 counted as read)
+#### Harmonize (12 cards, 0 counted as read)
 
 - **Likely cause:** no harmonize cost (tap a creature to reduce it)
 - **Card says:** CR 702.180a: cast this from your graveyard for its harmonize cost, tapping a creature to help
 - **Engine does:** pay the cost: put a +1/+1 counter on this
 - **Evidence:** IR: ADD_COUNTERS +1/+1
 
-Nature's Rhythm *(read)*, Wild Ride *(read)*, Winternight Stories *(read)*, Roamer's Routine *(read)*, Zenith Festival, Unending Whisper *(read)*, Synchronized Charge *(read)*, Glacial Dragonhunt, Channeled Dragonfire *(read)*, Ureni's Rebuff *(read)*, Mammoth Bellow *(read)*, Ureni's Counsel *(read)*
+Nature's Rhythm, Wild Ride, Winternight Stories, Roamer's Routine, Zenith Festival, Unending Whisper, Synchronized Charge, Glacial Dragonhunt, Channeled Dragonfire, Ureni's Rebuff, Mammoth Bellow, Ureni's Counsel
 
 #### Haunt (10 cards, 0 counted as read)
 
@@ -101,23 +101,23 @@ Nature's Rhythm *(read)*, Wild Ride *(read)*, Winternight Stories *(read)*, Roam
 
 Blind Hunter, Belfry Spirit, Cry of Contrition, Benediction of Moons, Orzhov Pontiff, Absolver Thrull, Seize the Soul, Orzhov Euthanist, Exhumer Thrull, Graven Dominator
 
-#### Amplify (9 cards, 7 counted as read)
+#### Amplify (9 cards, 0 counted as read)
 
 - **Likely cause:** no 'reveal any number of cards from hand' step
 - **Card says:** CR 702.38a: reveal creature cards sharing a type; N counters for each revealed
 - **Engine does:** always enters with N +1/+1 counters
 - **Evidence:** IR: flat ADD_COUNTERS N
 
-Kilnmouth Dragon *(read)*, Feral Throwback *(read)*, Aven Warhawk *(read)*, Ghastly Remains, Canopy Crawler *(read)*, Zombie Brute *(read)*, Daru Stinger, Embalmed Brawler *(read)*, Glowering Rogon *(read)*
+Kilnmouth Dragon, Feral Throwback, Aven Warhawk, Ghastly Remains, Canopy Crawler, Zombie Brute, Daru Stinger, Embalmed Brawler, Glowering Rogon
 
-#### Dethrone (9 cards, 6 counted as read)
+#### Dethrone (9 cards, 0 counted as read)
 
 - **Likely cause:** no 'player with the most life' comparison
 - **Card says:** CR 702.105a: +1/+1 counter when it attacks the player with the most life
 - **Engine does:** +1/+1 counter whenever it attacks anyone
 - **Evidence:** IR: no condition on the defending player
 
-Scourge of the Throne, Treasonous Ogre *(read)*, Marchesa, the Black Rose *(read)*, Park Heights Maverick, Marchesa's Infiltrator *(read)*, Marchesa's Smuggler, Grenzo's Cutthroat *(read)*, Marchesa's Emissary *(read)*, Enraged Revolutionary *(read)*
+Scourge of the Throne, Treasonous Ogre, Marchesa, the Black Rose, Park Heights Maverick, Marchesa's Infiltrator, Marchesa's Smuggler, Grenzo's Cutthroat, Marchesa's Emissary, Enraged Revolutionary
 
 #### Compleated (7 cards, 0 counted as read)
 
@@ -128,14 +128,14 @@ Scourge of the Throne, Treasonous Ogre *(read)*, Marchesa, the Black Rose *(read
 
 Vraska, Betrayal's Sting, Nissa, Ascended Animist, Jace, the Perfected Mind, Ajani, Sleeper Agent, Tamiyo, Compleated Sage, Lukka, Bound to Ruin, Nahiri, the Unforgiving
 
-#### Demonstrate (6 cards, 4 counted as read)
+#### Demonstrate (6 cards, 0 counted as read)
 
 - **Likely cause:** no way to copy a spell for another player
 - **Card says:** CR 702.144a: you may copy it; if you do, an opponent also copies it
 - **Engine does:** you may copy it, then you copy it again
 - **Evidence:** IR: two COPY_SPELL for you
 
-Incarnation Technique *(read)*, Replication Technique *(read)*, Creative Technique, Healing Technique *(read)*, Transforming Flourish, Excavation Technique *(read)*
+Incarnation Technique, Replication Technique, Creative Technique, Healing Technique, Transforming Flourish, Excavation Technique
 
 ### 1.b Missing
 
@@ -216,14 +216,14 @@ Go Blank
 
 Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, Trickster's Elk *(read)*, Indebted Spirit *(read)*, Detective's Phoenix, Chromanticore *(read)*, Glyph Elemental *(read)*, Hypnotic Siren, Nyxborn Unicorn *(read)*, Celestial Archon *(read)*, Triton Wavebreaker, Kestia, the Cultivator, Hopeful Eidolon *(read)*, Thassa's Emissary, Noble Quarry, Ghostblade Eidolon *(read)*, Boon Satyr *(read)*, Flitterstep Eidolon, Baleful Eidolon *(read)*, Gnarled Scarhide, Herald of Torment *(read)*, Nyxborn Rollicker *(read)*, Leafcrown Dryad *(read)*, Heliod's Emissary, Nyxborn Shieldmate *(read)*, Observant Alseid *(read)*, Nylea's Emissary *(read)*, Purphoros's Emissary *(read)*, Spiteful Returned, Nimbus Naiad *(read)*, Mogis's Warhound, Nyxborn Wolf *(read)*, Erebos's Emissary, Cavern Lampad *(read)*, Everflame Eidolon, Nyxborn Triton *(read)*, Nyxborn Eidolon *(read)*, Spearpoint Oread *(read)*, Crystalline Nautilus *(read)*, Spirespine, Sightless Brawler
 
-#### Buyback (40 cards, 31 counted as read)
+#### Buyback (40 cards, 30 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Constant Mists *(read)*, Reiterate *(read)*, Clockspinning, Haze of Rage *(read)*, Capsize *(read)*, Sprout Swarm *(read)*, Walk the Aeons, Mystic Speculation *(read)*, Forbid *(read)*, Spell Burst *(read)*, Mind Games *(read)*, Whim of Volrath, Corpse Dance, Searing Touch *(read)*, Lab Rats *(read)*, Wurmcalling *(read)*, Seething Anger *(read)*, Slaughter *(read)*, Whispers of the Muse *(read)*, Fanning the Flames *(read)*, Demonic Collusion *(read)*, Recruit the Worthy *(read)*, Shattering Pulse *(read)*, Disturbed Burial *(read)*, Allay *(read)*, Worthy Cause *(read)*, Elvish Fury *(read)*, Memory Crystal, Evincar's Justice *(read)*, Evangelize, Change of Heart *(read)*, Pegasus Stampede *(read)*, Invulnerability, Verdant Touch, Flowstone Flood *(read)*, Imps' Taunt, Anoint *(read)*, Reaping the Rewards *(read)*, Brush with Death *(read)*, Mind Peel *(read)*
+Constant Mists *(read)*, Reiterate *(read)*, Clockspinning, Haze of Rage, Capsize *(read)*, Sprout Swarm *(read)*, Walk the Aeons, Mystic Speculation *(read)*, Forbid *(read)*, Spell Burst *(read)*, Mind Games *(read)*, Whim of Volrath, Corpse Dance, Searing Touch *(read)*, Lab Rats *(read)*, Wurmcalling *(read)*, Seething Anger *(read)*, Slaughter *(read)*, Whispers of the Muse *(read)*, Fanning the Flames *(read)*, Demonic Collusion *(read)*, Recruit the Worthy *(read)*, Shattering Pulse *(read)*, Disturbed Burial *(read)*, Allay *(read)*, Worthy Cause *(read)*, Elvish Fury *(read)*, Memory Crystal, Evincar's Justice *(read)*, Evangelize, Change of Heart *(read)*, Pegasus Stampede *(read)*, Invulnerability, Verdant Touch, Flowstone Flood *(read)*, Imps' Taunt, Anoint *(read)*, Reaping the Rewards *(read)*, Brush with Death *(read)*, Mind Peel *(read)*
 
 #### Warp (39 cards, 31 counted as read)
 
@@ -481,14 +481,14 @@ Overlord of the Hauntwoods, Overlord of the Balemurk *(read)*, Overlord of the F
 
 ### 2.a Wrong
 
-#### Storm (35 cards, 28 counted as read)
+#### Storm (35 cards, 0 counted as read)
 
 - **Likely cause:** the spells-cast-this-turn count exists; one copy was built
 - **Card says:** CR 702.40a: copy it for each spell cast before it this turn
 - **Engine does:** copies it once
 - **Evidence:** IR: one COPY_SPELL
 
-Flusterstorm *(read)*, Grapeshot *(read)*, Brain Freeze *(read)*, Amphibian Downpour *(read)*, Empty the Warrens *(read)*, Chatterstorm *(read)*, Radstorm *(read)*, Mind's Desire *(read)*, Haze of Rage *(read)*, Stormscale Scion *(read)*, Tempest Technique *(read)*, Elemental Eruption *(read)*, Tendrils of Agony *(read)*, Aeve, Progenitor Ooze, Weather the Storm *(read)*, All of History, All at Once *(read)*, Dragonstorm *(read)*, Galvanic Relay, Temporal Fissure *(read)*, Spreading Insurrection *(read)*, Ignite Memories, Sprouting Vines *(read)*, Storm of Memories, Wing Shards *(read)*, Hunting Pack *(read)*, Mordor on the March *(read)*, Ground Rift *(read)*, Fiery Encore, Scattershot *(read)*, Reaping the Graves *(read)*, Astral Steel *(read)*, Volcanic Awakening *(read)*, Hindering Touch *(read)*, Galathul Galecaller // Corvid Squall, Limitless Rekindling
+Flusterstorm, Grapeshot, Brain Freeze, Amphibian Downpour, Empty the Warrens, Chatterstorm, Radstorm, Mind's Desire, Haze of Rage, Stormscale Scion, Tempest Technique, Elemental Eruption, Tendrils of Agony, Aeve, Progenitor Ooze, Weather the Storm, All of History, All at Once, Dragonstorm, Galvanic Relay, Temporal Fissure, Spreading Insurrection, Ignite Memories, Sprouting Vines, Storm of Memories, Wing Shards, Hunting Pack, Mordor on the March, Ground Rift, Fiery Encore, Scattershot, Reaping the Graves, Astral Steel, Volcanic Awakening, Hindering Touch, Galathul Galecaller // Corvid Squall, Limitless Rekindling
 
 #### Exploit (25 cards, 0 counted as read)
 
@@ -499,59 +499,41 @@ Flusterstorm *(read)*, Grapeshot *(read)*, Brain Freeze *(read)*, Amphibian Down
 
 Sidisi, Undead Vizier, Overcharged Amalgam, Fell Stinger, Colonel Autumn, Repository Skaab, Profaner of the Dead, Rot-Tide Gargantua, Infernal Captor, Sidisi's Faithful, Mindleech Ghoul, Silumgar Sorcerer, Skull Skaab, Stitched Assistant, Vulturous Aven, Graf Reaver, Silumgar Scavenger, Loathsome Curator, Qarsi Sadist, Rakshasa Gravecaller, Diver Skaab, Minister of Pain, Gurmag Drowner, Silumgar Butcher, A-Skull Skaab, A-Stitched Assistant
 
-#### Backup (25 cards, 19 counted as read)
+#### Backup (25 cards, 0 counted as read)
 
 - **Likely cause:** targeted counters and granted abilities exist; aimed at itself
 - **Card says:** CR 702.165a: put N counters on target creature; it gains this card's abilities
 - **Engine does:** puts N counters on this creature
 - **Evidence:** IR: ADD_COUNTERS on this permanent
 
-Archpriest of Shadows, Guardian Scalelord *(read)*, Emergent Woodwurm *(read)*, Conclave Sledge-Captain *(read)*, Boon-Bringer Valkyrie *(read)*, Scorn-Blade Berserker *(read)*, Bright-Palm, Soul Awakener, Saiba Cryptomancer *(read)*, Voldaren Thrillseeker *(read)*, Mirror-Style Master, Death-Greeter's Champion *(read)*, Doomskar Warrior, Gloomfang Mauler *(read)*, Hangar Scrounger *(read)*, Serpent-Blade Assailant *(read)*, Enduring Bondwarden *(read)*, Fearless Skald *(read)*, Bola Slinger *(read)*, Cragsmasher Yeti *(read)*, Redcap Heelslasher *(read)*, Consuming Aetherborn *(read)*, Sigiled Sentinel *(read)*, Streetwise Negotiator, Chomping Kavu, Golden-Scale Aeronaut *(read)*
+Archpriest of Shadows, Guardian Scalelord, Emergent Woodwurm, Conclave Sledge-Captain, Boon-Bringer Valkyrie, Scorn-Blade Berserker, Bright-Palm, Soul Awakener, Saiba Cryptomancer, Voldaren Thrillseeker, Mirror-Style Master, Death-Greeter's Champion, Doomskar Warrior, Gloomfang Mauler, Hangar Scrounger, Serpent-Blade Assailant, Enduring Bondwarden, Fearless Skald, Bola Slinger, Cragsmasher Yeti, Redcap Heelslasher, Consuming Aetherborn, Sigiled Sentinel, Streetwise Negotiator, Chomping Kavu, Golden-Scale Aeronaut
 
-#### Devour (24 cards, 12 counted as read)
+#### Devour (24 cards, 0 counted as read)
 
 - **Likely cause:** any-number sacrifices exist; built as a flat counter count
 - **Card says:** CR 702.82a: sacrifice any number of creatures; N counters for each sacrificed
 - **Engine does:** always enters with N +1/+1 counters, sacrificing nothing
 - **Evidence:** IR: flat ADD_COUNTERS N
 
-Mycoloth *(read)*, Famished Worldsire *(read)*, Feasting Hobbit, Ravenous Tyrannosaurus, Ribtruss Roaster, Intellect Devourer, Bloodspore Thrinax, Fell Beast of Mordor *(read)*, Thromok the Insatiable, Skullmulcher, Gluttonous Slime *(read)*, Voracious Dragon, Preyseizer Dragon *(read)*, Feaster of Fools *(read)*, Ravenous Gigantotherium, Predator Dragon *(read)*, Caldera Hellion *(read)*, Hellkite Hatchling, Thunder-Thrash Elder *(read)*, Tar Fiend, Marrow Chomper, Caprichrome *(read)*, Thorn-Thrash Viashino *(read)*, Gorger Wurm *(read)*
+Mycoloth, Famished Worldsire, Feasting Hobbit, Ravenous Tyrannosaurus, Ribtruss Roaster, Intellect Devourer, Bloodspore Thrinax, Fell Beast of Mordor, Thromok the Insatiable, Skullmulcher, Gluttonous Slime, Voracious Dragon, Preyseizer Dragon, Feaster of Fools, Ravenous Gigantotherium, Predator Dragon, Caldera Hellion, Hellkite Hatchling, Thunder-Thrash Elder, Tar Fiend, Marrow Chomper, Caprichrome, Thorn-Thrash Viashino, Gorger Wurm
 
-#### Modular (24 cards, 19 counted as read)
-
-- **Likely cause:** dies triggers exist; moving counters may also need engine work
-- **Card says:** CR 702.43a: enters with N counters; when it dies, move them to target artifact creature
-- **Engine does:** enters with N counters only
-- **Evidence:** IR: flat ADD_COUNTERS N, no dies trigger
-
-Power Depot, Arcbound Ravager *(read)*, Arcbound Crusher *(read)*, Scrapyard Recombiner *(read)*, Arcbound Reclaimer *(read)*, Arcbound Worker *(read)*, Arcbound Shikari *(read)*, Arcbound Stinger *(read)*, Arcbound Mouser *(read)*, Arcbound Slith *(read)*, Arcbound Condor *(read)*, Arcbound Tracker, Arcbound Javelineer, Arcbound Overseer *(read)*, Zabaz, the Glimmerwasp, Arcbound Prototype *(read)*, Arcbound Slasher *(read)*, Arcbound Hybrid *(read)*, Arcbound Fiend *(read)*, Arcbound Whelp *(read)*, Blaster, Combat DJ // Blaster, Morale Booster, Arcbound Bruiser *(read)*, Arcbound Lancer *(read)*, Arcbound Wanderer *(read)*
-
-#### Evolve (23 cards, 16 counted as read)
+#### Evolve (23 cards, 0 counted as read)
 
 - **Likely cause:** power/toughness comparisons exist; the condition was dropped
 - **Card says:** CR 702.100a: counter when a creature with greater power or toughness enters
 - **Engine does:** counter whenever any creature you control enters
 - **Evidence:** IR: no power/toughness comparison
 
-Gyre Sage *(read)*, Pollywog Prodigy *(read)*, Fathom Mage *(read)*, Scurry Oak *(read)*, Dinosaur Egg, Watchful Radstag, Ray Fillet, Wave Warrior *(read)*, Cloudfin Raptor *(read)*, Tyranid Prime *(read)*, Experiment One *(read)*, Lonis, Genetics Expert, Simic Manipulator, Crocanura *(read)*, Renegade Krasis, Elusive Krasis *(read)*, Shambleshark *(read)*, Gluttonous Slug *(read)*, Adaptive Snapjaw *(read)*, Battering Krasis *(read)*, Clinging Anemones *(read)*, Simic Fluxmage *(read)*, Darwin, Adaptive Mutant, Mutable Pupa
+Gyre Sage, Pollywog Prodigy, Fathom Mage, Scurry Oak, Dinosaur Egg, Watchful Radstag, Ray Fillet, Wave Warrior, Cloudfin Raptor, Tyranid Prime, Experiment One, Lonis, Genetics Expert, Simic Manipulator, Crocanura, Renegade Krasis, Elusive Krasis, Shambleshark, Gluttonous Slug, Adaptive Snapjaw, Battering Krasis, Clinging Anemones, Simic Fluxmage, Darwin, Adaptive Mutant, Mutable Pupa
 
-#### Vanishing (20 cards, 14 counted as read)
-
-- **Likely cause:** upkeep triggers, counter removal and sacrifice exist; only the counters were built
-- **Card says:** CR 702.63a: enters with N time counters; remove one each upkeep, sacrifice at the last
-- **Engine does:** enters with N time counters and nothing else happens
-- **Evidence:** IR: ADD_COUNTERS only, no upkeep trigger
-
-Dreamtide Whale *(read)*, Deep Forest Hermit *(read)*, Out of Time, Four Knocks *(read)*, Reality Acid, Regenerations Restored, Chronozoa *(read)*, Crack in Time, Lost Auramancers *(read)*, Deadwood Treefolk *(read)*, Waning Wurm *(read)*, Ravaging Riftwurm, Idris, Soul of the TARDIS, Deadly Grub *(read)*, Aven Riftwatcher *(read)*, Keldon Marauders *(read)*, Tidewalker *(read)*, Soultether Golem *(read)*, Lavacore Elemental *(read)*, Calciderm *(read)*
-
-#### Living weapon (19 cards, 16 counted as read)
+#### Living weapon (19 cards, 0 counted as read)
 
 - **Likely cause:** create token and attach exist; the token count was 0
 - **Card says:** CR 702.92a: create a 0/0 Germ token and attach this to it
 - **Engine does:** creates no Germ (token count 0) and attaches to nothing
 - **Evidence:** board: Nettlecyst resolved with no Germ
 
-Nettlecyst *(read)*, Kaldra Compleat, Bitterthorn, Nissa's Animus *(read)*, Batterskull *(read)*, Bonehoard *(read)*, Batterbone *(read)*, Scytheclaw, Cranial Ram *(read)*, Lashwrithe *(read)*, Mandibular Kite *(read)*, Flayer Husk *(read)*, Tangleweave Armor, Colossal Dreadmask *(read)*, Drossclaw *(read)*, Skinwing *(read)*, Mortarpod *(read)*, Sickleslicer *(read)*, Strandwalker *(read)*, Necropouncer *(read)*
+Nettlecyst, Kaldra Compleat, Bitterthorn, Nissa's Animus, Batterskull, Bonehoard, Batterbone, Scytheclaw, Cranial Ram, Lashwrithe, Mandibular Kite, Flayer Husk, Tangleweave Armor, Colossal Dreadmask, Drossclaw, Skinwing, Mortarpod, Sickleslicer, Strandwalker, Necropouncer
 
 #### Job select (19 cards, 0 counted as read)
 
@@ -562,122 +544,113 @@ Nettlecyst *(read)*, Kaldra Compleat, Bitterthorn, Nissa's Animus *(read)*, Batt
 
 Black Mage's Rod, Dancer's Chakrams, Machinist's Arsenal, Astrologian's Planisphere, Samurai's Katana, Reaper's Scythe, Blue Mage's Cane, Dragoon's Lance, Summoner's Grimoire, White Mage's Staff, Ninja's Blades, Red Mage's Rapier, Paladin's Arms, Thief's Knife, Warrior's Sword, Sage's Nouliths, Dark Knight's Greatsword, Monk's Fist, Bard's Bow
 
-#### Boast (18 cards, 14 counted as read)
+#### Boast (18 cards, 12 counted as read)
 
 - **Likely cause:** attacked-this-turn exists; the printed ability was replaced by a counter
 - **Card says:** CR 702.142a: the printed ability, activatable only if this attacked this turn
 - **Engine does:** pay nothing: put a +1/+1 counter on this
 - **Evidence:** IR: ADD_COUNTERS +1/+1, empty cost
 
-Varragoth, Bloodsky Sire, Broadside Bombardiers *(read)*, Sigurd, Jarl of Ravensthorpe, Eradicator Valkyrie *(read)*, Baron Helmut Zemo *(read)*, Dragonkin Berserker, Fearless Liberator *(read)*, Arni Brokenbrow, Usher of the Fallen *(read)*, Fearless Pup *(read)*, Duskwielder *(read)*, Draugr Recruiter *(read)*, Horizon Seeker *(read)*, Tuskeri Firewalker *(read)*, Axgard Braggart *(read)*, Battershield Warrior *(read)*, Goldmaw Champion *(read)*, Hagi Mob *(read)*
+Varragoth, Bloodsky Sire, Broadside Bombardiers, Sigurd, Jarl of Ravensthorpe, Eradicator Valkyrie *(read)*, Baron Helmut Zemo, Dragonkin Berserker, Fearless Liberator *(read)*, Arni Brokenbrow, Usher of the Fallen *(read)*, Fearless Pup *(read)*, Duskwielder *(read)*, Draugr Recruiter *(read)*, Horizon Seeker *(read)*, Tuskeri Firewalker *(read)*, Axgard Braggart *(read)*, Battershield Warrior *(read)*, Goldmaw Champion *(read)*, Hagi Mob *(read)*
 
-#### Fading (17 cards, 12 counted as read)
+#### Fading (17 cards, 0 counted as read)
 
-- **Likely cause:** upkeep triggers, counter removal and sacrifice exist; only the counters were built
+- **Likely cause:** upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep
 - **Card says:** CR 702.32a: enters with N fade counters; remove one each upkeep, sacrifice when you can't
-- **Engine does:** enters with N fade counters and nothing else happens
-- **Evidence:** IR: ADD_COUNTERS only, no upkeep trigger
+- **Engine does:** removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early
+- **Evidence:** IR: upkeep trigger sacrifices when the count reaches 0
 
-Tangle Wire, Parallax Wave, Saproling Burst, Parallax Tide, Parallax Dementia *(read)*, Parallax Nexus, Blastoderm *(read)*, Jolting Merfolk *(read)*, Woodripper *(read)*, Ancient Hydra *(read)*, Skyshroud Behemoth *(read)*, Rusting Golem *(read)*, Rejuvenation Chamber *(read)*, Phyrexian Prowler *(read)*, Cloudskate *(read)*, Defender en-Vec *(read)*, Skyshroud Ridgeback *(read)*
+Tangle Wire, Parallax Wave, Saproling Burst, Parallax Tide, Parallax Dementia, Parallax Nexus, Blastoderm, Jolting Merfolk, Woodripper, Ancient Hydra, Skyshroud Behemoth, Rusting Golem, Rejuvenation Chamber, Phyrexian Prowler, Cloudskate, Defender en-Vec, Skyshroud Ridgeback
 
-#### Fabricate (16 cards, 14 counted as read)
+#### Fabricate (16 cards, 0 counted as read)
 
 - **Likely cause:** choose-one modes exist; the token mode was dropped
 - **Card says:** CR 702.123a: choose: N +1/+1 counters, or N 1/1 Servo tokens
 - **Engine does:** always N +1/+1 counters
 - **Evidence:** IR: flat ADD_COUNTERS N
 
-Marionette Apprentice *(read)*, Marionette Master *(read)*, Angel of Invention *(read)*, Cayth, Famed Mechanist *(read)*, Cultivator of Blades, Weaponcraft Enthusiast *(read)*, Accomplished Automaton *(read)*, Iron League Steed *(read)*, Glint-Sleeve Artisan *(read)*, Visionary Augmenter *(read)*, Highspire Artisan *(read)*, Peema Outrider *(read)*, Propeller Pioneer *(read)*, Ambitious Aetherborn *(read)*, Elegant Edgecrafters, Maulfist Squad *(read)*
+Marionette Apprentice, Marionette Master, Angel of Invention, Cayth, Famed Mechanist, Cultivator of Blades, Weaponcraft Enthusiast, Accomplished Automaton, Iron League Steed, Glint-Sleeve Artisan, Visionary Augmenter, Highspire Artisan, Peema Outrider, Propeller Pioneer, Ambitious Aetherborn, Elegant Edgecrafters, Maulfist Squad
 
-#### Annihilator (15 cards, 10 counted as read)
+#### Annihilator (15 cards, 0 counted as read)
 
 - **Likely cause:** per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent
 - **Card says:** CR 702.86a: defending player sacrifices N permanents of their choice
 - **Engine does:** every permanent an opponent controls is sacrificed
 - **Evidence:** board: Kozilek, Butcher of Truth attacking; all 6 opposing lands sacrificed
 
-Kozilek, Butcher of Truth, Artisan of Kozilek *(read)*, Ulamog, the Infinite Gyre, It That Betrays *(read)*, Pathrazer of Ulamog, Nulldrifter *(read)*, Flayer of Loyalties *(read)*, Ulamog's Crusher *(read)*, Hideous Taskmaster *(read)*, Breaker of Creation *(read)*, Nazgûl Battle-Mace *(read)*, Eldrazi Ravager *(read)*, Spawnsire of Ulamog, Hand of Emrakul *(read)*, Emrakul, the Aeons Torn
+Kozilek, Butcher of Truth, Artisan of Kozilek, Ulamog, the Infinite Gyre, It That Betrays, Pathrazer of Ulamog, Nulldrifter, Flayer of Loyalties, Ulamog's Crusher, Hideous Taskmaster, Breaker of Creation, Nazgûl Battle-Mace, Eldrazi Ravager, Spawnsire of Ulamog, Hand of Emrakul, Emrakul, the Aeons Torn
 
-#### For Mirrodin! (15 cards, 9 counted as read)
+#### For Mirrodin! (15 cards, 0 counted as read)
 
 - **Likely cause:** create token and attach exist; the token count was 0
 - **Card says:** CR 702.163a: create a 2/2 Rebel token and attach this to it
 - **Engine does:** creates no Rebel (token count 0)
 - **Evidence:** IR: CREATE_TOKEN amount 0, same shape as living weapon
 
-Hexplate Wallbreaker, Glimmer Lens, Bladehold War-Whip, Hexgold Halberd *(read)*, Kemba's Banner *(read)*, Dragonwing Glider *(read)*, Hexgold Hoverwings, Blade of Shared Souls, Barbed Batterfist *(read)*, Mirran Bardiche *(read)*, Vulshok Splitter *(read)*, Goldwarden's Helm *(read)*, Sylvok Battle-Chair *(read)*, Bladehold Cleaver, Hexgold Sledge *(read)*
+Hexplate Wallbreaker, Glimmer Lens, Bladehold War-Whip, Hexgold Halberd, Kemba's Banner, Dragonwing Glider, Hexgold Hoverwings, Blade of Shared Souls, Barbed Batterfist, Mirran Bardiche, Vulshok Splitter, Goldwarden's Helm, Sylvok Battle-Chair, Bladehold Cleaver, Hexgold Sledge
 
-#### Hideaway (15 cards, 10 counted as read)
+#### Hideaway (15 cards, 0 counted as read)
 
 - **Likely cause:** look-at-top and exile exist; playing the hidden card later may also need engine work
 - **Card says:** CR 702.75a: look at the top N, exile one face down, the rest on the bottom
 - **Engine does:** reveals the top N, exiles the top card, puts nothing correctly
 - **Evidence:** IR: REVEAL N, EXILE top 1, PUT_ON_LIBRARY of 'you'
 
-Mosswort Bridge *(read)*, Windbrisk Heights *(read)*, Spinerock Knoll, Cemetery Tampering *(read)*, Rabble Rousing *(read)*, Fight Rigging *(read)*, Clive's Hideaway *(read)*, Evercoat Ursine, Watcher for Tomorrow *(read)*, Smuggler's Buggy *(read)*, Collector's Cage, Widespread Thieving *(read)*, Wiretapping, Shelldock Isle, Howltooth Hollow *(read)*
+Mosswort Bridge, Windbrisk Heights, Spinerock Knoll, Cemetery Tampering, Rabble Rousing, Fight Rigging, Clive's Hideaway, Evercoat Ursine, Watcher for Tomorrow, Smuggler's Buggy, Collector's Cage, Widespread Thieving, Wiretapping, Shelldock Isle, Howltooth Hollow
 
-#### Unleash (14 cards, 14 counted as read)
-
-- **Likely cause:** can't-block restrictions exist; the restriction was dropped
-- **Card says:** CR 702.98a: may enter with a +1/+1 counter; can't block while it has one
-- **Engine does:** may enter with a +1/+1 counter; blocks freely
-- **Evidence:** IR: no blocking restriction
-
-Tesak, Judith's Hellhound *(read)*, Thrill-Kill Assassin *(read)*, Exava, Rakdos Blood Witch *(read)*, Rakdos Cackler *(read)*, Chaos Imps *(read)*, Grim Roustabout *(read)*, Carnival Hellsteed *(read)*, Bloodfray Giant *(read)*, Hellhole Flailer *(read)*, Rakdos Drake *(read)*, Splatter Thug *(read)*, Gore-House Chainwalker *(read)*, Dead Reveler *(read)*, Spawn of Rix Maadi *(read)*
-
-#### Champion (13 cards, 10 counted as read)
+#### Champion (13 cards, 0 counted as read)
 
 - **Likely cause:** exile-until-it-leaves exists; the keyword dropped 'another' and the count
 - **Card says:** CR 702.72a: exile another creature of the type until this leaves; else sacrifice this
 - **Engine does:** exiles every creature you control, itself included
 - **Evidence:** board: Mistbind Clique with 3 Faeries; all 4 exiled
 
-Wanderwine Prophets, Mistbind Clique, Wren's Run Packmaster *(read)*, Changeling Berserker *(read)*, Silvar, Devourer of the Free *(read)*, Lightning Crafter *(read)*, Boggart Mob *(read)*, Unstoppable Ash *(read)*, Changeling Titan *(read)*, Changeling Hero *(read)*, Thoughtweft Trio, Nova Chaser *(read)*, Supreme Exemplar *(read)*
+Wanderwine Prophets, Mistbind Clique, Wren's Run Packmaster, Changeling Berserker, Silvar, Devourer of the Free, Lightning Crafter, Boggart Mob, Unstoppable Ash, Changeling Titan, Changeling Hero, Thoughtweft Trio, Nova Chaser, Supreme Exemplar
 
-#### Graft (13 cards, 10 counted as read)
+#### Graft (13 cards, 0 counted as read)
 
 - **Likely cause:** triggers exist; moving counters may also need engine work
 - **Card says:** CR 702.58a: enters with N counters, and may move one onto each creature that enters
 - **Engine does:** enters with N counters only
 - **Evidence:** IR: flat ADD_COUNTERS N, no trigger
 
-Llanowar Reborn *(read)*, Plaxcaster Frogling *(read)*, Vigean Graftmage *(read)*, Cytoplast Manipulator, Aquastrand Spider *(read)*, Cytoplast Root-Kin *(read)*, Sporeback Troll *(read)*, Novijen Sages, Helium Squirter *(read)*, Simic Initiate *(read)*, Cytospawn Shambler *(read)*, Vigean Hydropon *(read)*, Simic Basilisk
+Llanowar Reborn, Plaxcaster Frogling, Vigean Graftmage, Cytoplast Manipulator, Aquastrand Spider, Cytoplast Root-Kin, Sporeback Troll, Novijen Sages, Helium Squirter, Simic Initiate, Cytospawn Shambler, Vigean Hydropon, Simic Basilisk
 
-#### Training (11 cards, 9 counted as read)
+#### Training (11 cards, 0 counted as read)
 
 - **Likely cause:** attack triggers with conditions exist; the condition was dropped
 - **Card says:** CR 702.149a: counter when it attacks with a creature of greater power
 - **Engine does:** counter whenever it attacks
 - **Evidence:** IR: no condition
 
-Torens, Fist of the Angels *(read)*, Hopeful Initiate, Jenny Flint *(read)*, Savior of Ollenbock, Vikya, Scorching Stalwart *(read)*, Cloaked Cadet *(read)*, Parish-Blade Trainee *(read)*, Apprentice Sharpshooter *(read)*, Gryff Rider *(read)*, Gryffwing Cavalry *(read)*, Rural Recruit *(read)*
+Torens, Fist of the Angels, Hopeful Initiate, Jenny Flint, Savior of Ollenbock, Vikya, Scorching Stalwart, Cloaked Cadet, Parish-Blade Trainee, Apprentice Sharpshooter, Gryff Rider, Gryffwing Cavalry, Rural Recruit
 
-#### Recover (7 cards, 7 counted as read)
+#### Recover (7 cards, 0 counted as read)
 
 - **Likely cause:** graveyard triggers and pay-or-else exist; wrong trigger, no cost
 - **Card says:** CR 702.59a: when a creature card is put into your graveyard, pay the cost or exile this
 - **Engine does:** when a creature you control dies, you may return this to hand for free
 - **Evidence:** IR: trigger on your creatures dying, no cost, no exile
 
-Garza's Assassin *(read)*, Grim Harvest *(read)*, Icefall *(read)*, Controvert *(read)*, Resize *(read)*, Sun's Bounty *(read)*, Krovikan Rot *(read)*
+Garza's Assassin, Grim Harvest, Icefall, Controvert, Resize, Sun's Bounty, Krovikan Rot
 
-#### Ripple (5 cards, 5 counted as read)
+#### Ripple (5 cards, 0 counted as read)
 
 - **Likely cause:** reveal and cast-free exist; the same-name filter was dropped
 - **Card says:** CR 702.60a: reveal the top N; cast any with the same name free; rest on the bottom
 - **Engine does:** casts every card you own in your library for free
 - **Evidence:** IR: CAST_WITHOUT_PAYING 'all object you own in library'
 
-Surging Dementia *(read)*, Surging Flame *(read)*, Surging Aether *(read)*, Surging Sentinels *(read)*, Surging Might *(read)*
+Surging Dementia, Surging Flame, Surging Aether, Surging Sentinels, Surging Might
 
-#### Gravestorm (3 cards, 2 counted as read)
+#### Gravestorm (3 cards, 0 counted as read)
 
 - **Likely cause:** one copy was built; a permanents-to-graveyard count may also need engine work
 - **Card says:** CR 702.69a: copy it for each permanent put into a graveyard this turn
 - **Engine does:** copies it once
 - **Evidence:** IR: one COPY_SPELL
 
-Ominous Harvest *(read)*, Follow the Bodies *(read)*, Bitter Ordeal
+Ominous Harvest, Follow the Bodies, Bitter Ordeal
 
 ### 2.b Missing
 

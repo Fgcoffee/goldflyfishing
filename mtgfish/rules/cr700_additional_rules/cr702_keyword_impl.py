@@ -107,6 +107,66 @@ def register(*names: str) -> Callable[[Builder], Builder]:
     return decorate
 
 
+#: Keywords whose builder produced an ability that does something other than
+#: the keyword - each found by reading what the builder builds, and the worst
+#: of them confirmed on a real board (docs/engine-gaps.md has the evidence).
+#: A card that looks understood and plays differently is worse than one that
+#: says it is not understood, so until each has a faithful builder it is
+#: built inert, and the card reports honestly. Remove an entry only together
+#: with a builder that does what the rule says and a test on a real board.
+MISBUILT_KEYWORDS: dict[str, str] = {
+    "annihilator": "CR 702.86a: the defending player sacrifices N permanents;"
+    " was every permanent an opponent controls",
+    "exploit": "CR 702.110a: you may sacrifice a creature; was every creature you control",
+    "champion": "CR 702.72a: exile another creature until this leaves;"
+    " was every creature you control",
+    "living weapon": "CR 702.92a: create a 0/0 Germ and attach to it; created no Germ",
+    "for mirrodin!": "CR 702.163a: create a 2/2 Rebel and attach to it; created no Rebel",
+    "saddle": "CR 702.171a: tap creatures with total power N; was a free +1/+1 counter",
+    "craft": "CR 702.167a: exile with materials, return transformed; was a +1/+1 counter",
+    "harmonize": "CR 702.180a: cast from the graveyard; was a +1/+1 counter",
+    "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
+    "specialize": "CR 702.172a: perpetually specialize; was a +1/+1 counter",
+    "boast": "CR 702.142a: the printed ability, only if it attacked; was a +1/+1 counter",
+    "amplify": "CR 702.38a: counters per revealed card; was a flat N",
+    "devour": "CR 702.82a: counters per creature sacrificed; was a flat N",
+    "backup": "CR 702.165a: counters on target creature, which gains abilities;"
+    " was counters on this",
+    "fabricate": "CR 702.123a: counters or Servo tokens; was always counters",
+    "graft": "CR 702.58a: also moves counters onto entering creatures; was counters only",
+    "sunburst": "CR 702.44a: a counter per color spent; was always one",
+    "soulbond": "CR 702.95a: pair with one creature; was attached to every creature",
+    "fading": "CR 702.32a: sacrifice when a counter can't be removed;"
+    " was sacrificed as the last one came off, an upkeep early",
+    "compleated": "CR 702.150a: fewer loyalty per Phyrexian mana paid with life;"
+    " was a static removing X loyalty",
+    "haunt": "CR 702.55a: exile haunting a creature, trigger again; was exile only",
+    "recover": "CR 702.59a: when a creature card goes to your graveyard, pay or exile;"
+    " was a free return on your creatures dying",
+    "hideaway": "CR 702.75a: exile one of the top N face down, rest on the bottom;"
+    " was reveal N and exile the top card",
+    "demonstrate": "CR 702.144a: you and an opponent copy it; was two copies for you",
+    "storm": "CR 702.40a: a copy per spell cast before it this turn; was one copy",
+    "gravestorm": "CR 702.69a: a copy per permanent put into a graveyard; was one copy",
+    "ripple": "CR 702.60a: cast revealed cards with the same name; was every card"
+    " in your library",
+    "dethrone": "CR 702.105a: only attacking the player with the most life;"
+    " was any attack",
+    "evolve": "CR 702.100a: only for a bigger creature; was any creature",
+    "training": "CR 702.149a: only attacking beside a stronger creature; was any attack",
+}
+
+
+def _inert_keyword(instance: KeywordInstance) -> Ability:
+    """An inert placeholder for a keyword in ``MISBUILT_KEYWORDS``."""
+    return Ability(
+        AbilityKind.STATIC,
+        effects=(Effect(EffectKind.UNPARSED, text=instance.text or instance.name),),
+        keyword=instance.name,
+        text=instance.text or instance.name,
+    )
+
+
 def build(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Expand a keyword into the abilities that implement it.
 
@@ -117,6 +177,8 @@ def build(instance: KeywordInstance) -> tuple[Ability, ...]:
     builder = BUILDERS.get(instance.key)
     if builder is None:
         return (Ability.unreadable(instance.text or instance.name),)
+    if instance.key in MISBUILT_KEYWORDS:
+        return (_inert_keyword(instance),)
 
     # The keyword's name is stamped here rather than in each builder. Around a
     # fifth of them used ``Ability.static(...)`` and never set it, so anything

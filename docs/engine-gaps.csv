@@ -285,7 +285,7 @@ Evincar's Justice,24292,True,engine,Buyback,suspect,"the cost can be paid; the c
 Fanning the Flames,15127,True,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Flowstone Flood,27192,True,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Forbid,8160,True,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Haze of Rage,4476,True,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
+Haze of Rage,4476,False,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Imps' Taunt,27299,False,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Invulnerability,26076,False,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Lab Rats,12877,True,engine,Buyback,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -736,15 +736,15 @@ Voidcalled Devotee,,True,engine,Warp,suspect,"the cost can be paid; the casting 
 Weftblade Enhancer,18968,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Weftstalker Ardent,1430,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Zoanthrope,6891,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Aven Warhawk,28773,True,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
-Canopy Crawler,29136,True,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Aven Warhawk,28773,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Canopy Crawler,29136,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
 Daru Stinger,30396,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
-Embalmed Brawler,30696,True,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
-Feral Throwback,26281,True,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Embalmed Brawler,30696,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Feral Throwback,26281,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
 Ghastly Remains,29072,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
-Glowering Rogon,31230,True,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
-Kilnmouth Dragon,17444,True,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
-Zombie Brute,29823,True,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Glowering Rogon,31230,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Kilnmouth Dragon,17444,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Zombie Brute,29823,False,engine,Amplify,wrong,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
 "Ajani, Sleeper Agent",6819,False,engine,Compleated,wrong,no record of Phyrexian mana paid with life,continuously removes X loyalty counters
 "Jace, the Perfected Mind",5694,False,engine,Compleated,wrong,no record of Phyrexian mana paid with life,continuously removes X loyalty counters
 "Lukka, Bound to Ruin",13930,False,engine,Compleated,wrong,no record of Phyrexian mana paid with life,continuously removes X loyalty counters
@@ -754,43 +754,43 @@ Zombie Brute,29823,True,engine,Amplify,wrong,no 'reveal any number of cards from
 "Vraska, Betrayal's Sting",1356,False,engine,Compleated,wrong,no record of Phyrexian mana paid with life,continuously removes X loyalty counters
 Altar of the Wretched // Wretched Bonemass,7507,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Braided Net // Braided Quipu,12472,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Clay-Fired Bricks // Cosmium Kiln,12423,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Clay-Fired Bricks // Cosmium Kiln,12423,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Dire Flail // Dire Blunderbuss,13943,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Eye of Ojer Taq // Apex Observatory,12728,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Idol of the Deep King // Sovereign's Macuahuitl,20397,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Inverted Iceberg // Iceberg Titan,14130,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Idol of the Deep King // Sovereign's Macuahuitl,20397,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Inverted Iceberg // Iceberg Titan,14130,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Jade Seedstones // Jadeheart Attendant,22360,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Kaslem's Stonetree // Kaslem's Strider,22735,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Lodestone Needle // Guidestone Compass,14413,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Kaslem's Stonetree // Kaslem's Strider,22735,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Lodestone Needle // Guidestone Compass,14413,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Master's Guide-Mural // Master's Manufactory,13778,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Ore-Rich Stalactite // Cosmium Catalyst,13850,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Oteclan Landmark // Oteclan Levitator,16663,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Oteclan Landmark // Oteclan Levitator,16663,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Paleontologist's Pick-Axe // Dinosaur Headdress,17988,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Saheeli's Lattice // Mastercraft Raptor,14939,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Spring-Loaded Sawblades // Bladewheel Chariot,14255,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Spring-Loaded Sawblades // Bladewheel Chariot,14255,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Sunbird Standard // Sunbird Effigy,13743,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 "Tetzin, Gnome Champion // The Golden-Gear Colossus",15157,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 The Enigma Jewel // Locus of Enlightenment,6425,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Throne of the Grim Captain // The Grim Captain,15291,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-Tithing Blade // Consuming Sepulcher,4761,True,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
+Tithing Blade // Consuming Sepulcher,4761,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Unstable Glyphbridge // Sandswirl Wanderglyph,8403,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Visage of Dread // Dread Osseosaur,19113,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Waterlogged Hulk // Watertight Gondola,16444,False,engine,Craft,wrong,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Creative Technique,4747,False,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
-Excavation Technique,12063,True,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
-Healing Technique,11295,True,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
-Incarnation Technique,3575,True,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
-Replication Technique,4299,True,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
+Excavation Technique,12063,False,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
+Healing Technique,11295,False,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
+Incarnation Technique,3575,False,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
+Replication Technique,4299,False,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
 Transforming Flourish,11637,False,engine,Demonstrate,wrong,no way to copy a spell for another player,"you may copy it, then you copy it again"
-Enraged Revolutionary,30110,True,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
-Grenzo's Cutthroat,24519,True,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
-Marchesa's Emissary,28702,True,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
-Marchesa's Infiltrator,22237,True,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
+Enraged Revolutionary,30110,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
+Grenzo's Cutthroat,24519,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
+Marchesa's Emissary,28702,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
+Marchesa's Infiltrator,22237,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
 Marchesa's Smuggler,24173,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
-"Marchesa, the Black Rose",4874,True,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
+"Marchesa, the Black Rose",4874,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
 Park Heights Maverick,11545,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
 Scourge of the Throne,1288,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
-Treasonous Ogre,2265,True,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
+Treasonous Ogre,2265,False,engine,Dethrone,wrong,no 'player with the most life' comparison,+1/+1 counter whenever it attacks anyone
 Abandon the Post,17314,True,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Acorn Harvest,11997,True,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Alter Reality,15438,False,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
@@ -1002,17 +1002,17 @@ Wild Hunger,24916,True,engine,Flashback,wrong,casting from the graveyard works; 
 Winterthorn Blessing,21272,False,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Wreck and Rebuild,8995,True,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Wurmquake,13865,False,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
-Channeled Dragonfire,16013,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Channeled Dragonfire,16013,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
 Glacial Dragonhunt,13280,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Mammoth Bellow,23069,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Nature's Rhythm,909,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Roamer's Routine,7161,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Synchronized Charge,11240,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Unending Whisper,9947,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Ureni's Counsel,,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Ureni's Rebuff,17245,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Wild Ride,5903,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
-Winternight Stories,5913,True,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Mammoth Bellow,23069,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Nature's Rhythm,909,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Roamer's Routine,7161,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Synchronized Charge,11240,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Unending Whisper,9947,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Ureni's Counsel,,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Ureni's Rebuff,17245,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Wild Ride,5903,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
+Winternight Stories,5913,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
 Zenith Festival,7328,False,engine,Harmonize,wrong,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
 Absolver Thrull,25480,False,engine,Haunt,wrong,no haunting relation between a card in exile and a creature,"when it dies, exile it; nothing haunted"
 Belfry Spirit,22949,False,engine,Haunt,wrong,no haunting relation between a card in exile and a creature,"when it dies, exile it; nothing haunted"
@@ -1081,40 +1081,40 @@ Thundering Mightmare,10947,False,engine,Soulbond,wrong,no paired state between t
 Trusted Forcemage,30492,False,engine,Soulbond,wrong,no paired state between two creatures,attaches to every other creature you control
 Wingcrafter,7489,False,engine,Soulbond,wrong,no paired state between two creatures,attaches to every other creature you control
 Wolfir Silverheart,13786,False,engine,Soulbond,wrong,no paired state between two creatures,attaches to every other creature you control
-"Alora, Rogue Companion",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Ambergris, Citadel Agent",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Gale, Conduit of the Arcane",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Alora, Rogue Companion",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Ambergris, Citadel Agent",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Gale, Conduit of the Arcane",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Gut, Fanatical Priestess",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Imoen, Trickster Friend",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Jaheira, Harper Emissary",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Jaheira, Harper Emissary",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Karlach, Raging Tiefling",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Klement, Novice Acolyte",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Lae'zel, Githyanki Warrior",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Klement, Novice Acolyte",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Lae'zel, Githyanki Warrior",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Lukamina, Moon Druid",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Lulu, Forgetful Hollyphant",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Rasaad, Monk of Selûne",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-Sarevok the Usurper,,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Rasaad, Monk of Selûne",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+Sarevok the Usurper,,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Shadowheart, Sharran Cleric",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Skanos, Dragon Vassal",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Vhal, Eager Scholar",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Viconia, Nightsinger's Disciple",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-"Wilson, Bear Comrade",,True,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Skanos, Dragon Vassal",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Vhal, Eager Scholar",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Viconia, Nightsinger's Disciple",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+"Wilson, Bear Comrade",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Wyll, Pact-Bound Duelist",,False,engine,Specialize,wrong,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
-Baton of Courage,28480,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Clearwater Goblet,17522,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Engineered Explosives,12831,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Etched Oracle,8882,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Heliophial,27324,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Infused Arrows,25531,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Baton of Courage,28480,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Clearwater Goblet,17522,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Engineered Explosives,12831,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Etched Oracle,8882,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Heliophial,27324,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Infused Arrows,25531,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
 Lunar Avenger,26042,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Opaline Bracers,26087,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Pentad Prism,4153,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Sawtooth Thresher,28122,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Skyreach Manta,25376,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Solarion,22235,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Opaline Bracers,26087,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Pentad Prism,4153,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Sawtooth Thresher,28122,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Skyreach Manta,25376,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Solarion,22235,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
 Spinal Parasite,26728,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Suncrusher,23536,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
-Suntouched Myr,15255,True,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Suncrusher,23536,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
+Suntouched Myr,15255,False,engine,Sunburst,wrong,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
 "A-Rowan, Scholar of Sparks // A-Will, Scholar of Frost",,False,parser,refused: 'its controller' with no single antecedent,missing,the parser cannot decide whose controller is meant,"-8: Exile up to five target permanents. For each permanent exiled this way, its controller creates a 4/4 blue and red El"
 Acolyte Hybrid,14965,False,parser,refused: 'its controller' with no single antecedent,missing,the parser cannot decide whose controller is meant,"Whenever this creature attacks, destroy up to one target artifact. If an artifact is destroyed this way, its controller "
 Afflicted Deserter // Werewolf Ransacker,15065,False,parser,refused: 'its controller' with no single antecedent,missing,the parser cannot decide whose controller is meant,"Whenever this creature transforms into this, you may destroy target artifact. If that artifact is put into a graveyard t"
@@ -1250,51 +1250,51 @@ Nicol Bolas,12408,False,parser,refused: unbound player reference,missing,a playe
 Rain of Gore,19235,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If a spell or ability would cause its controller to gain life, that player loses that much life instead."
 "Szadek, Lord of Secrets",18617,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If this would deal combat damage to a player, instead put that many +1/+1 counters on this and that player mills that ma"
 Undead Alchemist,6149,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If a Zombie you control would deal combat damage to a player, instead that player mills that many cards."
-Artisan of Kozilek,1203,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Breaker of Creation,3974,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Eldrazi Ravager,9940,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Artisan of Kozilek,1203,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Breaker of Creation,3974,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Eldrazi Ravager,9940,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
 "Emrakul, the Aeons Torn",,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Flayer of Loyalties,3209,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Hand of Emrakul,12848,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Hideous Taskmaster,3869,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-It That Betrays,1556,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Flayer of Loyalties,3209,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Hand of Emrakul,12848,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Hideous Taskmaster,3869,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+It That Betrays,1556,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
 "Kozilek, Butcher of Truth",1123,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Nazgûl Battle-Mace,4045,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Nulldrifter,2491,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Nazgûl Battle-Mace,4045,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Nulldrifter,2491,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
 Pathrazer of Ulamog,2418,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
 Spawnsire of Ulamog,11660,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
-Ulamog's Crusher,3458,True,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
+Ulamog's Crusher,3458,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
 "Ulamog, the Infinite Gyre",1387,False,parser,Annihilator,wrong,per-player sacrifices of N exist (edicts use them); the keyword dropped the count and named every opponent,every permanent an opponent controls is sacrificed
 Archpriest of Shadows,3226,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Bola Slinger,21431,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Boon-Bringer Valkyrie,9196,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Bola Slinger,21431,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Boon-Bringer Valkyrie,9196,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
 "Bright-Palm, Soul Awakener",9617,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
 Chomping Kavu,24517,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Conclave Sledge-Captain,7548,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Consuming Aetherborn,23564,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Cragsmasher Yeti,22031,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Death-Greeter's Champion,13015,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Conclave Sledge-Captain,7548,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Consuming Aetherborn,23564,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Cragsmasher Yeti,22031,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Death-Greeter's Champion,13015,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
 Doomskar Warrior,14448,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Emergent Woodwurm,6874,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Enduring Bondwarden,18160,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Fearless Skald,21089,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Gloomfang Mauler,15361,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Golden-Scale Aeronaut,27208,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Guardian Scalelord,4708,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Hangar Scrounger,15380,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Emergent Woodwurm,6874,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Enduring Bondwarden,18160,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Fearless Skald,21089,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Gloomfang Mauler,15361,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Golden-Scale Aeronaut,27208,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Guardian Scalelord,4708,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Hangar Scrounger,15380,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
 Mirror-Style Master,12614,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Redcap Heelslasher,23124,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Saiba Cryptomancer,12025,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Scorn-Blade Berserker,9281,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Serpent-Blade Assailant,17580,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Sigiled Sentinel,24098,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Redcap Heelslasher,23124,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Saiba Cryptomancer,12025,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Scorn-Blade Berserker,9281,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Serpent-Blade Assailant,17580,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Sigiled Sentinel,24098,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
 Streetwise Negotiator,24248,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
-Voldaren Thrillseeker,12524,True,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
+Voldaren Thrillseeker,12524,False,parser,Backup,wrong,targeted counters and granted abilities exist; aimed at itself,puts N counters on this creature
 Arni Brokenbrow,16584,False,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
 Axgard Braggart,27328,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
-Baron Helmut Zemo,12455,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
+Baron Helmut Zemo,12455,False,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
 Battershield Warrior,27702,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
-Broadside Bombardiers,5174,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
+Broadside Bombardiers,5174,False,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
 Dragonkin Berserker,13657,False,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
 Draugr Recruiter,21593,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
 Duskwielder,21029,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
@@ -1308,65 +1308,65 @@ Horizon Seeker,22159,True,parser,Boast,wrong,attacked-this-turn exists; the prin
 Tuskeri Firewalker,24798,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
 Usher of the Fallen,19186,True,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
 "Varragoth, Bloodsky Sire",1940,False,parser,Boast,wrong,attacked-this-turn exists; the printed ability was replaced by a counter,pay nothing: put a +1/+1 counter on this
-Boggart Mob,14328,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Changeling Berserker,13541,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Changeling Hero,17052,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Changeling Titan,15429,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Lightning Crafter,13915,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Boggart Mob,14328,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Changeling Berserker,13541,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Changeling Hero,17052,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Changeling Titan,15429,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Lightning Crafter,13915,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
 Mistbind Clique,10240,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Nova Chaser,19800,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-"Silvar, Devourer of the Free",13844,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Supreme Exemplar,24026,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Nova Chaser,19800,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+"Silvar, Devourer of the Free",13844,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Supreme Exemplar,24026,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
 Thoughtweft Trio,19782,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Unstoppable Ash,14546,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Unstoppable Ash,14546,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
 Wanderwine Prophets,9568,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
-Wren's Run Packmaster,11704,True,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
+Wren's Run Packmaster,11704,False,parser,Champion,wrong,exile-until-it-leaves exists; the keyword dropped 'another' and the count,"exiles every creature you control, itself included"
 Bloodspore Thrinax,9244,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Caldera Hellion,23247,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Caprichrome,26579,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Famished Worldsire,3735,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Feaster of Fools,21304,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Caldera Hellion,23247,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Caprichrome,26579,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Famished Worldsire,3735,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Feaster of Fools,21304,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Feasting Hobbit,3997,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Fell Beast of Mordor,9784,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Gluttonous Slime,17573,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Gorger Wurm,27793,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Fell Beast of Mordor,9784,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Gluttonous Slime,17573,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Gorger Wurm,27793,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Hellkite Hatchling,23776,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Intellect Devourer,7482,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Marrow Chomper,25510,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Mycoloth,2106,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Predator Dragon,22092,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Preyseizer Dragon,18650,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Mycoloth,2106,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Predator Dragon,22092,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Preyseizer Dragon,18650,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Ravenous Gigantotherium,21592,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Ravenous Tyrannosaurus,5006,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Ribtruss Roaster,7165,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Skullmulcher,16831,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Tar Fiend,25283,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Thorn-Thrash Viashino,27361,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Thorn-Thrash Viashino,27361,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Thromok the Insatiable,15400,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Thunder-Thrash Elder,24176,True,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
+Thunder-Thrash Elder,24176,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
 Voracious Dragon,17719,False,parser,Devour,wrong,any-number sacrifices exist; built as a flat counter count,"always enters with N +1/+1 counters, sacrificing nothing"
-Adaptive Snapjaw,22694,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Battering Krasis,22802,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Clinging Anemones,23437,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Cloudfin Raptor,9906,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Crocanura,13278,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Adaptive Snapjaw,22694,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Battering Krasis,22802,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Clinging Anemones,23437,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Cloudfin Raptor,9906,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Crocanura,13278,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 "Darwin, Adaptive Mutant",25995,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 Dinosaur Egg,5736,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Elusive Krasis,16359,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Experiment One,10486,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Fathom Mage,1716,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Gluttonous Slug,20428,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Gyre Sage,837,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Elusive Krasis,16359,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Experiment One,10486,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Fathom Mage,1716,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Gluttonous Slug,20428,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Gyre Sage,837,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 "Lonis, Genetics Expert",11090,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 Mutable Pupa,,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Pollywog Prodigy,1170,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-"Ray Fillet, Wave Warrior",7380,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Pollywog Prodigy,1170,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+"Ray Fillet, Wave Warrior",7380,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 Renegade Krasis,14906,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Scurry Oak,2264,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Shambleshark,20355,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Simic Fluxmage,23516,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Scurry Oak,2264,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Shambleshark,20355,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Simic Fluxmage,23516,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 Simic Manipulator,12586,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
-Tyranid Prime,10078,True,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
+Tyranid Prime,10078,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 Watchful Radstag,6291,False,parser,Evolve,wrong,power/toughness comparisons exist; the condition was dropped,counter whenever any creature you control enters
 A-Skull Skaab,,False,parser,Exploit,wrong,optional single sacrifices exist; the keyword dropped the count,"you may sacrifice every creature you control, itself included"
 A-Stitched Assistant,,False,parser,Exploit,wrong,optional single sacrifices exist; the keyword dropped the count,"you may sacrifice every creature you control, itself included"
@@ -1393,84 +1393,84 @@ Silumgar Sorcerer,20232,False,parser,Exploit,wrong,optional single sacrifices ex
 Skull Skaab,20580,False,parser,Exploit,wrong,optional single sacrifices exist; the keyword dropped the count,"you may sacrifice every creature you control, itself included"
 Stitched Assistant,21060,False,parser,Exploit,wrong,optional single sacrifices exist; the keyword dropped the count,"you may sacrifice every creature you control, itself included"
 Vulturous Aven,21980,False,parser,Exploit,wrong,optional single sacrifices exist; the keyword dropped the count,"you may sacrifice every creature you control, itself included"
-Accomplished Automaton,20035,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Ambitious Aetherborn,28801,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Angel of Invention,4222,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-"Cayth, Famed Mechanist",4358,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Accomplished Automaton,20035,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Ambitious Aetherborn,28801,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Angel of Invention,4222,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+"Cayth, Famed Mechanist",4358,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
 Cultivator of Blades,9887,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
 Elegant Edgecrafters,28945,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Glint-Sleeve Artisan,24796,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Highspire Artisan,26929,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Iron League Steed,24304,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Marionette Apprentice,563,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Marionette Master,1549,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Maulfist Squad,29876,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Peema Outrider,27665,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Propeller Pioneer,28139,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Visionary Augmenter,25120,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Weaponcraft Enthusiast,12277,True,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Ancient Hydra,30596,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Blastoderm,29741,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Cloudskate,31239,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Defender en-Vec,31495,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Jolting Merfolk,30324,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Parallax Dementia,28095,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Parallax Nexus,28785,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Parallax Tide,21115,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Parallax Wave,12116,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Phyrexian Prowler,31149,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Rejuvenation Chamber,31046,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Rusting Golem,30793,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Saproling Burst,19100,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Skyshroud Behemoth,30720,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Skyshroud Ridgeback,31562,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Tangle Wire,8327,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Woodripper,30430,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N fade counters and nothing else happens
-Barbed Batterfist,14381,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Glint-Sleeve Artisan,24796,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Highspire Artisan,26929,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Iron League Steed,24304,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Marionette Apprentice,563,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Marionette Master,1549,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Maulfist Squad,29876,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Peema Outrider,27665,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Propeller Pioneer,28139,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Visionary Augmenter,25120,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Weaponcraft Enthusiast,12277,False,parser,Fabricate,wrong,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
+Ancient Hydra,30596,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Blastoderm,29741,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Cloudskate,31239,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Defender en-Vec,31495,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Jolting Merfolk,30324,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Dementia,28095,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Nexus,28785,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Tide,21115,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Wave,12116,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Phyrexian Prowler,31149,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Rejuvenation Chamber,31046,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Rusting Golem,30793,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Saproling Burst,19100,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Skyshroud Behemoth,30720,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Skyshroud Ridgeback,31562,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Tangle Wire,8327,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Woodripper,30430,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Barbed Batterfist,14381,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Blade of Shared Souls,12229,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Bladehold Cleaver,,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Bladehold War-Whip,5888,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Dragonwing Glider,11362,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Dragonwing Glider,11362,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Glimmer Lens,5459,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Goldwarden's Helm,18915,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Hexgold Halberd,9607,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Goldwarden's Helm,18915,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Hexgold Halberd,9607,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Hexgold Hoverwings,11998,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Hexgold Sledge,,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Hexgold Sledge,,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Hexplate Wallbreaker,3573,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Kemba's Banner,10108,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Mirran Bardiche,16872,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Sylvok Battle-Chair,21493,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Vulshok Splitter,17391,True,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
-Aquastrand Spider,17647,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Kemba's Banner,10108,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Mirran Bardiche,16872,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Sylvok Battle-Chair,21493,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Vulshok Splitter,17391,False,parser,For Mirrodin!,wrong,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
+Aquastrand Spider,17647,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
 Cytoplast Manipulator,13886,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Cytoplast Root-Kin,18359,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Cytospawn Shambler,24343,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Helium Squirter,22621,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Llanowar Reborn,2379,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Cytoplast Root-Kin,18359,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Cytospawn Shambler,24343,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Helium Squirter,22621,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Llanowar Reborn,2379,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
 Novijen Sages,21646,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Plaxcaster Frogling,6480,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Plaxcaster Frogling,6480,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
 Simic Basilisk,26984,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Simic Initiate,23424,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Sporeback Troll,19557,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Vigean Graftmage,13101,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
-Vigean Hydropon,25403,True,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Simic Initiate,23424,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Sporeback Troll,19557,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Vigean Graftmage,13101,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
+Vigean Hydropon,25403,False,parser,Graft,wrong,triggers exist; moving counters may also need engine work,enters with N counters only
 Bitter Ordeal,13633,False,parser,Gravestorm,wrong,one copy was built; a permanents-to-graveyard count may also need engine work,copies it once
-Follow the Bodies,12666,True,parser,Gravestorm,wrong,one copy was built; a permanents-to-graveyard count may also need engine work,copies it once
-Ominous Harvest,10568,True,parser,Gravestorm,wrong,one copy was built; a permanents-to-graveyard count may also need engine work,copies it once
-Cemetery Tampering,2797,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Clive's Hideaway,5055,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Follow the Bodies,12666,False,parser,Gravestorm,wrong,one copy was built; a permanents-to-graveyard count may also need engine work,copies it once
+Ominous Harvest,10568,False,parser,Gravestorm,wrong,one copy was built; a permanents-to-graveyard count may also need engine work,copies it once
+Cemetery Tampering,2797,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Clive's Hideaway,5055,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
 Collector's Cage,11393,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
 Evercoat Ursine,5105,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Fight Rigging,3836,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Howltooth Hollow,21454,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Mosswort Bridge,195,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Rabble Rousing,3431,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Fight Rigging,3836,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Howltooth Hollow,21454,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Mosswort Bridge,195,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Rabble Rousing,3431,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
 Shelldock Isle,16235,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Smuggler's Buggy,10299,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Smuggler's Buggy,10299,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
 Spinerock Knoll,778,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Watcher for Tomorrow,7490,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Widespread Thieving,12087,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
-Windbrisk Heights,658,True,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Watcher for Tomorrow,7490,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Widespread Thieving,12087,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
+Windbrisk Heights,658,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
 Wiretapping,15530,False,parser,Hideaway,wrong,look-at-top and exile exist; playing the hidden card later may also need engine work,"reveals the top N, exiles the top card, puts nothing correctly"
 Astrologian's Planisphere,5287,False,parser,Job select,wrong,create token and attach exist; built as a counter instead,put a +1/+1 counter on this
 Bard's Bow,15978,False,parser,Job select,wrong,create token and attach exist; built as a counter instead,put a +1/+1 counter on this
@@ -1491,138 +1491,80 @@ Summoner's Grimoire,7910,False,parser,Job select,wrong,create token and attach e
 Thief's Knife,10667,False,parser,Job select,wrong,create token and attach exist; built as a counter instead,put a +1/+1 counter on this
 Warrior's Sword,10849,False,parser,Job select,wrong,create token and attach exist; built as a counter instead,put a +1/+1 counter on this
 White Mage's Staff,7996,False,parser,Job select,wrong,create token and attach exist; built as a counter instead,put a +1/+1 counter on this
-Batterbone,7232,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Batterskull,4984,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-"Bitterthorn, Nissa's Animus",1976,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Bonehoard,5061,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Colossal Dreadmask,13653,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Cranial Ram,7344,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Drossclaw,13790,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Flayer Husk,11916,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Batterbone,7232,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Batterskull,4984,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+"Bitterthorn, Nissa's Animus",1976,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Bonehoard,5061,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Colossal Dreadmask,13653,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Cranial Ram,7344,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Drossclaw,13790,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Flayer Husk,11916,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
 Kaldra Compleat,1670,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Lashwrithe,8100,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Mandibular Kite,9740,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Mortarpod,16762,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Necropouncer,20345,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Nettlecyst,1040,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Lashwrithe,8100,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Mandibular Kite,9740,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Mortarpod,16762,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Necropouncer,20345,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Nettlecyst,1040,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
 Scytheclaw,7316,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Sickleslicer,17886,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Skinwing,16613,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Strandwalker,19352,True,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Sickleslicer,17886,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Skinwing,16613,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
+Strandwalker,19352,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
 Tangleweave Armor,12150,False,parser,Living weapon,wrong,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Arcbound Bruiser,14785,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Condor,9777,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Crusher,6021,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Fiend,13156,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Hybrid,12893,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Javelineer,10770,False,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Lancer,15911,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Mouser,8424,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Overseer,11211,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Prototype,11936,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Ravager,3692,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Reclaimer,7485,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Shikari,8086,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Slasher,12322,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Slith,9027,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Stinger,8261,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Tracker,9785,False,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Wanderer,20114,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Whelp,13250,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Arcbound Worker,7855,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-"Blaster, Combat DJ // Blaster, Morale Booster",13947,False,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Power Depot,1983,False,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Scrapyard Recombiner,6350,True,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-"Zabaz, the Glimmerwasp",11869,False,parser,Modular,wrong,dies triggers exist; moving counters may also need engine work,enters with N counters only
-Controvert,25825,True,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
-Garza's Assassin,18942,True,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
-Grim Harvest,20120,True,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
-Icefall,22502,True,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
-Krovikan Rot,31377,True,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
-Resize,27487,True,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
-Sun's Bounty,29058,True,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
-Surging Aether,31861,True,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
-Surging Dementia,31591,True,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
-Surging Flame,31835,True,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
-Surging Might,32016,True,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
-Surging Sentinels,31970,True,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
+Controvert,25825,False,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
+Garza's Assassin,18942,False,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
+Grim Harvest,20120,False,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
+Icefall,22502,False,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
+Krovikan Rot,31377,False,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
+Resize,27487,False,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
+Sun's Bounty,29058,False,parser,Recover,wrong,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
+Surging Aether,31861,False,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
+Surging Dementia,31591,False,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
+Surging Flame,31835,False,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
+Surging Might,32016,False,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
+Surging Sentinels,31970,False,parser,Ripple,wrong,reveal and cast-free exist; the same-name filter was dropped,casts every card you own in your library for free
 "Aeve, Progenitor Ooze",7478,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-"All of History, All at Once",9405,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Amphibian Downpour,1228,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Astral Steel,18358,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Brain Freeze,781,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Chatterstorm,2829,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Dragonstorm,9971,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Elemental Eruption,5514,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Empty the Warrens,2500,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+"All of History, All at Once",9405,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Amphibian Downpour,1228,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Astral Steel,18358,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Brain Freeze,781,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Chatterstorm,2829,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Dragonstorm,9971,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Elemental Eruption,5514,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Empty the Warrens,2500,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
 Fiery Encore,16661,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Flusterstorm,307,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Flusterstorm,307,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
 Galathul Galecaller // Corvid Squall,,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
 Galvanic Relay,9996,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Grapeshot,723,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Ground Rift,16147,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Haze of Rage,4476,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Hindering Touch,22719,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Hunting Pack,14709,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Grapeshot,723,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Ground Rift,16147,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Haze of Rage,4476,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Hindering Touch,22719,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Hunting Pack,14709,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
 Ignite Memories,12712,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
 Limitless Rekindling,,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Mind's Desire,3607,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Mordor on the March,15481,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Radstorm,3073,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Reaping the Graves,17157,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Scattershot,17112,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Spreading Insurrection,12694,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Sprouting Vines,13337,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Mind's Desire,3607,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Mordor on the March,15481,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Radstorm,3073,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Reaping the Graves,17157,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Scattershot,17112,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Spreading Insurrection,12694,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Sprouting Vines,13337,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
 Storm of Memories,13796,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Stormscale Scion,4831,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Tempest Technique,5461,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Temporal Fissure,11983,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Tendrils of Agony,5595,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Volcanic Awakening,19590,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Weather the Storm,9051,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Wing Shards,14382,True,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
-Apprentice Sharpshooter,21765,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-Cloaked Cadet,19075,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-Gryff Rider,24402,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-Gryffwing Cavalry,24872,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+Stormscale Scion,4831,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Tempest Technique,5461,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Temporal Fissure,11983,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Tendrils of Agony,5595,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Volcanic Awakening,19590,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Weather the Storm,9051,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Wing Shards,14382,False,parser,Storm,wrong,the spells-cast-this-turn count exists; one copy was built,copies it once
+Apprentice Sharpshooter,21765,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+Cloaked Cadet,19075,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+Gryff Rider,24402,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+Gryffwing Cavalry,24872,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
 Hopeful Initiate,5540,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-Jenny Flint,15920,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-Parish-Blade Trainee,20632,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-Rural Recruit,25761,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+Jenny Flint,15920,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+Parish-Blade Trainee,20632,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+Rural Recruit,25761,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
 Savior of Ollenbock,17989,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-"Torens, Fist of the Angels",4438,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-"Vikya, Scorching Stalwart",18178,True,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
-Bloodfray Giant,24630,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Carnival Hellsteed,24003,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Chaos Imps,23172,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Dead Reveler,28432,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-"Exava, Rakdos Blood Witch",17304,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Gore-House Chainwalker,27371,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Grim Roustabout,23598,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Hellhole Flailer,24701,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Rakdos Cackler,19608,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Rakdos Drake,26312,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Spawn of Rix Maadi,28855,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Splatter Thug,26424,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-"Tesak, Judith's Hellhound",12394,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Thrill-Kill Assassin,16813,True,parser,Unleash,wrong,can't-block restrictions exist; the restriction was dropped,may enter with a +1/+1 counter; blocks freely
-Aven Riftwatcher,22340,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Calciderm,29795,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Chronozoa,12203,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Crack in Time,13711,False,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Deadly Grub,21061,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Deadwood Treefolk,16945,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Deep Forest Hermit,3498,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Dreamtide Whale,1202,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Four Knocks,8856,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-"Idris, Soul of the TARDIS",20505,False,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Keldon Marauders,25409,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Lavacore Elemental,27365,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Lost Auramancers,15944,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Out of Time,6016,False,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Ravaging Riftwurm,20392,False,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Reality Acid,9489,False,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Regenerations Restored,11238,False,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Soultether Golem,26974,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Tidewalker,25792,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
-Waning Wurm,18904,True,parser,Vanishing,wrong,"upkeep triggers, counter removal and sacrifice exist; only the counters were built",enters with N time counters and nothing else happens
+"Torens, Fist of the Angels",4438,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks
+"Vikya, Scorching Stalwart",18178,False,parser,Training,wrong,attack triggers with conditions exist; the condition was dropped,counter whenever it attacks

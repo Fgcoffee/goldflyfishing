@@ -15,6 +15,7 @@ from mtgfish.rules.cr100_game_concepts.actions import destroy
 from mtgfish.rules.cr100_game_concepts.cr118_costs import Cost
 from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
 from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
+    MISBUILT_KEYWORDS,
     KeywordInstance,
     build,
     implemented_keywords,
@@ -143,11 +144,6 @@ def test_exalted_does_not_trigger_with_two_attackers(board):
     assert not game.pending_triggers
 
 
-def test_annihilator_carries_its_amount(board):
-    abilities = kw("Annihilator", amount=2)
-    assert abilities[0].kind is AbilityKind.TRIGGERED
-    effect = abilities[0].effects[0]
-    assert effect.amount.constant == 2
 
 
 def test_afflict_triggers_on_becoming_blocked(board):
@@ -263,11 +259,6 @@ def test_modular_is_two_abilities(board):
     assert {a.kind for a in abilities} == {AbilityKind.STATIC, AbilityKind.TRIGGERED}
 
 
-def test_graft_enters_with_counters(board):
-    abilities = kw("Graft", amount=2)
-    effect = abilities[0].effects[0]
-    assert effect.counter_type == "+1/+1"
-    assert effect.amount.constant == 2
 
 
 def test_vanishing_is_counters_plus_an_upkeep_trigger(board):
@@ -409,19 +400,6 @@ def test_prowess_does_not_trigger_on_a_creature_spell(board):
     assert not game.pending_triggers
 
 
-def test_evolve_triggers_on_a_creature_entering(board):
-    from mtgfish.rules.kernel.events import Event, EventKind
-
-    game = board.game
-    board.scripts.add("Experiment One", *kw("Evolve"))
-    board.play("Experiment One", controller=0)
-    game.pending_triggers.clear()
-
-    newcomer = board.play("Grizzly Bears", controller=0)
-    game.emit(
-        Event(EventKind.ENTERS_BATTLEFIELD, object_id=newcomer.id, player=PlayerId(0))
-    )
-    assert game.pending_triggers
 
 
 def test_a_persisted_creature_does_not_persist_a_second_time(board):
@@ -437,3 +415,22 @@ def test_a_persisted_creature_does_not_persist_a_second_time(board):
         board.resolve_stack()
 
     assert not _creature_named(board, "Grizzly Bears")
+
+
+# ---------------------------------------------------------------------------
+# Keywords whose builder did something other than the keyword
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("name", sorted(MISBUILT_KEYWORDS))
+def test_a_misbuilt_keyword_is_inert_until_it_has_a_faithful_builder(name):
+    """Annihilator made the defending player sacrifice every permanent,
+    Exploit sacrificed every creature, Living weapon made no Germ. A card
+    that looks understood and plays differently is worse than one that says
+    it is not understood, so each is built inert - and its card reports
+    honestly - until it has a builder that does what the rule says."""
+    from mtgfish.parser.compile import understood
+
+    abilities = build(KeywordInstance(name.title(), amount=2))
+    assert abilities
+    assert not any(understood(ability) for ability in abilities)

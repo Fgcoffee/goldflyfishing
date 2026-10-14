@@ -121,10 +121,6 @@ FINDINGS: tuple[Finding, ...] = (
             "enters with N counters, and may move one onto each creature that enters",
             "enters with N counters only",
             "IR: flat ADD_COUNTERS N, no trigger"),
-    Finding("Modular", WRONG, "702.43a",
-            "enters with N counters; when it dies, move them to target artifact creature",
-            "enters with N counters only",
-            "IR: flat ADD_COUNTERS N, no dies trigger"),
     Finding("Sunburst", WRONG, "702.44a",
             "a counter for each color of mana spent to cast it",
             "always exactly one +1/+1 counter",
@@ -135,12 +131,9 @@ FINDINGS: tuple[Finding, ...] = (
             "IR: ATTACH to 'all another creature you control'"),
     Finding("Fading", WRONG, "702.32a",
             "enters with N fade counters; remove one each upkeep, sacrifice when you can't",
-            "enters with N fade counters and nothing else happens",
-            "IR: ADD_COUNTERS only, no upkeep trigger"),
-    Finding("Vanishing", WRONG, "702.63a",
-            "enters with N time counters; remove one each upkeep, sacrifice at the last",
-            "enters with N time counters and nothing else happens",
-            "IR: ADD_COUNTERS only, no upkeep trigger"),
+            "removes a counter each upkeep and sacrifices as the last one comes off,"
+            " an upkeep early",
+            "IR: upkeep trigger sacrifices when the count reaches 0"),
     Finding("Compleated", WRONG, "702.150a",
             "enters with two fewer loyalty for each Phyrexian mana paid with life",
             "continuously removes X loyalty counters",
@@ -185,10 +178,6 @@ FINDINGS: tuple[Finding, ...] = (
             "counter when it attacks with a creature of greater power",
             "counter whenever it attacks",
             "IR: no condition"),
-    Finding("Unleash", WRONG, "702.98a",
-            "may enter with a +1/+1 counter; can't block while it has one",
-            "may enter with a +1/+1 counter; blocks freely",
-            "IR: no blocking restriction"),
     # -- missing: inert placeholder, honestly not understood -----------------
     Finding("Plot", MISSING, "702.170a", "exile from hand, cast later for free",
             "nothing (inert)", "IR: UNPARSED placeholder"),
@@ -257,18 +246,14 @@ CAUSES: dict[str, tuple[str, str]] = {
     "Backup": (PARSER, "targeted counters and granted abilities exist; aimed at itself"),
     "Boast": (PARSER, "attacked-this-turn exists; the printed ability was replaced by a"
               " counter"),
-    "Fading": (PARSER, "upkeep triggers, counter removal and sacrifice exist; only the"
-               " counters were built"),
-    "Vanishing": (PARSER, "upkeep triggers, counter removal and sacrifice exist; only the"
-                  " counters were built"),
+    "Fading": (PARSER, "upkeep triggers, counter removal and sacrifice exist; the"
+               " sacrifice condition is off by one upkeep"),
     "Recover": (PARSER, "graveyard triggers and pay-or-else exist; wrong trigger, no cost"),
     "Storm": (PARSER, "the spells-cast-this-turn count exists; one copy was built"),
     "Ripple": (PARSER, "reveal and cast-free exist; the same-name filter was dropped"),
     "Evolve": (PARSER, "power/toughness comparisons exist; the condition was dropped"),
     "Training": (PARSER, "attack triggers with conditions exist; the condition was dropped"),
-    "Unleash": (PARSER, "can't-block restrictions exist; the restriction was dropped"),
     "Graft": (PARSER, "triggers exist; moving counters may also need engine work"),
-    "Modular": (PARSER, "dies triggers exist; moving counters may also need engine work"),
     "Hideaway": (PARSER, "look-at-top and exile exist; playing the hidden card later may"
                  " also need engine work"),
     "Gravestorm": (PARSER, "one copy was built; a permanents-to-graveyard count may also"
