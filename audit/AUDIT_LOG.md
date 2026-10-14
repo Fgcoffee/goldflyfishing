@@ -12,7 +12,7 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 | Branch | Owner | Verdict | Notes |
 |---|---|---|---|
-| `claude/lucid-einstein-dml803` @ 043206d | parser | BLOCK (process) | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
+| `claude/lucid-einstein-dml803` @ 043206d | parser | BLOCK (process, F9 red test) | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
 | `wip-misbuilt-keywords` (local, unpushed) | parser | not received | |
 | `main-n8yjai` @ a0c91e7 | rules | OK for this commit; BLOCK (process) | Flashback exile verified on the board. PR #10 is already MERGED, so this needs a new PR. |
 
@@ -41,6 +41,8 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 | F5 | **BLOCK** | parser (builder) + rules (legality) | Jump-start is cast from the graveyard for FREE with no discard (702.133a: pay the mana cost and discard a card as an additional cost). It's built as a graveyard *alternative* cost with no cost. On main it then goes back to the graveyard: a free spell, recast forever. On a0c91e7 it's exiled, but still free. | Radical Idea: offered with no mana and an empty hand; pool unchanged after the cast |
 | F6 | **BLOCK** | parser (builder) + rules (legality) | Aftermath is inverted (702.127a): the aftermath half (Dawn) is cast FROM HAND for its mana cost, and can't be cast from the graveyard even with mana. | Dusk // Dawn: face_index 1 offered from hand and resolved; nothing offered from the graveyard with 60 mana |
 | F7 | WARN | rules | `_EXILED_WHEN_IT_LEAVES_THE_STACK` keys aftermath on an alternative cost, but 702.127a exiles it whenever it "was cast from a graveyard", whatever cost was paid. Harmonize's entry is dead, because Harmonize is built as a +1/+1-counter ability (class A6). | a0c91e7 game.py |
+| F8 | **BLOCK** | parser (builder) / rules (LKI) | Modular moves NO counters. The dies trigger targets an artifact creature and resolves, but the target gets 0 counters: the count is read from the card in the graveyard, not from last-known information (CR 702.43a, 608.2h). Main and branch. This contradicts the parser's 13:15 correction. | Arcbound Worker (1 counter) Shocked, trigger targets Ornithopter, Ornithopter `{}` |
+| F9 | **BLOCK** | parser | The branch's own suite is red: `tests/rules/test_citations.py::test_the_baseline_covers_every_cited_rule`, "702.34a" cited (tools/engine_gaps.py) but absent from the baseline. 1 failed, 2457 passed. | `pytest tests/parser tests/rules` @ 043206d |
 | F1 | WARN | sandbox | `Sandbox.put` places planeswalkers with no loyalty counters (CR 306.5b); casting gives 7. Tests built with `put` see a 0-loyalty walker. | Ugin via put: counters `{}` |
 | F2 | WARN | rules | Enlist (an optional cost to attack, 702.154a) is paid after the attack tax rather than being part of one locked-in total cost (508.1g-h). | `cr506_combat.declare_attackers` |
 | F3 | WARN | parser | "cards in that player's hand" (Sudden Impact) counts every hand, the same defect as "their hand". The fix must cover "that player's" and "its owner's" too. Pre-existing on main. | Sudden Impact: "the number of all object in hand" |
@@ -50,6 +52,8 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 Class A (read as understood but wrong, the worst class). All of these violate
 working rule 1 and must be placeholders (unread) until they are built
 faithfully:
+
+Parser correction (13:15), board-checked: **Vanishing OK** (Keldon Marauders sacrificed as its last counter comes off, 702.63a). **Unleash OK** (a Cackler with a counter can't block; Hill Giant control blocks). **Fading off by one, confirmed**: Blastoderm sacrificed on the upkeep that removes its last counter (turn 6), should be the following one (turn 8, 702.32a). **Modular NOT correct**: see F8.
 
 1. Annihilator sacrifices every permanent (parser). **Reproduced**: Ulamog's Crusher, 6 Forests all gone (main too).
 2. Flashback card goes back to the graveyard, not exile, 702.34a (rules). **Reproduced**: Think Twice back in graveyard (main too).
