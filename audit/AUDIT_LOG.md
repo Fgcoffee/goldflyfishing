@@ -12,9 +12,9 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 | Branch | Owner | Verdict | Notes |
 |---|---|---|---|
-| `claude/lucid-einstein-dml803` @ 043206d | parser | BLOCK (process, F9 red test) | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
+| `claude/lucid-einstein-dml803` @ 745e50e (PR #17) | parser | BLOCK: F6b, F10 (merge order) | Census verified: 426 lost, all carrying a listed keyword; 0 gained, 0 changed. F9 fixed. Earlier @ 043206d: | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
 | `wip-misbuilt-keywords` (local, unpushed) | parser | not received | |
-| `main-n8yjai` @ a0c91e7 | rules | OK for this commit; BLOCK (process) | Flashback exile verified on the board. PR #10 is already MERGED, so this needs a new PR. |
+| `main-n8yjai` @ 599bdb1 (PR #18) | rules | BLOCK: F5 still free on this PR alone, F11 Vehicle crews itself (before wiring), F10 (merge order) | Aftermath, flashback, dash, blitz, buyback (when chosen) and sandbox loyalty verified. Jump-start and soulbond are primitives only. |
 
 ## Verified on the sandbox (parser branch @ 043206d)
 
@@ -43,7 +43,13 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 | F7 | WARN | rules | `_EXILED_WHEN_IT_LEAVES_THE_STACK` keys aftermath on an alternative cost, but 702.127a exiles it whenever it "was cast from a graveyard", whatever cost was paid. Harmonize's entry is dead, because Harmonize is built as a +1/+1-counter ability (class A6). | a0c91e7 game.py |
 | F8 | **BLOCK** | parser (builder) / rules (LKI) | Modular moves NO counters. The dies trigger targets an artifact creature and resolves, but the target gets 0 counters: the count is read from the card in the graveyard, not from last-known information (CR 702.43a, 608.2h). Main and branch. This contradicts the parser's 13:15 correction. | Arcbound Worker (1 counter) Shocked, trigger targets Ornithopter, Ornithopter `{}` |
 | F9 | **BLOCK** | parser | The branch's own suite is red: `tests/rules/test_citations.py::test_the_baseline_covers_every_cited_rule`, "702.34a" cited (tools/engine_gaps.py) but absent from the baseline. 1 failed, 2457 passed. | `pytest tests/parser tests/rules` @ 043206d |
-| F1 | WARN | sandbox | `Sandbox.put` places planeswalkers with no loyalty counters (CR 306.5b); casting gives 7. Tests built with `put` see a 0-loyalty walker. | Ugin via put: counters `{}` |
+| F6b | **BLOCK** | rules (legality) → resolved on PR #18 | With Aftermath inert on PR #17, Dawn is still castable FROM HAND: the castability comes from split-card legality, not the keyword. PR #18 fixes it (only face 0 from hand; face 1 from the graveyard for {3}{W}{W}, then exiled). PR #17 must not merge without PR #18's fix. | Dusk // Dawn on 745e50e: CAST_SPELL faces 0 and 1 from hand |
+| F10 | **BLOCK** | both | Merge order and integration. (a) PR #17 and PR #18 CONFLICT in 5 files (cr_baseline.json, resolve.py, conditions.py, gameobject.py, query.py). (b) PR #17 makes Crew, Jump-start and Aftermath inert while PR #18 fixes Aftermath's legality and adds the Crew and jump-start primitives, so whoever merges second must decide each table entry and rerun the board checks. (c) Flashback (117 cards) stays a wrong reading counted as read on PR #17 until PR #18's exile lands. (d) Dies triggers ("When this creature dies") don't fire on main or PR #18 (Requisitioner makes no Treasure); PR #17 fixes this. | combo worktree; t_req.py |
+| F11 | **BLOCK** (before Crew is wired) | rules + parser | PR #18's total-power TAP_OTHER lets a Vehicle TAP ITSELF to pay its own Crew: after Cultivator's Caravan is crewed (a 5/5 creature), Crew is offered again and taps the Caravan. CR 702.122a and 702.171a say "OTHER untapped creatures". The candidates must exclude the source (or the builder must use an "another creature" filter). Otherwise correct, wired in a scratch merge: Hill Giant alone OK, Bears + Elves OK, two Elves refused, three 0-power refused, a summoning-sick creature may crew (302.6), the chooser taps the fewest. | t_crew2.py on cherry-pick e85e13d + total_power=True |
+| F12 | WARN | rules | Buyback works when chosen (Capsize: {1}{U}{U}+{3} paid, returns to hand), but `legal_actions` never offers the buyback variant, so bots never pay it. | t_bb.py |
+| F13 | WARN | rules | `find_payment(life_available=player.life - 1)` won't pay Phyrexian life down to 0; CR 119.4 allows paying life equal to your total. Pre-existing. | cr601_casting._pay |
+| F14 | WARN | parser | The inert placeholders also drop the correct half: Modular creatures (19 Arcbound) now die on entry as 0/0; Fading creatures enter with no counters and never fade (Blastoderm stays a permanent 5/5 shroud). This is the honest-unread outcome rule 1 accepts, but it distorts the simulation, so prioritise the faithful builders. | t_inert.py |
+| F1 | WARN | sandbox → fixed on PR #18 | `Sandbox.put` places planeswalkers with no loyalty counters (CR 306.5b); casting gives 7. Tests built with `put` see a 0-loyalty walker. | Ugin via put: counters `{}` |
 | F2 | WARN | rules | Enlist (an optional cost to attack, 702.154a) is paid after the attack tax rather than being part of one locked-in total cost (508.1g-h). | `cr506_combat.declare_attackers` |
 | F3 | WARN | parser | "cards in that player's hand" (Sudden Impact) counts every hand, the same defect as "their hand". The fix must cover "that player's" and "its owner's" too. Pre-existing on main. | Sudden Impact: "the number of all object in hand" |
 
@@ -104,3 +110,9 @@ I. Linked abilities (607): no link ids from the parser; 607.1d not modelled.
 J. "Same name as" filters missing (Guardian Project, Maelstrom Pulse).
 K. The bots' mana-plan lookahead hasn't been audited.
 L. keywords.py Status field stale.
+
+## Round 3 (2026-10-14)
+
+Parser PR #17 @ 745e50e: 65b723b + 745e50e census vs 043206d gives 0 gained, 426 lost, 0 changed; every lost card's text contains a MISBUILT_KEYWORDS keyword. On the board: Annihilator inert (6 lands stay), Crew not offered (the Caravan's mana ability still is), Radical Idea not castable from the graveyard, Batterskull makes no Germ. Dawn is still castable from hand (F6b).
+
+Rules PR #18 @ 599bdb1: aftermath OK (from the graveyard only, exiled); dash OK (haste, returns at end step); blitz OK (haste, sacrificed, draws); buyback OK when chosen (F12); sandbox loyalty OK. Jump-start is still free on PR #18 alone, because its builder doesn't use `pays_mana_cost` yet (parser wiring). Soulbond is a primitive only (the builder still reads "attach to all"; the paired static is unread). 461017e (sunburst colours, compleated, dethrone): code-reviewed OK, F13.
