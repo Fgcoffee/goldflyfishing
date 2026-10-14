@@ -252,11 +252,6 @@ def test_afterlife_makes_the_right_number_of_tokens(board):
 # ---------------------------------------------------------------------------
 
 
-def test_modular_is_two_abilities(board):
-    """One keyword, one enters-with-counters and one dies trigger."""
-    abilities = kw("Modular", amount=3)
-    assert len(abilities) == 2
-    assert {a.kind for a in abilities} == {AbilityKind.STATIC, AbilityKind.TRIGGERED}
 
 
 
@@ -345,12 +340,6 @@ def test_unearth_functions_from_the_graveyard(board):
     assert Zone.GRAVEYARD in ability.functions_in
 
 
-def test_crew_animates_the_vehicle(board):
-    from mtgfish.rules.cr600_spells_and_abilities.effects import EffectKind
-
-    ability = kw("Crew", amount=3)[0]
-    assert ability.effects[0].kind is EffectKind.ADD_TYPE
-    assert ability.effects[0].types & CardType.CREATURE
 
 
 # ---------------------------------------------------------------------------

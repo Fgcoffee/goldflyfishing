@@ -178,6 +178,26 @@ FINDINGS: tuple[Finding, ...] = (
             "counter when it attacks with a creature of greater power",
             "counter whenever it attacks",
             "IR: no condition"),
+    Finding("Modular", WRONG, "702.43a",
+            "when it dies, move its +1/+1 counters (as it last existed) to target artifact creature",
+            "moves none: the count is read from the card in the graveyard",
+            "auditor board: Arcbound Worker (1 counter) Shocked; Ornithopter got no counter"),
+    Finding("Crew", WRONG, "702.122a",
+            "tap other untapped creatures with total power N or greater",
+            "taps N creatures, whatever their power",
+            "auditor board: Cultivator's Caravan (Crew 3) can't be crewed by one Hill Giant"),
+    Finding("Jump-start", WRONG, "702.133a",
+            "cast from the graveyard for its mana cost plus discarding a card; then exiled",
+            "cast from the graveyard for nothing",
+            "auditor board: Radical Idea cast from the graveyard with no mana, no discard"),
+    Finding("Aftermath", WRONG, "702.127a",
+            "this half is cast only from a graveyard, then exiled",
+            "castable from hand and not from the graveyard",
+            "auditor board: Dawn (Dusk // Dawn) castable from hand, not from graveyard"),
+    Finding("Encore", WRONG, "702.141a",
+            "exile it from the graveyard: a token copy attacking each opponent",
+            "an alternative cost to cast it",
+            "code: registered as a graveyard alternative cost"),
     # -- missing: inert placeholder, honestly not understood -----------------
     Finding("Plot", MISSING, "702.170a", "exile from hand, cast later for free",
             "nothing (inert)", "IR: UNPARSED placeholder"),
@@ -195,9 +215,9 @@ FINDINGS: tuple[Finding, ...] = (
                 "the cost can be paid; nothing in the engine reads the keyword afterwards",
                 "code: no use of the keyword outside the keyword table")
         for name in (
-            "Aftermath", "Assist", "Bargain", "Bestow", "Blitz", "Buyback", "Cleave",
-            "Conspire", "Embalm", "Emerge", "Encore", "Entwine", "Escalate",
-            "Eternalize", "Freerunning", "Gift", "Impending", "Jump-start", "Miracle",
+            "Assist", "Bargain", "Bestow", "Blitz", "Buyback", "Cleave",
+            "Conspire", "Embalm", "Emerge", "Entwine", "Escalate",
+            "Eternalize", "Freerunning", "Gift", "Impending", "Miracle",
             "More Than Meets the Eye", "Multikicker", "Offspring", "Prowl",
             "Replicate", "Retrace", "Spectacle", "Splice", "Spree", "Squad", "Warp",
         )
@@ -253,6 +273,14 @@ CAUSES: dict[str, tuple[str, str]] = {
     "Ripple": (PARSER, "reveal and cast-free exist; the same-name filter was dropped"),
     "Evolve": (PARSER, "power/toughness comparisons exist; the condition was dropped"),
     "Training": (PARSER, "attack triggers with conditions exist; the condition was dropped"),
+    "Modular": (PARSER, "last-known information exists for sacrificed objects; the dies"
+                " trigger reads the counters off the card in the graveyard"),
+    "Crew": (ENGINE, "no 'creatures with total power N' cost; the builder tapped N"),
+    "Jump-start": (PARSER, "graveyard casting and discard costs exist; built as a free"
+                   " alternative cost"),
+    "Aftermath": (PARSER, "graveyard casting exists; the zone was set the wrong way round"),
+    "Encore": (PARSER, "graveyard activated abilities and token copies exist; built as a"
+               " cast"),
     "Graft": (PARSER, "triggers exist; moving counters may also need engine work"),
     "Hideaway": (PARSER, "look-at-top and exile exist; playing the hidden card later may"
                  " also need engine work"),
@@ -318,11 +346,18 @@ def build(records: list[dict]) -> tuple[list[dict], dict[str, str]]:
     """One row per (card, mechanic): the cards each finding applies to."""
     rows: list[dict] = []
     cards = [r for r in records if r["status"] in ("ok", "failed")]
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import MISBUILT_KEYWORDS
+
     for finding in FINDINGS:
         pattern = _keyword_line(finding.keyword)
+        # A wrong builder the engine now refuses (built inert) is no longer
+        # played wrong; the card honestly reports as not understood.
+        verdict = finding.verdict
+        if verdict == WRONG and finding.keyword.lower() in MISBUILT_KEYWORDS:
+            verdict = MISSING
         for record in cards:
             if any(pattern(text) for text in _card_texts(record)):
-                rows.append(_row(record, finding.keyword, finding.verdict, finding.engine_does))
+                rows.append(_row(record, finding.keyword, verdict, finding.engine_does))
     # Refusals made after every word was read: the census marks them.
     refusals: dict[str, str] = {}
     for record in cards:
@@ -442,7 +477,9 @@ def main(argv: list[str] | None = None) -> int:
     rows, _ = build(load(args.census))
     args.out.write_text(render(rows) + "\n", encoding="utf8")
     with args.out.with_suffix(".csv").open("w", newline="", encoding="utf8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()) if rows else ["card"])
+        writer = csv.DictWriter(
+            handle, fieldnames=list(rows[0].keys()) if rows else ["card"], lineterminator="\n"
+        )
         writer.writeheader()
         writer.writerows(sorted(rows, key=lambda r: (r["cause"], r["verdict"], r["mechanic"], r["card"])))
     counts = collections.Counter(r["verdict"] for r in rows)

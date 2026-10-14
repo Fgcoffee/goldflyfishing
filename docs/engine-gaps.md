@@ -18,9 +18,9 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 
 | | Rules engine | Parser allocation |
 |---|---|---|
-| Wrong, counted as read | 117 | 12 |
-| Missing, not understood | 141 | 135 |
-| Suspected, counted as read | 319 | 0 |
+| Wrong, counted as read | 117 | 0 |
+| Missing, not understood | 493 | 542 |
+| Suspected, counted as read | 278 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
 first; *(read)* marks a card the parser currently counts as fully read.
@@ -37,6 +37,32 @@ first; *(read)* marks a card the parser currently counts as fully read.
 - **Evidence:** board: Think Twice flashed back, drew, and was back in the graveyard
 
 Faithless Looting *(read)*, Sevinne's Reclamation, Dread Return *(read)*, Strike It Rich *(read)*, Past in Flames, Deep Analysis *(read)*, Bulk Up, Seize the Day *(read)*, Army of the Damned, Think Twice *(read)*, Electroduplicate, Laughing Mad *(read)*, Otherworldly Gaze *(read)*, Echo of Eons, Momentary Blink *(read)*, Cackling Counterpart *(read)*, Galvanic Iteration, Increasing Vengeance, Increasing Devotion, Ignite the Future, Prisoner's Dilemma, Faithful Mending *(read)*, Divine Reckoning, Rite of Oblivion *(read)*, Eviscerator's Insight *(read)*, Nibelheim Aflame, Artful Dodge *(read)*, Unburial Rites *(read)*, Siphon Insight, Rite of Harmony *(read)*, Snort, Angelfire Ignition *(read)*, Lingering Souls *(read)*, Forbidden Alchemy *(read)*, Esper Origins // Summon: Esper Maduin, Mystic Retrieval *(read)*, Rockalanche, Electric Revelation *(read)*, Summons of Saruman, Moment's Peace *(read)*, Isengard Unleashed, Flash Photography, Croaking Counterpart *(read)*, Memory Deluge *(read)*, Visions of Glory, Lava Dart *(read)*, Revenge of the Rats, Reckless Charge *(read)*, Resentful Revelation *(read)*, Solstice Revelations, Dryad's Revival *(read)*, Chatter of the Squirrel *(read)*, Creeping Renaissance, Ancient Grudge *(read)*, Sorceress's Schemes, Welcome the Dead, Fire Nation Attacks, Battle Screech *(read)*, Dreams of Laguna *(read)*, Visions of Dominance, Spider Spawning *(read)*, For the Ancestors *(read)*, Wake the Dragon, Daydream, Visions of Ruin, Mass Diminish *(read)*, Wreck and Rebuild *(read)*, Otterball Antics, Pursue the Past *(read)*, Increasing Ambition, Gysahl Greens *(read)*, Mystical Teachings, Memories Returning, Inspiration from Beyond *(read)*, Increasing Confusion, Devil's Play *(read)*, Practiced Offense, Increasing Savagery, Dire-Strain Rampage, Self-Reflection *(read)*, Scour All Possibilities *(read)*, Multiversal Recruitment *(read)*, Crawl from the Cellar *(read)*, Grizzly Fate, From Father to Son, Unnatural Moonrise, Vengeful Regrowth *(read)*, Dream Twist *(read)*, March from Velis Vel, Lidless Gaze, Parallel Evolution, Acorn Harvest *(read)*, Prismatic Strands, Defy Gravity *(read)*, Arcane Infusion *(read)*, Turn the Earth, Diregraf Rebirth, Catalyst Stone, Join the Dance *(read)*, Recoup, Call the Mountain Chocobo *(read)*, The Final Days, Kindle the Inner Flame, Shattered Perception, Secrets of the Key, Wurmquake, Sacred Fire *(read)*, Silent Departure *(read)*, Memory's Journey, Rotten Reunion *(read)*, Seize the Storm, Feeling of Dread *(read)*, Chainer's Edict *(read)*, Hallowed Respite, Storm the Festival *(read)*, Cabal Therapy, Tidings of War, Alter Reality, Antiquities on the Loose, Crush of Wurms *(read)*, Firebolt *(read)*, Random Encounter *(read)*, Desperate Ravings, Path to the Festival, Gnaw to the Bone *(read)*, Rite of the Moth, Plunder the Trollshaws, Geistflame *(read)*, Firecat Blitz *(read)*, Dig Site Inventory *(read)*, Can't Stay Away, Retrieve the Esper, Homestead Courage *(read)*, Deep Reconnaissance *(read)*, Visions of Duplicity, Abandon the Post *(read)*, Volcanic Spray, Sever the Bloodline, Visions of Dread, Flaring Pain, Conflagrate, Deadly Allure, Auron's Inspiration *(read)*, Ruthless Negotiation, Tapping at the Window *(read)*, Light Up the Night, Moan of the Unhallowed *(read)*, Hungry for More, Roar of the Wurm *(read)*, Molten Note *(read)*, Ghoulcaller's Harvest, Corpse Cobble, Duel Tactics *(read)*, Group Project *(read)*, Wake to Slaughter, Purify the Grave *(read)*, Chill of Foreboding *(read)*, Calibrated Blast, Tome Blast *(read)*, Ray of Revelation *(read)*, Moment of Glory, Flash of Insight *(read)*, Winterthorn Blessing, Rally the Peasants *(read)*, Travel Preparations *(read)*, Krosan Reclamation, Saving Grasp *(read)*, Tracker's Instincts *(read)*, Call of the Herd *(read)*, Morgue Theft *(read)*, Sylvan Might *(read)*, Coffin Purge *(read)*, Fervent Denial *(read)*, Embolden, Rise of the Ants *(read)*, Rolling Temblor *(read)*, Ray of Distortion *(read)*, Marshaling Cry *(read)*, Gaze of Justice *(read)*, Wild Hunger *(read)*, Earth Rift *(read)*, Ancestral Tribute *(read)*, Traitor's Clutch, Bump in the Night *(read)*, Nightbird's Clutches *(read)*, Shadowbeast Sighting *(read)*, Grasp of Phantoms *(read)*, Beast Attack *(read)*, Volley of Boulders, Canopy Claws *(read)*, Elephant Ambush *(read)*, Lightning Surge, Kaleidoscorch, Flaming Gambit, Bash to Bits *(read)*, Engulfing Flames *(read)*, Skull Fracture *(read)*, Burning Oil, Crippling Fatigue *(read)*, Reap the Seagraf *(read)*, Dematerialize *(read)*, Folk Medicine *(read)*, Flash of Defiance *(read)*, Thrill of the Hunt *(read)*, Spirit Flare, Fires of Undeath *(read)*, Smiting Helix *(read)*, Howling Gale, Strangling Soot *(read)*, Scorching Missile *(read)*, Morbid Hunger *(read)*
+
+### 1.b Missing
+
+#### Crew (186 cards, 0 counted as read)
+
+- **Likely cause:** no 'creatures with total power N' cost; the builder tapped N
+- **Card says:** CR 702.122a: tap other untapped creatures with total power N or greater
+- **Engine does:** taps N creatures, whatever their power
+- **Evidence:** auditor board: Cultivator's Caravan (Crew 3) can't be crewed by one Hill Giant
+
+Hedge Shredder, Smuggler's Copter, Imposter Mech, Shorikai, Genesis Engine, The Indomitable, Weatherlight, The Regalia, Skysovereign, Consul Flagship, Cultivator's Caravan, Esika's Chariot, Reaver Titan, Parhelion II, Nautiloid Ship, Thunderhawk Gunship, Reckoner Bankbuster, Salvation Engine, Unlicensed Hearse, Clown Car, Lumbering Worldwagon, Rolling Hamsphere, Thopter Fabricator, Demonic Junker, Mechtitan Core, Cryptcaller Chariot, RMS Titanic, Peacewalker Colossus, Surgehacker Mech, Brotherhood Vertibird, Aerial Surveyor, Hoard Hauler, Cosima, God of the Voyage // The Omenkeel, Mobilizer Mech, Cybership, Knight Paladin, Lifecraft Engine, Recon Craft Theta, Mighty Servant of Leuk-o, Golden Argosy, Balamb Garden, SeeD Academy // Balamb Garden, Airborne, Bespoke Battlewagon, Jackdaw, Thunderous Velocipede, The Prydwen, Steel Flagship, The Belligerent, Unidentified Hovership, Prodigy's Prototype, Deluxe Dragster, Valor's Flagship, Magmatic Galleon, TARDIS, The Fire Nation Drill, Midnight Crusader Shuttle, Luxurious Locomotive, Careening Mine Cart, Subterranean Schooner, Adrestia, Conqueror's Galleon // Conqueror's Foothold, Colossal Plow, The Falcon, Airship Restored, Consulate Dreadnought, Phoenix Fleet Airship, Guidelight Pathmaker, Raiders' Karve, High-Speed Hoverbike, Flywheel Racer, Possession Engine, Smuggler's Buggy, Boosted Sloop, Mobile Garrison, Adventurer's Airship, Hulldrifter, Cargo Ship, The Lunar Whale, Necron Monolith, Bessie, the Doctor's Roadster, Thundersteel Colossus, Mindlink Mech, Imperial Recovery Unit, Mole Module, N'Yami-Class Mother Ship, Rover Blades, Mobile Homestead, Veloheart Bike, Fell Flagship, Untethered Express, Rocketeer Boostbuggy, Fleetwheel Cruiser, Night Scythe, Boommobile, Clamorous Ironclad, Ghost Ark, Goliath Truck, Aethersphere Harvester, Vibranium Mining Mech, Royal Talon Fighter Jet, Mysterious Limousine, Voyager Glidecar, Spring-Loaded Sawblades // Bladewheel Chariot, Heart of Kiran, Avengers Quinjet, Invasion of Kaladesh // Aetherwing, Golden-Scale Flagship, Earthrumbler, Aradara Express, Gastal Thrillroller, Bomat Bazaar Barge, Filigree Racer, Carrion Cruiser, Turtle Van, The Thanos-Copter, Detention Chariot, Spire Mechcycle, Damocles Base, Sword of Kang, Foreboding Steamboat, The Last Ride, Grond, the Gatebreaker, Spider-Mobile, Dependable Quinjet, Burner Rocket, Smoldering Stagecoach, Silent Submersible, Demolition Stomper, Ribskiff, Waterlogged Hulk // Watertight Gondola, Midnight Mangler, Getaway Car, Mukotai Soulripper, Brute Suit, Ovalchase Dragster, Dodgy Jalopy, Skybox Ferry, Subway Train, Cloudspire Skycycle, Skyseer's Chariot, Spotcycle Scouter, Fire Nation Warship, Broadcast Rambler, Air Response Unit, Passenger Ferry, Mizzium Tank, Rangers' Refueler, War Balloon, Tundra Tank, Great Gilded Boat, Sky Skiff, Ripclaw Wrangler, Enchanted Carriage, Dune Drifter, Sidequest: Card Collection // Magicked Card, Renegade Freighter, Dragonfly Suit, Haunted Hellride, Strixhaven Skycoach, Futurist Sentinel, Dreadmobile, The Prima Vista, Magitek Armor, Daredevil Dragster, Ballista Charger, Dusk Legion Dreadnought, Gilded Assault Cart, Apocalypse Runner, S.H.I.E.L.D. Flying Car, Funeral Longboat, Thundering Chariot, Shadowed Caravel, Sleek Schooner, Irontread Crusher, Rangers' Aetherhive, S.H.I.E.L.D. Helicarrier, Debris Beetle, Kylox's Voltstrider, Turtle Blimp, Marauding Dreadship, Thundering Broodwagon, Capenna Express, Meldweb Strider, Marshals' Pathcruiser, _____ _____ Rocketship, Sky Cycle, Captain America's Motorcycle, Big Wheel, A-Capenna Express, Protean War Engine, Smogbelcher Chariot, Soul Shredder, Support Skyforge
+
+#### refused: pile reference without a pile (45 cards, 0 counted as read)
+
+- **Likely cause:** the engine has no piles
+
+Etali, Primal Storm, Planar Genesis, Colossal Grave-Reaver, Villainous Wealth, Silent-Blade Oni, Tezzeret, Master of the Bridge, Lord of the Void, Consult the Star Charts, Apex of Power, Barrowgoyf, Locke, Treasure Hunter, Birthing Ritual, Flow State, Cache Grab, Xenagos, the Reveler, Rampant Frogantua, Cream of the Crop, Valki, God of Lies // Tibalt, Cosmic Impostor, Mindleech Mass, Town Greeter, Shadow Kin, Narset, Enlightened Master, Nashi, Searcher in the Dark, Planar Atlas, Fertile Thicket, Sanwell, Avenger Ace, Herald of Amity, Mindclaw Shaman, Blanchwood Prowler, Ainok Wayfarer, Farsight Ritual, Earth's Mightiest Heroes, Nathan Drake, Treasure Hunter, Ellywick Tumblestrum, Moonlight Bargain, Follow the Lumarets, Fallaji Archaeologist, Ostrich-Horse, Tomorrow, Azami's Familiar, Airlift Chaplain, Munda, Ambush Leader, Ravenous Gigamole, Tomakul Scrapsmith, Preferred Selection, A-Ellywick Tumblestrum
+
+#### Plot (33 cards, 0 counted as read)
+
+- **Likely cause:** no plotted cards
+- **Card says:** CR 702.170a: exile from hand, cast later for free
+- **Engine does:** nothing (inert)
+- **Evidence:** IR: UNPARSED placeholder
+
+Railway Brawler, Outcaster Trailblazer, Highway Robbery, Lock and Load, Pitiless Carnage, Demonic Ruckus, Visage Bandit, Pillage the Bog, Slickshot Show-Off, Pyretic Charge, Step Between Worlds, Brimstone Roundup, Slickshot Lockpicker, Unscrupulous Contractor, Dust Animus, Tumbleweed Rising, Plan the Heist, Sheriff of Safe Passage, Stingerback Terror, Aloe Alchemist, Loan Shark, Beastbond Outcaster, Cunning Coyote, Outlaw Stitcher, Rise of the Varmints, Spinewoods Paladin, Longhorn Sharpshooter, Rictus Robber, Freestrider Commando, Irascible Wolverine, Stagecoach Security, Djinn of Fool's Fall, Blacksnag Buzzard
 
 #### Saddle (32 cards, 0 counted as read)
 
@@ -65,6 +91,15 @@ Deadeye Navigator, Tandem Lookout, Mirage Phalanx, Wingcrafter, Breathkeeper Ser
 
 Tithing Blade // Consuming Sepulcher, The Enigma Jewel // Locus of Enlightenment, Altar of the Wretched // Wretched Bonemass, Unstable Glyphbridge // Sandswirl Wanderglyph, Clay-Fired Bricks // Cosmium Kiln, Braided Net // Braided Quipu, Eye of Ojer Taq // Apex Observatory, Sunbird Standard // Sunbird Effigy, Master's Guide-Mural // Master's Manufactory, Ore-Rich Stalactite // Cosmium Catalyst, Dire Flail // Dire Blunderbuss, Inverted Iceberg // Iceberg Titan, Spring-Loaded Sawblades // Bladewheel Chariot, Lodestone Needle // Guidestone Compass, Saheeli's Lattice // Mastercraft Raptor, Tetzin, Gnome Champion // The Golden-Gear Colossus, Throne of the Grim Captain // The Grim Captain, Waterlogged Hulk // Watertight Gondola, Oteclan Landmark // Oteclan Levitator, Paleontologist's Pick-Axe // Dinosaur Headdress, Visage of Dread // Dread Osseosaur, Idol of the Deep King // Sovereign's Macuahuitl, Jade Seedstones // Jadeheart Attendant, Kaslem's Stonetree // Kaslem's Strider
 
+#### Myriad (23 cards, 0 counted as read)
+
+- **Likely cause:** no token copies attacking each other opponent
+- **Card says:** CR 702.116a: token copies attacking each other opponent
+- **Engine does:** nothing (inert)
+- **Evidence:** IR: UNPARSED placeholder
+
+Battle Angels of Tyr, Goldlust Triad, Scurry of Squirrels, Scion of Calamity, The Master, Multiplied, Wizards of Thay, Chittering Dispatcher, Elturel Survivors, Hammers of Moradin, Dalek Squadron, Polygoyf, Wyrm's Crossing Patrol, Herald of the Host, Tiamat's Fanatics, Warchief Giant, Genasi Enforcers, Caller of the Pack, Conclave Evangelist, Banshee of the Dread Choir, Gnoll War Band, Broodbirth Viper, Tabaxi Toucaneers, Sumala Rumblers
+
 #### Specialize (19 cards, 0 counted as read)
 
 - **Likely cause:** no specialize faces (digital)
@@ -73,6 +108,24 @@ Tithing Blade // Consuming Sepulcher, The Enigma Jewel // Locus of Enlightenment
 - **Evidence:** IR: ADD_COUNTERS +1/+1
 
 Alora, Rogue Companion, Ambergris, Citadel Agent, Gale, Conduit of the Arcane, Gut, Fanatical Priestess, Imoen, Trickster Friend, Jaheira, Harper Emissary, Karlach, Raging Tiefling, Klement, Novice Acolyte, Lae'zel, Githyanki Warrior, Lukamina, Moon Druid, Lulu, Forgetful Hollyphant, Rasaad, Monk of Selûne, Sarevok the Usurper, Shadowheart, Sharran Cleric, Skanos, Dragon Vassal, Vhal, Eager Scholar, Viconia, Nightsinger's Disciple, Wilson, Bear Comrade, Wyll, Pact-Bound Duelist
+
+#### Double team (18 cards, 0 counted as read)
+
+- **Likely cause:** no conjure-on-attack (digital)
+- **Card says:** conjure a copy into hand when it attacks
+- **Engine does:** nothing (inert)
+- **Evidence:** IR: UNPARSED placeholder
+
+Amber-Plate Ainok, Champions of Tyr, Dragonblood Twins, Enduring Friendship, Genasi Rabble-Rouser, Giant Fire Beetles, Gnoll Hunting Party, Great Fang Chroniclers, Lizardfolk Librarians, Moradin's Disciples, Ranger Squadron, Soldiers of the Watch, Syr Joshua and Syr Saxon, Terrors of the Track, Thayan Evokers, Thoughtsteal Sprites, Tiefling Outcasts, Warriors of Tiamat
+
+#### Teamwork (17 cards, 0 counted as read)
+
+- **Likely cause:** no tap-creatures-by-total-power additional cost
+- **Card says:** CR 702.194a: tap creatures as an additional cost for a bonus
+- **Engine does:** nothing (inert)
+- **Evidence:** IR: UNPARSED placeholder
+
+HULK SMASH!, We Say Thee Nay!, Earth's Mightiest Heroes, Go Nuts!, Too Evil to Stay Dead, Murdock's Crusade, Team Tactics, Repulsor Blast, Crossover Collaboration, Cruel Alliance, Widow's Bite, Atlantis Attacks, Helicarrier Strike, Quantum Reduction, Timeline Inquiry, Beast Mode, Heroic Teamwork
 
 #### Sunburst (15 cards, 0 counted as read)
 
@@ -136,50 +189,6 @@ Vraska, Betrayal's Sting, Nissa, Ascended Animist, Jace, the Perfected Mind, Aja
 - **Evidence:** IR: two COPY_SPELL for you
 
 Incarnation Technique, Replication Technique, Creative Technique, Healing Technique, Transforming Flourish, Excavation Technique
-
-### 1.b Missing
-
-#### refused: pile reference without a pile (45 cards, 0 counted as read)
-
-- **Likely cause:** the engine has no piles
-
-Etali, Primal Storm, Planar Genesis, Colossal Grave-Reaver, Villainous Wealth, Silent-Blade Oni, Tezzeret, Master of the Bridge, Lord of the Void, Consult the Star Charts, Apex of Power, Barrowgoyf, Locke, Treasure Hunter, Birthing Ritual, Flow State, Cache Grab, Xenagos, the Reveler, Rampant Frogantua, Cream of the Crop, Valki, God of Lies // Tibalt, Cosmic Impostor, Mindleech Mass, Town Greeter, Shadow Kin, Narset, Enlightened Master, Nashi, Searcher in the Dark, Planar Atlas, Fertile Thicket, Sanwell, Avenger Ace, Herald of Amity, Mindclaw Shaman, Blanchwood Prowler, Ainok Wayfarer, Farsight Ritual, Earth's Mightiest Heroes, Nathan Drake, Treasure Hunter, Ellywick Tumblestrum, Moonlight Bargain, Follow the Lumarets, Fallaji Archaeologist, Ostrich-Horse, Tomorrow, Azami's Familiar, Airlift Chaplain, Munda, Ambush Leader, Ravenous Gigamole, Tomakul Scrapsmith, Preferred Selection, A-Ellywick Tumblestrum
-
-#### Plot (33 cards, 0 counted as read)
-
-- **Likely cause:** no plotted cards
-- **Card says:** CR 702.170a: exile from hand, cast later for free
-- **Engine does:** nothing (inert)
-- **Evidence:** IR: UNPARSED placeholder
-
-Railway Brawler, Outcaster Trailblazer, Highway Robbery, Lock and Load, Pitiless Carnage, Demonic Ruckus, Visage Bandit, Pillage the Bog, Slickshot Show-Off, Pyretic Charge, Step Between Worlds, Brimstone Roundup, Slickshot Lockpicker, Unscrupulous Contractor, Dust Animus, Tumbleweed Rising, Plan the Heist, Sheriff of Safe Passage, Stingerback Terror, Aloe Alchemist, Loan Shark, Beastbond Outcaster, Cunning Coyote, Outlaw Stitcher, Rise of the Varmints, Spinewoods Paladin, Longhorn Sharpshooter, Rictus Robber, Freestrider Commando, Irascible Wolverine, Stagecoach Security, Djinn of Fool's Fall, Blacksnag Buzzard
-
-#### Myriad (23 cards, 0 counted as read)
-
-- **Likely cause:** no token copies attacking each other opponent
-- **Card says:** CR 702.116a: token copies attacking each other opponent
-- **Engine does:** nothing (inert)
-- **Evidence:** IR: UNPARSED placeholder
-
-Battle Angels of Tyr, Goldlust Triad, Scurry of Squirrels, Scion of Calamity, The Master, Multiplied, Wizards of Thay, Chittering Dispatcher, Elturel Survivors, Hammers of Moradin, Dalek Squadron, Polygoyf, Wyrm's Crossing Patrol, Herald of the Host, Tiamat's Fanatics, Warchief Giant, Genasi Enforcers, Caller of the Pack, Conclave Evangelist, Banshee of the Dread Choir, Gnoll War Band, Broodbirth Viper, Tabaxi Toucaneers, Sumala Rumblers
-
-#### Double team (18 cards, 0 counted as read)
-
-- **Likely cause:** no conjure-on-attack (digital)
-- **Card says:** conjure a copy into hand when it attacks
-- **Engine does:** nothing (inert)
-- **Evidence:** IR: UNPARSED placeholder
-
-Amber-Plate Ainok, Champions of Tyr, Dragonblood Twins, Enduring Friendship, Genasi Rabble-Rouser, Giant Fire Beetles, Gnoll Hunting Party, Great Fang Chroniclers, Lizardfolk Librarians, Moradin's Disciples, Ranger Squadron, Soldiers of the Watch, Syr Joshua and Syr Saxon, Terrors of the Track, Thayan Evokers, Thoughtsteal Sprites, Tiefling Outcasts, Warriors of Tiamat
-
-#### Teamwork (17 cards, 0 counted as read)
-
-- **Likely cause:** no tap-creatures-by-total-power additional cost
-- **Card says:** CR 702.194a: tap creatures as an additional cost for a bonus
-- **Engine does:** nothing (inert)
-- **Evidence:** IR: UNPARSED placeholder
-
-HULK SMASH!, We Say Thee Nay!, Earth's Mightiest Heroes, Go Nuts!, Too Evil to Stay Dead, Murdock's Crusade, Team Tactics, Repulsor Blast, Crossover Collaboration, Cruel Alliance, Widow's Bite, Atlantis Attacks, Helicarrier Strike, Quantum Reduction, Timeline Inquiry, Beast Mode, Heroic Teamwork
 
 #### refused: player reference on REVEAL (2 cards, 0 counted as read)
 
@@ -260,24 +269,6 @@ Desperate Ritual *(read)*, Goryo's Vengeance *(read)*, Fell Beast's Shriek, Veil
 - **Evidence:** code: no use of the keyword outside the keyword table
 
 Dawn's Truce, Into the Flood Maw, Long River's Pull, Parting Gust, Starfall Invocation, Perch Protection, Wear Down, Peerless Recycling, Sazacap's Brew, Coiling Rebirth, Octomancer *(read)*, Cruelclaw's Heist, Crumb and Get It, Bilbo's Gambit, Scrapshooter, Consumed by Greed, Dewdrop Cure, Longstalk Brawl, Kitnap, Dark Apostle, Nocturnal Hunger, Valley Rally, Mind Spiral, Starforged Sword, Blooming Blast, Wildfire Howl, Archival Whorl, Dragonborn Immolator, Pool Resources
-
-#### Aftermath (27 cards, 15 counted as read)
-
-- **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
-- **Card says:** an alternative or additional cost with its own consequences
-- **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
-- **Evidence:** code: no use of the keyword outside the keyword table
-
-Dusk // Dawn *(read)*, Commit // Memory, Insult // Injury, Cut // Ribbons *(read)*, Consign // Oblivion *(read)*, Indulge // Excess, Road // Ruin *(read)*, Never // Return *(read)*, Driven // Despair *(read)*, Heaven // Earth *(read)*, Rags // Riches, Mouth // Feed *(read)*, Reason // Believe *(read)*, Struggle // Survive, Spring // Mind *(read)*, Refuse // Cooperate, Leave // Chance, Destined // Lead, Claim // Fame *(read)*, Onward // Victory *(read)*, Failure // Comply, Farm // Market, Prepare // Fight *(read)*, Appeal // Authority *(read)*, Start // Finish *(read)*, Reduce // Rubble, Grind // Dust
-
-#### Encore (26 cards, 18 counted as read)
-
-- **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
-- **Card says:** an alternative or additional cost with its own consequences
-- **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
-- **Evidence:** code: no use of the keyword outside the keyword table
-
-Impulsive Pilferer *(read)*, Phyrexian Triniform *(read)*, Angel of Indemnity *(read)*, Amphin Mutineer *(read)*, Mist Dancer *(read)*, Jubilation *(read)*, Lamentation *(read)*, Impulsivity, Subterfuge *(read)*, Sliver Gravemother, Rakshasa Debaser, Belonging *(read)*, Eumidian Wastewaker, Fathom Fleet Swordjack, Kangee's Lieutenant *(read)*, Soul of Eternity *(read)*, Coastline Marauders *(read)*, Elvish Dreadlord *(read)*, Broodmate Tyrant *(read)*, Exquisite Huntmaster *(read)*, Spellbinding Soprano, Kitesail Skirmisher, Trove Tracker *(read)*, Briarblade Adept *(read)*, Fin-Clade Fugitives, Kinsbaile Courier *(read)*
 
 #### Bargain (22 cards, 0 counted as read)
 
@@ -396,15 +387,6 @@ Slicer, Hired Muscle // Slicer, High-Speed Antagonist, Starscream, Power Hungry 
 
 Galadhrim Brigade *(read)*, Securitron Squadron *(read)*, Endless Foot Assault, Ultramarines Honour Guard *(read)*, Sicarian Infiltrator *(read)*, Space Marine Devastator *(read)*, Wasteland Raider *(read)*, Vanguard Suppressor *(read)*, Powder Ganger *(read)*, Zephyrim *(read)*, Roadkill Rodney, Gary Clone, Ruthless Radrat *(read)*, Arco-Flagellant *(read)*, Thrill-Kill Disciple *(read)*
 
-#### Jump-start (13 cards, 8 counted as read)
-
-- **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
-- **Card says:** an alternative or additional cost with its own consequences
-- **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
-- **Evidence:** code: no use of the keyword outside the keyword table
-
-Quasiduplicate *(read)*, Chemister's Insight *(read)*, Risk Factor, Radical Idea *(read)*, Gravitic Punch *(read)*, Dihada's Ploy, Beacon Bolt, Start the TARDIS, Maximize Velocity *(read)*, Maximize Altitude *(read)*, Sonic Assault *(read)*, Direct Current *(read)*, Surge of Acclaim
-
 #### Cleave (12 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
@@ -479,7 +461,19 @@ Overlord of the Hauntwoods, Overlord of the Balemurk *(read)*, Overlord of the F
 
 ## 2. Could be parser allocation bugs
 
-### 2.a Wrong
+### 2.b Missing
+
+#### refused: 'its controller' with no single antecedent (41 cards, 0 counted as read)
+
+- **Likely cause:** the parser cannot decide whose controller is meant
+
+Curse of the Swine, Summon: Yojimbo, Pendant of Prosperity, Oft-Nabbed Goat, Arcum Dagsson, Rampage of the Clans, Reality Acid, Tuktuk Scrapper, The Phasing of Zhalfir, Krenko's Buzzcrusher, Rowan, Scholar of Sparks // Will, Scholar of Frost, War Cadence, Reaper of Sheoldred, Descent of the Dragons, Fade Away, Cauldron Dance, Mindswipe, Acolyte Hybrid, Afflicted Deserter // Werewolf Ransacker, Mercy Killing, War Tax, Forbidding Spirit, Foolish Fate, Vengeful Strangler // Strangling Grasp, Torment of Venom, March of Souls, Sarkhan the Mad, Seeds of Innocence, Belltower Sphinx, Parasitic Implant, Hour of Need, Stench of Evil, Kaervek's Purge, Tephraderm, Cinder Cloud, Martyr's Cry, Consuming Ferocity, Fold into Aether, Celestial Sword, Heroism, A-Rowan, Scholar of Sparks // A-Will, Scholar of Frost
+
+#### refused: characteristic of an object it cannot name (39 cards, 0 counted as read)
+
+- **Likely cause:** the parser cannot bind 'its power' (etc.) to an object
+
+Mana Drain, Skyclave Apparition, Sunbird's Invocation, Halana and Alena, Partners, Thickest in the Thicket, Shadowheart, Dark Justiciar, Titan's Presence, Mana Sculpt, Minn, Wily Illusionist, Calamity of the Titans, Hammerhead Tyrant, Iron Man, Titan of Innovation, Hunter's Bow, Earthshape, Ayara, Widow of the Realm // Ayara, Furnace Queen, Vivien on the Hunt, Kiora, Sovereign of the Deep, Eddie Brock // Venom, Lethal Protector, Counterpoint, Shantotto, Tactician Magician, Monkey Cage, Drach'Nyen, Soul's Might, Greatbow Doyen, Infernal Genesis, Mindshrieker, Refuse // Cooperate, Disaster Radius, Bishop of Binding, Enigmatic Incarnation, Living Lore, Severance Priest, Charge of the Forever-Beast, Heed the Mists, Parallectric Feedback, Living Armor, Living Destiny, Artillery Enthusiast, Puppet Raiser
 
 #### Storm (35 cards, 0 counted as read)
 
@@ -489,6 +483,30 @@ Overlord of the Hauntwoods, Overlord of the Balemurk *(read)*, Overlord of the F
 - **Evidence:** IR: one COPY_SPELL
 
 Flusterstorm, Grapeshot, Brain Freeze, Amphibian Downpour, Empty the Warrens, Chatterstorm, Radstorm, Mind's Desire, Haze of Rage, Stormscale Scion, Tempest Technique, Elemental Eruption, Tendrils of Agony, Aeve, Progenitor Ooze, Weather the Storm, All of History, All at Once, Dragonstorm, Galvanic Relay, Temporal Fissure, Spreading Insurrection, Ignite Memories, Sprouting Vines, Storm of Memories, Wing Shards, Hunting Pack, Mordor on the March, Ground Rift, Fiery Encore, Scattershot, Reaping the Graves, Astral Steel, Volcanic Awakening, Hindering Touch, Galathul Galecaller // Corvid Squall, Limitless Rekindling
+
+#### refused: 'that player' with no single antecedent (35 cards, 0 counted as read)
+
+- **Likely cause:** the parser cannot decide which player is meant
+
+Court of Ambition, Fertilid, Thunderbreak Regent, Indulgent Tormentor, Bandit's Talent, Acererak the Archlich, Red Death, Shipwrecker, Perforating Artist, Ob Nixilis, the Adversary, Sivriss, Nightmare Speaker, The Long Reach of Night // Animus of Night's Reach, Luminate Primordial, Nicol Bolas, the Deceiver, Fertilid's Favor, Rest for the Weary, Sonic Shrieker, Memory Vessel, Ashenmoor Liege, Possessed Portal, Tibalt, the Fiend-Blooded, Patron of the Nezumi, Bellowing Mauler, Rishadan Cutpurse, Rishadan Footpad, Warren Weirding, Rishadan Brigand, Liability, Laquatus's Champion, Frightful Delusion, Furnace Scamp, Haunted Cadaver, Blood Oath, Soul Scourge, Inquisition, Cut the Tethers
+
+#### Aftermath (27 cards, 0 counted as read)
+
+- **Likely cause:** graveyard casting exists; the zone was set the wrong way round
+- **Card says:** CR 702.127a: this half is cast only from a graveyard, then exiled
+- **Engine does:** castable from hand and not from the graveyard
+- **Evidence:** auditor board: Dawn (Dusk // Dawn) castable from hand, not from graveyard
+
+Dusk // Dawn, Commit // Memory, Insult // Injury, Cut // Ribbons, Consign // Oblivion, Indulge // Excess, Road // Ruin, Never // Return, Driven // Despair, Heaven // Earth, Rags // Riches, Mouth // Feed, Reason // Believe, Struggle // Survive, Spring // Mind, Refuse // Cooperate, Leave // Chance, Destined // Lead, Claim // Fame, Onward // Victory, Failure // Comply, Farm // Market, Prepare // Fight, Appeal // Authority, Start // Finish, Reduce // Rubble, Grind // Dust
+
+#### Encore (26 cards, 0 counted as read)
+
+- **Likely cause:** graveyard activated abilities and token copies exist; built as a cast
+- **Card says:** CR 702.141a: exile it from the graveyard: a token copy attacking each opponent
+- **Engine does:** an alternative cost to cast it
+- **Evidence:** code: registered as a graveyard alternative cost
+
+Impulsive Pilferer, Phyrexian Triniform, Angel of Indemnity, Amphin Mutineer, Mist Dancer, Jubilation, Lamentation, Impulsivity, Subterfuge, Sliver Gravemother, Rakshasa Debaser, Belonging, Eumidian Wastewaker, Fathom Fleet Swordjack, Kangee's Lieutenant, Soul of Eternity, Coastline Marauders, Elvish Dreadlord, Broodmate Tyrant, Exquisite Huntmaster, Spellbinding Soprano, Kitesail Skirmisher, Trove Tracker, Briarblade Adept, Fin-Clade Fugitives, Kinsbaile Courier
 
 #### Exploit (25 cards, 0 counted as read)
 
@@ -516,6 +534,15 @@ Archpriest of Shadows, Guardian Scalelord, Emergent Woodwurm, Conclave Sledge-Ca
 - **Evidence:** IR: flat ADD_COUNTERS N
 
 Mycoloth, Famished Worldsire, Feasting Hobbit, Ravenous Tyrannosaurus, Ribtruss Roaster, Intellect Devourer, Bloodspore Thrinax, Fell Beast of Mordor, Thromok the Insatiable, Skullmulcher, Gluttonous Slime, Voracious Dragon, Preyseizer Dragon, Feaster of Fools, Ravenous Gigantotherium, Predator Dragon, Caldera Hellion, Hellkite Hatchling, Thunder-Thrash Elder, Tar Fiend, Marrow Chomper, Caprichrome, Thorn-Thrash Viashino, Gorger Wurm
+
+#### Modular (24 cards, 0 counted as read)
+
+- **Likely cause:** last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard
+- **Card says:** CR 702.43a: when it dies, move its +1/+1 counters (as it last existed) to target artifact creature
+- **Engine does:** moves none: the count is read from the card in the graveyard
+- **Evidence:** auditor board: Arcbound Worker (1 counter) Shocked; Ornithopter got no counter
+
+Power Depot, Arcbound Ravager, Arcbound Crusher, Scrapyard Recombiner, Arcbound Reclaimer, Arcbound Worker, Arcbound Shikari, Arcbound Stinger, Arcbound Mouser, Arcbound Slith, Arcbound Condor, Arcbound Tracker, Arcbound Javelineer, Arcbound Overseer, Zabaz, the Glimmerwasp, Arcbound Prototype, Arcbound Slasher, Arcbound Hybrid, Arcbound Fiend, Arcbound Whelp, Blaster, Combat DJ // Blaster, Morale Booster, Arcbound Bruiser, Arcbound Lancer, Arcbound Wanderer
 
 #### Evolve (23 cards, 0 counted as read)
 
@@ -616,6 +643,15 @@ Wanderwine Prophets, Mistbind Clique, Wren's Run Packmaster, Changeling Berserke
 
 Llanowar Reborn, Plaxcaster Frogling, Vigean Graftmage, Cytoplast Manipulator, Aquastrand Spider, Cytoplast Root-Kin, Sporeback Troll, Novijen Sages, Helium Squirter, Simic Initiate, Cytospawn Shambler, Vigean Hydropon, Simic Basilisk
 
+#### Jump-start (13 cards, 0 counted as read)
+
+- **Likely cause:** graveyard casting and discard costs exist; built as a free alternative cost
+- **Card says:** CR 702.133a: cast from the graveyard for its mana cost plus discarding a card; then exiled
+- **Engine does:** cast from the graveyard for nothing
+- **Evidence:** auditor board: Radical Idea cast from the graveyard with no mana, no discard
+
+Quasiduplicate, Chemister's Insight, Risk Factor, Radical Idea, Gravitic Punch, Dihada's Ploy, Beacon Bolt, Start the TARDIS, Maximize Velocity, Maximize Altitude, Sonic Assault, Direct Current, Surge of Acclaim
+
 #### Training (11 cards, 0 counted as read)
 
 - **Likely cause:** attack triggers with conditions exist; the condition was dropped
@@ -625,6 +661,12 @@ Llanowar Reborn, Plaxcaster Frogling, Vigean Graftmage, Cytoplast Manipulator, A
 
 Torens, Fist of the Angels, Hopeful Initiate, Jenny Flint, Savior of Ollenbock, Vikya, Scorching Stalwart, Cloaked Cadet, Parish-Blade Trainee, Apprentice Sharpshooter, Gryff Rider, Gryffwing Cavalry, Rural Recruit
 
+#### refused: 'other target' after another target (9 cards, 0 counted as read)
+
+- **Likely cause:** two targets the parser cannot keep apart
+
+Hidden Strings, Urborg Repossession, Toils of Night and Day, Markov Retribution, Arm the Cathars, Rhino, Terrible Trampler, Rushing River, Dwarven Landslide, Jilt
+
 #### Recover (7 cards, 0 counted as read)
 
 - **Likely cause:** graveyard triggers and pay-or-else exist; wrong trigger, no cost
@@ -633,6 +675,12 @@ Torens, Fist of the Angels, Hopeful Initiate, Jenny Flint, Savior of Ollenbock, 
 - **Evidence:** IR: trigger on your creatures dying, no cost, no exile
 
 Garza's Assassin, Grim Harvest, Icefall, Controvert, Resize, Sun's Bounty, Krovikan Rot
+
+#### refused: unbound player reference (6 cards, 0 counted as read)
+
+- **Likely cause:** a player reference bound to nothing
+
+Alms Collector, Undead Alchemist, Chains of Mephistopheles, Nicol Bolas, Szadek, Lord of Secrets, Rain of Gore
 
 #### Ripple (5 cards, 0 counted as read)
 
@@ -651,38 +699,6 @@ Surging Dementia, Surging Flame, Surging Aether, Surging Sentinels, Surging Migh
 - **Evidence:** IR: one COPY_SPELL
 
 Ominous Harvest, Follow the Bodies, Bitter Ordeal
-
-### 2.b Missing
-
-#### refused: 'its controller' with no single antecedent (41 cards, 0 counted as read)
-
-- **Likely cause:** the parser cannot decide whose controller is meant
-
-Curse of the Swine, Summon: Yojimbo, Pendant of Prosperity, Oft-Nabbed Goat, Arcum Dagsson, Rampage of the Clans, Reality Acid, Tuktuk Scrapper, The Phasing of Zhalfir, Krenko's Buzzcrusher, Rowan, Scholar of Sparks // Will, Scholar of Frost, War Cadence, Reaper of Sheoldred, Descent of the Dragons, Fade Away, Cauldron Dance, Mindswipe, Acolyte Hybrid, Afflicted Deserter // Werewolf Ransacker, Mercy Killing, War Tax, Forbidding Spirit, Foolish Fate, Vengeful Strangler // Strangling Grasp, Torment of Venom, March of Souls, Sarkhan the Mad, Seeds of Innocence, Belltower Sphinx, Parasitic Implant, Hour of Need, Stench of Evil, Kaervek's Purge, Tephraderm, Cinder Cloud, Martyr's Cry, Consuming Ferocity, Fold into Aether, Celestial Sword, Heroism, A-Rowan, Scholar of Sparks // A-Will, Scholar of Frost
-
-#### refused: characteristic of an object it cannot name (39 cards, 0 counted as read)
-
-- **Likely cause:** the parser cannot bind 'its power' (etc.) to an object
-
-Mana Drain, Skyclave Apparition, Sunbird's Invocation, Halana and Alena, Partners, Thickest in the Thicket, Shadowheart, Dark Justiciar, Titan's Presence, Mana Sculpt, Minn, Wily Illusionist, Calamity of the Titans, Hammerhead Tyrant, Iron Man, Titan of Innovation, Hunter's Bow, Earthshape, Ayara, Widow of the Realm // Ayara, Furnace Queen, Vivien on the Hunt, Kiora, Sovereign of the Deep, Eddie Brock // Venom, Lethal Protector, Counterpoint, Shantotto, Tactician Magician, Monkey Cage, Drach'Nyen, Soul's Might, Greatbow Doyen, Infernal Genesis, Mindshrieker, Refuse // Cooperate, Disaster Radius, Bishop of Binding, Enigmatic Incarnation, Living Lore, Severance Priest, Charge of the Forever-Beast, Heed the Mists, Parallectric Feedback, Living Armor, Living Destiny, Artillery Enthusiast, Puppet Raiser
-
-#### refused: 'that player' with no single antecedent (35 cards, 0 counted as read)
-
-- **Likely cause:** the parser cannot decide which player is meant
-
-Court of Ambition, Fertilid, Thunderbreak Regent, Indulgent Tormentor, Bandit's Talent, Acererak the Archlich, Red Death, Shipwrecker, Perforating Artist, Ob Nixilis, the Adversary, Sivriss, Nightmare Speaker, The Long Reach of Night // Animus of Night's Reach, Luminate Primordial, Nicol Bolas, the Deceiver, Fertilid's Favor, Rest for the Weary, Sonic Shrieker, Memory Vessel, Ashenmoor Liege, Possessed Portal, Tibalt, the Fiend-Blooded, Patron of the Nezumi, Bellowing Mauler, Rishadan Cutpurse, Rishadan Footpad, Warren Weirding, Rishadan Brigand, Liability, Laquatus's Champion, Frightful Delusion, Furnace Scamp, Haunted Cadaver, Blood Oath, Soul Scourge, Inquisition, Cut the Tethers
-
-#### refused: 'other target' after another target (9 cards, 0 counted as read)
-
-- **Likely cause:** two targets the parser cannot keep apart
-
-Hidden Strings, Urborg Repossession, Toils of Night and Day, Markov Retribution, Arm the Cathars, Rhino, Terrible Trampler, Rushing River, Dwarven Landslide, Jilt
-
-#### refused: unbound player reference (6 cards, 0 counted as read)
-
-- **Likely cause:** a player reference bound to nothing
-
-Alms Collector, Undead Alchemist, Chains of Mephistopheles, Nicol Bolas, Szadek, Lord of Secrets, Rain of Gore
 
 #### refused: the one who acts was named under a condition (2 cards, 0 counted as read)
 

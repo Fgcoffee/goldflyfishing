@@ -133,6 +133,8 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "backup": "CR 702.165a: counters on target creature, which gains abilities;"
     " was counters on this",
     "fabricate": "CR 702.123a: counters or Servo tokens; was always counters",
+    "modular": "CR 702.43a with 608.2h: move the counters it had on the battlefield;"
+    " the dies trigger counted them on the card in the graveyard and moved none",
     "graft": "CR 702.58a: also moves counters onto entering creatures; was counters only",
     "sunburst": "CR 702.44a: a counter per color spent; was always one",
     "soulbond": "CR 702.95a: pair with one creature; was attached to every creature",
@@ -153,6 +155,15 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "dethrone": "CR 702.105a: only attacking the player with the most life;"
     " was any attack",
     "evolve": "CR 702.100a: only for a bigger creature; was any creature",
+    # Found by the auditing session, checked against the builders:
+    "crew": "CR 702.122a: tap other creatures with total power N or greater;"
+    " was tap N creatures (the cost system has no total-power cost yet)",
+    "jump-start": "CR 702.133a: cast from the graveyard paying the mana cost and"
+    " discarding a card, then exile; was a free cast from the graveyard",
+    "aftermath": "CR 702.127a: cast this half only from a graveyard, then exile;"
+    " was castable from hand and not from the graveyard",
+    "encore": "CR 702.141a: an activated ability exiling it for token copies;"
+    " was an alternative cost to cast it",
     "training": "CR 702.149a: only attacking beside a stronger creature; was any attack",
 }
 
