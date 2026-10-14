@@ -200,6 +200,9 @@ class GameObject:
     #: cast for, if any - what "if its sneak cost was paid" asks. Empty for a
     #: spell cast for its mana cost.
     alternative_cost_paid: str = ""
+    #: CR 601.2a: the zone the card was in when it was cast, for the rules
+    #: that ask where a spell was cast from (CR 702.127a aftermath).
+    cast_from: object | None = None
     #: CR 601.2b: the alternative cost announced for this spell when the card
     #: it was cast from offered it through a granted ability. The grant was
     #: settled on that card, and CR 400.7 leaves it behind as the spell moves.

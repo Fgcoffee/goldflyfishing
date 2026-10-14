@@ -267,6 +267,11 @@ class AlternativeCost:
     #: CR 702.190b: a permanent spell cast this way enters tapped and
     #: attacking whatever the creature returned to pay for it was attacking.
     enters_tapped_and_attacking: bool = False
+    #: CR 702.133a: a permission to cast from ``from_zone`` that charges the
+    #: spell's own mana cost, with ``cost`` added on top as additional costs
+    #: (jump-start's discard). Such a permission is not an alternative cost
+    #: in the sense of CR 118.9, so nothing about the mana cost is replaced.
+    pays_mana_cost: bool = False
     #: The keyword this came from, for the log and the coverage report.
     keyword: str = ""
     text: str = ""

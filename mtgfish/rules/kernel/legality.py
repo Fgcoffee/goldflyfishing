@@ -195,6 +195,10 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             may_cast_from_here = zone in (Zone.HAND, Zone.COMMAND) or (
                 obj.playable_from_here_by == player_id
             )
+            # CR 702.127a: an aftermath half may be cast from a graveyard,
+            # and from no other zone.
+            if chars.has_keyword("Aftermath"):
+                may_cast_from_here = zone is Zone.GRAVEYARD
             if may_cast_from_here and chars.has_mana_cost:
                 if _affordable(game, player_id, obj, zone, chars):
                     out.append(
@@ -294,6 +298,12 @@ def _affordable_alternative(
 
     player = game.player(player_id)
     cost = alternative.cost.mana_component
+    if alternative.pays_mana_cost:
+        # CR 702.133a: the spell's own mana cost, with this one added.
+        chars = game.characteristics(obj)
+        if not chars.has_mana_cost:
+            return False
+        cost = chars.mana_cost.plus(cost)
     if zone is Zone.COMMAND and obj.is_commander:
         # CR 903.8 with CR 118.9d: the tax is a cost *increase*, and an
         # alternative cost replaces the mana cost rather than the increases

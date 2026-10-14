@@ -133,6 +133,7 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     # 601.2a: move the card to the stack. It becomes a spell there.
     spell = game.move_object(card_object, Zone.STACK, to_player=player_id)
     spell.controller = player_id
+    spell.cast_from = origin_zone
     spell.alternative_cost_offered = offered
     # CR 118.5: permission to cast "without paying its mana cost" is given to
     # the card before it moves, and CR 400.7 makes the spell a new object. Not
@@ -293,7 +294,15 @@ def compute_total_cost(
 
     alternative = chosen_alternative_cost(game, spell, action)
 
-    if alternative is not None:
+    if alternative is not None and alternative.pays_mana_cost:
+        # CR 702.133a: the mana cost is paid as usual and the permission's
+        # own cost is added to it.
+        total = TotalCost(base=chars.mana_cost, x_value=action.x_value)
+        total.unpayable = not chars.has_mana_cost
+        total.base = total.base.plus(alternative.cost.mana_component)
+        for component in alternative.cost.non_mana_components:
+            total.add_additional(component)
+    elif alternative is not None:
         # CR 118.9c: this replaces what must be *paid*, not the spell's mana
         # cost. Anything that later asks for the mana cost still sees the
         # printed one.

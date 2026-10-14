@@ -70,7 +70,7 @@ class UnparsedAbilityProvider:
 #: anywhere else, when it leaves the stack - lower-cased keyword names, as
 #: ``GameObject.alternative_cost_paid`` records them.
 _EXILED_WHEN_IT_LEAVES_THE_STACK = frozenset(
-    {"flashback", "jump-start", "aftermath", "harmonize"}
+    {"flashback", "jump-start", "harmonize"}
 )
 
 #: Events that can amount to a CR 700 happening - descending, a crime,
@@ -491,6 +491,16 @@ class Game:
             target.append(obj.id)
         return obj
 
+    def _exiled_as_it_leaves_the_stack(self, obj: GameObject) -> bool:
+        """Whether a spell is exiled rather than going anywhere else."""
+        if obj.alternative_cost_paid.lower() in _EXILED_WHEN_IT_LEAVES_THE_STACK:
+            return True
+        # CR 702.127a: aftermath asks where the spell was cast from, not how
+        # it was paid for.
+        return obj.cast_from is Zone.GRAVEYARD and self.characteristics(
+            obj
+        ).has_keyword("Aftermath")
+
     def move_object(
         self,
         obj: GameObject,
@@ -548,10 +558,10 @@ class Game:
         if (
             from_zone is Zone.STACK
             and prospective.to_zone is not Zone.EXILE
-            and obj.alternative_cost_paid.lower() in _EXILED_WHEN_IT_LEAVES_THE_STACK
+            and self._exiled_as_it_leaves_the_stack(obj)
         ):
-            # CR 702.34a flashback, 702.133a jump-start, 702.127a aftermath,
-            # 702.180a harmonize: a spell cast that way is exiled instead of
+            # CR 702.34a flashback, 702.133a jump-start, 702.180a harmonize,
+            # 702.127a aftermath: a spell cast that way is exiled instead of
             # going anywhere else as it leaves the stack - resolved, countered
             # or bounced alike. Without this a flashed-back card went back to
             # the graveyard and could be flashed back again for ever.

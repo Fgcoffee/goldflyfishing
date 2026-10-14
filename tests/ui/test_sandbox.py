@@ -95,6 +95,17 @@ def test_a_permanent_placed_on_the_battlefield_can_act_at_once(box):
     assert bear["summoning_sick"] is False
 
 
+def test_a_planeswalker_placed_on_the_battlefield_has_its_loyalty(box):
+    """CR 306.5b: placing one is entering, counters and all."""
+    box.put("Jace Beleren", "battlefield", 0)
+    walker = next(
+        o
+        for o in box.game.objects.values()
+        if o.is_live and o.card is not None and o.card.name == "Jace Beleren"
+    )
+    assert walker.counter_count("loyalty") == 3
+
+
 def test_putting_a_card_nowhere_real_is_refused(box):
     assert "error" in box.put("Grizzly Bears", "the bin", 0)
 
