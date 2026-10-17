@@ -1600,7 +1600,33 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
     if refusal is not None:
         result.failures.append(ParseFailure(text, refusal, rule=rule))
         return Ability.unreadable(text)
+    if _grants_a_trigger(bound):
+        result.failures.append(
+            ParseFailure(text, "grants a triggered ability the engine never collects", rule=rule)
+        )
+        return Ability.unreadable(text)
     return bound
+
+
+def _grants_a_trigger(ability: Ability) -> bool:
+    """Whether this ability gives another object a triggered ability.
+
+    CR 613.1f: an ability an effect grants is the object's like any printed
+    one, and CR 603.2 triggers it. The engine's trigger scan reads only an
+    object's printed abilities (cr603_triggers._trigger_abilities), so a
+    granted trigger - Abnormal Endurance's "When this creature dies, return
+    it", or "creatures you control have prowess" - never fires. Until the scan
+    reads layered abilities, a card that grants one would look read and do
+    nothing, so it is refused.
+    """
+    for effect in ability.effects:
+        for node in effect.walk():
+            if node.kind is not EffectKind.GRANT_ABILITY:
+                continue
+            for granted in node.granted_abilities:
+                if getattr(granted, "kind", None) is AbilityKind.TRIGGERED:
+                    return True
+    return False
 
 
 # ---------------------------------------------------------------------------
