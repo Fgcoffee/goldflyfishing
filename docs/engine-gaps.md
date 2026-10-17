@@ -19,8 +19,8 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 117 | 0 |
-| Missing, not understood | 493 | 542 |
-| Suspected, counted as read | 278 | 0 |
+| Missing, not understood | 513 | 825 |
+| Suspected, counted as read | 258 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
 first; *(read)* marks a card the parser currently counts as fully read.
@@ -99,6 +99,15 @@ Tithing Blade // Consuming Sepulcher, The Enigma Jewel // Locus of Enlightenment
 - **Evidence:** IR: UNPARSED placeholder
 
 Battle Angels of Tyr, Goldlust Triad, Scurry of Squirrels, Scion of Calamity, The Master, Multiplied, Wizards of Thay, Chittering Dispatcher, Elturel Survivors, Hammers of Moradin, Dalek Squadron, Polygoyf, Wyrm's Crossing Patrol, Herald of the Host, Tiamat's Fanatics, Warchief Giant, Genasi Enforcers, Caller of the Pack, Conclave Evangelist, Banshee of the Dread Choir, Gnoll War Band, Broodbirth Viper, Tabaxi Toucaneers, Sumala Rumblers
+
+#### Replicate (20 cards, 3 counted as read)
+
+- **Likely cause:** copying a spell does not let the copy choose new targets
+- **Card says:** CR 702.56a: a copy for each time the replicate cost was paid; each copy may choose new targets
+- **Engine does:** copies keep the original's targets: refused on targeted spells, read on the rest
+- **Evidence:** auditor: copies are never offered new targets
+
+Hatchery Sliver, Changing Loyalty *(read)*, Consign to Memory, Shattering Spree, Mists of Lórien, Super Combo, Exterminate!, Psionic Ritual, Lose Focus, Gigadrowse, Stream of Thought, Reiterating Bolt, Pyromatics, Train of Thought *(read)*, Leap of Flame, Mimeofacture, Siege of Towers, Vacuumelt, Thunderheads *(read)*, Feed the Bog
 
 #### Specialize (19 cards, 0 counted as read)
 
@@ -216,14 +225,14 @@ Go Blank
 
 ### 1.c Suspected, not yet proved
 
-#### Bestow (43 cards, 24 counted as read)
+#### Bestow (43 cards, 21 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, Trickster's Elk *(read)*, Indebted Spirit *(read)*, Detective's Phoenix, Chromanticore *(read)*, Glyph Elemental *(read)*, Hypnotic Siren, Nyxborn Unicorn *(read)*, Celestial Archon *(read)*, Triton Wavebreaker, Kestia, the Cultivator, Hopeful Eidolon *(read)*, Thassa's Emissary, Noble Quarry, Ghostblade Eidolon *(read)*, Boon Satyr *(read)*, Flitterstep Eidolon, Baleful Eidolon *(read)*, Gnarled Scarhide, Herald of Torment *(read)*, Nyxborn Rollicker *(read)*, Leafcrown Dryad *(read)*, Heliod's Emissary, Nyxborn Shieldmate *(read)*, Observant Alseid *(read)*, Nylea's Emissary *(read)*, Purphoros's Emissary *(read)*, Spiteful Returned, Nimbus Naiad *(read)*, Mogis's Warhound, Nyxborn Wolf *(read)*, Erebos's Emissary, Cavern Lampad *(read)*, Everflame Eidolon, Nyxborn Triton *(read)*, Nyxborn Eidolon *(read)*, Spearpoint Oread *(read)*, Crystalline Nautilus *(read)*, Spirespine, Sightless Brawler
+Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, Trickster's Elk *(read)*, Indebted Spirit, Detective's Phoenix, Chromanticore *(read)*, Glyph Elemental *(read)*, Hypnotic Siren, Nyxborn Unicorn, Celestial Archon *(read)*, Triton Wavebreaker, Kestia, the Cultivator, Hopeful Eidolon *(read)*, Thassa's Emissary, Noble Quarry, Ghostblade Eidolon *(read)*, Boon Satyr *(read)*, Flitterstep Eidolon, Baleful Eidolon *(read)*, Gnarled Scarhide, Herald of Torment *(read)*, Nyxborn Rollicker *(read)*, Leafcrown Dryad *(read)*, Heliod's Emissary, Nyxborn Shieldmate *(read)*, Observant Alseid *(read)*, Nylea's Emissary *(read)*, Purphoros's Emissary *(read)*, Spiteful Returned, Nimbus Naiad *(read)*, Mogis's Warhound, Nyxborn Wolf *(read)*, Erebos's Emissary, Cavern Lampad *(read)*, Everflame Eidolon, Nyxborn Triton *(read)*, Nyxborn Eidolon *(read)*, Spearpoint Oread *(read)*, Crystalline Nautilus, Spirespine, Sightless Brawler
 
 #### Buyback (40 cards, 30 counted as read)
 
@@ -234,23 +243,23 @@ Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, T
 
 Constant Mists *(read)*, Reiterate *(read)*, Clockspinning, Haze of Rage, Capsize *(read)*, Sprout Swarm *(read)*, Walk the Aeons, Mystic Speculation *(read)*, Forbid *(read)*, Spell Burst *(read)*, Mind Games *(read)*, Whim of Volrath, Corpse Dance, Searing Touch *(read)*, Lab Rats *(read)*, Wurmcalling *(read)*, Seething Anger *(read)*, Slaughter *(read)*, Whispers of the Muse *(read)*, Fanning the Flames *(read)*, Demonic Collusion *(read)*, Recruit the Worthy *(read)*, Shattering Pulse *(read)*, Disturbed Burial *(read)*, Allay *(read)*, Worthy Cause *(read)*, Elvish Fury *(read)*, Memory Crystal, Evincar's Justice *(read)*, Evangelize, Change of Heart *(read)*, Pegasus Stampede *(read)*, Invulnerability, Verdant Touch, Flowstone Flood *(read)*, Imps' Taunt, Anoint *(read)*, Reaping the Rewards *(read)*, Brush with Death *(read)*, Mind Peel *(read)*
 
-#### Warp (39 cards, 31 counted as read)
+#### Warp (39 cards, 30 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Exalted Sunborn *(read)*, Weftstalker Ardent *(read)*, Haliya, Guided by Light *(read)*, Starfield Vocalist *(read)*, Anticausal Vestige *(read)*, Starwinder *(read)*, Loading Zone *(read)*, Mightform Harmonizer *(read)*, Bygone Colossus *(read)*, Starfield Shepherd *(read)*, Timeline Culler, Pinnacle Emissary, Susurian Voidborn *(read)*, Eusocial Engineering *(read)*, Zoanthrope *(read)*, Broodguard Elite *(read)*, Drix Fatemaker *(read)*, Astelli Reclaimer *(read)*, Quantum Riddler, Mutalith Vortex Beast *(read)*, All-Fates Stalker *(read)*, Nova Hellkite *(read)*, Perigee Beckoner *(read)*, Mechanozoa *(read)*, Rayblade Trooper *(read)*, Knight Luminary *(read)*, Germinating Wurm *(read)*, Possibility Technician, Red Tiger Mechan *(read)*, Codecracker Hound, Starbreach Whale *(read)*, Weftblade Enhancer *(read)*, Memorial Team Leader *(read)*, Sinister Cryologist *(read)*, Axavar, Fate Thief, Network Marauder, Sliver Weftwinder, Spirited Simulacrum *(read)*, Voidcalled Devotee *(read)*
+Exalted Sunborn *(read)*, Weftstalker Ardent *(read)*, Haliya, Guided by Light *(read)*, Starfield Vocalist *(read)*, Anticausal Vestige *(read)*, Starwinder *(read)*, Loading Zone *(read)*, Mightform Harmonizer *(read)*, Bygone Colossus *(read)*, Starfield Shepherd *(read)*, Timeline Culler, Pinnacle Emissary, Susurian Voidborn *(read)*, Eusocial Engineering *(read)*, Zoanthrope *(read)*, Broodguard Elite *(read)*, Drix Fatemaker *(read)*, Astelli Reclaimer *(read)*, Quantum Riddler, Mutalith Vortex Beast *(read)*, All-Fates Stalker *(read)*, Nova Hellkite *(read)*, Perigee Beckoner, Mechanozoa *(read)*, Rayblade Trooper *(read)*, Knight Luminary *(read)*, Germinating Wurm *(read)*, Possibility Technician, Red Tiger Mechan *(read)*, Codecracker Hound, Starbreach Whale *(read)*, Weftblade Enhancer *(read)*, Memorial Team Leader *(read)*, Sinister Cryologist *(read)*, Axavar, Fate Thief, Network Marauder, Sliver Weftwinder, Spirited Simulacrum *(read)*, Voidcalled Devotee *(read)*
 
-#### Entwine (32 cards, 19 counted as read)
+#### Entwine (32 cards, 18 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Tooth and Nail *(read)*, Savage Beating, Kaya's Guile, Goblin War Party *(read)*, Unbounded Potential *(read)*, Dream's Grip *(read)*, Mirage Mockery *(read)*, Journey of Discovery, Rude Awakening, Road of Return, Reap and Sow *(read)*, Wail of the Nim *(read)*, Gravedig *(read)*, Grab the Reins, Plunge into Darkness, Promise of Power *(read)*, Temporal Cascade, Spectral Shift, Solar Tide *(read)*, Barbed Lightning *(read)*, Shriveling Rot, One Dozen Eyes *(read)*, Roar of the Kha *(read)*, Betrayal of Flesh *(read)*, Abuna's Chant *(read)*, Flourishing Strike *(read)*, Second Sight *(read)*, Incite War, Blinding Beam, Stir the Pride *(read)*, Twisted Reflection, Rain of Rust *(read)*
+Tooth and Nail *(read)*, Savage Beating, Kaya's Guile, Goblin War Party *(read)*, Unbounded Potential *(read)*, Dream's Grip *(read)*, Mirage Mockery *(read)*, Journey of Discovery, Rude Awakening, Road of Return, Reap and Sow *(read)*, Wail of the Nim *(read)*, Gravedig *(read)*, Grab the Reins, Plunge into Darkness, Promise of Power *(read)*, Temporal Cascade, Spectral Shift, Solar Tide *(read)*, Barbed Lightning *(read)*, Shriveling Rot, One Dozen Eyes *(read)*, Roar of the Kha *(read)*, Betrayal of Flesh *(read)*, Abuna's Chant *(read)*, Flourishing Strike *(read)*, Second Sight *(read)*, Incite War, Blinding Beam, Stir the Pride, Twisted Reflection, Rain of Rust *(read)*
 
 #### Splice (30 cards, 21 counted as read)
 
@@ -297,23 +306,14 @@ Coruscation Mage *(read)*, Agate Instigator *(read)*, Starscape Cleric *(read)*,
 
 Return the Favor, Three Steps Ahead, Great Train Heist, Insatiable Avarice, Requisition Raid, Smuggler's Surprise, Lively Dirge, Final Showdown, Rush of Dread, Trash the Town, Getaway Glamer, Shifting Grift, Dance of the Tumbleweeds, Rustler Rampage, One Last Job, Explosive Derailment, Phantom Interference, Metamorphic Blast, Jailbreak Scheme, Caught in the Crossfire, Unfortunate Accident
 
-#### Blitz (20 cards, 8 counted as read)
+#### Blitz (20 cards, 7 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Jaxis, the Troublemaker *(read)*, Star Athlete, Henzie "Toolbox" Torre, Wave of Rats, Tenacious Underdog, Sabin, Master Monk, Ziatora's Envoy, Mezzio Mugger, Riveteers Requisitioner *(read)*, Night Clubber *(read)*, Caldaia Guardian *(read)*, Workshop Warchief *(read)*, Mayhem Patrol *(read)*, Pugnacious Pugilist, Plasma Jockey *(read)*, Girder Goons, Caldaia Strongarm *(read)*, Riveteers Decoy, Effluence Devourer, Riveteers Provocateur
-
-#### Replicate (20 cards, 14 counted as read)
-
-- **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
-- **Card says:** an alternative or additional cost with its own consequences
-- **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
-- **Evidence:** code: no use of the keyword outside the keyword table
-
-Hatchery Sliver, Changing Loyalty *(read)*, Consign to Memory, Shattering Spree *(read)*, Mists of Lórien, Super Combo *(read)*, Exterminate! *(read)*, Psionic Ritual *(read)*, Lose Focus *(read)*, Gigadrowse *(read)*, Stream of Thought, Reiterating Bolt *(read)*, Pyromatics *(read)*, Train of Thought *(read)*, Leap of Flame *(read)*, Mimeofacture, Siege of Towers, Vacuumelt *(read)*, Thunderheads *(read)*, Feed the Bog *(read)*
+Jaxis, the Troublemaker, Star Athlete, Henzie "Toolbox" Torre, Wave of Rats, Tenacious Underdog, Sabin, Master Monk, Ziatora's Envoy, Mezzio Mugger, Riveteers Requisitioner *(read)*, Night Clubber *(read)*, Caldaia Guardian *(read)*, Workshop Warchief *(read)*, Mayhem Patrol *(read)*, Pugnacious Pugilist, Plasma Jockey *(read)*, Girder Goons, Caldaia Strongarm *(read)*, Riveteers Decoy, Effluence Devourer, Riveteers Provocateur
 
 #### Multikicker (19 cards, 0 counted as read)
 
@@ -462,6 +462,12 @@ Overlord of the Hauntwoods, Overlord of the Balemurk *(read)*, Overlord of the F
 ## 2. Could be parser allocation bugs
 
 ### 2.b Missing
+
+#### refused: grants a triggered ability the engine never collects (278 cards, 0 counted as read)
+
+- **Likely cause:** unclassified refusal
+
+Hexing Squelcher, Innkeeper's Talent, Flowering of the White Tree, Bear Umbra, Herd Heirloom, Sheltered by Ghosts, Mikaeus, the Unhallowed, Legolas's Quick Reflexes, Fake Your Own Death, Diamond Pick-Axe, Snake Umbra, Lavaspur Boots, Codsworth, Handy Helper, Fire Nation Palace, Jaxis, the Troublemaker, Supernatural Stamina, Power Fist, Sticky Fingers, Passionate Archaeologist, Bronze Guardian, Winged Boots, Combat Research, Combat Research, Agent of the Iron Throne, Dionus, Elvish Archdruid, Imoti, Celebrant of Bounty, Gold-Forged Thopteryx, Thornbite Staff, Nalfeshnee, Cyberman Patrol, Rivaz of the Claw, Bria, Riptide Rogue, Lost Monarch of Ifnir, Rite of the Raging Storm, K-9, Mark I, Strength of Will, Karumonix, the Rat King, Wildsear, Scouring Maw, Sozin's Comet, Saruman, the White Hand, Svyelun of Sea and Sky, Unctus, Grand Metatect, Harmonic Sliver, Well Rested, Coppercoat Vanguard, The First Sliver, Tavern Brawler, Rammas Echor, Ancient Shield, Undying Evil, Light of Promise, Depthshaker Titan, Nerd Rage, Far Traveler, Spiteful Sliver, Wondrous Crucible, Adriana, Captain of the Guard, Rith, Liberated Primeval, Flaming Fist, Sokka, Tenacious Tactician, Shelob, Child of Ungoliant, Giant Ankheg, Chains of Custody, Wizard's Staff, Helm of the Ghastlord, Helm of the Ghastlord, Necrogen Communion, Iymrith, Desert Doom, Narset, Enlightened Exile, Staggering Insight, Lavabelly Sliver, Assassin Gauntlet, Hunter's Prowess, Candlekeep Sage, Dreadmaw's Ire, Cultist of the Absolute, Eternal Thirst, Pontiff of Blight, Star Whale, Security Bypass, Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight, Subterfuge, Kaya the Inexorable, Sixth Sense, Hunter's Bow, Leyline Immersion, Fire Nation Turret, Long River Lurker, Verdant Embrace, Cathedral Acolyte, Merchant of Truth, Virulent Sliver, Aragorn, Hornburg Hero, Constricting Sliver, Iroh, Dragon of the West, Afterlife Insurance, Lazotep Sliver, Carnage, Crimson Chaos, Quandrix, the Proof, Open into Wonder, Dusk Legion Sergeant, Feywild Visitor, Return to Action, Drogskol Reinforcements, Flamekin Herald, Biorganic Carapace, Dragon-Cursed Halls, Sublime Archangel, Family's Favor, Indebted Spirit, Demonic Gifts, Mitotic Slime, Curious Obsession, Plate Armor, Clawing Torment, Sunbond, Fall of Gil-galad, Abaddon the Despoiler, Unquenchable Fury, The Tabernacle at Pendrell Vale, Cathar's Call, Popular Entertainer, Abnormal Endurance, Fly, Prosthetic Injector, Necrosynthesis, Mishra, Tamer of Mak Fawa, Kataki, War's Wage, Timothar, Baron of Bats, Octopus Umbra, Taunting Sliver, Leather Armor, Infuse with Vitality, Relic Vial, Opaline Sliver, Choreographed Sparks, Wingrattle Scarecrow, Rhys, the Evermore, Glowcap Lantern, Order of Sacred Dusk, Storvald, Frost Giant Jarl, Tempered Sliver, Hunting Grounds, Diviner's Wand, Elder Owyn Lyons, Web-Shooters, Pain 101, Commander Mustard, Vibranium Strike Gauntlets, Mischievous Catgeist // Catlike Curiosity, Sidewinder Sliver, Curious Inquiry, Rashel, Fist of Torm, Candlestick, Root Manipulation, Livewire Lash, Nyxborn Unicorn, Hardlight Containment, Triton Wavebreaker, Perigee Beckoner, Thief of Existence, Avarice Amulet, Fungus Sliver, Capricious Sliver, Radagast, Wizard of Wilds, Hunter Sliver, Presumed Dead, Vile Consumption, Thorncaster Sliver, Dwarven Mattock, Aspirant's Ascent, Plague Nurse, Morgul-Knife Wound, Pirate Hat, Verdant Rebirth, Aegis of the Legion, Driven // Despair, Driven // Despair, Matt Murdock, Justice Seeker, Crystal Carapace, Energy Flux, Dormant Sliver, Dance with Devils, Terminal Velocity, Vivien's Stampede, Winter, Cursed Rider, Titania, Proud Pummeler, Nurturing Presence, Devils' Playground, Super Strength, Armguard Familiar, Volcano Hellion, Commanding Presence, Chaplain of Alms // Chapel Shieldgeist, Rattleblaze Scarecrow, First Sliver's Chosen, Trickster's Talisman, Endling, Pendrell Mists, Magus of the Tabernacle, Reckless Pyrosurfer, Mesmeric Sliver, Commander's Authority, Falcon's Wing Harness, Creeping Crystal Coating, Necrotic Plague, Take Flight, Make Mischief, Veteran's Armaments, Antler Skulkin, Pillory of the Sleepless, Secret Invasion, Grasp of the Hieromancer, Frenzy Sliver, Dragon's Disciple, Inevitable End, Ghostly Touch, Arm with Aether, Infernal Scarring, Snake Cult Initiation, Distracting Geist // Clever Distraction, Aethermage's Touch, Showstopper, Cement Shoes, Spare Dagger, Nettlevine Blight, Consuming Fervor, Sunfire Torch, Fang of the Pack, Skirk Ridge Exhumer, Serpent Generator, Agility, Aura Flux, Iconic Shield, Dagger of the Worthy, Infinity Formula, Zarda, the Power Princess, Decaying Soil, Sparkspitter, Cephalid Sage, Expedition Diviner, Cavalry Master, Bloodcurdler, Crystalline Nautilus, Jabari's Banner, Stir the Pride, Cruel Deceiver, Gloomdrifter, Relic Bane, Centaur Chieftain, Plague Sliver, Boneshard Slasher, Maelstrom Djinn, Farmstead, Coral Net, Pardic Arsonist, Decomposition, Reborn Hero, Treacherous Werewolf, Teroh's Vanguard, Treacherous Vampire, A-Kargan Warleader, A-Mischievous Catgeist // A-Catlike Curiosity, A-Plate Armor, Ambassador of Evendo, Bail Out, Consuming Oni, Goblin Trapfinder, Guildpact Greenwalker, Lae'zel, Githyanki Warrior, Marshland Hordemaster, Painful Bond, Putrid Hexhag, Rope Line Attendant, Sewer Plague, Solitary Defiance, Tome of Gadwick, Traumatic Prank, Waystone's Guidance
 
 #### refused: 'its controller' with no single antecedent (41 cards, 0 counted as read)
 
@@ -660,6 +666,12 @@ Quasiduplicate, Chemister's Insight, Risk Factor, Radical Idea, Gravitic Punch, 
 - **Evidence:** IR: no condition
 
 Torens, Fist of the Angels, Hopeful Initiate, Jenny Flint, Savior of Ollenbock, Vikya, Scorching Stalwart, Cloaked Cadet, Parish-Blade Trainee, Apprentice Sharpshooter, Gryff Rider, Gryffwing Cavalry, Rural Recruit
+
+#### refused: replicate copies of a targeted spell cannot choose new targets (11 cards, 0 counted as read)
+
+- **Likely cause:** unclassified refusal
+
+Shattering Spree, Super Combo, Exterminate!, Psionic Ritual, Lose Focus, Gigadrowse, Reiterating Bolt, Pyromatics, Leap of Flame, Vacuumelt, Feed the Bog
 
 #### refused: 'other target' after another target (9 cards, 0 counted as read)
 

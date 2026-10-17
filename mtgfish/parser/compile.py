@@ -139,8 +139,33 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
         ability = _parse_line(line, result, is_permanent=is_permanent)
         abilities.extend(ability)
 
-    result.abilities = tuple(abilities)
+    result.abilities = tuple(_refuse_targeted_replicate(abilities, result))
     return result
+
+
+def _refuse_targeted_replicate(abilities: list[Ability], result: ParsedFace) -> list[Ability]:
+    """CR 702.56a: each replicate copy "may choose new targets". The engine's
+    copies keep the original's, so on a spell with targets replicate would
+    hit the same target every time; it is refused there. A spell without
+    targets copies faithfully, so it is left read.
+    """
+    if not any(a.keyword.lower() == "replicate" for a in abilities):
+        return abilities
+    if not any(a.is_targeted for a in abilities if a.kind is AbilityKind.SPELL):
+        return abilities
+    out = []
+    for ability in abilities:
+        if ability.keyword.lower() == "replicate":
+            result.failures.append(
+                ParseFailure(
+                    ability.text,
+                    "replicate copies of a targeted spell cannot choose new targets",
+                    rule="keyword",
+                )
+            )
+            ability = Ability.unreadable(ability.text)
+        out.append(ability)
+    return out
 
 
 def _self_names(face) -> dict:
@@ -1600,7 +1625,33 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
     if refusal is not None:
         result.failures.append(ParseFailure(text, refusal, rule=rule))
         return Ability.unreadable(text)
+    if _grants_a_trigger(bound):
+        result.failures.append(
+            ParseFailure(text, "grants a triggered ability the engine never collects", rule=rule)
+        )
+        return Ability.unreadable(text)
     return bound
+
+
+def _grants_a_trigger(ability: Ability) -> bool:
+    """Whether this ability gives another object a triggered ability.
+
+    CR 613.1f: an ability an effect grants is the object's like any printed
+    one, and CR 603.2 triggers it. The engine's trigger scan reads only an
+    object's printed abilities (cr603_triggers._trigger_abilities), so a
+    granted trigger - Abnormal Endurance's "When this creature dies, return
+    it", or "creatures you control have prowess" - never fires. Until the scan
+    reads layered abilities, a card that grants one would look read and do
+    nothing, so it is refused.
+    """
+    for effect in ability.effects:
+        for node in effect.walk():
+            if node.kind is not EffectKind.GRANT_ABILITY:
+                continue
+            for granted in node.granted_abilities:
+                if getattr(granted, "kind", None) is AbilityKind.TRIGGERED:
+                    return True
+    return False
 
 
 # ---------------------------------------------------------------------------

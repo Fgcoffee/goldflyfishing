@@ -182,6 +182,10 @@ FINDINGS: tuple[Finding, ...] = (
             "when it dies, move its +1/+1 counters (as it last existed) to target artifact creature",
             "moves none: the count is read from the card in the graveyard",
             "auditor board: Arcbound Worker (1 counter) Shocked; Ornithopter got no counter"),
+    Finding("Replicate", MISSING, "702.56a",
+            "a copy for each time the replicate cost was paid; each copy may choose new targets",
+            "copies keep the original's targets: refused on targeted spells, read on the rest",
+            "auditor: copies are never offered new targets"),
     Finding("Crew", WRONG, "702.122a",
             "tap other untapped creatures with total power N or greater",
             "taps N creatures, whatever their power",
@@ -219,7 +223,7 @@ FINDINGS: tuple[Finding, ...] = (
             "Conspire", "Embalm", "Emerge", "Entwine", "Escalate",
             "Eternalize", "Freerunning", "Gift", "Impending", "Miracle",
             "More Than Meets the Eye", "Multikicker", "Offspring", "Prowl",
-            "Replicate", "Retrace", "Spectacle", "Splice", "Spree", "Squad", "Warp",
+            "Retrace", "Spectacle", "Splice", "Spree", "Squad", "Warp",
         )
     ),
 )
@@ -275,6 +279,7 @@ CAUSES: dict[str, tuple[str, str]] = {
     "Training": (PARSER, "attack triggers with conditions exist; the condition was dropped"),
     "Modular": (PARSER, "last-known information exists for sacrificed objects; the dies"
                 " trigger reads the counters off the card in the graveyard"),
+    "Replicate": (ENGINE, "copying a spell does not let the copy choose new targets"),
     "Crew": (ENGINE, "no 'creatures with total power N' cost; the builder tapped N"),
     "Jump-start": (PARSER, "graveyard casting and discard costs exist; built as a free"
                    " alternative cost"),
