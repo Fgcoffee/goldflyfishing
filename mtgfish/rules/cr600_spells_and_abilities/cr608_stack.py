@@ -211,13 +211,8 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         permanent.x_value = obj.x_value
         # CR 702.33e and its kin: "if it was kicked", "if no mana was spent to
         # cast it", "if its surge cost was paid" are asked by the permanent's
-        # own abilities about the spell it was. Left on the spell, every one
-        # of them read the new object's defaults and was never true.
-        permanent.additional_costs_paid = obj.additional_costs_paid
-        permanent.mana_spent = obj.mana_spent
-        permanent.mana_spent_colors = obj.mana_spent_colors
-        permanent.phyrexian_paid_with_life = obj.phyrexian_paid_with_life
-        permanent.alternative_cost_paid = obj.alternative_cost_paid
+        # own abilities about the spell it was. ``move_object`` gave the
+        # permanent that record as it entered (``carry_payment_record``).
         # It got here by resolving as a spell, which is what "if you cast it"
         # asks. A permanent put onto the battlefield never passes through
         # here and so is left with the default.

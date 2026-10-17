@@ -454,7 +454,32 @@ def holds(
         # CR 702.33b: kicked means the optional additional cost was chosen at
         # announcement (CR 601.2b), which the spell records as it is cast.
         spell = game.objects.get(source)
-        return bool(spell is not None and spell.additional_costs_paid)
+        if spell is None or not spell.additional_costs_paid:
+            return False
+        if not condition.keyword:
+            return True
+        # CR 702.33e, 702.175b: a rider is linked to its own keyword's cost
+        # (CR 607), so "if its offspring cost was paid" asks about offspring
+        # and a kicker payment does not answer it.
+        from ..cr700_additional_rules.cr702_paid_costs import paid_additional_keywords
+
+        return condition.keyword.lower() in paid_additional_keywords(game, spell)
+
+    if kind is ConditionKind.COMBAT_DAMAGE_DEALT_BY:
+        # CR 702.173a: what the source was as it dealt the damage.
+        from ..cr700_additional_rules.cr702_cost_keyword_rules import combat_damage_dealt_by
+
+        return controller != NO_PLAYER and combat_damage_dealt_by(game, condition, controller)
+
+    if kind is ConditionKind.COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE:
+        # CR 702.76a: a source that had any of this spell's creature types.
+        from ..cr700_additional_rules.cr702_cost_keyword_rules import (
+            combat_damage_by_shared_type,
+        )
+
+        return controller != NO_PLAYER and combat_damage_by_shared_type(
+            game, source, controller
+        )
 
     if kind is ConditionKind.IS_STEP:
         # CR 307.5 and friends: "activate only during your upkeep". Both halves

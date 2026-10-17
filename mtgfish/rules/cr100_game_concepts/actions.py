@@ -476,6 +476,15 @@ def _damage_player(
     if combat and player.has_lost:
         return 0
 
+    if combat:
+        # CR 702.76a, 702.173a: what dealt combat damage to a player, as it
+        # was at that moment - infect damage too.
+        from ..cr700_additional_rules.cr702_cost_keyword_rules import (
+            record_combat_damage_source,
+        )
+
+        record_combat_damage_source(game, source, source_controller)
+
     # CR 702.90c: infect damages players with poison counters instead of life.
     source_obj = game.objects.get(source)
     source_chars = game.characteristics(source_obj) if source_obj is not None else None

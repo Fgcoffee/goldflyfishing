@@ -541,6 +541,9 @@ class ObjectFilter:
     must_be_coloured: bool = False
     must_be_multicolored: bool = False
     must_be_monocolored: bool = False
+    #: CR 702.78a conspire: "creatures that each share a color with it" -
+    #: at least one color in common with the ability's source.
+    shares_color_with_source: bool = False
 
     # -- identity -----------------------------------------------------------
     named: tuple[str, ...] = ()
@@ -948,6 +951,14 @@ class ConditionKind(IntEnum):
     #: cost the spell was cast for, named by ``Condition.keyword``. An empty
     #: keyword asks whether any alternative cost was paid.
     ALTERNATIVE_COST_PAID = 24
+    #: CR 702.173a freerunning: a player was dealt combat damage this turn by
+    #: a source that, as it dealt the damage, was under your control and
+    #: matched ``filter`` (its creature types, whether it was a commander).
+    COMBAT_DAMAGE_DEALT_BY = 75
+    #: CR 702.76a prowl: a player was dealt combat damage this turn by a
+    #: source that, as it dealt the damage, was under your control and had
+    #: any of this object's creature types.
+    COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE = 76
     #: CR 702.192a: "if this is the first time a spell you control with this
     #: spell's name has resolved this game". Asked while the spell resolves,
     #: so it counts earlier resolutions only.

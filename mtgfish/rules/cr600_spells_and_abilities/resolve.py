@@ -1078,14 +1078,30 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
 
     count = _count(resolution, effect)
     spec = _token_size_now(resolution, effect.token)
+    # CR 707.2: a token copy is built from the copiable values of what it
+    # copies, one set for each object copied.
+    cards = [None]
+    if spec.copy_of is not None:
+        from ..cr700_additional_rules.cr702_cost_keyword_rules import (
+            copy_originals,
+            copy_token_card,
+        )
+
+        cards = [
+            copy_token_card(resolution.game, original, spec)
+            for original in copy_originals(resolution, effect)
+        ]
     made: list = []
-    for player_id in _players(resolution, effect):
+    for player_id, card in (
+        (player_id, card) for player_id in _players(resolution, effect) for card in cards
+    ):
         created = create_tokens(
             resolution.game,
             spec,
             player_id,
             count,
             source=resolution.source,
+            card=card,
         )
         # CR 607.2c: "tokens created with this" are these and no others.
         for token in created:
@@ -3733,6 +3749,20 @@ def _do_roll_to_visit(resolution: Resolution, effect: Effect) -> None:
         resolution.die_results = (result,)
 
 
+def _do_repeat_per_payment(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.33d, 702.157a: once for each payment of a cost."""
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import do_repeat_per_payment
+
+    do_repeat_per_payment(resolution, effect)
+
+
+def _do_give_gift(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.174b: the gift, given to the opponent it was promised to."""
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import do_give_gift
+
+    do_give_gift(resolution, effect)
+
+
 def _wants(resolution: Resolution, effect: Effect) -> bool:
     """Whether the controller takes an optional effect."""
     if effect.kind is not EffectKind.OPTIONAL and not effect.children:
@@ -3865,6 +3895,8 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.OPEN_ATTRACTION: _do_open_attraction,
     EffectKind.ROLL_TO_VISIT: _do_roll_to_visit,
     EffectKind.CHOOSE_MODE: _do_choose_mode,
+    EffectKind.REPEAT_PER_PAYMENT: _do_repeat_per_payment,
+    EffectKind.GIVE_GIFT: _do_give_gift,
 }
 
 # Every continuous-effect opcode registers a continuous effect rather than

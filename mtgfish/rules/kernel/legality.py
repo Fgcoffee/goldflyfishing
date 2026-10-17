@@ -437,16 +437,27 @@ def _affordable(
     # cast. Asked of the dry run payment itself uses.
     from ..cr600_spells_and_abilities.cr601_casting import CastError, _check_payable
 
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import chosen_cost
+
     for index, additional in enumerate(chars.additional_costs):
         if additional.optional and index not in optional:
             continue
-        # CR 601.2f: an announced optional cost adds its mana to the total.
-        cost = cost.plus(additional.cost.mana_component)
-        for component in additional.cost.non_mana_components:
+        # CR 601.2f: an announced optional cost adds its mana to the total -
+        # for a cost written as a choice, the choice that would be paid.
+        charged = chosen_cost(game, player_id, additional.cost, obj)
+        cost = cost.plus(charged.mana_component)
+        for component in charged.non_mana_components:
             try:
                 _check_payable(game, player_id, component, obj, spell=obj)
             except CastError:
                 return False
+
+    # CR 702.172a: a spree spell costs at least its cheapest mode.
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import cheapest_mode_cost
+
+    cheapest = cheapest_mode_cost(game, obj)
+    if cheapest is not None:
+        cost = cost.plus(cheapest.mana_component)
 
     increase = sum(cost_increases(game, obj, player_id))
     if zone is Zone.COMMAND and obj.is_commander:
