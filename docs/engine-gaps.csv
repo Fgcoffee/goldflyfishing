@@ -39,192 +39,6 @@ Tithing Blade // Consuming Sepulcher,4761,False,engine,Craft,missing,no craft co
 Unstable Glyphbridge // Sandswirl Wanderglyph,8403,False,engine,Craft,missing,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Visage of Dread // Dread Osseosaur,19113,False,engine,Craft,missing,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
 Waterlogged Hulk // Watertight Gondola,16444,False,engine,Craft,missing,no craft cost (exiling materials) or return-transformed,pay nothing: put a +1/+1 counter on this
-A-Capenna Express,,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Adrestia,8468,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Adventurer's Airship,10751,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Aerial Surveyor,5034,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Aethersphere Harvester,13897,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Air Response Unit,17872,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Apocalypse Runner,20414,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Aradara Express,14955,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Avengers Quinjet,14500,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Balamb Garden, SeeD Academy // Balamb Garden, Airborne",6342,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Ballista Charger,20297,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Bespoke Battlewagon,6570,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Bessie, the Doctor's Roadster",11026,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Big Wheel,29012,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Bomat Bazaar Barge,15013,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Boommobile,13585,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Boosted Sloop,10439,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Broadcast Rambler,17855,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Brotherhood Vertibird,4815,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Brute Suit,16768,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Burner Rocket,16007,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Capenna Express,23952,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Captain America's Motorcycle,28524,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Careening Mine Cart,8302,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Cargo Ship,10826,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Carrion Cruiser,15101,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Clamorous Ironclad,13623,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Cloudspire Skycycle,17543,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Clown Car,3954,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Colossal Plow,8767,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Conqueror's Galleon // Conqueror's Foothold,8602,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Consulate Dreadnought,9160,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Cosima, God of the Voyage // The Omenkeel",5293,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Cryptcaller Chariot,4502,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Cultivator's Caravan,2918,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Cybership,5793,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Damocles Base, Sword of Kang",15462,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Daredevil Dragster,19764,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Debris Beetle,22655,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Deluxe Dragster,7075,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Demolition Stomper,16157,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Demonic Junker,4282,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Dependable Quinjet,15988,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Detention Chariot,15337,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Dodgy Jalopy,17323,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Dragonfly Suit,19089,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Dreadmobile,19597,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Dune Drifter,18839,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Dusk Legion Dreadnought,20360,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Earthrumbler,14784,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Enchanted Carriage,18725,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Esika's Chariot,3017,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Fell Flagship,12441,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Filigree Racer,15068,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Fire Nation Warship,17837,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Fleetwheel Cruiser,13411,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Flywheel Racer,9667,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Foreboding Steamboat,15523,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Funeral Longboat,20541,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Futurist Sentinel,19215,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Gastal Thrillroller,15005,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Getaway Car,16649,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Ghost Ark,13628,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Gilded Assault Cart,20393,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Golden Argosy,6044,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Goliath Truck,13827,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Great Gilded Boat,18518,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Grond, the Gatebreaker",15745,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Guidelight Pathmaker,9563,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Haunted Hellride,19185,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Heart of Kiran,14459,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Hedge Shredder,1257,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-High-Speed Hoverbike,9586,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Hoard Hauler,5134,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Hulldrifter,10775,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Imperial Recovery Unit,11751,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Imposter Mech,2225,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Invasion of Kaladesh // Aetherwing, Golden-Scale Flagship",14763,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Irontread Crusher,21921,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Jackdaw,6804,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Knight Paladin,5827,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Kylox's Voltstrider,22709,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Lifecraft Engine,5873,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Lumbering Worldwagon,4176,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Luxurious Locomotive,8209,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Magitek Armor,19709,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Magmatic Galleon,7368,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Marauding Dreadship,23186,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Marshals' Pathcruiser,26348,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mechtitan Core,4496,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Meldweb Strider,25119,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Midnight Crusader Shuttle,8164,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Midnight Mangler,16490,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mighty Servant of Leuk-o,5987,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mindlink Mech,11636,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mizzium Tank,18097,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mobile Garrison,10703,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mobile Homestead,12230,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mobilizer Mech,5370,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mole Module,11831,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mukotai Soulripper,16671,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Mysterious Limousine,14225,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-N'Yami-Class Mother Ship,12067,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Nautiloid Ship,3224,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Necron Monolith,10973,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Night Scythe,13575,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Ovalchase Dragster,17158,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Parhelion II,3213,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Passenger Ferry,17911,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Peacewalker Colossus,4683,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Phoenix Fleet Airship,9352,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Possession Engine,10152,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Prodigy's Prototype,6982,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Protean War Engine,,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-RMS Titanic,4587,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Raiders' Karve,9569,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Rangers' Aetherhive,22234,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Rangers' Refueler,18205,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Reaver Titan,3044,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Reckoner Bankbuster,3733,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Recon Craft Theta,5920,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Renegade Freighter,18922,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Ribskiff,16195,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Ripclaw Wrangler,18678,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Rocketeer Boostbuggy,13344,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Rolling Hamsphere,4195,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Rover Blades,12076,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Royal Talon Fighter Jet,14045,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-S.H.I.E.L.D. Flying Car,20455,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-S.H.I.E.L.D. Helicarrier,22622,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Salvation Engine,3786,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Shadowed Caravel,20651,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Shorikai, Genesis Engine",2305,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Sidequest: Card Collection // Magicked Card,18901,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Silent Submersible,16101,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Sky Cycle,28036,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Sky Skiff,18614,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Skybox Ferry,17443,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Skyseer's Chariot,17618,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"Skysovereign, Consul Flagship",2697,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Sleek Schooner,21162,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Smogbelcher Chariot,,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Smoldering Stagecoach,16011,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Smuggler's Buggy,10299,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Smuggler's Copter,1900,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Soul Shredder,,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Spider-Mobile,15938,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Spire Mechcycle,15397,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Spotcycle Scouter,17820,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Spring-Loaded Sawblades // Bladewheel Chariot,14255,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Strixhaven Skycoach,19192,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Subterranean Schooner,8358,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Subway Train,17527,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Support Skyforge,,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Surgehacker Mech,4694,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-TARDIS,7394,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Belligerent,6832,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"The Falcon, Airship Restored",8849,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Fire Nation Drill,8081,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Indomitable,2359,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Last Ride,15602,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Lunar Whale,10967,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Prima Vista,19636,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-"The Prydwen, Steel Flagship",6823,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Regalia,2512,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-The Thanos-Copter,15165,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Thopter Fabricator,4250,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Thunderhawk Gunship,3622,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Thundering Broodwagon,23240,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Thundering Chariot,20582,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Thunderous Velocipede,6816,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Thundersteel Colossus,11344,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Tundra Tank,18366,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Turtle Blimp,23036,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Turtle Van,15160,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Unidentified Hovership,6974,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Unlicensed Hearse,3883,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Untethered Express,13065,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Valor's Flagship,7172,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Veloheart Bike,12363,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Vibranium Mining Mech,13924,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Voyager Glidecar,14253,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-War Balloon,18251,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Waterlogged Hulk // Watertight Gondola,16444,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-Weatherlight,2478,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
-_____ _____ Rocketship,26434,False,engine,Crew,missing,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
 Creative Technique,4747,False,engine,Demonstrate,missing,no way to copy a spell for another player,"you may copy it, then you copy it again"
 Excavation Technique,12063,False,engine,Demonstrate,missing,no way to copy a spell for another player,"you may copy it, then you copy it again"
 Healing Technique,11295,False,engine,Demonstrate,missing,no way to copy a spell for another player,"you may copy it, then you copy it again"
@@ -356,38 +170,6 @@ Super Combo,9058,False,engine,Replicate,missing,copying a spell does not let the
 Thunderheads,29871,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Train of Thought,21630,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Vacuumelt,29666,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Alacrian Jaguar,22043,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Archmage's Newt,13503,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Autarch Mammoth,18583,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Bounding Felidar,11101,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Bridled Bighorn,18288,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Brightfield Glider,19973,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Brightfield Mustang,15822,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Bulwark Ox,6980,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-"Calamity, Galloping Inferno",6456,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Caustic Bronco,6579,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Congregation Gryff,17295,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-District Mascot,6928,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Dracosaur Auxiliary,19863,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Drover Grizzly,10331,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-"Fortune, Loyal Steed",8070,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Giant Beaver,18854,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Gila Courser,16746,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Gilded Ghoda,13336,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Gloryheath Lynx,11552,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Guardian Sunmare,7991,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-"Lagorin, Soul of Alacria",14297,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Ornery Tumblewagg,5044,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Quilled Charger,25867,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Rambling Possum,20961,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Routeway Moose,,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Seraphic Steed,11647,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Stubborn Burrowfiend,20235,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Switchgrass Grazer,,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-"The Gitrog, Ravenous Ride",4237,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Trained Arynx,19674,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Unswerving Sloth,16076,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
-Venomsac Lagac,19205,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
 Breathkeeper Seraph,8339,False,engine,Soulbond,missing,no paired state between two creatures,attaches to every other creature you control
 Deadeye Navigator,1482,False,engine,Soulbond,missing,no paired state between two creatures,attaches to every other creature you control
 Diregraf Escort,29410,False,engine,Soulbond,missing,no paired state between two creatures,attaches to every other creature you control
@@ -1024,6 +806,192 @@ Voidcalled Devotee,,True,engine,Warp,suspect,"the cost can be paid; the casting 
 Weftblade Enhancer,18968,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Weftstalker Ardent,1430,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Zoanthrope,6891,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
+A-Capenna Express,,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Adrestia,8468,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Adventurer's Airship,10751,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Aerial Surveyor,5034,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Aethersphere Harvester,13897,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Air Response Unit,17872,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Apocalypse Runner,20414,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Aradara Express,14955,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Avengers Quinjet,14500,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Balamb Garden, SeeD Academy // Balamb Garden, Airborne",6342,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Ballista Charger,20297,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Bespoke Battlewagon,6570,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Bessie, the Doctor's Roadster",11026,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Big Wheel,29012,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Bomat Bazaar Barge,15013,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Boommobile,13585,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Boosted Sloop,10439,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Broadcast Rambler,17855,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Brotherhood Vertibird,4815,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Brute Suit,16768,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Burner Rocket,16007,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Capenna Express,23952,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Captain America's Motorcycle,28524,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Careening Mine Cart,8302,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Cargo Ship,10826,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Carrion Cruiser,15101,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Clamorous Ironclad,13623,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Cloudspire Skycycle,17543,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Clown Car,3954,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Colossal Plow,8767,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Conqueror's Galleon // Conqueror's Foothold,8602,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Consulate Dreadnought,9160,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Cosima, God of the Voyage // The Omenkeel",5293,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Cryptcaller Chariot,4502,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Cultivator's Caravan,2918,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Cybership,5793,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Damocles Base, Sword of Kang",15462,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Daredevil Dragster,19764,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Debris Beetle,22655,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Deluxe Dragster,7075,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Demolition Stomper,16157,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Demonic Junker,4282,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Dependable Quinjet,15988,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Detention Chariot,15337,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Dodgy Jalopy,17323,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Dragonfly Suit,19089,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Dreadmobile,19597,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Dune Drifter,18839,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Dusk Legion Dreadnought,20360,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Earthrumbler,14784,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Enchanted Carriage,18725,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Esika's Chariot,3017,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Fell Flagship,12441,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Filigree Racer,15068,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Fire Nation Warship,17837,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Fleetwheel Cruiser,13411,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Flywheel Racer,9667,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Foreboding Steamboat,15523,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Funeral Longboat,20541,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Futurist Sentinel,19215,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Gastal Thrillroller,15005,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Getaway Car,16649,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Ghost Ark,13628,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Gilded Assault Cart,20393,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Golden Argosy,6044,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Goliath Truck,13827,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Great Gilded Boat,18518,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Grond, the Gatebreaker",15745,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Guidelight Pathmaker,9563,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Haunted Hellride,19185,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Heart of Kiran,14459,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Hedge Shredder,1257,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+High-Speed Hoverbike,9586,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Hoard Hauler,5134,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Hulldrifter,10775,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Imperial Recovery Unit,11751,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Imposter Mech,2225,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Invasion of Kaladesh // Aetherwing, Golden-Scale Flagship",14763,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Irontread Crusher,21921,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Jackdaw,6804,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Knight Paladin,5827,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Kylox's Voltstrider,22709,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Lifecraft Engine,5873,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Lumbering Worldwagon,4176,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Luxurious Locomotive,8209,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Magitek Armor,19709,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Magmatic Galleon,7368,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Marauding Dreadship,23186,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Marshals' Pathcruiser,26348,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mechtitan Core,4496,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Meldweb Strider,25119,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Midnight Crusader Shuttle,8164,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Midnight Mangler,16490,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mighty Servant of Leuk-o,5987,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mindlink Mech,11636,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mizzium Tank,18097,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mobile Garrison,10703,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mobile Homestead,12230,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mobilizer Mech,5370,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mole Module,11831,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mukotai Soulripper,16671,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Mysterious Limousine,14225,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+N'Yami-Class Mother Ship,12067,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Nautiloid Ship,3224,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Necron Monolith,10973,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Night Scythe,13575,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Ovalchase Dragster,17158,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Parhelion II,3213,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Passenger Ferry,17911,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Peacewalker Colossus,4683,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Phoenix Fleet Airship,9352,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Possession Engine,10152,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Prodigy's Prototype,6982,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Protean War Engine,,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+RMS Titanic,4587,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Raiders' Karve,9569,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Rangers' Aetherhive,22234,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Rangers' Refueler,18205,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Reaver Titan,3044,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Reckoner Bankbuster,3733,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Recon Craft Theta,5920,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Renegade Freighter,18922,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Ribskiff,16195,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Ripclaw Wrangler,18678,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Rocketeer Boostbuggy,13344,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Rolling Hamsphere,4195,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Rover Blades,12076,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Royal Talon Fighter Jet,14045,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+S.H.I.E.L.D. Flying Car,20455,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+S.H.I.E.L.D. Helicarrier,22622,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Salvation Engine,3786,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Shadowed Caravel,20651,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Shorikai, Genesis Engine",2305,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Sidequest: Card Collection // Magicked Card,18901,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Silent Submersible,16101,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Sky Cycle,28036,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Sky Skiff,18614,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Skybox Ferry,17443,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Skyseer's Chariot,17618,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"Skysovereign, Consul Flagship",2697,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Sleek Schooner,21162,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Smogbelcher Chariot,,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Smoldering Stagecoach,16011,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Smuggler's Buggy,10299,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Smuggler's Copter,1900,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Soul Shredder,,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Spider-Mobile,15938,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Spire Mechcycle,15397,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Spotcycle Scouter,17820,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Spring-Loaded Sawblades // Bladewheel Chariot,14255,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Strixhaven Skycoach,19192,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Subterranean Schooner,8358,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Subway Train,17527,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Support Skyforge,,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Surgehacker Mech,4694,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+TARDIS,7394,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Belligerent,6832,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"The Falcon, Airship Restored",8849,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Fire Nation Drill,8081,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Indomitable,2359,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Last Ride,15602,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Lunar Whale,10967,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Prima Vista,19636,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+"The Prydwen, Steel Flagship",6823,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Regalia,2512,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+The Thanos-Copter,15165,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Thopter Fabricator,4250,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Thunderhawk Gunship,3622,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Thundering Broodwagon,23240,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Thundering Chariot,20582,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Thunderous Velocipede,6816,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Thundersteel Colossus,11344,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Tundra Tank,18366,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Turtle Blimp,23036,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Turtle Van,15160,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Unidentified Hovership,6974,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Unlicensed Hearse,3883,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Untethered Express,13065,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Valor's Flagship,7172,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Veloheart Bike,12363,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Vibranium Mining Mech,13924,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Voyager Glidecar,14253,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+War Balloon,18251,True,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Waterlogged Hulk // Watertight Gondola,16444,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+Weatherlight,2478,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
+_____ _____ Rocketship,26434,False,engine,Crew,wrong,no 'creatures with total power N' cost; the builder tapped N,"taps N creatures, whatever their power"
 Abandon the Post,17314,True,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Acorn Harvest,11997,True,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Alter Reality,15438,False,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
@@ -1235,6 +1203,38 @@ Wild Hunger,24916,True,engine,Flashback,wrong,casting from the graveyard works; 
 Winterthorn Blessing,21272,False,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Wreck and Rebuild,8995,True,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
 Wurmquake,13865,False,engine,Flashback,wrong,casting from the graveyard works; the rule that exiles the spell afterwards (CR 702.34a) is not applied,"cast from graveyard and returns to the graveyard, castable again forever"
+Alacrian Jaguar,22043,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Archmage's Newt,13503,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Autarch Mammoth,18583,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Bounding Felidar,11101,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Bridled Bighorn,18288,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Brightfield Glider,19973,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Brightfield Mustang,15822,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Bulwark Ox,6980,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+"Calamity, Galloping Inferno",6456,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Caustic Bronco,6579,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Congregation Gryff,17295,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+District Mascot,6928,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Dracosaur Auxiliary,19863,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Drover Grizzly,10331,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+"Fortune, Loyal Steed",8070,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Giant Beaver,18854,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Gila Courser,16746,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Gilded Ghoda,13336,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Gloryheath Lynx,11552,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Guardian Sunmare,7991,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+"Lagorin, Soul of Alacria",14297,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Ornery Tumblewagg,5044,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Quilled Charger,25867,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Rambling Possum,20961,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Routeway Moose,,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Seraphic Steed,11647,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Stubborn Burrowfiend,20235,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Switchgrass Grazer,,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+"The Gitrog, Ravenous Ride",4237,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Trained Arynx,19674,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Unswerving Sloth,16076,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
+Venomsac Lagac,19205,False,engine,Saddle,wrong,no saddled state,pay nothing: put N +1/+1 counters on this
 Appeal // Authority,22592,False,parser,Aftermath,missing,graveyard casting exists; the zone was set the wrong way round,castable from hand and not from the graveyard
 Claim // Fame,20521,False,parser,Aftermath,missing,graveyard casting exists; the zone was set the wrong way round,castable from hand and not from the graveyard
 Commit // Memory,3294,False,parser,Aftermath,missing,graveyard casting exists; the zone was set the wrong way round,castable from hand and not from the graveyard
@@ -1447,23 +1447,6 @@ Peema Outrider,27665,False,parser,Fabricate,missing,choose-one modes exist; the 
 Propeller Pioneer,28139,False,parser,Fabricate,missing,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
 Visionary Augmenter,25120,False,parser,Fabricate,missing,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
 Weaponcraft Enthusiast,12277,False,parser,Fabricate,missing,choose-one modes exist; the token mode was dropped,always N +1/+1 counters
-Ancient Hydra,30596,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Blastoderm,29741,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Cloudskate,31239,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Defender en-Vec,31495,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Jolting Merfolk,30324,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Parallax Dementia,28095,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Parallax Nexus,28785,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Parallax Tide,21115,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Parallax Wave,12116,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Phyrexian Prowler,31149,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Rejuvenation Chamber,31046,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Rusting Golem,30793,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Saproling Burst,19100,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Skyshroud Behemoth,30720,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Skyshroud Ridgeback,31562,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Tangle Wire,8327,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
-Woodripper,30430,False,parser,Fading,missing,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
 Barbed Batterfist,14381,False,parser,For Mirrodin!,missing,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Blade of Shared Souls,12229,False,parser,For Mirrodin!,missing,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
 Bladehold Cleaver,,False,parser,For Mirrodin!,missing,create token and attach exist; the token count was 0,creates no Rebel (token count 0)
@@ -1561,30 +1544,6 @@ Sickleslicer,17886,False,parser,Living weapon,missing,create token and attach ex
 Skinwing,16613,False,parser,Living weapon,missing,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
 Strandwalker,19352,False,parser,Living weapon,missing,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
 Tangleweave Armor,12150,False,parser,Living weapon,missing,create token and attach exist; the token count was 0,creates no Germ (token count 0) and attaches to nothing
-Arcbound Bruiser,14785,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Condor,9777,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Crusher,6021,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Fiend,13156,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Hybrid,12893,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Javelineer,10770,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Lancer,15911,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Mouser,8424,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Overseer,11211,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Prototype,11936,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Ravager,3692,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Reclaimer,7485,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Shikari,8086,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Slasher,12322,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Slith,9027,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Stinger,8261,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Tracker,9785,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Wanderer,20114,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Whelp,13250,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Arcbound Worker,7855,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-"Blaster, Combat DJ // Blaster, Morale Booster",13947,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Power Depot,1983,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-Scrapyard Recombiner,6350,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
-"Zabaz, the Glimmerwasp",11869,False,parser,Modular,missing,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
 Controvert,25825,False,parser,Recover,missing,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
 Garza's Assassin,18942,False,parser,Recover,missing,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
 Grim Harvest,20120,False,parser,Recover,missing,"graveyard triggers and pay-or-else exist; wrong trigger, no cost","when a creature you control dies, you may return this to hand for free"
@@ -1791,6 +1750,7 @@ Avarice Amulet,13217,False,parser,refused: grants a triggered ability the engine
 Bail Out,,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,"Until end of turn, target creature you control gains ""When this creature dies, return it to the battlefield tapped under"
 Bear Umbra,880,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,"Enchanted creature gets +2/+2 and has ""Whenever this creature attacks, untap all lands you control."""
 Biorganic Carapace,8385,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,"Equipped creature gets +2/+2 and has ""Whenever this creature deals combat damage to a player, draw a card for each modif"
+"Blaster, Combat DJ // Blaster, Morale Booster",13947,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,Other nontoken artifact creatures and Vehicles you control have modular 1.
 Bloodcurdler,27002,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,"As long as there are seven or more cards in your graveyard, this creature gets +1/+1 and has ""At the beginning of your e"
 Boneshard Slasher,28788,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,"As long as there are seven or more cards in your graveyard, this creature gets +2/+2 and has ""When this creature becomes"
 "Bria, Riptide Rogue",3069,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,Other creatures you control have prowess.
@@ -2067,3 +2027,44 @@ Nicol Bolas,12408,False,parser,refused: unbound player reference,missing,a playe
 Rain of Gore,19235,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If a spell or ability would cause its controller to gain life, that player loses that much life instead."
 "Szadek, Lord of Secrets",18617,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If this would deal combat damage to a player, instead put that many +1/+1 counters on this and that player mills that ma"
 Undead Alchemist,6149,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If a Zombie you control would deal combat damage to a player, instead that player mills that many cards."
+Ancient Hydra,30596,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Blastoderm,29741,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Cloudskate,31239,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Defender en-Vec,31495,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Jolting Merfolk,30324,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Dementia,28095,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Nexus,28785,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Tide,21115,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Parallax Wave,12116,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Phyrexian Prowler,31149,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Rejuvenation Chamber,31046,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Rusting Golem,30793,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Saproling Burst,19100,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Skyshroud Behemoth,30720,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Skyshroud Ridgeback,31562,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Tangle Wire,8327,False,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Woodripper,30430,True,parser,Fading,wrong,"upkeep triggers, counter removal and sacrifice exist; the sacrifice condition is off by one upkeep","removes a counter each upkeep and sacrifices as the last one comes off, an upkeep early"
+Arcbound Bruiser,14785,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Condor,9777,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Crusher,6021,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Fiend,13156,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Hybrid,12893,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Javelineer,10770,False,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Lancer,15911,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Mouser,8424,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Overseer,11211,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Prototype,11936,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Ravager,3692,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Reclaimer,7485,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Shikari,8086,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Slasher,12322,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Slith,9027,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Stinger,8261,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Tracker,9785,False,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Wanderer,20114,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Whelp,13250,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Arcbound Worker,7855,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+"Blaster, Combat DJ // Blaster, Morale Booster",13947,False,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Power Depot,1983,False,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+Scrapyard Recombiner,6350,True,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard
+"Zabaz, the Glimmerwasp",11869,False,parser,Modular,wrong,last-known information exists for sacrificed objects; the dies trigger reads the counters off the card in the graveyard,moves none: the count is read from the card in the graveyard

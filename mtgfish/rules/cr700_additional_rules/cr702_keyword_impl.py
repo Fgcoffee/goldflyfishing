@@ -122,7 +122,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     " was every creature you control",
     "living weapon": "CR 702.92a: create a 0/0 Germ and attach to it; created no Germ",
     "for mirrodin!": "CR 702.163a: create a 2/2 Rebel and attach to it; created no Rebel",
-    "saddle": "CR 702.171a: tap creatures with total power N; was a free +1/+1 counter",
     "craft": "CR 702.167a: exile with materials, return transformed; was a +1/+1 counter",
     "harmonize": "CR 702.180a: cast from the graveyard; was a +1/+1 counter",
     "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
@@ -133,13 +132,9 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "backup": "CR 702.165a: counters on target creature, which gains abilities;"
     " was counters on this",
     "fabricate": "CR 702.123a: counters or Servo tokens; was always counters",
-    "modular": "CR 702.43a with 608.2h: move the counters it had on the battlefield;"
-    " the dies trigger counted them on the card in the graveyard and moved none",
     "graft": "CR 702.58a: also moves counters onto entering creatures; was counters only",
     "sunburst": "CR 702.44a: a counter per color spent; was always one",
     "soulbond": "CR 702.95a: pair with one creature; was attached to every creature",
-    "fading": "CR 702.32a: sacrifice when a counter can't be removed;"
-    " was sacrificed as the last one came off, an upkeep early",
     "compleated": "CR 702.150a: fewer loyalty per Phyrexian mana paid with life;"
     " was a static removing X loyalty",
     "haunt": "CR 702.55a: exile haunting a creature, trigger again; was exile only",
@@ -156,8 +151,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     " was any attack",
     "evolve": "CR 702.100a: only for a bigger creature; was any creature",
     # Found by the auditing session, checked against the builders:
-    "crew": "CR 702.122a: tap other creatures with total power N or greater;"
-    " was tap N creatures (the cost system has no total-power cost yet)",
     "jump-start": "CR 702.133a: cast from the graveyard paying the mana cost and"
     " discarding a card, then exile; was a free cast from the graveyard",
     "aftermath": "CR 702.127a: cast this half only from a graveyard, then exile;"
@@ -918,14 +911,29 @@ def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
 # ---------------------------------------------------------------------------
 
 
-def _dies_trigger(instance: KeywordInstance, *effects: Effect) -> Ability:
+def _dies_trigger(
+    instance: KeywordInstance, *effects: Effect, look_back: bool = False
+) -> Ability:
+    """A "when this dies" keyword trigger.
+
+    By default it also functions from the graveyard, and its source is the
+    card there: what Persist and Undying return is that card. ``look_back``
+    instead triggers from the object as it last existed on the battlefield
+    (CR 603.10a), which is what a trigger needs when it reads what the
+    permanent had - Modular's counters are on that object, not on the
+    graveyard card that replaced it (CR 608.2h).
+    """
     return Ability.triggered(
         TriggerCondition(
             event_kinds=frozenset({EventKind.DIES}),
             subject=ObjectFilter(source_only=True, zones=frozenset()),
-            # A dies trigger has to function from the graveyard as well, since
-            # that is where the object is by the time it fires (CR 603.6e).
-            functions_in=frozenset({Zone.BATTLEFIELD, Zone.GRAVEYARD}),
+            # Looking back, the engine finds it through the departed object
+            # (cr603_triggers._collect_departed_card), as it does every parsed
+            # "when this dies"; otherwise it also functions from the
+            # graveyard, where the object is by the time it fires (603.6e).
+            functions_in=(
+                BATTLEFIELD if look_back else frozenset({Zone.BATTLEFIELD, Zone.GRAVEYARD})
+            ),
             uses_last_known_information=True,
             text=f"when this dies ({instance.name})",
         ),
@@ -1053,18 +1061,27 @@ def _modular(instance: KeywordInstance) -> tuple[Ability, ...]:
     tuple.
     """
     amount = Value.of(max(1, instance.amount))
+    # "you may put" (CR 702.43a): with only an opponent's artifact creature
+    # to target, moving the counters is a choice, not an obligation.
     move = _dies_trigger(
         instance,
         Effect(
-            EffectKind.ADD_COUNTERS,
-            targets=ObjectFilter(
-                types_all=CardType.ARTIFACT | CardType.CREATURE,
-                other_than_source=True,
+            EffectKind.OPTIONAL,
+            children=(
+                Effect(
+                    EffectKind.ADD_COUNTERS,
+                    targets=ObjectFilter(
+                        types_all=CardType.ARTIFACT | CardType.CREATURE,
+                        other_than_source=True,
+                    ),
+                    counter_type="+1/+1",
+                    amount=Value(ValueKind.COUNTERS, counter_type="+1/+1", of_affected=False),
+                    is_targeted=True,
+                ),
             ),
-            counter_type="+1/+1",
-            amount=Value(ValueKind.COUNTERS, counter_type="+1/+1", of_affected=False),
-            is_targeted=True,
+            text="you may move its +1/+1 counters to target artifact creature",
         ),
+        look_back=True,
     )
     return (_enters_with_counters(instance, "+1/+1", amount), move)
 
@@ -1079,10 +1096,45 @@ def _graft(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Fading")
 def _fading(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.32a: enters with N fade counters; upkeep removes one or sacrifices."""
+    """CR 702.32a: "This permanent enters with N fade counters on it" and "At
+    the beginning of your upkeep, remove a fade counter from this permanent.
+    If you can't, sacrifice the permanent."
+
+    Not Vanishing's shape: Vanishing sacrifices as the last counter comes off,
+    Fading only when there is none left to remove - an upkeep later, so
+    Blastoderm (fading 3) attacks for three turns, not two.
+    """
+    none_left = Condition(
+        ConditionKind.OBJECT_COUNT,
+        filter=ObjectFilter(source_only=True, has_counter="fade"),
+        constraint=NumericConstraint(Comparison.EQ, Value.of(0)),
+        text="if you can't remove a fade counter",
+    )
+    upkeep = Ability.triggered(
+        TriggerCondition(
+            event_kinds=frozenset({EventKind.UPKEEP}),
+            players=YOU,
+            functions_in=BATTLEFIELD,
+            text="at the beginning of your upkeep",
+        ),
+        Effect(
+            EffectKind.CONDITIONAL,
+            condition=none_left,
+            children=(Effect(EffectKind.SACRIFICE, text="sacrifice this permanent"),),
+            otherwise=(
+                Effect(
+                    EffectKind.REMOVE_COUNTERS,
+                    counter_type="fade",
+                    amount=Value.of(1),
+                    text="remove a fade counter from this permanent",
+                ),
+            ),
+        ),
+        text=f"{instance.name} upkeep",
+    )
     return (
         _enters_with_counters(instance, "fade", Value.of(max(1, instance.amount))),
-        _upkeep_counter_sacrifice(instance, "fade"),
+        upkeep,
     )
 
 
@@ -1359,9 +1411,35 @@ def _cycling(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+#: CR 702.122a / 702.171a: "Tap any number of OTHER untapped creatures you
+#: control with total power N or greater". Without "other", a crewed Vehicle
+#: - a creature by then - could tap itself to pay its own crew cost. Untapped
+#: is the cost's own requirement (TAP_OTHER only taps untapped permanents).
+_OTHER_CREATURES_YOU_CONTROL = ObjectFilter(
+    types_all=CardType.CREATURE,
+    controller=ControllerRelation.YOU,
+    other_than_source=True,
+)
+
+
+def _tap_total_power(n: int, verb: str) -> Cost:
+    return Cost(
+        (
+            CostComponent(
+                CostKind.TAP_OTHER,
+                amount=Value.of(max(1, n)),
+                filter=_OTHER_CREATURES_YOU_CONTROL,
+                total_power=True,
+                text=f"tap other untapped creatures you control with total power {n} or greater"
+                f" ({verb})",
+            ),
+        )
+    )
+
+
 @register("Crew")
 def _crew(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.122a: tap creatures with total power N to animate the Vehicle."""
+    """CR 702.122a: tap other creatures with total power N to animate the Vehicle."""
     return (
         Ability(
             AbilityKind.ACTIVATED,
@@ -1373,18 +1451,28 @@ def _crew(instance: KeywordInstance) -> tuple[Ability, ...]:
                     text="becomes an artifact creature until end of turn",
                 ),
             ),
-            cost=Cost(
-                (
-                    CostComponent(
-                        CostKind.TAP_OTHER,
-                        amount=Value.of(max(1, instance.amount)),
-                        filter=CREATURES_YOU_CONTROL,
-                        text=f"tap creatures with total power {instance.amount}",
-                    ),
-                )
-            ),
+            cost=_tap_total_power(instance.amount, "crew"),
             keyword="Crew",
             text=instance.text or f"Crew {instance.amount}",
+        ),
+    )
+
+
+@register("Saddle")
+def _saddle(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.171a: "Tap any number of other untapped creatures you control
+    with total power N or greater: This permanent becomes saddled until end of
+    turn. Activate only as a sorcery." The saddled designation (702.171b) is
+    the engine's; "attacks while saddled" reads ConditionKind.IS_SADDLED.
+    """
+    return (
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(Effect(EffectKind.BECOME_SADDLED, text="becomes saddled until end of turn"),),
+            cost=_tap_total_power(instance.amount, "saddle"),
+            timing=Timing.SORCERY,
+            keyword="Saddle",
+            text=instance.text or f"Saddle {instance.amount}",
         ),
     )
 
@@ -2192,7 +2280,7 @@ def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Outlast", "Level Up", "Boast", "Exhaust", "Saddle",
+@register("Outlast", "Level Up", "Boast", "Exhaust",
           "Harmonize", "Craft", "Job select", "Specialize")
 def _counter_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Activated keywords whose effect is putting counters on this permanent."""

@@ -60,12 +60,6 @@ def resolve_everything(box):
         box.resolve_top()
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="the parser refuses abilities that grant a triggered ability "
-    "(parser/compile.py _grants_a_trigger) until it has checked them against "
-    "this fix; remove this marker when it lifts the refusal",
-)
 def test_a_granted_dies_trigger_returns_the_creature(box):
     box.put("Grizzly Bears", "battlefield", 0)
     box.put("Abnormal Endurance", "hand", 0)
