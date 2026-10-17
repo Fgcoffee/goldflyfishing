@@ -167,6 +167,10 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     from ..cr300_card_types.cr300_card_types import cast_mode_for_face
 
     spell.cast_mode = int(cast_mode_for_face(spell, action.face_index))
+    # The face was chosen after the move, and anything that looked at the
+    # board as the spell arrived saw it as its front face.
+    spell.invalidate()
+    game.invalidate_characteristics()
 
     # CR 702.36a: a morph spell is cast *face down*, as a 2/2 with no
     # characteristics of its own. That has to be true from the moment it hits

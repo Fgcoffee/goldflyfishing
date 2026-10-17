@@ -681,6 +681,9 @@ class Game:
 
         forget_designations(self, obj.id)
 
+        if from_zone is Zone.BATTLEFIELD:
+            # CR 603.10a: read before anything attached to it falls off.
+            obj.last_known_characteristics = self.characteristics(obj)
         self._detach_all(obj)
         self._remove_from_zone(obj)
 
