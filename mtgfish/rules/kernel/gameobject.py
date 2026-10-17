@@ -169,6 +169,9 @@ class GameObject:
     #: card - the chosen name may match nothing in the game, which is the
     #: whole point of naming a card your opponent has not played yet.
     chosen_name: str = ""
+    #: CR 702.174a: the opponent chosen as a gift was promised. Kept by the
+    #: permanent the spell becomes, whose gift ability gives to that player.
+    chosen_player: PlayerId = NO_PLAYER
     #: CR 715.3, 718.3, 720.3: which set of characteristics this object was
     #: played with. Chosen as the card is played and then fixed, which is why
     #: it is state rather than something recomputed - and it decides where an

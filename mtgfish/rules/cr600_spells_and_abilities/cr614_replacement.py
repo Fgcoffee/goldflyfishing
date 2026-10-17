@@ -808,6 +808,10 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
                 elif node.kind is EffectKind.TAP:
                     obj.tapped = True
                 elif node.kind is EffectKind.ADD_COUNTERS:
+                    # CR 702.54a, 702.176a: "if ..., it enters with counters"
+                    # applies only while its condition holds as it enters.
+                    if not _entry_condition_holds(game, obj, node):
+                        continue
                     add_counters(
                         game,
                         obj,
@@ -815,6 +819,16 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
                         max(1, node.amount.constant),
                         source=obj.id,
                     )
+
+
+def _entry_condition_holds(game: Game, obj, node) -> bool:
+    """Whether an "as it enters" effect's own condition holds for the
+    permanent entering, which is the object it asks about."""
+    if node.condition.is_always:
+        return True
+    from ..kernel.conditions import holds
+
+    return holds(game, node.condition, source=obj.id, controller=obj.controller)
 
 
 def _saga_enters_with_lore_counters(game: Game, obj) -> None:

@@ -175,8 +175,12 @@ def create_tokens(
     count: int = 1,
     *,
     source: ObjectId = NO_OBJECT,
+    card=None,
 ) -> list[GameObject]:
     """Create tokens on the battlefield (CR 111.1).
+
+    ``card`` is what a token copy is built from (CR 707.2), in place of the
+    spec's own definition.
 
     Returns the tokens actually created, which may be fewer than asked for -
     CR 111.5 means a prohibition on entering stops the token existing at all,
@@ -200,7 +204,8 @@ def create_tokens(
     if count <= 0:
         return []
 
-    card = build_token_card(game, spec, source)
+    if card is None:
+        card = build_token_card(game, spec, source)
     created: list[GameObject] = []
 
     for _ in range(count):

@@ -277,6 +277,16 @@ class EffectKind(IntEnum):
     #: Attractions.
     ROLL_TO_VISIT = 271
 
+    # -- cost keywords (CR 702) ---------------------------------------------
+    #: CR 702.33d, 702.157a: "for each time it was kicked", "for each time
+    #: its squad cost was paid" - ``children`` once for each payment of the
+    #: optional additional cost whose keyword is ``keywords[0]``.
+    REPEAT_PER_PAYMENT = 300
+    #: CR 702.174b: the gift - ``children`` carried out for the opponent the
+    #: gift was promised to, as "that player" (``PlayerScope.THAT_PLAYER``).
+    #: Does nothing when no gift was promised.
+    GIVE_GIFT = 301
+
     # -- digital-only mechanics (MTG Arena) ---------------------------------
     #: These are not in the Comprehensive Rules at all; they exist only on MTG
     #: Arena, whose own published descriptions are the rules they follow. See
@@ -502,6 +512,11 @@ class Effect:
     #: mechanism, just this one with weights that are not all 1. A card
     #: printing "{P}{P} -" gives that mode a 2.
     mode_weights: tuple[int, ...] = ()
+    #: CR 702.172a: spree - what each mode of a CHOOSE_MODE costs, one
+    #: ``Cost`` per child, paid as an additional cost for each mode chosen.
+    #: Empty for an ordinary modal spell. A spree spell chooses one or more
+    #: modes, so at least one is always chosen.
+    mode_costs: tuple = ()
     #: CR 700.2d: normally a mode may not be chosen twice, and some cards say
     #: otherwise in so many words ("You may choose the same mode more than
     #: once"). Every pawprint spell printed so far does.

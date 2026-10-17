@@ -37,6 +37,14 @@ def current_loyalty(obj, chars):
     return loyalty(obj, chars)
 
 
+def _shares_a_color(game: Game, chars, source: ObjectId) -> bool:
+    """CR 702.78a: whether this object has a color the source also has."""
+    obj = game.objects.get(source)
+    if obj is None:
+        return False
+    return bool(int(chars.colors) & int(game.characteristics(obj).colors))
+
+
 def matches(
     game: Game,
     obj: GameObject,
@@ -135,6 +143,8 @@ def matches(
         return False
 
     if not _colors_match(chars.colors, spec):
+        return False
+    if spec.shares_color_with_source and not _shares_a_color(game, chars, source):
         return False
 
     if spec.named and chars.name not in spec.named:

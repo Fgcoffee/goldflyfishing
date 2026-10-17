@@ -178,14 +178,27 @@ def entwined_modes(game: Game, spell: GameObject, modal: Effect | None) -> tuple
     return tuple(range(len(modal.children)))
 
 
-def put_cast_triggers(game: Game, spell: GameObject) -> None:
-    """CR 702.56a: replicate's "when you cast this spell" trigger.
+#: CR 702.56a replicate, 702.78a conspire: "when you cast this spell, if
+#: [its cost] was paid, copy it" - once for each payment.
+_COPIED_AS_CAST = {
+    "replicate": "copy it for each time its replicate cost was paid",
+    "conspire": "copy it",
+}
 
-    It copies the spell once for each time the replicate cost was paid. It
-    triggers on the cast, so it goes on the stack above the spell and can be
-    responded to.
+
+def put_cast_triggers(game: Game, spell: GameObject) -> None:
+    """CR 702.56a, 702.78a: the "when you cast this spell" copy triggers.
+
+    Replicate copies the spell once for each time its cost was paid, and
+    each paid conspire once (CR 702.78b). They trigger on the cast, so they
+    go on the stack above the spell and can be responded to.
     """
-    count = times_paid(game, spell, "replicate")
+    for keyword, text in _COPIED_AS_CAST.items():
+        _put_copy_trigger(game, spell, keyword, text)
+
+
+def _put_copy_trigger(game: Game, spell: GameObject, keyword: str, text: str) -> None:
+    count = times_paid(game, spell, keyword)
     if not count:
         return
     from ..cr600_spells_and_abilities.cr603_triggers import PendingTrigger
@@ -195,15 +208,15 @@ def put_cast_triggers(game: Game, spell: GameObject) -> None:
         TriggerCondition(
             event_kinds=frozenset({EventKind.CAST_SPELL}),
             functions_in=frozenset({Zone.STACK}),
-            text="when you cast this spell, if a replicate cost was paid for it",
+            text=f"when you cast this spell, if a {keyword} cost was paid for it",
         ),
         Effect(
             EffectKind.COPY_SPELL,
             targets=ObjectFilter(specific=(spell.id,), zones=frozenset({Zone.STACK})),
             amount=Value.of(count),
-            text="copy it for each time its replicate cost was paid",
+            text=text,
         ),
-        text="Replicate",
+        text=keyword.capitalize(),
     )
     game.pending_triggers.append(
         PendingTrigger(

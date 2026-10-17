@@ -159,6 +159,9 @@ class EventKind(IntEnum):
     #: CR 702.171a: a permanent became saddled ("whenever this becomes
     #: saddled").
     BECAME_SADDLED = 380
+    #: CR 702.174c: a player gave a gift. ``player`` is the giver and
+    #: ``data`` holds the player who received it.
+    GIFT_GIVEN = 370
 
     # -- dungeons (CR 309) --------------------------------------------------
     #: CR 309.4c: a venture marker moved into a room. ``object_id`` is the
