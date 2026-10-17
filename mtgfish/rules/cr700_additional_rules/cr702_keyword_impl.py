@@ -125,7 +125,7 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "craft": "CR 702.167a: exile with materials, return transformed; was a +1/+1 counter",
     "harmonize": "CR 702.180a: cast from the graveyard; was a +1/+1 counter",
     "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
-    "specialize": "CR 702.172a: perpetually specialize; was a +1/+1 counter",
+    "specialize": "a digital (Alchemy) mechanic, not in the CR: perpetually specialize; was a +1/+1 counter",
     "boast": "CR 702.142a: the printed ability, only if it attacked; was a +1/+1 counter",
     "amplify": "CR 702.38a: counters per revealed card; was a flat N",
     "devour": "CR 702.82a: counters per creature sacrificed; was a flat N",
@@ -150,6 +150,34 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "dethrone": "CR 702.105a: only attacking the player with the most life;"
     " was any attack",
     "evolve": "CR 702.100a: only for a bigger creature; was any creature",
+    # The auditing session's F21: counted as read, playing wrong on a board.
+    # The rules session built the engine pieces (REPEAT_PER_PAYMENT,
+    # TokenSpec.copy_of, GIVE_GIFT, combat-damage records); each comes out
+    # with a builder on them and a board test.
+    "squad": "CR 702.157a: a token copy per time the squad cost was paid;"
+    " the cost was offered and paid and no token made",
+    "offspring": "CR 702.175a: a 1/1 token copy if the offspring cost was paid;"
+    " the cost was paid and no token made",
+    "prowl": "CR 702.76a: only after a creature sharing a type dealt combat damage"
+    " to a player; was castable for the prowl cost at any time",
+    "freerunning": "CR 702.173a: only after an Assassin or your commander dealt"
+    " combat damage; was castable for the freerunning cost at any time",
+    "spectacle": "CR 702.137a: only if an opponent lost life this turn; was"
+    " castable for the spectacle cost at any time",
+    "gift": "CR 702.174a: an optional additional cost giving an opponent a gift;"
+    " was built as an alternative cost",
+    "bargain": "CR 702.166a: sacrifice an artifact, enchantment or token as an"
+    " optional additional cost; was a cost of nothing",
+    "spree": "CR 702.172a: an additional cost per chosen mode; was one free"
+    " optional cost",
+    "conspire": "CR 702.78a: tap two untapped creatures sharing a color to copy it;"
+    " was never offered",
+    "impending": "CR 702.176a: enters with N time counters and is not a creature"
+    " while it has one; entered with none, a creature at once",
+    "bloodthirst": "CR 702.54a: enters with N counters if an opponent was dealt"
+    " damage this turn; never applied",
+    "assist": "CR 702.132a: another player may pay generic mana; was a free"
+    " alternative cost",
     # Found by the auditing session, checked against the builders:
     "jump-start": "CR 702.133a: cast from the graveyard paying the mana cost and"
     " discarding a card, then exile; was a free cast from the graveyard",

@@ -19,8 +19,8 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 224 | 31 |
-| Missing, not understood | 297 | 785 |
-| Suspected, counted as read | 258 | 0 |
+| Missing, not understood | 297 | 524 |
+| Suspected, counted as read | 194 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
 first; *(read)* marks a card the parser currently counts as fully read.
@@ -112,7 +112,7 @@ Hatchery Sliver, Changing Loyalty *(read)*, Consign to Memory, Shattering Spree,
 #### Specialize (19 cards, 0 counted as read)
 
 - **Likely cause:** no specialize faces (digital)
-- **Card says:** CR 702.172a: discard a card of a color: perpetually specialize into another face
+- **Card says:** discard a card of a color: perpetually specialize into another face
 - **Engine does:** pay the cost: put a +1/+1 counter on this
 - **Evidence:** IR: ADD_COUNTERS +1/+1
 
@@ -225,14 +225,14 @@ Go Blank
 
 ### 1.c Suspected, not yet proved
 
-#### Bestow (43 cards, 21 counted as read)
+#### Bestow (43 cards, 23 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, Trickster's Elk *(read)*, Indebted Spirit, Detective's Phoenix, Chromanticore *(read)*, Glyph Elemental *(read)*, Hypnotic Siren, Nyxborn Unicorn, Celestial Archon *(read)*, Triton Wavebreaker, Kestia, the Cultivator, Hopeful Eidolon *(read)*, Thassa's Emissary, Noble Quarry, Ghostblade Eidolon *(read)*, Boon Satyr *(read)*, Flitterstep Eidolon, Baleful Eidolon *(read)*, Gnarled Scarhide, Herald of Torment *(read)*, Nyxborn Rollicker *(read)*, Leafcrown Dryad *(read)*, Heliod's Emissary, Nyxborn Shieldmate *(read)*, Observant Alseid *(read)*, Nylea's Emissary *(read)*, Purphoros's Emissary *(read)*, Spiteful Returned, Nimbus Naiad *(read)*, Mogis's Warhound, Nyxborn Wolf *(read)*, Erebos's Emissary, Cavern Lampad *(read)*, Everflame Eidolon, Nyxborn Triton *(read)*, Nyxborn Eidolon *(read)*, Spearpoint Oread *(read)*, Crystalline Nautilus, Spirespine, Sightless Brawler
+Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, Trickster's Elk *(read)*, Indebted Spirit, Detective's Phoenix, Chromanticore *(read)*, Glyph Elemental *(read)*, Hypnotic Siren, Nyxborn Unicorn *(read)*, Celestial Archon *(read)*, Triton Wavebreaker, Kestia, the Cultivator, Hopeful Eidolon *(read)*, Thassa's Emissary, Noble Quarry, Ghostblade Eidolon *(read)*, Boon Satyr *(read)*, Flitterstep Eidolon, Baleful Eidolon *(read)*, Gnarled Scarhide, Herald of Torment *(read)*, Nyxborn Rollicker *(read)*, Leafcrown Dryad *(read)*, Heliod's Emissary, Nyxborn Shieldmate *(read)*, Observant Alseid *(read)*, Nylea's Emissary *(read)*, Purphoros's Emissary *(read)*, Spiteful Returned, Nimbus Naiad *(read)*, Mogis's Warhound, Nyxborn Wolf *(read)*, Erebos's Emissary, Cavern Lampad *(read)*, Everflame Eidolon, Nyxborn Triton *(read)*, Nyxborn Eidolon *(read)*, Spearpoint Oread *(read)*, Crystalline Nautilus *(read)*, Spirespine, Sightless Brawler
 
 #### Buyback (40 cards, 30 counted as read)
 
@@ -243,23 +243,23 @@ Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, T
 
 Constant Mists *(read)*, Reiterate *(read)*, Clockspinning, Haze of Rage, Capsize *(read)*, Sprout Swarm *(read)*, Walk the Aeons, Mystic Speculation *(read)*, Forbid *(read)*, Spell Burst *(read)*, Mind Games *(read)*, Whim of Volrath, Corpse Dance, Searing Touch *(read)*, Lab Rats *(read)*, Wurmcalling *(read)*, Seething Anger *(read)*, Slaughter *(read)*, Whispers of the Muse *(read)*, Fanning the Flames *(read)*, Demonic Collusion *(read)*, Recruit the Worthy *(read)*, Shattering Pulse *(read)*, Disturbed Burial *(read)*, Allay *(read)*, Worthy Cause *(read)*, Elvish Fury *(read)*, Memory Crystal, Evincar's Justice *(read)*, Evangelize, Change of Heart *(read)*, Pegasus Stampede *(read)*, Invulnerability, Verdant Touch, Flowstone Flood *(read)*, Imps' Taunt, Anoint *(read)*, Reaping the Rewards *(read)*, Brush with Death *(read)*, Mind Peel *(read)*
 
-#### Warp (39 cards, 30 counted as read)
+#### Warp (39 cards, 31 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Exalted Sunborn *(read)*, Weftstalker Ardent *(read)*, Haliya, Guided by Light *(read)*, Starfield Vocalist *(read)*, Anticausal Vestige *(read)*, Starwinder *(read)*, Loading Zone *(read)*, Mightform Harmonizer *(read)*, Bygone Colossus *(read)*, Starfield Shepherd *(read)*, Timeline Culler, Pinnacle Emissary, Susurian Voidborn *(read)*, Eusocial Engineering *(read)*, Zoanthrope *(read)*, Broodguard Elite *(read)*, Drix Fatemaker *(read)*, Astelli Reclaimer *(read)*, Quantum Riddler, Mutalith Vortex Beast *(read)*, All-Fates Stalker *(read)*, Nova Hellkite *(read)*, Perigee Beckoner, Mechanozoa *(read)*, Rayblade Trooper *(read)*, Knight Luminary *(read)*, Germinating Wurm *(read)*, Possibility Technician, Red Tiger Mechan *(read)*, Codecracker Hound, Starbreach Whale *(read)*, Weftblade Enhancer *(read)*, Memorial Team Leader *(read)*, Sinister Cryologist *(read)*, Axavar, Fate Thief, Network Marauder, Sliver Weftwinder, Spirited Simulacrum *(read)*, Voidcalled Devotee *(read)*
+Exalted Sunborn *(read)*, Weftstalker Ardent *(read)*, Haliya, Guided by Light *(read)*, Starfield Vocalist *(read)*, Anticausal Vestige *(read)*, Starwinder *(read)*, Loading Zone *(read)*, Mightform Harmonizer *(read)*, Bygone Colossus *(read)*, Starfield Shepherd *(read)*, Timeline Culler, Pinnacle Emissary, Susurian Voidborn *(read)*, Eusocial Engineering *(read)*, Zoanthrope *(read)*, Broodguard Elite *(read)*, Drix Fatemaker *(read)*, Astelli Reclaimer *(read)*, Quantum Riddler, Mutalith Vortex Beast *(read)*, All-Fates Stalker *(read)*, Nova Hellkite *(read)*, Perigee Beckoner *(read)*, Mechanozoa *(read)*, Rayblade Trooper *(read)*, Knight Luminary *(read)*, Germinating Wurm *(read)*, Possibility Technician, Red Tiger Mechan *(read)*, Codecracker Hound, Starbreach Whale *(read)*, Weftblade Enhancer *(read)*, Memorial Team Leader *(read)*, Sinister Cryologist *(read)*, Axavar, Fate Thief, Network Marauder, Sliver Weftwinder, Spirited Simulacrum *(read)*, Voidcalled Devotee *(read)*
 
-#### Entwine (32 cards, 18 counted as read)
+#### Entwine (32 cards, 19 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Tooth and Nail *(read)*, Savage Beating, Kaya's Guile, Goblin War Party *(read)*, Unbounded Potential *(read)*, Dream's Grip *(read)*, Mirage Mockery *(read)*, Journey of Discovery, Rude Awakening, Road of Return, Reap and Sow *(read)*, Wail of the Nim *(read)*, Gravedig *(read)*, Grab the Reins, Plunge into Darkness, Promise of Power *(read)*, Temporal Cascade, Spectral Shift, Solar Tide *(read)*, Barbed Lightning *(read)*, Shriveling Rot, One Dozen Eyes *(read)*, Roar of the Kha *(read)*, Betrayal of Flesh *(read)*, Abuna's Chant *(read)*, Flourishing Strike *(read)*, Second Sight *(read)*, Incite War, Blinding Beam, Stir the Pride, Twisted Reflection, Rain of Rust *(read)*
+Tooth and Nail *(read)*, Savage Beating, Kaya's Guile, Goblin War Party *(read)*, Unbounded Potential *(read)*, Dream's Grip *(read)*, Mirage Mockery *(read)*, Journey of Discovery, Rude Awakening, Road of Return, Reap and Sow *(read)*, Wail of the Nim *(read)*, Gravedig *(read)*, Grab the Reins, Plunge into Darkness, Promise of Power *(read)*, Temporal Cascade, Spectral Shift, Solar Tide *(read)*, Barbed Lightning *(read)*, Shriveling Rot, One Dozen Eyes *(read)*, Roar of the Kha *(read)*, Betrayal of Flesh *(read)*, Abuna's Chant *(read)*, Flourishing Strike *(read)*, Second Sight *(read)*, Incite War, Blinding Beam, Stir the Pride *(read)*, Twisted Reflection, Rain of Rust *(read)*
 
 #### Splice (30 cards, 21 counted as read)
 
@@ -270,14 +270,14 @@ Tooth and Nail *(read)*, Savage Beating, Kaya's Guile, Goblin War Party *(read)*
 
 Desperate Ritual *(read)*, Goryo's Vengeance *(read)*, Fell Beast's Shriek, Veil of Secrecy, Overblaze, Blessed Breath, Reweave, Through the Breach *(read)*, Wear Away *(read)*, Psychic Puppetry *(read)*, Shifting Borders, Splicer's Skill *(read)*, Soulless Revival *(read)*, Everdream *(read)*, Evermind *(read)*, Consuming Vortex *(read)*, Spiritual Visit *(read)*, Kodama's Might *(read)*, Glacial Ray *(read)*, Horobi's Whisper *(read)*, Dampen Thought *(read)*, Into the Fray, Vital Surge *(read)*, Roar of Jukai *(read)*, Hideous Laughter *(read)*, Lifted by Clouds *(read)*, Hundred-Talon Strike *(read)*, Candles' Glow, Strange Inversion, Torrent of Stone *(read)*
 
-#### Gift (29 cards, 1 counted as read)
+#### Gift (29 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Dawn's Truce, Into the Flood Maw, Long River's Pull, Parting Gust, Starfall Invocation, Perch Protection, Wear Down, Peerless Recycling, Sazacap's Brew, Coiling Rebirth, Octomancer *(read)*, Cruelclaw's Heist, Crumb and Get It, Bilbo's Gambit, Scrapshooter, Consumed by Greed, Dewdrop Cure, Longstalk Brawl, Kitnap, Dark Apostle, Nocturnal Hunger, Valley Rally, Mind Spiral, Starforged Sword, Blooming Blast, Wildfire Howl, Archival Whorl, Dragonborn Immolator, Pool Resources
+Dawn's Truce, Into the Flood Maw, Long River's Pull, Parting Gust, Starfall Invocation, Perch Protection, Wear Down, Peerless Recycling, Sazacap's Brew, Coiling Rebirth, Octomancer, Cruelclaw's Heist, Crumb and Get It, Bilbo's Gambit, Scrapshooter, Consumed by Greed, Dewdrop Cure, Longstalk Brawl, Kitnap, Dark Apostle, Nocturnal Hunger, Valley Rally, Mind Spiral, Starforged Sword, Blooming Blast, Wildfire Howl, Archival Whorl, Dragonborn Immolator, Pool Resources
 
 #### Bargain (22 cards, 0 counted as read)
 
@@ -288,14 +288,14 @@ Dawn's Truce, Into the Flood Maw, Long River's Pull, Parting Gust, Starfall Invo
 
 Beseech the Mirror, Back for Seconds, Ice Out, Rowan's Grim Search, Realm-Scorcher Hellkite, Stonesplitter Bolt, Thunderous Debut, Farsight Ritual, Brave the Wilds, Candy Grapple, Torch the Tower, High Fae Negotiator, Archon's Glory, Tenacious Tomeseeker, Troublemaker Ouphe, Johann's Stopgap, Kellan's Lightblades, Hamlet Glutton, Agatha's Champion, Diminisher Witch, Dunbarrow Revivalist, Talion's Throneguard
 
-#### Offspring (21 cards, 16 counted as read)
+#### Offspring (21 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Coruscation Mage *(read)*, Agate Instigator *(read)*, Starscape Cleric *(read)*, Iridescent Vinelasher *(read)*, Darkstar Augur *(read)*, Tender Wildguide *(read)*, Warren Warleader, Prosperous Bandit *(read)*, Thundertrap Trainer *(read)*, Steelburr Champion *(read)*, Pawpatch Recruit, Splash Lasher *(read)*, Bushy Bodyguard *(read)*, Manifold Mouse, Thornplate Intimidator *(read)*, Flowerfoot Swordmaster, Steampath Charger *(read)*, Intrepid Rabbit *(read)*, Rust-Shield Rampager, Finch Formation *(read)*, Fountainport Charmer *(read)*
+Coruscation Mage, Agate Instigator, Starscape Cleric, Iridescent Vinelasher, Darkstar Augur, Tender Wildguide, Warren Warleader, Prosperous Bandit, Thundertrap Trainer, Steelburr Champion, Pawpatch Recruit, Splash Lasher, Bushy Bodyguard, Manifold Mouse, Thornplate Intimidator, Flowerfoot Swordmaster, Steampath Charger, Intrepid Rabbit, Rust-Shield Rampager, Finch Formation, Fountainport Charmer
 
 #### Spree (21 cards, 0 counted as read)
 
@@ -306,14 +306,14 @@ Coruscation Mage *(read)*, Agate Instigator *(read)*, Starscape Cleric *(read)*,
 
 Return the Favor, Three Steps Ahead, Great Train Heist, Insatiable Avarice, Requisition Raid, Smuggler's Surprise, Lively Dirge, Final Showdown, Rush of Dread, Trash the Town, Getaway Glamer, Shifting Grift, Dance of the Tumbleweeds, Rustler Rampage, One Last Job, Explosive Derailment, Phantom Interference, Metamorphic Blast, Jailbreak Scheme, Caught in the Crossfire, Unfortunate Accident
 
-#### Blitz (20 cards, 7 counted as read)
+#### Blitz (20 cards, 8 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Jaxis, the Troublemaker, Star Athlete, Henzie "Toolbox" Torre, Wave of Rats, Tenacious Underdog, Sabin, Master Monk, Ziatora's Envoy, Mezzio Mugger, Riveteers Requisitioner *(read)*, Night Clubber *(read)*, Caldaia Guardian *(read)*, Workshop Warchief *(read)*, Mayhem Patrol *(read)*, Pugnacious Pugilist, Plasma Jockey *(read)*, Girder Goons, Caldaia Strongarm *(read)*, Riveteers Decoy, Effluence Devourer, Riveteers Provocateur
+Jaxis, the Troublemaker *(read)*, Star Athlete, Henzie "Toolbox" Torre, Wave of Rats, Tenacious Underdog, Sabin, Master Monk, Ziatora's Envoy, Mezzio Mugger, Riveteers Requisitioner *(read)*, Night Clubber *(read)*, Caldaia Guardian *(read)*, Workshop Warchief *(read)*, Mayhem Patrol *(read)*, Pugnacious Pugilist, Plasma Jockey *(read)*, Girder Goons, Caldaia Strongarm *(read)*, Riveteers Decoy, Effluence Devourer, Riveteers Provocateur
 
 #### Multikicker (19 cards, 0 counted as read)
 
@@ -324,14 +324,14 @@ Jaxis, the Troublemaker, Star Athlete, Henzie "Toolbox" Torre, Wave of Rats, Ten
 
 Everflowing Chalice, Comet Storm, Joraga Warcaller, Marshal's Anthem, Wolfbriar Elemental, Zethi, Arcane Blademaster, Strength of the Tajuru, Skitter of Lizards, Bloodhusk Ritualist, Flametongue Yearling, Quag Vampires, Batroc the Leaper, Lightkeeper of Emeria, Gnarlid Pack, Enclave Elite, Deathforge Shaman, Spell Contortion, Apex Hawks, Voyager Drake
 
-#### Miracle (17 cards, 11 counted as read)
+#### Miracle (17 cards, 10 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Reforge the Soul *(read)*, Temporal Mastery, Metamorphosis Fanatic, Redress Fate *(read)*, Devastation Tide *(read)*, Terminus, Entreat the Angels *(read)*, Bonfire of the Damned, Zephyrim *(read)*, Triumph of Saint Katherine, Entreat the Dead *(read)*, Sister Repentia *(read)*, Revenge of the Hunted, Banishing Stroke *(read)*, Vanishment *(read)*, Thunderous Wrath *(read)*, Blessings of Nature *(read)*
+Reforge the Soul *(read)*, Temporal Mastery, Metamorphosis Fanatic, Redress Fate *(read)*, Devastation Tide *(read)*, Terminus, Entreat the Angels *(read)*, Bonfire of the Damned, Zephyrim, Triumph of Saint Katherine, Entreat the Dead *(read)*, Sister Repentia *(read)*, Revenge of the Hunted, Banishing Stroke *(read)*, Vanishment *(read)*, Thunderous Wrath *(read)*, Blessings of Nature *(read)*
 
 #### Retrace (17 cards, 12 counted as read)
 
@@ -342,14 +342,14 @@ Reforge the Soul *(read)*, Temporal Mastery, Metamorphosis Fanatic, Redress Fate
 
 Formless Genesis *(read)*, Throes of Chaos *(read)*, Embrace the Unknown, Decaying Time Loop, Waves of Aggression, Reality Scramble, Spitting Image *(read)*, Worm Harvest *(read)*, Flame Jab *(read)*, Glamerdye, Raven's Crime *(read)*, Oona's Grace *(read)*, Call the Skybreaker *(read)*, Cenn's Enlistment *(read)*, Syphon Life *(read)*, Monstrify *(read)*, Savage Conception *(read)*
 
-#### Assist (16 cards, 11 counted as read)
+#### Assist (16 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Game Plan, Play of the Game *(read)*, Out of Bounds *(read)*, The Crowd Goes Wild, Huddle Up, Gang Up *(read)*, Vampire Charmseeker *(read)*, Skystreamer *(read)*, Bring Down *(read)*, Lava-Field Overlord *(read)*, Bloodborn Scoundrels *(read)*, Fan Favorite, Charging Binox *(read)*, Magma Hellion *(read)*, Spellweaver Duo *(read)*, Dwarven Lightsmith
+Game Plan, Play of the Game, Out of Bounds, The Crowd Goes Wild, Huddle Up, Gang Up, Vampire Charmseeker, Skystreamer, Bring Down, Lava-Field Overlord, Bloodborn Scoundrels, Fan Favorite, Charging Binox, Magma Hellion, Spellweaver Duo, Dwarven Lightsmith
 
 #### Embalm (15 cards, 12 counted as read)
 
@@ -378,14 +378,14 @@ Herigast, Erupting Nullkite, Crabomination, Elder Deep-Fiend *(read)*, Decimator
 
 Slicer, Hired Muscle // Slicer, High-Speed Antagonist, Starscream, Power Hungry // Starscream, Seeker Leader, Ratchet, Field Medic // Ratchet, Rescue Racer *(read)*, Blitzwing, Cruel Tormentor // Blitzwing, Adaptive Assailant, Optimus Prime, Hero // Optimus Prime, Autobot Leader, Prowl, Stoic Strategist // Prowl, Pursuit Vehicle, Goldbug, Humanity's Ally // Goldbug, Scrappy Scout, Megatron, Tyrant // Megatron, Destructive Force, Jetfire, Ingenious Scientist // Jetfire, Air Guardian, Cyclonus, the Saboteur // Cyclonus, Cybertronian Fighter, Flamewar, Brash Veteran // Flamewar, Streetwise Operative, Arcee, Sharpshooter // Arcee, Acrobatic Coupe, Blaster, Combat DJ // Blaster, Morale Booster, Soundwave, Sonic Spy // Soundwave, Superior Captain, Ultra Magnus, Tactician // Ultra Magnus, Armored Carrier
 
-#### Squad (15 cards, 12 counted as read)
+#### Squad (15 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Galadhrim Brigade *(read)*, Securitron Squadron *(read)*, Endless Foot Assault, Ultramarines Honour Guard *(read)*, Sicarian Infiltrator *(read)*, Space Marine Devastator *(read)*, Wasteland Raider *(read)*, Vanguard Suppressor *(read)*, Powder Ganger *(read)*, Zephyrim *(read)*, Roadkill Rodney, Gary Clone, Ruthless Radrat *(read)*, Arco-Flagellant *(read)*, Thrill-Kill Disciple *(read)*
+Galadhrim Brigade, Securitron Squadron, Endless Foot Assault, Ultramarines Honour Guard, Sicarian Infiltrator, Space Marine Devastator, Wasteland Raider, Vanguard Suppressor, Powder Ganger, Zephyrim, Roadkill Rodney, Gary Clone, Ruthless Radrat, Arco-Flagellant, Thrill-Kill Disciple
 
 #### Cleave (12 cards, 0 counted as read)
 
@@ -405,41 +405,41 @@ Wash Away, Dig Up, Alchemist's Retrieval, Alchemist's Gambit, Winged Portent, Fi
 
 Fanatic of Rhonas *(read)*, Timeless Witness *(read)*, Adorned Pouncer *(read)*, Champion of Wits *(read)*, Timeless Dragon *(read)*, Dreamstealer *(read)*, Earthshaker Khenra *(read)*, Sunscourge Champion *(read)*, Resilient Khenra, Proven Combatant *(read)*, Steadfast Sentinel *(read)*, Sinuous Striker *(read)*
 
-#### Freerunning (12 cards, 7 counted as read)
+#### Freerunning (12 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Overpowering Attack, Eagle Vision *(read)*, Restart Sequence *(read)*, Viewpoint Synchronization, Achilles Davenport *(read)*, Chain Assassination, Petty Larceny, Merciless Harlequin *(read)*, Distract the Guards *(read)*, Escape Detection *(read)*, Brotherhood Ambushers *(read)*, Monastery Raid
+Overpowering Attack, Eagle Vision, Restart Sequence, Viewpoint Synchronization, Achilles Davenport, Chain Assassination, Petty Larceny, Merciless Harlequin, Distract the Guards, Escape Detection, Brotherhood Ambushers, Monastery Raid
 
-#### Conspire (11 cards, 10 counted as read)
-
-- **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
-- **Card says:** an alternative or additional cost with its own consequences
-- **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
-- **Evidence:** code: no use of the keyword outside the keyword table
-
-Rally the Galadhrim *(read)*, Gleeful Sabotage *(read)*, Mine Excavation *(read)*, Memory Sluice *(read)*, Ghastly Discovery *(read)*, Disturbing Plot *(read)*, Aethertow, Barkshell Blessing *(read)*, Traitor's Roar *(read)*, Giantbaiting *(read)*, Burn Trail *(read)*
-
-#### Spectacle (11 cards, 6 counted as read)
+#### Conspire (11 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Light Up the Stage, Body Count, Skewer the Critics *(read)*, Spawn of Mayhem *(read)*, Dead Revels *(read)*, Rix Maadi Reveler, Drill Bit, Blade Juggler *(read)*, Rafter Demon, Hackrobat *(read)*, Spikewheel Acrobat *(read)*
+Rally the Galadhrim, Gleeful Sabotage, Mine Excavation, Memory Sluice, Ghastly Discovery, Disturbing Plot, Aethertow, Barkshell Blessing, Traitor's Roar, Giantbaiting, Burn Trail
 
-#### Prowl (10 cards, 2 counted as read)
+#### Spectacle (11 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Notorious Throng, Enigma Thief *(read)*, Knowledge Exploitation, Stinkdrinker Bandit, Latchkey Faerie, Earwig Squad, Thieves' Fortune *(read)*, Auntie's Snitch, Noggin Whack, Morsel Theft
+Light Up the Stage, Body Count, Skewer the Critics, Spawn of Mayhem, Dead Revels, Rix Maadi Reveler, Drill Bit, Blade Juggler, Rafter Demon, Hackrobat, Spikewheel Acrobat
+
+#### Prowl (10 cards, 0 counted as read)
+
+- **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
+- **Card says:** an alternative or additional cost with its own consequences
+- **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
+- **Evidence:** code: no use of the keyword outside the keyword table
+
+Notorious Throng, Enigma Thief, Knowledge Exploitation, Stinkdrinker Bandit, Latchkey Faerie, Earwig Squad, Thieves' Fortune, Auntie's Snitch, Noggin Whack, Morsel Theft
 
 #### Escalate (9 cards, 7 counted as read)
 
@@ -450,14 +450,14 @@ Notorious Throng, Enigma Thief *(read)*, Knowledge Exploitation, Stinkdrinker Ba
 
 Collective Resistance *(read)*, Collective Effort *(read)*, Collective Defiance, Collective Brutality, Borrowed Hostility *(read)*, Blessed Alliance *(read)*, Savage Alliance *(read)*, Borrowed Grace *(read)*, Borrowed Malevolence *(read)*
 
-#### Impending (6 cards, 4 counted as read)
+#### Impending (6 cards, 0 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Overlord of the Hauntwoods, Overlord of the Balemurk *(read)*, Overlord of the Floodpits *(read)*, Overlord of the Mistmoors *(read)*, Overlord of the Boilerbilges *(read)*, Lurker in the Deep
+Overlord of the Hauntwoods, Overlord of the Balemurk, Overlord of the Floodpits, Overlord of the Mistmoors, Overlord of the Boilerbilges, Lurker in the Deep
 
 ## 2. Could be parser allocation bugs
 
@@ -482,12 +482,6 @@ Power Depot, Arcbound Ravager *(read)*, Arcbound Crusher *(read)*, Scrapyard Rec
 Tangle Wire, Parallax Wave, Saproling Burst, Parallax Tide, Parallax Dementia *(read)*, Parallax Nexus, Blastoderm *(read)*, Jolting Merfolk *(read)*, Woodripper *(read)*, Ancient Hydra *(read)*, Skyshroud Behemoth *(read)*, Rusting Golem *(read)*, Rejuvenation Chamber *(read)*, Phyrexian Prowler *(read)*, Cloudskate *(read)*, Defender en-Vec *(read)*, Skyshroud Ridgeback *(read)*
 
 ### 2.b Missing
-
-#### refused: grants a triggered ability the engine never collects (279 cards, 0 counted as read)
-
-- **Likely cause:** unclassified refusal
-
-Hexing Squelcher, Innkeeper's Talent, Flowering of the White Tree, Bear Umbra, Herd Heirloom, Sheltered by Ghosts, Mikaeus, the Unhallowed, Legolas's Quick Reflexes, Fake Your Own Death, Diamond Pick-Axe, Snake Umbra, Lavaspur Boots, Codsworth, Handy Helper, Fire Nation Palace, Jaxis, the Troublemaker, Supernatural Stamina, Power Fist, Sticky Fingers, Passionate Archaeologist, Bronze Guardian, Winged Boots, Combat Research, Combat Research, Agent of the Iron Throne, Dionus, Elvish Archdruid, Imoti, Celebrant of Bounty, Gold-Forged Thopteryx, Thornbite Staff, Nalfeshnee, Cyberman Patrol, Rivaz of the Claw, Bria, Riptide Rogue, Lost Monarch of Ifnir, Rite of the Raging Storm, K-9, Mark I, Strength of Will, Karumonix, the Rat King, Wildsear, Scouring Maw, Sozin's Comet, Saruman, the White Hand, Svyelun of Sea and Sky, Unctus, Grand Metatect, Harmonic Sliver, Well Rested, Coppercoat Vanguard, The First Sliver, Tavern Brawler, Rammas Echor, Ancient Shield, Undying Evil, Light of Promise, Depthshaker Titan, Nerd Rage, Far Traveler, Spiteful Sliver, Wondrous Crucible, Adriana, Captain of the Guard, Rith, Liberated Primeval, Flaming Fist, Sokka, Tenacious Tactician, Shelob, Child of Ungoliant, Giant Ankheg, Chains of Custody, Wizard's Staff, Helm of the Ghastlord, Helm of the Ghastlord, Necrogen Communion, Iymrith, Desert Doom, Narset, Enlightened Exile, Staggering Insight, Lavabelly Sliver, Assassin Gauntlet, Hunter's Prowess, Candlekeep Sage, Dreadmaw's Ire, Cultist of the Absolute, Eternal Thirst, Pontiff of Blight, Star Whale, Security Bypass, Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight, Subterfuge, Kaya the Inexorable, Sixth Sense, Hunter's Bow, Leyline Immersion, Fire Nation Turret, Long River Lurker, Verdant Embrace, Cathedral Acolyte, Merchant of Truth, Virulent Sliver, Aragorn, Hornburg Hero, Constricting Sliver, Iroh, Dragon of the West, Afterlife Insurance, Lazotep Sliver, Carnage, Crimson Chaos, Quandrix, the Proof, Open into Wonder, Dusk Legion Sergeant, Feywild Visitor, Return to Action, Drogskol Reinforcements, Flamekin Herald, Biorganic Carapace, Dragon-Cursed Halls, Sublime Archangel, Family's Favor, Indebted Spirit, Demonic Gifts, Mitotic Slime, Curious Obsession, Plate Armor, Clawing Torment, Sunbond, Fall of Gil-galad, Abaddon the Despoiler, Unquenchable Fury, The Tabernacle at Pendrell Vale, Cathar's Call, Popular Entertainer, Abnormal Endurance, Fly, Prosthetic Injector, Necrosynthesis, Mishra, Tamer of Mak Fawa, Kataki, War's Wage, Timothar, Baron of Bats, Octopus Umbra, Taunting Sliver, Leather Armor, Infuse with Vitality, Relic Vial, Opaline Sliver, Choreographed Sparks, Wingrattle Scarecrow, Rhys, the Evermore, Glowcap Lantern, Order of Sacred Dusk, Storvald, Frost Giant Jarl, Tempered Sliver, Hunting Grounds, Diviner's Wand, Elder Owyn Lyons, Web-Shooters, Pain 101, Commander Mustard, Vibranium Strike Gauntlets, Mischievous Catgeist // Catlike Curiosity, Sidewinder Sliver, Curious Inquiry, Rashel, Fist of Torm, Candlestick, Root Manipulation, Livewire Lash, Nyxborn Unicorn, Hardlight Containment, Triton Wavebreaker, Perigee Beckoner, Thief of Existence, Avarice Amulet, Fungus Sliver, Capricious Sliver, Radagast, Wizard of Wilds, Hunter Sliver, Presumed Dead, Vile Consumption, Thorncaster Sliver, Blaster, Combat DJ // Blaster, Morale Booster, Dwarven Mattock, Aspirant's Ascent, Plague Nurse, Morgul-Knife Wound, Pirate Hat, Verdant Rebirth, Aegis of the Legion, Driven // Despair, Driven // Despair, Matt Murdock, Justice Seeker, Crystal Carapace, Energy Flux, Dormant Sliver, Dance with Devils, Terminal Velocity, Vivien's Stampede, Winter, Cursed Rider, Titania, Proud Pummeler, Nurturing Presence, Devils' Playground, Super Strength, Armguard Familiar, Volcano Hellion, Commanding Presence, Chaplain of Alms // Chapel Shieldgeist, Rattleblaze Scarecrow, First Sliver's Chosen, Trickster's Talisman, Endling, Pendrell Mists, Magus of the Tabernacle, Reckless Pyrosurfer, Mesmeric Sliver, Commander's Authority, Falcon's Wing Harness, Creeping Crystal Coating, Necrotic Plague, Take Flight, Make Mischief, Veteran's Armaments, Antler Skulkin, Pillory of the Sleepless, Secret Invasion, Grasp of the Hieromancer, Frenzy Sliver, Dragon's Disciple, Inevitable End, Ghostly Touch, Arm with Aether, Infernal Scarring, Snake Cult Initiation, Distracting Geist // Clever Distraction, Aethermage's Touch, Showstopper, Cement Shoes, Spare Dagger, Nettlevine Blight, Consuming Fervor, Sunfire Torch, Fang of the Pack, Skirk Ridge Exhumer, Serpent Generator, Agility, Aura Flux, Iconic Shield, Dagger of the Worthy, Infinity Formula, Zarda, the Power Princess, Decaying Soil, Sparkspitter, Cephalid Sage, Expedition Diviner, Cavalry Master, Bloodcurdler, Crystalline Nautilus, Jabari's Banner, Stir the Pride, Cruel Deceiver, Gloomdrifter, Relic Bane, Centaur Chieftain, Plague Sliver, Boneshard Slasher, Maelstrom Djinn, Farmstead, Coral Net, Pardic Arsonist, Decomposition, Reborn Hero, Treacherous Werewolf, Teroh's Vanguard, Treacherous Vampire, A-Kargan Warleader, A-Mischievous Catgeist // A-Catlike Curiosity, A-Plate Armor, Ambassador of Evendo, Bail Out, Consuming Oni, Goblin Trapfinder, Guildpact Greenwalker, Lae'zel, Githyanki Warrior, Marshland Hordemaster, Painful Bond, Putrid Hexhag, Rope Line Attendant, Sewer Plague, Solitary Defiance, Tome of Gadwick, Traumatic Prank, Waystone's Guidance
 
 #### refused: 'its controller' with no single antecedent (41 cards, 0 counted as read)
 
@@ -659,6 +653,12 @@ Llanowar Reborn, Plaxcaster Frogling, Vigean Graftmage, Cytoplast Manipulator, A
 - **Evidence:** auditor board: Radical Idea cast from the graveyard with no mana, no discard
 
 Quasiduplicate, Chemister's Insight, Risk Factor, Radical Idea, Gravitic Punch, Dihada's Ploy, Beacon Bolt, Start the TARDIS, Maximize Velocity, Maximize Altitude, Sonic Assault, Direct Current, Surge of Acclaim
+
+#### refused: grants a triggered keyword that does not yet work when granted (12 cards, 0 counted as read)
+
+- **Likely cause:** unclassified refusal
+
+Mikaeus, the Unhallowed, Undying Evil, Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight, Afterlife Insurance, Dusk Legion Sergeant, Indebted Spirit, Wingrattle Scarecrow, Rhys, the Evermore, Blaster, Combat DJ // Blaster, Morale Booster, Rattleblaze Scarecrow, Endling, Antler Skulkin
 
 #### Training (11 cards, 0 counted as read)
 

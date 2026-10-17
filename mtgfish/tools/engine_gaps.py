@@ -93,7 +93,7 @@ FINDINGS: tuple[Finding, ...] = (
             "create a 1/1 Hero token and attach this Equipment to it",
             "put a +1/+1 counter on this",
             "IR: ADD_COUNTERS +1/+1, empty cost"),
-    Finding("Specialize", WRONG, "702.172a",
+    Finding("Specialize", WRONG, "digital",
             "discard a card of a color: perpetually specialize into another face",
             "pay the cost: put a +1/+1 counter on this",
             "IR: ADD_COUNTERS +1/+1"),
