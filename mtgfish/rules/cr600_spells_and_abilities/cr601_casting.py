@@ -194,7 +194,16 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         # kicker riders read it on resolution. It is recorded before the
         # modes because "If this spell was kicked, choose any number
         # instead" decides how many modes may be chosen.
-        spell.additional_costs_paid = tuple(action.additional_costs)
+        # CR 702.33c, 702.157a: one entry per payment, so a cost paid "any
+        # number of times" is recorded as often as it was paid and any other
+        # optional cost once, however often it was named.
+        spell.additional_costs_paid = recorded_payments(
+            game.characteristics(spell), action.additional_costs
+        )
+        # CR 702.174a: promising a gift chooses the opponent it goes to.
+        from ..cr700_additional_rules.cr702_cost_keyword_rules import promise_gift
+
+        promise_gift(game, spell, player_id)
         # CR 702.42a: a paid entwine cost chooses every mode.
         from ..cr700_additional_rules.cr702_paid_costs import entwined_modes
 
@@ -354,8 +363,9 @@ def compute_total_cost(
     # CR 118.8a: any number of additional costs, mandatory ones always, and
     # optional ones as announced. CR 118.9d applies them to the alternative
     # cost too, so an alternative cost is never a way to dodge a tax.
+    payments = recorded_payments(chars, action.additional_costs)
     for index, additional in enumerate(chars.additional_costs):
-        for _ in range(_times_charged(spell, additional, index, action)):
+        for _ in range(_times_charged(spell, additional, index, payments)):
             total.base = total.base.plus(additional.cost.mana_component)
             for component in additional.cost.non_mana_components:
                 total.add_additional(component)
@@ -375,12 +385,33 @@ def compute_total_cost(
     return total
 
 
-#: CR 702.56a replicate, 702.33c multikicker: optional additional costs that
-#: may be paid any number of times, once for each time they are announced.
-_PAID_ANY_NUMBER_OF_TIMES = frozenset({"replicate", "multikicker"})
+#: CR 702.56a replicate, 702.33c multikicker, 702.157a squad: optional
+#: additional costs that may be paid any number of times, once for each time
+#: they are announced.
+_PAID_ANY_NUMBER_OF_TIMES = frozenset({"replicate", "multikicker", "squad"})
 
 
-def _times_charged(spell: GameObject, additional, index: int, action: Action) -> int:
+def recorded_payments(chars, announced) -> tuple[int, ...]:
+    """The optional additional costs paid, one index per payment.
+
+    An index announced twice for a cost that may be paid only once is one
+    payment, and an index naming no optional cost is none.
+    """
+    costs = chars.additional_costs
+    out: list[int] = []
+    for index in announced:
+        if not 0 <= index < len(costs) or not costs[index].optional:
+            continue
+        repeatable = costs[index].keyword.lower() in _PAID_ANY_NUMBER_OF_TIMES
+        if index in out and not repeatable:
+            continue
+        out.append(index)
+    return tuple(out)
+
+
+def _times_charged(
+    spell: GameObject, additional, index: int, payments: tuple[int, ...]
+) -> int:
     """How many times an additional cost is part of this spell's total cost."""
     keyword = additional.keyword.lower()
     if keyword == "escalate":
@@ -389,10 +420,8 @@ def _times_charged(spell: GameObject, additional, index: int, action: Action) ->
         return max(0, len(spell.chosen_modes) - 1)
     if not additional.optional:
         return 1
-    announced = action.additional_costs.count(index)
-    if keyword in _PAID_ANY_NUMBER_OF_TIMES:
-        return announced
-    return min(announced, 1)
+    # CR 601.2f: charged once for each payment, as the spell records them.
+    return payments.count(index)
 
 
 def _matches_being_cast(game, spell, effect, obj) -> bool:

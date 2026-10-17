@@ -277,6 +277,16 @@ class EffectKind(IntEnum):
     #: Attractions.
     ROLL_TO_VISIT = 271
 
+    # -- cost keywords (CR 702) ---------------------------------------------
+    #: CR 702.33d, 702.157a: "for each time it was kicked", "for each time
+    #: its squad cost was paid" - ``children`` once for each payment of the
+    #: optional additional cost whose keyword is ``keywords[0]``.
+    REPEAT_PER_PAYMENT = 300
+    #: CR 702.174b: the gift - ``children`` carried out for the opponent the
+    #: gift was promised to, as "that player" (``PlayerScope.THAT_PLAYER``).
+    #: Does nothing when no gift was promised.
+    GIVE_GIFT = 301
+
     # -- digital-only mechanics (MTG Arena) ---------------------------------
     #: These are not in the Comprehensive Rules at all; they exist only on MTG
     #: Arena, whose own published descriptions are the rules they follow. See

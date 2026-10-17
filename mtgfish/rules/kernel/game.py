@@ -750,6 +750,12 @@ class Game:
 
             if CastMode(obj.cast_mode) in PERSISTS_ON_BATTLEFIELD:
                 new_obj.cast_mode = obj.cast_mode
+            # CR 603.4, 614.1c: "when this enters, if it was kicked" and "if
+            # its impending cost was paid, it enters with" are asked as it
+            # enters, so the permanent has the record before the event.
+            from ..cr700_additional_rules.cr702_cost_keyword_rules import carry_payment_record
+
+            carry_payment_record(obj, new_obj)
         if to_zone is Zone.BATTLEFIELD:
             new_obj.entered_battlefield_turn = self.turn
             new_obj.summoning_sick = True
