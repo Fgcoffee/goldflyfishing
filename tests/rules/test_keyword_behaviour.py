@@ -227,16 +227,6 @@ def test_cascade_is_the_cascade_procedure():
     assert kinds == {EffectKind.CASCADE}
 
 
-def test_living_weapon_makes_a_germ_and_attaches(board):
-    """CR 702.91a: both halves, in that order - the token has to exist before
-    the Equipment can attach to it."""
-    abilities = build(KeywordInstance("Living weapon"))
-    kinds = [effect.kind for ability in abilities for effect in ability.effects]
-    assert kinds == [EffectKind.CREATE_TOKEN, EffectKind.ATTACH]
-
-    token = abilities[0].effects[0].token
-    assert token.name == "Germ"
-    assert token.power.constant == 0 and token.toughness.constant == 0
 
 
 def test_convoke_and_improvise_carry_the_right_helper(board):

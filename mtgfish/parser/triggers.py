@@ -25,6 +25,7 @@ from ..rules.kernel.query import (
     ObjectFilter,
     PlayerFilter,
     PlayerScope,
+    ValueKind,
 )
 from .nouns import parse_object_filter, parse_player_filter
 from .tokens import Stream, TokenKind
@@ -84,13 +85,18 @@ def _deals_damage(stream: Stream, source, text: str) -> TriggerCondition:
     """
     stream.accept("to")
     players, _ = parse_player_filter(stream)
-    recipient = parse_object_filter(stream) if players is None else None
+    recipient, batched = (None, False)
+    if players is None:
+        recipient, batched = _event_subject(stream)
+        if recipient is _UNREADABLE:
+            return None
     return TriggerCondition(
         event_kinds=_ANY_DAMAGE,
         source=source,
         subject=recipient,
         players=players,
         to_player=players is not None,
+        batched=batched,
         text=text,
     )
 
@@ -106,19 +112,23 @@ def parse_trigger(stream: Stream) -> TriggerCondition | None:
 
     intervening = _intervening_if(stream)
     if intervening is not None:
-        condition = TriggerCondition(
-            event_kinds=condition.event_kinds,
-            subject=condition.subject,
-            source=condition.source,
-            players=condition.players,
-            intervening_if=intervening,
-            functions_in=condition.functions_in,
-            uses_last_known_information=condition.uses_last_known_information,
-            phases=condition.phases,
-            to_player=condition.to_player,
-            text=condition.text,
-        )
+        # CR 603.4 adds a check to the trigger; it takes nothing away. The
+        # condition used to be rebuilt field by field, and every field the
+        # rebuild did not name was lost: "one or more creatures die, if ..."
+        # stopped being one trigger per batch (CR 603.2c), "your second spell
+        # each turn, if ..." fired on every spell, and a counter kind, an
+        # origin zone or an expend total fell away the same way.
+        from dataclasses import replace
 
+        # "When this Class becomes level 2" already carries its level as an
+        # intervening-if; a written one is checked as well, not instead.
+        if not condition.intervening_if.is_always:
+            intervening = Condition(
+                kind=ConditionKind.AND,
+                operands=(condition.intervening_if, intervening),
+                text=f"{condition.intervening_if.text} and {intervening.text}",
+            )
+        condition = replace(condition, intervening_if=intervening)
     stream.skip_punct(",")
     return condition
 
@@ -182,18 +192,32 @@ def _step_trigger(stream: Stream) -> TriggerCondition | None:
     # forms are the same player phrases with an apostrophe-s, which the
     # tokenizer keeps attached to the word.
     players = _step_owner(stream)
-    if players is None:
+    owned = players is not None
+    if not owned:
+        # CR 513.1, 507.1: "at the beginning of the end step" and "at the
+        # beginning of combat" name no player, and every turn has one - so
+        # the trigger fires on every turn, not only its controller's (Ball
+        # Lightning's sacrifice happens on whichever turn it was cast). "The
+        # next end step" is a delayed trigger (CR 603.7) that this recurring
+        # reader cannot represent, and neither is "your next upkeep"; both
+        # are left for ``parse_delayed_when`` or fail honestly.
         stream.accept("the")
-        if stream.accept_phrase("next end step"):
-            return TriggerCondition(
-                event_kinds=frozenset({EventKind.END_STEP}),
-                text="at the beginning of the next end step",
-            )
-        players = YOU
-    stream.accept("next")
+    if stream.peek().lower == "next":
+        stream.reset(mark)
+        return None
 
     for phrase, kind in _STEP_TRIGGERS:
         if stream.accept_phrase(phrase):
+            if not owned:
+                # "at the beginning of combat *on your turn*" names the owner
+                # after the step. The words are left for the effect grammar,
+                # which reads them as its own turn condition; the owner is
+                # recorded here as well so the trigger itself is not wider.
+                look = stream.mark()
+                players = (
+                    YOU if stream.accept_phrase("on your turn") else None
+                )
+                stream.reset(look)
             return TriggerCondition(
                 event_kinds=frozenset({kind}),
                 players=players,
@@ -224,6 +248,44 @@ def _step_owner(stream: Stream) -> PlayerFilter | None:
         if stream.accept_phrase(phrase):
             return PlayerFilter(scope)
     return parse_player_filter(stream)[0]
+
+
+#: What ``_event_subject`` returns for a subject whose quantity the
+#: trigger cannot represent ("two or more creatures", "X creatures").
+_UNREADABLE = object()
+
+
+def _event_subject(stream: Stream):
+    """The noun an event is about, and whether it was "one or more".
+
+    CR 603.2c: "whenever *one or more* creatures die" triggers once for all
+    the creatures that died at the same time, where "whenever *a* creature
+    dies" triggers for each. The quantity is the whole difference, so it is
+    recorded (``batched``) and stripped from the filter, which only says what
+    kind of object counts. "Two or more creatures attack" is a threshold on
+    the batch that nothing here represents, and is refused rather than read
+    as "a creature attacks".
+
+    Returns ``(filter, batched)``, ``(None, False)`` when there is no noun,
+    or ``(_UNREADABLE, False)`` with the stream rewound.
+    """
+    from dataclasses import replace
+
+    mark = stream.mark()
+    batched = stream.accept_phrase("one or more")
+    stream.reset(mark)
+    spec = parse_object_filter(stream)
+    if spec is None:
+        return None, False
+    if batched:
+        return replace(spec, count=None), True
+    count = spec.count
+    if count is not None and (
+        count.kind is not ValueKind.CONSTANT or count.constant != 1 or spec.up_to
+    ):
+        stream.reset(mark)
+        return _UNREADABLE, False
+    return spec, False
 
 
 def _event_trigger(stream: Stream) -> TriggerCondition | None:
@@ -257,19 +319,36 @@ def _event_trigger(stream: Stream) -> TriggerCondition | None:
     if counters is not None:
         return counters
 
-    subject = parse_object_filter(stream)
+    subject, batched = _event_subject(stream)
+    if subject is _UNREADABLE:
+        return None
     if subject is not None:
-        return (
-            _with_alternatives(_subject_event, stream, subject)
-            or _reset(stream, mark)
-        )
+        condition = _with_alternatives(_subject_event, stream, subject)
+        if condition is None:
+            return _reset(stream, mark)
+        return _batch(condition, batched)
 
+    # "Whenever one or more players discard one or more cards" is one
+    # trigger across every player's discards, where "a player discards" is
+    # one per player; nothing records the difference, so it is not read.
+    if stream.accept_phrase("one or more players"):
+        stream.reset(mark)
+        return None
     players, _ = parse_player_filter(stream)
     if players is not None:
         return _player_event(stream, players) or _reset(stream, mark)
 
     stream.reset(mark)
     return None
+
+
+def _batch(condition: TriggerCondition, batched: bool) -> TriggerCondition:
+    """Mark a condition as triggering once per batch (CR 603.2c)."""
+    if not batched:
+        return condition
+    from dataclasses import replace
+
+    return replace(condition, batched=True)
 
 
 def _with_alternatives(reader, stream: Stream, subject):
@@ -317,7 +396,13 @@ def _with_alternatives(reader, stream: Stream, subject):
         # one set of event kinds - the union would match combinations neither
         # half describes. It is kept whole instead, and the trigger becomes a
         # disjunction of complete conditions.
-        if alternative.subject != first.subject:
+        #
+        # Likewise one whose other constraints differ: "attacks or becomes
+        # the target *of a spell*" folded into one set of kinds dropped the
+        # spell filter, so the Dragon made Treasure off every ability that
+        # targeted it - and a filter on the first half would equally have
+        # been applied to the second.
+        if not _same_but_events(alternative, first):
             others.append(alternative)
             continue
         kinds |= alternative.event_kinds
@@ -334,6 +419,22 @@ def _with_alternatives(reader, stream: Stream, subject):
     if not others:
         return first
     return _replace(first, alternatives=(first, *others))
+
+
+def _same_but_events(one: TriggerCondition, other: TriggerCondition) -> bool:
+    """Whether two conditions differ only in what happened, so a single
+    condition watching both events says the same as the pair."""
+    from dataclasses import replace
+
+    def bare(condition):
+        return replace(
+            condition,
+            event_kinds=frozenset(),
+            uses_last_known_information=False,
+            text="",
+        )
+
+    return bare(one) == bare(other)
 
 
 def _or_another(stream: Stream) -> ObjectFilter | None:
@@ -490,18 +591,30 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
         # nothing after it at all. The recipient narrows the trigger, so it is
         # read if it is there and left general if it is not.
         return _deals_damage(stream, SELF, "when this deals damage")
-    if stream.accept_phrase("becomes the target of a spell or ability"):
+    # Only when nothing follows: "... a spell or ability *an opponent
+    # controls*" and "becomes blocked *by a creature*" narrow the event, and
+    # the shared table below reads those tails.
+    look = stream.mark()
+    if (
+        stream.accept_phrase("becomes the target of a spell or ability")
+        and stream.peek().kind is TokenKind.PUNCT
+    ):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TARGETED}),
             subject=SELF,
             text="when this becomes the target of a spell or ability",
         )
-    if stream.accept_phrase("becomes blocked"):
+    stream.reset(look)
+    if (
+        stream.accept_phrase("becomes blocked")
+        and stream.peek().kind is TokenKind.PUNCT
+    ):
         return TriggerCondition(
             event_kinds=frozenset({EventKind.BECOMES_BLOCKED}),
             subject=SELF,
             text="when this becomes blocked",
         )
+    stream.reset(look)
     if stream.accept_phrase("attacks or blocks"):
         # Two events in one trigger, which the engine handles natively -
         # ``event_kinds`` is a set precisely so an "or" costs nothing.
@@ -518,9 +631,16 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
         )
     if stream.accept_phrase("becomes monstrous"):
         return TriggerCondition(
-            event_kinds=frozenset({EventKind.COUNTER_ADDED}),
+            event_kinds=frozenset({EventKind.BECAME_MONSTROUS}),
             subject=SELF,
             text="when this becomes monstrous",
+        )
+    if stream.accept_phrase("becomes renowned"):
+        # CR 702.112b: its own event, not the renown counters.
+        return TriggerCondition(
+            event_kinds=frozenset({EventKind.BECAME_RENOWNED}),
+            subject=SELF,
+            text="when this becomes renowned",
         )
     if stream.accept_phrase("transforms into this"):
         return TriggerCondition(
@@ -529,15 +649,22 @@ def _self_event(stream: Stream) -> TriggerCondition | None:
             text="when this transforms",
         )
 
+    # "When this card is put into your graveyard from your library" - the
+    # same reader as for any other subject, so the owner and origin are kept.
+    into_graveyard = _put_into_graveyard(stream, SELF)
+    if into_graveyard is not None:
+        return into_graveyard
+
     # The same table the general-subject path uses. Kept shared rather than
     # duplicated: "is dealt damage" means the same thing whether the subject
     # is this permanent or any other, and two copies drift.
     simple = _simple_event(stream)
     if simple is not None:
-        kinds, last_known = simple
+        kinds, last_known, acting = simple
         return TriggerCondition(
             event_kinds=kinds,
             subject=SELF,
+            source=acting,
             uses_last_known_information=last_known,
             text="when this has something happen to it",
         )
@@ -600,28 +727,9 @@ def _subject_event(stream: Stream, subject: ObjectFilter) -> TriggerCondition | 
     if for_mana is not None:
         return for_mana
 
-    if (
-        stream.accept_phrase("is put into a graveyard")
-        or stream.accept_phrase("are put into a graveyard")
-        or stream.accept_phrase("is put into your graveyard")
-        or stream.accept_phrase("are put into your graveyard")
-        or stream.accept_phrase("is put into their graveyard")
-        or stream.accept_phrase("are put into their graveyard")
-    ):
-        # "from the battlefield" is a different event - that is what dying
-        # is - and the rest narrow the same one. Which is why the origin has
-        # to be read here rather than left for the effect grammar to trip on.
-        kind = EventKind.PUT_INTO_GRAVEYARD
-        if stream.accept_phrase("from the battlefield"):
-            kind = EventKind.DIES
-        else:
-            _graveyard_origin(stream)
-        return TriggerCondition(
-            event_kinds=frozenset({kind}),
-            subject=subject,
-            uses_last_known_information=True,
-            text="whenever something is put into a graveyard",
-        )
+    into_graveyard = _put_into_graveyard(stream, subject)
+    if into_graveyard is not None:
+        return into_graveyard
     if (
         stream.accept_phrase("leaves the battlefield")
         or stream.accept_phrase("leave the battlefield")
@@ -674,10 +782,11 @@ def _subject_event(stream: Stream, subject: ObjectFilter) -> TriggerCondition | 
 
     simple = _simple_event(stream)
     if simple is not None:
-        kinds, last_known = simple
+        kinds, last_known, acting = simple
         return TriggerCondition(
             event_kinds=kinds,
             subject=subject,
+            source=acting,
             uses_last_known_information=last_known,
             text="whenever something happens to it",
         )
@@ -703,61 +812,165 @@ def _entry_state(stream: Stream, subject):
 def _tapped_for_mana(stream: Stream, subject):
     """"is tapped for mana", "you tap a permanent for {C}".
 
-    Both are the same event - mana was produced by tapping something - and
-    the engine emits it already. The mana-doubling lands and every "adds an
-    additional" enchantment in the format depend on it.
+    Both are the same event (CR 106.12a): a mana ability with {T} in its
+    cost resolved and produced mana. The mana-doubling lands and every "adds
+    an additional" enchantment in the format depend on it.
     """
     mark = stream.mark()
     if not (
         stream.accept_phrase("is tapped for mana")
         or stream.accept_phrase("are tapped for mana")
-        or stream.accept_phrase("is tapped for")
-        or stream.accept_phrase("are tapped for")
     ):
         stream.reset(mark)
         return None
-    # "tapped for {C}" names which mana; the trigger fires on the production
-    # either way and the symbol narrows nothing the engine records.
-    while stream.peek().kind is TokenKind.SYMBOL:
-        stream.next()
-    stream.accept("mana")
+    # "Tapped for {C}" and "for mana of the chosen color" trigger only on
+    # that mana (CR 106.12a), which the event does not record: not read.
+    if stream.at("of"):
+        stream.reset(mark)
+        return None
 
     return TriggerCondition(
-        event_kinds=frozenset({EventKind.MANA_ADDED}),
+        event_kinds=frozenset({EventKind.TAPPED_FOR_MANA}),
         subject=subject,
         text="whenever something is tapped for mana",
     )
 
 
-def _graveyard_origin(stream: Stream) -> None:
-    """"from anywhere", "from anywhere other than the battlefield".
+def _put_into_graveyard(stream: Stream, subject: ObjectFilter):
+    """"is put into your graveyard from your library" and its family.
 
-    Every origin except the battlefield names the same event, so these
-    narrow nothing the trigger has to record - but they have to be read, or
-    the words fall through to the effect grammar and fail the ability.
+    Whose graveyard and where from both narrow the event, and both are kept:
+    "another creature is put into *your* graveyard from the battlefield" is
+    about creatures you own (a card goes to its owner's graveyard, CR 400.3),
+    and "from your library" is a mill, not a discard. "From the battlefield"
+    is a different event - that is what dying is (CR 603.6c).
+    """
+    from dataclasses import replace
+
+    mark = stream.mark()
+    if not (stream.accept("is", "are") and stream.accept_phrase("put into")):
+        stream.reset(mark)
+        return None
+    owner = _graveyard_owner(stream)
+    if owner is None or not stream.accept("graveyard"):
+        stream.reset(mark)
+        return None
+
+    kind = EventKind.PUT_INTO_GRAVEYARD
+    origins: frozenset = frozenset()
+    if stream.accept_phrase("from the battlefield"):
+        kind = EventKind.DIES
+    else:
+        origin = _graveyard_origin(stream)
+        if origin is None:
+            stream.reset(mark)
+            return None
+        origins, origin_owner = origin
+        if origin_owner is not ControllerRelation.ANY:
+            # "from your library": a card in your library is yours (CR 400.3).
+            if owner not in (ControllerRelation.ANY, origin_owner):
+                stream.reset(mark)
+                return None
+            owner = origin_owner
+    if owner is not ControllerRelation.ANY:
+        if subject.owner not in (ControllerRelation.ANY, owner):
+            stream.reset(mark)
+            return None
+        subject = replace(subject, owner=owner)
+    return TriggerCondition(
+        event_kinds=frozenset({kind}),
+        subject=subject,
+        from_zones=origins,
+        uses_last_known_information=True,
+        text="whenever something is put into a graveyard",
+    )
+
+
+def _graveyard_owner(stream: Stream) -> ControllerRelation | None:
+    """Whose graveyard: "a", "your", "an opponent's", "a player's", "their".
+
+    "Their graveyard" and "its owner's graveyard" are the owner's, which is
+    where every card goes anyway (CR 400.3), so they narrow nothing. Returns
+    None, with nothing consumed, for anything else.
     """
     mark = stream.mark()
-    if not stream.accept("from"):
-        return
-    if stream.accept_phrase("anywhere other than the battlefield") or stream.accept(
-        "anywhere"
+    if stream.accept("your"):
+        return ControllerRelation.YOU
+    if stream.accept_phrase("an opponent's"):
+        return ControllerRelation.OPPONENT
+    if (
+        stream.accept_phrase("a player's")
+        or stream.accept_phrase("its owner's")
+        or stream.accept("a", "their")
     ):
-        return
-    from .nouns import parse_zone
-
-    if parse_zone(stream) is not None:
-        return
+        return ControllerRelation.ANY
     stream.reset(mark)
+    return None
+
+
+def _graveyard_origin(stream: Stream):
+    """"from anywhere", "from your library", "from your hand or library".
+
+    Returns ``(zones, owner)``: the zones the card may have come from (empty
+    for anywhere) and whose they were ("your library" is the owner's,
+    CR 400.3). No origin at all is anywhere. None, with the stream rewound,
+    for an origin that cannot be read.
+    """
+    from .nouns import ZONE_WORDS
+
+    mark = stream.mark()
+    if not stream.accept("from"):
+        return frozenset(), ControllerRelation.ANY
+    if stream.accept_phrase("anywhere other than the battlefield"):
+        return frozenset(z for z in Zone if z is not Zone.BATTLEFIELD), (
+            ControllerRelation.ANY
+        )
+    if stream.accept("anywhere"):
+        return frozenset(), ControllerRelation.ANY
+    owner = ControllerRelation.ANY
+    if stream.accept("your"):
+        owner = ControllerRelation.YOU
+    else:
+        # "a library", "their library": the card's owner's, as always.
+        stream.accept("a", "their")
+    zones = set()
+    while True:
+        token = stream.peek()
+        zone = ZONE_WORDS.get(token.lower)
+        if zone is None or zone in (Zone.BATTLEFIELD, Zone.STACK, Zone.COMMAND):
+            stream.reset(mark)
+            return None
+        stream.next()
+        zones.add(zone)
+        if not stream.accept("or"):
+            break
+    return frozenset(zones), owner
 
 
 def _counter_subject(stream: Stream):
     """"Whenever one or more +1/+1 counters are put on <something>"."""
     from .tokens import TokenKind
 
-    mark = stream.mark()
-    stream.accept_number()
-    stream.accept_phrase("or more")
+    from dataclasses import replace
 
+    mark = stream.mark()
+    # "a +1/+1 counter is put on" and "one or more +1/+1 counters are put
+    # on" are different triggers (CR 603.2c): the first fires once for each
+    # counter, the second once for the placement. Any other count ("two
+    # counters", "the twelfth counter", CR 122.7) is neither and is left
+    # unread rather than widened to one of them.
+    token = stream.peek()
+    if stream.accept_phrase("one or more"):
+        each_counter = False
+    elif token.kind is TokenKind.NUMBER and token.lower in ("a", "an"):
+        stream.next()
+        each_counter = True
+    else:
+        stream.reset(mark)
+        return None
+
+    # The kind is kept: "+1/+1 counters are put on" does not fire for a
+    # -1/-1 counter. Only "one or more counters", naming no kind, is any.
     kind = ""
     token = stream.peek()
     if token.kind is TokenKind.PT:
@@ -768,9 +981,12 @@ def _counter_subject(stream: Stream):
         "counters",
     ):
         stream.next()
-        kind = token.text
+        kind = token.lower
+    elif not (not each_counter and token.lower == "counters"):
+        stream.reset(mark)
+        return None
 
-    if not kind or not stream.accept("counter", "counters"):
+    if not stream.accept("counter", "counters"):
         stream.reset(mark)
         return None
 
@@ -778,7 +994,7 @@ def _counter_subject(stream: Stream):
     if result is None:
         stream.reset(mark)
         return None
-    return result
+    return replace(result, counter_kind=kind, each_counter=each_counter)
 
 
 def _leaves_zone(stream: Stream, subject: ObjectFilter):
@@ -795,13 +1011,25 @@ def _leaves_zone(stream: Stream, subject: ObjectFilter):
         stream.reset(mark)
         return None
 
-    from .nouns import parse_zone
+    from .nouns import ZONE_WORDS
 
-    stream.accept("your", "their", "his", "her", "a", "an", "the")
-    zone = parse_zone(stream)
-    if zone is None:
+    # Whose zone: "leave *your* graveyard" is about your cards, and dropping
+    # the word fired Tormod on every card an opponent flashed back.
+    owner = ControllerRelation.ANY
+    if stream.accept("your"):
+        owner = ControllerRelation.YOU
+    elif stream.accept_phrase("an opponent's"):
+        owner = ControllerRelation.OPPONENT
+    else:
+        stream.accept("a", "an", "the")
+    token = stream.peek()
+    zone = ZONE_WORDS.get(token.lower)
+    if zone is None or subject.owner not in (ControllerRelation.ANY, owner):
         stream.reset(mark)
         return None
+    stream.next()
+    if owner is not ControllerRelation.ANY:
+        subject = replace(subject, owner=owner)
 
     # The subject is a card *in that zone* right up until it leaves, so the
     # filter has to say so - a graveyard filter tested against the battlefield
@@ -826,15 +1054,18 @@ def _counters_placed(stream: Stream, subject: ObjectFilter):
         stream.reset(mark)
         return None
 
-    target = parse_object_filter(stream)
-    if target is None:
+    target, batched = _event_subject(stream)
+    if target is None or target is _UNREADABLE:
         stream.reset(mark)
         return None
     # The *subject* of the sentence is the counters; the trigger is about the
     # permanent they land on, which is what the engine's event carries.
+    # "Put on *a* creature you control" triggers for each creature that got
+    # some; "on *one or more* Humans" once for all of them (CR 603.2c).
     return TriggerCondition(
         event_kinds=frozenset({EventKind.COUNTER_ADDED}),
         subject=target,
+        batched=batched,
         text="whenever counters are put on something",
     )
 
@@ -849,6 +1080,7 @@ _SIMPLE_EVENTS: tuple[tuple[str, tuple[EventKind, ...], bool], ...] = (
     ("is dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
     ("are dealt damage", (EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT), False),
     ("becomes the target", (EventKind.TARGETED,), False),
+    ("become the target", (EventKind.TARGETED,), False),
     ("is targeted", (EventKind.TARGETED,), False),
     ("becomes blocked", (EventKind.BECOMES_BLOCKED,), False),
     ("becomes untapped", (EventKind.UNTAPPED,), False),
@@ -870,7 +1102,8 @@ _SIMPLE_EVENTS: tuple[tuple[str, tuple[EventKind, ...], bool], ...] = (
     ("phases out", (EventKind.PHASED_OUT,), False),
     ("phases in", (EventKind.PHASED_IN,), False),
     ("is returned to its owner's hand", (EventKind.RETURNED_TO_HAND,), True),
-    ("becomes monstrous", (EventKind.COUNTER_ADDED,), False),
+    ("becomes monstrous", (EventKind.BECAME_MONSTROUS,), False),
+    ("becomes renowned", (EventKind.BECAME_RENOWNED,), False),
     ("untaps", (EventKind.UNTAPPED,), False),
     ("taps", (EventKind.TAPPED,), False),
     ("attacks or blocks", (EventKind.ATTACKS, EventKind.BLOCKS), False),
@@ -887,36 +1120,104 @@ def _simple_event(stream: Stream):
     Longest first because "attacks or blocks" and "attacks" both start the
     same way, and matching the short one would leave "or blocks" stranded and
     fail the whole ability.
+
+    Returns ``(kinds, last_known, source)``: ``source`` is what acted, from
+    an "of"/"by" tail - "becomes the target *of a spell*", "is dealt damage
+    *by a source you control*" - or None.
     """
     for phrase, kinds, last_known in sorted(
         _SIMPLE_EVENTS, key=lambda entry: -len(entry[0])
     ):
+        mark = stream.mark()
         if not stream.accept_phrase(phrase):
             continue
-        # "becomes the target *of a spell or ability*", "is dealt damage *by a
-        # source you control*". The tail says what acted; consumed rather than
-        # modelled, because narrowing it needs a source constraint the event
-        # does not always carry.
-        look = stream.mark()
-        if stream.accept("of", "by"):
-            if parse_object_filter(stream) is None and not _ability_words(stream):
-                stream.reset(look)
-        return frozenset(kinds), last_known
+        tail = _TAILS.get(phrase)
+        if tail is None or not stream.at(tail):
+            # Any other "of"/"by" is left where it is, and fails the ability
+            # rather than being read as nothing.
+            return frozenset(kinds), last_known, None
+        stream.next()
+        acting = _acting_source(stream, spells=tail == "of")
+        if acting is None:
+            stream.reset(mark)
+            return None
+        if acting is _ANY_SOURCE:
+            acting = None
+        return frozenset(kinds), last_known, acting
     return None
 
 
-def _ability_words(stream: Stream) -> bool:
-    """"a spell or ability" written out, which is not an object filter."""
+#: The events whose "of"/"by" tail names what acted, and which word it is.
+#: The engine puts that actor in the event's ``source``: the spell or ability
+#: that targeted (CR 115.1), the source of the damage (CR 120.1).
+#:
+#: Not "becomes blocked by a creature": that is once per blocker (CR 509.3d),
+#: a different event from becoming blocked (CR 509.3c), and its "that
+#: creature" is the blocker rather than the object the event is about, which
+#: the effect's pronouns cannot yet say - so it stays unread.
+_TAILS = {
+    "becomes the target": "of",
+    "become the target": "of",
+    "is dealt damage": "by",
+    "are dealt damage": "by",
+}
+
+#: What ``_acting_source`` returns for "a spell or ability" with no owner:
+#: every targeting object, so no constraint at all.
+_ANY_SOURCE = object()
+
+
+def _acting_source(stream: Stream, spells: bool):
+    """The actor after "of"/"by": exactly one of something (CR 603.2c - a
+    count would be a threshold nothing here records).
+
+    With ``spells`` (a targeting tail) the actor is on the stack: "a spell or
+    ability [you control]" is any of them, "an ability" only abilities and
+    "a spell" only spells - a spell is not an ability (CR 113.1), and reading
+    "the target of a spell" as either made those cards fire on activated
+    abilities too. Returns None, rewound, for anything unread.
+    """
+    from dataclasses import replace
+
+    from .nouns import _ownership
+
     mark = stream.mark()
-    stream.accept("a", "an")
-    if stream.accept("spell"):
-        if stream.accept("or"):
-            stream.accept("ability")
-        return True
-    if stream.accept("ability"):
-        return True
-    stream.reset(mark)
-    return False
+    on_stack = ObjectFilter(zones=frozenset({Zone.STACK}))
+    if spells:
+        stream.accept("a", "an")
+        if stream.accept_phrase("spell or ability"):
+            spec = _ownership(stream, on_stack)
+            return _ANY_SOURCE if spec == on_stack else spec
+        if stream.accept("ability"):
+            return _ownership(stream, replace(on_stack, is_ability=True))
+        stream.reset(mark)
+
+    # "a"/"an" and nothing else: "by one or more black creatures" and "by
+    # two or more creatures" (CR 509.3e) are counts the filter does not keep.
+    if not stream.at("a", "an"):
+        return None
+    spec = parse_object_filter(stream)
+    count = spec.count if spec is not None else None
+    if (
+        spec is None
+        or spec.up_to
+        or count is None
+        or count.kind is not ValueKind.CONSTANT
+        or count.constant != 1
+    ):
+        stream.reset(mark)
+        return None
+    words = {token.lower for token in stream.tokens[mark : stream.pos]}
+    if spells:
+        if not words & {"spell", "spells"} or words & {"ability", "abilities"}:
+            stream.reset(mark)
+            return None
+        return replace(spec, is_ability=False)
+    if "source" in words:
+        # A source of damage may be a spell on the stack, a card, or a
+        # permanent (CR 120.1): "a source you control" names no zone.
+        return replace(spec, zones=frozenset())
+    return spec
 
 
 #: "their second spell", "their first noncreature spell" - the ordinal words
@@ -1057,13 +1358,18 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
     if stream.accept("tap", "taps"):
         # "Whenever you tap a permanent for {C}" - the player is the one
         # doing the tapping and the permanent is what produced the mana.
-        tapped = parse_object_filter(stream)
-        if tapped is not None and stream.accept("for"):
-            while stream.peek().kind is TokenKind.SYMBOL:
-                stream.next()
-            stream.accept("mana")
+        # "for {C}" is only that mana (CR 106.12a), which the event does
+        # not record, so only "for mana" is read.
+        tapped, batched = _event_subject(stream)
+        if (
+            tapped is not None
+            and tapped is not _UNREADABLE
+            and not batched
+            and stream.accept_phrase("for mana")
+            and not stream.at("of")
+        ):
             return TriggerCondition(
-                event_kinds=frozenset({EventKind.MANA_ADDED}),
+                event_kinds=frozenset({EventKind.TAPPED_FOR_MANA}),
                 subject=tapped,
                 players=players,
                 text="whenever a player taps something for mana",
@@ -1091,49 +1397,97 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
                 kinds.add(EventKind.SACRIFICED)
             else:
                 stream.reset(look)
-        spec = parse_object_filter(stream)
+        spec, batched = _event_subject(stream)
+        if spec is _UNREADABLE:
+            return None
         if spec is not None:
             return TriggerCondition(
                 event_kinds=frozenset(kinds),
                 subject=spec,
                 players=players,
+                batched=batched,
                 text="whenever a player creates or sacrifices something",
             )
         stream.reset(look)
 
+    look = stream.mark()
     if stream.accept("attack", "attacks"):
         # "Whenever you attack" (CR 506.2, as templated) means the declaration
         # happened, not that any particular creature did - so the trigger
-        # watches the declaration event rather than an attacker.
-        parse_object_filter(stream)
+        # watches the declaration event rather than an attacker. Whatever
+        # follows - "attacks one or more planeswalkers you control" (CR
+        # 508.3e) - narrows it in a way the declaration event cannot be
+        # asked, and is left unread rather than dropped.
+        if stream.accept("with"):
+            # "Whenever you attack with one or more Elves" (CR 508.3c): an
+            # attacker of that kind - the attacking player's own creature -
+            # was declared, once for the declaration (CR 603.2c). Only the
+            # batch: "with two or more creatures" is a threshold nothing
+            # here records, and "with a creature" is not templated.
+            if not stream.at_phrase("one or more"):
+                stream.reset(look)
+                return None
+            attackers, batched = _event_subject(stream)
+            if (
+                attackers is None
+                or attackers is _UNREADABLE
+                or not batched
+                or stream.peek().kind is not TokenKind.PUNCT
+            ):
+                stream.reset(look)
+                return None
+            return TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTACKS}),
+                subject=attackers,
+                players=players,
+                batched=True,
+                text="whenever a player attacks with one or more creatures",
+            )
+        if stream.peek().kind is not TokenKind.PUNCT:
+            stream.reset(look)
+            return None
         return TriggerCondition(
             event_kinds=frozenset({EventKind.ATTACKERS_DECLARED}),
             players=players,
             text="whenever a player attacks",
         )
     if stream.accept("discard", "discards"):
-        parse_object_filter(stream)
+        # "Whenever an opponent discards *a creature card*" - the card is the
+        # event's object, and dropping it made Waste Not's three abilities
+        # all fire on every discard.
+        spec, batched = _event_subject(stream)
+        if spec is None or spec is _UNREADABLE:
+            return None
         return TriggerCondition(
             event_kinds=frozenset({EventKind.DISCARDED}),
+            subject=spec,
             players=players,
+            batched=batched,
             text="whenever a player discards",
         )
     if stream.accept("sacrifice", "sacrifices"):
-        spec = parse_object_filter(stream)
+        spec, batched = _event_subject(stream)
+        if spec is _UNREADABLE:
+            return None
         return TriggerCondition(
             event_kinds=frozenset({EventKind.SACRIFICED}),
             subject=spec,
             players=players,
+            batched=batched,
             uses_last_known_information=True,
             text="whenever a player sacrifices something",
         )
     if stream.accept("tap", "taps"):
-        spec = parse_object_filter(stream)
-        stream.accept_phrase("for mana")
+        spec, batched = _event_subject(stream)
+        if spec is _UNREADABLE or stream.at("for"):
+            # "for mana" that the reader above did not take is not read here
+            # as a plain tap: tapping for mana is its own event (CR 106.12).
+            return None
         return TriggerCondition(
             event_kinds=frozenset({EventKind.TAPPED}),
             subject=spec,
             players=players,
+            batched=batched,
             text="whenever a player taps something",
         )
     if stream.accept_phrase("draws a card") or stream.accept("draws"):

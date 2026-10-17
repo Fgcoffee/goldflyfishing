@@ -151,7 +151,8 @@ def declare_attackers(game: Game) -> None:
     active = game.active_player
     candidates = [obj for obj in game.permanents(active) if can_attack(game, obj)]
     if not candidates:
-        game.emit(Event(EventKind.ATTACKERS_DECLARED, player=active))
+        # ``amount`` is how many attackers were declared: none here.
+        game.emit(Event(EventKind.ATTACKERS_DECLARED, player=active, amount=0))
         return
 
     agent = game.agent_for(active)
@@ -160,7 +161,9 @@ def declare_attackers(game: Game) -> None:
         proposal = dict(agent.declare_attackers(game, active, candidates) or {})
 
     proposal = _enforce_attack_requirements(game, active, candidates, proposal)
+    costs = _attack_costs(game, active, proposal)
 
+    tapped_here: list[GameObject] = []
     for attacker_id, defender in sorted(proposal.items()):
         obj = game.objects.get(attacker_id)
         if obj is None:
@@ -183,9 +186,33 @@ def declare_attackers(game: Game) -> None:
             not game.characteristics(obj).has_keyword("Vigilance")
             and game.rule_is_suspended(Rule.ATTACKING_TAPS, obj=obj) is None
         ):
+            if not obj.tapped:
+                tapped_here.append(obj)
             obj.tapped = True
 
+    # CR 508.1h-j: the total cost to attack is paid after the attackers are
+    # tapped, all at once. ``_attack_costs`` already dropped what could not
+    # be afforded; a payment that still fails (its check is an upper bound)
+    # makes the declaration with those creatures illegal, so they do not
+    # attack, and are untapped again as the rewind (CR 508.1, 732.1) leaves
+    # them.
+    from .combat_costs import pay
+
+    if costs and not pay(game, active, costs, what="attack"):
+        for attacker_id in costs:
+            combat.attacking.pop(attacker_id, None)
+            combat.attacking_permanent.pop(attacker_id, None)
+            combat.controllers.pop(attacker_id, None)
+            obj = game.objects.get(attacker_id)
+            if obj is None:
+                continue
+            obj.attacked_this_turn = False
+            if obj in tapped_here:
+                obj.tapped = False
+            game.log.record(game, f"{obj} does not attack: its cost was not paid", kind="combat")
+
     game.invalidate_characteristics()
+    _pay_enlist_costs(game, combat, active, agent)
     for attacker_id in sorted(combat.attacking):
         game.emit(
             Event(
@@ -195,7 +222,135 @@ def declare_attackers(game: Game) -> None:
                 amount=combat.attacking[attacker_id],
             )
         )
-    game.emit(Event(EventKind.ATTACKERS_DECLARED, player=active))
+    game.emit(
+        Event(EventKind.ATTACKERS_DECLARED, player=active, amount=len(combat.attacking))
+    )
+
+
+def _attack_costs(
+    game: Game, active: PlayerId, proposal: dict[ObjectId, int]
+) -> dict[ObjectId, object]:
+    """CR 508.1h: the cost of each chosen attacker, and the declaration cut
+    down to what the active player will pay for.
+
+    Mutates ``proposal``: a creature whose cost is not paid does not attack.
+    Returns the cost of each creature that does and has one.
+    """
+    from .combat_costs import affordable, attack_cost
+
+    costs = {}
+    for attacker_id, defender in proposal.items():
+        obj = game.objects.get(attacker_id)
+        if obj is None:
+            continue
+        player, permanent = _resolve_defender(game, defender)
+        mana = attack_cost(game, obj, player, permanent)
+        if mana:
+            costs[attacker_id] = mana
+    if not costs:
+        return {}
+    # CR 508.1f taps every attacker without vigilance before the cost is
+    # paid, so none of them can tap for mana to pay it.
+    tapping = tuple(
+        attacker_id
+        for attacker_id in proposal
+        if attacker_id in game.objects
+        and not game.characteristics(game.objects[attacker_id]).has_keyword("Vigilance")
+        and game.rule_is_suspended(Rule.ATTACKING_TAPS, obj=game.objects[attacker_id]) is None
+    )
+    paid = affordable(game, active, costs, tapped=tapping)
+    for attacker_id in costs:
+        if attacker_id not in paid:
+            proposal.pop(attacker_id, None)
+            game.log.record(
+                game,
+                f"{game.objects[attacker_id]} does not attack: its cost to attack"
+                f" ({costs[attacker_id]}) is not paid",
+                kind="combat",
+            )
+    return paid
+
+
+def _pay_enlist_costs(game: Game, combat, active: PlayerId, agent) -> None:
+    """CR 702.154a-b, 508.1g-h: enlist is an optional cost to attack.
+
+    For each instance of enlist on each attacker, the attacking player may tap
+    up to one untapped creature they control that was not chosen to attack
+    and that has haste or has been under their control continuously since
+    the turn began (not summoning sick, CR 302.6). A creature can't enlist
+    itself (702.154c) - it is attacking - and one tapped for one enlist is not
+    untapped for another.
+
+    Paying it makes the linked "when you do" ability trigger (CR 603.9,
+    607.2h), once for that payment and no other (702.154d): the attacker gets
+    +X/+0 until end of turn, X the enlisted creature's power as the ability
+    resolves (CR 608.2h). The choice is the agent's ``choose_enlist``; an
+    agent without one never enlists.
+    """
+    chooser = getattr(agent, "choose_enlist", None)
+    if chooser is None:
+        return
+    from ..cr100_game_concepts.actions import tap
+    from ..cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from ..cr600_spells_and_abilities.cr603_triggers import PendingTrigger
+    from ..cr600_spells_and_abilities.effects import Effect, EffectKind
+    from ..kernel.enums import Duration
+    from ..kernel.query import ObjectFilter, Value, ValueKind
+
+    for attacker_id in sorted(combat.attacking):
+        attacker = game.objects.get(attacker_id)
+        if attacker is None:
+            continue
+        instances = sum(
+            1
+            for ability in game.characteristics(attacker).abilities
+            if ability.keyword.lower() == "enlist" and ability.kind is AbilityKind.STATIC
+        )
+        for _ in range(instances):
+            eligible = [
+                obj
+                for obj in game.permanents(active)
+                if obj.id not in combat.attacking
+                and not obj.tapped
+                and game.characteristics(obj).is_creature
+                and (
+                    not obj.summoning_sick
+                    or game.characteristics(obj).has_keyword("Haste")
+                )
+            ]
+            if not eligible:
+                break
+            chosen = chooser(game, active, attacker, eligible)
+            enlisted = next((obj for obj in eligible if obj.id == chosen), None)
+            if enlisted is None or not tap(game, enlisted, source=attacker_id):
+                continue
+            game.log.record(game, f"{attacker} enlists {enlisted}", kind="cost")
+            power = Value(
+                ValueKind.POWER,
+                filter=ObjectFilter(specific=(enlisted.id,), zones=frozenset()),
+            )
+            game.pending_triggers.append(
+                PendingTrigger(
+                    attacker_id,
+                    Ability(
+                        AbilityKind.TRIGGERED,
+                        effects=(
+                            Effect(
+                                EffectKind.MODIFY_PT,
+                                amount=power,
+                                amount2=Value.of(0),
+                                duration=int(Duration.END_OF_TURN),
+                                text="this creature gets +X/+0 until end of turn,"
+                                " where X is the tapped creature's power",
+                            ),
+                        ),
+                        keyword="Enlist",
+                        text="when you do (enlist)",
+                    ),
+                    Event(EventKind.ABILITY_TRIGGERED, object_id=attacker_id),
+                    active,
+                )
+            )
 
 
 def can_attack(game: Game, obj: GameObject) -> bool:
@@ -252,15 +407,36 @@ def _enforce_attack_requirements(
             continue
         if not _must_attack(game, obj):
             continue
-        defender = _forced_defender(game, obj, active)
-        if defender is None:
+        forced = _forced_defender(game, obj, active)
+        if forced is None:
             continue
-        if _attack_is_permitted(game, obj, defender):
+        # CR 508.1d: the requirement is obeyed if it can be without paying a
+        # cost, so a defender that would cost something gives way to one that
+        # does not.
+        defender = next(
+            (
+                option
+                for option in [forced] + [p for p in game.opponents(active) if p != forced]
+                if _attack_is_permitted(game, obj, option)
+                and not _costs_to_attack(game, obj, option)
+            ),
+            None,
+        )
+        if defender is not None:
             result[obj.id] = defender
             game.log.record(
                 game, f"{obj} must attack and is forced into combat", kind="combat"
             )
     return result
+
+
+def _costs_to_attack(game: Game, obj: GameObject, defender) -> bool:
+    """CR 508.1d: a creature that can't attack unless a cost is paid is never
+    forced to - the player is not required to pay."""
+    from .combat_costs import attack_cost
+
+    player, permanent = _resolve_defender(game, defender)
+    return bool(attack_cost(game, obj, player, permanent))
 
 
 def _must_attack(game: Game, obj: GameObject) -> bool:
@@ -296,6 +472,25 @@ def _attack_is_permitted(game: Game, obj: GameObject, defender: int) -> bool:
     if not can_attack(game, obj):
         return False
     if not _may_be_attacked(game, obj, defender):
+        return False
+    # CR 508.1c: a restriction on whom a creature attacks - "creatures can't
+    # attack you or planeswalkers you control" - is asked of this attacker
+    # and this defender, and leaves every other attack open.
+    from .restrictions import Act, prohibited
+
+    player, permanent = _resolve_defender(game, defender)
+    if permanent == NO_OBJECT:
+        if prohibited(game, Act.ATTACK_PLAYER, obj=obj, player=player) is not None:
+            return False
+    elif (
+        prohibited(
+            game,
+            Act.ATTACK_PLANESWALKER,
+            obj=obj,
+            counterpart=game.objects.get(permanent),
+        )
+        is not None
+    ):
         return False
     chars = game.characteristics(obj)
     if chars.has_keyword("Can't attack"):
@@ -452,6 +647,7 @@ def enter_attacking(
 
 def declare_blockers(game: Game) -> None:
     """CR 509.1: each defending player declares blockers, all at once."""
+    from .combat_costs import affordable, block_cost, pay
     from .restrictions import enforce_block_requirements
 
     combat = _combat(game)
@@ -481,10 +677,36 @@ def declare_blockers(game: Game) -> None:
         # CR 509.1c: the declaration must obey the greatest possible number of
         # blocking requirements. The defending player's own choices survive
         # wherever they are compatible with that, since the rule constrains
-        # how many requirements are obeyed and nothing else.
+        # how many requirements are obeyed and nothing else - and a creature
+        # that can't block unless a cost is paid is never made to block by a
+        # requirement, since the player is not required to pay (CR 509.1c).
+        costs = {obj.id: block_cost(game, obj) for obj in available}
         proposal = enforce_block_requirements(
-            game, combat, defender_id, available, proposal
+            game,
+            combat,
+            defender_id,
+            [obj for obj in available if obj.id in proposal or not costs[obj.id]],
+            proposal,
         )
+        # CR 509.1d-f: the total cost to block, paid all at once; a blocker
+        # whose cost is not paid does not block.
+        wanted = {
+            blocker_id: costs[blocker_id]
+            for blocker_id in proposal
+            if costs.get(blocker_id)
+        }
+        paid = affordable(game, defender_id, wanted) if wanted else {}
+        if paid and not pay(game, defender_id, paid, what="block"):
+            paid = {}
+        for blocker_id in wanted:
+            if blocker_id not in paid:
+                proposal = {k: v for k, v in proposal.items() if k != blocker_id}
+                game.log.record(
+                    game,
+                    f"{game.objects[blocker_id]} does not block: its cost to block"
+                    f" ({wanted[blocker_id]}) is not paid",
+                    kind="combat",
+                )
         for blocker_id, attacker_ids in sorted(proposal.items()):
             blocker = game.objects.get(blocker_id)
             if blocker is None or not can_block_at_all(game, blocker):
@@ -514,8 +736,23 @@ def declare_blockers(game: Game) -> None:
             game.emit(
                 Event(EventKind.BECOMES_BLOCKED, object_id=attacker_id, amount=len(blockers))
             )
+            # CR 509.3d: once for each creature that blocks it.
+            for blocker_id in blockers:
+                game.emit(
+                    Event(
+                        EventKind.BECOMES_BLOCKED_BY,
+                        object_id=attacker_id,
+                        source=blocker_id,
+                        source_controller=combat.controllers.get(blocker_id, NO_PLAYER),
+                    )
+                )
     for blocker_id in sorted(combat.blocking):
         game.emit(Event(EventKind.BLOCKS, object_id=blocker_id))
+    # CR 509.3g: an attacker with no blocker declared for it - including one
+    # that was put onto the battlefield attacking.
+    for attacker_id in sorted(combat.attacking):
+        if not combat.blockers.get(attacker_id):
+            game.emit(Event(EventKind.ATTACKS_UNBLOCKED, object_id=attacker_id))
 
     game.emit(Event(EventKind.BLOCKERS_DECLARED, player=game.active_player))
 

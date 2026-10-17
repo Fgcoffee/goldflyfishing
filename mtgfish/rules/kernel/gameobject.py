@@ -169,6 +169,9 @@ class GameObject:
     #: card - the chosen name may match nothing in the game, which is the
     #: whole point of naming a card your opponent has not played yet.
     chosen_name: str = ""
+    #: CR 702.174a: the opponent chosen as a gift was promised. Kept by the
+    #: permanent the spell becomes, whose gift ability gives to that player.
+    chosen_player: PlayerId = NO_PLAYER
     #: CR 715.3, 718.3, 720.3: which set of characteristics this object was
     #: played with. Chosen as the card is played and then fixed, which is why
     #: it is state rather than something recomputed - and it decides where an
@@ -186,6 +189,10 @@ class GameObject:
     #: cast, not the Adventure again, so a permission that offered every face
     #: would let a player loop the Adventure half for ever.
     playable_face: int = 0
+    #: The first turn that permission may be used on. CR 702.185a lets a
+    #: warped card be cast "after the current turn has ended"; zero is any
+    #: turn.
+    playable_from_turn: int = 0
     #: Modes chosen at announcement (CR 700.2).
     chosen_modes: tuple[int, ...] = ()
     #: The value chosen for X (CR 601.2b).
@@ -200,6 +207,9 @@ class GameObject:
     #: cast for, if any - what "if its sneak cost was paid" asks. Empty for a
     #: spell cast for its mana cost.
     alternative_cost_paid: str = ""
+    #: CR 601.2a: the zone the card was in when it was cast, for the rules
+    #: that ask where a spell was cast from (CR 702.127a aftermath).
+    cast_from: object | None = None
     #: CR 601.2b: the alternative cost announced for this spell when the card
     #: it was cast from offered it through a granted ability. The grant was
     #: settled on that card, and CR 400.7 leaves it behind as the spell moves.
@@ -210,6 +220,19 @@ class GameObject:
     #: CR 701.64b: the harnessed designation. It lasts until the permanent
     #: leaves the battlefield, which CR 400.7 gives by making a new object.
     harnessed: bool = False
+    #: CR 702.171b: the turn this permanent became saddled (0: never). It is
+    #: saddled until that turn ends or it leaves the battlefield, which CR
+    #: 400.7 gives by making a new object. CR 702.171c: what saddled it.
+    saddled_turn: int = 0
+    #: CR 702.95b: the creature this one is paired with, and the player it
+    #: was paired under (CR 702.95e ends it if control changes).
+    paired_with: ObjectId = NO_OBJECT
+    pair_controller: PlayerId = NO_PLAYER
+    saddled_by: tuple = ()
+    #: CR 702.112b: the renowned designation. Not copiable, and it lasts until
+    #: the permanent leaves the battlefield, which CR 400.7 gives by making a
+    #: new object.
+    renowned: bool = False
     #: CR 702.190b: a spell whose alternative cost puts it onto the battlefield
     #: tapped and attacking, and the objects paid for it, whose attack it
     #: joins (CR 506.3a).
@@ -218,6 +241,11 @@ class GameObject:
     #: How much mana was actually spent casting this spell (CR 601.2g). Zero
     #: for a free cast, which is what Lavinia and friends key off.
     mana_spent: int = 0
+    #: CR 702.44a: the colours of the mana actually spent casting this spell,
+    #: as Color flags - what sunburst and converge count.
+    mana_spent_colors: int = 0
+    #: CR 702.150a: how many Phyrexian symbols in its cost were paid with life.
+    phyrexian_paid_with_life: int = 0
 
     # -- Commander (CR 903.3) -----------------------------------------------
     is_commander: bool = False
@@ -230,6 +258,11 @@ class GameObject:
     #: COMMAND and this names the pile. A zone change builds a new object
     #: with it empty, which is CR 400.7 doing the bookkeeping.
     command_pile: str = ""
+
+    #: CR 603.10a: the characteristics this permanent had as it left the
+    #: battlefield - abilities an Aura or an effect granted included - which
+    #: its own leaves-the-battlefield abilities are looked for in.
+    last_known_characteristics: Characteristics | None = None
 
     # -- caching ------------------------------------------------------------
     #: Characteristics after the layer system has run. Invalidated whenever the

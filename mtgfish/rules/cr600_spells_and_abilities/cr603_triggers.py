@@ -46,6 +46,9 @@ class PendingTrigger(NamedTuple):
     ability: Ability
     event: Event
     controller: PlayerId
+    #: ``Game.event_batch`` when it triggered - which "one or more" ability
+    #: triggers a later event of the same batch folds into (CR 603.2c).
+    batch: int = -1
 
 
 #: Zones scanned for triggered abilities. The library is deliberately excluded:
@@ -86,6 +89,7 @@ def collect_triggers(game: Game, event: Event) -> None:
 
     if event.looks_back_in_time:
         _collect_departed_token(game, event, found)
+        _collect_departed_card(game, event, found)
 
     if not found:
         return
@@ -96,14 +100,76 @@ def collect_triggers(game: Game, event: Event) -> None:
     found.sort(key=lambda pair: (order.get(pair[0].controller, 99), pair[0].timestamp))
 
     for obj, ability in found:
+        trigger = ability.trigger
+        if trigger is not None and trigger.batched and _fold_into_batch(
+            game, obj, ability, event
+        ):
+            continue
+        if trigger is not None and trigger.once_each_turn:
+            # "This ability triggers only once each turn" (CR 603.2): the
+            # object's second trigger this turn does not happen.
+            key = (obj.id, ability)
+            if key in game.triggered_once_this_turn:
+                continue
+            game.triggered_once_this_turn.add(key)
+        noted = event
+        if trigger is not None and trigger.batched:
+            # "That many" counts the batch: one object for an object event,
+            # the counters of a counter event (CR 603.2c).
+            noted = event.with_amount(max(1, event.amount))
         # The controller is read now, while the source is still here to ask.
-        pending = PendingTrigger(obj.id, ability, event, obj.controller)
+        pending = PendingTrigger(
+            obj.id, ability, noted, obj.controller, game.event_batch
+        )
         game.pending_triggers.append(pending)
+        # CR 603.2c: "whenever a +1/+1 counter is put on" - one placement of
+        # three counters holds three occurrences, and each triggers.
+        if (
+            trigger is not None
+            and trigger.each_counter
+            and not trigger.once_each_turn
+            and event.amount > 1
+        ):
+            for _ in range(event.amount - 1):
+                game.pending_triggers.append(pending)
         # CR 603.2b: something may say this ability triggers an extra time.
         # Both instances are separate triggers - they go on the stack
         # independently and can be responded to between them.
         for _ in range(_extra_triggers(game, obj, event)):
             game.pending_triggers.append(pending)
+
+
+def _fold_into_batch(game: Game, obj: GameObject, ability: Ability, event: Event) -> bool:
+    """CR 603.2c: "whenever one or more creatures die" triggers once for
+    everything that happened at the same time.
+
+    If this ability of this object already triggered on an earlier event of
+    the same batch, that one pending trigger stands for both: its event's
+    amount grows by this event's share, which is what "that many" reads, and
+    no second trigger is made.
+    """
+    folded = False
+    # Every copy, so an ability that triggers an additional time (CR 603.2d)
+    # sees the same batch in each instance.
+    for index, pending in enumerate(game.pending_triggers):
+        if (
+            pending.batch == game.event_batch
+            and pending.source == obj.id
+            and pending.ability == ability
+            # "Deal combat damage to *a player*" is about each player dealt
+            # damage, and "an opponent discards one or more cards" about
+            # each opponent: two players at once are two occurrences.
+            and (
+                pending.event.player == event.player
+                or not (ability.trigger.to_player or ability.trigger.players)
+            )
+        ):
+            grown = pending.event.with_amount(
+                pending.event.amount + max(1, event.amount)
+            )
+            game.pending_triggers[index] = pending._replace(event=grown)
+            folded = True
+    return folded
 
 
 def _collect_departed_token(
@@ -124,7 +190,7 @@ def _collect_departed_token(
         return
     if any(obj.id == token.id for obj, _ in found):
         return
-    for ability in game.printed_characteristics(token).abilities:
+    for ability in _last_known_abilities(game, token):
         if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
             continue
         trigger = ability.trigger
@@ -132,6 +198,50 @@ def _collect_departed_token(
             continue
         if condition_met(game, token, trigger, event):
             found.append((token, ability))
+
+
+def _collect_departed_card(
+    game: Game, event: Event, found: list[tuple[GameObject, Ability]]
+) -> None:
+    """A card's own leaves-the-battlefield abilities (CR 603.10a, 603.6c).
+
+    CR 603.10a: the game "looks back in time" for these, using the existence
+    of the abilities immediately before the event. A card that leaves is a new
+    object in its new zone (CR 400.7), and that object's abilities function
+    only where they say - a "when this dies" ability works on the battlefield,
+    so the graveyard card never answered for it and every such ability in the
+    format did nothing. The pre-move object is kept as last-known information
+    and still reads the zone it left, so it is asked instead.
+
+    Only the departed object's *own* abilities are looked for here: every
+    other permanent is still on the battlefield and the index already has it.
+    An ability that also functions where the card went has been found through
+    the new object already, and is not counted twice.
+    """
+    if not event.data:
+        return
+    departed = game.objects.get(event.data[0])
+    if departed is None or departed.id == event.object_id:
+        return  # A token is its own record (CR 111.7); see above.
+    if departed.zone is not Zone.BATTLEFIELD or departed.phased_out:
+        return
+    # CR 708.2: a face-down permanent has no abilities of its own to trigger.
+    if departed.face_down:
+        return
+    for ability in _last_known_abilities(game, departed):
+        if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
+            continue
+        trigger = ability.trigger
+        if trigger is None or event.kind not in _kinds_watched(trigger):
+            continue
+        if Zone.BATTLEFIELD not in trigger.functions_in:
+            continue
+        if any(
+            obj.id == event.object_id and other == ability for obj, other in found
+        ):
+            continue
+        if condition_met(game, departed, trigger, event):
+            found.append((departed, ability))
 
 
 def _extra_triggers(game: Game, obj: GameObject, event: Event) -> int:
@@ -385,15 +495,26 @@ def _watchers(game: Game) -> dict:
 def _trigger_abilities(game: Game, obj: GameObject) -> tuple:
     """The abilities that may trigger for this object.
 
-    Its printed abilities - except when it is face down. CR 708.2: a
+    Printed ones off the battlefield; on it, and face down, the ones the
+    layers leave it with. CR 708.2: a
     face-down permanent has only what turned it face down lists, so the
     card's own triggered abilities do not exist (and CR 708.3's "enters"
     abilities never see it), while a disguised or cloaked one's ward does.
     CR 406.3a: a card exiled face down has none at all.
     """
-    if obj.face_down:
+    # CR 613.1f: on the battlefield, abilities granted or removed by
+    # continuous effects - an Aura's "enchanted creature has 'When this
+    # creature dies, ...'" - count like printed ones.
+    if obj.face_down or obj.zone is Zone.BATTLEFIELD:
         return game.characteristics(obj).abilities
     return game.printed_characteristics(obj).abilities
+
+
+def _last_known_abilities(game: Game, departed: GameObject) -> tuple:
+    """CR 603.10a: the abilities a permanent had immediately before it left."""
+    if departed.last_known_characteristics is not None:
+        return departed.last_known_characteristics.abilities
+    return game.printed_characteristics(departed).abilities
 
 
 def _kinds_watched(trigger) -> frozenset:
@@ -460,10 +581,15 @@ def condition_met(
         # is a complete condition, so this is one recursion rather than a
         # union of constraints that would match combinations of them that no
         # half describes.
+        #
+        # CR 603.4: an intervening-if written after the disjunction ("whenever
+        # a creature dies or a creature card leaves your graveyard, if ...")
+        # belongs to the whole trigger, not to either half, so it is asked
+        # here as well.
         return any(
             condition_met(game, source, alternative, event)
             for alternative in trigger.alternatives
-        )
+        ) and check_intervening_if(game, source, trigger, event)
 
     if event.kind not in trigger.event_kinds:
         return False
@@ -474,6 +600,15 @@ def condition_met(
     if trigger.to_player and event.object_id != NO_OBJECT:
         # Damage to a permanent carries the permanent's id; damage to a player
         # carries none (CR 120.3).
+        return False
+
+    # CR 508.3d: "whenever [a player] attacks" triggers if one or more
+    # creatures that player controls are declared as attackers - not on a
+    # declaration of none.
+    if event.kind is EventKind.ATTACKERS_DECLARED and event.amount <= 0:
+        return False
+
+    if trigger.from_zones and event.from_zone not in trigger.from_zones:
         return False
 
     # A counter trigger that names a kind fires for that kind alone: the
@@ -524,6 +659,16 @@ def condition_met(
         before = now - max(1, event.amount)
         if not (before < trigger.chapter <= now):
             return False
+        # CR 702.155a: with read ahead, a chapter ability can't trigger the
+        # turn the Saga entered unless it has exactly that chapter's number
+        # of lore counters - so the chapters skipped by the number chosen as
+        # it entered (CR 714.3b) never happen.
+        if (
+            source.entered_battlefield_turn == game.turn
+            and game.characteristics(source).has_keyword("Read Ahead")
+            and now != trigger.chapter
+        ):
+            return False
 
     # CR 309.4c: a room ability triggers when its owner's venture marker
     # moves into that room of that dungeon - not a room of the same number on
@@ -538,7 +683,7 @@ def condition_met(
 
     # CR 603.4: the intervening-if clause is checked here, and again on
     # resolution. Failing either time means the ability does nothing.
-    return check_intervening_if(game, source, trigger)
+    return check_intervening_if(game, source, trigger, event)
 
 
 def _is_nth_this_turn(game: Game, trigger: TriggerCondition, event: Event) -> bool:
@@ -554,14 +699,25 @@ def _is_nth_this_turn(game: Game, trigger: TriggerCondition, event: Event) -> bo
     return total == trigger.ordinal
 
 
-def check_intervening_if(game: Game, source: GameObject, trigger: TriggerCondition) -> bool:
-    """Evaluate an intervening-if clause (CR 603.4)."""
+def check_intervening_if(
+    game: Game, source: GameObject, trigger: TriggerCondition, event=None
+) -> bool:
+    """Evaluate an intervening-if clause (CR 603.4).
+
+    ``event`` is the event the ability triggered on, which is what "it" means
+    in "whenever a creature dies, if it was a Human" - both when the ability
+    triggers and when it resolves.
+    """
     if trigger.intervening_if.is_always:
         return True
     from ..kernel.conditions import holds
 
     return holds(
-        game, trigger.intervening_if, source=source.id, controller=source.controller
+        game,
+        trigger.intervening_if,
+        source=source.id,
+        controller=source.controller,
+        event=event,
     )
 
 
@@ -576,7 +732,10 @@ def is_triggered_mana_ability(game: Game, source_id: int, ability: Ability) -> b
     """
     if ability.trigger is None:
         return False
-    if EventKind.MANA_ADDED not in ability.trigger.event_kinds:
+    if not ability.trigger.event_kinds & {
+        EventKind.MANA_ADDED,
+        EventKind.TAPPED_FOR_MANA,
+    }:
         return False
     if ability.is_targeted:
         return False
@@ -624,6 +783,9 @@ def resolve_mana_triggers(game: Game) -> int:
                 game=game,
                 source=pending.source,
                 controller=controller,
+                # No stack object carries the event here, and "its
+                # controller adds an additional {G}" is read off it.
+                trigger_event=pending.event,
                 chosen_modes=choose_modes(
                     game,
                     game.objects.get(pending.source),
@@ -675,6 +837,9 @@ def put_triggers_on_stack(game: Game) -> int:
     pending = game.pending_triggers
     game.pending_triggers = []
     count = 0
+    # What happens from here on happens after these triggered, never at the
+    # same time as what triggered them (CR 603.2c).
+    game.event_batch += 1
 
     for entry in pending:
         ability = entry.ability
@@ -736,6 +901,12 @@ def put_triggers_on_stack(game: Game) -> int:
                 source=entry.source,
             )
         )
+        # CR 603.3d: its targets were chosen as it went on the stack, and a
+        # permanent that became one of them has become the target of an
+        # ability - which ward (CR 702.21a) watches for.
+        from .cr601_casting import _announce_targets
+
+        _announce_targets(game, stack_object, controller)
         game.log.record(
             game,
             f"Trigger goes on the stack: {ability}",
@@ -822,7 +993,7 @@ def _choose_trigger_targets(
             return _candidates_for(game, source, effect, controller)
         # The source is gone and nothing kept it: no protection to check
         # against it, so the filters alone decide.
-        if effect.targets is None:
+        if effect.targets_a_player:
             return [
                 player_target(pid)
                 for pid in _targetable_players(game, effect.players, controller)
@@ -851,10 +1022,13 @@ def _choose_trigger_targets(
 
     # The agent is not trusted to return something legal: an illegal choice is
     # dropped rather than allowed through, and the ability fizzles later if
-    # nothing is left (CR 608.2b).
-    cleaned: list[tuple] = []
-    for index, effect in enumerate(effects):
-        legal = set(candidates[index]) if index < len(candidates) else set()
-        picked = tuple(chosen[index]) if index < len(chosen) else ()
-        cleaned.append(tuple(object_id for object_id in picked if object_id in legal))
-    return tuple(cleaned)
+    # nothing is left (CR 608.2b). The same cut spells get: no object twice
+    # for one "target", nothing chosen earlier in an "another target" slot
+    # (CR 115.3, 601.2c).
+    from .cr601_casting import settle_target_choices
+
+    # With no agent the engine chose for it, and a collision of its own
+    # making is its own to repair.
+    return settle_target_choices(
+        effects, candidates, chosen, fill_required=chooser is None
+    )
