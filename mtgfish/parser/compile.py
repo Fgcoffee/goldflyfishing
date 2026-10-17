@@ -1627,31 +1627,39 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
         return Ability.unreadable(text)
     if _grants_a_trigger(bound):
         result.failures.append(
-            ParseFailure(text, "grants a triggered ability the engine never collects", rule=rule)
+            ParseFailure(text, "grants a triggered keyword that does not yet work when granted", rule=rule)
         )
         return Ability.unreadable(text)
     return bound
 
 
 def _grants_a_trigger(ability: Ability) -> bool:
-    """Whether this ability gives another object a triggered ability.
+    """Whether this ability grants a triggered ability the engine cannot yet
+    run when granted.
 
-    CR 613.1f: an ability an effect grants is the object's like any printed
-    one, and CR 603.2 triggers it. The engine's trigger scan reads only an
-    object's printed abilities (cr603_triggers._trigger_abilities), so a
-    granted trigger - Abnormal Endurance's "When this creature dies, return
-    it", or "creatures you control have prowess" - never fires. Until the scan
-    reads layered abilities, a card that grants one would look read and do
-    nothing, so it is refused.
+    CR 613.1f and 603.2: a granted ability triggers like a printed one, and
+    the engine now collects layered abilities (rules session, 5d767e8) -
+    checked on boards by the auditing session for a granted quoted dies
+    trigger (Abnormal Endurance), exalted, ward and prowess. Granted persist
+    and undying still fail there: they trigger and resolve, and the card stays
+    in the graveyard (F19). Afterlife and modular are kept refused until they
+    have been checked granted. Those keywords alone are refused.
     """
     for effect in ability.effects:
         for node in effect.walk():
             if node.kind is not EffectKind.GRANT_ABILITY:
                 continue
             for granted in node.granted_abilities:
-                if getattr(granted, "kind", None) is AbilityKind.TRIGGERED:
+                if getattr(granted, "kind", None) is not AbilityKind.TRIGGERED:
+                    continue
+                if (getattr(granted, "keyword", "") or "").lower() in _UNTESTED_GRANTED_TRIGGERS:
                     return True
     return False
+
+
+#: Triggered keywords that do not yet work when granted (F19), or have not
+#: been checked granted on a board.
+_UNTESTED_GRANTED_TRIGGERS = frozenset({"persist", "undying", "afterlife", "modular"})
 
 
 # ---------------------------------------------------------------------------
