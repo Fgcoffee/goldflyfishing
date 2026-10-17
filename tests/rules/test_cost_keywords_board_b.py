@@ -949,3 +949,135 @@ def test_a_card_cast_for_its_mana_cost_is_front_face_up(converted):
     assert spell.face_index == 0
     converted.resolve_stack()
     assert named(converted, "Goldbug, Humanity's Ally")
+
+
+# ---------------------------------------------------------------------------
+# Impending (CR 702.176a) and bloodthirst (CR 702.54a): "enters with
+# counters if ..."
+# ---------------------------------------------------------------------------
+
+
+def enters_with(counter: str, amount: int, condition: Condition) -> Ability:
+    return Ability.static(
+        Effect(EffectKind.ADD_COUNTERS, counter_type=counter, amount=Value.of(amount),
+               condition=condition, text=f"enters with {amount} {counter} counters"),
+        text=f"enters with {counter} counters if",
+    )
+
+
+def impending_as_the_rule_reads(n: int, cost: str) -> tuple[Ability, ...]:
+    """The alternative cost, the counters it enters with, and "not a
+    creature while it has a time counter" - all keyed on the payment."""
+    from mtgfish.rules.kernel.query import Comparison, NumericConstraint
+
+    impending_paid = Condition(ConditionKind.ALTERNATIVE_COST_PAID, keyword="Impending")
+    has_time = Condition(ConditionKind.COUNTER_COUNT, counter_type="time",
+                         constraint=NumericConstraint(Comparison.GE, Value.of(1)))
+    return (
+        alternative_cost("Impending", mana(cost)),
+        enters_with("time", n, impending_paid),
+        Ability.static(
+            Effect(EffectKind.REMOVE_TYPE, targets=SELF, types=CardType.CREATURE,
+                   text="it's not a creature"),
+            condition=Condition(ConditionKind.AND, operands=(impending_paid, has_time)),
+            text="as long as its impending cost was paid and it has a time counter",
+        ),
+    )
+
+
+@pytest.fixture
+def impending(card_db):
+    return setup(card_db, {"Hill Giant": impending_as_the_rule_reads(2, "{R}")})
+
+
+def test_an_impending_permanent_enters_with_time_counters_and_is_no_creature(impending):
+    card = impending.hand("Hill Giant")
+    give(impending, 1, Color.RED)
+    cast(impending, card, alternative=alternative_index(impending, card, "Impending"))
+    run(impending)
+    (giant,) = named(impending, "Hill Giant")
+    assert giant.counter_count("time") == 2
+    assert not impending.chars(giant).is_creature
+
+
+def test_cast_for_its_mana_cost_it_enters_without_counters(impending):
+    card = impending.hand("Hill Giant")
+    give(impending, 4, Color.RED)
+    cast(impending, card)
+    run(impending)
+    (giant,) = named(impending, "Hill Giant")
+    assert giant.counter_count("time") == 0
+    assert impending.chars(giant).is_creature
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Impending is built as a plain alternative cost; CR 702.176a "
+    "also needs a static ADD_COUNTERS 'enters with N time counters' (text "
+    "starting 'enters ') with condition ALTERNATIVE_COST_PAID keyword "
+    "'Impending', a static REMOVE_TYPE CREATURE on itself under AND(that, "
+    "COUNTER_COUNT time >= 1), and an end-step trigger removing a time "
+    "counter under the same condition"))
+def test_the_impending_builder_enters_with_time_counters(card_db):
+    board = setup(card_db, {"Hill Giant": keyword("Impending", "{R}", amount=2)})
+    card = board.hand("Hill Giant")
+    give(board, 1, Color.RED)
+    cast(board, card, alternative=alternative_index(board, card, "Impending"))
+    run(board)
+    (giant,) = named(board, "Hill Giant")
+    assert giant.counter_count("time") == 2
+
+
+def an_opponent_was_dealt_damage() -> Condition:
+    from mtgfish.rules.kernel.query import PlayerFilter, PlayerScope
+
+    return Condition(ConditionKind.EVENT_THIS_TURN,
+                     players=PlayerFilter(PlayerScope.OPPONENT),
+                     event_kinds=(int(EventKind.DAMAGE_DEALT),
+                                  int(EventKind.COMBAT_DAMAGE_DEALT)))
+
+
+@pytest.fixture
+def bloodthirst(card_db):
+    return setup(card_db, {"Hill Giant": (
+        enters_with("+1/+1", 2, an_opponent_was_dealt_damage()),)})
+
+
+def test_bloodthirst_after_an_opponent_was_dealt_damage(bloodthirst):
+    from mtgfish.rules.cr100_game_concepts.actions import deal_damage
+
+    deal_damage(bloodthirst.game, P1, 1, source_controller=P0)
+    card = bloodthirst.hand("Hill Giant")
+    give(bloodthirst, 4, Color.RED)
+    cast(bloodthirst, card)
+    run(bloodthirst)
+    (giant,) = named(bloodthirst, "Hill Giant")
+    assert bloodthirst.pt(giant) == (5, 5)
+
+
+def test_no_bloodthirst_when_no_opponent_was_dealt_damage(bloodthirst):
+    card = bloodthirst.hand("Hill Giant")
+    give(bloodthirst, 4, Color.RED)
+    cast(bloodthirst, card)
+    run(bloodthirst)
+    (giant,) = named(bloodthirst, "Hill Giant")
+    assert bloodthirst.pt(giant) == (3, 3)
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Bloodthirst's ADD_COUNTERS has no text, so it is not read "
+    "as an 'enters with' effect, and its EVENT_THIS_TURN condition has no "
+    "event_kinds or players, so it never holds; it needs text 'enters with N "
+    "+1/+1 counters' and condition=Condition(EVENT_THIS_TURN, "
+    "players=PlayerFilter(OPPONENT), event_kinds=(DAMAGE_DEALT, "
+    "COMBAT_DAMAGE_DEALT))"))
+def test_the_bloodthirst_builder_after_an_opponent_was_dealt_damage(card_db):
+    from mtgfish.rules.cr100_game_concepts.actions import deal_damage
+
+    board = setup(card_db, {"Hill Giant": keyword("Bloodthirst", None, amount=2)})
+    deal_damage(board.game, P1, 1, source_controller=P0)
+    card = board.hand("Hill Giant")
+    give(board, 4, Color.RED)
+    cast(board, card)
+    run(board)
+    (giant,) = named(board, "Hill Giant")
+    assert board.pt(giant) == (5, 5)
