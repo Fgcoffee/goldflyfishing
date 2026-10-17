@@ -675,3 +675,94 @@ def test_the_gift_builder_is_an_additional_cost(card_db):
     chars = board.chars(card)
     assert not chars.alternative_costs
     assert [c.keyword for c in chars.additional_costs] == ["Gift"]
+
+
+# ---------------------------------------------------------------------------
+# Bargain (CR 702.166a-b)
+# ---------------------------------------------------------------------------
+
+
+def sacrifice(spec: ObjectFilter, text: str) -> Cost:
+    return Cost((CostComponent(CostKind.SACRIFICE, amount=Value.of(1), filter=spec,
+                               text=text),))
+
+
+def bargain_as_the_rule_reads() -> Ability:
+    """"You may sacrifice an artifact, enchantment, or token" - a choice of
+    two costs, because no one filter says "or token"."""
+    from mtgfish.rules.kernel.query import ControllerRelation
+
+    yours = ControllerRelation.YOU
+    return optional_cost("Bargain", Cost(choices=(
+        sacrifice(ObjectFilter(types_any=CardType.ARTIFACT | CardType.ENCHANTMENT,
+                               controller=yours), "sacrifice an artifact or enchantment"),
+        sacrifice(ObjectFilter(is_token=True, controller=yours), "sacrifice a token"),
+    )))
+
+
+def if_bargained(*effects: Effect) -> Effect:
+    return Effect(EffectKind.CONDITIONAL, condition=paid("bargain"), children=effects,
+                  text="if this spell was bargained")
+
+
+@pytest.fixture
+def bargain(card_db):
+    return setup(card_db, {"Fire Prophecy": (
+        Ability.spell(GAIN_1, if_bargained(GAIN_1)), bargain_as_the_rule_reads())})
+
+
+def bargain_offered(board, card) -> bool:
+    return bool(offered(board, card, additional_costs=(0,)))
+
+
+def test_bargain_sacrifices_an_artifact(bargain):
+    bargain.play("Witch's Oven")
+    card = bargain.hand("Fire Prophecy")
+    give(bargain, 2, Color.RED)
+    assert bargain_offered(bargain, card)
+    cast(bargain, card, additional=(0,))
+    assert bargain.in_graveyard() == ["Witch's Oven"]
+    run(bargain)
+    assert life(bargain) == 42
+
+
+def test_bargain_sacrifices_a_token_when_that_is_what_there_is(bargain):
+    bargain.token("Grizzly Bears")
+    card = bargain.hand("Fire Prophecy")
+    give(bargain, 2, Color.RED)
+    assert bargain_offered(bargain, card)
+    cast(bargain, card, additional=(0,))
+    assert named(bargain, "Grizzly Bears") == []
+    run(bargain)
+    assert life(bargain) == 42
+
+
+def test_bargain_is_not_offered_with_nothing_to_sacrifice(bargain):
+    bargain.play("Grizzly Bears")  # a nontoken creature is not enough
+    card = bargain.hand("Fire Prophecy")
+    give(bargain, 2, Color.RED)
+    assert offered(bargain, card)
+    assert not bargain_offered(bargain, card)
+
+
+def test_an_unbargained_spell_skips_the_rider(bargain):
+    bargain.play("Witch's Oven")
+    card = bargain.hand("Fire Prophecy")
+    give(bargain, 2, Color.RED)
+    cast(bargain, card)
+    run(bargain)
+    assert life(bargain) == 41
+    assert named(bargain, "Witch's Oven")
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Bargain is built as an optional additional cost of "
+    "instance.cost, which the keyword never prints, so it is free; it needs "
+    "Cost(choices=(sacrifice an artifact or enchantment you control, "
+    "sacrifice a token you control))"))
+def test_the_bargain_builder_needs_something_to_sacrifice(card_db):
+    board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
+                                              *keyword("Bargain", None))})
+    card = board.hand("Fire Prophecy")
+    give(board, 2, Color.RED)
+    assert not bargain_offered(board, card)

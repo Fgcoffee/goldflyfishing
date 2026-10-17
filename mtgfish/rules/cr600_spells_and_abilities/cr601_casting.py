@@ -364,10 +364,14 @@ def compute_total_cost(
     # optional ones as announced. CR 118.9d applies them to the alternative
     # cost too, so an alternative cost is never a way to dodge a tax.
     payments = recorded_payments(chars, action.additional_costs)
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import chosen_cost
+
     for index, additional in enumerate(chars.additional_costs):
         for _ in range(_times_charged(spell, additional, index, payments)):
-            total.base = total.base.plus(additional.cost.mana_component)
-            for component in additional.cost.non_mana_components:
+            # CR 601.2f: a cost written as a choice charges the one chosen.
+            cost = chosen_cost(game, player_id, additional.cost, spell)
+            total.base = total.base.plus(cost.mana_component)
+            for component in cost.non_mana_components:
                 total.add_additional(component)
 
     if from_command_zone and spell.is_commander:

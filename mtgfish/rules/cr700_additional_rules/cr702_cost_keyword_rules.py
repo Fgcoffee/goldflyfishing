@@ -75,6 +75,28 @@ def do_repeat_per_payment(resolution: Resolution, effect: Effect) -> None:
         execute(resolution, effect.children)
 
 
+def chosen_cost(game: Game, player_id: PlayerId, cost, spell: GameObject):
+    """The cost actually paid when a cost is written as a choice of costs.
+
+    CR 702.166a: bargain is "sacrifice an artifact, enchantment, or token",
+    which no single filter can say, so it is written as a choice. With
+    nothing to ask, the first choice whose components can all be paid is
+    taken; when none can, the first, whose payment then fails (CR 601.2h).
+    """
+    if not cost.choices:
+        return cost
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _check_payable
+
+    for choice in cost.choices:
+        try:
+            for component in choice.non_mana_components:
+                _check_payable(game, player_id, component, spell, spell=spell)
+        except CastError:
+            continue
+        return choice
+    return cost.choices[0]
+
+
 # ---------------------------------------------------------------------------
 # Token copies (CR 707.2, 707.9)
 # ---------------------------------------------------------------------------
