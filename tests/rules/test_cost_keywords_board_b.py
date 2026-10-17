@@ -841,3 +841,73 @@ def test_a_spree_spell_is_not_offered_without_its_cheapest_mode(spree):
 def test_the_spree_builder_adds_no_cost_of_its_own(card_db):
     board = setup(card_db, {"Fire Prophecy": keyword("Spree", None)})
     assert not board.chars(board.hand("Fire Prophecy")).additional_costs
+
+
+# ---------------------------------------------------------------------------
+# Conspire (CR 702.78a)
+# ---------------------------------------------------------------------------
+
+
+def conspire_as_the_rule_reads() -> Ability:
+    """"You may tap two untapped creatures you control that each share a
+    color with it"; the copy trigger is keyed on the payment."""
+    from mtgfish.rules.kernel.query import ControllerRelation
+
+    tap_two = CostComponent(
+        CostKind.TAP_OTHER,
+        amount=Value.of(2),
+        filter=ObjectFilter(types_all=CardType.CREATURE, controller=ControllerRelation.YOU,
+                            shares_color_with_source=True),
+        text="tap two untapped creatures you control that each share a color with it",
+    )
+    return optional_cost("Conspire", Cost((tap_two,)))
+
+
+@pytest.fixture
+def conspire(card_db):
+    # Fire Prophecy is red.
+    return setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
+                                             conspire_as_the_rule_reads())})
+
+
+def test_conspire_taps_two_creatures_sharing_a_color_and_copies(conspire):
+    goblins = [conspire.play("Raging Goblin"), conspire.play("Goblin Piker")]
+    card = conspire.hand("Fire Prophecy")
+    give(conspire, 2, Color.RED)
+    assert offered(conspire, card, additional_costs=(0,))
+    cast(conspire, card, additional=(0,))
+    assert all(g.tapped for g in goblins)
+    run(conspire)
+    assert life(conspire) == 42, "the spell and its copy"
+
+
+def test_conspire_needs_creatures_that_share_a_color(conspire):
+    conspire.play("Raging Goblin")
+    conspire.play("Grizzly Bears")  # green
+    card = conspire.hand("Fire Prophecy")
+    give(conspire, 2, Color.RED)
+    assert offered(conspire, card)
+    assert not offered(conspire, card, additional_costs=(0,))
+
+
+def test_unpaid_conspire_makes_no_copy(conspire):
+    conspire.play("Raging Goblin")
+    conspire.play("Goblin Piker")
+    card = conspire.hand("Fire Prophecy")
+    give(conspire, 2, Color.RED)
+    cast(conspire, card)
+    run(conspire)
+    assert life(conspire) == 41
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Conspire is built as an optional additional cost of "
+    "instance.cost, which the keyword never prints, so it is free; it needs "
+    "Cost((CostComponent(TAP_OTHER, amount=2, filter=ObjectFilter(types_all="
+    "CREATURE, controller=YOU, shares_color_with_source=True)),))"))
+def test_the_conspire_builder_taps_two_creatures(card_db):
+    board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
+                                              *keyword("Conspire", None))})
+    card = board.hand("Fire Prophecy")
+    give(board, 2, Color.RED)
+    assert not offered(board, card, additional_costs=(0,)), "no creatures to tap"

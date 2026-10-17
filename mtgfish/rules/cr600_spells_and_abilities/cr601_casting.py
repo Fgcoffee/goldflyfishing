@@ -1660,6 +1660,22 @@ def _check_payable(
         obj = game.objects.get(context.source or context.id)
         if obj is None or obj.tapped:
             raise CastError("cannot tap")
+    if kind in (CostKind.TAP_OTHER, CostKind.UNTAP_OTHER) and component.filter is not None:
+        # CR 702.78a: conspire's two creatures, asked before the cast is
+        # offered rather than found missing halfway through paying.
+        from ..kernel.matching import find
+
+        tapping = kind is CostKind.TAP_OTHER
+        available = [
+            obj
+            for obj in find(game, component.filter, source=context.id, controller=player_id)
+            if obj.tapped is not tapping and obj.id != context.id
+        ]
+        if component.total_power and tapping:
+            if creatures_with_total_power(game, available, amount) is None:
+                raise CastError(f"not enough total power to tap ({amount})")
+        elif len(available) < max(1, amount):
+            raise CastError("not enough permanents to tap")
 
 
 def _choose_permanents(

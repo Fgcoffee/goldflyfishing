@@ -541,6 +541,9 @@ class ObjectFilter:
     must_be_coloured: bool = False
     must_be_multicolored: bool = False
     must_be_monocolored: bool = False
+    #: CR 702.78a conspire: "creatures that each share a color with it" -
+    #: at least one color in common with the ability's source.
+    shares_color_with_source: bool = False
 
     # -- identity -----------------------------------------------------------
     named: tuple[str, ...] = ()
