@@ -556,3 +556,122 @@ def test_the_spectacle_builder_needs_an_opponent_to_have_lost_life(card_db):
     card = board.hand("Fire Prophecy")
     give(board, 1, Color.RED)
     assert not spectacle_offered(board, card)
+
+
+# ---------------------------------------------------------------------------
+# Gift (CR 702.174)
+# ---------------------------------------------------------------------------
+
+
+def chosen_player_draws() -> Effect:
+    """CR 702.174e: "Gift a card" - the chosen player draws a card."""
+    from mtgfish.rules.kernel.query import PlayerFilter, PlayerScope
+
+    return Effect(
+        EffectKind.GIVE_GIFT,
+        children=(Effect(EffectKind.DRAW, players=PlayerFilter(PlayerScope.THAT_PLAYER),
+                         amount=Value.of(1), text="the chosen player draws a card"),),
+        text="gift a card",
+    )
+
+
+def gift_cost() -> Ability:
+    """CR 702.174a: "you may choose an opponent" - a cost with nothing to pay."""
+    return optional_cost("Gift", Cost(()))
+
+
+def hand_count(board, player: PlayerId) -> int:
+    return len(board.game.player(player).hand)
+
+
+@pytest.fixture
+def gift_spell(card_db):
+    return setup(card_db, {"Fire Prophecy": (
+        Ability.spell(chosen_player_draws(), GAIN_1), gift_cost())})
+
+
+def test_a_promised_gift_goes_to_the_chosen_opponent(gift_spell):
+    card = gift_spell.hand("Fire Prophecy")
+    give(gift_spell, 2, Color.RED)
+    before = hand_count(gift_spell, P1)
+    spell = cast(gift_spell, card, additional=(0,))
+    assert spell.chosen_player == P1
+    run(gift_spell)
+    assert hand_count(gift_spell, P1) == before + 1
+    assert life(gift_spell) == 41, "and the rest of the spell happens too"
+
+
+def test_no_gift_when_none_was_promised(gift_spell):
+    card = gift_spell.hand("Fire Prophecy")
+    give(gift_spell, 2, Color.RED)
+    before = hand_count(gift_spell, P1)
+    cast(gift_spell, card)
+    run(gift_spell)
+    assert hand_count(gift_spell, P1) == before
+    assert life(gift_spell) == 41
+
+
+def test_the_caster_chooses_which_opponent(card_db):
+    board = setup(card_db, {"Fire Prophecy": (
+        Ability.spell(chosen_player_draws()), gift_cost())}, players=3)
+
+    class PicksTheLast:
+        def choose_gift_recipient(self, game, player, opponents):
+            return opponents[-1]
+
+    board.game.agents[0] = PicksTheLast()
+    card = board.hand("Fire Prophecy")
+    give(board, 2, Color.RED)
+    before = hand_count(board, PlayerId(2))
+    spell = cast(board, card, additional=(0,))
+    assert spell.chosen_player == PlayerId(2)
+    run(board)
+    assert hand_count(board, PlayerId(2)) == before + 1
+
+
+def test_a_gift_permanent_gives_as_it_enters(card_db):
+    """CR 702.174b: on a permanent, an enters trigger - the choice made as
+    the spell was cast is the permanent's."""
+    board = setup(card_db, {"Grizzly Bears": (
+        gift_cost(), when_this_enters(chosen_player_draws(), condition=paid("gift")))})
+    card = board.hand("Grizzly Bears")
+    give(board, 2)
+    before = hand_count(board, P1)
+    cast(board, card, additional=(0,))
+    run(board)
+    (bears,) = named(board, "Grizzly Bears")
+    assert bears.chosen_player == P1
+    assert hand_count(board, P1) == before + 1
+
+
+def test_giving_a_gift_triggers_whenever_you_give_a_gift(card_db):
+    """CR 702.174c."""
+    watcher = Ability.triggered(
+        TriggerCondition(event_kinds=frozenset({EventKind.GIFT_GIVEN}), players=YOU,
+                         text="whenever you give a gift"),
+        GAIN_1,
+        text="whenever you give a gift, gain 1 life",
+    )
+    board = setup(card_db, {
+        "Fire Prophecy": (Ability.spell(chosen_player_draws()), gift_cost()),
+        "Grizzly Bears": (watcher,),
+    })
+    board.play("Grizzly Bears")
+    card = board.hand("Fire Prophecy")
+    give(board, 2, Color.RED)
+    cast(board, card, additional=(0,))
+    run(board)
+    assert life(board) == 41
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Gift is built as an alternative cost; CR 702.174a makes it "
+    "an optional additional cost ('you may choose an opponent', keyword Gift, "
+    "an empty Cost) plus a GIVE_GIFT effect, or an enters trigger "
+    "intervening-if WAS_KICKED keyword 'gift' wrapping GIVE_GIFT on a permanent"))
+def test_the_gift_builder_is_an_additional_cost(card_db):
+    board = setup(card_db, {"Fire Prophecy": keyword("Gift", None)})
+    card = board.hand("Fire Prophecy")
+    chars = board.chars(card)
+    assert not chars.alternative_costs
+    assert [c.keyword for c in chars.additional_costs] == ["Gift"]
