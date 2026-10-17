@@ -615,3 +615,36 @@ def test_graveyard_token_keywords_are_activated_not_cast(card_db, name):
     card = board.graveyard("Hill Giant")
     give(board, 5)
     assert not offered(board, card), "the card itself is never cast"
+
+
+def test_a_blitzed_creature_that_loses_its_abilities_draws_nothing(card_db):
+    """CR 702.152a: the draw is an ability the permanent has, so it goes
+    with the rest when a later effect removes them all (CR 613.1f)."""
+    from mtgfish.rules.cr100_game_concepts.actions import destroy
+
+    board = setup(
+        card_db,
+        {
+            "Grizzly Bears": keyword("Blitz", "{R}"),
+            "Humility": (
+                Ability.static(
+                    Effect(
+                        EffectKind.REMOVE_ABILITIES,
+                        targets=ObjectFilter(types_all=CardType.CREATURE),
+                    ),
+                    text="All creatures lose all abilities.",
+                ),
+            ),
+        },
+    )
+    card = board.hand("Grizzly Bears")
+    give(board, 1)
+    cast_for(board, card, "Blitz")
+    board.resolve_stack()
+    board.play("Humility")
+    board.refresh()
+    before = hand_size(board)
+    destroy(board.game, permanent(board, "Grizzly Bears"))
+    board.settle()
+    board.resolve_stack()
+    assert hand_size(board) == before
