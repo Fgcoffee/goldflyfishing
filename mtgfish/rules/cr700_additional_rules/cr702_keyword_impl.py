@@ -122,7 +122,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     " was every creature you control",
     "living weapon": "CR 702.92a: create a 0/0 Germ and attach to it; created no Germ",
     "for mirrodin!": "CR 702.163a: create a 2/2 Rebel and attach to it; created no Rebel",
-    "saddle": "CR 702.171a: tap creatures with total power N; was a free +1/+1 counter",
     "craft": "CR 702.167a: exile with materials, return transformed; was a +1/+1 counter",
     "harmonize": "CR 702.180a: cast from the graveyard; was a +1/+1 counter",
     "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
@@ -152,8 +151,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     " was any attack",
     "evolve": "CR 702.100a: only for a bigger creature; was any creature",
     # Found by the auditing session, checked against the builders:
-    "crew": "CR 702.122a: tap other creatures with total power N or greater;"
-    " was tap N creatures (the cost system has no total-power cost yet)",
     "jump-start": "CR 702.133a: cast from the graveyard paying the mana cost and"
     " discarding a card, then exile; was a free cast from the graveyard",
     "aftermath": "CR 702.127a: cast this half only from a graveyard, then exile;"
@@ -1414,9 +1411,35 @@ def _cycling(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+#: CR 702.122a / 702.171a: "Tap any number of OTHER untapped creatures you
+#: control with total power N or greater". Without "other", a crewed Vehicle
+#: - a creature by then - could tap itself to pay its own crew cost. Untapped
+#: is the cost's own requirement (TAP_OTHER only taps untapped permanents).
+_OTHER_CREATURES_YOU_CONTROL = ObjectFilter(
+    types_all=CardType.CREATURE,
+    controller=ControllerRelation.YOU,
+    other_than_source=True,
+)
+
+
+def _tap_total_power(n: int, verb: str) -> Cost:
+    return Cost(
+        (
+            CostComponent(
+                CostKind.TAP_OTHER,
+                amount=Value.of(max(1, n)),
+                filter=_OTHER_CREATURES_YOU_CONTROL,
+                total_power=True,
+                text=f"tap other untapped creatures you control with total power {n} or greater"
+                f" ({verb})",
+            ),
+        )
+    )
+
+
 @register("Crew")
 def _crew(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.122a: tap creatures with total power N to animate the Vehicle."""
+    """CR 702.122a: tap other creatures with total power N to animate the Vehicle."""
     return (
         Ability(
             AbilityKind.ACTIVATED,
@@ -1428,18 +1451,28 @@ def _crew(instance: KeywordInstance) -> tuple[Ability, ...]:
                     text="becomes an artifact creature until end of turn",
                 ),
             ),
-            cost=Cost(
-                (
-                    CostComponent(
-                        CostKind.TAP_OTHER,
-                        amount=Value.of(max(1, instance.amount)),
-                        filter=CREATURES_YOU_CONTROL,
-                        text=f"tap creatures with total power {instance.amount}",
-                    ),
-                )
-            ),
+            cost=_tap_total_power(instance.amount, "crew"),
             keyword="Crew",
             text=instance.text or f"Crew {instance.amount}",
+        ),
+    )
+
+
+@register("Saddle")
+def _saddle(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.171a: "Tap any number of other untapped creatures you control
+    with total power N or greater: This permanent becomes saddled until end of
+    turn. Activate only as a sorcery." The saddled designation (702.171b) is
+    the engine's; "attacks while saddled" reads ConditionKind.IS_SADDLED.
+    """
+    return (
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(Effect(EffectKind.BECOME_SADDLED, text="becomes saddled until end of turn"),),
+            cost=_tap_total_power(instance.amount, "saddle"),
+            timing=Timing.SORCERY,
+            keyword="Saddle",
+            text=instance.text or f"Saddle {instance.amount}",
         ),
     )
 
@@ -2247,7 +2280,7 @@ def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Outlast", "Level Up", "Boast", "Exhaust", "Saddle",
+@register("Outlast", "Level Up", "Boast", "Exhaust",
           "Harmonize", "Craft", "Job select", "Specialize")
 def _counter_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Activated keywords whose effect is putting counters on this permanent."""

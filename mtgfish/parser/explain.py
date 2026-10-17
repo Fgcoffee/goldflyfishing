@@ -278,6 +278,7 @@ _OBJECT_VERBS = {
     EffectKind.PHASE_OUT: "phase out",
     EffectKind.REGENERATE: "regenerate",
     EffectKind.GOAD: "goad",
+    EffectKind.BECOME_SADDLED: "saddle (until end of turn)",
     EffectKind.ATTACH: "attach to",
     EffectKind.UNATTACH: "unattach",
     EffectKind.COPY_PERMANENT: "copy",
