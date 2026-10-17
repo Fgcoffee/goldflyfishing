@@ -60,6 +60,12 @@ def resolve_everything(box):
         box.resolve_top()
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason="the parser refuses abilities that grant a triggered ability "
+    "(parser/compile.py _grants_a_trigger) until it has checked them against "
+    "this fix; remove this marker when it lifts the refusal",
+)
 def test_a_granted_dies_trigger_returns_the_creature(box):
     box.put("Grizzly Bears", "battlefield", 0)
     box.put("Abnormal Endurance", "hand", 0)
@@ -82,3 +88,53 @@ def test_without_the_grant_the_creature_stays_dead(box):
     cast(box, "Shock", creature.id)
     (dead,) = bears(box.game)
     assert dead.zone is Zone.GRAVEYARD
+
+
+def test_granted_exalted_triggers_for_each_creature_that_has_it(card_db):
+    """Sublime Archangel's shape: its own exalted, and "other creatures you
+    control have exalted". A lone attacker with the Archangel and two other
+    creatures in play gets three triggers, not one (CR 702.90b)."""
+    from harness import FixedAgent, ScriptedAbilities, make_board
+
+    from mtgfish.rules.cr500_turn_structure.cr506_combat import declare_attackers
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
+        KeywordInstance,
+        build,
+    )
+    from mtgfish.rules.kernel.enums import CardType
+    from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter
+
+    exalted = build(KeywordInstance("Exalted"))
+    others = ObjectFilter(
+        types_all=CardType.CREATURE,
+        controller=ControllerRelation.YOU,
+        other_than_source=True,
+    )
+    board = make_board(
+        card_db,
+        ScriptedAbilities(
+            {
+                "Serra Angel": (
+                    *exalted,
+                    Ability.static(
+                        Effect(
+                            EffectKind.GRANT_ABILITY,
+                            targets=others,
+                            granted_abilities=exalted,
+                            text="Other creatures you control have exalted.",
+                        ),
+                    ),
+                ),
+            }
+        ),
+    )
+    game = board.game
+    game.active_player = P0
+    board.play("Serra Angel", controller=0)
+    attacker = board.play("Grizzly Bears", controller=0)
+    board.play("Grizzly Bears", controller=0)
+    game.agents[P0] = FixedAgent(attackers={attacker.id: 1})
+    declare_attackers(game)
+    assert len(game.pending_triggers) == 3
