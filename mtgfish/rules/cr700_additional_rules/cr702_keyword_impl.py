@@ -133,13 +133,9 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "backup": "CR 702.165a: counters on target creature, which gains abilities;"
     " was counters on this",
     "fabricate": "CR 702.123a: counters or Servo tokens; was always counters",
-    "modular": "CR 702.43a with 608.2h: move the counters it had on the battlefield;"
-    " the dies trigger counted them on the card in the graveyard and moved none",
     "graft": "CR 702.58a: also moves counters onto entering creatures; was counters only",
     "sunburst": "CR 702.44a: a counter per color spent; was always one",
     "soulbond": "CR 702.95a: pair with one creature; was attached to every creature",
-    "fading": "CR 702.32a: sacrifice when a counter can't be removed;"
-    " was sacrificed as the last one came off, an upkeep early",
     "compleated": "CR 702.150a: fewer loyalty per Phyrexian mana paid with life;"
     " was a static removing X loyalty",
     "haunt": "CR 702.55a: exile haunting a creature, trigger again; was exile only",
@@ -918,14 +914,29 @@ def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
 # ---------------------------------------------------------------------------
 
 
-def _dies_trigger(instance: KeywordInstance, *effects: Effect) -> Ability:
+def _dies_trigger(
+    instance: KeywordInstance, *effects: Effect, look_back: bool = False
+) -> Ability:
+    """A "when this dies" keyword trigger.
+
+    By default it also functions from the graveyard, and its source is the
+    card there: what Persist and Undying return is that card. ``look_back``
+    instead triggers from the object as it last existed on the battlefield
+    (CR 603.10a), which is what a trigger needs when it reads what the
+    permanent had - Modular's counters are on that object, not on the
+    graveyard card that replaced it (CR 608.2h).
+    """
     return Ability.triggered(
         TriggerCondition(
             event_kinds=frozenset({EventKind.DIES}),
             subject=ObjectFilter(source_only=True, zones=frozenset()),
-            # A dies trigger has to function from the graveyard as well, since
-            # that is where the object is by the time it fires (CR 603.6e).
-            functions_in=frozenset({Zone.BATTLEFIELD, Zone.GRAVEYARD}),
+            # Looking back, the engine finds it through the departed object
+            # (cr603_triggers._collect_departed_card), as it does every parsed
+            # "when this dies"; otherwise it also functions from the
+            # graveyard, where the object is by the time it fires (603.6e).
+            functions_in=(
+                BATTLEFIELD if look_back else frozenset({Zone.BATTLEFIELD, Zone.GRAVEYARD})
+            ),
             uses_last_known_information=True,
             text=f"when this dies ({instance.name})",
         ),
@@ -1053,18 +1064,27 @@ def _modular(instance: KeywordInstance) -> tuple[Ability, ...]:
     tuple.
     """
     amount = Value.of(max(1, instance.amount))
+    # "you may put" (CR 702.43a): with only an opponent's artifact creature
+    # to target, moving the counters is a choice, not an obligation.
     move = _dies_trigger(
         instance,
         Effect(
-            EffectKind.ADD_COUNTERS,
-            targets=ObjectFilter(
-                types_all=CardType.ARTIFACT | CardType.CREATURE,
-                other_than_source=True,
+            EffectKind.OPTIONAL,
+            children=(
+                Effect(
+                    EffectKind.ADD_COUNTERS,
+                    targets=ObjectFilter(
+                        types_all=CardType.ARTIFACT | CardType.CREATURE,
+                        other_than_source=True,
+                    ),
+                    counter_type="+1/+1",
+                    amount=Value(ValueKind.COUNTERS, counter_type="+1/+1", of_affected=False),
+                    is_targeted=True,
+                ),
             ),
-            counter_type="+1/+1",
-            amount=Value(ValueKind.COUNTERS, counter_type="+1/+1", of_affected=False),
-            is_targeted=True,
+            text="you may move its +1/+1 counters to target artifact creature",
         ),
+        look_back=True,
     )
     return (_enters_with_counters(instance, "+1/+1", amount), move)
 
@@ -1079,10 +1099,45 @@ def _graft(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Fading")
 def _fading(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.32a: enters with N fade counters; upkeep removes one or sacrifices."""
+    """CR 702.32a: "This permanent enters with N fade counters on it" and "At
+    the beginning of your upkeep, remove a fade counter from this permanent.
+    If you can't, sacrifice the permanent."
+
+    Not Vanishing's shape: Vanishing sacrifices as the last counter comes off,
+    Fading only when there is none left to remove - an upkeep later, so
+    Blastoderm (fading 3) attacks for three turns, not two.
+    """
+    none_left = Condition(
+        ConditionKind.OBJECT_COUNT,
+        filter=ObjectFilter(source_only=True, has_counter="fade"),
+        constraint=NumericConstraint(Comparison.EQ, Value.of(0)),
+        text="if you can't remove a fade counter",
+    )
+    upkeep = Ability.triggered(
+        TriggerCondition(
+            event_kinds=frozenset({EventKind.UPKEEP}),
+            players=YOU,
+            functions_in=BATTLEFIELD,
+            text="at the beginning of your upkeep",
+        ),
+        Effect(
+            EffectKind.CONDITIONAL,
+            condition=none_left,
+            children=(Effect(EffectKind.SACRIFICE, text="sacrifice this permanent"),),
+            otherwise=(
+                Effect(
+                    EffectKind.REMOVE_COUNTERS,
+                    counter_type="fade",
+                    amount=Value.of(1),
+                    text="remove a fade counter from this permanent",
+                ),
+            ),
+        ),
+        text=f"{instance.name} upkeep",
+    )
     return (
         _enters_with_counters(instance, "fade", Value.of(max(1, instance.amount))),
-        _upkeep_counter_sacrifice(instance, "fade"),
+        upkeep,
     )
 
 
