@@ -452,6 +452,13 @@ def _affordable(
             except CastError:
                 return False
 
+    # CR 702.172a: a spree spell costs at least its cheapest mode.
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import cheapest_mode_cost
+
+    cheapest = cheapest_mode_cost(game, obj)
+    if cheapest is not None:
+        cost = cost.plus(cheapest.mana_component)
+
     increase = sum(cost_increases(game, obj, player_id))
     if zone is Zone.COMMAND and obj.is_commander:
         increase += player.commander_tax(game.commander_identity(obj.id))

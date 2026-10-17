@@ -364,7 +364,10 @@ def compute_total_cost(
     # optional ones as announced. CR 118.9d applies them to the alternative
     # cost too, so an alternative cost is never a way to dodge a tax.
     payments = recorded_payments(chars, action.additional_costs)
-    from ..cr700_additional_rules.cr702_cost_keyword_rules import chosen_cost
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import (
+        chosen_cost,
+        chosen_mode_costs,
+    )
 
     for index, additional in enumerate(chars.additional_costs):
         for _ in range(_times_charged(spell, additional, index, payments)):
@@ -373,6 +376,12 @@ def compute_total_cost(
             total.base = total.base.plus(cost.mana_component)
             for component in cost.non_mana_components:
                 total.add_additional(component)
+
+    # CR 702.172a: each chosen spree mode adds its cost.
+    for cost in chosen_mode_costs(game, spell):
+        total.base = total.base.plus(cost.mana_component)
+        for component in cost.non_mana_components:
+            total.add_additional(component)
 
     if from_command_zone and spell.is_commander:
         # CR 903.8: {2} for each previous cast of this commander from the
@@ -573,6 +582,15 @@ def mode_budget(modal: Effect) -> int:
     return 1
 
 
+def mode_floor(modal: Effect) -> int:
+    """The fewest modes an up-to choice may take (CR 700.2).
+
+    CR 702.172a: a spree spell is "choose one or more", so a modal effect
+    whose modes carry costs takes at least one however its header reads.
+    """
+    return max(modal.modes_at_least, 1 if modal.mode_costs else 0)
+
+
 def mode_weight(modal: Effect, index: int) -> int:
     """What choosing this mode costs against the budget (CR 700.2i).
 
@@ -703,10 +721,11 @@ def _cleaned_modes(
             continue
         kept.append(index)
         spent += cost
-    if modal.modes_up_to and len(kept) >= modal.modes_at_least:
+    floor = mode_floor(modal)
+    if modal.modes_up_to and len(kept) >= floor:
         return tuple(kept)
     for index in available:
-        if modal.modes_up_to and len(kept) >= modal.modes_at_least:
+        if modal.modes_up_to and len(kept) >= floor:
             # CR 700.2: "choose one or more" is topped up to its floor of
             # one, not to its ceiling - the rest was the player's to decline.
             break

@@ -512,6 +512,11 @@ class Effect:
     #: mechanism, just this one with weights that are not all 1. A card
     #: printing "{P}{P} -" gives that mode a 2.
     mode_weights: tuple[int, ...] = ()
+    #: CR 702.172a: spree - what each mode of a CHOOSE_MODE costs, one
+    #: ``Cost`` per child, paid as an additional cost for each mode chosen.
+    #: Empty for an ordinary modal spell. A spree spell chooses one or more
+    #: modes, so at least one is always chosen.
+    mode_costs: tuple = ()
     #: CR 700.2d: normally a mode may not be chosen twice, and some cards say
     #: otherwise in so many words ("You may choose the same mode more than
     #: once"). Every pawprint spell printed so far does.

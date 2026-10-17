@@ -97,6 +97,28 @@ def chosen_cost(game: Game, player_id: PlayerId, cost, spell: GameObject):
     return cost.choices[0]
 
 
+def chosen_mode_costs(game: Game, spell: GameObject) -> list:
+    """CR 702.172a: the costs of the spree modes chosen for this spell."""
+    from ..cr600_spells_and_abilities.cr601_casting import modal_effect, spell_effects
+
+    modal = modal_effect(spell_effects(game, spell))
+    if modal is None or not modal.mode_costs:
+        return []
+    costs = modal.mode_costs
+    return [costs[index] for index in spell.chosen_modes if 0 <= index < len(costs)]
+
+
+def cheapest_mode_cost(game: Game, obj: GameObject):
+    """The least a spree spell can cost on top of its mana cost - its
+    cheapest mode, since one is always chosen - or None for any other."""
+    from ..cr600_spells_and_abilities.cr601_casting import modal_effect, spell_effects
+
+    modal = modal_effect(spell_effects(game, obj))
+    if modal is None or not modal.mode_costs:
+        return None
+    return min(modal.mode_costs, key=lambda cost: cost.mana_component.mana_value)
+
+
 # ---------------------------------------------------------------------------
 # Token copies (CR 707.2, 707.9)
 # ---------------------------------------------------------------------------

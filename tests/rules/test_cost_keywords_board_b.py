@@ -766,3 +766,78 @@ def test_the_bargain_builder_needs_something_to_sacrifice(card_db):
     card = board.hand("Fire Prophecy")
     give(board, 2, Color.RED)
     assert not bargain_offered(board, card)
+
+
+# ---------------------------------------------------------------------------
+# Spree (CR 702.172a)
+# ---------------------------------------------------------------------------
+
+GAIN_3 = Effect(EffectKind.GAIN_LIFE, players=YOU, amount=Value.of(3), text="gain 3 life")
+
+
+def spree_modes(*costs: str) -> Effect:
+    """"Choose one or more" with "+ {cost} -" before each mode."""
+    return Effect(
+        EffectKind.CHOOSE_MODE,
+        children=(GAIN_1, GAIN_3)[: len(costs)],
+        amount=Value.of(len(costs)),
+        modes_up_to=True,
+        mode_costs=tuple(mana(cost) for cost in costs),
+        text="choose one or more",
+    )
+
+
+@pytest.fixture
+def spree(card_db):
+    # Fire Prophecy costs {1}{R}.
+    return setup(card_db, {"Fire Prophecy": (
+        Ability.spell(spree_modes("{1}", "{2}")), *keyword("Spree", None))})
+
+
+def cast_modes(board, card, modes):
+    return cast_spell(board.game, P0, Action(ActionKind.CAST_SPELL, source=card.id,
+                                             mode_choices=tuple(modes)))
+
+
+def test_each_chosen_spree_mode_adds_its_cost(spree):
+    card = spree.hand("Fire Prophecy")
+    give(spree, 5, Color.RED)
+    cast_modes(spree, card, (0, 1))
+    assert pool(spree) == 0, "{1}{R} plus {1} plus {2}"
+    run(spree)
+    assert life(spree) == 44
+
+
+def test_an_unchosen_spree_mode_costs_nothing(spree):
+    card = spree.hand("Fire Prophecy")
+    give(spree, 5, Color.RED)
+    cast_modes(spree, card, (1,))
+    assert pool(spree) == 1, "{1}{R} plus {2}"
+    run(spree)
+    assert life(spree) == 43
+
+
+def test_a_spree_spell_always_chooses_a_mode(spree):
+    """Choose one or more: with nothing announced, one is chosen and paid."""
+    card = spree.hand("Fire Prophecy")
+    give(spree, 5, Color.RED)
+    spell = cast_modes(spree, card, ())
+    assert len(spell.chosen_modes) == 1
+    assert pool(spree) == 5 - 2 - (1 if spell.chosen_modes == (0,) else 2)
+
+
+def test_a_spree_spell_is_not_offered_without_its_cheapest_mode(spree):
+    card = spree.hand("Fire Prophecy")
+    give(spree, 2, Color.RED)
+    assert not offered(spree, card), "{1}{R} alone buys no mode"
+    give(spree, 1, Color.RED)
+    assert offered(spree, card)
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Spree is built as a free optional additional cost named "
+    "Spree; the keyword has no cost of its own - its costs are the modes' "
+    "(Effect.mode_costs on the CHOOSE_MODE, modes_up_to=True, modes_at_least=1)"))
+def test_the_spree_builder_adds_no_cost_of_its_own(card_db):
+    board = setup(card_db, {"Fire Prophecy": keyword("Spree", None)})
+    assert not board.chars(board.hand("Fire Prophecy")).additional_costs
