@@ -159,7 +159,11 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     # CR 722.3c: casting a prepare copy unprepares its permanent at 601.2i;
     # it is recorded now and rewound with the cast if the cast fails.
     prepared_by = card_object.prepare_copy_of
-    spell.face_index = action.face_index
+    # CR 702.162a, 712.8c: a card cast converted is a spell with its back
+    # face up.
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import cast_face_index
+
+    spell.face_index = cast_face_index(spell, offered, action.face_index)
     # CR 715.3, 718.3, 720.3: the alternative characteristics apply because
     # the player chose them as the card was played, so the choice is recorded
     # now and read later - above all by CR 715.3d and CR 720.3d, which send

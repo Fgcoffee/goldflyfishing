@@ -119,6 +119,20 @@ def cheapest_mode_cost(game: Game, obj: GameObject):
     return min(modal.mode_costs, key=lambda cost: cost.mana_component.mana_value)
 
 
+#: CR 702.162a: alternative costs that cast the card converted.
+CONVERTED_CAST_KEYWORDS = frozenset({"more than meets the eye"})
+
+
+def cast_face_index(spell: GameObject, alternative, face_index: int) -> int:
+    """The face a spell is cast with: its back face when an alternative cost
+    casts it converted (CR 712.8c), whichever face was asked for."""
+    if alternative is None or alternative.keyword.lower() not in CONVERTED_CAST_KEYWORDS:
+        return face_index
+    if len(getattr(spell.card, "faces", ())) < 2:
+        return face_index
+    return 1
+
+
 # ---------------------------------------------------------------------------
 # Token copies (CR 707.2, 707.9)
 # ---------------------------------------------------------------------------

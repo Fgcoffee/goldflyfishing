@@ -911,3 +911,41 @@ def test_the_conspire_builder_taps_two_creatures(card_db):
     card = board.hand("Fire Prophecy")
     give(board, 2, Color.RED)
     assert not offered(board, card, additional_costs=(0,)), "no creatures to tap"
+
+
+# ---------------------------------------------------------------------------
+# More Than Meets the Eye (CR 702.162a, 712.8c)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def converted(card_db):
+    # Goldbug, Humanity's Ally {1}{W}{U}, 3/3; its back face is Goldbug,
+    # Scrappy Scout, a 1/3 Vehicle.
+    return setup(card_db, {"Goldbug, Humanity's Ally": keyword(
+        "More Than Meets the Eye", "{W}{U}")})
+
+
+def test_a_card_cast_converted_is_on_the_stack_back_face_up(converted):
+    card = converted.hand("Goldbug, Humanity's Ally")
+    give(converted, 1, Color.WHITE)
+    give(converted, 1, Color.BLUE)
+    index = alternative_index(converted, card, "More Than Meets the Eye")
+    assert offered(converted, card, alternative_cost=index)
+    spell = cast(converted, card, alternative=index)
+    assert pool(converted) == 0
+    assert spell.face_index == 1
+    assert converted.chars(spell).name == "Goldbug, Scrappy Scout"
+    converted.resolve_stack()
+    (vehicle,) = named(converted, "Goldbug, Scrappy Scout")
+    assert "Vehicle" in converted.chars(vehicle).type_line.subtypes
+
+
+def test_a_card_cast_for_its_mana_cost_is_front_face_up(converted):
+    card = converted.hand("Goldbug, Humanity's Ally")
+    give(converted, 1, Color.WHITE)
+    give(converted, 2, Color.BLUE)
+    spell = cast(converted, card)
+    assert spell.face_index == 0
+    converted.resolve_stack()
+    assert named(converted, "Goldbug, Humanity's Ally")
