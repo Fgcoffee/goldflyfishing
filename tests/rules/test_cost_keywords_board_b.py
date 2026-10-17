@@ -357,3 +357,202 @@ def test_the_offspring_builder_makes_the_copy(card_db):
     cast(board, card, additional=(0,))
     run(board)
     assert len(named(board, "Hill Giant")) == 2
+
+
+# ---------------------------------------------------------------------------
+# Prowl (CR 702.76a) and freerunning (CR 702.173a)
+# ---------------------------------------------------------------------------
+
+
+def combat_damage(board, source, amount: int = 1, to: PlayerId = P1) -> None:
+    from mtgfish.rules.cr100_game_concepts.actions import deal_damage
+
+    deal_damage(board.game, to, amount, source=source.id,
+                source_controller=source.controller, combat=True,
+                is_commander_source=source.is_commander)
+
+
+PROWL_CONDITION = Condition(ConditionKind.COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE)
+
+
+@pytest.fixture
+def prowl(card_db):
+    # Latchkey Faerie is a Faerie Rogue.
+    return setup(card_db, {"Latchkey Faerie": (
+        alternative_cost("Prowl", mana("{U}"), PROWL_CONDITION),)})
+
+
+def prowl_offered(board, card) -> bool:
+    return bool(offered(board, card, alternative_cost=alternative_index(board, card, "Prowl")))
+
+
+def test_prowl_is_offered_after_a_rogue_you_control_dealt_combat_damage(prowl):
+    card = prowl.hand("Latchkey Faerie")
+    give(prowl, 1, Color.BLUE)
+    assert not prowl_offered(prowl, card), "no damage yet"
+    combat_damage(prowl, prowl.play("Boggart Arsonists"))  # a Goblin Rogue
+    assert prowl_offered(prowl, card)
+    spell = cast(prowl, card, alternative=alternative_index(prowl, card, "Prowl"))
+    assert spell.alternative_cost_paid == "Prowl"
+    assert pool(prowl) == 0
+
+
+def test_prowl_needs_a_shared_creature_type(prowl):
+    card = prowl.hand("Latchkey Faerie")
+    give(prowl, 1, Color.BLUE)
+    combat_damage(prowl, prowl.play("Grizzly Bears"))
+    assert not prowl_offered(prowl, card)
+
+
+def test_prowl_needs_combat_damage_by_a_source_you_controlled(prowl):
+    from mtgfish.rules.cr100_game_concepts.actions import deal_damage
+
+    card = prowl.hand("Latchkey Faerie")
+    give(prowl, 1, Color.BLUE)
+    combat_damage(prowl, prowl.play("Boggart Arsonists", controller=1), to=P0)
+    assert not prowl_offered(prowl, card), "an opponent's Rogue"
+    rogue = prowl.play("Boggart Arsonists")
+    deal_damage(prowl.game, P1, 2, source=rogue.id, source_controller=P0)
+    assert not prowl_offered(prowl, card), "noncombat damage"
+
+
+def test_prowl_asks_what_the_source_was_when_it_dealt_the_damage(prowl):
+    """The Rogue may be gone by now; it was a Rogue you controlled then."""
+    card = prowl.hand("Latchkey Faerie")
+    give(prowl, 1, Color.BLUE)
+    rogue = prowl.play("Boggart Arsonists")
+    combat_damage(prowl, rogue)
+    prowl.game.move_object(rogue, Zone.GRAVEYARD)
+    assert prowl_offered(prowl, card)
+
+
+def test_prowl_lasts_only_this_turn(prowl):
+    card = prowl.hand("Latchkey Faerie")
+    give(prowl, 1, Color.BLUE)
+    combat_damage(prowl, prowl.play("Boggart Arsonists"))
+    # What a new turn does to "this turn" (CR 500.1, take_turn).
+    prowl.game.turn_history.clear()
+    assert not prowl_offered(prowl, card)
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Prowl is built as an unconditional alternative cost; it "
+    "needs condition=Condition(COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE)"))
+def test_the_prowl_builder_needs_combat_damage(card_db):
+    board = setup(card_db, {"Latchkey Faerie": keyword("Prowl", "{U}")})
+    card = board.hand("Latchkey Faerie")
+    give(board, 1, Color.BLUE)
+    assert not prowl_offered(board, card)
+
+
+ASSASSIN_OR_COMMANDER = Condition(ConditionKind.OR, operands=(
+    Condition(ConditionKind.COMBAT_DAMAGE_DEALT_BY, filter=ObjectFilter(
+        types_all=CardType.CREATURE, subtypes_any=("Assassin",))),
+    Condition(ConditionKind.COMBAT_DAMAGE_DEALT_BY, filter=ObjectFilter(
+        types_all=CardType.CREATURE, is_commander=True)),
+))
+
+
+@pytest.fixture
+def freerunning(card_db):
+    return setup(card_db, {"Fire Prophecy": (
+        Ability.spell(GAIN_1),
+        alternative_cost("Freerunning", mana("{R}"), ASSASSIN_OR_COMMANDER))})
+
+
+def freerunning_offered(board, card) -> bool:
+    index = alternative_index(board, card, "Freerunning")
+    return bool(offered(board, card, alternative_cost=index))
+
+
+def test_freerunning_after_an_assassin_dealt_combat_damage(freerunning):
+    card = freerunning.hand("Fire Prophecy")
+    give(freerunning, 1, Color.RED)
+    assert not freerunning_offered(freerunning, card)
+    combat_damage(freerunning, freerunning.play("Ezio Auditore da Firenze"))
+    assert freerunning_offered(freerunning, card)
+
+
+def test_freerunning_after_a_commander_dealt_combat_damage(freerunning):
+    card = freerunning.hand("Fire Prophecy")
+    give(freerunning, 1, Color.RED)
+    combat_damage(freerunning, freerunning.play("Grizzly Bears", is_commander=True))
+    assert freerunning_offered(freerunning, card)
+
+
+def test_freerunning_not_after_another_creature(freerunning):
+    card = freerunning.hand("Fire Prophecy")
+    give(freerunning, 1, Color.RED)
+    combat_damage(freerunning, freerunning.play("Grizzly Bears"))
+    assert not freerunning_offered(freerunning, card)
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Freerunning is built as an unconditional alternative cost; "
+    "it needs condition=OR(COMBAT_DAMAGE_DEALT_BY Assassin creature, "
+    "COMBAT_DAMAGE_DEALT_BY creature with is_commander)"))
+def test_the_freerunning_builder_needs_combat_damage(card_db):
+    board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
+                                              *keyword("Freerunning", "{R}"))})
+    card = board.hand("Fire Prophecy")
+    give(board, 1, Color.RED)
+    assert not freerunning_offered(board, card)
+
+
+# ---------------------------------------------------------------------------
+# Spectacle (CR 702.137a)
+# ---------------------------------------------------------------------------
+
+
+def an_opponent_lost_life() -> Condition:
+    from mtgfish.rules.kernel.query import PlayerFilter, PlayerScope
+
+    return Condition(ConditionKind.EVENT_THIS_TURN,
+                     players=PlayerFilter(PlayerScope.OPPONENT),
+                     event_kinds=(int(EventKind.LIFE_LOST),))
+
+
+@pytest.fixture
+def spectacle(card_db):
+    return setup(card_db, {"Fire Prophecy": (
+        Ability.spell(GAIN_1),
+        alternative_cost("Spectacle", mana("{R}"), an_opponent_lost_life()))})
+
+
+def spectacle_offered(board, card) -> bool:
+    index = alternative_index(board, card, "Spectacle")
+    return bool(offered(board, card, alternative_cost=index))
+
+
+def test_spectacle_after_an_opponent_lost_life(spectacle):
+    from mtgfish.rules.cr100_game_concepts.actions import lose_life
+
+    card = spectacle.hand("Fire Prophecy")
+    give(spectacle, 1, Color.RED)
+    assert not spectacle_offered(spectacle, card)
+    lose_life(spectacle.game, P1, 1)
+    assert spectacle_offered(spectacle, card)
+    spell = cast(spectacle, card, alternative=alternative_index(spectacle, card, "Spectacle"))
+    assert spell.alternative_cost_paid == "Spectacle"
+    assert pool(spectacle) == 0
+
+
+def test_spectacle_not_after_you_lost_life(spectacle):
+    from mtgfish.rules.cr100_game_concepts.actions import lose_life
+
+    card = spectacle.hand("Fire Prophecy")
+    give(spectacle, 1, Color.RED)
+    lose_life(spectacle.game, P0, 1)
+    assert not spectacle_offered(spectacle, card)
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Spectacle is built as an unconditional alternative cost; it "
+    "needs condition=Condition(EVENT_THIS_TURN, players=PlayerFilter(OPPONENT), "
+    "event_kinds=(LIFE_LOST,))"))
+def test_the_spectacle_builder_needs_an_opponent_to_have_lost_life(card_db):
+    board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
+                                              *keyword("Spectacle", "{R}"))})
+    card = board.hand("Fire Prophecy")
+    give(board, 1, Color.RED)
+    assert not spectacle_offered(board, card)
