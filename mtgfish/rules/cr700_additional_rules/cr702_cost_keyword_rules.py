@@ -4,9 +4,10 @@
 permanent. This module holds the pieces the rest of the engine reads while a
 keyword plays out: how many times a cost was paid and what repeats per payment
 (multikicker, squad), the payment record a permanent inherits as it enters,
-the token copy a squad or offspring ability creates, what combat damage was
-dealt by this turn (prowl, freerunning), and the opponent a gift was promised
-to.
+which of a choice of costs is paid (bargain), what spree modes cost, the face
+a converted card is cast with (More Than Meets the Eye), the token copy a
+squad or offspring ability creates, what combat damage was dealt by this turn
+(prowl, freerunning), and the opponent a gift was promised to.
 """
 
 from __future__ import annotations
@@ -73,6 +74,11 @@ def do_repeat_per_payment(resolution: Resolution, effect: Effect) -> None:
         return
     for _ in range(times_paid_for(resolution.game, resolution, effect.keywords[0])):
         execute(resolution, effect.children)
+
+
+# ---------------------------------------------------------------------------
+# What a cast costs, and how it is cast
+# ---------------------------------------------------------------------------
 
 
 def chosen_cost(game: Game, player_id: PlayerId, cost, spell: GameObject):
@@ -298,9 +304,7 @@ def promise_gift(game: Game, spell: GameObject, player_id: PlayerId) -> None:
 
     if "gift" not in paid_additional_keywords(game, spell):
         return
-    opponents = [
-        p.id for p in game.living_players if p.id != player_id
-    ]
+    opponents = [p.id for p in game.living_players if p.id != player_id]
     if not opponents:
         return
     agent = game.agent_for(player_id)
