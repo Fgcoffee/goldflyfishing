@@ -190,7 +190,7 @@ def _collect_departed_token(
         return
     if any(obj.id == token.id for obj, _ in found):
         return
-    for ability in game.printed_characteristics(token).abilities:
+    for ability in _last_known_abilities(game, token):
         if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
             continue
         trigger = ability.trigger
@@ -228,7 +228,7 @@ def _collect_departed_card(
     # CR 708.2: a face-down permanent has no abilities of its own to trigger.
     if departed.face_down:
         return
-    for ability in game.printed_characteristics(departed).abilities:
+    for ability in _last_known_abilities(game, departed):
         if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
             continue
         trigger = ability.trigger
@@ -495,15 +495,26 @@ def _watchers(game: Game) -> dict:
 def _trigger_abilities(game: Game, obj: GameObject) -> tuple:
     """The abilities that may trigger for this object.
 
-    Its printed abilities - except when it is face down. CR 708.2: a
+    Printed ones off the battlefield; on it, and face down, the ones the
+    layers leave it with. CR 708.2: a
     face-down permanent has only what turned it face down lists, so the
     card's own triggered abilities do not exist (and CR 708.3's "enters"
     abilities never see it), while a disguised or cloaked one's ward does.
     CR 406.3a: a card exiled face down has none at all.
     """
-    if obj.face_down:
+    # CR 613.1f: on the battlefield, abilities granted or removed by
+    # continuous effects - an Aura's "enchanted creature has 'When this
+    # creature dies, ...'" - count like printed ones.
+    if obj.face_down or obj.zone is Zone.BATTLEFIELD:
         return game.characteristics(obj).abilities
     return game.printed_characteristics(obj).abilities
+
+
+def _last_known_abilities(game: Game, departed: GameObject) -> tuple:
+    """CR 603.10a: the abilities a permanent had immediately before it left."""
+    if departed.last_known_characteristics is not None:
+        return departed.last_known_characteristics.abilities
+    return game.printed_characteristics(departed).abilities
 
 
 def _kinds_watched(trigger) -> frozenset:

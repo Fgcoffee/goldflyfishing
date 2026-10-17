@@ -256,6 +256,11 @@ class GameObject:
     #: with it empty, which is CR 400.7 doing the bookkeeping.
     command_pile: str = ""
 
+    #: CR 603.10a: the characteristics this permanent had as it left the
+    #: battlefield - abilities an Aura or an effect granted included - which
+    #: its own leaves-the-battlefield abilities are looked for in.
+    last_known_characteristics: Characteristics | None = None
+
     # -- caching ------------------------------------------------------------
     #: Characteristics after the layer system has run. Invalidated whenever the
     #: continuous-effect set or any timestamp changes; never written directly.

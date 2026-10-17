@@ -80,26 +80,26 @@ def _haste(text: str) -> Effect:
 
 
 def _when_it_dies_draw_a_card() -> Effect:
-    """Blitz's "when this permanent is put into a graveyard from the
-    battlefield, draw a card".
-
-    DIVERGENCE: CR 702.152a makes this an ability the permanent has. The
-    trigger index reads printed abilities only, so a granted triggered
-    ability never triggers; a delayed ability bound to this one object
-    (CR 603.7c) fires on the same death and on nothing else.
-    """
+    """CR 702.152a: blitz gives the permanent "when this permanent is put into
+    a graveyard from the battlefield, draw a card" - an ability it has, so
+    one it loses with the rest of its abilities."""
     return Effect(
-        EffectKind.DELAYED_TRIGGER,
-        trigger=TriggerCondition(
-            event_kinds=frozenset({EventKind.DIES}),
-            subject=ObjectFilter(remembered=True, zones=frozenset()),
-            uses_last_known_information=True,
-            text="when this permanent is put into a graveyard from the battlefield",
+        EffectKind.GRANT_ABILITY,
+        targets=_SELF,
+        granted_abilities=(
+            Ability.triggered(
+                TriggerCondition(
+                    event_kinds=frozenset({EventKind.DIES}),
+                    subject=ObjectFilter(source_only=True, zones=frozenset()),
+                    uses_last_known_information=True,
+                    text="when this permanent is put into a graveyard from the battlefield",
+                ),
+                Effect(EffectKind.DRAW, players=_YOU, amount=Value.of(1), text="draw a card"),
+                text="when this dies, draw a card",
+            ),
         ),
-        children=(
-            Effect(EffectKind.DRAW, players=_YOU, amount=Value.of(1), text="draw a card"),
-        ),
-        text="when it dies, draw a card",
+        duration=int(Duration.PERMANENT),
+        text="as long as its blitz cost was paid, it has \"when this dies, draw a card\"",
     )
 
 

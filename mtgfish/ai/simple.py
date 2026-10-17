@@ -570,6 +570,18 @@ class _TargetingMixin:
             out.append((self._best(game, player, group, harmful=harmful),))
         return tuple(out)
 
+    def choose_new_targets(
+        self,
+        game: Game,
+        player: PlayerId,
+        copy: ObjectId,
+        current: tuple,
+        candidates: list,
+    ) -> tuple:
+        """CR 707.10c: aim a copy as if casting it - a copied Lightning Bolt
+        aimed at this bot goes back the other way."""
+        return self.choose_targets(game, player, copy, candidates)
+
     def _best(
         self, game: Game, player: PlayerId, group: list, *, harmful: bool
     ) -> ObjectId:

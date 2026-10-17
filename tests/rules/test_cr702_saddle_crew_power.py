@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import dataclasses
+
 import pytest
 from harness import ScriptedAbilities, make_board
 
@@ -110,3 +112,28 @@ def test_the_mount_itself_cannot_pay(board):
     board.refresh()
     with pytest.raises(CastError):
         activate(board, mount)
+
+
+def test_the_source_is_never_one_of_the_others_whatever_the_filter(board):
+    """CR 702.122a: "other" is part of the cost itself. A crewed Vehicle is a
+    creature, and a filter that forgets "another" must not let it pay."""
+    from mtgfish.rules.kernel.legality import legal_actions
+
+    loose = ObjectFilter(types_all=CardType.CREATURE, controller=ControllerRelation.YOU)
+    ability = saddle(3)
+    component = ability.cost.components[0]
+    ability = dataclasses.replace(
+        ability,
+        cost=Cost((dataclasses.replace(component, filter=loose),)),
+    )
+    mount = board.play("Hill Giant")
+    board.scripts.add("Hill Giant", ability)
+    board.refresh()
+    assert not [
+        a
+        for a in legal_actions(board.game, P0)
+        if a.kind is ActionKind.ACTIVATE_ABILITY and a.source == mount.id
+    ]
+    with pytest.raises(CastError):
+        activate(board, mount)
+    assert not mount.tapped
