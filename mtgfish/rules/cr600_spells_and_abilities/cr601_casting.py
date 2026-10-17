@@ -1170,12 +1170,12 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
 
     if mana_cost:
         payment = find_payment(
-            player.mana_pool, mana_cost, life_available=player.life - 1, context=context
+            player.mana_pool, mana_cost, life_available=player.life, context=context
         )
         if payment is None:
             _tap_for_mana(game, player_id, mana_cost, context)
             payment = find_payment(
-                player.mana_pool, mana_cost, life_available=player.life - 1, context=context
+                player.mana_pool, mana_cost, life_available=player.life, context=context
             )
         if payment is None:
             # CR 702.51a / 702.126a / 702.66a: convoke, improvise and delve
@@ -1184,7 +1184,7 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
             # not needed.
             _pay_with_helpers(game, player_id, mana_cost, context)
             payment = find_payment(
-                player.mana_pool, mana_cost, life_available=player.life - 1, context=context
+                player.mana_pool, mana_cost, life_available=player.life, context=context
             )
         if payment is None:
             raise CastError(f"cannot pay {mana_cost}")
@@ -1429,6 +1429,9 @@ def _pay_component(
             if obj.tapped is not tapping
         ]
         if component.total_power and tapping:
+            # CR 702.122a, 702.171a: *other* creatures - a crewed Vehicle is a
+            # creature, and must not pay for crewing itself again.
+            candidates = [obj for obj in candidates if obj.id != context.id]
             chosen = creatures_with_total_power(game, candidates, amount)
             if chosen is None:
                 raise CastError(f"not enough total power to tap ({amount})")
@@ -2053,7 +2056,7 @@ def can_pay_cost(
     mana_cost = _scaled_mana(game, player_id, cost)
     if not mana_cost:
         return True
-    if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
+    if find_payment(player.mana_pool, mana_cost, life_available=player.life):
         return True
     from .mana_plan import can_produce
 
@@ -2077,7 +2080,7 @@ def pay_cost(
     mana_cost = _scaled_mana(game, player_id, cost)
     if mana_cost:
         payment = find_payment(
-            player.mana_pool, mana_cost, life_available=player.life - 1
+            player.mana_pool, mana_cost, life_available=player.life
         )
         if payment is None:
             # No source permanent here, so the context is the payer's own
@@ -2099,7 +2102,7 @@ def pay_cost(
                 _restore_mana_checkpoint(game, player_id, checkpoint)
                 return False
             payment = find_payment(
-                player.mana_pool, mana_cost, life_available=player.life - 1
+                player.mana_pool, mana_cost, life_available=player.life
             )
             if payment is None:
                 _restore_mana_checkpoint(game, player_id, checkpoint)
@@ -2348,6 +2351,8 @@ def _can_pay_activation(
                 if obj.tapped is not tapping
             ]
             if component.total_power and tapping:
+                # CR 702.122a: other creatures, never the source itself.
+                available = [obj for obj in available if obj.id != source.id]
                 needed = evaluate(game, component.amount, controller=player.id)
                 if creatures_with_total_power(game, available, needed) is None:
                     return False
@@ -2369,7 +2374,7 @@ def _can_pay_activation(
 
     mana_cost = activation_mana_cost(game, source, ability).substitute_x(x_value)
     if mana_cost:
-        if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
+        if find_payment(player.mana_pool, mana_cost, life_available=player.life):
             return True
         if ability.is_mana_ability:
             # The planner asks this very question of every mana ability, so a
@@ -2416,11 +2421,11 @@ def _pay_activation(
 
     mana_cost = activation_mana_cost(game, source, ability).substitute_x(x_value)
     if mana_cost:
-        payment = find_payment(player.mana_pool, mana_cost, life_available=player.life - 1)
+        payment = find_payment(player.mana_pool, mana_cost, life_available=player.life)
         if payment is None:
             _tap_for_mana(game, source.controller, mana_cost, source)
             payment = find_payment(
-                player.mana_pool, mana_cost, life_available=player.life - 1
+                player.mana_pool, mana_cost, life_available=player.life
             )
         if payment is None:
             raise CastError("cannot pay the mana cost")

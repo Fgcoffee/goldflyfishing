@@ -213,6 +213,21 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                             face_index=face_index,
                         )
                     )
+                    # CR 601.2b, 118.8a: announcing an optional additional
+                    # cost - kicker, buyback - is a different way to cast
+                    # the spell, offered when it too can be paid.
+                    for announced in _optional_cost_choices(chars):
+                        if _affordable(
+                            game, player_id, obj, zone, chars, optional=announced
+                        ):
+                            out.append(
+                                Action(
+                                    ActionKind.CAST_SPELL,
+                                    source=object_id,
+                                    face_index=face_index,
+                                    additional_costs=announced,
+                                )
+                            )
 
         # CR 113.6: a granted alternative cost works in the card's zone too.
         chars = game.characteristics(obj)
@@ -328,7 +343,7 @@ def _affordable_alternative(
     from ..cr700_additional_rules.cr702_paid_costs import emerge_discount
 
     cost = cost.reduced_by(emerge_discount(game, player_id, alternative))
-    if find_payment(player.mana_pool, cost, life_available=player.life - 1):
+    if find_payment(player.mana_pool, cost, life_available=player.life):
         return True
 
     available = player.mana_pool.total
@@ -369,7 +384,7 @@ def can_afford(game: Game, player_id: PlayerId, cost) -> bool:
     player = game.player(player_id)
     if cost is None or cost.mana_value == 0:
         return True
-    if find_payment(player.mana_pool, cost, life_available=player.life - 1):
+    if find_payment(player.mana_pool, cost, life_available=player.life):
         return True
 
     # Solved exactly, as payment will solve it: counting untapped sources said
@@ -379,8 +394,30 @@ def can_afford(game: Game, player_id: PlayerId, cost) -> bool:
     return can_produce(game, player_id, cost)
 
 
+def _optional_cost_choices(chars) -> list[tuple[int, ...]]:
+    """Each optional additional cost alone, then all of them together.
+
+    Not every combination: a spell with several optional costs would multiply
+    the actions offered, and alone or all covers what a player usually wants.
+    """
+    indices = tuple(
+        index
+        for index, additional in enumerate(chars.additional_costs)
+        if additional.optional and not additional.cost.is_unparsed
+    )
+    choices = [(index,) for index in indices]
+    if len(indices) > 1:
+        choices.append(indices)
+    return choices
+
+
 def _affordable(
-    game: Game, player_id: PlayerId, obj: GameObject, zone: Zone, chars=None
+    game: Game,
+    player_id: PlayerId,
+    obj: GameObject,
+    zone: Zone,
+    chars=None,
+    optional: tuple[int, ...] = (),
 ) -> bool:
     """Whether the player could plausibly pay for this spell.
 
@@ -400,9 +437,11 @@ def _affordable(
     # cast. Asked of the dry run payment itself uses.
     from ..cr600_spells_and_abilities.cr601_casting import CastError, _check_payable
 
-    for additional in chars.additional_costs:
-        if additional.optional:
+    for index, additional in enumerate(chars.additional_costs):
+        if additional.optional and index not in optional:
             continue
+        # CR 601.2f: an announced optional cost adds its mana to the total.
+        cost = cost.plus(additional.cost.mana_component)
         for component in additional.cost.non_mana_components:
             try:
                 _check_payable(game, player_id, component, obj, spell=obj)
@@ -421,7 +460,7 @@ def _affordable(
     # be abandoned mid-cast - a bot then wastes the turn on a play the card
     # never allowed.
     if find_payment(
-        player.mana_pool, cost, life_available=player.life - 1, context=obj
+        player.mana_pool, cost, life_available=player.life, context=obj
     ):
         return True
 
