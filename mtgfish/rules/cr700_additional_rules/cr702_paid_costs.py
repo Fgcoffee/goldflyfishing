@@ -203,6 +203,7 @@ def _put_copy_trigger(game: Game, spell: GameObject, keyword: str, text: str) ->
         return
     from ..cr600_spells_and_abilities.cr603_triggers import PendingTrigger
     from ..kernel.events import Event
+    from .cr707_faces import MAY_CHOOSE_NEW_TARGETS
 
     ability = Ability.triggered(
         TriggerCondition(
@@ -214,6 +215,8 @@ def _put_copy_trigger(game: Game, spell: GameObject, keyword: str, text: str) ->
             EffectKind.COPY_SPELL,
             targets=ObjectFilter(specific=(spell.id,), zones=frozenset({Zone.STACK})),
             amount=Value.of(count),
+            # CR 702.56a, 702.78a: both say the copies may be given new targets.
+            keywords=(MAY_CHOOSE_NEW_TARGETS,),
             text=text,
         ),
         text=keyword.capitalize(),

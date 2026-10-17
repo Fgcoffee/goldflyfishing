@@ -317,6 +317,7 @@
     "400.11c": "Cards outside the game can’t be affected by spells or abilities, except for characteristic-defining abilities printed on them (see rule 604.3) and spells and abilities that allow those cards to be brought into the game.",
     "400.3": "If an object would go to any library, graveyard, or hand other than its owner’s, it goes to its owner’s corresponding zone.",
     "400.7": "An object that moves from one zone to another becomes a new object with no memory of, or relation to, its previous existence. This rule has the following exceptions.",
+    "400.7e": "Abilities that trigger when an object moves from one zone to another (for example, “When this Aura is put into a graveyard from the battlefield”) can find the new object that it became in the zone it moved to when the ability triggered, if that zone is a public zone.",
     "401": "Library",
     "401.1": "When a game begins, each player’s deck becomes their library.",
     "401.2": "Each library must be kept in a single face-down pile. Players can’t look at or change the order of cards in a library.",

@@ -138,3 +138,76 @@ def test_granted_exalted_triggers_for_each_creature_that_has_it(card_db):
     game.agents[P0] = FixedAgent(attackers={attacker.id: 1})
     declare_attackers(game)
     assert len(game.pending_triggers) == 3
+
+
+def _granting_board(card_db, keyword_name):
+    """Mikaeus's shape: "other creatures you control have [keyword]"."""
+    from harness import ScriptedAbilities, make_board
+
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+    from mtgfish.rules.cr700_additional_rules.cr702_keyword_impl import (
+        KeywordInstance,
+        build,
+    )
+    from mtgfish.rules.kernel.enums import CardType
+    from mtgfish.rules.kernel.query import ControllerRelation, ObjectFilter
+
+    others = ObjectFilter(
+        types_all=CardType.CREATURE,
+        controller=ControllerRelation.YOU,
+        other_than_source=True,
+    )
+    board = make_board(
+        card_db,
+        ScriptedAbilities(
+            {
+                "Serra Angel": (
+                    Ability.static(
+                        Effect(
+                            EffectKind.GRANT_ABILITY,
+                            targets=others,
+                            granted_abilities=build(KeywordInstance(keyword_name)),
+                            text=f"Other creatures you control have {keyword_name.lower()}.",
+                        ),
+                    ),
+                ),
+            }
+        ),
+    )
+    board.game.active_player = P0
+    board.play("Serra Angel", controller=0)
+    return board
+
+
+@pytest.mark.parametrize(
+    ("keyword_name", "counter"), [("Undying", "+1/+1"), ("Persist", "-1/-1")]
+)
+def test_a_granted_return_finds_the_card_in_the_graveyard(card_db, keyword_name, counter):
+    """CR 400.7e: the granted "return it" finds the card the creature became.
+    Before, the trigger resolved and the creature stayed in the graveyard."""
+    from mtgfish.rules.cr100_game_concepts.actions import destroy
+
+    board = _granting_board(card_db, keyword_name)
+    creature = board.play("Grizzly Bears", controller=0)
+    destroy(board.game, creature)
+    board.settle()
+    board.resolve_stack()
+    (returned,) = bears(board.game)
+    assert returned.zone is Zone.BATTLEFIELD
+    assert returned.counter_count(counter) == 1
+
+
+def test_a_granted_return_does_not_follow_a_card_that_moved_on(card_db):
+    """CR 400.7e: only while it is still where it went."""
+    from mtgfish.rules.cr100_game_concepts.actions import destroy
+
+    board = _granting_board(card_db, "Undying")
+    creature = board.play("Grizzly Bears", controller=0)
+    destroy(board.game, creature)
+    board.settle()
+    (dead,) = bears(board.game)
+    board.game.move_object(dead, Zone.EXILE)
+    board.resolve_stack()
+    (exiled,) = bears(board.game)
+    assert exiled.zone is Zone.EXILE

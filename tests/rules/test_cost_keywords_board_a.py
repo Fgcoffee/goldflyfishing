@@ -648,3 +648,17 @@ def test_a_blitzed_creature_that_loses_its_abilities_draws_nothing(card_db):
     board.settle()
     board.resolve_stack()
     assert hand_size(board) == before
+
+
+def test_replicate_copies_may_be_given_new_targets(replicate):
+    """CR 702.56a says so, and CR 707.10c makes it a stated permission."""
+    from mtgfish.rules.cr700_additional_rules.cr707_faces import MAY_CHOOSE_NEW_TARGETS
+
+    card = replicate.hand("Divination")
+    give(replicate, 6, Color.BLUE)
+    index = additional_index(replicate, card, "Replicate")
+    cast_spell(replicate.game, P0, Action(ActionKind.CAST_SPELL, source=card.id,
+                                          additional_costs=(index,)))
+    (pending,) = [p for p in replicate.game.pending_triggers if p.ability.text == "Replicate"]
+    (copy_effect,) = pending.ability.effects
+    assert MAY_CHOOSE_NEW_TARGETS in copy_effect.keywords

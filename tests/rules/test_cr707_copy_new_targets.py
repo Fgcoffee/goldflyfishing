@@ -65,7 +65,7 @@ def bolt_the_first_bear(box):
 def test_the_copy_may_be_aimed_elsewhere(box):
     spell, first, second = bolt_the_first_bear(box)
     box.game.agents[0] = Retargets(second)
-    copy = copy_spell(box.game, spell, P0)
+    copy = copy_spell(box.game, spell, P0, may_choose_new_targets=True)
     assert copy.targets == ((second,),)
     assert spell.targets == ((first,),)
     assert second in box.game.agents[0].offered[0]
@@ -80,5 +80,13 @@ def test_without_a_new_choice_the_copy_keeps_the_targets(box):
 def test_a_choice_that_is_not_legal_is_not_taken(box):
     spell, first, _ = bolt_the_first_bear(box)
     box.game.agents[0] = Retargets(spell.id)  # a spell is no creature or player
-    copy = copy_spell(box.game, spell, P0)
+    copy = copy_spell(box.game, spell, P0, may_choose_new_targets=True)
     assert copy.targets[0] and copy.targets[0][0] != spell.id
+
+
+def test_a_copy_whose_text_does_not_say_so_keeps_the_targets(box):
+    """CR 707.10c is permission an effect states; 707.10d-e copies are fixed."""
+    spell, first, second = bolt_the_first_bear(box)
+    box.game.agents[0] = Retargets(second)
+    copy = copy_spell(box.game, spell, P0)
+    assert copy.targets == ((first,),)
