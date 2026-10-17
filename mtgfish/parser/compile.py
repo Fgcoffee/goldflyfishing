@@ -139,8 +139,33 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
         ability = _parse_line(line, result, is_permanent=is_permanent)
         abilities.extend(ability)
 
-    result.abilities = tuple(abilities)
+    result.abilities = tuple(_refuse_targeted_replicate(abilities, result))
     return result
+
+
+def _refuse_targeted_replicate(abilities: list[Ability], result: ParsedFace) -> list[Ability]:
+    """CR 702.56a: each replicate copy "may choose new targets". The engine's
+    copies keep the original's, so on a spell with targets replicate would
+    hit the same target every time; it is refused there. A spell without
+    targets copies faithfully, so it is left read.
+    """
+    if not any(a.keyword.lower() == "replicate" for a in abilities):
+        return abilities
+    if not any(a.is_targeted for a in abilities if a.kind is AbilityKind.SPELL):
+        return abilities
+    out = []
+    for ability in abilities:
+        if ability.keyword.lower() == "replicate":
+            result.failures.append(
+                ParseFailure(
+                    ability.text,
+                    "replicate copies of a targeted spell cannot choose new targets",
+                    rule="keyword",
+                )
+            )
+            ability = Ability.unreadable(ability.text)
+        out.append(ability)
+    return out
 
 
 def _self_names(face) -> dict:

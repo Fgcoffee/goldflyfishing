@@ -336,6 +336,26 @@ Stingerback Terror,17625,False,engine,Plot,missing,no plotted cards,nothing (ine
 Tumbleweed Rising,13747,False,engine,Plot,missing,no plotted cards,nothing (inert)
 Unscrupulous Contractor,12608,False,engine,Plot,missing,no plotted cards,nothing (inert)
 Visage Bandit,7346,False,engine,Plot,missing,no plotted cards,nothing (inert)
+Changing Loyalty,6689,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Consign to Memory,7307,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Exterminate!,9756,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Feed the Bog,,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Gigadrowse,10761,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Hatchery Sliver,6300,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Leap of Flame,24696,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Lose Focus,10296,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Mimeofacture,27695,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Mists of Lórien,8688,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Psionic Ritual,10146,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Pyromatics,20225,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Reiterating Bolt,17965,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Shattering Spree,7895,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Siege of Towers,28251,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Stream of Thought,15607,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Super Combo,9058,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Thunderheads,29871,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Train of Thought,21630,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Vacuumelt,29666,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Alacrian Jaguar,22043,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
 Archmage's Newt,13503,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
 Autarch Mammoth,18583,False,engine,Saddle,missing,no saddled state,pay nothing: put N +1/+1 counters on this
@@ -871,26 +891,6 @@ Noggin Whack,26817,False,engine,Prowl,suspect,"the cost can be paid; the casting
 Notorious Throng,4255,False,engine,Prowl,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Stinkdrinker Bandit,13020,False,engine,Prowl,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Thieves' Fortune,20544,True,engine,Prowl,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Changing Loyalty,6689,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Consign to Memory,7307,False,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Exterminate!,9756,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Feed the Bog,,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Gigadrowse,10761,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Hatchery Sliver,6300,False,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Leap of Flame,24696,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Lose Focus,10296,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Mimeofacture,27695,False,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Mists of Lórien,8688,False,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Psionic Ritual,10146,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Pyromatics,20225,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Reiterating Bolt,17965,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Shattering Spree,7895,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Siege of Towers,28251,False,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Stream of Thought,15607,False,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Super Combo,9058,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Thunderheads,29871,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Train of Thought,21630,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Vacuumelt,29666,True,engine,Replicate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Call the Skybreaker,19840,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Cenn's Enlistment,21900,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Decaying Time Loop,7066,False,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -2048,6 +2048,17 @@ Wondrous Crucible,4788,False,parser,refused: grants a triggered ability the engi
 "Zarda, the Power Princess",24976,False,parser,refused: grants a triggered ability the engine never collects,missing,unclassified refusal,Other Heroes you control have exalted.
 The Creation of Avacyn,8575,False,parser,refused: refers back to another chapter,missing,a Saga chapter referring to another chapter,"You may put the exiled card onto the battlefield if it's a creature card. If you don't put it onto the battlefield, put "
 The Princess Takes Flight,12644,False,parser,refused: refers back to another chapter,missing,a Saga chapter referring to another chapter,Return the exiled card to the battlefield under its owner's control.
+Exterminate!,9756,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate - Tap an untapped Dalek you control
+Feed the Bog,,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {1}{B}
+Gigadrowse,10761,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {U}
+Leap of Flame,24696,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {U}{R}
+Lose Focus,10296,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {U}
+Psionic Ritual,10146,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate - Tap an untapped Horror you control
+Pyromatics,20225,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {1}{R}
+Reiterating Bolt,17965,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate - Pay {E}{E}{E}
+Shattering Spree,7895,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {R}
+Super Combo,9058,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {2}
+Vacuumelt,29666,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {2}{U}
 Ancient Animus,4937,False,parser,refused: the one who acts was named under a condition,missing,the actor is named inside a condition,Put a +1/+1 counter on target creature you control if it's legendary. Then it fights target creature an opponent control
 Savage Swipe,16659,False,parser,refused: the one who acts was named under a condition,missing,the actor is named inside a condition,Target creature you control gets +2/+2 until end of turn if its power is 2. Then it fights target creature you don't con
 Alms Collector,4126,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If an opponent would draw two or more cards, instead you and that player each draw a card."

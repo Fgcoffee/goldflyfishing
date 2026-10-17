@@ -1905,6 +1905,10 @@ def _upkeep_keyword(instance: KeywordInstance) -> tuple[Ability, ...]:
           "Embalm", "Eternalize", "Mutate")
 def _more_alternatives(instance: KeywordInstance) -> tuple[Ability, ...]:
     zone = Zone.GRAVEYARD if instance.key in ("disturb", "embalm", "eternalize") else None
+    if instance.key == "warp":
+        # CR 702.185a: "cast this card from your hand". No zone means hand or
+        # command zone (CR 903.8), which would let a warp commander warp.
+        zone = Zone.HAND
     return _alternative(instance, zone)
 
 
