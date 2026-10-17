@@ -1081,3 +1081,141 @@ def test_the_bloodthirst_builder_after_an_opponent_was_dealt_damage(card_db):
     run(board)
     (giant,) = named(board, "Hill Giant")
     assert board.pt(giant) == (5, 5)
+
+
+# ---------------------------------------------------------------------------
+# Jump-start (CR 702.133a)
+# ---------------------------------------------------------------------------
+
+
+def jump_start_as_the_rule_reads() -> Ability:
+    """Cast from the graveyard for the mana cost plus a discard."""
+    discard = CostComponent(CostKind.DISCARD, amount=Value.of(1), text="discard a card")
+    return Ability(
+        AbilityKind.STATIC,
+        keyword="Jump-start",
+        alternative_cost=AlternativeCost(cost=Cost((discard,)), from_zone=Zone.GRAVEYARD,
+                                         pays_mana_cost=True, keyword="Jump-start",
+                                         text="Jump-start"),
+        functions_in=frozenset({Zone.GRAVEYARD}),
+        text="Jump-start",
+    )
+
+
+@pytest.fixture
+def jump_start(card_db):
+    # Fire Prophecy costs {1}{R}.
+    return setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
+                                             jump_start_as_the_rule_reads())})
+
+
+def zones_of(board, name: str) -> list[Zone]:
+    return sorted(
+        o.zone for o in board.game.objects.values()
+        if o.is_live and o.card is not None and o.card.name == name
+    )
+
+
+def jump(board, card):
+    index = alternative_index(board, card, "Jump-start")
+    assert offered(board, card, alternative_cost=index)
+    return cast(board, card, alternative=index)
+
+
+def test_jump_start_casts_from_the_graveyard_and_exiles_it(jump_start):
+    card = jump_start.graveyard("Fire Prophecy")
+    jump_start.hand("Grizzly Bears")
+    give(jump_start, 2, Color.RED)
+    jump(jump_start, card)
+    assert jump_start.in_graveyard() == ["Grizzly Bears"], "the discard"
+    assert pool(jump_start) == 0, "and the mana cost"
+    run(jump_start)
+    assert life(jump_start) == 41
+    assert zones_of(jump_start, "Fire Prophecy") == [Zone.EXILE]
+
+
+def test_a_countered_jump_started_spell_is_exiled_too(jump_start):
+    card = jump_start.graveyard("Fire Prophecy")
+    jump_start.hand("Grizzly Bears")
+    give(jump_start, 2, Color.RED)
+    spell = jump(jump_start, card)
+    jump_start.game.move_object(spell, Zone.GRAVEYARD)
+    assert zones_of(jump_start, "Fire Prophecy") == [Zone.EXILE]
+
+
+def test_jump_start_needs_a_card_to_discard(jump_start):
+    game = jump_start.game
+    for object_id in list(game.player(P0).hand):
+        game.move_object(game.objects[object_id], Zone.LIBRARY)
+    card = jump_start.graveyard("Fire Prophecy")
+    give(jump_start, 2, Color.RED)
+    assert not offered(jump_start, card)
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Jump-start is built inert (MISBUILT_KEYWORDS); it needs an "
+    "AlternativeCost(from_zone=GRAVEYARD, pays_mana_cost=True, cost=Cost(("
+    "CostComponent(DISCARD, amount=1),)), keyword='Jump-start') functioning "
+    "in the graveyard - the exile is the engine's, keyed on the keyword"))
+def test_the_jump_start_builder_casts_from_the_graveyard(card_db):
+    board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
+                                              *keyword("Jump-start", None))})
+    card = board.graveyard("Fire Prophecy")
+    board.hand("Grizzly Bears")
+    give(board, 2, Color.RED)
+    assert offered(board, card)
+
+
+# ---------------------------------------------------------------------------
+# Cleave (CR 702.148a)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def cleave(card_db):
+    """The bracketed text removed is the rider: with it, gain 1; without, 3."""
+    rider = Effect(
+        EffectKind.CONDITIONAL,
+        condition=Condition(ConditionKind.ALTERNATIVE_COST_PAID, keyword="Cleave"),
+        children=(GAIN_3,),
+        otherwise=(GAIN_1,),
+        text="if this spell's cleave cost was paid",
+    )
+    return setup(card_db, {"Fire Prophecy": (Ability.spell(rider),
+                                             *keyword("Cleave", "{3}{R}"))})
+
+
+def test_a_cleaved_spell_does_what_its_unbracketed_text_says(cleave):
+    card = cleave.hand("Fire Prophecy")
+    give(cleave, 4, Color.RED)
+    index = alternative_index(cleave, card, "Cleave")
+    assert offered(cleave, card, alternative_cost=index)
+    cast(cleave, card, alternative=index)
+    assert pool(cleave) == 0
+    run(cleave)
+    assert life(cleave) == 43
+
+
+def test_a_spell_cast_for_its_mana_cost_keeps_its_brackets(cleave):
+    card = cleave.hand("Fire Prophecy")
+    give(cleave, 2, Color.RED)
+    cast(cleave, card)
+    run(cleave)
+    assert life(cleave) == 41
+
+
+# ---------------------------------------------------------------------------
+# Assist (CR 702.132a)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "BUILDER BUG: Assist is built as an alternative cost (free, since the "
+    "keyword has no cost); CR 702.132a changes who may pay the generic mana, "
+    "and the engine has no way for another player to pay part of a cost - "
+    "the builder should build a bare keyword ability with no cost at all"))
+def test_assist_is_not_an_alternative_cost(card_db):
+    board = setup(card_db, {"Hill Giant": keyword("Assist", None)})
+    card = board.hand("Hill Giant")
+    assert not board.chars(card).alternative_costs
+    assert not offered(board, card), "no mana: nobody has paid anything"
