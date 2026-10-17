@@ -26,6 +26,7 @@ responded to, and may be activated during cost payment (CR 605.3).
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -40,7 +41,7 @@ from ..cr100_game_concepts.cr118_costs import (
 from ..kernel.enums import Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_OBJECT, PlayerId
+from ..kernel.ids import NO_OBJECT, ObjectId, PlayerId
 from .abilities import Ability, AbilityKind
 from .effects import Effect, EffectKind
 
@@ -76,6 +77,12 @@ def play_land(game: Game, player_id: PlayerId, action: Action) -> bool:
         raise CastError("no such card")
     if player.lands_played >= player.max_lands:
         raise CastError("land drop already used this turn")
+    # CR 101.2: "players can't play lands" stops a land played by an effect
+    # as well as the land drop offered at priority.
+    from ..cr500_turn_structure.restrictions import Act, prohibited
+
+    if prohibited(game, Act.PLAY_LAND, obj=obj, player=player_id) is not None:
+        raise CastError("an effect prohibits playing that land")
 
     permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=player_id)
     permanent.controller = player_id
@@ -126,6 +133,15 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
 
     origin_zone = card_object.zone
     from_command_zone = origin_zone is Zone.COMMAND
+    # CR 601.3: a player may begin to cast a spell only if nothing prohibits
+    # it. Asked here, and not only of the casts offered at priority, so that
+    # Silence or Drannith Magistrate also stops a cascade, a discover, or a
+    # card cast by another spell's instruction - the casts those cards are
+    # most often printed against.
+    from ..cr500_turn_structure.restrictions import Act, prohibited
+
+    if prohibited(game, Act.CAST_SPELL, obj=card_object, player=player_id) is not None:
+        raise CastError("an effect prohibits casting that spell")
 
     # CR 601.2b: an alternative cost offered by a granted ability is read off
     # the card before CR 400.7 separates the spell from the grant.
@@ -133,6 +149,7 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     # 601.2a: move the card to the stack. It becomes a spell there.
     spell = game.move_object(card_object, Zone.STACK, to_player=player_id)
     spell.controller = player_id
+    spell.cast_from = origin_zone
     spell.alternative_cost_offered = offered
     # CR 118.5: permission to cast "without paying its mana cost" is given to
     # the card before it moves, and CR 400.7 makes the spell a new object. Not
@@ -172,15 +189,22 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         # 601.2b: choose modes and X. The caller may have announced the modes
         # already; when it has not, the controller is asked, because a modal
         # spell whose modes nobody chose does nothing at all (CR 700.2).
-        spell.chosen_modes = choose_modes(
+        # CR 601.2b: optional additional costs are chosen here, and whether
+        # they were is a fact the spell carries for the rest of its life -
+        # kicker riders read it on resolution. It is recorded before the
+        # modes because "If this spell was kicked, choose any number
+        # instead" decides how many modes may be chosen.
+        spell.additional_costs_paid = tuple(action.additional_costs)
+        # CR 702.42a: a paid entwine cost chooses every mode.
+        from ..cr700_additional_rules.cr702_paid_costs import entwined_modes
+
+        spell.chosen_modes = entwined_modes(
+            game, spell, modal_effect(spell_effects(game, spell))
+        ) or choose_modes(
             game, spell, spell_effects(game, spell), player_id,
             announced=action.mode_choices,
         )
         spell.x_value = action.x_value
-        # CR 601.2b: optional additional costs are chosen here, and whether
-        # they were is a fact the spell carries for the rest of its life -
-        # kicker riders read it on resolution.
-        spell.additional_costs_paid = tuple(action.additional_costs)
 
         # 601.2c-d: choose targets, and divide anything that needs dividing.
         # The caller may have chosen them already - a scripted test does, and
@@ -241,6 +265,10 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     game.spells_cast_this_turn += 1
     # 601.2i: the spell has been cast; only now do cast triggers fire.
     game.emit(Event(EventKind.CAST_SPELL, object_id=spell.id, player=player_id))
+    # CR 702.56a: replicate's cast trigger, counted from the payments.
+    from ..cr700_additional_rules.cr702_paid_costs import put_cast_triggers
+
+    put_cast_triggers(game, spell)
     return spell
 
 
@@ -293,7 +321,15 @@ def compute_total_cost(
 
     alternative = chosen_alternative_cost(game, spell, action)
 
-    if alternative is not None:
+    if alternative is not None and alternative.pays_mana_cost:
+        # CR 702.133a: the mana cost is paid as usual and the permission's
+        # own cost is added to it.
+        total = TotalCost(base=chars.mana_cost, x_value=action.x_value)
+        total.unpayable = not chars.has_mana_cost
+        total.base = total.base.plus(alternative.cost.mana_component)
+        for component in alternative.cost.non_mana_components:
+            total.add_additional(component)
+    elif alternative is not None:
         # CR 118.9c: this replaces what must be *paid*, not the spell's mana
         # cost. Anything that later asks for the mana cost still sees the
         # printed one.
@@ -304,6 +340,11 @@ def compute_total_cost(
         )
         for component in alternative.cost.non_mana_components:
             total.add_additional(component)
+        if alternative.keyword.lower() == "emerge":
+            # CR 702.119a: reduced by the sacrificed creature's mana value.
+            from ..cr700_additional_rules.cr702_paid_costs import apply_emerge
+
+            apply_emerge(game, spell, player_id, total)
     else:
         total = TotalCost(base=chars.mana_cost, x_value=action.x_value)
         # CR 118.6: no mana cost at all is an *unpayable* cost, not zero. Only
@@ -314,11 +355,10 @@ def compute_total_cost(
     # optional ones as announced. CR 118.9d applies them to the alternative
     # cost too, so an alternative cost is never a way to dodge a tax.
     for index, additional in enumerate(chars.additional_costs):
-        if additional.optional and index not in action.additional_costs:
-            continue
-        total.base = total.base.plus(additional.cost.mana_component)
-        for component in additional.cost.non_mana_components:
-            total.add_additional(component)
+        for _ in range(_times_charged(spell, additional, index, action)):
+            total.base = total.base.plus(additional.cost.mana_component)
+            for component in additional.cost.non_mana_components:
+                total.add_additional(component)
 
     if from_command_zone and spell.is_commander:
         # CR 903.8: {2} for each previous cast of this commander from the
@@ -333,6 +373,26 @@ def compute_total_cost(
         total.reduction += amount
 
     return total
+
+
+#: CR 702.56a replicate, 702.33c multikicker: optional additional costs that
+#: may be paid any number of times, once for each time they are announced.
+_PAID_ANY_NUMBER_OF_TIMES = frozenset({"replicate", "multikicker"})
+
+
+def _times_charged(spell: GameObject, additional, index: int, action: Action) -> int:
+    """How many times an additional cost is part of this spell's total cost."""
+    keyword = additional.keyword.lower()
+    if keyword == "escalate":
+        # CR 702.120a: once for each mode beyond the first. Not a choice: it
+        # is charged whether or not it was announced.
+        return max(0, len(spell.chosen_modes) - 1)
+    if not additional.optional:
+        return 1
+    announced = action.additional_costs.count(index)
+    if keyword in _PAID_ANY_NUMBER_OF_TIMES:
+        return announced
+    return min(announced, 1)
 
 
 def _matches_being_cast(game, spell, effect, obj) -> bool:
@@ -443,7 +503,9 @@ def _mode_is_choosable(
     for node in mode.walk():
         if not node.is_targeted:
             continue
-        if node.targets is not None and (node.targets.up_to or node.targets.includes_players):
+        if node.target_optional or (
+            node.targets is not None and node.targets.includes_players
+        ):
             # "Up to one target" is satisfiable with none, and a player is
             # always there to be targeted (CR 115.4).
             continue
@@ -456,7 +518,7 @@ def _mode_is_choosable(
         # filters alone decide.
         from ..kernel.matching import find
 
-        if node.targets is None:
+        if node.targets_a_player:
             if not _targetable_players(game, node.players, player_id):
                 return False
             continue
@@ -519,6 +581,8 @@ def choose_modes(
     modal = modal_effect(effects)
     if modal is None:
         return ()
+    identifier = source.id if source is not None else source_id
+    modal = _upgraded_header(game, modal, identifier, player_id)
     available = legal_modes(game, source, modal, player_id)
     if not available:
         return ()
@@ -541,12 +605,40 @@ def choose_modes(
         (index, modal.children[index], mode_weight(modal, index))
         for index in available
     ]
-    identifier = source.id if source is not None else source_id
     return _cleaned_modes(
         chooser(game, player_id, identifier, options, budget),
         available,
         modal,
         budget,
+    )
+
+
+def _upgraded_header(
+    game: Game, modal: Effect, source_id: int, player_id: PlayerId
+) -> Effect:
+    """The header in force as the modes are chosen (CR 700.2, 601.2b).
+
+    "Choose one. If you control a commander as you cast this spell, you may
+    choose both instead" is asked now, while the spell is being cast or the
+    ability put on the stack; once chosen, the modes stay chosen whatever
+    happens to the condition afterwards (Jeska's Will's rulings).
+    """
+    if not modal.modes_instead:
+        return modal
+    from dataclasses import replace
+
+    from ..kernel.conditions import holds
+    from ..kernel.query import Value
+
+    condition, budget, up_to, at_least = modal.modes_instead
+    if not holds(game, condition, source=source_id, controller=player_id):
+        return modal
+    return replace(
+        modal,
+        amount=Value.of(budget),
+        modes_up_to=up_to,
+        modes_at_least=at_least,
+        modes_instead=(),
     )
 
 
@@ -578,9 +670,13 @@ def _cleaned_modes(
             continue
         kept.append(index)
         spent += cost
-    if modal.modes_up_to:
+    if modal.modes_up_to and len(kept) >= modal.modes_at_least:
         return tuple(kept)
     for index in available:
+        if modal.modes_up_to and len(kept) >= modal.modes_at_least:
+            # CR 700.2: "choose one or more" is topped up to its floor of
+            # one, not to its ceiling - the rest was the player's to decline.
+            break
         if not modal.modes_may_repeat and index in kept:
             continue
         cost = mode_weight(modal, index)
@@ -602,6 +698,11 @@ def targeted_nodes(effects, chosen_modes: tuple[int, ...] | None = None) -> list
 
     ``None`` means no choice has been made yet - which is the question
     legality asks of a card in hand - and then every mode is included.
+
+    An instruction that shares the target of the one before it
+    (``Effect.same_target``: one word "target", two verbs) holds no slot of
+    its own (CR 115.3): there is one choice, and the resolver hands it to
+    both.
     """
     out: list = []
 
@@ -611,7 +712,7 @@ def targeted_nodes(effects, chosen_modes: tuple[int, ...] | None = None) -> list
                 if 0 <= index < len(node.children):
                     visit(node.children[index])
             return
-        if node.is_targeted:
+        if node.is_targeted and not node.same_target:
             out.append(node)
         for child in node.children + node.otherwise:
             visit(child)
@@ -702,11 +803,13 @@ def _candidates_for(
     from ..kernel.ids import player_target
     from ..kernel.matching import find
 
-    if effect.targets is None:
+    if effect.targets_a_player:
         # "Target player draws two cards": the parser describes a target that
         # can only be a player with ``players`` and no object filter at all.
         # Asking ``find`` about a missing filter crashed the whole run - one
         # Prismari Command in one deck was enough to fail every simulation.
+        # "Target player sacrifices a creature" has a filter, but it says what
+        # the player will sacrifice, not what is targeted (CR 115.1).
         return [player_target(pid) for pid in _targetable_players(game, effect.players, player_id)]
 
     out = [
@@ -772,12 +875,19 @@ def ability_targets_available(
         # would hide a charm behind whichever of its modes had nothing to
         # point at.
         return False
-    for node in targeted_nodes(ability.effects, ()):
-        if node.targets is not None and (node.targets.up_to or node.targets.includes_players):
+    nodes = targeted_nodes(ability.effects, ())
+    for node in nodes:
+        if node.target_optional or (
+            node.targets is not None and node.targets.includes_players
+        ):
             continue
         if not _candidates_for(game, source, node, player_id):
             return False
-    return True
+    if not any(node.distinct_from_earlier_targets for node in nodes):
+        return True
+    return distinct_targets_available(
+        nodes, [_candidates_for(game, source, node, player_id) for node in nodes]
+    )
 
 
 def choose_targets(game: Game, source: GameObject, effects: list, player_id: PlayerId) -> tuple:
@@ -799,18 +909,124 @@ def choose_targets(game: Game, source: GameObject, effects: list, player_id: Pla
     else:
         picked = chooser(game, player_id, source.id, candidates)
 
-    cleaned = []
+    return settle_target_choices(effects, candidates, picked, fill_required=True)
+
+
+def _required(effect) -> bool:
+    """Whether a target slot must be filled when anything can fill it."""
+    return not effect.target_optional
+
+
+def distinct_assignment(effects, candidates) -> list | None:
+    """One target for each required slot, obeying "another target", or None.
+
+    CR 601.2c: targets must fit the targeting criteria, and "another target
+    creature" after an earlier target is a criterion about the earlier
+    choices (``Effect.distinct_from_earlier_targets``). Whether a spell with
+    such a target can be cast is a joint question: two slots may each have a
+    candidate while the only candidate for both is the same creature. Solved
+    by a small search - a spell has a handful of targets.
+    """
+    slots = [
+        (index, effect)
+        for index, effect in enumerate(effects)
+        if _required(effect) and index < len(candidates) and candidates[index]
+    ]
+    chosen: dict[int, int] = {}
+
+    def place(position: int) -> bool:
+        if position == len(slots):
+            return True
+        index, effect = slots[position]
+        earlier = {chosen[i] for i in chosen if i < index}
+        for candidate in candidates[index]:
+            if effect.distinct_from_earlier_targets and candidate in earlier:
+                continue
+            # A later "another" slot must not be one this choice collides with.
+            if any(
+                effects[j].distinct_from_earlier_targets and chosen[j] == candidate
+                for j in chosen
+                if j > index
+            ):
+                continue
+            chosen[index] = candidate
+            if place(position + 1):
+                return True
+            del chosen[index]
+        return False
+
+    if not place(0):
+        return None
+    return [chosen.get(index) for index in range(len(effects))]
+
+
+def distinct_targets_available(effects, candidates) -> bool:
+    """Whether every required slot can be filled at once (CR 601.2c).
+
+    Slots with no candidate at all are the caller's to judge (a player
+    target, an "any target" with players); this answers only whether the
+    "another target" slots can be told apart."""
+    if not any(effect.distinct_from_earlier_targets for effect in effects):
+        return True
+    return distinct_assignment(effects, candidates) is not None
+
+
+def settle_target_choices(effects, candidates, picked, *, fill_required: bool) -> tuple:
+    """What an agent chose, cut down to what the rules allow.
+
+    Anything not offered is dropped. CR 115.3: the same object can't be
+    chosen twice for one instance of "target". An "another target" slot
+    drops anything chosen for an earlier target. With ``fill_required``, a
+    required slot left empty is filled deterministically (CR 601.2c) - from
+    a joint assignment when the agent's own choices boxed a slot in.
+    """
+    cleaned: list[tuple] = []
+    earlier: set = set()
     for index, effect in enumerate(effects):
         legal = set(candidates[index]) if index < len(candidates) else set()
         offered = tuple(picked[index]) if index < len(picked) else ()
-        kept = tuple(object_id for object_id in offered if object_id in legal)
-        # CR 601.2c: a target is required unless the spell said "up to".
-        if not kept and legal and not (
-            effect.targets is not None and effect.targets.up_to
-        ):
-            kept = (candidates[index][0],)
+        kept = tuple(
+            dict.fromkeys(
+                object_id
+                for object_id in offered
+                if object_id in legal
+                and not (effect.distinct_from_earlier_targets and object_id in earlier)
+            )
+        )
+        if fill_required and not kept and legal and _required(effect):
+            free = [
+                object_id
+                for object_id in candidates[index]
+                if not (effect.distinct_from_earlier_targets and object_id in earlier)
+            ]
+            if free:
+                kept = (free[0],)
         cleaned.append(kept)
+        earlier.update(kept)
+    if fill_required and any(
+        not kept and _required(effect) and index < len(candidates) and candidates[index]
+        for index, (effect, kept) in enumerate(zip(effects, cleaned))
+    ):
+        assignment = distinct_assignment(effects, candidates)
+        if assignment is not None:
+            cleaned = [
+                (assignment[index],) if assignment[index] is not None else kept
+                for index, kept in enumerate(cleaned)
+            ]
     return tuple(cleaned)
+
+
+def check_distinct_targets(effects, targets) -> None:
+    """CR 115.3, 601.2c: no object twice for one "target"; nothing chosen
+    for an earlier target in an "another target" slot."""
+    earlier: set = set()
+    for index, effect in enumerate(effects):
+        chosen = tuple(targets[index]) if index < len(targets) else ()
+        if len(set(chosen)) != len(chosen):
+            raise CastError("the same target was chosen twice for one target")
+        if effect.distinct_from_earlier_targets and earlier & set(chosen):
+            raise CastError("another target must differ from the earlier targets")
+        earlier.update(chosen)
 
 
 def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
@@ -827,12 +1043,13 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
 
     if len(targets) < len(effects):
         raise CastError("not every required target was chosen")
+    check_distinct_targets(effects, targets)
 
     for index, effect in enumerate(effects):
         chosen = targets[index] if index < len(targets) else ()
         # "up to N targets" is a property of the target specification, not of
         # the effect: it is what may be chosen, not what is done with it.
-        optional = effect.targets is not None and effect.targets.up_to
+        optional = effect.target_optional
         if not chosen and not optional:
             raise CastError("a required target was not chosen")
         for object_id in chosen:
@@ -844,7 +1061,12 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
 
                 if game.player(target_player(object_id)).has_lost:
                     raise CastError("that player has left the game")
+                _check_player_target(game, effect, object_id, spell.controller)
                 continue
+            if effect.targets_a_player:
+                # "Target player sacrifices a creature": the creature is the
+                # player's to choose later, and is not what is targeted.
+                raise CastError("only a player can be this target")
             candidate = game.objects.get(object_id)
             if candidate is None:
                 raise CastError("target no longer exists")
@@ -856,8 +1078,22 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
                 raise CastError(f"{candidate} can't be targeted by this spell")
 
 
+def _check_player_target(game: Game, effect, target: int, controller: PlayerId) -> None:
+    """CR 115.1, 601.2c: a player chosen as the target must be one the
+    instruction may target - "target opponent" is not you."""
+    from ..kernel.ids import target_player
+
+    if effect.targets_a_player and target_player(target) not in _targetable_players(
+        game, effect.players, controller
+    ):
+        raise CastError("that player is not a legal target")
+
+
 def _announce_targets(game: Game, spell: GameObject, controller: PlayerId) -> None:
     """Emit a TARGETED event for each chosen target (CR 115.1).
+
+    ``spell`` is whatever is on the stack doing the targeting - a spell, or an
+    activated or triggered ability, which ward treats alike.
 
     Ward is a *triggered* ability (CR 702.21a), not a targeting restriction:
     "whenever this becomes the target of a spell or ability an opponent
@@ -868,7 +1104,10 @@ def _announce_targets(game: Game, spell: GameObject, controller: PlayerId) -> No
     for group in spell.targets:
         for object_id in group:
             target = game.objects.get(object_id)
-            if target is None or target.controller == controller:
+            # Every target, including one's own: "becomes the target of a
+            # spell or ability *you control*" is an event too (CR 115.1).
+            # Ward's trigger names an opponent's spell itself.
+            if target is None:
                 continue
             game.emit(
                 Event(
@@ -952,8 +1191,15 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
 
         for kind, amount in payment.mana:
             player.mana_pool.remove(kind, amount)
+            # CR 702.44a and "converge": which colours were spent casting it -
+            # a spell only, not a permanent paying to turn face up.
+            if amount > 0 and context is not None and context.zone is Zone.STACK:
+                context.mana_spent_colors |= int(kind.color)
         if payment.life:
             player.lose_life(payment.life)
+            # CR 702.150a: each Phyrexian symbol paid with life costs 2.
+            if context is not None and context.zone is Zone.STACK:
+                context.phyrexian_paid_with_life += payment.life // 2
         game.emit(Event(EventKind.MANA_SPENT, player=player_id, amount=payment.total_mana))
 
     for component in total.additional:
@@ -1093,6 +1339,7 @@ _PAYABLE_KINDS = frozenset(
         CostKind.RETURN_TO_HAND,
         CostKind.UNATTACH,
         CostKind.DISCARD,
+        CostKind.DISCARD_AT_RANDOM,
         *EXILE_ZONES,
         CostKind.MILL,
         CostKind.REMOVE_COUNTERS,
@@ -1101,6 +1348,18 @@ _PAYABLE_KINDS = frozenset(
         CostKind.CHOOSE,
     }
 )
+
+
+def _record_paid(game: Game, context: GameObject, obj: GameObject) -> None:
+    """Note an object a cost is about to consume, and what it was.
+
+    "The sacrificed creature's power" is the power it had on the
+    battlefield, counters and pumps included (CR 608.2h). The object kept
+    after the move is no longer on the board the layer system computes, so
+    it reads as printed; its characteristics are taken now, before it moves.
+    """
+    context.cost_paid_objects.append(obj.id)
+    game.cost_paid_last_known[obj.id] = game.characteristics(obj)
 
 
 def _pay_component(
@@ -1169,11 +1428,17 @@ def _pay_component(
             )
             if obj.tapped is not tapping
         ]
-        if len(candidates) < wanted:
+        if component.total_power and tapping:
+            chosen = creatures_with_total_power(game, candidates, amount)
+            if chosen is None:
+                raise CastError(f"not enough total power to tap ({amount})")
+        elif len(candidates) < wanted:
             raise CastError("not enough permanents to tap")
-        for obj in candidates[:wanted]:
+        else:
+            chosen = candidates[:wanted]
+        for obj in chosen:
             obj.tapped = tapping
-            context.cost_paid_objects.append(obj.id)
+            _record_paid(game, context, obj)
             game.emit(
                 Event(
                     EventKind.TAPPED if tapping else EventKind.UNTAPPED,
@@ -1185,13 +1450,18 @@ def _pay_component(
     elif kind in (CostKind.SACRIFICE, CostKind.RETURN_TO_HAND, CostKind.UNATTACH):
         for obj in _choose_permanents(game, player_id, component, amount, context):
             if kind is CostKind.SACRIFICE:
+                # "The sacrificed creature's power" (Fling, Altar of
+                # Dementia): the object as it last existed on the
+                # battlefield (CR 608.2h), which only this record can name
+                # once it is in the graveyard.
+                _record_paid(game, context, obj)
                 game_actions.sacrifice(game, obj, source=context.id)
             elif kind is CostKind.RETURN_TO_HAND:
                 # Recorded before it goes, as tapping another permanent is:
                 # ninjutsu's Ninja attacks whatever *this* creature was
                 # attacking (CR 702.49c), and once it is back in hand nothing
                 # else in the resolution can name it.
-                context.cost_paid_objects.append(obj.id)
+                _record_paid(game, context, obj)
                 game_actions.bounce(game, obj, source=context.id)
             else:
                 game_actions.detach(game, obj)
@@ -1216,15 +1486,15 @@ def _pay_component(
             raise CastError("this card is not in its owner's hand")
         game_actions.discard(game, context, source=context.id)
 
-    elif kind is CostKind.DISCARD:
-        if len(player.hand) < amount:
-            raise CastError("not enough cards in hand")
-        agent = game.agent_for(player_id)
+    elif kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+        candidates = discard_candidates(game, player_id, component, context)
+        if len(candidates) < amount:
+            raise CastError("not enough cards in hand to discard")
         for _ in range(amount):
-            choice = (
-                agent.choose_discard(game, player_id) if agent is not None else player.hand[-1]
-            )
-            obj = game.objects.get(choice) or game.objects[player.hand[-1]]
+            obj = pick_discard(game, player_id, component, candidates)
+            candidates.remove(obj)
+            # "The discarded card's mana value" (Mercurial Chemister).
+            _record_paid(game, context, obj)
             game_actions.discard(game, obj, source=context.id)
 
     elif kind in EXILE_ZONES:
@@ -1234,6 +1504,8 @@ def _pay_component(
         # and kept the artifact. "Exile this card from your graveyard" is the
         # source paying for itself, and only from there.
         for obj in _choose_exiled(game, player_id, component, amount, context):
+            # "The exiled card's power" (Dread Defiler, Corpse Explosion).
+            _record_paid(game, context, obj)
             game_actions.exile(game, obj, source=context.id)
 
     elif kind is CostKind.MILL:
@@ -1275,7 +1547,6 @@ def _check_payable(
     cast from. It is on the stack by the time the cost is paid, so it cannot
     pay for itself: a Force of Will is not the blue card it exiles.
     """
-    from ..kernel.matching import find
     from ..kernel.values import evaluate
 
     player = game.player(player_id)
@@ -1293,6 +1564,13 @@ def _check_payable(
         raise CastError(f"cannot pay a {kind.name.lower()} cost")
     if kind is CostKind.PAY_LIFE and player.life < amount:
         raise CastError("not enough life")
+    if kind is CostKind.PAY_LIFE and amount > 0:
+        # CR 119.8: a cost that has a player who can't lose life pay life
+        # can't be paid (CR 119.4b: paying 0 always can).
+        from ..cr100_game_concepts.actions import _life_change_prohibited
+
+        if _life_change_prohibited(game, player_id, gain=False):
+            raise CastError("that player's life total can't change")
     if kind is CostKind.PAY_ENERGY and player.energy < amount:
         raise CastError("not enough energy")
     if kind is CostKind.DISCARD and _is_this_card(component):
@@ -1300,10 +1578,9 @@ def _check_payable(
         if context.zone is not Zone.HAND:
             raise CastError("this card is not in its owner's hand")
         return
-    if kind is CostKind.DISCARD:
-        in_hand = [i for i in player.hand if spell is None or i != spell.id]
-        if len(in_hand) < amount:
-            raise CastError("not enough cards in hand")
+    if kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+        if len(discard_candidates(game, player_id, component, context, spell)) < amount:
+            raise CastError("not enough cards in hand to discard")
     if kind in EXILE_ZONES:
         if len(_exile_candidates(game, player_id, component, context, spell)) < amount:
             raise CastError(_exile_shortfall(component))
@@ -1322,7 +1599,7 @@ def _check_payable(
         if obj is None or obj.counter_count(component.counter_type) < amount:
             raise CastError(f"not enough {component.counter_type} counters")
     if kind in (CostKind.SACRIFICE, CostKind.RETURN_TO_HAND) and component.filter is not None:
-        if len(find(game, component.filter, source=context.id, controller=player_id)) < amount:
+        if len(cost_permanents(game, player_id, component, context.id)) < amount:
             raise CastError("not enough permanents to pay the cost")
     if kind is CostKind.TAP_SELF:
         obj = game.objects.get(context.source or context.id)
@@ -1343,14 +1620,12 @@ def _choose_permanents(
     creature cannot pay two costs. That falls out of actually sacrificing it
     before the next component is paid.
     """
-    from ..kernel.matching import find
-
     spec = component.filter
     if spec is None:
         obj = game.objects.get(context.source or context.id)
         return [obj] if obj is not None else []
 
-    candidates = find(game, spec, source=context.id, controller=player_id)
+    candidates = cost_permanents(game, player_id, component, context.id)
     if len(candidates) < amount:
         raise CastError("not enough permanents to pay the cost")
 
@@ -1363,6 +1638,76 @@ def _choose_permanents(
     return sorted(candidates, key=lambda o: (game.characteristics(o).mana_value, o.id))[
         :amount
     ]
+
+
+def cost_permanents(
+    game: Game, player_id: PlayerId, component: CostComponent, source: ObjectId
+) -> list[GameObject]:
+    """The permanents that could pay a sacrifice or return cost.
+
+    CR 701.21a: a player can sacrifice only a permanent they control. "Sacrifice
+    a creature" names no controller, and the filter alone matched every
+    creature on the battlefield - so a cost could be paid with an opponent's
+    creature, which is both free and removal.
+    """
+    from ..kernel.matching import find
+
+    found = find(game, component.filter, source=source, controller=player_id)
+    if component.kind is CostKind.SACRIFICE:
+        found = [obj for obj in found if obj.controller == player_id]
+    return found
+
+
+def discard_candidates(
+    game: Game,
+    player_id: PlayerId,
+    component: CostComponent,
+    context: GameObject | None = None,
+    spell: GameObject | None = None,
+) -> list[GameObject]:
+    """The cards in the payer's hand that could pay a discard cost.
+
+    "Discard an artifact card" is paid with an artifact card and nothing
+    else. The filter was ignored, so any card paid it - which makes the cost
+    payable when it is not and lets the payer keep the card it names. CR
+    118.3: a cost is paid with exactly what it asks for. ``spell`` is a card
+    asked about before it is cast, which will be on the stack by the time the
+    cost is paid and so cannot pay it (see ``_check_payable``).
+    """
+    from dataclasses import replace
+
+    from ..kernel.matching import matches
+
+    hand = [
+        game.objects[i]
+        for i in game.player(player_id).hand
+        if i in game.objects and (spell is None or i != spell.id)
+    ]
+    spec = component.filter
+    if spec is None:
+        return hand
+    spec = replace(spec, zones=frozenset({Zone.HAND}), count=None)
+    source = context.id if context is not None else NO_OBJECT
+    return [
+        obj for obj in hand if matches(game, obj, spec, source=source, controller=player_id)
+    ]
+
+
+def pick_discard(
+    game: Game, player_id: PlayerId, component: CostComponent, candidates: list[GameObject]
+) -> GameObject:
+    """One card to discard for a cost, from the cards that may pay it.
+
+    CR 701.9b: a card discarded "at random" is picked by the game, not the
+    payer. Otherwise the payer chooses - and a pick the cost does not accept
+    (the agent is asked about its whole hand) falls back to the deterministic
+    default, the last card, which is what was always taken with no agent.
+    """
+    if component.kind is CostKind.DISCARD_AT_RANDOM:
+        return game.rng.choice(candidates)
+    agent = game.agent_for(player_id)
+    choice = agent.choose_discard(game, player_id) if agent is not None else None
+    return next((c for c in candidates if c.id == choice), candidates[-1])
 
 
 def _exile_candidates(
@@ -1454,9 +1799,6 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
     one important divergence: a mana ability never goes on the stack and
     resolves immediately (CR 605.3).
     """
-    from .cr608_stack import push_ability
-    from .resolve import Resolution, execute
-
     source = game.objects.get(action.source)
     if source is None:
         raise CastError("no such permanent")
@@ -1474,8 +1816,42 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
         raise CastError(refusal)
     if activation_limit_reached(source, ability, action.ability_index):
         raise CastError("that ability has already been activated as often as it may be")
-    if not _can_pay_activation(game, source, ability):
-        raise CastError("cannot pay the activation cost")
+    # CR 107.3a, 601.2b: X in an activation cost is announced first, and
+    # CR 107.3k makes it this activation's own. With no X to announce there
+    # is nothing to choose, so a stray value on the action is ignored.
+    x_value = max(0, action.x_value) if ability.cost.asks_for_x else 0
+    with announced_x(game, source.id, ability, x_value):
+        if not _can_pay_activation(game, source, ability, x_value):
+            raise CastError("cannot pay the activation cost")
+        return _activate(game, player_id, action, source, ability, x_value)
+
+
+@contextmanager
+def announced_x(game: Game, source_id: ObjectId, ability: Ability, x_value: int):
+    """CR 107.3a, 107.3k: while an activated ability whose activation cost
+    has an X is being activated and while it resolves, every X in it is the
+    value announced for that activation - not the X its source was cast with.
+
+    X in an effect or in a filter bound ("mana value X or less") is read off
+    the source object, which for a permanent is the X of the spell it was
+    (CR 107.3m). For the length of this activation or resolution that object
+    answers with the announced value instead, and is put back afterwards.
+    """
+    source = game.objects.get(source_id)
+    if source is None or ability.kind is not AbilityKind.ACTIVATED or not ability.cost.asks_for_x:
+        yield
+        return
+    was = source.x_value
+    source.x_value = x_value
+    try:
+        yield
+    finally:
+        source.x_value = was
+
+
+def _activate(game, player_id, action, source, ability, x_value) -> GameObject | None:
+    from .cr608_stack import push_ability
+    from .resolve import Resolution, resolve_mana_ability
 
     # CR 602.2b: activating an ability follows CR 601.2b-i, so the modes are
     # chosen here, before the targets and before anything is paid. A modal
@@ -1492,21 +1868,21 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
             effects = targeted_nodes(ability.effects, chosen_modes or None)
             targets = choose_targets(game, source, effects, player_id)
             for node, chosen in zip(effects, targets):
-                if not chosen and not (node.targets is not None and node.targets.up_to):
+                if not chosen and not node.target_optional:
                     raise CastError("no legal target for this ability")
         _validate_ability_targets(game, source, ability, targets, chosen_modes)
 
     # A fresh record per activation: what the *last* activation tapped must
     # not leak into this one.
     source.cost_paid_objects = []
-    _pay_activation(game, source, ability)
+    _pay_activation(game, source, ability, x_value)
     record_activation(source, ability, action.ability_index)
 
     if ability.is_mana_ability:
         # CR 605.3b: resolves immediately, with no chance to respond. There is
         # no stack object, so the modes chosen above travel on the resolution
         # instead - otherwise "Add {R} or {G}" chose a mode and added nothing.
-        execute(
+        resolve_mana_ability(
             Resolution(
                 game=game,
                 source=source.id,
@@ -1514,6 +1890,7 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
                 chosen_modes=chosen_modes,
             ),
             ability.effects,
+            tapped=ability.cost.requires_tapping,
         )
         # CR 605.4: anything that triggered off this mana ability and is itself
         # a mana ability resolves right here too. It cannot wait for the stack,
@@ -1532,9 +1909,13 @@ def activate_ability(game: Game, player_id: PlayerId, action: Action) -> GameObj
         source,
         ability,
         targets=targets,
-        x_value=action.x_value,
+        x_value=x_value,
         chosen_modes=chosen_modes,
     )
+    # CR 602.2b applies CR 601.2c: an ability's targets are chosen as it is
+    # activated, and becoming one is an event ward watches (CR 702.21a) -
+    # "a spell or ability", not only a spell.
+    _announce_targets(game, stack_object, player_id)
     # What the cost consumed travels with the ability, as its targets do. The
     # source's own record belongs to its latest activation, and a Ninja still
     # in hand can activate ninjutsu again while the first is on the stack.
@@ -1554,6 +1935,7 @@ def _validate_ability_targets(
     effects = targeted_nodes(ability.effects, chosen_modes or None)
     if len(targets) < len(effects):
         raise CastError("not every required target was chosen")
+    check_distinct_targets(effects, targets)
     for index, effect in enumerate(effects):
         for object_id in targets[index] if index < len(targets) else ():
             if object_id < 0:
@@ -1564,7 +1946,12 @@ def _validate_ability_targets(
 
                 if game.player(target_player(object_id)).has_lost:
                     raise CastError("that player has left the game")
+                _check_player_target(game, effect, object_id, source.controller)
                 continue
+            if effect.targets_a_player:
+                # "Target player sacrifices a creature": the creature is the
+                # player's to choose later, and is not what is targeted.
+                raise CastError("only a player can be this target")
             candidate = game.objects.get(object_id)
             if candidate is None:
                 raise CastError("target no longer exists")
@@ -1597,39 +1984,71 @@ def _scaled_mana(game: Game, player_id: PlayerId, cost):
     return mana.increased_by(mana.mana_value * (times - 1))
 
 
-def can_pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
+#: The non-mana components a player can be charged with no activation behind
+#: them - "unless that player pays ...", and ward's cost (CR 702.21a). Anything
+#: else is refused by ``can_pay_cost``, so a keyword that builds such a cost
+#: asks here first rather than building one nobody can pay.
+PLAYER_PAYABLE_KINDS = frozenset(
+    {
+        CostKind.MANA,
+        CostKind.PAY_LIFE,
+        CostKind.DISCARD,
+        CostKind.DISCARD_AT_RANDOM,
+        CostKind.SACRIFICE,
+    }
+)
+
+
+def _player_amount(
+    game: Game, player_id: PlayerId, component: CostComponent, source: ObjectId
+) -> int:
+    """What a player-scoped component charges. ``source`` is the object whose
+    ability asks - "pay life equal to *this creature's* power"."""
+    from ..kernel.values import evaluate
+
+    return required_amount(
+        component, evaluate(game, component.amount, source=source, controller=player_id)
+    )
+
+
+def can_pay_cost(
+    game: Game, player_id: PlayerId, cost, *, source: ObjectId = NO_OBJECT
+) -> bool:
     """Whether a player could pay a cost that has no source permanent.
 
     "Unless that player pays {1}" is charged to a player, not to a permanent,
     so none of the activation helpers apply: there is nothing to tap and no
-    controller to infer. Only the components that actually appear in these
-    clauses are supported - mana, life, sacrificing, discarding - and anything
-    else answers no, which lets the effect happen rather than silently
-    waiving it.
+    controller to infer. Only the components in ``PLAYER_PAYABLE_KINDS`` are
+    supported, and anything else answers no, which lets the effect happen
+    rather than silently waiving it.
     """
     if cost.choices:
         # "Discard a card or pay 3 life": payable if either half is.
-        return any(can_pay_cost(game, player_id, each) for each in cost.choices)
+        return any(
+            can_pay_cost(game, player_id, each, source=source) for each in cost.choices
+        )
 
     player = game.player(player_id)
     for component in cost.non_mana_components:
+        if component.kind not in PLAYER_PAYABLE_KINDS:
+            return False
+        try:
+            amount = _player_amount(game, player_id, component, source)
+        except CastError:
+            return False  # CR 903.4f: an amount that cannot be determined.
         if component.kind is CostKind.PAY_LIFE:
-            from ..kernel.values import evaluate
-
-            if player.life <= evaluate(game, component.amount, controller=player_id):
+            if player.life <= amount:
                 return False
-        elif component.kind is CostKind.DISCARD:
-            if not player.hand:
+        elif component.kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+            # The cards the cost accepts, not merely any card: "discard an
+            # enchantment, instant, or sorcery card" cannot be paid with a land.
+            if len(discard_candidates(game, player_id, component)) < amount:
                 return False
         elif component.kind is CostKind.SACRIFICE:
-            from ..kernel.matching import find
-
-            if component.filter is None or not find(
-                game, component.filter, controller=player_id
-            ):
+            if component.filter is None or len(
+                cost_permanents(game, player_id, component, source)
+            ) < amount:
                 return False
-        else:
-            return False
 
     mana_cost = _scaled_mana(game, player_id, cost)
     if not mana_cost:
@@ -1641,15 +2060,17 @@ def can_pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
     return can_produce(game, player_id, mana_cost)
 
 
-def pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
+def pay_cost(
+    game: Game, player_id: PlayerId, cost, *, source: ObjectId = NO_OBJECT
+) -> bool:
     """Charge a player-scoped cost. False if it could not be paid in full."""
     if cost.choices:
         # The first half that can actually be paid. A player choosing between
         # two costs would weigh them; with nothing to ask, taking the first
         # payable one keeps the run deterministic.
         for each in cost.choices:
-            if can_pay_cost(game, player_id, each):
-                return pay_cost(game, player_id, each)
+            if can_pay_cost(game, player_id, each, source=source):
+                return pay_cost(game, player_id, each, source=source)
         return False
 
     player = game.player(player_id)
@@ -1688,19 +2109,34 @@ def pay_cost(game: Game, player_id: PlayerId, cost) -> bool:
         if payment.life:
             player.lose_life(payment.life)
 
+    from ..cr100_game_concepts import actions as game_actions
+
     for component in cost.non_mana_components:
+        amount = _player_amount(game, player_id, component, source)
         if component.kind is CostKind.PAY_LIFE:
-            from ..kernel.values import evaluate
-
-            player.lose_life(evaluate(game, component.amount, controller=player_id))
-        elif component.kind is CostKind.DISCARD and player.hand:
-            game.move_object(game.objects[player.hand[-1]], Zone.GRAVEYARD)
+            player.lose_life(amount)
+        elif component.kind in (CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM):
+            # A real discard (CR 701.8), so madness and "whenever you discard"
+            # see it; moving the card to the graveyard was not one.
+            candidates = discard_candidates(game, player_id, component)
+            for _ in range(min(amount, len(candidates))):
+                obj = pick_discard(game, player_id, component, candidates)
+                candidates.remove(obj)
+                game_actions.discard(game, obj, source=source)
         elif component.kind is CostKind.SACRIFICE and component.filter is not None:
-            from ..kernel.matching import find
-
-            found = find(game, component.filter, controller=player_id)
-            if found:
-                game.move_object(found[0], Zone.GRAVEYARD)
+            # As many as the cost names, each a real sacrifice (CR 701.17) of
+            # a permanent the payer controls.
+            candidates = cost_permanents(game, player_id, component, source)
+            agent = game.agent_for(player_id)
+            picked = None
+            if agent is not None and hasattr(agent, "choose_cost_permanents"):
+                picked = agent.choose_cost_permanents(game, player_id, candidates, amount)
+            if not picked or len(picked) != amount:
+                picked = sorted(
+                    candidates, key=lambda o: (game.characteristics(o).mana_value, o.id)
+                )[:amount]
+            for obj in picked:
+                game_actions.sacrifice(game, obj, source=source)
     return True
 
 
@@ -1826,13 +2262,42 @@ def activation_mana_cost(game: Game, source: GameObject, ability: Ability) -> Ma
     return mana.reduced_by_mana(own) if own else mana
 
 
+def creatures_with_total_power(game: Game, candidates: list, needed: int) -> list | None:
+    """Untapped creatures whose total power is at least ``needed`` (crew, CR
+    702.122a; saddle, CR 702.171a), or None if every one together falls short.
+
+    Which ones is the player's choice; without an agent, the fewest and
+    weakest that suffice: the smallest single creature that is enough on its
+    own, otherwise the strongest first until the total is reached - so a
+    3-power cost taps one 3/3 rather than three 1/1s and a 5/5.
+    """
+    power = {obj.id: max(0, game.characteristics(obj).power or 0) for obj in candidates}
+    if needed <= 0:
+        return []
+    if sum(power.values()) < needed:
+        return None
+    alone = sorted((o for o in candidates if power[o.id] >= needed), key=lambda o: (power[o.id], o.id))
+    if alone:
+        return [alone[0]]
+    chosen, total = [], 0
+    for obj in sorted(candidates, key=lambda o: (-power[o.id], o.id)):
+        chosen.append(obj)
+        total += power[obj.id]
+        if total >= needed:
+            return chosen
+    return None
+
+
 def _is_this_card(component: CostComponent) -> bool:
     """"Discard this card", "Exile this card from your hand" - paid by the source."""
     return component.filter is not None and component.filter.source_only
 
 
-def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> bool:
-    """Whether an ability's cost could be paid right now."""
+def _can_pay_activation(
+    game: Game, source: GameObject, ability: Ability, x_value: int = 0
+) -> bool:
+    """Whether an ability's cost could be paid right now, for an announced X
+    (CR 107.3a; zero when the cost has none)."""
     cost = ability.cost
     if cost.is_unparsed:
         return False
@@ -1860,7 +2325,11 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
             # it - that is the whole shape of planeswalker resource management.
             from ..kernel.values import evaluate
 
-            change = evaluate(game, component.amount, controller=player.id)
+            # CR 606.6: with [-X], X more than the loyalty it has cannot be
+            # announced at all.
+            change = evaluate(
+                game, component.amount, controller=player.id, x_value=x_value
+            )
             if change < 0 and source.counter_count("loyalty") < -change:
                 return False
         elif component.kind in (CostKind.TAP_OTHER, CostKind.UNTAP_OTHER):
@@ -1878,7 +2347,11 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
                 )
                 if obj.tapped is not tapping
             ]
-            if len(available) < wanted:
+            if component.total_power and tapping:
+                needed = evaluate(game, component.amount, controller=player.id)
+                if creatures_with_total_power(game, available, needed) is None:
+                    return False
+            elif len(available) < wanted:
                 return False
         elif component.kind is CostKind.UNPARSED:
             return False
@@ -1894,7 +2367,7 @@ def _can_pay_activation(game: Game, source: GameObject, ability: Ability) -> boo
             except CastError:
                 return False
 
-    mana_cost = activation_mana_cost(game, source, ability)
+    mana_cost = activation_mana_cost(game, source, ability).substitute_x(x_value)
     if mana_cost:
         if find_payment(player.mana_pool, mana_cost, life_available=player.life - 1):
             return True
@@ -1928,8 +2401,10 @@ def _could_produce(game: Game, player_id: PlayerId, cost) -> bool:
     return available >= cost.mana_value
 
 
-def _pay_activation(game: Game, source: GameObject, ability: Ability) -> None:
-
+def _pay_activation(
+    game: Game, source: GameObject, ability: Ability, x_value: int = 0
+) -> None:
+    """Pay an activation cost, with X as announced (CR 107.3a, 601.2f-h)."""
     cost = ability.cost
     player = game.player(source.controller)
 
@@ -1939,7 +2414,7 @@ def _pay_activation(game: Game, source: GameObject, ability: Ability) -> None:
             Event(EventKind.TAPPED, object_id=source.id, player=source.controller)
         )
 
-    mana_cost = activation_mana_cost(game, source, ability)
+    mana_cost = activation_mana_cost(game, source, ability).substitute_x(x_value)
     if mana_cost:
         payment = find_payment(player.mana_pool, mana_cost, life_available=player.life - 1)
         if payment is None:
@@ -1960,7 +2435,9 @@ def _pay_activation(game: Game, source: GameObject, ability: Ability) -> None:
         if component.kind is CostKind.LOYALTY:
             from ..kernel.values import evaluate
 
-            change = evaluate(game, component.amount, controller=source.controller)
+            change = evaluate(
+                game, component.amount, controller=source.controller, x_value=x_value
+            )
             if change >= 0:
                 source.add_counters("loyalty", change)
             elif source.remove_counters("loyalty", -change) < -change:

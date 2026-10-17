@@ -12,7 +12,7 @@ compare them, and the whole structure serialises for the native port.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from enum import IntEnum
 
 from .enums import CardType, Color, Supertype, Zone
@@ -115,6 +115,11 @@ class ValueKind(IntEnum):
     #: power" asks about the creature the cost tapped, which nothing else in
     #: the resolution has any way to name.
     COST_PAID_POWER = 21
+    #: Any other characteristic of what the cost consumed: "the sacrificed
+    #: creature's toughness", "the exiled card's mana value". ``operands[0]``
+    #: says which characteristic, read off each consumed object as it last
+    #: existed (CR 608.2h) and totalled. Power keeps its own kind above.
+    COST_PAID = 30
     #: How big the event that triggered this ability was. "Whenever this deals
     #: combat damage to a player, create that many Treasure tokens" has no
     #: other way to ask - the number is a fact about the event, not about any
@@ -127,6 +132,9 @@ class ValueKind(IntEnum):
     EVENT_COUNT_THIS_TURN = 26
     #: CR 700.8: the size of the player's party.
     PARTY_SIZE = 60
+    #: CR 702.44a: how many colours of mana were spent casting this object -
+    #: sunburst and the converge ability word.
+    COLORS_OF_MANA_SPENT = 61
     #: A characteristic summed across every object matching a filter: "the
     #: total power of creatures you control". The third way to ask about a
     #: set, alongside GREATEST_AMONG and LEAST_AMONG, and read the same way -
@@ -153,6 +161,15 @@ class ValueKind(IntEnum):
     #: EVENT_COUNT_THIS_TURN counts how many times they happened. Gaining 2
     #: life twice is 4 life and two events.
     EVENT_AMOUNT_THIS_TURN = 7002
+    #: "Each creature blocking it" (CR 702.23a, rampage): how many creatures
+    #: are blocking the ability's source right now. Read from the combat, not
+    #: from the event that declared them - CR 702.23b counts at resolution, so
+    #: a blocker removed from combat in between is not counted.
+    BLOCKERS_OF_SOURCE = 18001
+    #: How many players ``players`` names, counting only those still in the
+    #: game: "for each opponent you have" (CR 702.125a-b, undaunted). Players
+    #: who have left are not opponents any more.
+    PLAYER_COUNT = 18002
 
 
 @dataclass(frozen=True, slots=True)
@@ -199,13 +216,22 @@ class Value:
         if self.kind is ValueKind.UNCHANGED:
             return "unchanged"
         if self.kind is ValueKind.COST_PAID_POWER:
-            return "the power of the creature tapped to pay for this"
+            return "the power of what was used to pay for this"
+        if self.kind is ValueKind.COST_PAID:
+            what = self.operands[0].kind.name.lower().replace("_", " ") if self.operands else "?"
+            return f"the {what} of what was consumed to pay for this"
         if self.kind is ValueKind.X:
             return "X"
         if self.kind is ValueKind.COUNT:
             return f"the number of {self.filter}"
-        if self.kind is ValueKind.MANA_SPENT:
-            return "the mana spent to cast it"
+        if self.kind is ValueKind.MANA_SPENT and self.filter is None:
+            return "the mana spent to cast " + ("it" if self.of_affected else "this")
+        if self.kind is ValueKind.BLOCKERS_OF_SOURCE:
+            return "the number of creatures blocking this creature"
+        if self.kind is ValueKind.PLAYER_COUNT:
+            if self.players is not None and self.players.scope is PlayerScope.EACH_OPPONENT:
+                return "the number of opponents you have"
+            return f"the number of players ({self.players}) still in the game"
         if self.kind is ValueKind.COLOURS_AMONG:
             return f"the number of colors among {self.filter}"
         if self.kind in (ValueKind.AMOUNT_THIS_WAY, ValueKind.EVENT_AMOUNT_THIS_TURN):
@@ -214,6 +240,8 @@ class Value:
                 return f"the {what} this way"
             who = str(self.players) if self.players is not None else "you"
             return f"the total {what} this turn (by {who})"
+        if self.kind is ValueKind.DEVOTION and self.filter is not None:
+            return "your devotion to the chosen colour"
         if self.kind is ValueKind.DEVOTION:
             names = " and ".join(c.name.lower() for c in self.colors) or "nothing"
             return f"your devotion to {names}"
@@ -224,6 +252,21 @@ class Value:
             what = str(self.operands[0]) if self.operands else "value"
             what = what.replace("this permanent's ", "").replace("its ", "")
             return f"the {word} {what} among {self.filter}"
+        if self.filter is not None and self.kind in (
+            ValueKind.POWER,
+            ValueKind.TOUGHNESS,
+            ValueKind.MANA_VALUE,
+            ValueKind.COUNTERS,
+            ValueKind.MANA_SPENT,
+        ):
+            # A characteristic of the object the filter names ("that card's
+            # mana value"), not of the source or of the affected object.
+            if self.kind is ValueKind.COUNTERS:
+                return f"the number of {self.counter_type or '+1/+1'} counters on {self.filter}"
+            if self.kind is ValueKind.MANA_SPENT:
+                return f"the mana spent to cast {self.filter}"
+            what = self.kind.name.lower().replace("_", " ")
+            return f"the {what} of {self.filter}"
         if self.kind is ValueKind.COUNTERS:
             whose = "its" if self.of_affected else "this permanent's"
             return f"the number of {self.counter_type or '+1/+1'} counters on {whose}"
@@ -355,6 +398,39 @@ class PlayerScope(IntEnum):
     #: in turn - facing a villainous choice (CR 701.55a) above all. Resolved
     #: by the resolution, which knows whose turn in the sequence it is.
     THAT_PLAYER = 12
+    #: The player who controls the spell or ability that caused the event a
+    #: triggered ability fired on - ward's "that player" (CR 702.21a), who
+    #: controls the spell or ability that targeted the warded permanent.
+    #: Captured on the event (``Event.source_controller``) when it happened,
+    #: so it is right even if the spell has left the stack by resolution.
+    TRIGGER_SOURCE_CONTROLLER = 4001
+    #: "That player", "they", "them" as the parser first reads them: a player
+    #: the sentence has already named, not yet worked out which. The parser
+    #: binds it to one of the scopes below (``mtgfish.parser.referents``) or
+    #: refuses the ability; the engine resolves it to nobody.
+    REFERRED_PLAYER = 13001
+    #: The player the triggering event is about - "whenever an opponent draws
+    #: a card, *that player* ...". ``Event.player`` is the player the
+    #: trigger's player filter matched (CR 603.2), so it is read off the event.
+    TRIGGER_PLAYER = 13002
+    #: The controller / owner of the object(s) the resolution last acted on -
+    #: "Destroy target creature. *Its controller* ...". CR 608.2h: an object
+    #: that has left its zone is asked about as it last existed there.
+    REMEMBERED_CONTROLLER = 13003
+    REMEMBERED_OWNER = 13004
+    #: The controller / owner of the object the triggering event is about -
+    #: "whenever enchanted land becomes tapped, *its controller* ..." - as it
+    #: last existed (CR 603.10, 608.2h).
+    TRIGGER_OBJECT_CONTROLLER = 13005
+    TRIGGER_OBJECT_OWNER = 13006
+    #: For UNLESS_PAYS: the player the guarded instruction acts on - its
+    #: target player, or the controller of its object: "counter target spell
+    #: unless *its controller* pays {3}", "target player loses 3 life unless
+    #: *they* sacrifice a nonland permanent".
+    AFFECTED_CONTROLLER = 13007
+    #: The player an earlier instruction of the same resolution targeted -
+    #: "Target player mills three cards. *That player* ..." (CR 115.1, 608.2c).
+    CHOSEN_PLAYER = 13008
 
 
 @dataclass(frozen=True, slots=True)
@@ -387,6 +463,19 @@ class PlayerFilter:
             PlayerScope.OWNER_OF: "its owner",
             PlayerScope.MONARCH: "the monarch",
             PlayerScope.DEFENDING_PLAYER: "the defending player",
+            PlayerScope.TRIGGER_SOURCE_CONTROLLER: (
+                "the controller of the spell or ability that triggered this"
+            ),
+            PlayerScope.REFERRED_PLAYER: "that player (unresolved)",
+            PlayerScope.TRIGGER_PLAYER: "the player the trigger is about",
+            PlayerScope.REMEMBERED_CONTROLLER: "the controller of that object",
+            PlayerScope.REMEMBERED_OWNER: "the owner of that object",
+            PlayerScope.TRIGGER_OBJECT_CONTROLLER: (
+                "the controller of the object the trigger is about"
+            ),
+            PlayerScope.TRIGGER_OBJECT_OWNER: "the owner of the object the trigger is about",
+            PlayerScope.AFFECTED_CONTROLLER: "the player it acts on (or its controller)",
+            PlayerScope.CHOSEN_PLAYER: "the player targeted earlier",
         }
         base = names.get(self.scope, self.scope.name.lower().replace("_", " "))
         if self.controls is not None:
@@ -469,6 +558,13 @@ class ObjectFilter:
     #: objects: "Destroy target creature. Its controller loses 2 life" means
     #: the *target's* controller, not this card's.
     remembered: bool = False
+    #: "That spell or ability" in a triggered ability: the object that caused
+    #: the event the ability triggered on (``Event.source``) - the spell or
+    #: ability that targeted a warded permanent (CR 702.21a). Answered from
+    #: the triggered ability's own event at resolution, never by searching.
+    #: Left out of ``repr`` so that adding it did not change the census hash
+    #: of every ability that carries a filter.
+    trigger_source: bool = field(default=False, repr=False)
     specific: tuple[ObjectId, ...] = ()
     #: CR 607.2a-c: "the exiled cards", "cards exiled with this", "creatures
     #: put onto the battlefield with this" - what the source's linked ability
@@ -477,6 +573,13 @@ class ObjectFilter:
     #: source.
     linked_to_source: bool = False
     link_id: int = 0
+    #: "from among them", "the rest", "all cards revealed this way" - the
+    #: cards an earlier instruction of this same resolution looked at or
+    #: revealed (``EffectKind.LOOK_AT_TOP``), and only those not yet dealt
+    #: with. They are still in the library they were looked at in (CR 701.20:
+    #: revealing moves nothing), so the filter's ``zones`` say nothing here;
+    #: the rest of it narrows which of the pile may be chosen.
+    from_pile: bool = False
 
     # -- zone and control ---------------------------------------------------
     zones: frozenset[Zone] = frozenset({Zone.BATTLEFIELD})
@@ -499,6 +602,9 @@ class ObjectFilter:
     #: CR 700.9: modified - counters, equipped, or enchanted by its
     #: controller's Aura.
     modified: bool | None = None
+    #: CR 702.95b: this creature and the creature it is paired with - "each
+    #: of those creatures has ...". Matches nothing while it is unpaired.
+    in_pair_with_source: bool | None = None
     #: CR 700.10: the source of an ability activated this turn.
     activated_this_turn: bool | None = None
     face_down: bool | None = None
@@ -587,7 +693,13 @@ class ObjectFilter:
 
     def _quantity(self) -> list[str]:
         if self.count is None:
-            return ["all"] if not self.source_only and not self.remembered else []
+            if self.up_to:
+                return ["any number of"]
+            return (
+                ["all"]
+                if not self.source_only and not self.remembered and not self.trigger_source
+                else []
+            )
         return [f"up to {self.count}"] if self.up_to else [str(self.count)]
 
     def _colors(self) -> list[str]:
@@ -632,6 +744,10 @@ class ObjectFilter:
             parts.append("(this permanent itself)")
         if self.remembered:
             parts.append("(whatever was just referred to)")
+        if self.trigger_source:
+            parts.append("(the spell or ability that triggered this)")
+        if self.from_pile:
+            parts.append("from among the cards looked at")
         if self.linked_to_source:
             parts.append("(affected by this object's linked ability)")
         if self.named:
@@ -698,6 +814,8 @@ class ObjectFilter:
                 self.entered_this_turn,
             ),
             ("summoning sick", "not summoning sick", self.summoning_sick),
+            # On the stack: an ability, or a spell and not an ability.
+            ("that is an ability", "that is a spell", self.is_ability),
         )
         for yes, no, value in flags:
             if value is True:
@@ -729,7 +847,7 @@ class ObjectFilter:
             elif self.owner is ControllerRelation.OPPONENT:
                 where = "an opponent's library"
             return [f"from the top {self.from_top} of {where}"]
-        if self.zones == frozenset({Zone.BATTLEFIELD}):
+        if self.from_pile or self.zones == frozenset({Zone.BATTLEFIELD}):
             return []
         names = sorted(z.name.lower().replace("_", " ") for z in self.zones)
         return ["in " + " or ".join(names)] if names else []
@@ -805,6 +923,21 @@ class ConditionKind(IntEnum):
     HAS_ENDURING_STORY = 27
     #: CR 702.186b: whether this permanent is harnessed.
     IS_HARNESSED = 28
+    #: CR 702.105a: this creature is attacking the player with the most life
+    #: or tied for the most life - a player, not a planeswalker or battle.
+    ATTACKING_PLAYER_WITH_MOST_LIFE = 85
+    #: CR 702.171b: whether this permanent is saddled ("attacks while
+    #: saddled").
+    IS_SADDLED = 86
+    #: CR 702.95b: whether this creature is paired.
+    IS_PAIRED = 87
+    #: CR 702.112b: whether this permanent is renowned.
+    IS_RENOWNED = 18001
+    #: CR 702.191a (increment): "if this permanent is a creature and the
+    #: amount of mana spent to cast that spell is greater than this
+    #: creature's power or this creature's toughness". "That spell" is the
+    #: one the trigger event was about; asked again on resolution (CR 603.4).
+    SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS = 18002
     #: CR 309.7: "if you've completed a dungeon". ``Condition.keyword``, when
     #: set, names the dungeon ("if you haven't completed Tomb of
     #: Annihilation" is the negation of the named form).
@@ -834,6 +967,27 @@ class ConditionKind(IntEnum):
     AND = 20
     OR = 21
     NOT = 22
+    #: "Whenever a creature you control dies, if it was a Human, ..." - "it"
+    #: in a triggered ability, before the ability has acted on anything, is
+    #: the object the trigger event was about (CR 603.2, 603.4). Asked of that
+    #: object as the event left it: a creature that died is asked about as it
+    #: last existed on the battlefield (CR 603.10a, 608.2h), which is the only
+    #: way "if it had counters on it" can ever be true. Distinct from
+    #: REMEMBERED_MATCHES because nothing in the resolution has touched it -
+    #: the event is the only thing that knows which object is meant.
+    TRIGGER_OBJECT_MATCHES = 2001
+    #: "Counter target instant spell if it's blue", "put a +1/+1 counter on
+    #: target creature you control if it's legendary" - a condition about the
+    #: objects the very effect it guards would act on. Asked before that
+    #: effect happens (CR 608.2c: the instruction is followed only if the
+    #: condition holds), so nothing is remembered yet: the guarded effect's
+    #: own targets are the referent.
+    AFFECTED_MATCHES = 2002
+    #: "as long as your devotion to red is less than five", "if X is 5 or
+    #: more", "if creatures you control have total power 10 or greater" - a
+    #: number the game can already compute, measured against a constraint.
+    #: ``value`` is the left-hand side and ``constraint`` the right.
+    VALUE_COMPARE = 2003
     #: The parser could not read the clause. A condition that is never true is
     #: the safe failure: the ability simply does not apply.
     UNPARSED = 99
@@ -855,6 +1009,25 @@ class Condition:
     #: COMPLETED_DUNGEON: the dungeon's name, or empty for any dungeon.
     keyword: str = ""
     text: str = ""
+    #: For VALUE_COMPARE: the quantity measured against ``constraint``.
+    value: Value | None = None
+
+    def __repr__(self) -> str:
+        """The dataclass repr, leaving ``value`` out while it is unset.
+
+        Written by hand for one reason: the parse census fingerprints every
+        ability by its repr, and a new field printed as ``value=None`` on every
+        condition in the pool would make all of them look changed. Unset, the
+        repr is exactly what it was before the field existed; set, it says so.
+        """
+        from dataclasses import fields
+
+        parts = [
+            f"{f.name}={getattr(self, f.name)!r}"
+            for f in fields(self)
+            if not (f.name == "value" and self.value is None)
+        ]
+        return f"{type(self).__qualname__}({', '.join(parts)})"
 
     @property
     def is_always(self) -> bool:
@@ -923,6 +1096,38 @@ class Condition:
                 return f"{verb} {what}"
             return f"{verb} {_count_phrase(self.constraint)} {what}"
 
+        if kind in (
+            ConditionKind.REMEMBERED_MATCHES,
+            ConditionKind.TRIGGER_OBJECT_MATCHES,
+            ConditionKind.AFFECTED_MATCHES,
+        ):
+            who = {
+                ConditionKind.REMEMBERED_MATCHES: "the object just referred to",
+                ConditionKind.TRIGGER_OBJECT_MATCHES: "the object the trigger was about",
+                ConditionKind.AFFECTED_MATCHES: "the object this affects",
+            }[kind]
+            if self.filter is None:
+                return f"{who} is something"
+            spec = replace(self.filter, remembered=False, zones=frozenset())
+            return f"{who} is {spec.describe(quantified=False)}"
+        if kind is ConditionKind.COMPARE_COUNTS:
+            who = str(self.players) if self.players is not None else "an opponent"
+            if self.filter is None or self.constraint is None:
+                return f"{who} controls something"
+            spec = replace(self.filter, controller=ControllerRelation.ANY)
+            return f"{who} controls {_count_phrase(self.constraint)} {spec.describe(quantified=False)}"
+        if kind is ConditionKind.VALUE_COMPARE:
+            return f"{self.value} is {self.constraint}"
+        if kind is ConditionKind.EVENT_THIS_TURN:
+            who = str(self.players) if self.players is not None else "you"
+            from .events import EventKind
+
+            what = "/".join(
+                EventKind(k).name.lower() for k in self.event_kinds
+            )
+            how = "times" if self.counter_type == "count" else "in total"
+            amount = f" {self.constraint} {how}" if self.constraint else ""
+            return f"{who}: event {what} happened this turn{amount}"
         if kind is ConditionKind.PLAYER_COUNT:
             who = str(self.players) if self.players is not None else "players"
             return f"you have {self.constraint} {who}"
@@ -934,6 +1139,11 @@ class Condition:
             return "it is a main phase"
         if kind is ConditionKind.NO_MANA_SPENT:
             return "no mana was spent casting it"
+        if kind is ConditionKind.SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS:
+            return (
+                "this is a creature and the mana spent to cast that spell is"
+                " greater than its power or its toughness"
+            )
         if kind is ConditionKind.WAS_KICKED:
             return "it was kicked"
         if kind is ConditionKind.ALTERNATIVE_COST_PAID:

@@ -214,6 +214,8 @@ class Sandbox:
 
         game = Game(rng=random.Random(0), log=GameLog(enabled=True))
         game.ability_provider = self.provider
+        # Where MTG Arena's conjure looks a card up by name.
+        game.card_catalog = self.db
         for index, name in enumerate(("You", "Opponent")):
             game.players.append(Player(id=PlayerId(index), name=name))
         game.turn_order = [PlayerId(0), PlayerId(1)]
@@ -495,6 +497,14 @@ class Sandbox:
             from ..rules.kernel.events import Event, EventKind
 
             apply_self_entry_replacements(self.game, obj)
+            # CR 306.5b, 310.4b: skipping move_object also skips the loyalty
+            # and defense counters a planeswalker or battle enters with.
+            from ..rules.cr300_card_types.cr300_characteristics import (
+                entering_counters,
+            )
+
+            for kind, amount in entering_counters(self.game.characteristics(obj)):
+                obj.add_counters(kind, amount)
             # Placing a permanent skips move_object, so nothing announced that
             # it entered and no enters-the-battlefield trigger fired. An
             # instrument that silently drops ETB triggers would report a card
@@ -592,7 +602,7 @@ class Sandbox:
             groups.append(
                 {
                     "description": effect.text or effect.kind.name.lower(),
-                    "optional": bool(effect.targets and effect.targets.up_to),
+                    "optional": effect.target_optional,
                     "candidates": [
                         self._candidate(target) for target in candidates
                     ],

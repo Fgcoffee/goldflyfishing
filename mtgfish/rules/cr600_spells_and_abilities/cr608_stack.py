@@ -73,7 +73,9 @@ def _resolve_ability(game: Game, obj: GameObject) -> None:
         from .cr603_triggers import check_intervening_if
 
         source = game.objects.get(obj.source)
-        if source is not None and not check_intervening_if(game, source, ability.trigger):
+        if source is not None and not check_intervening_if(
+            game, source, ability.trigger, obj.trigger_event
+        ):
             game.log.record(game, "Intervening 'if' no longer true; ability does nothing")
             _cease(game, obj)
             return
@@ -95,11 +97,51 @@ def _resolve_ability(game: Game, obj: GameObject) -> None:
         # CR 603.7c: a delayed ability's "it" was fixed when it was created.
         remembered=_still_where_expected(game, ability, obj.trigger_event),
     )
-    execute(resolution, ability.effects)
+    if not resolution.remembered and not ability.remembered:
+        resolution.remembered = _trigger_subject(game, ability, obj.trigger_event)
+    from .cr601_casting import announced_x
+
+    # CR 107.3a: while an activated ability is on the stack, an X in its
+    # activation cost is the value announced for it.
+    with announced_x(game, obj.source, ability, obj.x_value):
+        execute(resolution, ability.effects)
     game.emit(
         Event(EventKind.ABILITY_RESOLVED, object_id=obj.id, player=obj.controller)
     )
     _cease(game, obj)
+
+
+def _trigger_subject(game: Game, ability, event) -> list[ObjectId]:
+    """What "it" and "that creature" mean in a triggered ability: the object
+    its trigger event was about (CR 603.2, 608.2h).
+
+    "Whenever a creature enters, this deals 2 damage to it"; "whenever
+    another creature you control enters, you gain life equal to that
+    creature's toughness". Nothing else in the resolution names that object,
+    and without it every such pronoun referred to nothing - Aether Flash
+    dealt its damage to no one.
+
+    The object is the one the trigger looked at (``_subject_of``), which for
+    a leaves-the-battlefield event is the permanent as it last existed, so a
+    value asks about it with last-known information (CR 608.2h) while an
+    effect that moves "it" follows it to where the event put it.
+    """
+    if ability.kind is not AbilityKind.TRIGGERED or event is None:
+        return []
+    from .cr603_triggers import _subject_of
+
+    if event.kind is EventKind.ABILITY_TRIGGERED and event.data:
+        # A reflexive ability (CR 603.12) is about what the resolution that
+        # created it had just acted on, which its event carries.
+        return [object_id for object_id in event.data if isinstance(object_id, int)]
+    trigger = ability.trigger
+    if trigger is not None and trigger.subject is None and trigger.source is not None:
+        # "Whenever a creature you control deals combat damage to a player,
+        # ... that creature": the event's cause, not the player it hit.
+        cause = game.objects.get(event.source) if event.source else None
+        return [cause.id] if cause is not None else []
+    subject = _subject_of(game, event)
+    return [subject.id] if subject is not None else []
 
 
 def _still_where_expected(game: Game, ability, event) -> list[ObjectId]:
@@ -173,6 +215,8 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # of them read the new object's defaults and was never true.
         permanent.additional_costs_paid = obj.additional_costs_paid
         permanent.mana_spent = obj.mana_spent
+        permanent.mana_spent_colors = obj.mana_spent_colors
+        permanent.phyrexian_paid_with_life = obj.phyrexian_paid_with_life
         permanent.alternative_cost_paid = obj.alternative_cost_paid
         # It got here by resolving as a spell, which is what "if you cast it"
         # asks. A permanent put onto the battlefield never passes through
@@ -183,6 +227,11 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         _record_resolution(game, obj, chars)
         if obj.enters_tapped_and_attacking:
             _enter_tapped_and_attacking(game, obj, permanent)
+        # CR 702.109a dash, 702.152a blitz, 702.185a warp: what the paid
+        # alternative cost does to the permanent the spell became.
+        from ..cr700_additional_rules.cr702_paid_costs import on_permanent_spell_resolved
+
+        on_permanent_spell_resolved(game, permanent)
         game.emit(
             Event(EventKind.SPELL_RESOLVED, object_id=permanent.id, player=obj.controller)
         )
@@ -218,6 +267,11 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
     # Compared against None rather than tested for truth: Zone.LIBRARY is 0,
     # so "or Zone.GRAVEYARD" silently sends every Omen to the graveyard.
     destination = resolution_zone(CastMode(obj.cast_mode))
+    if destination is None:
+        # CR 702.27a: a paid buyback cost puts it into its owner's hand.
+        from ..cr700_additional_rules.cr702_paid_costs import resolution_destination
+
+        destination = resolution_destination(game, obj)
     if destination is None:
         destination = Zone.GRAVEYARD
     moved = game.move_object(obj, destination, to_player=obj.owner)

@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from ..rules.cr100_game_concepts.cr106_mana import ManaCost, UnknownManaSymbol
 from ..rules.cr100_game_concepts.cr118_costs import EXILE_ZONES, Cost, CostComponent, CostKind
-from ..rules.kernel.query import ObjectFilter, Value
-from .nouns import SELF_NOUNS, parse_object_filter, parse_value
+from ..rules.kernel.query import ObjectFilter, Value, ValueKind
+from .nouns import SELF_NOUNS, chosen_count, parse_object_filter, parse_value
 from .tokens import Stream, TokenKind
 
 SELF = ObjectFilter(source_only=True)
@@ -33,7 +33,7 @@ def parse_cost(text: str) -> tuple[Cost | None, str]:
         stream.skip_punct(",")
         if stream.done:
             break
-        component = _component(stream)
+        component = _pronoun_for_this(stream, components) or _component(stream)
         if component is None:
             return None, f"unreadable cost component at {stream.peek().text!r}"
         components.append(component)
@@ -41,6 +41,33 @@ def parse_cost(text: str) -> tuple[Cost | None, str]:
     if not components:
         return None, "empty cost"
     return Cost(tuple(components)), ""
+
+
+def _pronoun_for_this(stream: Stream, components: list[CostComponent]):
+    """"Remove three quest counters from this enchantment and sacrifice it."
+
+    After a component that acts on this permanent, "it" is that permanent:
+    no other object has been named. Read only there - elsewhere a pronoun in a
+    cost has no referent the payment can charge, and the cost stays unread.
+    """
+    last = components[-1].filter if components else None
+    if last is None or not last.source_only:
+        return None
+    mark = stream.mark()
+    if stream.accept_phrase("sacrifice it"):
+        return CostComponent(
+            CostKind.SACRIFICE, filter=SELF, amount=Value.of(1), text="sacrifice this"
+        )
+    if stream.accept_phrase("exile it"):
+        return CostComponent(
+            CostKind.EXILE_FROM_BATTLEFIELD, filter=SELF, amount=Value.of(1), text="exile this"
+        )
+    if stream.accept_phrase("return it to its owner's hand"):
+        return CostComponent(
+            CostKind.RETURN_TO_HAND, filter=SELF, amount=Value.of(1), text="return this to hand"
+        )
+    stream.reset(mark)
+    return None
 
 
 def _skip_keyword_prefix(stream: Stream) -> None:
@@ -80,6 +107,22 @@ def _component(stream: Stream) -> CostComponent | None:
     )
 
 
+def _uncounted(spec) -> bool:
+    """"Sacrifice all permanents you control": no number of objects, which
+    a cost charged per object would pay with one. Unread rather than
+    charged as the cheapest reading.
+
+    "Enchanted creature" / "equipped creature" names exactly one object -
+    the permanent this one is attached to - so it is counted, not "all".
+    """
+    if spec.source_only:
+        return False
+    attached = spec.has_attached
+    if attached is not None and attached.source_only:
+        return False
+    return spec.count is None
+
+
 def _exert(stream: Stream) -> CostComponent | None:
     """"Exert this land" as a cost (CR 701.39).
 
@@ -112,7 +155,7 @@ def _tap_other(stream: Stream) -> CostComponent | None:
     tapping = stream.tokens[mark].lower == "tap"
 
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         stream.reset(mark)
         return None
     return CostComponent(
@@ -194,6 +237,19 @@ def _loyalty(stream: Stream) -> CostComponent | None:
         stream.accept("+")
 
     amount = stream.accept_number()
+    if amount is None and sign < 0 and stream.accept("x"):
+        # CR 107.7: a negative loyalty symbol may show an X, "[-X]". The
+        # controller announces X as the ability is activated (CR 107.3a) and
+        # the cost removes that many counters; CR 606.6 forbids announcing
+        # more than the permanent has. Only the minus symbol carries one.
+        if not stream.done:
+            stream.reset(mark)
+            return None
+        return CostComponent(
+            CostKind.LOYALTY,
+            amount=Value(ValueKind.DIFFERENCE, operands=(Value.of(0), Value(ValueKind.X))),
+            text="-X",
+        )
     if amount is None:
         stream.reset(mark)
         return None
@@ -253,12 +309,15 @@ def _sacrifice(stream: Stream) -> CostComponent | None:
             text="sacrifice this",
         )
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         return None
+    # "Sacrifice *two* creatures" - the count lives on the noun phrase, as it
+    # does for an exile cost. Charged as one, every such cost was half price
+    # or less.
     return CostComponent(
         CostKind.SACRIFICE,
         filter=spec,
-        amount=Value.of(1),
+        amount=spec.count if spec.count is not None else Value.of(1),
         text="sacrifice",
     )
 
@@ -287,12 +346,17 @@ def _discard(stream: Stream) -> CostComponent | None:
         )
     amount = parse_value(stream) or Value.of(1)
     spec = parse_object_filter(stream)
+    if spec is not None and chosen_count(spec):
+        return None
     if spec is None and not stream.accept("card", "cards"):
         return None
-    # "at random" says *how* the card is chosen. The engine's discard already
-    # picks without the player's judgement, so the phrase is consumed rather
-    # than modelled - but leaving it unread failed the whole cost.
-    stream.accept_phrase("at random")
+    # "at random" says *how* the card is chosen (CR 701.9b): the game picks,
+    # not the payer. Consumed and dropped, it made the cost a chosen discard -
+    # the payer keeping the card that mattered - so it is a kind of its own.
+    if stream.accept_phrase("at random"):
+        return CostComponent(
+            CostKind.DISCARD_AT_RANDOM, filter=spec, amount=amount, text="discard at random"
+        )
     return CostComponent(
         CostKind.DISCARD, filter=spec, amount=amount, text="discard"
     )
@@ -362,7 +426,7 @@ def _exile_from_zone(stream: Stream) -> CostComponent | None:
         # disagreeing about its tail is how "Exile this card from your hand"
         # became an unreadable cost.
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         stream.reset(mark)
         return None
     # The zone was hardcoded to the graveyard, so Force of Will - "exile a
@@ -405,13 +469,21 @@ def _return_to_hand(stream: Stream) -> CostComponent | None:
     if not stream.accept("return"):
         return None
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec) or _uncounted(spec):
         stream.reset(mark)
         return None
     if not (
         stream.accept_phrase("to its owner's hand")
+        or stream.accept_phrase("to their owner's hand")
         or stream.accept_phrase("to your hand")
     ):
         stream.reset(mark)
         return None
-    return CostComponent(CostKind.RETURN_TO_HAND, filter=spec, text="return to hand")
+    # "Return *two* lands you control": the count is on the noun phrase, and
+    # left unset the cost was floored to one land.
+    return CostComponent(
+        CostKind.RETURN_TO_HAND,
+        filter=spec,
+        amount=spec.count if spec.count is not None else Value.of(1),
+        text="return to hand",
+    )

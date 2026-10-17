@@ -345,6 +345,20 @@ class SimpleAgent:
             out[obj.id] = target
         return out
 
+    def choose_enlist(
+        self, game: Game, player: PlayerId, attacker: GameObject, eligible: list[GameObject]
+    ) -> ObjectId | None:
+        """CR 702.154a: enlist the strongest creature that is staying home, if
+        it has any power to lend."""
+        best = max(
+            eligible,
+            key=lambda obj: (game.characteristics(obj).power or 0, -obj.id),
+            default=None,
+        )
+        if best is None or (game.characteristics(best).power or 0) <= 0:
+            return None
+        return best.id
+
     def _threat_target(self, game: Game, player: PlayerId, opponents: list) -> PlayerId:
         """Who to attack: whoever is closest to dying, then whoever is scariest.
 
@@ -523,7 +537,8 @@ def _targeted_effects(game: Game, source: ObjectId) -> list:
         for ability in abilities
         for effect in ability.effects
         for node in effect.walk()
-        if node.is_targeted
+        # A verb sharing the previous one's "target" holds no slot.
+        if node.is_targeted and not node.same_target
     ]
 
 
