@@ -231,7 +231,9 @@ def copy_permanent(
     return True
 
 
-def copy_spell(game: Game, original: GameObject, controller=None) -> GameObject | None:
+def copy_spell(
+    game: Game, original: GameObject, controller=None, may_choose_new_targets: bool = True
+) -> GameObject | None:
     """Put a copy of a spell or ability onto the stack (CR 707.10).
 
     CR 707.10: the copy is *not cast*. Nothing that triggers on casting sees
@@ -269,8 +271,44 @@ def copy_spell(game: Game, original: GameObject, controller=None) -> GameObject 
     game.objects[copy.id] = copy
     game.stack.append(copy.id)
     game.invalidate_characteristics()
+    if may_choose_new_targets:
+        _choose_new_targets(game, copy, owner)
     game.log.record(
         game, f"A copy of {original} is put onto the stack", kind="copy", player=owner
     )
     game.emit(Event(EventKind.COPIED, object_id=copy.id, source=original.id))
     return copy
+
+
+def _choose_new_targets(game: Game, copy: GameObject, controller) -> None:
+    """CR 707.10c: the copy's controller may choose new targets for it.
+
+    Asked of the agent's ``choose_new_targets``; one without it keeps the
+    original's targets, which is always a legal answer. A choice is settled
+    against the copy's own legal candidates, as targets chosen on casting are.
+    """
+    if not copy.targets:
+        return
+    agent = game.agent_for(controller)
+    chooser = getattr(agent, "choose_new_targets", None)
+    if chooser is None:
+        return
+    from ..cr600_spells_and_abilities.cr601_casting import (
+        _candidates_for,
+        ability_targeting_effects,
+        settle_target_choices,
+        targeting_effects,
+    )
+
+    if copy.ability is not None:
+        effects = ability_targeting_effects(copy.ability, copy.chosen_modes or None)
+    else:
+        effects = targeting_effects(game, copy)
+    if len(effects) != len(copy.targets):
+        return
+    candidates = [_candidates_for(game, copy, effect, controller) for effect in effects]
+    picked = chooser(game, controller, copy.id, copy.targets, candidates)
+    if picked is None or tuple(picked) == tuple(copy.targets):
+        return
+    copy.targets = settle_target_choices(effects, candidates, picked, fill_required=True)
+    game.log.record(game, f"New targets are chosen for {copy}", kind="copy", player=controller)
