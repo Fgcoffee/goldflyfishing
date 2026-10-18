@@ -202,7 +202,6 @@ def test_a_colour_test_reads_and_evaluates(box):
     "text",
     [
         "an opponent lost 2 or more life this turn",
-        "an opponent was dealt 7 or more damage this turn",
         "an opponent cast three or more spells this turn",
         "you attacked with three or more creatures this turn",
         "it's blue",
@@ -212,6 +211,8 @@ def test_a_colour_test_reads_and_evaluates(box):
     ],
 )
 def test_the_condition_reads(card_db, text):
+    """(Damage to a player is not in the list: see
+    ``test_damage_to_a_player_this_turn_is_not_read``.)"""
     from mtgfish.parser.clauses import parse_condition_text
     from mtgfish.parser.tokens import Stream
 
@@ -219,3 +220,16 @@ def test_the_condition_reads(card_db, text):
     stream = Stream.of(text)
     condition = parse_condition_text(stream)
     assert condition is not None and stream.done
+
+
+def test_damage_to_a_player_this_turn_is_not_read(card_db):
+    """The turn tally files damage to a creature under its controller, so
+    "an opponent was dealt 7 or more damage this turn" cannot be told apart
+    from "an opponent's creatures were". Declined rather than answered wrong."""
+    from mtgfish.parser.clauses import parse_condition_text
+    from mtgfish.parser.tokens import Stream
+
+    card_db.registry()
+    stream = Stream.of("an opponent was dealt 7 or more damage this turn")
+    condition = parse_condition_text(stream)
+    assert condition is None or not stream.done or condition.is_unparsed

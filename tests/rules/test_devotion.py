@@ -121,3 +121,40 @@ def test_nykthos_reads(card_db):
         pytest.skip("Nykthos not in this pool")
     card_db.registry()
     assert parse_card(card).fully_parsed
+
+
+def test_nykthos_makes_mana_of_the_chosen_colour_only(box):
+    """"Choose a color. Add an amount of mana of that color equal to your
+    devotion to that color" - devotion to the one colour chosen, not to all
+    five: a red permanent adds nothing to black mana. It was read as
+    devotion to every colour at once, paid in any colour."""
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaCost
+    from mtgfish.rules.cr600_spells_and_abilities.mana_plan import (
+        can_produce,
+        execute_plan,
+        plan_payment,
+    )
+
+    box.put("Nykthos, Shrine to Nyx", "battlefield", 0)
+    box.put("Gray Merchant of Asphodel", "battlefield", 0, count=2)
+    box.put("Goblin Guide", "battlefield", 0)
+    box.put("Wastes", "battlefield", 0, count=2)
+    box.settle()
+    game, me = box.game, box.game.player(0).id
+    assert can_produce(game, me, ManaCost.parse("{B}{B}{B}{B}"))
+    assert not can_produce(game, me, ManaCost.parse("{B}{B}{B}{B}{B}"))
+    assert can_produce(game, me, ManaCost.parse("{R}"))
+    assert not can_produce(game, me, ManaCost.parse("{R}{R}"))
+    execute_plan(game, me, plan_payment(game, me, ManaCost.parse("{B}{B}{B}{B}")))
+    assert str(game.player(me).mana_pool) == "4xB"
+
+
+def test_devotion_to_that_colour_reads_the_choice(card_db):
+    from mtgfish.parser.nouns import parse_value
+    from mtgfish.parser.tokens import Stream
+
+    card_db.registry()
+    value = parse_value(Stream.of("your devotion to that color"))
+    assert value.kind is ValueKind.DEVOTION
+    assert value.colors == Color.NONE
+    assert value.filter is not None and value.filter.of_chosen_color

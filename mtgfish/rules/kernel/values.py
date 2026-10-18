@@ -62,6 +62,25 @@ def evaluate(
         tally = this_way or {}
         return sum(tally.get(int(event_kind), 0) for event_kind in value.event_kinds)
 
+    # CR 702.23a-b: the creatures blocking the source as this is evaluated.
+    if kind is ValueKind.BLOCKERS_OF_SOURCE:
+        combat = getattr(game, "combat", None)
+        if combat is None:
+            return 0
+        return len(combat.blockers.get(source, ()))
+
+    # CR 702.125b: players who have left the game are not counted.
+    if kind is ValueKind.PLAYER_COUNT:
+        from .matching import resolve_players
+
+        if value.players is None:
+            return 0
+        return sum(
+            1
+            for player in resolve_players(game, value.players, controller=controller)
+            if game.player(player).is_active_in_game
+        )
+
     if kind is ValueKind.X:
         obj = game.objects.get(source)
         return obj.x_value if obj is not None else x_value
@@ -71,8 +90,22 @@ def evaluate(
             return 0
         return len(_among(game, value.filter, source, controller, remembered))
 
+    if value.filter is not None and kind in _NAMED_OBJECT_VALUES:
+        return _of_named_objects(game, value, source, controller, remembered)
+
     if kind in (ValueKind.POWER, ValueKind.TOUGHNESS, ValueKind.MANA_VALUE):
-        obj = game.objects.get(source)
+        # "Its controller gains life equal to its power", "then gains life
+        # equal to that creature's toughness": in a resolving instruction
+        # "its" is the object the previous instruction acted on, as it last
+        # existed (CR 608.2h) - not the spell or ability's source. Reading the
+        # source made Swords to Plowshares gain its controller 0 life, and
+        # Solitude gain them Solitude's own power. A continuous effect
+        # (CR 613) names its own subject and passes no ``remembered``.
+        # The parser settles most such references to a named object before
+        # they get here (``object_referents``, read by ``_of_named_objects``
+        # above); this is the reading of one it left as "its".
+        subject = remembered[0] if value.of_affected and remembered else source
+        obj = game.objects.get(subject)
         if obj is None:
             return 0
         chars = game.characteristics(obj)
@@ -117,13 +150,17 @@ def evaluate(
             return Undeterminable("a commander's colour identity, and there is no commander")
         return bin(int(identity)).count("1")
 
+    if kind is ValueKind.COLORS_OF_MANA_SPENT:
+        obj = game.objects.get(source)
+        return bin(int(obj.mana_spent_colors)).count("1") if obj is not None else 0
+
     if kind is ValueKind.PARTY_SIZE:
         from ..cr700_additional_rules.cr700_general import party_size
 
         return party_size(game, controller) if controller != NO_PLAYER else 0
 
     if kind is ValueKind.DEVOTION:
-        return _devotion(game, value, controller)
+        return _devotion(game, value, controller, source)
 
     if kind is ValueKind.COST_PAID_POWER:
         obj = game.objects.get(source)
@@ -131,9 +168,30 @@ def evaluate(
             return 0
         total = 0
         for object_id in getattr(obj, "cost_paid_objects", ()):
-            paid = game.objects.get(object_id)
-            if paid is not None:
-                total += game.characteristics(paid).power or 0
+            chars = _paid_as_it_was(game, object_id)
+            if chars is not None:
+                total += chars.power or 0
+        return total
+
+    if kind is ValueKind.COST_PAID:
+        # "The sacrificed creature's toughness": each object the cost
+        # consumed, as it last existed (CR 608.2h) - the record keeps the
+        # object from before it moved.
+        obj = game.objects.get(source)
+        if obj is None or not value.operands:
+            return 0
+        wanted = value.operands[0].kind
+        total = 0
+        for object_id in getattr(obj, "cost_paid_objects", ()):
+            chars = _paid_as_it_was(game, object_id)
+            if chars is None:
+                continue
+            if wanted is ValueKind.TOUGHNESS:
+                total += chars.toughness or 0
+            elif wanted is ValueKind.MANA_VALUE:
+                total += chars.mana_value
+            elif wanted is ValueKind.POWER:
+                total += chars.power or 0
         return total
 
     if kind in (
@@ -165,6 +223,78 @@ def evaluate(
     )
 
 
+#: Characteristics a Value can read off an object its ``filter`` names rather
+#: than off the ability's source.
+_NAMED_OBJECT_VALUES = frozenset(
+    {
+        ValueKind.POWER,
+        ValueKind.TOUGHNESS,
+        ValueKind.MANA_VALUE,
+        ValueKind.COUNTERS,
+        ValueKind.MANA_SPENT,
+    }
+)
+
+
+def _of_named_objects(
+    game: Game,
+    value: Value,
+    source: ObjectId,
+    controller: PlayerId,
+    remembered: tuple[ObjectId, ...],
+) -> int:
+    """"Its power", "that card's mana value", "the number of +1/+1 counters
+    on enchanted creature" - a characteristic of the object the text names.
+
+    The object is picked out by the value's filter, so Reanimate's "you lose
+    life equal to that card's mana value" reads the card it returned and not
+    Reanimate itself. A remembered object is asked as it was when the
+    resolution acted on it (CR 608.2h): a creature exiled by Swords to
+    Plowshares is a card in exile now, and "its power" is the power it last
+    had on the battlefield - which is why the pre-move object is kept and
+    read here rather than the one it became.
+
+    Nothing named is zero, as a value about an object that is not there is
+    everywhere else. More than one is their total, which only a filter that
+    names a group can produce.
+    """
+    total = 0
+    for obj in _among(game, value.filter, source, controller, remembered):
+        if value.kind is ValueKind.COUNTERS:
+            total += obj.counter_count(value.counter_type)
+            continue
+        if value.kind is ValueKind.MANA_SPENT:
+            # CR 601.2g: recorded on the spell as it was cast.
+            total += getattr(obj, "mana_spent", 0)
+            continue
+        chars = game.characteristics(obj)
+        if value.kind is ValueKind.POWER:
+            total += chars.power or 0
+        elif value.kind is ValueKind.TOUGHNESS:
+            total += chars.toughness or 0
+        else:
+            total += chars.mana_value
+    return total
+
+
+def _paid_as_it_was(game: Game, object_id):
+    """An object a cost used, as it is now or as it last existed (CR 608.2h).
+
+    One still where it was - a creature tapped to pay - is read as it is
+    now. One the payment moved is read from the record taken as it was paid
+    (``Game.cost_paid_last_known``): the object kept after the move is off
+    the board and would read as printed.
+    """
+    paid = game.objects.get(object_id)
+    if paid is None:
+        return None
+    if paid.superseded_by:
+        known = game.cost_paid_last_known.get(object_id)
+        if known is not None:
+            return known
+    return game.characteristics(paid)
+
+
 def _among(
     game: Game,
     spec,
@@ -190,6 +320,20 @@ def _among(
 
     from .matching import find, matches
 
+    if spec.specific and not spec.zones and not spec.remembered:
+        # Named by id, anywhere: "the tapped creature's power" (enlist,
+        # CR 702.154a) is about that one object, as it is or - if it has
+        # since left the battlefield - as it last existed (CR 608.2h). The
+        # superseded object is exactly that last-known state.
+        described = replace(spec, specific=(), zones=frozenset(), count=None, up_to=False)
+        return [
+            obj
+            for object_id in spec.specific
+            if (obj := game.objects.get(object_id)) is not None
+            and matches(
+                game, obj, described, source=source, controller=controller, allow_stale=True
+            )
+        ]
     if not spec.remembered:
         return find(game, spec, source=source, controller=controller)
     described = replace(spec, remembered=False, zones=frozenset(), count=None, up_to=False)
@@ -235,7 +379,7 @@ def _this_turn(
     return total
 
 
-def _devotion(game: Game, value: Value, controller: PlayerId) -> int:
+def _devotion(game: Game, value: Value, controller: PlayerId, source: ObjectId = NO_OBJECT) -> int:
     """CR 700.5: coloured mana symbols among permanents a player controls.
 
     Counted per *symbol*, not per permanent - a card costing {B}{B} adds two -
@@ -246,6 +390,13 @@ def _devotion(game: Game, value: Value, controller: PlayerId) -> int:
     from .query import YOU
 
     wanted = value.colors
+    if value.filter is not None and value.filter.of_chosen_color:
+        # "Your devotion to that color": the colour the source chose. None
+        # chosen is devotion to nothing.
+        from .enums import Color
+
+        chooser = game.objects.get(source)
+        wanted = Color(getattr(chooser, "chosen_color", 0) or 0) if chooser else Color.NONE
     if not wanted:
         return 0
 

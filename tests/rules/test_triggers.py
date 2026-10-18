@@ -358,6 +358,29 @@ def test_zone_change_redirect_sends_it_elsewhere(board):
     assert game.exile
 
 
+def test_a_redirect_to_the_library_is_not_ignored(board):
+    """"Put it on the bottom of its owner's library instead": Zone.LIBRARY is
+    0, and a destination read with "or" was taken as no replacement at all,
+    so the creature went to the graveyard anyway."""
+    game = board.game
+    bears = board.play("Grizzly Bears", controller=0)
+    register(
+        game,
+        ReplacementEffect(
+            kind=ReplacementKind.REDIRECT_ZONE_CHANGE,
+            event_kinds=frozenset({EventKind.ZONE_CHANGE}),
+            subject=CREATURES,
+            destination=Zone.LIBRARY,
+            text="put it into its owner's library instead",
+        ),
+    )
+    library = len(game.player(PlayerId(0)).library)
+
+    destroy(game, bears)
+    assert not game.player(PlayerId(0)).graveyard
+    assert len(game.player(PlayerId(0)).library) == library + 1
+
+
 def test_a_one_shot_shield_is_used_up(board):
     """CR 615.5: a prevention shield applies once and then is gone."""
     game = board.game

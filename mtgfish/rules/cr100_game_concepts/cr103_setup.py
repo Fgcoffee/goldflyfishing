@@ -44,6 +44,7 @@ def new_game(
     log_enabled: bool = False,
     ability_provider: AbilityProvider | None = None,
     randomize_turn_order: bool = True,
+    card_catalog: object = None,
 ) -> Game:
     """Build a game from decks, up to but not including the first turn.
 
@@ -53,6 +54,8 @@ def new_game(
     game = Game(rng=random.Random(seed), log=GameLog(enabled=log_enabled))
     if ability_provider is not None:
         game.ability_provider = ability_provider
+    # Where MTG Arena's conjure looks a card up by name (``Game.card_catalog``).
+    game.card_catalog = card_catalog
     # CR 727.2: every card in the restarted game is in the new one, so the
     # decks have to survive the game that used them.
     game.source_decks = list(decks)
