@@ -211,3 +211,5 @@ Heads diverged AGAIN: rules 06453f8 contains parser f79b00b (batch A) but not c1
 - **F23, two fixes, compatible.** On rules 06453f8 alone, Twincast's rider is an OPTIONAL CHANGE_TARGETS: the copy is retargeted when the agent accepts the "may". On the merge, the parser's MAY_CHOOSE_NEW_TARGETS path asks the agent exactly ONCE (no double prompt), and the copy is retargeted.
 - **Unearth regression check OK** (merge): Dregscape Zombie unearthed has haste and is exiled when Bolted; Relic of Progenitus exiling all graveyards in response means it isn't returned.
 - **F25 (Ertai's Trickery) still open** on the parser side.
+
+24774b2 (batch B) full suite `pytest tests`: **2927 passed, 9 xfailed, 0 failed.** No test covers F25 (Ertai's Trickery).
