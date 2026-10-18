@@ -125,7 +125,7 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "craft": "CR 702.167a: exile with materials, return transformed; was a +1/+1 counter",
     "harmonize": "CR 702.180a: cast from the graveyard; was a +1/+1 counter",
     "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
-    "specialize": "CR 702.172a: perpetually specialize; was a +1/+1 counter",
+    "specialize": "a digital (Alchemy) mechanic, not in the CR: perpetually specialize; was a +1/+1 counter",
     "boast": "CR 702.142a: the printed ability, only if it attacked; was a +1/+1 counter",
     "amplify": "CR 702.38a: counters per revealed card; was a flat N",
     "devour": "CR 702.82a: counters per creature sacrificed; was a flat N",
@@ -150,9 +150,25 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "dethrone": "CR 702.105a: only attacking the player with the most life;"
     " was any attack",
     "evolve": "CR 702.100a: only for a bigger creature; was any creature",
+    # The auditing session's F21: counted as read, playing wrong on a board.
+    # The rules session built the engine pieces (REPEAT_PER_PAYMENT,
+    # TokenSpec.copy_of, GIVE_GIFT, combat-damage records); each comes out
+    # with a builder on them and a board test.
+    "squad": "CR 702.157a: a token copy per time the squad cost was paid;"
+    " the cost was offered and paid and no token made",
+    "offspring": "CR 702.175a: a 1/1 token copy if the offspring cost was paid;"
+    " the cost was paid and no token made",
+    "gift": "CR 702.174a: an optional additional cost giving an opponent a gift;"
+    " was built as an alternative cost",
+    "bargain": "CR 702.166a: sacrifice an artifact, enchantment or token as an"
+    " optional additional cost; was a cost of nothing",
+    "spree": "CR 702.172a: an additional cost per chosen mode; was one free"
+    " optional cost",
+    "conspire": "CR 702.78a: tap two untapped creatures sharing a color to copy it;"
+    " was never offered",
+    "impending": "CR 702.176a: enters with N time counters and is not a creature"
+    " while it has one; entered with none, a creature at once",
     # Found by the auditing session, checked against the builders:
-    "jump-start": "CR 702.133a: cast from the graveyard paying the mana cost and"
-    " discarding a card, then exile; was a free cast from the graveyard",
     "aftermath": "CR 702.127a: cast this half only from a graveyard, then exile;"
     " was castable from hand and not from the graveyard",
     "encore": "CR 702.141a: an activated ability exiling it for token copies;"
@@ -1182,8 +1198,12 @@ def _bloodthirst(instance: KeywordInstance) -> tuple[Ability, ...]:
                 amount=Value.of(max(1, instance.amount)),
                 condition=Condition(
                     ConditionKind.EVENT_THIS_TURN,
+                    players=PlayerFilter(PlayerScope.OPPONENT),
+                    event_kinds=(int(EventKind.DAMAGE_DEALT), int(EventKind.COMBAT_DAMAGE_DEALT)),
                     text="if an opponent was dealt damage this turn",
                 ),
+                # "Enters with": the engine applies it as the permanent enters.
+                text=f"enters with {max(1, instance.amount)} +1/+1 counters",
             ),
             text=instance.text or instance.name,
         ),
@@ -1232,7 +1252,14 @@ def _mandatory_additional(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-def _alternative(instance: KeywordInstance, zone: Zone | None) -> tuple[Ability, ...]:
+def _alternative(
+    instance: KeywordInstance,
+    zone: Zone | None,
+    *,
+    condition: Condition | None = None,
+    pays_mana_cost: bool = False,
+    cost: Cost | None = None,
+) -> tuple[Ability, ...]:
     """An alternative cost, as a static ability working where the card is.
 
     CR 604.5: "you may pay [cost] rather than pay this object's mana cost"
@@ -1247,8 +1274,10 @@ def _alternative(instance: KeywordInstance, zone: Zone | None) -> tuple[Ability,
             AbilityKind.STATIC,
             keyword=instance.name,
             alternative_cost=AlternativeCost(
-                cost=instance.cost or Cost(()),
+                cost=cost if cost is not None else (instance.cost or Cost(())),
                 from_zone=zone,
+                condition=condition,
+                pays_mana_cost=pays_mana_cost,
                 keyword=instance.name,
                 text=instance.text or instance.name,
             ),
@@ -1258,16 +1287,99 @@ def _alternative(instance: KeywordInstance, zone: Zone | None) -> tuple[Ability,
     )
 
 
-@register("Flashback", "Jump-start", "Retrace", "Escape", "Aftermath", "Encore")
+@register("Flashback", "Retrace", "Escape", "Aftermath", "Encore")
 def _graveyard_alternative(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Alternative costs that let a card be cast from a graveyard (CR 702.34)."""
     return _alternative(instance, Zone.GRAVEYARD)
 
 
-@register("Dash", "Blitz", "Spectacle", "Prowl", "Surge", "Evoke", "Madness", "Mayhem")
+@register("Dash", "Blitz", "Surge", "Evoke", "Madness", "Mayhem")
 def _hand_alternative(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Alternative costs paid instead of the mana cost, from hand."""
     return _alternative(instance, None)
+
+
+@register("Jump-start")
+def _jump_start(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.133a: "You may cast this card from your graveyard by discarding a
+    card in addition to paying its other costs." Its mana cost is paid too;
+    the exile as it leaves the stack is the engine's, keyed on the keyword."""
+    return _alternative(
+        instance,
+        Zone.GRAVEYARD,
+        pays_mana_cost=True,
+        cost=Cost((CostComponent(CostKind.DISCARD, amount=Value.of(1), text="discard a card"),)),
+    )
+
+
+@register("Prowl")
+def _prowl(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.76a: castable for the prowl cost only if a creature sharing a
+    creature type with it dealt combat damage to a player this turn."""
+    return _alternative(
+        instance,
+        None,
+        condition=Condition(
+            ConditionKind.COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE,
+            text="a creature sharing a creature type dealt combat damage to a player this turn",
+        ),
+    )
+
+
+@register("Freerunning")
+def _freerunning(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.173a: castable for the freerunning cost only if an Assassin or
+    a commander you control dealt combat damage to a player this turn."""
+    return _alternative(
+        instance,
+        None,
+        condition=Condition(
+            ConditionKind.OR,
+            operands=(
+                Condition(
+                    ConditionKind.COMBAT_DAMAGE_DEALT_BY,
+                    filter=ObjectFilter(types_all=CardType.CREATURE, subtypes_any=("Assassin",)),
+                ),
+                Condition(
+                    ConditionKind.COMBAT_DAMAGE_DEALT_BY,
+                    filter=ObjectFilter(types_all=CardType.CREATURE, is_commander=True),
+                ),
+            ),
+            text="an Assassin or your commander dealt combat damage to a player this turn",
+        ),
+    )
+
+
+@register("Spectacle")
+def _spectacle(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.137a: castable for the spectacle cost only if an opponent lost
+    life this turn."""
+    return _alternative(
+        instance,
+        None,
+        condition=Condition(
+            ConditionKind.EVENT_THIS_TURN,
+            players=PlayerFilter(PlayerScope.OPPONENT),
+            event_kinds=(int(EventKind.LIFE_LOST),),
+            text="an opponent lost life this turn",
+        ),
+    )
+
+
+@register("Assist")
+def _assist(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.132a: another player may pay some of the generic mana. The engine
+    has no way for another player to pay part of a cost, so the keyword is a
+    bare marker: the card is cast for its own cost, which is what a game where
+    nobody assists does. It was a free alternative cost."""
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            functions_in=HAND,
+            text=instance.text or instance.name,
+        ),
+    )
 
 
 @register("Morph", "Megamorph", "Disguise")
@@ -1988,8 +2100,8 @@ def _upkeep_keyword(instance: KeywordInstance) -> tuple[Ability, ...]:
 # ---------------------------------------------------------------------------
 
 
-@register("Overload", "Foretell", "Emerge", "Freerunning", "Bestow", "Miracle",
-          "Warp", "Impending", "Offering", "Assist", "Cleave", "Gift", "Disturb",
+@register("Overload", "Foretell", "Emerge", "Bestow", "Miracle",
+          "Warp", "Impending", "Offering", "Cleave", "Gift", "Disturb",
           "Embalm", "Eternalize", "Mutate")
 def _more_alternatives(instance: KeywordInstance) -> tuple[Ability, ...]:
     zone = Zone.GRAVEYARD if instance.key in ("disturb", "embalm", "eternalize") else None

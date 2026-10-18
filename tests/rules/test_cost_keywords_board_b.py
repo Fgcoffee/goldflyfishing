@@ -435,9 +435,6 @@ def test_prowl_lasts_only_this_turn(prowl):
     assert not prowl_offered(prowl, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Prowl is built as an unconditional alternative cost; it "
-    "needs condition=Condition(COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE)"))
 def test_the_prowl_builder_needs_combat_damage(card_db):
     board = setup(card_db, {"Latchkey Faerie": keyword("Prowl", "{U}")})
     card = board.hand("Latchkey Faerie")
@@ -487,10 +484,6 @@ def test_freerunning_not_after_another_creature(freerunning):
     assert not freerunning_offered(freerunning, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Freerunning is built as an unconditional alternative cost; "
-    "it needs condition=OR(COMBAT_DAMAGE_DEALT_BY Assassin creature, "
-    "COMBAT_DAMAGE_DEALT_BY creature with is_commander)"))
 def test_the_freerunning_builder_needs_combat_damage(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Freerunning", "{R}"))})
@@ -546,10 +539,6 @@ def test_spectacle_not_after_you_lost_life(spectacle):
     assert not spectacle_offered(spectacle, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Spectacle is built as an unconditional alternative cost; it "
-    "needs condition=Condition(EVENT_THIS_TURN, players=PlayerFilter(OPPONENT), "
-    "event_kinds=(LIFE_LOST,))"))
 def test_the_spectacle_builder_needs_an_opponent_to_have_lost_life(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Spectacle", "{R}"))})
@@ -755,11 +744,6 @@ def test_an_unbargained_spell_skips_the_rider(bargain):
     assert named(bargain, "Witch's Oven")
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Bargain is built as an optional additional cost of "
-    "instance.cost, which the keyword never prints, so it is free; it needs "
-    "Cost(choices=(sacrifice an artifact or enchantment you control, "
-    "sacrifice a token you control))"))
 def test_the_bargain_builder_needs_something_to_sacrifice(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Bargain", None))})
@@ -834,10 +818,6 @@ def test_a_spree_spell_is_not_offered_without_its_cheapest_mode(spree):
     assert offered(spree, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Spree is built as a free optional additional cost named "
-    "Spree; the keyword has no cost of its own - its costs are the modes' "
-    "(Effect.mode_costs on the CHOOSE_MODE, modes_up_to=True, modes_at_least=1)"))
 def test_the_spree_builder_adds_no_cost_of_its_own(card_db):
     board = setup(card_db, {"Fire Prophecy": keyword("Spree", None)})
     assert not board.chars(board.hand("Fire Prophecy")).additional_costs
@@ -900,11 +880,6 @@ def test_unpaid_conspire_makes_no_copy(conspire):
     assert life(conspire) == 41
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Conspire is built as an optional additional cost of "
-    "instance.cost, which the keyword never prints, so it is free; it needs "
-    "Cost((CostComponent(TAP_OTHER, amount=2, filter=ObjectFilter(types_all="
-    "CREATURE, controller=YOU, shares_color_with_source=True)),))"))
 def test_the_conspire_builder_taps_two_creatures(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Conspire", None))})
@@ -1063,13 +1038,6 @@ def test_no_bloodthirst_when_no_opponent_was_dealt_damage(bloodthirst):
     assert bloodthirst.pt(giant) == (3, 3)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Bloodthirst's ADD_COUNTERS has no text, so it is not read "
-    "as an 'enters with' effect, and its EVENT_THIS_TURN condition has no "
-    "event_kinds or players, so it never holds; it needs text 'enters with N "
-    "+1/+1 counters' and condition=Condition(EVENT_THIS_TURN, "
-    "players=PlayerFilter(OPPONENT), event_kinds=(DAMAGE_DEALT, "
-    "COMBAT_DAMAGE_DEALT))"))
 def test_the_bloodthirst_builder_after_an_opponent_was_dealt_damage(card_db):
     from mtgfish.rules.cr100_game_concepts.actions import deal_damage
 
@@ -1152,11 +1120,6 @@ def test_jump_start_needs_a_card_to_discard(jump_start):
     assert not offered(jump_start, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Jump-start is built inert (MISBUILT_KEYWORDS); it needs an "
-    "AlternativeCost(from_zone=GRAVEYARD, pays_mana_cost=True, cost=Cost(("
-    "CostComponent(DISCARD, amount=1),)), keyword='Jump-start') functioning "
-    "in the graveyard - the exile is the engine's, keyed on the keyword"))
 def test_the_jump_start_builder_casts_from_the_graveyard(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Jump-start", None))})
@@ -1209,11 +1172,6 @@ def test_a_spell_cast_for_its_mana_cost_keeps_its_brackets(cleave):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Assist is built as an alternative cost (free, since the "
-    "keyword has no cost); CR 702.132a changes who may pay the generic mana, "
-    "and the engine has no way for another player to pay part of a cost - "
-    "the builder should build a bare keyword ability with no cost at all"))
 def test_assist_is_not_an_alternative_cost(card_db):
     board = setup(card_db, {"Hill Giant": keyword("Assist", None)})
     card = board.hand("Hill Giant")
