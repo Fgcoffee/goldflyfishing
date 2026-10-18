@@ -629,20 +629,10 @@ def _the_source_wherever_it_is(
     from dataclasses import replace
 
     obj = game.objects.get(source)
-    if obj is None:
+    if obj is None or not obj.is_live:
         return []
-    if obj.is_live:
-        previous = game.objects.get(obj.previous_id) if obj.previous_id else None
-    else:
-        # CR 400.7e, 603.10a: an ability granted to a permanent that has just
-        # left resolves from the permanent as it last existed. That object
-        # *is* "what it was a moment ago"; the card it became, if it has not
-        # moved again, is "it" now.
-        became = game.objects.get(obj.superseded_by)
-        if became is None or not became.is_live:
-            return []
-        obj, previous = became, obj
     anywhere = replace(spec, zones=frozenset())
+    previous = game.objects.get(obj.previous_id) if obj.previous_id else None
     for candidate in (obj, previous):
         if candidate is not None and matches(
             game, candidate, anywhere, source=source, controller=controller,

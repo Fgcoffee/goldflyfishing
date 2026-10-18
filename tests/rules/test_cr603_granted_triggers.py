@@ -227,3 +227,18 @@ def test_a_granted_return_does_not_happen_twice(card_db, keyword_name, counter):
     board.resolve_stack()
     (dead,) = bears(board.game)
     assert dead.zone is Zone.GRAVEYARD
+
+
+def test_a_granted_modular_moves_the_counters_it_had(card_db):
+    """Modular's dies trigger works on the battlefield alone and reads the
+    permanent as it last existed (CR 702.43a, 608.2h), granted or printed."""
+    from mtgfish.rules.cr100_game_concepts.actions import destroy
+
+    board = _granting_board(card_db, "Modular")
+    worker = board.play("Grizzly Bears", controller=0)
+    worker.add_counters("+1/+1", 2)
+    target = board.play("Ornithopter", controller=0)
+    destroy(board.game, worker)
+    board.settle()
+    board.resolve_stack()
+    assert target.counter_count("+1/+1") >= 2

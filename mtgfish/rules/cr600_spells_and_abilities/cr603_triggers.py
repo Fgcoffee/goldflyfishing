@@ -112,15 +112,14 @@ def collect_triggers(game: Game, event: Event) -> None:
             if key in game.triggered_once_this_turn:
                 continue
             game.triggered_once_this_turn.add(key)
+        source, controller = _source_for(game, obj, ability, event)
         noted = event
         if trigger is not None and trigger.batched:
             # "That many" counts the batch: one object for an object event,
             # the counters of a counter event (CR 603.2c).
             noted = event.with_amount(max(1, event.amount))
         # The controller is read now, while the source is still here to ask.
-        pending = PendingTrigger(
-            obj.id, ability, noted, obj.controller, game.event_batch
-        )
+        pending = PendingTrigger(source, ability, noted, controller, game.event_batch)
         game.pending_triggers.append(pending)
         # CR 603.2c: "whenever a +1/+1 counter is put on" - one placement of
         # three counters holds three occurrences, and each triggers.
@@ -137,6 +136,36 @@ def collect_triggers(game: Game, event: Event) -> None:
         # independently and can be responded to between them.
         for _ in range(_extra_triggers(game, obj, event)):
             game.pending_triggers.append(pending)
+
+
+def _source_for(
+    game: Game, obj: GameObject, ability: Ability, event: Event
+) -> tuple[ObjectId, PlayerId]:
+    """The source and controller a noted trigger goes on the stack with.
+
+    CR 400.7e: an ability that triggered on its source leaving the battlefield
+    can find the object the source became in a public zone. A printed one is
+    found through that object already; one the permanent was granted is found
+    through the permanent as it left, and takes the new object as its source - so "return it" and "if it had no counters on it" mean
+    what they mean for a printed one. CR 603.3a: the controller is still the
+    one it had as it left.
+    """
+    if obj.is_live or not event.data or event.data[0] != obj.id:
+        return obj.id, obj.controller
+    became = game.objects.get(obj.superseded_by)
+    if (
+        became is None
+        or became.id != event.object_id
+        or not became.is_live
+        or became.zone in (Zone.HAND, Zone.LIBRARY)
+        # Only an ability that also works where the card went, as a printed
+        # one is then found there. One that works on the battlefield alone
+        # (modular's "its counters") reads the permanent as it left.
+        or ability.trigger is None
+        or became.zone not in ability.trigger.functions_in
+    ):
+        return obj.id, obj.controller
+    return became.id, obj.controller
 
 
 def _fold_into_batch(game: Game, obj: GameObject, ability: Ability, event: Event) -> bool:
