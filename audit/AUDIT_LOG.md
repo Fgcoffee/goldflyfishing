@@ -213,3 +213,4 @@ Heads diverged AGAIN: rules 06453f8 contains parser f79b00b (batch A) but not c1
 - **F25 (Ertai's Trickery) still open** on the parser side.
 
 24774b2 (batch B) full suite `pytest tests`: **2927 passed, 9 xfailed, 0 failed.** No test covers F25 (Ertai's Trickery).
+Scratch merge f0bc5e6 (parser 24774b2 + rules 06453f8) full suite: **2931 passed, 9 xfailed, 0 failed.** Safe to merge into one head. Open BLOCK: F25 only (plus lifting the F22 refusal, now allowed).
