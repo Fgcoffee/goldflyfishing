@@ -71,3 +71,38 @@ def test_the_offered_action_pays_the_buyback(card_db):
     (action,) = [a for a in casts(board, card) if a.additional_costs]
     cast_spell(board.game, P0, action)
     assert board.game.player(P0).mana_pool.total == 0
+
+
+REPLICATE = Ability(
+    AbilityKind.STATIC,
+    keyword="Replicate",
+    additional_cost=AdditionalCost(
+        cost=Cost((CostComponent(CostKind.MANA, mana=ManaCost.parse("{1}")),)),
+        optional=True,
+        keyword="Replicate",
+        text="Replicate {1}",
+    ),
+    functions_in=frozenset({Zone.HAND, Zone.STACK}),
+    text="Replicate {1}",
+)
+
+
+def test_a_repeatable_cost_is_offered_as_often_as_it_can_be_paid(card_db):
+    """CR 702.56a: replicate any number of times. Divination is {2}{U}; with
+    six mana, three payments of {1} fit and a fourth does not."""
+    board = make_board(card_db, ScriptedAbilities({"Divination": (REPLICATE,)}))
+    game = board.game
+    game.active_player = P0
+    game.phase = Phase.PRECOMBAT_MAIN
+    game.step = Step.MAIN
+    game.player(P0).mana_pool.add(ManaKind(Color.BLUE), 6)
+    card = board.hand("Divination")
+    assert sorted(a.additional_costs for a in casts(board, card)) == [
+        (), (0,), (0, 0), (0, 0, 0)
+    ]
+
+
+def test_a_cost_paid_once_is_not_offered_twice(card_db):
+    board = setup(card_db, 20)
+    card = board.hand("Divination")
+    assert sorted(a.additional_costs for a in casts(board, card)) == [(), (0,)]

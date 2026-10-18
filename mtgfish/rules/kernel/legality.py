@@ -217,7 +217,10 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                     # cost - kicker, buyback - is a different way to cast
                     # the spell, offered when it too can be paid.
                     for announced in _optional_cost_choices(chars):
-                        if _affordable(
+                        # CR 702.33a, 702.56a, 702.157a: multikicker,
+                        # replicate and squad may be paid any number of
+                        # times - offered as often as they can be afforded.
+                        while _affordable(
                             game, player_id, obj, zone, chars, optional=announced
                         ):
                             out.append(
@@ -228,6 +231,9 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                                     additional_costs=announced,
                                 )
                             )
+                            if not _repeatable_alone(chars, announced):
+                                break
+                            announced = announced + announced[:1]
 
         # CR 113.6: a granted alternative cost works in the card's zone too.
         chars = game.characteristics(obj)
@@ -411,6 +417,21 @@ def _optional_cost_choices(chars) -> list[tuple[int, ...]]:
     return choices
 
 
+#: Most payments of one repeatable optional cost a single cast is offered
+#: with - enough for any real mana base, and a bound on the actions listed.
+_MOST_REPEATS = 10
+
+
+def _repeatable_alone(chars, announced: tuple[int, ...]) -> bool:
+    """Whether ``announced`` is one cost that may be paid again."""
+    from ..cr600_spells_and_abilities.cr601_casting import _PAID_ANY_NUMBER_OF_TIMES
+
+    if not announced or len(set(announced)) != 1 or len(announced) >= _MOST_REPEATS:
+        return False
+    keyword = chars.additional_costs[announced[0]].keyword.lower()
+    return keyword in _PAID_ANY_NUMBER_OF_TIMES
+
+
 def _affordable(
     game: Game,
     player_id: PlayerId,
@@ -440,12 +461,15 @@ def _affordable(
     from ..cr700_additional_rules.cr702_cost_keyword_rules import chosen_cost
 
     for index, additional in enumerate(chars.additional_costs):
-        if additional.optional and index not in optional:
+        times = optional.count(index) if additional.optional else 1
+        if not times:
             continue
         # CR 601.2f: an announced optional cost adds its mana to the total -
-        # for a cost written as a choice, the choice that would be paid.
+        # for a cost written as a choice, the choice that would be paid -
+        # once for each time it is paid.
         charged = chosen_cost(game, player_id, additional.cost, obj)
-        cost = cost.plus(charged.mana_component)
+        for _ in range(times):
+            cost = cost.plus(charged.mana_component)
         for component in charged.non_mana_components:
             try:
                 _check_payable(game, player_id, component, obj, spell=obj)
