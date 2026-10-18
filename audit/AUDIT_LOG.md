@@ -172,3 +172,5 @@ Parser 44ebe85, census vs 127dad9: gained 360 (220 lifted grants; 138 previously
 Rules c1bb0ff: **F19 return fixed** (granted undying back with +1/+1, persist with -1/-1, Rattleblaze without a black creature stays dead), but **F22**: the counter condition isn't checked. **F20 fixed** in the engine (default False; replicate and conspire pass it) but causes **F23**. On the rules head alone, F21's wrong readings are still live (no 44ebe85).
 
 The test run on 44ebe85 was killed by a worker restart; the full suite on merge 31df145 is rerunning.
+
+Scratch merge 31df145 (parser 44ebe85 + rules 9966349), full suite `pytest tests`: **2916 passed, 16 xfailed, 0 failed.** Green, but no test covers F22 (granted undying/persist second death) or F23 (Twincast-style copies retargeting): both reproduce on the board. Each fix needs a board test.
