@@ -186,3 +186,7 @@ New batch A: **bloodthirst OK** (Stormblood 1/1, or 3/3 after an opponent is Sho
 Census 810e89c vs 44ebe85: **+64** (bloodthirst 18, assist 11, replicate 11, jump-start 8, freerunning 7, spectacle 6, prowl 3), **-3** (the three refused riders), **50 abilities changed**, each now carrying "(you may choose new targets for the copy)". ACCEPTED.
 
 Open: F22 (rules: granted undying/persist intervening-if), F20 explainer cosmetic, F24, F3/F17 (parser queue), plus the logged gaps.
+
+810e89c full suite `pytest tests`: **2924 passed, 11 xfailed, 0 failed.**
+
+**Verdict on 810e89c (PR #17, which contains PR #18's head 9966349): no BLOCK found in the work it adds.** Remaining before it can be called rules-faithful: F22 (rules; granted persist/undying are refused meanwhile, so no read card plays wrong). Everything else open is WARN or queued (F3, F17, F20 explainer, F24, logged gaps), or is honestly unread.
