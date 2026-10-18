@@ -139,8 +139,59 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
         ability = _parse_line(line, result, is_permanent=is_permanent)
         abilities.extend(ability)
 
-    result.abilities = tuple(abilities)
+    result.abilities = tuple(_refuse_borrowed_kicker(abilities, result))
     return result
+
+
+#: The keywords whose payment "it was kicked / bargained" can report about
+#: the card itself (CR 702.33b, 702.33d, 702.166b).
+_PAID_KEYWORDS = frozenset({"kicker", "multikicker", "bargain"})
+
+
+def _refuse_borrowed_kicker(abilities: list[Ability], result: ParsedFace) -> list[Ability]:
+    """"Counter target spell if it was kicked" (Ertai's Trickery): "it" is the
+    target, not the card - a card without kicker or bargain of its own has no
+    payment of its own to ask about. The condition grammar reads "it was
+    kicked" as the card's own payment, so on such a face the ability is
+    refused rather than read about the wrong spell (auditor's F25).
+    """
+    if any(a.keyword.lower() in _PAID_KEYWORDS for a in abilities):
+        return abilities
+    out = []
+    for ability in abilities:
+        if _asks_own_payment(ability):
+            result.failures.append(
+                ParseFailure(
+                    ability.text,
+                    "'it was kicked' names another spell; this card has no such cost",
+                    rule="condition",
+                )
+            )
+            ability = Ability.unreadable(ability.text)
+        out.append(ability)
+    return out
+
+
+def _asks_own_payment(ability: Ability) -> bool:
+    from ..rules.kernel.query import ConditionKind
+
+    if ability.keyword:
+        # Built by a keyword (squad, offspring): its condition names its own
+        # cost, which the card has by definition.
+        return False
+
+    def kicked(condition) -> bool:
+        if condition is None:
+            return False
+        if condition.kind is ConditionKind.WAS_KICKED and (condition.keyword or "") in ("", "bargain"):
+            return True
+        return any(kicked(c) for c in getattr(condition, "operands", ()) or ())
+
+    if kicked(getattr(ability.trigger, "intervening_if", None)):
+        return True
+    if kicked(ability.static_condition) or kicked(ability.activation_condition):
+        return True
+    return any(kicked(node.condition) for effect in ability.effects for node in effect.walk())
 
 
 
