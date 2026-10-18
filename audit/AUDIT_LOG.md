@@ -58,6 +58,7 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 | F22 | **BLOCK** (before persist/undying grants are lifted) | rules | After c1bb0ff a granted undying/persist RETURNS the card (F19 fixed), but its intervening-if ("if it had no +1/+1 [-1/-1] counters on it", 702.93a/702.79a) is not read from last-known information, so it returns EVERY time: an infinite loop. Printed undying and persist stop correctly. | Merge 31df145 with the parser's refusal switched off: Mikaeus + Grizzly Bears, Bolted twice, comes back both times; Rattleblaze + Nighthawk, back both times. Young Wolf and Kitchen Finks stay dead on the 2nd death. |
 | F23 | **BLOCK** (regression from c1bb0ff) | parser (set the keyword) + rules (coordinate) | c1bb0ff makes copies keep their targets unless COPY_SPELL carries MAY_CHOOSE_NEW_TARGETS, but the parser consumes "You may choose new targets for the copy" without setting it. **49 read cards** (Twincast, Reverberate, Dualcaster Mage, Double Vision, Echo Mage, Fury Storm, Aziza...) now play wrong: their copies can never be retargeted. A swallowed phrase, rule 3. | Opponent Bolts my Bears and I Twincast it with an agent that wants the copy on Hill Giant. Parser head 44ebe85 (old default): agent asked, Giant dies. Rules head 9966349: agent never asked, the copy hits the Bears. |
 | F24 | WARN | rules | `legal_actions` offers replicate (and presumably multikicker, squad) with at most ONE payment: Pyromatics shows () and (0,), never (0,0). Paying twice works when chosen (6 mana, 2 copies). Bots never pay "any number of times" more than once. Strategy gap, not a wrong reading. | t_batchA.py / t_batchA2.py |
+| F25 | **BLOCK** (new in 24774b2) | parser | Ertai's Trickery, "Counter target spell if it was kicked.", is newly counted as FULLY READ, but its condition is WAS_KICKED on the Trickery itself, not on the target spell (CR 702.33d: "kicked" is a property of the spell that was kicked). On the board: the opponent casts a KICKED Goblin Bushwhacker (its kicked trigger fires) and I cast Ertai's Trickery on it; the Trickery resolves and does NOT counter it. "It" must bind to its antecedent (the target), or the card must stay unread. Also the logged general risk: unkeyed "kicked" is true after any optional additional cost. | t_ertai.py |
 | F1 | WARN | sandbox → fixed on PR #18 | `Sandbox.put` places planeswalkers with no loyalty counters (CR 306.5b); casting gives 7. Tests built with `put` see a 0-loyalty walker. | Ugin via put: counters `{}` |
 | F2 | WARN | rules | Enlist (an optional cost to attack, 702.154a) is paid after the attack tax rather than being part of one locked-in total cost (508.1g-h). | `cr506_combat.declare_attackers` |
 | F3 | WARN | parser | "cards in that player's hand" (Sudden Impact) counts every hand, the same defect as "their hand". The fix must cover "that player's" and "its owner's" too. Pre-existing on main. | Sudden Impact: "the number of all object in hand" |
@@ -190,3 +191,15 @@ Open: F22 (rules: granted undying/persist intervening-if), F20 explainer cosmeti
 810e89c full suite `pytest tests`: **2924 passed, 11 xfailed, 0 failed.**
 
 **Verdict on 810e89c (PR #17, which contains PR #18's head 9966349): no BLOCK found in the work it adds.** Remaining before it can be called rules-faithful: F22 (rules; granted persist/undying are refused meanwhile, so no read card plays wrong). Everything else open is WARN or queued (F3, F17, F20 explainer, F24, logged gaps), or is honestly unread.
+
+## Round 9 (2026-10-18): batch B @ 24774b2
+
+Contains rules 9966349. Census vs 810e89c: +96, -0, 0 rendered-IR changes (the 28 "changed" are condition text fields only, as stated). Of the 48 gained "kicked" cards, 47 have kicker or multikicker; the 48th is Ertai's Trickery (F25).
+
+Board on real cards:
+- **Offspring OK:** Agate Instigator paid makes a 1/1 token copy, and the original's "another creature enters" pings once (opponent 39); unpaid makes none.
+- **Squad OK:** Powder Ganger with squad x2 makes 3 bodies, and the copies don't squad again.
+- **Kicker OK:** Goblin Bushwhacker kicked gives +1/+0; unkicked does nothing.
+- **Bargain OK** (Troublemaker Ouphe): not offered with nothing to sacrifice or with only a nontoken creature; offered with an offspring token or Sol Ring, which is sacrificed, and the opponent's Mind Stone is exiled. Torch the Tower is still partly unread (honest).
+- **Conspire OK:** Burn Trail offered with Raging Goblin + Goblin Piker (also when summoning-sick), not with Grizzly Bears + Piker.
+- **F25 BLOCK:** Ertai's Trickery.
