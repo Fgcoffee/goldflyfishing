@@ -4406,6 +4406,38 @@ def _condition(stream: Stream):
     )
 
 
+#: "If it was bargained" and its kin: the keyword whose optional additional
+#: cost the participle reports as paid (CR 702.166b). "Kicked" stays any
+#: optional additional cost, as the spell clause reads it (CR 702.33b).
+_PAID_PARTICIPLES = {"kicked": "", "bargained": "bargain"}
+
+
+def _optional_cost_paid(stream: Stream):
+    """"This spell was kicked", "it was bargained", "this creature was
+    kicked": whether an optional additional cost was paid as the spell was
+    cast, which the permanent it became still knows (CR 702.33b, 702.166b).
+    """
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    mark = stream.mark()
+    if stream.accept("this"):
+        stream.accept("spell", "creature", "permanent", "artifact", "enchantment")
+    elif not stream.accept("it"):
+        return None
+    if not stream.accept("was"):
+        stream.reset(mark)
+        return None
+    for participle, keyword in _PAID_PARTICIPLES.items():
+        if stream.accept(participle):
+            return Condition(
+                kind=ConditionKind.WAS_KICKED,
+                keyword=keyword,
+                text=f"it was {participle}",
+            )
+    stream.reset(mark)
+    return None
+
+
 def _single_condition(stream: Stream):
     """The conditions that appear often enough to be worth reading.
 
@@ -4430,6 +4462,10 @@ def _single_condition(stream: Stream):
     designation = designation_condition(stream)
     if designation is not None:
         return designation
+
+    paid = _optional_cost_paid(stream)
+    if paid is not None:
+        return paid
 
     about_it = _about_the_remembered(stream)
     if about_it is not None:
@@ -6350,21 +6386,36 @@ def _copy(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
-    # "You may choose new targets for the copy" is a rider on the copy, and
-    # the engine's copy already offers the choice.
+    # "You may choose new targets for the copy" is a rider on the copy (CR
+    # 707.10c): the choice is made as the copy is created, and a copy keeps
+    # the original's targets unless the effect allows it. It may sit in the
+    # same sentence or open the next one ("Copy target instant or sorcery
+    # spell. You may choose new targets for the copy."); either way it is
+    # carried as the copy's MAY_CHOOSE_NEW_TARGETS keyword. The closing period
+    # is left for the sentence reader.
+    may_retarget = False
     look = stream.mark()
-    if stream.accept("you") and stream.accept("may"):
-        if not stream.accept_phrase("choose new targets for the copy"):
-            stream.reset(look)
+    stream.accept(".")
+    if (
+        stream.accept("you")
+        and stream.accept("may")
+        and stream.accept_phrase("choose new targets for")
+        and stream.accept("the")
+        and stream.accept("copy", "copies")
+    ):
+        may_retarget = True
     else:
         stream.reset(look)
 
     on_stack = targets.zones == frozenset({Zone.STACK}) or targets.remembered
+    from ..rules.cr700_additional_rules.cr707_faces import MAY_CHOOSE_NEW_TARGETS
+
     return Effect(
         EffectKind.COPY_SPELL if on_stack else EffectKind.COPY_PERMANENT,
         targets=targets,
         is_targeted=targeted,
         players=YOU,
+        keywords=(MAY_CHOOSE_NEW_TARGETS,) if may_retarget and on_stack else (),
         text="copy",
     )
 
@@ -8812,7 +8863,8 @@ def _kicked(stream: Stream) -> Effect | None:
     if not stream.accept("was"):
         stream.reset(mark)
         return None
-    if not stream.accept("kicked"):
+    participle = next((w for w in _PAID_PARTICIPLES if stream.accept(w)), None)
+    if participle is None:
         stream.reset(mark)
         return None
     stream.skip_punct(",")
@@ -8821,13 +8873,18 @@ def _kicked(stream: Stream) -> Effect | None:
     if inner is None:
         stream.reset(mark)
         return None
+    # "Bargained" is linked to bargain's own cost (CR 607, 702.166b);
+    # "kicked" is any optional additional cost, as before (CR 702.33b).
+    keyword = _PAID_PARTICIPLES[participle]
     return Effect(
         EffectKind.CONDITIONAL,
         condition=Condition(
-            kind=ConditionKind.WAS_KICKED, text="this spell was kicked"
+            kind=ConditionKind.WAS_KICKED,
+            keyword=keyword,
+            text=f"this spell was {participle}",
         ),
         children=tuple(inner),
-        text="if this spell was kicked",
+        text=f"if this spell was {participle}",
     )
 
 

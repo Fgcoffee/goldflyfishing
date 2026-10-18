@@ -139,33 +139,9 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
         ability = _parse_line(line, result, is_permanent=is_permanent)
         abilities.extend(ability)
 
-    result.abilities = tuple(_refuse_targeted_replicate(abilities, result))
+    result.abilities = tuple(abilities)
     return result
 
-
-def _refuse_targeted_replicate(abilities: list[Ability], result: ParsedFace) -> list[Ability]:
-    """CR 702.56a: each replicate copy "may choose new targets". The engine's
-    copies keep the original's, so on a spell with targets replicate would
-    hit the same target every time; it is refused there. A spell without
-    targets copies faithfully, so it is left read.
-    """
-    if not any(a.keyword.lower() == "replicate" for a in abilities):
-        return abilities
-    if not any(a.is_targeted for a in abilities if a.kind is AbilityKind.SPELL):
-        return abilities
-    out = []
-    for ability in abilities:
-        if ability.keyword.lower() == "replicate":
-            result.failures.append(
-                ParseFailure(
-                    ability.text,
-                    "replicate copies of a targeted spell cannot choose new targets",
-                    rule="keyword",
-                )
-            )
-            ability = Ability.unreadable(ability.text)
-        out.append(ability)
-    return out
 
 
 def _self_names(face) -> dict:
@@ -1625,12 +1601,41 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
     if refusal is not None:
         result.failures.append(ParseFailure(text, refusal, rule=rule))
         return Ability.unreadable(text)
+    if _copy_retarget_not_carried(bound):
+        result.failures.append(
+            ParseFailure(text, "a copy's 'choose new targets' is not carried onto the copy", rule=rule)
+        )
+        return Ability.unreadable(text)
     if _grants_a_trigger(bound):
         result.failures.append(
             ParseFailure(text, "grants a triggered keyword that does not yet work when granted", rule=rule)
         )
         return Ability.unreadable(text)
     return bound
+
+
+def _copy_retarget_not_carried(ability: Ability) -> bool:
+    """Whether a spell is copied and its "you may choose new targets for the
+    copy" was read as a later, separate change of targets.
+
+    CR 707.10c: the new targets are chosen as the copy is created, and the
+    engine's copy keeps the original's targets unless the COPY_SPELL carries
+    MAY_CHOOSE_NEW_TARGETS. The copy clause carries the rider when it follows
+    the copy directly; when another instruction sits between ("Copy target
+    spell, then return it to its owner's hand. You may choose new targets for
+    the copy."), the rider became a CHANGE_TARGETS on the remembered copy,
+    which the engine no longer honours - the copy would keep its targets.
+    """
+    copies = changes = False
+    for effect in ability.effects:
+        for node in effect.walk():
+            if node.kind is EffectKind.COPY_SPELL and "may choose new targets" not in node.keywords:
+                copies = True
+            if node.kind is EffectKind.CHANGE_TARGETS and node.targets is not None and (
+                node.targets.remembered
+            ):
+                changes = True
+    return copies and changes
 
 
 def _grants_a_trigger(ability: Ability) -> bool:
@@ -1641,9 +1646,9 @@ def _grants_a_trigger(ability: Ability) -> bool:
     the engine now collects layered abilities (rules session, 5d767e8) -
     checked on boards by the auditing session for a granted quoted dies
     trigger (Abnormal Endurance), exalted, ward and prowess. Granted persist
-    and undying still fail there: they trigger and resolve, and the card stays
-    in the graveyard (F19). Afterlife and modular are kept refused until they
-    have been checked granted. Those keywords alone are refused.
+    and undying return the card since the rules session's CR 400.7e fix, but
+    every time, ignoring "if it had no -1/-1 (+1/+1) counters" - a loop
+    (auditor's F22). Afterlife and modular have not been checked granted.
     """
     for effect in ability.effects:
         for node in effect.walk():
@@ -1657,8 +1662,7 @@ def _grants_a_trigger(ability: Ability) -> bool:
     return False
 
 
-#: Triggered keywords that do not yet work when granted (F19), or have not
-#: been checked granted on a board.
+#: Triggered keywords that do not yet work, or are not yet checked, granted.
 _UNTESTED_GRANTED_TRIGGERS = frozenset({"persist", "undying", "afterlife", "modular"})
 
 
