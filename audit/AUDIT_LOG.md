@@ -203,3 +203,11 @@ Board on real cards:
 - **Bargain OK** (Troublemaker Ouphe): not offered with nothing to sacrifice or with only a nontoken creature; offered with an offspring token or Sol Ring, which is sacrificed, and the opponent's Mind Stone is exiled. Torch the Tower is still partly unread (honest).
 - **Conspire OK:** Burn Trail offered with Raging Goblin + Goblin Piker (also when summoning-sick), not with Grizzly Bears + Piker.
 - **F25 BLOCK:** Ertai's Trickery.
+
+## Round 10 (2026-10-18): rules 06453f8
+
+Heads diverged AGAIN: rules 06453f8 contains parser f79b00b (batch A) but not c1e4849, 810e89c or 24774b2; parser 24774b2 lacks rules 3322de3, 8306425 and 06453f8. Scratch merge f0bc5e6 (24774b2 + 06453f8) is CLEAN.
+- **F22 FIXED** (on the merge, with the parser's persist/undying grant refusal switched off): Mikaeus-granted undying and Rattleblaze persist return once and stay dead on the 2nd death, exactly like printed Young Wolf and Kitchen Finks. The parser may now lift that refusal, with a census diff.
+- **F23, two fixes, compatible.** On rules 06453f8 alone, Twincast's rider is an OPTIONAL CHANGE_TARGETS: the copy is retargeted when the agent accepts the "may". On the merge, the parser's MAY_CHOOSE_NEW_TARGETS path asks the agent exactly ONCE (no double prompt), and the copy is retargeted.
+- **Unearth regression check OK** (merge): Dregscape Zombie unearthed has haste and is exiled when Bolted; Relic of Progenitus exiling all graveyards in response means it isn't returned.
+- **F25 (Ertai's Trickery) still open** on the parser side.
