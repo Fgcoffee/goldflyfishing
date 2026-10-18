@@ -19,8 +19,8 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 224 | 39 |
-| Missing, not understood | 297 | 505 |
-| Suspected, counted as read | 265 | 0 |
+| Missing, not understood | 297 | 494 |
+| Suspected, counted as read | 266 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
 first; *(read)* marks a card the parser currently counts as fully read.
@@ -225,14 +225,14 @@ Go Blank
 
 ### 1.c Suspected, not yet proved
 
-#### Bestow (43 cards, 23 counted as read)
+#### Bestow (43 cards, 24 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, Trickster's Elk *(read)*, Indebted Spirit, Detective's Phoenix, Chromanticore *(read)*, Glyph Elemental *(read)*, Hypnotic Siren, Nyxborn Unicorn *(read)*, Celestial Archon *(read)*, Triton Wavebreaker, Kestia, the Cultivator, Hopeful Eidolon *(read)*, Thassa's Emissary, Noble Quarry, Ghostblade Eidolon *(read)*, Boon Satyr *(read)*, Flitterstep Eidolon, Baleful Eidolon *(read)*, Gnarled Scarhide, Herald of Torment *(read)*, Nyxborn Rollicker *(read)*, Leafcrown Dryad *(read)*, Heliod's Emissary, Nyxborn Shieldmate *(read)*, Observant Alseid *(read)*, Nylea's Emissary *(read)*, Purphoros's Emissary *(read)*, Spiteful Returned, Nimbus Naiad *(read)*, Mogis's Warhound, Nyxborn Wolf *(read)*, Erebos's Emissary, Cavern Lampad *(read)*, Everflame Eidolon, Nyxborn Triton *(read)*, Nyxborn Eidolon *(read)*, Spearpoint Oread *(read)*, Crystalline Nautilus *(read)*, Spirespine, Sightless Brawler
+Springheart Nantuko, Nyxborn Hydra, Eidolon of Countless Battles, Nighthowler, Trickster's Elk *(read)*, Indebted Spirit *(read)*, Detective's Phoenix, Chromanticore *(read)*, Glyph Elemental *(read)*, Hypnotic Siren, Nyxborn Unicorn *(read)*, Celestial Archon *(read)*, Triton Wavebreaker, Kestia, the Cultivator, Hopeful Eidolon *(read)*, Thassa's Emissary, Noble Quarry, Ghostblade Eidolon *(read)*, Boon Satyr *(read)*, Flitterstep Eidolon, Baleful Eidolon *(read)*, Gnarled Scarhide, Herald of Torment *(read)*, Nyxborn Rollicker *(read)*, Leafcrown Dryad *(read)*, Heliod's Emissary, Nyxborn Shieldmate *(read)*, Observant Alseid *(read)*, Nylea's Emissary *(read)*, Purphoros's Emissary *(read)*, Spiteful Returned, Nimbus Naiad *(read)*, Mogis's Warhound, Nyxborn Wolf *(read)*, Erebos's Emissary, Cavern Lampad *(read)*, Everflame Eidolon, Nyxborn Triton *(read)*, Nyxborn Eidolon *(read)*, Spearpoint Oread *(read)*, Crystalline Nautilus *(read)*, Spirespine, Sightless Brawler
 
 #### Buyback (40 cards, 30 counted as read)
 
@@ -654,12 +654,6 @@ Wanderwine Prophets, Mistbind Clique, Wren's Run Packmaster, Changeling Berserke
 
 Llanowar Reborn, Plaxcaster Frogling, Vigean Graftmage, Cytoplast Manipulator, Aquastrand Spider, Cytoplast Root-Kin, Sporeback Troll, Novijen Sages, Helium Squirter, Simic Initiate, Cytospawn Shambler, Vigean Hydropon, Simic Basilisk
 
-#### refused: grants a triggered keyword that does not yet work when granted (12 cards, 0 counted as read)
-
-- **Likely cause:** unclassified refusal
-
-Mikaeus, the Unhallowed, Undying Evil, Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight, Afterlife Insurance, Dusk Legion Sergeant, Indebted Spirit, Wingrattle Scarecrow, Rhys, the Evermore, Blaster, Combat DJ // Blaster, Morale Booster, Rattleblaze Scarecrow, Endling, Antler Skulkin
-
 #### Training (11 cards, 0 counted as read)
 
 - **Likely cause:** attack triggers with conditions exist; the condition was dropped
@@ -725,6 +719,12 @@ Ancient Animus, Savage Swipe
 - **Likely cause:** a Saga chapter referring to another chapter
 
 The Creation of Avacyn, The Princess Takes Flight
+
+#### refused: 'it was kicked' names another spell; this card has no such cost (1 cards, 0 counted as read)
+
+- **Likely cause:** unclassified refusal
+
+Ertai's Trickery
 
 #### refused: a standing prohibition on whatever was just referred to (1 cards, 0 counted as read)
 

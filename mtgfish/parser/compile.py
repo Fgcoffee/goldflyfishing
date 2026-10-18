@@ -1657,11 +1657,6 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
             ParseFailure(text, "a copy's 'choose new targets' is not carried onto the copy", rule=rule)
         )
         return Ability.unreadable(text)
-    if _grants_a_trigger(bound):
-        result.failures.append(
-            ParseFailure(text, "grants a triggered keyword that does not yet work when granted", rule=rule)
-        )
-        return Ability.unreadable(text)
     return bound
 
 
@@ -1689,32 +1684,6 @@ def _copy_retarget_not_carried(ability: Ability) -> bool:
     return copies and changes
 
 
-def _grants_a_trigger(ability: Ability) -> bool:
-    """Whether this ability grants a triggered ability the engine cannot yet
-    run when granted.
-
-    CR 613.1f and 603.2: a granted ability triggers like a printed one, and
-    the engine now collects layered abilities (rules session, 5d767e8) -
-    checked on boards by the auditing session for a granted quoted dies
-    trigger (Abnormal Endurance), exalted, ward and prowess. Granted persist
-    and undying return the card since the rules session's CR 400.7e fix, but
-    every time, ignoring "if it had no -1/-1 (+1/+1) counters" - a loop
-    (auditor's F22). Afterlife and modular have not been checked granted.
-    """
-    for effect in ability.effects:
-        for node in effect.walk():
-            if node.kind is not EffectKind.GRANT_ABILITY:
-                continue
-            for granted in node.granted_abilities:
-                if getattr(granted, "kind", None) is not AbilityKind.TRIGGERED:
-                    continue
-                if (getattr(granted, "keyword", "") or "").lower() in _UNTESTED_GRANTED_TRIGGERS:
-                    return True
-    return False
-
-
-#: Triggered keywords that do not yet work, or are not yet checked, granted.
-_UNTESTED_GRANTED_TRIGGERS = frozenset({"persist", "undying", "afterlife", "modular"})
 
 
 # ---------------------------------------------------------------------------
