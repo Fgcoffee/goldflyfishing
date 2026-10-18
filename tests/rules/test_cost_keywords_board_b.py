@@ -435,9 +435,6 @@ def test_prowl_lasts_only_this_turn(prowl):
     assert not prowl_offered(prowl, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Prowl is built as an unconditional alternative cost; it "
-    "needs condition=Condition(COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE)"))
 def test_the_prowl_builder_needs_combat_damage(card_db):
     board = setup(card_db, {"Latchkey Faerie": keyword("Prowl", "{U}")})
     card = board.hand("Latchkey Faerie")
@@ -487,10 +484,6 @@ def test_freerunning_not_after_another_creature(freerunning):
     assert not freerunning_offered(freerunning, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Freerunning is built as an unconditional alternative cost; "
-    "it needs condition=OR(COMBAT_DAMAGE_DEALT_BY Assassin creature, "
-    "COMBAT_DAMAGE_DEALT_BY creature with is_commander)"))
 def test_the_freerunning_builder_needs_combat_damage(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Freerunning", "{R}"))})
@@ -546,10 +539,6 @@ def test_spectacle_not_after_you_lost_life(spectacle):
     assert not spectacle_offered(spectacle, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Spectacle is built as an unconditional alternative cost; it "
-    "needs condition=Condition(EVENT_THIS_TURN, players=PlayerFilter(OPPONENT), "
-    "event_kinds=(LIFE_LOST,))"))
 def test_the_spectacle_builder_needs_an_opponent_to_have_lost_life(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Spectacle", "{R}"))})
@@ -1049,13 +1038,6 @@ def test_no_bloodthirst_when_no_opponent_was_dealt_damage(bloodthirst):
     assert bloodthirst.pt(giant) == (3, 3)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Bloodthirst's ADD_COUNTERS has no text, so it is not read "
-    "as an 'enters with' effect, and its EVENT_THIS_TURN condition has no "
-    "event_kinds or players, so it never holds; it needs text 'enters with N "
-    "+1/+1 counters' and condition=Condition(EVENT_THIS_TURN, "
-    "players=PlayerFilter(OPPONENT), event_kinds=(DAMAGE_DEALT, "
-    "COMBAT_DAMAGE_DEALT))"))
 def test_the_bloodthirst_builder_after_an_opponent_was_dealt_damage(card_db):
     from mtgfish.rules.cr100_game_concepts.actions import deal_damage
 
@@ -1138,11 +1120,6 @@ def test_jump_start_needs_a_card_to_discard(jump_start):
     assert not offered(jump_start, card)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Jump-start is built inert (MISBUILT_KEYWORDS); it needs an "
-    "AlternativeCost(from_zone=GRAVEYARD, pays_mana_cost=True, cost=Cost(("
-    "CostComponent(DISCARD, amount=1),)), keyword='Jump-start') functioning "
-    "in the graveyard - the exile is the engine's, keyed on the keyword"))
 def test_the_jump_start_builder_casts_from_the_graveyard(card_db):
     board = setup(card_db, {"Fire Prophecy": (Ability.spell(GAIN_1),
                                               *keyword("Jump-start", None))})

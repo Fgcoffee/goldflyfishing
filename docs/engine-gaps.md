@@ -18,9 +18,9 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 
 | | Rules engine | Parser allocation |
 |---|---|---|
-| Wrong, counted as read | 224 | 31 |
-| Missing, not understood | 297 | 524 |
-| Suspected, counted as read | 194 | 0 |
+| Wrong, counted as read | 224 | 39 |
+| Missing, not understood | 297 | 511 |
+| Suspected, counted as read | 220 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
 first; *(read)* marks a card the parser currently counts as fully read.
@@ -342,14 +342,14 @@ Reforge the Soul *(read)*, Temporal Mastery, Metamorphosis Fanatic, Redress Fate
 
 Formless Genesis *(read)*, Throes of Chaos *(read)*, Embrace the Unknown, Decaying Time Loop, Waves of Aggression, Reality Scramble, Spitting Image *(read)*, Worm Harvest *(read)*, Flame Jab *(read)*, Glamerdye, Raven's Crime *(read)*, Oona's Grace *(read)*, Call the Skybreaker *(read)*, Cenn's Enlistment *(read)*, Syphon Life *(read)*, Monstrify *(read)*, Savage Conception *(read)*
 
-#### Assist (16 cards, 0 counted as read)
+#### Assist (16 cards, 11 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Game Plan, Play of the Game, Out of Bounds, The Crowd Goes Wild, Huddle Up, Gang Up, Vampire Charmseeker, Skystreamer, Bring Down, Lava-Field Overlord, Bloodborn Scoundrels, Fan Favorite, Charging Binox, Magma Hellion, Spellweaver Duo, Dwarven Lightsmith
+Game Plan, Play of the Game *(read)*, Out of Bounds *(read)*, The Crowd Goes Wild, Huddle Up, Gang Up *(read)*, Vampire Charmseeker *(read)*, Skystreamer *(read)*, Bring Down *(read)*, Lava-Field Overlord *(read)*, Bloodborn Scoundrels *(read)*, Fan Favorite, Charging Binox *(read)*, Magma Hellion *(read)*, Spellweaver Duo *(read)*, Dwarven Lightsmith
 
 #### Embalm (15 cards, 12 counted as read)
 
@@ -405,14 +405,14 @@ Wash Away, Dig Up, Alchemist's Retrieval, Alchemist's Gambit, Winged Portent, Fi
 
 Fanatic of Rhonas *(read)*, Timeless Witness *(read)*, Adorned Pouncer *(read)*, Champion of Wits *(read)*, Timeless Dragon *(read)*, Dreamstealer *(read)*, Earthshaker Khenra *(read)*, Sunscourge Champion *(read)*, Resilient Khenra, Proven Combatant *(read)*, Steadfast Sentinel *(read)*, Sinuous Striker *(read)*
 
-#### Freerunning (12 cards, 0 counted as read)
+#### Freerunning (12 cards, 7 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Overpowering Attack, Eagle Vision, Restart Sequence, Viewpoint Synchronization, Achilles Davenport, Chain Assassination, Petty Larceny, Merciless Harlequin, Distract the Guards, Escape Detection, Brotherhood Ambushers, Monastery Raid
+Overpowering Attack, Eagle Vision *(read)*, Restart Sequence *(read)*, Viewpoint Synchronization, Achilles Davenport *(read)*, Chain Assassination, Petty Larceny, Merciless Harlequin *(read)*, Distract the Guards *(read)*, Escape Detection *(read)*, Brotherhood Ambushers *(read)*, Monastery Raid
 
 #### Conspire (11 cards, 0 counted as read)
 
@@ -423,23 +423,23 @@ Overpowering Attack, Eagle Vision, Restart Sequence, Viewpoint Synchronization, 
 
 Rally the Galadhrim, Gleeful Sabotage, Mine Excavation, Memory Sluice, Ghastly Discovery, Disturbing Plot, Aethertow, Barkshell Blessing, Traitor's Roar, Giantbaiting, Burn Trail
 
-#### Spectacle (11 cards, 0 counted as read)
+#### Spectacle (11 cards, 6 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Light Up the Stage, Body Count, Skewer the Critics, Spawn of Mayhem, Dead Revels, Rix Maadi Reveler, Drill Bit, Blade Juggler, Rafter Demon, Hackrobat, Spikewheel Acrobat
+Light Up the Stage, Body Count, Skewer the Critics *(read)*, Spawn of Mayhem *(read)*, Dead Revels *(read)*, Rix Maadi Reveler, Drill Bit, Blade Juggler *(read)*, Rafter Demon, Hackrobat *(read)*, Spikewheel Acrobat *(read)*
 
-#### Prowl (10 cards, 0 counted as read)
+#### Prowl (10 cards, 2 counted as read)
 
 - **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
 - **Card says:** an alternative or additional cost with its own consequences
 - **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
 - **Evidence:** code: no use of the keyword outside the keyword table
 
-Notorious Throng, Enigma Thief, Knowledge Exploitation, Stinkdrinker Bandit, Latchkey Faerie, Earwig Squad, Thieves' Fortune, Auntie's Snitch, Noggin Whack, Morsel Theft
+Notorious Throng, Enigma Thief *(read)*, Knowledge Exploitation, Stinkdrinker Bandit, Latchkey Faerie, Earwig Squad, Thieves' Fortune *(read)*, Auntie's Snitch, Noggin Whack, Morsel Theft
 
 #### Escalate (9 cards, 7 counted as read)
 
@@ -480,6 +480,15 @@ Power Depot, Arcbound Ravager *(read)*, Arcbound Crusher *(read)*, Scrapyard Rec
 - **Evidence:** IR: upkeep trigger sacrifices when the count reaches 0
 
 Tangle Wire, Parallax Wave, Saproling Burst, Parallax Tide, Parallax Dementia *(read)*, Parallax Nexus, Blastoderm *(read)*, Jolting Merfolk *(read)*, Woodripper *(read)*, Ancient Hydra *(read)*, Skyshroud Behemoth *(read)*, Rusting Golem *(read)*, Rejuvenation Chamber *(read)*, Phyrexian Prowler *(read)*, Cloudskate *(read)*, Defender en-Vec *(read)*, Skyshroud Ridgeback *(read)*
+
+#### Jump-start (13 cards, 8 counted as read)
+
+- **Likely cause:** graveyard casting and discard costs exist; built as a free alternative cost
+- **Card says:** CR 702.133a: cast from the graveyard for its mana cost plus discarding a card; then exiled
+- **Engine does:** cast from the graveyard for nothing
+- **Evidence:** auditor board: Radical Idea cast from the graveyard with no mana, no discard
+
+Quasiduplicate *(read)*, Chemister's Insight *(read)*, Risk Factor, Radical Idea *(read)*, Gravitic Punch *(read)*, Dihada's Ploy, Beacon Bolt, Start the TARDIS, Maximize Velocity *(read)*, Maximize Altitude *(read)*, Sonic Assault *(read)*, Direct Current *(read)*, Surge of Acclaim
 
 ### 2.b Missing
 
@@ -644,15 +653,6 @@ Wanderwine Prophets, Mistbind Clique, Wren's Run Packmaster, Changeling Berserke
 - **Evidence:** IR: flat ADD_COUNTERS N, no trigger
 
 Llanowar Reborn, Plaxcaster Frogling, Vigean Graftmage, Cytoplast Manipulator, Aquastrand Spider, Cytoplast Root-Kin, Sporeback Troll, Novijen Sages, Helium Squirter, Simic Initiate, Cytospawn Shambler, Vigean Hydropon, Simic Basilisk
-
-#### Jump-start (13 cards, 0 counted as read)
-
-- **Likely cause:** graveyard casting and discard costs exist; built as a free alternative cost
-- **Card says:** CR 702.133a: cast from the graveyard for its mana cost plus discarding a card; then exiled
-- **Engine does:** cast from the graveyard for nothing
-- **Evidence:** auditor board: Radical Idea cast from the graveyard with no mana, no discard
-
-Quasiduplicate, Chemister's Insight, Risk Factor, Radical Idea, Gravitic Punch, Dihada's Ploy, Beacon Bolt, Start the TARDIS, Maximize Velocity, Maximize Altitude, Sonic Assault, Direct Current, Surge of Acclaim
 
 #### refused: grants a triggered keyword that does not yet work when granted (12 cards, 0 counted as read)
 
