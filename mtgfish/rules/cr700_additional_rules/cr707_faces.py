@@ -231,8 +231,14 @@ def copy_permanent(
     return True
 
 
+#: CR 707.10c: the ``Effect.keywords`` entry on a COPY_SPELL whose text says
+#: the copy's controller "may choose new targets for the copy". Without it the
+#: copy keeps the original's targets (CR 707.10).
+MAY_CHOOSE_NEW_TARGETS = "may choose new targets"
+
+
 def copy_spell(
-    game: Game, original: GameObject, controller=None, may_choose_new_targets: bool = True
+    game: Game, original: GameObject, controller=None, may_choose_new_targets: bool = False
 ) -> GameObject | None:
     """Put a copy of a spell or ability onto the stack (CR 707.10).
 
