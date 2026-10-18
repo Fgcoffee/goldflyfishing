@@ -154,18 +154,10 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     # The rules session built the engine pieces (REPEAT_PER_PAYMENT,
     # TokenSpec.copy_of, GIVE_GIFT, combat-damage records); each comes out
     # with a builder on them and a board test.
-    "squad": "CR 702.157a: a token copy per time the squad cost was paid;"
-    " the cost was offered and paid and no token made",
-    "offspring": "CR 702.175a: a 1/1 token copy if the offspring cost was paid;"
-    " the cost was paid and no token made",
     "gift": "CR 702.174a: an optional additional cost giving an opponent a gift;"
     " was built as an alternative cost",
-    "bargain": "CR 702.166a: sacrifice an artifact, enchantment or token as an"
-    " optional additional cost; was a cost of nothing",
     "spree": "CR 702.172a: an additional cost per chosen mode; was one free"
     " optional cost",
-    "conspire": "CR 702.78a: tap two untapped creatures sharing a color to copy it;"
-    " was never offered",
     "impending": "CR 702.176a: enters with N time counters and is not a creature"
     " while it has one; entered with none, a creature at once",
     # Found by the auditing session, checked against the builders:
@@ -1234,7 +1226,7 @@ def _kicker(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Casualty", "Bargain")
+@register("Casualty")
 def _mandatory_additional(instance: KeywordInstance) -> tuple[Ability, ...]:
     return (
         Ability(
@@ -2135,8 +2127,8 @@ def _prototype(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Entwine", "Escalate", "Replicate", "Conspire", "Splice", "Squad",
-          "Spree", "Tiered", "Offspring", "Buyback")
+@register("Entwine", "Escalate", "Replicate", "Splice",
+          "Spree", "Tiered", "Buyback")
 def _more_additionals(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 118.8: optional additional costs that change what the spell does."""
     return (
@@ -2151,6 +2143,142 @@ def _more_additionals(instance: KeywordInstance) -> tuple[Ability, ...]:
             ),
             functions_in=frozenset({Zone.HAND, Zone.STACK}),
             text=instance.text or instance.name,
+        ),
+    )
+
+
+def _if_paid_enters(instance: KeywordInstance, *effects: Effect) -> Ability:
+    """"When this enters, if its [keyword] cost was paid, ..." - the linked
+    trigger of an optional additional cost (CR 607), keyed on this keyword's
+    own payment so another cost's payment cannot pay for it."""
+    return Ability.triggered(
+        TriggerCondition(
+            event_kinds=frozenset({EventKind.ENTERS_BATTLEFIELD}),
+            subject=ObjectFilter(source_only=True),
+            intervening_if=Condition(ConditionKind.WAS_KICKED, keyword=instance.key),
+            text=f"when this enters, if its {instance.key} cost was paid",
+        ),
+        *effects,
+        text=f"{instance.name} (enters)",
+    )
+
+
+def _token_copy_of_this(power: int = 0, toughness: int = 0, text: str = "") -> Effect:
+    """A token that's a copy of this permanent; a nonzero power/toughness is
+    the copy's stated exception (CR 707.9b)."""
+    return Effect(
+        EffectKind.CREATE_TOKEN,
+        players=YOU,
+        token=TokenSpec(
+            copy_of=ObjectFilter(source_only=True),
+            power=Value.of(power),
+            toughness=Value.of(toughness),
+        ),
+        text=text or "create a token that's a copy of it",
+    )
+
+
+@register("Squad")
+def _squad(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.157a: an optional additional cost payable any number of times,
+    and "When this creature enters, if its squad cost was paid, create a
+    token that's a copy of it for each time its squad cost was paid."
+    """
+    (cost,) = _more_additionals(instance)
+    return (
+        cost,
+        _if_paid_enters(
+            instance,
+            Effect(
+                EffectKind.REPEAT_PER_PAYMENT,
+                keywords=("squad",),
+                children=(_token_copy_of_this(),),
+                text="for each time its squad cost was paid",
+            ),
+        ),
+    )
+
+
+@register("Offspring")
+def _offspring(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.175a: an optional additional cost, and "When this permanent
+    enters, if its offspring cost was paid, create a token that's a copy of
+    it, except it's 1/1."
+    """
+    (cost,) = _more_additionals(instance)
+    return (
+        cost,
+        _if_paid_enters(
+            instance,
+            _token_copy_of_this(1, 1, "create a 1/1 token that's a copy of it"),
+        ),
+    )
+
+
+def _optional_cost(instance: KeywordInstance, cost: Cost) -> Ability:
+    """An optional additional cost the keyword states itself (CR 118.8b)."""
+    return Ability(
+        AbilityKind.STATIC,
+        keyword=instance.name,
+        additional_cost=AdditionalCost(
+            cost=cost, optional=True, keyword=instance.name, text=instance.text or instance.name
+        ),
+        functions_in=frozenset({Zone.HAND, Zone.STACK}),
+        text=instance.text or instance.name,
+    )
+
+
+@register("Bargain")
+def _bargain(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.166a: "As an additional cost to cast this spell, you may
+    sacrifice an artifact, enchantment, or token." Two choices, because no one
+    filter says "or token"; "if it was bargained" reads the payment
+    (702.166b)."""
+    yours = ControllerRelation.YOU
+    sacrifice = lambda spec, text: CostComponent(  # noqa: E731
+        CostKind.SACRIFICE, amount=Value.of(1), filter=spec, text=text
+    )
+    return (
+        _optional_cost(
+            instance,
+            Cost(
+                choices=(
+                    Cost((sacrifice(
+                        ObjectFilter(types_any=CardType.ARTIFACT | CardType.ENCHANTMENT, controller=yours),
+                        "sacrifice an artifact or enchantment",
+                    ),)),
+                    Cost((sacrifice(
+                        ObjectFilter(is_token=True, controller=yours), "sacrifice a token"
+                    ),)),
+                )
+            ),
+        ),
+    )
+
+
+@register("Conspire")
+def _conspire(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.78a: "As an additional cost to cast this spell, you may tap two
+    untapped creatures you control that each share a color with it" and
+    "When you cast this spell, if its conspire cost was paid, copy it" - the
+    copy trigger is the engine's, keyed on the payment."""
+    return (
+        _optional_cost(
+            instance,
+            Cost(
+                (
+                    CostComponent(
+                        CostKind.TAP_OTHER,
+                        amount=Value.of(2),
+                        filter=ObjectFilter(
+                            types_all=CardType.CREATURE,
+                            controller=ControllerRelation.YOU,
+                            shares_color_with_source=True,
+                        ),
+                        text="tap two untapped creatures you control that each share a color with it",
+                    ),
+                )
+            ),
         ),
     )
 

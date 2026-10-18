@@ -281,13 +281,6 @@ def test_a_squad_token_copy_does_not_trigger_squad_again(squad):
     assert len(named(squad, "Grizzly Bears")) == 2
 
 
-_SQUAD_BUILDER_BUG = pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Squad is built as an optional additional cost only; the "
-    "linked 'when this enters, if its squad cost was paid, create a token "
-    "that's a copy of it for each time' trigger is missing"))
-
-
-@_SQUAD_BUILDER_BUG
 def test_the_squad_builder_makes_the_copies(card_db):
     board = setup(card_db, {"Grizzly Bears": keyword("Squad", "{2}")})
     card = board.hand("Grizzly Bears")
@@ -346,10 +339,6 @@ def test_a_kicker_payment_does_not_pay_for_offspring(card_db):
     assert len(named(board, "Hill Giant")) == 1
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Offspring is built as an optional additional cost only; the "
-    "'when this enters, if its offspring cost was paid, create a token that's "
-    "a copy of it, except it's 1/1' trigger is missing"))
 def test_the_offspring_builder_makes_the_copy(card_db):
     board = setup(card_db, {"Hill Giant": keyword("Offspring", "{2}")})
     card = board.hand("Hill Giant")
