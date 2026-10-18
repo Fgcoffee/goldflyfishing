@@ -278,7 +278,7 @@ def copy_spell(
     game.stack.append(copy.id)
     game.invalidate_characteristics()
     if may_choose_new_targets:
-        _choose_new_targets(game, copy, owner)
+        choose_new_targets(game, copy, owner)
     game.log.record(
         game, f"A copy of {original} is put onto the stack", kind="copy", player=owner
     )
@@ -286,7 +286,7 @@ def copy_spell(
     return copy
 
 
-def _choose_new_targets(game: Game, copy: GameObject, controller) -> None:
+def choose_new_targets(game: Game, copy: GameObject, controller) -> None:
     """CR 707.10c: the copy's controller may choose new targets for it.
 
     Asked of the agent's ``choose_new_targets``; one without it keeps the

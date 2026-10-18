@@ -205,3 +205,40 @@ def test_a_granted_return_does_not_follow_a_card_that_moved_on(card_db):
     board.resolve_stack()
     (exiled,) = bears(board.game)
     assert exiled.zone is Zone.EXILE
+
+
+@pytest.mark.parametrize(
+    ("keyword_name", "counter"), [("Undying", "+1/+1"), ("Persist", "-1/-1")]
+)
+def test_a_granted_return_does_not_happen_twice(card_db, keyword_name, counter):
+    """CR 702.93a, 702.79a: "if it had no [counter] on it" asks about the
+    permanent as it last existed (CR 603.10a). The second time, it had one."""
+    from mtgfish.rules.cr100_game_concepts.actions import destroy
+
+    board = _granting_board(card_db, keyword_name)
+    creature = board.play("Grizzly Bears", controller=0)
+    destroy(board.game, creature)
+    board.settle()
+    board.resolve_stack()
+    (returned,) = bears(board.game)
+    assert returned.counter_count(counter) == 1
+    destroy(board.game, returned)
+    board.settle()
+    board.resolve_stack()
+    (dead,) = bears(board.game)
+    assert dead.zone is Zone.GRAVEYARD
+
+
+def test_a_granted_modular_moves_the_counters_it_had(card_db):
+    """Modular's dies trigger works on the battlefield alone and reads the
+    permanent as it last existed (CR 702.43a, 608.2h), granted or printed."""
+    from mtgfish.rules.cr100_game_concepts.actions import destroy
+
+    board = _granting_board(card_db, "Modular")
+    worker = board.play("Grizzly Bears", controller=0)
+    worker.add_counters("+1/+1", 2)
+    target = board.play("Ornithopter", controller=0)
+    destroy(board.game, worker)
+    board.settle()
+    board.resolve_stack()
+    assert target.counter_count("+1/+1") >= 2

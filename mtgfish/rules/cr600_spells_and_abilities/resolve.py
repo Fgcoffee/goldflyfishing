@@ -359,8 +359,6 @@ def _objects(
 
     if effect.targets is None:
         obj = game.objects.get(resolution.source)
-        if obj is not None and not obj.is_live:
-            obj = _where_it_went(resolution, obj) or obj
         return [obj] if obj is not None else []
 
     from ..kernel.matching import find
@@ -488,26 +486,6 @@ def _targeted_players(resolution: Resolution, effect: Effect, chosen) -> list[Pl
     from ..kernel.ids import is_player_target, target_player
 
     return [target_player(target) for target in chosen if is_player_target(target)]
-
-
-def _where_it_went(resolution: Resolution, departed: GameObject) -> GameObject | None:
-    """CR 400.7e: an ability that triggered on its source moving between
-    zones can find the object the source became in a public zone it moved to,
-    while it is still there.
-
-    Persist's "return it" is about the card in the graveyard. A printed one
-    resolves from that card already; one granted by another permanent
-    resolves from what was left on the battlefield, and has to look here.
-    """
-    event = _trigger_event(resolution)
-    if event is None or not event.data or event.data[0] != departed.id:
-        return None
-    became = resolution.game.objects.get(departed.superseded_by)
-    if became is None or became.id != event.object_id or not became.is_live:
-        return None
-    if became.zone in (Zone.HAND, Zone.LIBRARY):
-        return None
-    return became
 
 
 def _trigger_event(resolution: Resolution):
@@ -2037,14 +2015,21 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
     from ..cr700_additional_rules.cr707_faces import MAY_CHOOSE_NEW_TARGETS, copy_spell
 
     count = _count(resolution, effect)
+    made: list[ObjectId] = []
     for original in _objects(resolution, effect):
         for _ in range(count):
-            copy_spell(
+            copy = copy_spell(
                 resolution.game,
                 original,
                 resolution.controller,
                 may_choose_new_targets=MAY_CHOOSE_NEW_TARGETS in effect.keywords,
             )
+            if copy is not None:
+                made.append(copy.id)
+    if made:
+        # CR 707.10: "You may choose new targets for the copy" - the next
+        # sentence is about the copy, not the spell it copied.
+        resolution.remembered = made
 
 
 def _do_goad(resolution: Resolution, effect: Effect) -> None:
@@ -3441,7 +3426,14 @@ def _do_change_targets(resolution: Resolution, effect: Effect) -> None:
 
     game = resolution.game
     for obj in _objects(resolution, effect):
-        if obj.zone is not Zone.STACK or obj.ability is None:
+        if obj.zone is not Zone.STACK:
+            continue
+        if obj.ability is None:
+            # CR 115.7, 707.10c: a spell's new targets are its controller's
+            # choice, asked of the agent as a copy's are.
+            from ..cr700_additional_rules.cr707_faces import choose_new_targets
+
+            choose_new_targets(game, obj, resolution.controller)
             continue
         rebuilt: list[tuple[ObjectId, ...]] = []
         changed = False
