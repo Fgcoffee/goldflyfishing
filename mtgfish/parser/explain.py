@@ -379,6 +379,10 @@ def _object_verb(effect: Effect, objects: str) -> str:
         text = f"{_who(effect)} {_PLAYER_ACTED_VERBS[effect.kind]} {objects}"
     else:
         text = f"{verb} {objects}"
+    if effect.kind is EffectKind.COPY_SPELL and "may choose new targets" in effect.keywords:
+        # CR 707.10c: the copy keeps the original's targets unless the effect
+        # lets its controller choose new ones; the rider changes play.
+        text += " (you may choose new targets for the copy)"
     return text + _object_riders(effect)
 
 

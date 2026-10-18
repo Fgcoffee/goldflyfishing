@@ -6350,21 +6350,36 @@ def _copy(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
-    # "You may choose new targets for the copy" is a rider on the copy, and
-    # the engine's copy already offers the choice.
+    # "You may choose new targets for the copy" is a rider on the copy (CR
+    # 707.10c): the choice is made as the copy is created, and a copy keeps
+    # the original's targets unless the effect allows it. It may sit in the
+    # same sentence or open the next one ("Copy target instant or sorcery
+    # spell. You may choose new targets for the copy."); either way it is
+    # carried as the copy's MAY_CHOOSE_NEW_TARGETS keyword. The closing period
+    # is left for the sentence reader.
+    may_retarget = False
     look = stream.mark()
-    if stream.accept("you") and stream.accept("may"):
-        if not stream.accept_phrase("choose new targets for the copy"):
-            stream.reset(look)
+    stream.accept(".")
+    if (
+        stream.accept("you")
+        and stream.accept("may")
+        and stream.accept_phrase("choose new targets for")
+        and stream.accept("the")
+        and stream.accept("copy", "copies")
+    ):
+        may_retarget = True
     else:
         stream.reset(look)
 
     on_stack = targets.zones == frozenset({Zone.STACK}) or targets.remembered
+    from ..rules.cr700_additional_rules.cr707_faces import MAY_CHOOSE_NEW_TARGETS
+
     return Effect(
         EffectKind.COPY_SPELL if on_stack else EffectKind.COPY_PERMANENT,
         targets=targets,
         is_targeted=targeted,
         players=YOU,
+        keywords=(MAY_CHOOSE_NEW_TARGETS,) if may_retarget and on_stack else (),
         text="copy",
     )
 

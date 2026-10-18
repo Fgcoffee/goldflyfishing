@@ -152,24 +152,24 @@ Unscrupulous Contractor,12608,False,engine,Plot,missing,no plotted cards,nothing
 Visage Bandit,7346,False,engine,Plot,missing,no plotted cards,nothing (inert)
 Changing Loyalty,6689,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Consign to Memory,7307,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Exterminate!,9756,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Feed the Bog,,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Gigadrowse,10761,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Exterminate!,9756,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Feed the Bog,,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Gigadrowse,10761,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Hatchery Sliver,6300,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Leap of Flame,24696,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Lose Focus,10296,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Leap of Flame,24696,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Lose Focus,10296,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Mimeofacture,27695,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Mists of Lórien,8688,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Psionic Ritual,10146,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Pyromatics,20225,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Reiterating Bolt,17965,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Shattering Spree,7895,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Psionic Ritual,10146,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Pyromatics,20225,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Reiterating Bolt,17965,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Shattering Spree,7895,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Siege of Towers,28251,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Stream of Thought,15607,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Super Combo,9058,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Super Combo,9058,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Thunderheads,29871,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Train of Thought,21630,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
-Vacuumelt,29666,False,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
+Vacuumelt,29666,True,engine,Replicate,missing,copying a spell does not let the copy choose new targets,"copies keep the original's targets: refused on targeted spells, read on the rest"
 Breathkeeper Seraph,8339,False,engine,Soulbond,missing,no paired state between two creatures,attaches to every other creature you control
 Deadeye Navigator,1482,False,engine,Soulbond,missing,no paired state between two creatures,attaches to every other creature you control
 Diregraf Escort,29410,False,engine,Soulbond,missing,no paired state between two creatures,attaches to every other creature you control
@@ -1674,6 +1674,11 @@ The Long Reach of Night // Animus of Night's Reach,11490,False,parser,refused: '
 Thunderbreak Regent,3037,False,parser,refused: 'that player' with no single antecedent,missing,the parser cannot decide which player is meant,"Whenever a Dragon you control becomes the target of a spell or ability an opponent controls, this creature deals 3 damag"
 "Tibalt, the Fiend-Blooded",17873,False,parser,refused: 'that player' with no single antecedent,missing,the parser cannot decide which player is meant,-4: this deals damage equal to the number of cards in target player's hand to that player.
 Warren Weirding,20370,False,parser,refused: 'that player' with no single antecedent,missing,the parser cannot decide which player is meant,"Target player sacrifices a creature of their choice. If a Goblin is sacrificed this way, that player creates two 1/1 bla"
+Increasing Vengeance,3046,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"Copy target instant or sorcery spell you control. If this spell was cast from a graveyard, copy that spell twice instead"
+Lumaret's Favor,22442,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"When you cast this spell, copy it if you gained life this turn. You may choose new targets for the copy."
+"Mica, Reader of Ruins",14196,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"Whenever you cast an instant or sorcery spell, you may sacrifice an artifact. If you do, copy that spell and you may cho"
+Narset's Reversal,726,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"Copy target instant or sorcery spell, then return it to its owner's hand. You may choose new targets for the copy."
+Tomb of Horrors Adventurer,6165,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"Whenever you cast your second spell each turn, copy it. If you've completed a dungeon, copy that spell twice instead. Yo"
 "Varchild, Betrayer of Kjeldor",6018,False,parser,refused: a standing prohibition on whatever was just referred to,missing,a lasting 'can't' on an object the parser cannot keep hold of,"Survivors your opponents control can't block, and they can't attack you or planeswalkers you control."
 Artillery Enthusiast,,False,parser,refused: characteristic of an object it cannot name,missing,the parser cannot bind 'its power' (etc.) to an object,"When this enters, you may discard a card. If you do, seek a card with mana value equal to that card's mana value."
 "Ayara, Widow of the Realm // Ayara, Furnace Queen",7107,False,parser,refused: characteristic of an object it cannot name,missing,the parser cannot bind 'its power' (etc.) to an object,"{T}, Sacrifice another creature or artifact: this deals X damage to target opponent or battle and you gain X life, where"
@@ -1728,17 +1733,6 @@ Undying Evil,4387,False,parser,refused: grants a triggered keyword that does not
 Wingrattle Scarecrow,11309,False,parser,refused: grants a triggered keyword that does not yet work when granted,missing,unclassified refusal,This creature has persist as long as you control a black creature.
 The Creation of Avacyn,8575,False,parser,refused: refers back to another chapter,missing,a Saga chapter referring to another chapter,"You may put the exiled card onto the battlefield if it's a creature card. If you don't put it onto the battlefield, put "
 The Princess Takes Flight,12644,False,parser,refused: refers back to another chapter,missing,a Saga chapter referring to another chapter,Return the exiled card to the battlefield under its owner's control.
-Exterminate!,9756,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate - Tap an untapped Dalek you control
-Feed the Bog,,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {1}{B}
-Gigadrowse,10761,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {U}
-Leap of Flame,24696,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {U}{R}
-Lose Focus,10296,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {U}
-Psionic Ritual,10146,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate - Tap an untapped Horror you control
-Pyromatics,20225,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {1}{R}
-Reiterating Bolt,17965,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate - Pay {E}{E}{E}
-Shattering Spree,7895,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {R}
-Super Combo,9058,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {2}
-Vacuumelt,29666,False,parser,refused: replicate copies of a targeted spell cannot choose new targets,missing,unclassified refusal,Replicate {2}{U}
 Ancient Animus,4937,False,parser,refused: the one who acts was named under a condition,missing,the actor is named inside a condition,Put a +1/+1 counter on target creature you control if it's legendary. Then it fights target creature an opponent control
 Savage Swipe,16659,False,parser,refused: the one who acts was named under a condition,missing,the actor is named inside a condition,Target creature you control gets +2/+2 until end of turn if its power is 2. Then it fights target creature you don't con
 Alms Collector,4126,False,parser,refused: unbound player reference,missing,a player reference bound to nothing,"If an opponent would draw two or more cards, instead you and that player each draw a card."

@@ -19,7 +19,7 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 224 | 39 |
-| Missing, not understood | 297 | 511 |
+| Missing, not understood | 297 | 505 |
 | Suspected, counted as read | 220 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
@@ -100,14 +100,14 @@ Tithing Blade // Consuming Sepulcher, The Enigma Jewel // Locus of Enlightenment
 
 Battle Angels of Tyr, Goldlust Triad, Scurry of Squirrels, Scion of Calamity, The Master, Multiplied, Wizards of Thay, Chittering Dispatcher, Elturel Survivors, Hammers of Moradin, Dalek Squadron, Polygoyf, Wyrm's Crossing Patrol, Herald of the Host, Tiamat's Fanatics, Warchief Giant, Genasi Enforcers, Caller of the Pack, Conclave Evangelist, Banshee of the Dread Choir, Gnoll War Band, Broodbirth Viper, Tabaxi Toucaneers, Sumala Rumblers
 
-#### Replicate (20 cards, 3 counted as read)
+#### Replicate (20 cards, 14 counted as read)
 
 - **Likely cause:** copying a spell does not let the copy choose new targets
 - **Card says:** CR 702.56a: a copy for each time the replicate cost was paid; each copy may choose new targets
 - **Engine does:** copies keep the original's targets: refused on targeted spells, read on the rest
 - **Evidence:** auditor: copies are never offered new targets
 
-Hatchery Sliver, Changing Loyalty *(read)*, Consign to Memory, Shattering Spree, Mists of Lórien, Super Combo, Exterminate!, Psionic Ritual, Lose Focus, Gigadrowse, Stream of Thought, Reiterating Bolt, Pyromatics, Train of Thought *(read)*, Leap of Flame, Mimeofacture, Siege of Towers, Vacuumelt, Thunderheads *(read)*, Feed the Bog
+Hatchery Sliver, Changing Loyalty *(read)*, Consign to Memory, Shattering Spree *(read)*, Mists of Lórien, Super Combo *(read)*, Exterminate! *(read)*, Psionic Ritual *(read)*, Lose Focus *(read)*, Gigadrowse *(read)*, Stream of Thought, Reiterating Bolt *(read)*, Pyromatics *(read)*, Train of Thought *(read)*, Leap of Flame *(read)*, Mimeofacture, Siege of Towers, Vacuumelt *(read)*, Thunderheads *(read)*, Feed the Bog *(read)*
 
 #### Specialize (19 cards, 0 counted as read)
 
@@ -669,12 +669,6 @@ Mikaeus, the Unhallowed, Undying Evil, Eirdu, Carrier of Dawn // Isilu, Carrier 
 
 Torens, Fist of the Angels, Hopeful Initiate, Jenny Flint, Savior of Ollenbock, Vikya, Scorching Stalwart, Cloaked Cadet, Parish-Blade Trainee, Apprentice Sharpshooter, Gryff Rider, Gryffwing Cavalry, Rural Recruit
 
-#### refused: replicate copies of a targeted spell cannot choose new targets (11 cards, 0 counted as read)
-
-- **Likely cause:** unclassified refusal
-
-Shattering Spree, Super Combo, Exterminate!, Psionic Ritual, Lose Focus, Gigadrowse, Reiterating Bolt, Pyromatics, Leap of Flame, Vacuumelt, Feed the Bog
-
 #### refused: 'other target' after another target (9 cards, 0 counted as read)
 
 - **Likely cause:** two targets the parser cannot keep apart
@@ -704,6 +698,12 @@ Alms Collector, Undead Alchemist, Chains of Mephistopheles, Nicol Bolas, Szadek,
 - **Evidence:** IR: CAST_WITHOUT_PAYING 'all object you own in library'
 
 Surging Dementia, Surging Flame, Surging Aether, Surging Sentinels, Surging Might
+
+#### refused: a copy's 'choose new targets' is not carried onto the copy (5 cards, 0 counted as read)
+
+- **Likely cause:** unclassified refusal
+
+Narset's Reversal, Increasing Vengeance, Tomb of Horrors Adventurer, Mica, Reader of Ruins, Lumaret's Favor
 
 #### Gravestorm (3 cards, 0 counted as read)
 
