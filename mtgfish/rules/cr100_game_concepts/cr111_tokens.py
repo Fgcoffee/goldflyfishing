@@ -134,7 +134,7 @@ def build_token_card(game: Game, spec: TokenSpec, source: ObjectId) -> Synthetic
 
 
 def _replaced_count(
-    game: Game, controller: PlayerId, count: int, source: ObjectId
+    game: Game, controller: PlayerId, count: int, source: ObjectId, spec=None
 ) -> int:
     """How many tokens are actually created, after replacement (CR 614.1c).
 
@@ -156,6 +156,10 @@ def _replaced_count(
             player=controller,
             source=source,
             amount=count,
+            # What the tokens would be, so "if one or more *creature* tokens
+            # would be created" can tell a Treasure from a Soldier before
+            # either exists.
+            data=(spec,) if spec is not None else (),
         )
     )
     # Replaced out of existence entirely: the tokens are simply never created.
@@ -171,8 +175,12 @@ def create_tokens(
     count: int = 1,
     *,
     source: ObjectId = NO_OBJECT,
+    card=None,
 ) -> list[GameObject]:
     """Create tokens on the battlefield (CR 111.1).
+
+    ``card`` is what a token copy is built from (CR 707.2), in place of the
+    spec's own definition.
 
     Returns the tokens actually created, which may be fewer than asked for -
     CR 111.5 means a prohibition on entering stops the token existing at all,
@@ -192,11 +200,12 @@ def create_tokens(
     # Replacements apply to the number asked for, before any token exists.
     # A doubler raises it; "creates no tokens instead" takes it to zero, and
     # then there is nothing left to build a card for.
-    count = _replaced_count(game, controller, count, source)
+    count = _replaced_count(game, controller, count, source, spec)
     if count <= 0:
         return []
 
-    card = build_token_card(game, spec, source)
+    if card is None:
+        card = build_token_card(game, spec, source)
     created: list[GameObject] = []
 
     for _ in range(count):
@@ -221,6 +230,14 @@ def create_tokens(
             continue
 
         created.append(obj)
+        if spec.enters_attacking:
+            # CR 508.4: put onto the battlefield attacking - what it attacks
+            # is chosen as it enters, so it is attacking before anything sees
+            # it arrive. It never "attacked" (no ATTACKS event), and
+            # CR 506.3a-c decide whether it is attacking at all.
+            from ..cr500_turn_structure.cr506_combat import enter_attacking
+
+            enter_attacking(game, obj)
         game.emit(
             Event(EventKind.TOKEN_CREATED, object_id=obj.id, player=controller, source=source)
         )

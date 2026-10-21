@@ -476,6 +476,15 @@ def _damage_player(
     if combat and player.has_lost:
         return 0
 
+    if combat:
+        # CR 702.76a, 702.173a: what dealt combat damage to a player, as it
+        # was at that moment - infect damage too.
+        from ..cr700_additional_rules.cr702_cost_keyword_rules import (
+            record_combat_damage_source,
+        )
+
+        record_combat_damage_source(game, source, source_controller)
+
     # CR 702.90c: infect damages players with poison counters instead of life.
     source_obj = game.objects.get(source)
     source_chars = game.characteristics(source_obj) if source_obj is not None else None
@@ -494,7 +503,8 @@ def _damage_player(
             gain_life(game, source_controller, amount, source=source)
         return amount
 
-    player.lose_life(amount)
+    life_lost = replaced_life_loss(game, player_id, amount, source=source)
+    player.lose_life(life_lost)
 
     # CR 903.10: combat damage from a commander is tracked separately, and 21
     # from any single commander is lethal on its own.
@@ -520,7 +530,10 @@ def _damage_player(
             amount=amount,
         )
     )
-    game.emit(Event(EventKind.LIFE_LOST, player=player_id, amount=amount, source=source))
+    if life_lost > 0:
+        game.emit(
+            Event(EventKind.LIFE_LOST, player=player_id, amount=life_lost, source=source)
+        )
     if lifelink and source_controller != NO_PLAYER:
         gain_life(game, source_controller, amount, source=source)
     return amount
@@ -542,6 +555,11 @@ def gain_life(
     that reason rather than adding life directly.
     """
     if amount <= 0:
+        return 0
+    # CR 119.7: a player who can't gain life doesn't, and a replacement of
+    # the gain has nothing to replace. "Your life total can't change" forbids
+    # the gain as well as the loss.
+    if _life_change_prohibited(game, player_id, gain=True):
         return 0
 
     if game.has_replacements:
@@ -565,9 +583,44 @@ def gain_life(
     return gained
 
 
+def replaced_life_loss(
+    game: Game, player_id: PlayerId, amount: int, *, source: ObjectId = NO_OBJECT
+) -> int:
+    """How much life a player actually loses, after replacement (CR 614).
+
+    Life loss is an event like any other, and "if an opponent would lose life
+    during your turn, they lose twice that much life instead" replaces it -
+    including the loss that damage causes (CR 120.3a), which changes how much
+    life is lost and not how much damage was dealt.
+    """
+    if amount > 0 and _life_change_prohibited(game, player_id, gain=False):
+        # "Your life total can't change": damage is still dealt, but no life
+        # is lost to it (CR 120.3a asks for a loss the life total refuses).
+        return 0
+    if amount <= 0 or not game.has_replacements:
+        return amount
+    prospective = game.replace(
+        Event(EventKind.LIFE_LOST, player=player_id, amount=amount, source=source)
+    )
+    if prospective is None:
+        return 0
+    return prospective.amount
+
+
+def _life_change_prohibited(game: Game, player_id: PlayerId, *, gain: bool) -> bool:
+    """Whether a prohibition stops this player's life total moving this way
+    (CR 101.2, 119.7, 119.8): "can't gain life" stops a gain, "can't lose
+    life" a loss, and "your life total can't change" either."""
+    from ..cr500_turn_structure.restrictions import Act, prohibited
+
+    acts = (Act.LIFE_TOTAL_CHANGE, Act.GAIN_LIFE if gain else Act.LOSE_LIFE)
+    return any(prohibited(game, act, player=player_id) is not None for act in acts)
+
+
 def lose_life(
     game: Game, player_id: PlayerId, amount: int, *, source: ObjectId = NO_OBJECT
 ) -> int:
+    amount = replaced_life_loss(game, player_id, amount, source=source)
     lost = game.player(player_id).lose_life(amount)
     if lost:
         game.emit(Event(EventKind.LIFE_LOST, player=player_id, amount=lost, source=source))
