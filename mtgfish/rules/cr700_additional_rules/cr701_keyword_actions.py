@@ -275,22 +275,56 @@ def _amass(instance: ActionInstance) -> tuple[Effect, ...]:
     )
 
 
+#: CR 111.10i: the Incubator token's back face, a 0/0 colourless Phyrexian
+#: artifact creature named Phyrexian Token.
+_PHYREXIAN_TOKEN = TokenSpec(
+    name="Phyrexian Token",
+    types=CardType.ARTIFACT | CardType.CREATURE,
+    subtypes=("Phyrexian",),
+    power=Value.of(0),
+    toughness=Value.of(0),
+)
+#: CR 111.10i: the front face, a colourless Incubator artifact with
+#: "{2}: Transform this token."
+INCUBATOR_TOKEN = TokenSpec(
+    name="Incubator Token",
+    types=CardType.ARTIFACT,
+    subtypes=("Incubator",),
+    abilities=(
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(Effect(EffectKind.TRANSFORM, text="transform this token"),),
+            cost=Cost.mana("{2}"),
+            text="{2}: Transform this token.",
+        ),
+    ),
+    back=_PHYREXIAN_TOKEN,
+)
+
+
 @register("Incubate")
 def _incubate(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.53: an Incubator token with N +1/+1 counters on it."""
-    incubator = TokenSpec(
-        name="Incubator",
-        types=CardType.ARTIFACT,
-        subtypes=("Incubator",),
-        power=Value.of(0),
-        toughness=Value.of(0),
-    )
+    """CR 701.53a: create an Incubator token with N +1/+1 counters on it.
+
+    Built as a plain 0/0 artifact, it had no counters and no way to turn
+    into the creature, so incubating did nothing at all.
+    """
     return (
         Effect(
             EffectKind.CREATE_TOKEN,
-            token=incubator,
+            token=INCUBATOR_TOKEN,
             players=YOU,
+            amount=Value.of(1),
             text=instance.text or instance.name,
+        ),
+        # CR 701.53a: the counters go on the token just made - "it" is what
+        # CREATE_TOKEN remembers.
+        Effect(
+            EffectKind.ADD_COUNTERS,
+            targets=ObjectFilter(remembered=True),
+            counter_type="+1/+1",
+            amount=_amount(instance),
+            text=f"with {_amount(instance)} +1/+1 counters on it",
         ),
     )
 
