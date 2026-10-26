@@ -97,3 +97,40 @@ def test_an_opponents_creature_is_never_chosen(board):
     theirs = board.play("Runeclaw Bear", controller=1)
     counters_on(ObjectFilter(**MINE, count=Value.of(3)), board)
     assert theirs.counter_count("+1/+1") == 0
+
+
+def test_rest_in_peace_exiles_every_graveyard(card_db, tmp_path):
+    """Rest in Peace's "exile all cards from all graveyards", read by the real
+    parser, exiles every card in every graveyard. Its filter carried a bare
+    int as its count, and reading that as a Value aborted the resolution."""
+    from mtgfish.parser.verdicts import VerdictStore
+    from mtgfish.rules.kernel.enums import Zone
+    from mtgfish.ui.sandbox import PassiveOpponent, Sandbox
+
+    card_db.registry()
+    for name in ("Rest in Peace", "Grizzly Bears", "Shock"):
+        if card_db.lookup(name) is None:
+            pytest.skip(f"{name} is not in this card pool")
+    box = Sandbox(db=card_db, verdicts=VerdictStore(tmp_path / "v.json"))
+    box.game.agents[0] = PassiveOpponent()
+    box.game.agents[1] = PassiveOpponent()
+    box.put("Grizzly Bears", "graveyard", 0)
+    box.put("Shock", "graveyard", 1)
+    box.put("Rest in Peace", "battlefield", 0)
+    box.settle()
+    for _ in range(5):
+        if not box.game.stack:
+            break
+        box.resolve_top()
+
+    def where(name):
+        return [
+            obj.zone
+            for obj in box.game.objects.values()
+            if obj.is_live and obj.card is not None and obj.card.name == name
+        ]
+
+    assert where("Grizzly Bears") == [Zone.EXILE]
+    assert where("Shock") == [Zone.EXILE]
+    assert not box.game.player(PlayerId(0)).graveyard
+    assert not box.game.player(PlayerId(1)).graveyard
