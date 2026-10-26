@@ -367,7 +367,7 @@ Harness note: `Sandbox.next_turn()` runs a WHOLE further turn for the active pla
 
 Suite on f41ece1: **2 failed, 3020 passed, 5 xfailed** (929.88s). Both failures are F47.
 
-Benches on f41ece1 ():
+Benches on f41ece1 (`--games 20 --seed 0`):
 
 | Deck | Win rate | Stall-outs | Notes |
 |---|---|---|---|
