@@ -242,8 +242,8 @@ def conjure(
             return None
         from ..cr300_card_types.cr300_characteristics import entering_counters
 
-        for kind, amount in entering_counters(game.characteristics(obj)):
-            obj.add_counters(kind, amount)
+        # Read before it is on the battlefield (CR 306.5c), put on once it is.
+        entering = entering_counters(game.characteristics(obj))
         obj.entered_battlefield_turn = game.turn
         obj.summoning_sick = True
         obj.tapped = tapped
@@ -255,6 +255,13 @@ def conjure(
     else:
         target.append(obj.id)
     game.invalidate_characteristics()
+    if zone is Zone.BATTLEFIELD:
+        # CR 122.6, 614.1c: entering with counters is having them put on it,
+        # so the counter replacements apply to them.
+        from ..cr100_game_concepts.actions import add_counters
+
+        for kind, amount in entering:
+            add_counters(game, obj, kind, amount, source=obj.id)
     game.log.record(
         game,
         f"{player.name} conjures {getattr(card, 'name', card)} into {zone.name.lower()}",

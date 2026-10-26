@@ -778,11 +778,9 @@ class Game:
         if to_zone is Zone.BATTLEFIELD:
             new_obj.entered_battlefield_turn = self.turn
             new_obj.summoning_sick = True
-            for kind, amount in entering:
-                new_obj.add_counters(kind, amount)
             # CR 310.9a: as a battle enters, its controller chooses its
-            # protector. Done here, with the entering counters, because both
-            # are things that happen *as* it enters rather than after.
+            # protector. Done here, because it happens *as* it enters rather
+            # than after.
             self.choose_protector(new_obj)
 
         # The old object is kept, and deliberately keeps its old zone: that is
@@ -821,6 +819,14 @@ class Game:
             target.append(new_obj.id)
 
         self.invalidate_characteristics()
+        if entering:
+            # CR 122.6, 614.1c: entering with counters is having them put on
+            # it, so the counter replacements (CR 614.1a) apply to them.
+            # Placed once the permanent is where they would see it.
+            from ..cr100_game_concepts.actions import add_counters
+
+            for kind, amount in entering:
+                add_counters(self, new_obj, kind, amount, source=new_obj.id)
         # CR 406.7: an object in exile that becomes exiled does not change
         # zones. It still becomes a new object - which is why the work above
         # is done either way - but nothing watching for a zone change may see
