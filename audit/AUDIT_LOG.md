@@ -272,3 +272,5 @@ A separate audit session (session_016Cy2ntzq8cWGNRNT9B8Ngr, "Codebase audit and 
 | F37 | **BLOCK** | parser | Toxic Deluge's "As an additional cost to cast this spell, pay X life" is read as an EFFECT ("You loses X life"), not a cost (601.2h, 119.4). | IR: "You loses X life." then "All creature gets -X/-X". |
 | F38 | WARN (instrument) | rules (sandbox owner) | `Sandbox.resolve_top` resolves before putting pending triggers on the stack (117.5): Lightning Bolt goes through Kappa Cannoneer's ward unless settle() is called first. The UI Resolve button hits this. My earlier ward checks settled first, so they stand. | Bolt at Kappa, resolve_top without settle: Kappa damage 3 (expect 0, countered by ward). |
 | — | unverified | web | Peer: web Results shows "Inert cards: none" while the CLI lists 6 for the same run. Not re-run by me. | — |
+
+d4f6a3e full suite: **2944 passed, 10 xfailed in 645.66s (0:10:45)**. No test covers F26 on real cards or F27-F38.
