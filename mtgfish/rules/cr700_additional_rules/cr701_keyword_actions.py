@@ -31,6 +31,7 @@ from ..cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
 from ..kernel.enums import CardType, Color, Duration, Zone
 from ..kernel.events import EventKind
 from ..kernel.query import (
+    Comparison,
     ControllerRelation,
     NumericConstraint,
     ObjectFilter,
@@ -206,8 +207,20 @@ def _counters(
 def _bolster(instance: ActionInstance) -> tuple[Effect, ...]:
     """CR 701.39: N +1/+1 counters on the creature you control with the least
     toughness. "Least toughness" is a choice among ties, so the filter narrows
-    to your creatures and the chooser breaks the tie."""
-    return _counters(instance, CREATURES_YOU_CONTROL)
+    to your creatures with that toughness and the chooser breaks the tie."""
+    least = Value(
+        ValueKind.LEAST_AMONG,
+        filter=CREATURES_YOU_CONTROL,
+        operands=(Value(ValueKind.TOUGHNESS),),
+    )
+    # CR 701.39a: one creature, chosen as it resolves, among those tied for
+    # the least toughness.
+    chosen = replace(
+        CREATURES_YOU_CONTROL,
+        toughness=NumericConstraint(Comparison.EQ, least),
+        count=Value.of(1),
+    )
+    return _counters(instance, chosen)
 
 
 @register("Support")
