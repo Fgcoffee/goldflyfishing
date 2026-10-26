@@ -10,11 +10,13 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 ## Branch status
 
-| Branch | Owner | Verdict | Notes |
-|---|---|---|---|
-| `claude/lucid-einstein-dml803` @ 745e50e (PR #17) | parser | BLOCK: F6b, F10 (merge order), F15 | Tests GREEN: 2488 passed (parser+rules+tools). Census verified: 426 lost, all carrying a listed keyword; 0 gained, 0 changed. F9 fixed. Earlier @ 043206d: | 105 commits not in main, and PR #15 is already MERGED, so this work needs a new PR. Census vs main: +983 / −379 / 8953 abilities with changed IR text. The LOST and CHANGED samples are corrections (see below). Test suite rerunning. |
-| `wip-misbuilt-keywords` (local, unpushed) | parser | not received | |
-| `main-n8yjai` @ 599bdb1 (PR #18) | rules | BLOCK: F5 still free on this PR alone, F11 Vehicle crews itself (before wiring), F10 (merge order) | Aftermath, flashback, dash, blitz, buyback (when chosen) and sandbox loyalty verified. Jump-start and soulbond are primitives only. |
+As of round 18 (2026-10-26): PRs #17 (parser) and #18 (rules) are **merged into main** (228bb35, 19:41 UTC, by the repository owner's account). The merged tree is byte-identical to the head I verified (scratch merge 9b45447, tree b51470f): suite 3031 passed, 5 xfailed, 0 failed, and all four benches complete. The earlier per-branch verdicts are in the round records below.
+
+Open BLOCKs on main (all pre-existing, none introduced by that merge):
+- **parser:** F28 (overload), F37 (Toxic Deluge cost), F43 (Sly Instigator target read as "all"), F46 (Harnesser "or" read as AND), F49 (spot check: 19 misread + 7 stronger-than-printed cards, owner-reported).
+- **rules:** F40 (mana_spent is the base mana value), F41 ("When you cast this spell" never triggers), F42 (goad never ends), F49 keyword builders (echo, cumulative upkeep, toxic, outlast, affinity for X, bolster, incubate, basic landcycling, equip [quality]).
+
+Open WARNs: F44 (a leading duration reaching past its own sentence), F45/F48 (helper and emerge casts offered and then rewound), stored-parse fingerprint missing data/db.py, the web Inert-cards list.
 
 ## Verified on the sandbox (parser branch @ 043206d)
 
@@ -377,3 +379,36 @@ Benches on f41ece1 (`--games 20 --seed 0`):
 | control | 35.0% | 0.0% | |
 
 **Merge verdict: BLOCK, on F47.** A red suite and a convoke regression would land on main. The other new findings (F40-F43, F46) are pre-existing and don't get worse with this merge. F28 and F37 remain open. The merge decision goes back to the user.
+
+## Round 18 (2026-10-26): new heads, rules 995d45d (F47 fix 3c609c0) and parser 0a9c068 (stored parse 7e274c5, spot check)
+
+Scratch merge 9b45447 (995d45d + 0a9c068) is CLEAN; the two heads have criss-cross merge bases 2c48a11 and 7fbd923. Checked on 9b45447.
+
+- **F47 FIXED** (3c609c0):
+  - Siege Wurm: 7 Bears, 6 Bears + Forest, and 3 Bears + 4 Forests all cast.
+  - Stoke the Flames: 4 Goblins and 3 Goblins + Mountain cast; 2 Goblins + Mountain is not offered.
+  - Chord of Calling (X=0): 3 or 6 Bears alone, 2 Bears + Forest, and 3 Elves all cast.
+  - The two convoke tests pass.
+  - **The F39 remainder is also fixed:** creatures + 1 land for coloured pips is now offered and cast.
+- Colour limits hold in payment:
+  - 4 green Bears can't pay Stoke's {R}{R}.
+  - 3 Bears + Mountain is not offered.
+  - Delve can't pay Treasure Cruise's {U}, and improvise can't pay Reverse Engineer's {U}{U}.
+- **F48 WARN** (rules, pre-existing): `legality._affordable` still has its count-only shortcut ("pool + helpers >= mana value: True") ahead of the new colour-aware check. So Stoke the Flames with 4 green Bears, Treasure Cruise with 8 graveyard cards and no land, and Reverse Engineer with 5 Ornithopters are offered, then rewound ("Action abandoned"). The state stays legal.
+- **Stored parse (7e274c5) ACCEPTED:**
+  - It's a read-only cache, served only while the code fingerprint matches (every .py under mtgfish/parser and mtgfish/rules, plus data/cards.py), the data fingerprint matches (snapshot hash, subtypes, vocabulary), and each card's `repr` hash matches.
+  - Manual inert verdicts are applied before the store.
+  - The census parses live (`parse_card`), so census checks stay independent. The suite sets MTGFISH_PARSE_STORE=off.
+  - I built it on 9b45447 (42,027 faces, 73s) and ran **`verify` over every card: 42,027 faces checked, 0 mismatched, 0 missing.**
+  - With the store serving (sandbox provider: 3 served, 0 live), my round-17 board scripts give the same results as live.
+  - Note (WARN, minor): vocabulary is loaded through mtgfish/data/db.py, which is not in `_CODE_FILES`; a change to that loader alone would not mark the store stale.
+- Census: parser code since f41ece1 is only the store hook in `OracleAbilities`, so the round-17 census still stands.
+- **Parser's 500-card spot check** (docs/spot-check/2026-10-26-report.md) LOGGED as owner-reported, F49 below. Board-confirmed by me: Bolster (Elite Scaleguard: +2 on every creature, expected only the one with least toughness). Llanowar Wastes damages on its {B}/{G} ability, but my harness can't choose the colour, so that one is unsettled. Toxic needs three or more players; the sandbox has two.
+
+| # | Sev | Owner | Finding | Evidence |
+|---|---|---|---|---|
+| F49 | **BLOCK** (LOGGED: owner-reported) | parser (+ rules for builders) | Spot check of 500 random cards: 19 of 250 fully-read cards misread (7.6%), plus 9 read right and played wrong:<br>• Keyword builders: echo and cumulative upkeep never sacrifice; toxic poisons every opponent; outlast has no {T}; "affinity for X" counts artifacts; bolster hits every creature; incubate makes a token with no counters or transform; basic landcycling fetches every basic; "Equip Hero" and "Equip planeswalker" are free and reach any creature.<br>• Target read as "all": Chainwhip Cyclops, Phase Dolphin, Insufferable Balladeer.<br>• Wrong player: Witness the End, Architects of Will, Viseling, Borrowed Knowledge, Soul-Guide Lantern.<br>• "or" read as AND: Skullport Merchant, Satsuki, Relentless Pursuit.<br>• Pain lands damage only on {G}.<br>• Others: Enduring Innocence loops; Fists of Flame gives a flat +1; detain has no duration; Arcade Cabinet's targets aren't targeted; Chandra, Spark Hunter's +2 is read as a third mode; Jaya Ballard's "up to three" is read as one.<br>• Seven PARTIAL cards play STRONGER than printed (a drawback left unread): Savage Beating, Changeling Titan, Benevolent Geist, Faerie Impostor, Mox Diamond, Vintara Elephant, Vivid Marsh. | The report. Bolster checked on the board. |
+
+Suite on 9b45447: **3031 passed, 5 xfailed, 0 failed** (932s). Benches (`--games 20 --seed 0`): stax 30% / 45% stalls, combo 15% / 0%, aggro 20% / 0%, control 35% / 0%, identical to round 17. All four complete.
+
+**Merged.** At 19:41-19:42 UTC, PRs #18, #17 and #16 were merged into main by the repository owner's account (main 228bb35, then fa48e1b with this log); I didn't run that merge. I checked what landed: 228bb35's tree equals my tested 9b45447 tree (b51470f), and fa48e1b adds only audit/AUDIT_LOG.md. So main carries the verified head and none of the round 17-18 BLOCKs.
