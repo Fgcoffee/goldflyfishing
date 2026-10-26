@@ -10,7 +10,7 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 ## Branch status
 
-As of round 18 (2026-10-26): PRs #17 (parser) and #18 (rules) are **merged into main** (228bb35, 19:41 UTC, by the repository owner's account). The merged tree is byte-identical to the head I verified (scratch merge 9b45447, tree b51470f): suite 3031 passed, 5 xfailed, 0 failed, and all four benches complete. The earlier per-branch verdicts are in the round records below.
+As of round 18 (2026-10-26): PRs #17 (parser) and #18 (rules) are **merged into main** (228bb35, 19:41 UTC, merged by the rules session). The merged tree is byte-identical to the head I verified (scratch merge 9b45447, tree b51470f): suite 3031 passed, 5 xfailed, 0 failed, and all four benches complete. The earlier per-branch verdicts are in the round records below.
 
 Open BLOCKs on main (all pre-existing, none introduced by that merge):
 - **parser:** F28 (overload), F37 (Toxic Deluge cost), F43 (Sly Instigator target read as "all"), F46 (Harnesser "or" read as AND), F49 (spot check: 19 misread + 7 stronger-than-printed cards, owner-reported).
@@ -411,4 +411,4 @@ Scratch merge 9b45447 (995d45d + 0a9c068) is CLEAN; the two heads have criss-cro
 
 Suite on 9b45447: **3031 passed, 5 xfailed, 0 failed** (932s). Benches (`--games 20 --seed 0`): stax 30% / 45% stalls, combo 15% / 0%, aggro 20% / 0%, control 35% / 0%, identical to round 17. All four complete.
 
-**Merged.** At 19:41-19:42 UTC, PRs #18, #17 and #16 were merged into main by the repository owner's account (main 228bb35, then fa48e1b with this log); I didn't run that merge. I checked what landed: 228bb35's tree equals my tested 9b45447 tree (b51470f), and fa48e1b adds only audit/AUDIT_LOG.md. So main carries the verified head and none of the round 17-18 BLOCKs.
+**Merged.** At 19:41-19:42 UTC, PRs #18, #17 and #16 were merged into main by the rules session (per its 19:46 message, acting on the user's instruction to merge once ready; GitHub shows the owner's account), main 228bb35 then fa48e1b with this log. I didn't run that merge. The rules session's own suite on d0bd33c (-n 6): 3030 passed, 5 xfailed, 1 test_cancel timing failure that passed alone; my serial run on the identical tree had 0 failures. I checked what landed: 228bb35's tree equals my tested 9b45447 tree (b51470f), and fa48e1b adds only audit/AUDIT_LOG.md. So main carries the verified head and none of the round 17-18 BLOCKs.
