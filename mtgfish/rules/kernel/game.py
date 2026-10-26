@@ -25,7 +25,7 @@ from ..cr100_game_concepts.player import Player
 from ..cr200_parts_of_a_card.characteristics import Characteristics, from_face
 from ..cr600_spells_and_abilities.abilities import Ability
 from ..cr600_spells_and_abilities.effects import Effect
-from .enums import CardType, LossReason, Phase, Step, Zone
+from .enums import CardType, Layout, LossReason, Phase, Step, Zone
 from .events import Event, EventKind
 from .gameobject import GameObject, ObjectKind
 from .ids import NO_OBJECT, NO_PLAYER, IdAllocator, ObjectId, PlayerId
@@ -64,6 +64,19 @@ class UnparsedAbilityProvider:
         return (Ability.unreadable(text),)
 
 
+
+
+#: Nonmodal double-faced layouts whose back face can be up (CR 712.1, 310.11).
+#: A melded permanent's mana value is the sum of its fronts (CR 712.8g) and is
+#: not this.
+_TRANSFORMING_LAYOUTS = frozenset({Layout.TRANSFORM, Layout.BATTLE})
+
+#: Alternative costs whose payment exiles the spell, instead of letting it go
+#: anywhere else, when it leaves the stack - lower-cased keyword names, as
+#: ``GameObject.alternative_cost_paid`` records them.
+_EXILED_WHEN_IT_LEAVES_THE_STACK = frozenset(
+    {"flashback", "jump-start", "harmonize"}
+)
 
 #: Events that can amount to a CR 700 happening - descending, a crime,
 #: expending - which ``cr700_general`` announces in turn.
@@ -233,6 +246,22 @@ class Game:
     #: ask about this want "how many" or "did it happen", and a 100-turn
     #: stall-out would otherwise accumulate a lot of nothing.
     turn_history: dict = field(default_factory=dict)
+    #: CR 603.2c: which events happened *at the same time*. Bumped wherever
+    #: one simultaneous action ends and the next begins - each instruction
+    #: of a resolving spell or ability (CR 608.2c), each round of
+    #: state-based actions (CR 704.3), each time triggers are put on the
+    #: stack. A "whenever one or more ..." ability triggers once per value.
+    event_batch: int = 0
+    #: CR 603.10a: the permanents that have left the battlefield so far in
+    #: ``departed_batch``, as their pre-move objects. Objects leaving at the
+    #: same time are moved one after another, so a later one's look-back
+    #: triggers must still find the earlier ones as they were.
+    departed_in_batch: list = field(default_factory=list)
+    departed_batch: int = -1
+    #: The triggered abilities that said "this ability triggers only once each
+    #: turn" and have triggered this turn, as (object id, ability). Cleared
+    #: with ``turn_history``; a new object is a new id (CR 400.7).
+    triggered_once_this_turn: set = field(default_factory=set)
     #: Permissions (CR 113.6) - the mirror of restrictions. Cached the same
     #: way and invalidated by the same epoch, because both are derived from
     #: the same static abilities.
@@ -246,6 +275,10 @@ class Game:
     #: Prohibitions from resolved spells, which outlive their source
     #: (CR 611.2b). Those from static abilities are rebuilt each epoch instead.
     standing_restrictions: list = field(default_factory=list)
+    #: Blocking requirements from resolved effects ("target creature blocks
+    #: this creature this combat if able"), which outlive the resolution and
+    #: end with their duration (CR 611.2b). ``restrictions.Requirement``.
+    standing_requirements: list = field(default_factory=list)
     #: CR 101.1: rules a card has switched off, and for whom. See
     #: ``cr100_game_concepts/cr101_rule_overrides.py`` - the golden rule's
     #: seam for the rules that are about the game rather than about an object.
@@ -317,6 +350,21 @@ class Game:
     #: own set is loaded (``cr309_dungeons.available_dungeons``); a test may
     #: supply its own.
     dungeons: tuple = ()
+    #: Where MTG Arena's conjure finds a card by the name its text prints:
+    #: anything with ``lookup(name) -> card or None``, such as
+    #: ``data.db.CardDatabase``. ``None`` means this game has no catalogue,
+    #: and a conjure logs that it could not happen rather than guessing.
+    card_catalog: object = None
+    #: MTG Arena's "perpetually": the changes bound to each card for the rest
+    #: of the game, keyed by object id (see
+    #: ``cr700_additional_rules/digital_mechanics.py``). A zone change carries
+    #: them to the new object, which is the whole of what "perpetually" adds.
+    perpetual: dict = field(default_factory=dict)
+    #: CR 608.2h: what each object a cost consumed was as it was paid,
+    #: keyed by the object's id (``cr601_casting._record_paid``). "The
+    #: sacrificed creature's power" reads it; the object itself, once moved,
+    #: is off the board and reads as printed.
+    cost_paid_last_known: dict = field(default_factory=dict)
 
     def is_controlled(self, player_id: PlayerId) -> bool:
         """CR 723.1: whether someone else is making this player's decisions."""
@@ -483,6 +531,16 @@ class Game:
             target.append(obj.id)
         return obj
 
+    def _exiled_as_it_leaves_the_stack(self, obj: GameObject) -> bool:
+        """Whether a spell is exiled rather than going anywhere else."""
+        if obj.alternative_cost_paid.lower() in _EXILED_WHEN_IT_LEAVES_THE_STACK:
+            return True
+        # CR 702.127a: aftermath asks where the spell was cast from, not how
+        # it was paid for.
+        return obj.cast_from is Zone.GRAVEYARD and self.characteristics(
+            obj
+        ).has_keyword("Aftermath")
+
     def move_object(
         self,
         obj: GameObject,
@@ -537,6 +595,17 @@ class Game:
             # put on and meant nothing, so "return it with a finality counter"
             # was a plain reanimation that could be repeated.
             prospective = prospective.replaced(to_zone=Zone.EXILE)
+        if (
+            from_zone is Zone.STACK
+            and prospective.to_zone is not Zone.EXILE
+            and self._exiled_as_it_leaves_the_stack(obj)
+        ):
+            # CR 702.34a flashback, 702.133a jump-start, 702.180a harmonize,
+            # 702.127a aftermath: a spell cast that way is exiled instead of
+            # going anywhere else as it leaves the stack - resolved, countered
+            # or bounced alike. Without this a flashed-back card went back to
+            # the graveyard and could be flashed back again for ever.
+            prospective = prospective.replaced(to_zone=Zone.EXILE)
         if self.has_replacements:
             replaced = apply_replacements(self, prospective)
             if replaced is None:
@@ -548,7 +617,10 @@ class Game:
         from ..cr700_additional_rules.cr717_attractions import junkyard_replacement
 
         prospective = junkyard_replacement(self, obj, prospective)
-        to_zone = prospective.to_zone or to_zone
+        # Compared against None: Zone.LIBRARY is 0, and "or" read a
+        # replacement sending a card to its library as no replacement at all.
+        if prospective.to_zone is not None:
+            to_zone = prospective.to_zone
         if to_zone is Zone.COMMAND:
             to_player = owner
         elif to_zone in (Zone.LIBRARY, Zone.GRAVEYARD, Zone.HAND):
@@ -601,6 +673,16 @@ class Game:
             from ..cr300_card_types.cr300_characteristics import entering_counters
 
             entering = entering_counters(self.characteristics(obj))
+            if obj.phyrexian_paid_with_life and self.characteristics(obj).has_keyword(
+                "Compleated"
+            ):
+                # CR 702.150a: two fewer loyalty counters for each Phyrexian
+                # symbol its caster paid with life.
+                fewer = 2 * obj.phyrexian_paid_with_life
+                entering = tuple(
+                    (kind, max(0, amount - fewer) if kind == "loyalty" else amount)
+                    for kind, amount in entering
+                )
 
         destination_player = to_player if to_player is not None else owner
 
@@ -610,6 +692,14 @@ class Game:
 
         forget_designations(self, obj.id)
 
+        if from_zone is Zone.BATTLEFIELD:
+            # CR 603.10a: read before anything attached to it falls off.
+            obj.last_known_characteristics = self.characteristics(obj)
+            # CR 603.10a: noted for whatever else leaves in this same batch.
+            if self.departed_batch != self.event_batch:
+                self.departed_batch = self.event_batch
+                self.departed_in_batch = []
+            self.departed_in_batch.append(obj.id)
         self._detach_all(obj)
         self._remove_from_zone(obj)
 
@@ -679,14 +769,18 @@ class Game:
 
             if CastMode(obj.cast_mode) in PERSISTS_ON_BATTLEFIELD:
                 new_obj.cast_mode = obj.cast_mode
+            # CR 603.4, 614.1c: "when this enters, if it was kicked" and "if
+            # its impending cost was paid, it enters with" are asked as it
+            # enters, so the permanent has the record before the event.
+            from ..cr700_additional_rules.cr702_cost_keyword_rules import carry_payment_record
+
+            carry_payment_record(obj, new_obj)
         if to_zone is Zone.BATTLEFIELD:
             new_obj.entered_battlefield_turn = self.turn
             new_obj.summoning_sick = True
-            for kind, amount in entering:
-                new_obj.add_counters(kind, amount)
             # CR 310.9a: as a battle enters, its controller chooses its
-            # protector. Done here, with the entering counters, because both
-            # are things that happen *as* it enters rather than after.
+            # protector. Done here, because it happens *as* it enters rather
+            # than after.
             self.choose_protector(new_obj)
 
         # The old object is kept, and deliberately keeps its old zone: that is
@@ -697,6 +791,11 @@ class Game:
         # in one direction or the other.
         obj.superseded_by = new_obj.id
         new_obj.previous_id = obj.id
+        # MTG Arena's "perpetually" is exactly the exception to CR 400.7: the
+        # change stays with the card as it moves. The old object keeps its
+        # copy too, as last-known information.
+        if obj.id in self.perpetual:
+            self.perpetual[new_obj.id] = self.perpetual[obj.id]
 
         self.objects[new_obj.id] = new_obj
         if to_zone is Zone.COMMAND:
@@ -720,6 +819,14 @@ class Game:
             target.append(new_obj.id)
 
         self.invalidate_characteristics()
+        if entering:
+            # CR 122.6, 614.1c: entering with counters is having them put on
+            # it, so the counter replacements (CR 614.1a) apply to them.
+            # Placed once the permanent is where they would see it.
+            from ..cr100_game_concepts.actions import add_counters
+
+            for kind, amount in entering:
+                add_counters(self, new_obj, kind, amount, source=new_obj.id)
         # CR 406.7: an object in exile that becomes exiled does not change
         # zones. It still becomes a new object - which is why the work above
         # is done either way - but nothing watching for a zone change may see
@@ -786,6 +893,24 @@ class Game:
                         data=(previous.id,) if previous else (),
                     )
                 )
+
+        if to_zone is Zone.GRAVEYARD:
+            # "Is put into a graveyard from anywhere" (CR 603.6c): the arrival,
+            # whatever the origin. Nothing emitted it, so every trigger written
+            # that way - The Gitrog Monster's, every self-mill payoff - waited
+            # for an event that never came. ``from_zone`` says where it came
+            # from, for the triggers that name an origin ("from your
+            # library"), and the pre-move object rides along in ``data``.
+            self.emit(
+                Event(
+                    EventKind.PUT_INTO_GRAVEYARD,
+                    object_id=obj.id,
+                    player=obj.owner,
+                    from_zone=from_zone,
+                    to_zone=to_zone,
+                    data=(previous.id,) if previous else (),
+                )
+            )
 
     def choose_protector(self, obj: GameObject) -> bool:
         """Designate a battle's protector (CR 310.9a, 310.11).
@@ -1002,6 +1127,11 @@ class Game:
                     else top.colors
                 ),
             )
+        elif face_index == 1 and getattr(card, "layout", None) in _TRANSFORMING_LAYOUTS:
+            # CR 712.8c, 712.8e: transformed or converted, it has only its back
+            # face's characteristics but its front face's mana value.
+            front = card.faces[0]  # type: ignore[attr-defined]
+            printed = printed.replace(mana_value_from_front=front.mana_cost.mana_value)
         return printed
 
     # ---------------------------------------------------------------------
@@ -1124,8 +1254,14 @@ class Game:
         On a bench with no library behind the board, the flag is not even set
         - see ``rules.relaxations``.
         """
+        from ..cr500_turn_structure.restrictions import Act, prohibited
+
         player = self.players[player_id]
         drawn: list[GameObject] = []
+        # "Players can't draw cards" (CR 101.2): the draw does not happen, and
+        # an empty library is not drawn from either.
+        if count > 0 and prohibited(self, Act.DRAW_CARD, player=player_id) is not None:
+            return drawn
         for _ in range(count):
             if not player.library:
                 if not self.relaxations.draws_from_an_empty_library_do_nothing:

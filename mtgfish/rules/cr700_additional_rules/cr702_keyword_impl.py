@@ -107,6 +107,89 @@ def register(*names: str) -> Callable[[Builder], Builder]:
     return decorate
 
 
+#: Keywords whose builder produced an ability that does something other than
+#: the keyword - each found by reading what the builder builds, and the worst
+#: of them confirmed on a real board (docs/engine-gaps.md has the evidence).
+#: A card that looks understood and plays differently is worse than one that
+#: says it is not understood, so until each has a faithful builder it is
+#: built inert, and the card reports honestly. Remove an entry only together
+#: with a builder that does what the rule says and a test on a real board.
+MISBUILT_KEYWORDS: dict[str, str] = {
+    "annihilator": "CR 702.86a: the defending player sacrifices N permanents;"
+    " was every permanent an opponent controls",
+    "exploit": "CR 702.110a: you may sacrifice a creature; was every creature you control",
+    "champion": "CR 702.72a: exile another creature until this leaves;"
+    " was every creature you control",
+    "living weapon": "CR 702.92a: create a 0/0 Germ and attach to it; created no Germ",
+    "for mirrodin!": "CR 702.163a: create a 2/2 Rebel and attach to it; created no Rebel",
+    "craft": "CR 702.167a: exile with materials, return transformed; was a +1/+1 counter",
+    "harmonize": "CR 702.180a: cast from the graveyard; was a +1/+1 counter",
+    "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
+    "specialize": "a digital (Alchemy) mechanic, not in the CR: perpetually specialize; was a +1/+1 counter",
+    "boast": "CR 702.142a: the printed ability, only if it attacked; was a +1/+1 counter",
+    "amplify": "CR 702.38a: counters per revealed card; was a flat N",
+    "devour": "CR 702.82a: counters per creature sacrificed; was a flat N",
+    "backup": "CR 702.165a: counters on target creature, which gains abilities;"
+    " was counters on this",
+    "fabricate": "CR 702.123a: counters or Servo tokens; was always counters",
+    "graft": "CR 702.58a: also moves counters onto entering creatures; was counters only",
+    "sunburst": "CR 702.44a: a counter per color spent; was always one",
+    "soulbond": "CR 702.95a: pair with one creature; was attached to every creature",
+    "compleated": "CR 702.150a: fewer loyalty per Phyrexian mana paid with life;"
+    " was a static removing X loyalty",
+    "haunt": "CR 702.55a: exile haunting a creature, trigger again; was exile only",
+    "recover": "CR 702.59a: when a creature card goes to your graveyard, pay or exile;"
+    " was a free return on your creatures dying",
+    "hideaway": "CR 702.75a: exile one of the top N face down, rest on the bottom;"
+    " was reveal N and exile the top card",
+    "demonstrate": "CR 702.144a: you and an opponent copy it; was two copies for you",
+    "storm": "CR 702.40a: a copy per spell cast before it this turn; was one copy",
+    "gravestorm": "CR 702.69a: a copy per permanent put into a graveyard; was one copy",
+    "ripple": "CR 702.60a: cast revealed cards with the same name; was every card"
+    " in your library",
+    "dethrone": "CR 702.105a: only attacking the player with the most life;"
+    " was any attack",
+    "evolve": "CR 702.100a: only for a bigger creature; was any creature",
+    # The auditing session's F21: counted as read, playing wrong on a board.
+    # The rules session built the engine pieces (REPEAT_PER_PAYMENT,
+    # TokenSpec.copy_of, GIVE_GIFT, combat-damage records); each comes out
+    # with a builder on them and a board test.
+    "gift": "CR 702.174a: an optional additional cost giving an opponent a gift;"
+    " was built as an alternative cost",
+    "spree": "CR 702.172a: an additional cost per chosen mode; was one free"
+    " optional cost",
+    "impending": "CR 702.176a: enters with N time counters and is not a creature"
+    " while it has one; entered with none, a creature at once",
+    # Found by the auditing session, checked against the builders:
+    "aftermath": "CR 702.127a: cast this half only from a graveyard, then exile;"
+    " was castable from hand and not from the graveyard",
+    "encore": "CR 702.141a: an activated ability exiling it for token copies;"
+    " was an alternative cost to cast it",
+    "training": "CR 702.149a: only attacking beside a stronger creature; was any attack",
+    # The auditing session's F34, matching the rules session's strict xfails.
+    "miracle": "CR 702.94a: cast for its cost when revealed as the first card"
+    " drawn this turn; was an alternative cost from hand at any time",
+    "splice": "CR 702.47a: reveal it to add its text to another spell; was an"
+    " additional cost of the card itself",
+    "bestow": "CR 702.103a: cast as an Aura spell; was a plain alternative cost,"
+    " never an Aura",
+    "embalm": "CR 702.128a: exile it from the graveyard to create a token copy;"
+    " was the card itself cast from the graveyard",
+    "eternalize": "CR 702.129a: exile it from the graveyard to create a 4/4"
+    " token copy; was the card itself cast from the graveyard",
+}
+
+
+def _inert_keyword(instance: KeywordInstance) -> Ability:
+    """An inert placeholder for a keyword in ``MISBUILT_KEYWORDS``."""
+    return Ability(
+        AbilityKind.STATIC,
+        effects=(Effect(EffectKind.UNPARSED, text=instance.text or instance.name),),
+        keyword=instance.name,
+        text=instance.text or instance.name,
+    )
+
+
 def build(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Expand a keyword into the abilities that implement it.
 
@@ -117,6 +200,8 @@ def build(instance: KeywordInstance) -> tuple[Ability, ...]:
     builder = BUILDERS.get(instance.key)
     if builder is None:
         return (Ability.unreadable(instance.text or instance.name),)
+    if instance.key in MISBUILT_KEYWORDS:
+        return (_inert_keyword(instance),)
 
     # The keyword's name is stamped here rather than in each builder. Around a
     # fifth of them used ``Ability.static(...)`` and never set it, so anything
@@ -501,19 +586,373 @@ def _afflict(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+@register("Bushido")
+def _bushido(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.45a: "Whenever this creature blocks or becomes blocked, it gets
+    +N/+N until end of turn." Each instance triggers separately (702.45b),
+    which one ability per instance gives for free."""
+    n = max(1, instance.amount)
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.BLOCKS, EventKind.BECOMES_BLOCKED}),
+                subject=ObjectFilter(source_only=True),
+                functions_in=BATTLEFIELD,
+                text="whenever this blocks or becomes blocked",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                amount=Value.of(n),
+                amount2=Value.of(n),
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or f"Bushido {n}",
+        ),
+    )
+
+
+@register("Rampage")
+def _rampage(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.23a: "Whenever this creature becomes blocked, it gets +N/+N
+    until end of turn for each creature blocking it beyond the first."
+
+    CR 702.23b: the bonus is worked out once, as the ability resolves, from
+    the creatures blocking it then - so the count is read from the combat at
+    resolution, not taken from the declaration. "Beyond the first" never goes
+    below zero: with every blocker gone there is no bonus, not a penalty.
+    """
+    n = max(1, instance.amount)
+    beyond_first = Value(
+        ValueKind.MAXIMUM,
+        operands=(
+            Value.of(0),
+            Value(
+                ValueKind.DIFFERENCE,
+                operands=(Value(ValueKind.BLOCKERS_OF_SOURCE), Value.of(1)),
+            ),
+        ),
+    )
+    bonus = Value(ValueKind.PRODUCT, constant=n, operands=(beyond_first,))
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.BECOMES_BLOCKED}),
+                subject=ObjectFilter(source_only=True),
+                functions_in=BATTLEFIELD,
+                text="whenever this becomes blocked",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                amount=bonus,
+                amount2=bonus,
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or f"Rampage {n}",
+        ),
+    )
+
+
+@register("Mobilize")
+def _mobilize(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.181a: "Whenever this creature attacks, create N 1/1 red Warrior
+    creature tokens. Those tokens enter tapped and attacking. Sacrifice them
+    at the beginning of the next end step."
+
+    "Them" is the tokens just made (CR 608.2c), which the token executor
+    remembers; the sacrifice is a delayed trigger (CR 603.7) so it happens
+    even if this creature has left by then.
+    """
+    from ..cr600_spells_and_abilities.effects import TokenSpec
+
+    n = max(1, instance.amount)
+    warrior = TokenSpec(
+        types=CardType.CREATURE,
+        subtypes=("Warrior",),
+        colors=Color.RED,
+        power=Value.of(1),
+        toughness=Value.of(1),
+        enters_tapped=True,
+        enters_attacking=True,
+    )
+    sacrifice_them = Effect(
+        EffectKind.SACRIFICE,
+        targets=ObjectFilter(remembered=True),
+        players=YOU,
+        text="sacrifice them",
+    )
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.CREATE_TOKEN,
+                token=warrior,
+                amount=Value.of(n),
+                players=YOU,
+            ),
+            _delayed(
+                TriggerCondition(
+                    event_kinds=frozenset({EventKind.END_STEP}),
+                    text="at the beginning of the next end step",
+                ),
+                sacrifice_them,
+                text="sacrifice them at the beginning of the next end step",
+            ),
+        ),
+    )
+
+
+@register("Firebending")
+def _firebending(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.189a: "Whenever this creature attacks, add N {R}. Until end of
+    combat, you don't lose this mana as steps and phases end."
+
+    The mana is marked ``END_OF_COMBAT`` and the pool keeps it through the
+    ends of combat's steps. "Firebending X, where X is ..." carries its
+    amount in words no builder reads, and stays unread.
+    """
+    n = max(1, instance.amount)
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.ADD_MANA,
+                players=YOU,
+                amount=Value.of(n),
+                colors=Color.RED,
+                mana_produced=("{R}",) * n,
+                duration=int(Duration.END_OF_COMBAT),
+                text=f"add {'{R}' * n}",
+            ),
+        ),
+    )
+
+
+@register("Flanking")
+def _flanking(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.25a: "Whenever this creature becomes blocked by a creature
+    without flanking, the blocking creature gets -1/-1 until end of turn."
+
+    "Becomes blocked by a creature" triggers once per blocker (CR 509.3d),
+    and "without flanking" is part of the trigger condition, checked as the
+    blocker is declared (CR 509.3f). "The blocking creature" is the one whose
+    block triggered it: the event's ``source``.
+    """
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.BECOMES_BLOCKED_BY}),
+                subject=ObjectFilter(source_only=True),
+                source=ObjectFilter(
+                    types_all=CardType.CREATURE, lacks_keyword=("Flanking",)
+                ),
+                functions_in=BATTLEFIELD,
+                text="whenever this becomes blocked by a creature without flanking",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                targets=ObjectFilter(trigger_source=True),
+                amount=Value.of(-1),
+                amount2=Value.of(-1),
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or "Flanking",
+        ),
+    )
+
+
+@register("Frenzy")
+def _frenzy(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.68a: "Whenever this creature attacks and isn't blocked, it gets
+    +N/+0 until end of turn." Each instance triggers separately (702.68b).
+
+    "Attacks and isn't blocked" triggers as blockers are declared, if none is
+    declared for it (CR 509.3g) - not when it attacks, and not if it is
+    blocked and its blockers later leave combat.
+    """
+    n = max(1, instance.amount)
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.ATTACKS_UNBLOCKED}),
+                subject=ObjectFilter(source_only=True),
+                functions_in=BATTLEFIELD,
+                text="whenever this attacks and isn't blocked",
+            ),
+            Effect(
+                EffectKind.MODIFY_PT,
+                amount=Value.of(n),
+                amount2=Value.of(0),
+                duration=int(Duration.END_OF_TURN),
+            ),
+            text=instance.text or f"Frenzy {n}",
+        ),
+    )
+
+
+@register("Increment")
+def _increment(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.191a: "Whenever you cast a spell, if this permanent is a
+    creature and the amount of mana spent to cast that spell is greater than
+    this creature's power or this creature's toughness, put a +1/+1 counter
+    on this creature." Each instance triggers separately (702.191b).
+
+    The whole "if" is an intervening if (CR 603.4): checked as the spell is
+    cast and again as the ability resolves, against the creature as it is
+    then - so a counter from one instance can stop another.
+    """
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.CAST_SPELL}),
+                subject=ObjectFilter(zones=frozenset({Zone.STACK})),
+                players=YOU,
+                intervening_if=Condition(
+                    ConditionKind.SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS,
+                    text=(
+                        "if this is a creature and the mana spent to cast that"
+                        " spell is greater than its power or toughness"
+                    ),
+                ),
+                functions_in=BATTLEFIELD,
+                text="whenever you cast a spell, if ...",
+            ),
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(1),
+                text="put a +1/+1 counter on this creature",
+            ),
+            text=instance.text or "Increment",
+        ),
+    )
+
+
+@register("Provoke")
+def _provoke(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.39a: "Whenever this creature attacks, you may choose to have
+    target creature defending player controls block this creature this
+    combat if able. If you do, untap that creature." Each instance triggers
+    separately (702.39b).
+
+    The target is chosen as the trigger is put on the stack; the choice to
+    use it is made on resolution, and only then is the creature bound to
+    block and untapped. "This combat" ends with the combat phase (CR 511.2).
+    """
+    defenders_creature = ObjectFilter(
+        types_all=CardType.CREATURE,
+        controller=ControllerRelation.DEFENDING_PLAYER,
+    )
+    return (
+        _attack_trigger(
+            instance,
+            Effect(
+                EffectKind.OPTIONAL,
+                players=YOU,
+                children=(
+                    Effect(
+                        EffectKind.BLOCKS_SOURCE_IF_ABLE,
+                        targets=defenders_creature,
+                        is_targeted=True,
+                        duration=int(Duration.END_OF_COMBAT),
+                        text="target creature defending player controls blocks"
+                        " this creature this combat if able",
+                    ),
+                    Effect(
+                        EffectKind.UNTAP,
+                        targets=ObjectFilter(remembered=True),
+                        text="untap that creature",
+                    ),
+                ),
+                text="you may choose to have target creature defending player"
+                " controls block this creature this combat if able",
+            ),
+        ),
+    )
+
+
+@register("Enlist")
+def _enlist(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.154a: "As this creature attacks, you may tap up to one untapped
+    creature you control that you didn't choose to attack with and that
+    either has haste or has been under your control continuously since this
+    turn began. When you do, this creature gets +X/+0 until end of turn,
+    where X is the tapped creature's power."
+
+    The static ability is an optional cost to attack (702.154b, CR 508.1g),
+    paid as attackers are declared; this is its marker, one per instance.
+    The linked "when you do" trigger is created by paying that cost
+    (``cr506_combat._pay_enlist_costs``), so each instance's trigger fires
+    only for its own payment (702.154d).
+    """
+    return (Ability(AbilityKind.STATIC, keyword="Enlist", text=instance.text or "Enlist"),)
+
+
+@register("Renown")
+def _renown(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.112a: "When this creature deals combat damage to a player, if
+    it isn't renowned, put N +1/+1 counters on it and it becomes renowned."
+
+    "If it isn't renowned" is an intervening if (CR 603.4), so with several
+    instances the first to resolve makes it renowned and the rest do nothing
+    (702.112c). Renowned is a designation on the permanent (702.112b), not a
+    counter: it is not copied and nothing that moves counters touches it.
+    """
+    n = max(1, instance.amount)
+    not_renowned = Condition(
+        ConditionKind.NOT,
+        operands=(Condition(ConditionKind.IS_RENOWNED, text="it is renowned"),),
+        text="if it isn't renowned",
+    )
+    return (
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
+                source=ObjectFilter(source_only=True),
+                to_player=True,
+                intervening_if=not_renowned,
+                functions_in=BATTLEFIELD,
+                text="when this deals combat damage to a player, if it isn't renowned",
+            ),
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(n),
+                text=f"put {n} +1/+1 counters on it",
+            ),
+            Effect(EffectKind.BECOME_RENOWNED, text="it becomes renowned"),
+            text=instance.text or f"Renown {n}",
+        ),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Death triggers
 # ---------------------------------------------------------------------------
 
 
-def _dies_trigger(instance: KeywordInstance, *effects: Effect) -> Ability:
+def _dies_trigger(
+    instance: KeywordInstance, *effects: Effect, look_back: bool = False
+) -> Ability:
+    """A "when this dies" keyword trigger.
+
+    By default it also functions from the graveyard, and its source is the
+    card there: what Persist and Undying return is that card. ``look_back``
+    instead triggers from the object as it last existed on the battlefield
+    (CR 603.10a), which is what a trigger needs when it reads what the
+    permanent had - Modular's counters are on that object, not on the
+    graveyard card that replaced it (CR 608.2h).
+    """
     return Ability.triggered(
         TriggerCondition(
             event_kinds=frozenset({EventKind.DIES}),
             subject=ObjectFilter(source_only=True, zones=frozenset()),
-            # A dies trigger has to function from the graveyard as well, since
-            # that is where the object is by the time it fires (CR 603.6e).
-            functions_in=frozenset({Zone.BATTLEFIELD, Zone.GRAVEYARD}),
+            # Looking back, the engine finds it through the departed object
+            # (cr603_triggers._collect_departed_card), as it does every parsed
+            # "when this dies"; otherwise it also functions from the
+            # graveyard, where the object is by the time it fires (603.6e).
+            functions_in=(
+                BATTLEFIELD if look_back else frozenset({Zone.BATTLEFIELD, Zone.GRAVEYARD})
+            ),
             uses_last_known_information=True,
             text=f"when this dies ({instance.name})",
         ),
@@ -641,18 +1080,27 @@ def _modular(instance: KeywordInstance) -> tuple[Ability, ...]:
     tuple.
     """
     amount = Value.of(max(1, instance.amount))
+    # "you may put" (CR 702.43a): with only an opponent's artifact creature
+    # to target, moving the counters is a choice, not an obligation.
     move = _dies_trigger(
         instance,
         Effect(
-            EffectKind.ADD_COUNTERS,
-            targets=ObjectFilter(
-                types_all=CardType.ARTIFACT | CardType.CREATURE,
-                other_than_source=True,
+            EffectKind.OPTIONAL,
+            children=(
+                Effect(
+                    EffectKind.ADD_COUNTERS,
+                    targets=ObjectFilter(
+                        types_all=CardType.ARTIFACT | CardType.CREATURE,
+                        other_than_source=True,
+                    ),
+                    counter_type="+1/+1",
+                    amount=Value(ValueKind.COUNTERS, counter_type="+1/+1", of_affected=False),
+                    is_targeted=True,
+                ),
             ),
-            counter_type="+1/+1",
-            amount=Value(ValueKind.COUNTERS, counter_type="+1/+1", of_affected=False),
-            is_targeted=True,
+            text="you may move its +1/+1 counters to target artifact creature",
         ),
+        look_back=True,
     )
     return (_enters_with_counters(instance, "+1/+1", amount), move)
 
@@ -667,10 +1115,45 @@ def _graft(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Fading")
 def _fading(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.32a: enters with N fade counters; upkeep removes one or sacrifices."""
+    """CR 702.32a: "This permanent enters with N fade counters on it" and "At
+    the beginning of your upkeep, remove a fade counter from this permanent.
+    If you can't, sacrifice the permanent."
+
+    Not Vanishing's shape: Vanishing sacrifices as the last counter comes off,
+    Fading only when there is none left to remove - an upkeep later, so
+    Blastoderm (fading 3) attacks for three turns, not two.
+    """
+    none_left = Condition(
+        ConditionKind.OBJECT_COUNT,
+        filter=ObjectFilter(source_only=True, has_counter="fade"),
+        constraint=NumericConstraint(Comparison.EQ, Value.of(0)),
+        text="if you can't remove a fade counter",
+    )
+    upkeep = Ability.triggered(
+        TriggerCondition(
+            event_kinds=frozenset({EventKind.UPKEEP}),
+            players=YOU,
+            functions_in=BATTLEFIELD,
+            text="at the beginning of your upkeep",
+        ),
+        Effect(
+            EffectKind.CONDITIONAL,
+            condition=none_left,
+            children=(Effect(EffectKind.SACRIFICE, text="sacrifice this permanent"),),
+            otherwise=(
+                Effect(
+                    EffectKind.REMOVE_COUNTERS,
+                    counter_type="fade",
+                    amount=Value.of(1),
+                    text="remove a fade counter from this permanent",
+                ),
+            ),
+        ),
+        text=f"{instance.name} upkeep",
+    )
     return (
         _enters_with_counters(instance, "fade", Value.of(max(1, instance.amount))),
-        _upkeep_counter_sacrifice(instance, "fade"),
+        upkeep,
     )
 
 
@@ -718,8 +1201,12 @@ def _bloodthirst(instance: KeywordInstance) -> tuple[Ability, ...]:
                 amount=Value.of(max(1, instance.amount)),
                 condition=Condition(
                     ConditionKind.EVENT_THIS_TURN,
+                    players=PlayerFilter(PlayerScope.OPPONENT),
+                    event_kinds=(int(EventKind.DAMAGE_DEALT), int(EventKind.COMBAT_DAMAGE_DEALT)),
                     text="if an opponent was dealt damage this turn",
                 ),
+                # "Enters with": the engine applies it as the permanent enters.
+                text=f"enters with {max(1, instance.amount)} +1/+1 counters",
             ),
             text=instance.text or instance.name,
         ),
@@ -750,7 +1237,7 @@ def _kicker(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Casualty", "Bargain")
+@register("Casualty")
 def _mandatory_additional(instance: KeywordInstance) -> tuple[Ability, ...]:
     return (
         Ability(
@@ -768,7 +1255,14 @@ def _mandatory_additional(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-def _alternative(instance: KeywordInstance, zone: Zone | None) -> tuple[Ability, ...]:
+def _alternative(
+    instance: KeywordInstance,
+    zone: Zone | None,
+    *,
+    condition: Condition | None = None,
+    pays_mana_cost: bool = False,
+    cost: Cost | None = None,
+) -> tuple[Ability, ...]:
     """An alternative cost, as a static ability working where the card is.
 
     CR 604.5: "you may pay [cost] rather than pay this object's mana cost"
@@ -783,8 +1277,10 @@ def _alternative(instance: KeywordInstance, zone: Zone | None) -> tuple[Ability,
             AbilityKind.STATIC,
             keyword=instance.name,
             alternative_cost=AlternativeCost(
-                cost=instance.cost or Cost(()),
+                cost=cost if cost is not None else (instance.cost or Cost(())),
                 from_zone=zone,
+                condition=condition,
+                pays_mana_cost=pays_mana_cost,
                 keyword=instance.name,
                 text=instance.text or instance.name,
             ),
@@ -794,16 +1290,119 @@ def _alternative(instance: KeywordInstance, zone: Zone | None) -> tuple[Ability,
     )
 
 
-@register("Flashback", "Jump-start", "Retrace", "Escape", "Aftermath", "Encore")
+@register("Flashback", "Escape", "Aftermath", "Encore")
 def _graveyard_alternative(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Alternative costs that let a card be cast from a graveyard (CR 702.34)."""
     return _alternative(instance, Zone.GRAVEYARD)
 
 
-@register("Dash", "Blitz", "Spectacle", "Prowl", "Surge", "Evoke", "Madness", "Mayhem")
+@register("Dash", "Blitz", "Surge", "Evoke", "Madness", "Mayhem")
 def _hand_alternative(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Alternative costs paid instead of the mana cost, from hand."""
     return _alternative(instance, None)
+
+
+@register("Jump-start")
+def _jump_start(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.133a: "You may cast this card from your graveyard by discarding a
+    card in addition to paying its other costs." Its mana cost is paid too;
+    the exile as it leaves the stack is the engine's, keyed on the keyword."""
+    return _alternative(
+        instance,
+        Zone.GRAVEYARD,
+        pays_mana_cost=True,
+        cost=Cost((CostComponent(CostKind.DISCARD, amount=Value.of(1), text="discard a card"),)),
+    )
+
+
+@register("Retrace")
+def _retrace(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.81a: "You may cast this card from your graveyard by discarding
+    a land card in addition to paying its other costs." Its mana cost is paid
+    too. Built as a bare graveyard alternative cost, it was free."""
+    return _alternative(
+        instance,
+        Zone.GRAVEYARD,
+        pays_mana_cost=True,
+        cost=Cost((
+            CostComponent(
+                CostKind.DISCARD,
+                amount=Value.of(1),
+                filter=ObjectFilter(types_all=CardType.LAND),
+                text="discard a land card",
+            ),
+        )),
+    )
+
+
+@register("Prowl")
+def _prowl(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.76a: castable for the prowl cost only if a creature sharing a
+    creature type with it dealt combat damage to a player this turn."""
+    return _alternative(
+        instance,
+        None,
+        condition=Condition(
+            ConditionKind.COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE,
+            text="a creature sharing a creature type dealt combat damage to a player this turn",
+        ),
+    )
+
+
+@register("Freerunning")
+def _freerunning(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.173a: castable for the freerunning cost only if an Assassin or
+    a commander you control dealt combat damage to a player this turn."""
+    return _alternative(
+        instance,
+        None,
+        condition=Condition(
+            ConditionKind.OR,
+            operands=(
+                Condition(
+                    ConditionKind.COMBAT_DAMAGE_DEALT_BY,
+                    filter=ObjectFilter(types_all=CardType.CREATURE, subtypes_any=("Assassin",)),
+                ),
+                Condition(
+                    ConditionKind.COMBAT_DAMAGE_DEALT_BY,
+                    filter=ObjectFilter(types_all=CardType.CREATURE, is_commander=True),
+                ),
+            ),
+            text="an Assassin or your commander dealt combat damage to a player this turn",
+        ),
+    )
+
+
+@register("Spectacle")
+def _spectacle(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.137a: castable for the spectacle cost only if an opponent lost
+    life this turn."""
+    return _alternative(
+        instance,
+        None,
+        condition=Condition(
+            ConditionKind.EVENT_THIS_TURN,
+            players=PlayerFilter(PlayerScope.OPPONENT),
+            event_kinds=(int(EventKind.LIFE_LOST),),
+            text="an opponent lost life this turn",
+        ),
+    )
+
+
+@register("Assist")
+def _assist(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.132a: another player may pay some of the generic mana. The engine
+    has no way for another player to pay part of a cost, so the keyword is a
+    bare marker: the card is cast for its own cost, which is what a game where
+    nobody assists does. It was a free alternative cost."""
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword=instance.name,
+            functions_in=HAND,
+            text=instance.text or instance.name,
+        ),
+    )
 
 
 @register("Morph", "Megamorph", "Disguise")
@@ -947,9 +1546,35 @@ def _cycling(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
+#: CR 702.122a / 702.171a: "Tap any number of OTHER untapped creatures you
+#: control with total power N or greater". Without "other", a crewed Vehicle
+#: - a creature by then - could tap itself to pay its own crew cost. Untapped
+#: is the cost's own requirement (TAP_OTHER only taps untapped permanents).
+_OTHER_CREATURES_YOU_CONTROL = ObjectFilter(
+    types_all=CardType.CREATURE,
+    controller=ControllerRelation.YOU,
+    other_than_source=True,
+)
+
+
+def _tap_total_power(n: int, verb: str) -> Cost:
+    return Cost(
+        (
+            CostComponent(
+                CostKind.TAP_OTHER,
+                amount=Value.of(max(1, n)),
+                filter=_OTHER_CREATURES_YOU_CONTROL,
+                total_power=True,
+                text=f"tap other untapped creatures you control with total power {n} or greater"
+                f" ({verb})",
+            ),
+        )
+    )
+
+
 @register("Crew")
 def _crew(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.122a: tap creatures with total power N to animate the Vehicle."""
+    """CR 702.122a: tap other creatures with total power N to animate the Vehicle."""
     return (
         Ability(
             AbilityKind.ACTIVATED,
@@ -961,18 +1586,28 @@ def _crew(instance: KeywordInstance) -> tuple[Ability, ...]:
                     text="becomes an artifact creature until end of turn",
                 ),
             ),
-            cost=Cost(
-                (
-                    CostComponent(
-                        CostKind.TAP_OTHER,
-                        amount=Value.of(max(1, instance.amount)),
-                        filter=CREATURES_YOU_CONTROL,
-                        text=f"tap creatures with total power {instance.amount}",
-                    ),
-                )
-            ),
+            cost=_tap_total_power(instance.amount, "crew"),
             keyword="Crew",
             text=instance.text or f"Crew {instance.amount}",
+        ),
+    )
+
+
+@register("Saddle")
+def _saddle(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.171a: "Tap any number of other untapped creatures you control
+    with total power N or greater: This permanent becomes saddled until end of
+    turn. Activate only as a sorcery." The saddled designation (702.171b) is
+    the engine's; "attacks while saddled" reads ConditionKind.IS_SADDLED.
+    """
+    return (
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(Effect(EffectKind.BECOME_SADDLED, text="becomes saddled until end of turn"),),
+            cost=_tap_total_power(instance.amount, "saddle"),
+            timing=Timing.SORCERY,
+            keyword="Saddle",
+            text=instance.text or f"Saddle {instance.amount}",
         ),
     )
 
@@ -1142,33 +1777,69 @@ def _protection(instance: KeywordInstance) -> tuple[Ability, ...]:
 def _ward(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.21a: ward is a *triggered* ability, not a targeting ban.
 
-    "Whenever this becomes the target of a spell or ability an opponent
-    controls, counter it unless that player pays [cost]." Modelling it as a
-    targeting restriction would wrongly stop the spell being cast at all,
-    rather than taxing it - and would make an unpaid ward uncounterable.
-    """
-    ward = Ability.triggered(
-        TriggerCondition(
-            event_kinds=frozenset({EventKind.TARGETED}),
-            subject=ObjectFilter(source_only=True),
-            functions_in=BATTLEFIELD,
-            text="whenever this becomes the target of an opponent's spell",
-        ),
-            Effect(
-                EffectKind.COUNTER_SPELL,
-                targets=ObjectFilter(zones=frozenset({Zone.STACK})),
-                condition=Condition(
-                    ConditionKind.UNPARSED, text="unless that player pays the ward cost"
-                ),
-            text="counter it unless its controller pays the ward cost",
-        ),
-        text=instance.text or "Ward",
-    )
-    # The cost rides on the ability even though this is a trigger, because the
-    # "unless that player pays" clause has to be able to read it.
-    from dataclasses import replace as _replace
+    "Whenever this permanent becomes the target of a spell or ability an
+    opponent controls, counter that spell or ability unless that player pays
+    [cost]." Modelling it as a targeting restriction would wrongly stop the
+    spell being cast at all, rather than taxing it - and would make an unpaid
+    ward uncounterable.
 
-    return (_replace(ward, cost=instance.cost or Cost(()), keyword="Ward"),)
+    Three references carry the rule, and each is read off the event the
+    ability triggered on rather than guessed: "an opponent controls" is a
+    constraint on the event's source, "that spell or ability" is that source
+    (``ObjectFilter.trigger_source``), and "that player" is its controller
+    (``PlayerScope.TRIGGER_SOURCE_CONTROLLER``) - not ward's controller, who
+    is the one player who never pays.
+
+    The cost is paid by a player with no activation behind it, so it has to be
+    one ``can_pay_cost`` can charge. Any other ("Ward - Collect evidence 4",
+    "Ward - Waterbend {4}") is left UNPARSED rather than built: a ward nobody
+    could pay counters everything, and one that is never charged counters
+    nothing.
+    """
+    from ..cr600_spells_and_abilities.cr601_casting import PLAYER_PAYABLE_KINDS
+
+    cost = instance.cost
+    payable = (
+        cost is not None
+        and bool(cost.components)
+        and not cost.choices
+        and all(c.kind in PLAYER_PAYABLE_KINDS for c in cost.components)
+    )
+    trigger = TriggerCondition(
+        event_kinds=frozenset({EventKind.TARGETED}),
+        subject=ObjectFilter(source_only=True),
+        source=ObjectFilter(
+            zones=frozenset({Zone.STACK}), controller=ControllerRelation.OPPONENT
+        ),
+        functions_in=BATTLEFIELD,
+        text="whenever this becomes the target of a spell or ability an opponent controls",
+    )
+    if not payable:
+        return (
+            Ability.triggered(
+                trigger,
+                Effect(EffectKind.UNPARSED, text=instance.text or "Ward"),
+                text=instance.text or "Ward",
+            ),
+        )
+    counter = Effect(
+        EffectKind.COUNTER_SPELL,
+        targets=ObjectFilter(trigger_source=True, zones=frozenset({Zone.STACK})),
+        text="counter that spell or ability",
+    )
+    return (
+        Ability.triggered(
+            trigger,
+            Effect(
+                EffectKind.UNLESS_PAYS,
+                players=PlayerFilter(PlayerScope.TRIGGER_SOURCE_CONTROLLER),
+                pay_cost=cost,
+                children=(counter,),
+                text="unless that player pays the ward cost",
+            ),
+            text=instance.text or "Ward",
+        ),
+    )
 
 
 #: CR 702.14: landwalk, one per basic land type plus the general forms. Each is
@@ -1340,40 +2011,28 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
 # ---------------------------------------------------------------------------
 
 
-@register("Bushido", "Rampage", "Flanking", "Frenzy", "Renown", "Enlist", "Mobilize",
-          "Myriad", "Double team", "Undaunted", "Teamwork", "Provoke", "Firebending",
-          "Increment", "Intensity")
-def _misc_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """Combat keywords that all reduce to "when this attacks or blocks, do N".
+#: Combat keywords the engine does not implement yet, with what each really
+#: does. They were once built by one shared helper as "put a +1/+1 counter on
+#: this when it attacks" or "+N/+N when it attacks or blocks" - a card that
+#: looked understood while doing something its keyword does not say (myriad
+#: makes token copies, undaunted reduces a cost, flanking shrinks blockers).
+#: Each is inert until it has a builder of its own.
+UNIMPLEMENTED_COMBAT_KEYWORDS = {
+    "myriad": "CR 702.116a: token copies attacking each other opponent",
+    "double team": "a digital keyword: conjure a copy into hand when it attacks",
+    "teamwork": "CR 702.194a: tap creatures as an additional cost for a bonus",
+    "intensity": "a digital intensity counter mechanic",
+}
 
-    Grouped because the engine hook is identical; the differences between them
-    live in the amount and in which event they watch, both carried by the
-    instance.
-    """
-    amount = Value.of(max(1, instance.amount))
-    if instance.key in ("renown", "mobilize", "myriad", "double team", "teamwork"):
-        return (
-            _attack_trigger(
-                instance,
-                Effect(
-                    EffectKind.ADD_COUNTERS, counter_type="+1/+1", amount=amount
-                ),
-            ),
-        )
+
+@register("Myriad", "Double team", "Teamwork", "Intensity")
+def _unimplemented_combat(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """An inert placeholder: see ``UNIMPLEMENTED_COMBAT_KEYWORDS``."""
     return (
-        Ability.triggered(
-            TriggerCondition(
-                event_kinds=frozenset({EventKind.ATTACKS, EventKind.BLOCKS}),
-                subject=ObjectFilter(source_only=True),
-                functions_in=BATTLEFIELD,
-                text=f"whenever this attacks or blocks ({instance.name})",
-            ),
-            Effect(
-                EffectKind.MODIFY_PT,
-                amount=amount,
-                amount2=amount,
-                duration=int(Duration.END_OF_TURN),
-            ),
+        Ability(
+            AbilityKind.STATIC,
+            effects=(Effect(EffectKind.UNPARSED, text=instance.text or instance.name),),
+            keyword=instance.name,
             text=instance.text or instance.name,
         ),
     )
@@ -1464,11 +2123,30 @@ def _upkeep_keyword(instance: KeywordInstance) -> tuple[Ability, ...]:
 # ---------------------------------------------------------------------------
 
 
-@register("Overload", "Foretell", "Emerge", "Freerunning", "Bestow", "Miracle",
-          "Warp", "Impending", "Offering", "Assist", "Cleave", "Gift", "Disturb",
+@register("Emerge")
+def _emerge(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.119a: "You may cast this spell by paying [cost] and sacrificing
+    a creature rather than paying its mana cost", reduced by the sacrificed
+    creature's mana value (the engine's ``emerge_discount``). Built without
+    the sacrifice, it was a plain cheaper cost."""
+    sacrifice = CostComponent(
+        CostKind.SACRIFICE,
+        amount=Value.of(1),
+        filter=ObjectFilter(types_all=CardType.CREATURE, controller=ControllerRelation.YOU),
+        text="sacrifice a creature",
+    )
+    return _alternative(instance, None, cost=(instance.cost or Cost(())).with_component(sacrifice))
+
+
+@register("Overload", "Foretell", "Bestow", "Miracle",
+          "Warp", "Impending", "Offering", "Cleave", "Gift", "Disturb",
           "Embalm", "Eternalize", "Mutate")
 def _more_alternatives(instance: KeywordInstance) -> tuple[Ability, ...]:
     zone = Zone.GRAVEYARD if instance.key in ("disturb", "embalm", "eternalize") else None
+    if instance.key == "warp":
+        # CR 702.185a: "cast this card from your hand". No zone means hand or
+        # command zone (CR 903.8), which would let a warp commander warp.
+        zone = Zone.HAND
     return _alternative(instance, zone)
 
 
@@ -1495,8 +2173,8 @@ def _prototype(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Entwine", "Escalate", "Replicate", "Conspire", "Splice", "Squad",
-          "Spree", "Tiered", "Offspring", "Buyback")
+@register("Entwine", "Escalate", "Replicate", "Splice",
+          "Spree", "Tiered", "Buyback")
 def _more_additionals(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 118.8: optional additional costs that change what the spell does."""
     return (
@@ -1511,6 +2189,142 @@ def _more_additionals(instance: KeywordInstance) -> tuple[Ability, ...]:
             ),
             functions_in=frozenset({Zone.HAND, Zone.STACK}),
             text=instance.text or instance.name,
+        ),
+    )
+
+
+def _if_paid_enters(instance: KeywordInstance, *effects: Effect) -> Ability:
+    """"When this enters, if its [keyword] cost was paid, ..." - the linked
+    trigger of an optional additional cost (CR 607), keyed on this keyword's
+    own payment so another cost's payment cannot pay for it."""
+    return Ability.triggered(
+        TriggerCondition(
+            event_kinds=frozenset({EventKind.ENTERS_BATTLEFIELD}),
+            subject=ObjectFilter(source_only=True),
+            intervening_if=Condition(ConditionKind.WAS_KICKED, keyword=instance.key),
+            text=f"when this enters, if its {instance.key} cost was paid",
+        ),
+        *effects,
+        text=f"{instance.name} (enters)",
+    )
+
+
+def _token_copy_of_this(power: int = 0, toughness: int = 0, text: str = "") -> Effect:
+    """A token that's a copy of this permanent; a nonzero power/toughness is
+    the copy's stated exception (CR 707.9b)."""
+    return Effect(
+        EffectKind.CREATE_TOKEN,
+        players=YOU,
+        token=TokenSpec(
+            copy_of=ObjectFilter(source_only=True),
+            power=Value.of(power),
+            toughness=Value.of(toughness),
+        ),
+        text=text or "create a token that's a copy of it",
+    )
+
+
+@register("Squad")
+def _squad(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.157a: an optional additional cost payable any number of times,
+    and "When this creature enters, if its squad cost was paid, create a
+    token that's a copy of it for each time its squad cost was paid."
+    """
+    (cost,) = _more_additionals(instance)
+    return (
+        cost,
+        _if_paid_enters(
+            instance,
+            Effect(
+                EffectKind.REPEAT_PER_PAYMENT,
+                keywords=("squad",),
+                children=(_token_copy_of_this(),),
+                text="for each time its squad cost was paid",
+            ),
+        ),
+    )
+
+
+@register("Offspring")
+def _offspring(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.175a: an optional additional cost, and "When this permanent
+    enters, if its offspring cost was paid, create a token that's a copy of
+    it, except it's 1/1."
+    """
+    (cost,) = _more_additionals(instance)
+    return (
+        cost,
+        _if_paid_enters(
+            instance,
+            _token_copy_of_this(1, 1, "create a 1/1 token that's a copy of it"),
+        ),
+    )
+
+
+def _optional_cost(instance: KeywordInstance, cost: Cost) -> Ability:
+    """An optional additional cost the keyword states itself (CR 118.8b)."""
+    return Ability(
+        AbilityKind.STATIC,
+        keyword=instance.name,
+        additional_cost=AdditionalCost(
+            cost=cost, optional=True, keyword=instance.name, text=instance.text or instance.name
+        ),
+        functions_in=frozenset({Zone.HAND, Zone.STACK}),
+        text=instance.text or instance.name,
+    )
+
+
+@register("Bargain")
+def _bargain(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.166a: "As an additional cost to cast this spell, you may
+    sacrifice an artifact, enchantment, or token." Two choices, because no one
+    filter says "or token"; "if it was bargained" reads the payment
+    (702.166b)."""
+    yours = ControllerRelation.YOU
+    sacrifice = lambda spec, text: CostComponent(  # noqa: E731
+        CostKind.SACRIFICE, amount=Value.of(1), filter=spec, text=text
+    )
+    return (
+        _optional_cost(
+            instance,
+            Cost(
+                choices=(
+                    Cost((sacrifice(
+                        ObjectFilter(types_any=CardType.ARTIFACT | CardType.ENCHANTMENT, controller=yours),
+                        "sacrifice an artifact or enchantment",
+                    ),)),
+                    Cost((sacrifice(
+                        ObjectFilter(is_token=True, controller=yours), "sacrifice a token"
+                    ),)),
+                )
+            ),
+        ),
+    )
+
+
+@register("Conspire")
+def _conspire(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.78a: "As an additional cost to cast this spell, you may tap two
+    untapped creatures you control that each share a color with it" and
+    "When you cast this spell, if its conspire cost was paid, copy it" - the
+    copy trigger is the engine's, keyed on the payment."""
+    return (
+        _optional_cost(
+            instance,
+            Cost(
+                (
+                    CostComponent(
+                        CostKind.TAP_OTHER,
+                        amount=Value.of(2),
+                        filter=ObjectFilter(
+                            types_all=CardType.CREATURE,
+                            controller=ControllerRelation.YOU,
+                            shares_color_with_source=True,
+                        ),
+                        text="tap two untapped creatures you control that each share a color with it",
+                    ),
+                )
+            ),
         ),
     )
 
@@ -1539,6 +2353,33 @@ def _affinity(instance: KeywordInstance) -> tuple[Ability, ...]:
                             ),
                         ),
                     ),
+                ),
+                text=instance.text or instance.name,
+            ),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Undaunted")
+def _undaunted(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.125a: "This spell costs {1} less to cast for each opponent you
+    have."
+
+    The Affinity shape with players counted instead of permanents. Players
+    who have left the game are not counted (702.125b), which the count asks
+    as it is evaluated; each instance is its own reduction (702.125c).
+    """
+    return (
+        Ability.static(
+            Effect(
+                EffectKind.MODIFY_COST,
+                targets=ObjectFilter(source_only=True, zones=frozenset({Zone.STACK})),
+                # Negative is cheaper (see Affinity).
+                amount=Value(
+                    ValueKind.PRODUCT,
+                    constant=-1,
+                    operands=(Value(ValueKind.PLAYER_COUNT, players=EACH_OPPONENT),),
                 ),
                 text=instance.text or instance.name,
             ),
@@ -1725,7 +2566,7 @@ def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Outlast", "Level Up", "Boast", "Exhaust", "Saddle",
+@register("Outlast", "Level Up", "Boast", "Exhaust",
           "Harmonize", "Craft", "Job select", "Specialize")
 def _counter_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Activated keywords whose effect is putting counters on this permanent."""

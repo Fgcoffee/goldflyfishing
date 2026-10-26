@@ -214,6 +214,8 @@ class Sandbox:
 
         game = Game(rng=random.Random(0), log=GameLog(enabled=True))
         game.ability_provider = self.provider
+        # Where MTG Arena's conjure looks a card up by name.
+        game.card_catalog = self.db
         for index, name in enumerate(("You", "Opponent")):
             game.players.append(Player(id=PlayerId(index), name=name))
         game.turn_order = [PlayerId(0), PlayerId(1)]
@@ -495,6 +497,16 @@ class Sandbox:
             from ..rules.kernel.events import Event, EventKind
 
             apply_self_entry_replacements(self.game, obj)
+            # CR 306.5b, 310.4b: skipping move_object also skips the loyalty
+            # and defense counters a planeswalker or battle enters with.
+            from ..rules.cr100_game_concepts.actions import add_counters
+            from ..rules.cr300_card_types.cr300_characteristics import (
+                entering_counters,
+            )
+
+            # CR 122.6: put on, so the counter replacements apply to them.
+            for kind, amount in entering_counters(self.game.characteristics(obj)):
+                add_counters(self.game, obj, kind, amount, source=obj.id)
             # Placing a permanent skips move_object, so nothing announced that
             # it entered and no enters-the-battlefield trigger fired. An
             # instrument that silently drops ETB triggers would report a card
@@ -592,7 +604,7 @@ class Sandbox:
             groups.append(
                 {
                     "description": effect.text or effect.kind.name.lower(),
-                    "optional": bool(effect.targets and effect.targets.up_to),
+                    "optional": effect.target_optional,
                     "candidates": [
                         self._candidate(target) for target in candidates
                     ],
@@ -681,10 +693,13 @@ class Sandbox:
         from ..rules.cr100_game_concepts.cr117_priority import settle
         from ..rules.cr600_spells_and_abilities.cr608_stack import resolve_top
 
+        # CR 117.5: before a player would receive priority, state-based
+        # actions are checked and waiting triggers are put on the stack - so
+        # what resolves is whatever is on top after that, not before it. A
+        # ward trigger goes above the spell that targeted its permanent.
+        settle(self.game)
         if not self.game.stack:
-            settle(self.game)
-            if not self.game.stack:
-                return self.state(message="nothing on the stack")
+            return self.state(message="nothing on the stack")
         resolve_top(self.game)
         settle(self.game)
         return self.state(message="resolved the top of the stack")

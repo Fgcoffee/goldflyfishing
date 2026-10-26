@@ -165,6 +165,9 @@ def test_exile_this_creature_exiles_the_creature_not_a_graveyard_card(box):
     game = box.game
     player = game.player(YOU)
     puppet = _place(box, "Inquisitive Puppet", "battlefield")
+    # Its enters trigger (scry 1) goes on the stack and resolves before the
+    # exile ability is activated (CR 117.5).
+    box.resolve_top()
     _place(box, "Island", "graveyard")
     index = _exiling(game, puppet)
 

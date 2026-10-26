@@ -184,64 +184,148 @@ def prohibited(
     allowed, which matters enormously when a simulated game does something
     surprising.
     """
-    from ..kernel.conditions import holds
-    from ..kernel.matching import matches, resolve_players
-
     for restriction in _active(game):
-        if restriction.act is not act:
-            continue
-
-        if restriction.subject is not None:
-            if obj is None:
-                continue
-            if not matches(
-                game,
-                obj,
-                restriction.subject,
-                source=restriction.source,
-                controller=restriction.controller,
-            ):
-                continue
-        elif restriction.source != NO_OBJECT and obj is not None:
-            if obj.id != restriction.source:
-                continue
-
-        if restriction.players is not None:
-            target_player = player
-            if target_player == NO_PLAYER and obj is not None:
-                target_player = obj.controller
-            if target_player == NO_PLAYER:
-                continue
-            allowed = resolve_players(
-                game, restriction.players, controller=restriction.controller
-            )
-            if target_player not in allowed:
-                continue
-
-        if restriction.counterpart is not None:
-            if counterpart is None:
-                continue
-            if not matches(
-                game,
-                counterpart,
-                restriction.counterpart,
-                source=restriction.source,
-                controller=restriction.controller,
-            ):
-                continue
-
-        if not restriction.condition.is_always:
-            if not holds(
-                game,
-                restriction.condition,
-                source=restriction.source,
-                controller=restriction.controller,
-            ):
-                continue
-
-        return restriction
-
+        if restriction_applies(
+            game, restriction, act, obj=obj, player=player, counterpart=counterpart
+        ):
+            return restriction
     return None
+
+
+def restriction_applies(
+    game: Game,
+    restriction: Restriction,
+    act: Act,
+    *,
+    obj: GameObject | None = None,
+    player: PlayerId = NO_PLAYER,
+    counterpart: GameObject | None = None,
+) -> bool:
+    """Whether one restriction covers ``act`` by ``obj`` / ``player``.
+
+    Split out of ``prohibited`` so that a restriction that is lifted by paying
+    a cost (CR 508.1h, 509.1d: "can't attack you unless their controller pays
+    {2}") is matched by exactly the same rules as one that is absolute.
+    """
+    from ..kernel.conditions import holds
+    from ..kernel.matching import matches
+
+    if restriction.act is not act:
+        return False
+
+    player_scoped = act in PLAYER_ACTS and restriction.players is not None
+    if restriction.subject is not None:
+        if obj is None:
+            return False
+        if not matches(
+            game,
+            obj,
+            _as_proposed(act, restriction.subject),
+            source=restriction.source,
+            controller=restriction.controller,
+        ):
+            return False
+    elif restriction.source != NO_OBJECT and obj is not None and not player_scoped:
+        # No subject means the restriction's own source ("this spell
+        # can't be countered") - unless it names players instead.
+        # "Players can't cast spells" (split second, epic, Silence)
+        # forbids an act to those players whatever card they would cast,
+        # and reading it as being about its source made it stop nothing.
+        if obj.id != restriction.source:
+            return False
+
+    if restriction.players is not None:
+        target_player = player
+        if target_player == NO_PLAYER and obj is not None:
+            target_player = obj.controller
+        if target_player == NO_PLAYER:
+            return False
+        allowed = _restricted_players(game, restriction)
+        if target_player not in allowed:
+            return False
+
+    if restriction.counterpart is not None:
+        if counterpart is None:
+            return False
+        if not matches(
+            game,
+            counterpart,
+            restriction.counterpart,
+            source=restriction.source,
+            controller=restriction.controller,
+        ):
+            return False
+
+    if not restriction.condition.is_always:
+        if not holds(
+            game,
+            restriction.condition,
+            source=restriction.source,
+            controller=restriction.controller,
+        ):
+            return False
+    return True
+
+
+#: Acts a *player* performs. A restriction on one of these that names players
+#: ("your opponents can't cast spells") is about those players, not about
+#: the restriction's source.
+PLAYER_ACTS = frozenset(
+    {
+        Act.CAST_SPELL,
+        Act.PLAY_LAND,
+        Act.ACTIVATE_ABILITY,
+        Act.ACTIVATE_MANA_ABILITY,
+        Act.ACTIVATE_LOYALTY_ABILITY,
+        Act.DRAW_CARD,
+        Act.GAIN_LIFE,
+        Act.LOSE_LIFE,
+        Act.SEARCH_LIBRARY,
+        Act.WIN_GAME,
+        Act.LOSE_GAME,
+        Act.SHUFFLE,
+        Act.LIFE_TOTAL_CHANGE,
+    }
+)
+
+
+def _as_proposed(act: Act, subject: ObjectFilter) -> ObjectFilter:
+    """The subject of a casting or land-play prohibition, asked of the card
+    before it moves.
+
+    "Can't cast creature spells" describes the card as the spell it would
+    become (CR 601.2a moves it to the stack only once the cast is proposed),
+    and "can't play lands" the card as the land it would become (CR 305.1).
+    The question is asked of the card where it still is - the hand, a
+    graveyard - so the stack or battlefield a "spells" or "lands" filter
+    defaults to is where the card is going, not a constraint on it. A zone the
+    card text names ("spells from graveyards") is kept: that one is where the
+    card is cast from.
+    """
+    from dataclasses import replace
+
+    from ..kernel.enums import Zone
+
+    destination = {Act.CAST_SPELL: Zone.STACK, Act.PLAY_LAND: Zone.BATTLEFIELD}.get(act)
+    if destination is None or destination not in subject.zones:
+        return subject
+    return replace(subject, zones=subject.zones - {destination})
+
+
+def _restricted_players(game: Game, restriction: Restriction) -> list[PlayerId]:
+    """Who a standing restriction's player filter names.
+
+    "Defending player" from a static ability (Wardscale Dragon: "as long as
+    this creature is attacking, defending player can't cast spells") is
+    answered from the restriction's source and the combat (CR 506.2), which
+    ``resolve_players`` - knowing only the game - cannot do.
+    """
+    from ..kernel.matching import _defending_players, resolve_players
+    from ..kernel.query import PlayerScope
+
+    if restriction.players.scope is PlayerScope.DEFENDING_PLAYER:
+        return list(_defending_players(game, restriction.source))
+    return resolve_players(game, restriction.players, controller=restriction.controller)
 
 
 def allowed(game: Game, act: Act, **kwargs) -> bool:
@@ -504,6 +588,11 @@ class Requirement:
     controller: PlayerId = NO_PLAYER
     condition: Condition = ALWAYS
     text: str = ""
+    #: For a standing requirement from a resolved effect: how long it lasts
+    #: (``Duration`` as an int) and the turn it began, which CR 611.2b's
+    #: expiry reads the same way it reads a standing restriction's.
+    duration: int = 0
+    created_turn: int = 0
 
     def __str__(self) -> str:
         return self.text or f"must {self.act.name.lower().replace('_', ' ')}"
@@ -590,7 +679,7 @@ def requirements(game: Game) -> list[Requirement]:
     """
     from dataclasses import replace
 
-    out: list[Requirement] = list(getattr(game, "standing_requirements", ()))
+    out: list[Requirement] = list(game.standing_requirements)
     for object_id in list(game.battlefield):
         obj = game.objects.get(object_id)
         if obj is None or obj.phased_out:

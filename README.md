@@ -64,6 +64,24 @@ Drop `--offline` to pull the current dumps from Scryfall instead, which is how
 you refresh the pool when new sets are released. Either way it writes about
 100 MB to `cache/cards.sqlite`, which is derived data and stays out of git.
 
+### The stored parse
+
+Every card's parsed abilities are kept in `cache/parse_store.sqlite`, so a game
+starts without parsing its cards (400 cards: about 0.15 s instead of 3 s). It is
+a cache of the parser: it is used only while the parser and rules code and the
+card data are exactly what it was built from, and otherwise every card is
+parsed live.
+
+```bash
+python -m mtgfish.tools.parse_store install-hooks   # once per clone
+python -m mtgfish.tools.parse_store status          # fresh, stale (and why) or missing
+python -m mtgfish.tools.parse_store build           # about 1.5 minutes on four cores
+```
+
+After `install-hooks`, git rebuilds it in the background after every commit,
+merge, checkout and rebase that leaves it stale, and `fetch_scryfall` does the
+same for new card data. `MTGFISH_PARSE_STORE=off` turns it off.
+
 ### Run it
 
 ```bash

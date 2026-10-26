@@ -13,14 +13,14 @@ permanent with hexproof it was never allowed to target.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Callable
 
 from ..cr100_game_concepts import actions
 from ..kernel.enums import Duration, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_PLAYER, ObjectId, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from ..kernel.query import PlayerScope, ValueKind
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 
@@ -67,10 +67,36 @@ class Resolution:
     #: kind - life lost, life gained, damage dealt - so "you gain life equal
     #: to the life lost this way" can read it. Totals, not counts.
     this_way: dict = field(default_factory=dict)
+    #: CR 603.9, 608.2d: whether the last "you may" was carried out - taken,
+    #: and its cost, if it had one, paid. ``None`` before any. "If you do" and
+    #: "when you do" read it; ``remembered`` cannot say, since it may already
+    #: hold the object the ability triggered on.
+    did_it: bool | None = None
+    #: The cards a "look at / reveal the top N" instruction set aside, in
+    #: library order, for "from among them" and "the rest" to choose among
+    #: (``ObjectFilter.from_pile``). A card leaves the pile when something is
+    #: done with it; what is left when the last instruction runs is "the rest".
+    pile: list[ObjectId] = field(default_factory=list)
+    #: The event a triggered ability triggered on, for a resolution with no
+    #: stack object to carry it - a triggered mana ability (CR 605.4a).
+    trigger_event: object | None = None
+    #: The players an earlier instruction of this resolution targeted, for
+    #: "that player" after "target player ..." (``PlayerScope.CHOSEN_PLAYER``).
+    chosen_players: list[PlayerId] = field(default_factory=list)
+    #: CR 701.19c: set while a destroy that says its permanents can't be
+    #: regenerated is carried out, so their shields are not applied.
+    unregenerable: bool = False
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
         if not effect.is_targeted:
+            return ()
+        if effect.same_target:
+            # One word "target" governing this verb and the one before it
+            # (CR 115.3): the choice already handed out, not a new one.
+            index = self.target_index - 1
+            if 0 <= index < len(self.targets):
+                return tuple(self.targets[index])
             return ()
         if self.target_index < len(self.targets):
             chosen = self.targets[self.target_index]
@@ -81,8 +107,44 @@ class Resolution:
 
 def execute(resolution: Resolution, effects: tuple[Effect, ...]) -> None:
     """Run a list of effects in order (CR 608.2a)."""
-    for effect in effects:
+    for index, effect in enumerate(effects):
+        # CR 608.2c: instructions are followed one after another, so what one
+        # does does not happen at the same time as what the next does - a
+        # "whenever one or more" ability sees them as separate (CR 603.2c).
+        resolution.game.event_batch += 1
+        # CR 701.19c: "Destroy all creatures. They can't be regenerated." The
+        # second sentence is read as a prohibition on what the destroy acted
+        # on, which exists only once the destroy has run - too late for the
+        # shields it was meant to stop. The destroy reads it ahead instead.
+        if effect.kind is EffectKind.DESTROY and _forbids_regenerating_them(
+            effects[index + 1 : index + 2]
+        ):
+            resolution.unregenerable = True
+            try:
+                execute_one(resolution, effect)
+            finally:
+                resolution.unregenerable = False
+            continue
         execute_one(resolution, effect)
+
+
+def _forbids_regenerating_them(following: tuple[Effect, ...]) -> bool:
+    """Whether the instruction after a destroy says that what it destroyed
+    can't be regenerated (CR 701.19c)."""
+    from ..cr500_turn_structure.restrictions import Act
+
+    if not following or following[0].kind is not EffectKind.RESTRICTION:
+        return False
+    effect = following[0]
+    for restriction in effect.restrictions:
+        subject = restriction.subject or effect.targets
+        if (
+            restriction.act is Act.BE_REGENERATED
+            and subject is not None
+            and subject.remembered
+        ):
+            return True
+    return False
 
 
 #: Opcodes whose subject a following sentence can refer to as "it". A draw or
@@ -95,6 +157,8 @@ _REMEMBERING = frozenset(
         EffectKind.SACRIFICE,
         EffectKind.TAP,
         EffectKind.UNTAP,
+        # Provoke's "if you do, untap that creature" (CR 702.39a).
+        EffectKind.BLOCKS_SOURCE_IF_ABLE,
         EffectKind.RETURN_TO_HAND,
         EffectKind.PUT_ONTO_BATTLEFIELD,
         EffectKind.CREATE_TOKEN,
@@ -103,8 +167,35 @@ _REMEMBERING = frozenset(
         EffectKind.COPY_PERMANENT,
         EffectKind.SEARCH_LIBRARY,
         EffectKind.DAMAGE,
+        # "Reveal a creature card from among them and put it into your hand.
+        # If it's legendary, ..." - "it" is the card that moved, not the
+        # whole pile the look before it remembered.
+        EffectKind.MOVE_ZONE,
+        EffectKind.PUT_ON_LIBRARY,
+        # "Counter target spell. Its controller mills three cards", "create
+        # X Treasure tokens, where X is that spell's mana value" - the spell,
+        # as it was on the stack (CR 608.2h), is who "its" asks about.
+        EffectKind.COUNTER_SPELL,
+        # "Regenerate target creature. You gain life equal to that creature's
+        # toughness"; "target creature gains hexproof ... you gain life equal
+        # to that creature's toughness" - the object named, whatever was done
+        # to it.
+        EffectKind.REGENERATE,
+        EffectKind.DOUBLE_COUNTERS,
+        EffectKind.CHANGE_TARGETS,
+        EffectKind.MODIFY_PT,
+        EffectKind.GRANT_ABILITY,
+        # "Target creature you control deals damage equal to its power ...":
+        # the target is chosen to be named next, and nothing else.
+        EffectKind.DESIGNATE,
     }
 )
+
+
+#: Remembering opcodes that do nothing to the object but describe it, so
+#: one about the source itself ("this creature gets +X/+X, where X is that
+#: spell's mana value") leaves "that spell" as it was.
+_NAMING_ONLY = frozenset({EffectKind.MODIFY_PT, EffectKind.GRANT_ABILITY})
 
 
 #: Opcodes whose amounts "this way" can refer back to, and the events that
@@ -174,6 +265,7 @@ def _execute_one(resolution: Resolution, effect: Effect) -> None:
         effect.kind in _REMEMBERING
         and effect.targets is not None
         and not _is_per_player_sacrifice(effect)
+        and not (effect.kind in _NAMING_ONLY and effect.targets.source_only)
     ):
         # Captured *before* the effect runs: an object that dies to it is
         # exactly the one the next sentence wants to talk about, and after
@@ -186,9 +278,18 @@ def _execute_one(resolution: Resolution, effect: Effect) -> None:
         cursor = resolution.target_index
         acted_on = [obj.id for obj in _objects(resolution, effect)]
         resolution.target_index = cursor
+        # An object chosen as this instruction's target that is no longer
+        # legal is still what a following "it" names, and CR 608.2b says
+        # information about it can't be determined: "Tap target creature. It
+        # deals damage equal to its power" deals none. Keeping whatever was
+        # remembered before would hand "it" to a different object.
+        chosen_objects = effect.is_targeted and any(
+            object_id >= 0 for object_id in resolution.targets_for(effect)
+        )
+        resolution.target_index = cursor
 
         executor(resolution, effect)
-        if acted_on:
+        if acted_on or chosen_objects:
             resolution.remembered = acted_on
         return
 
@@ -212,6 +313,9 @@ def _objects(
     """
     game = resolution.game
 
+    if effect.targets is not None and effect.targets.from_pile:
+        return _from_pile(resolution, effect)
+
     # CR 608.2: a pronoun refers to whatever the resolution last acted on.
     # Answering it with the source instead would quietly redirect half the
     # removal spells in the pool at the card that cast them.
@@ -229,6 +333,43 @@ def _objects(
             if obj is not None:
                 found.append(obj)
         return found
+
+    if effect.targets is not None and effect.targets.trigger_source:
+        # "Counter that spell or ability" (CR 702.21a): the object whose
+        # action the ability triggered on, and only while it is still where
+        # the filter says - a spell that has already left the stack is a new
+        # object (CR 400.7) and is not countered.
+        event = _trigger_event(resolution)
+        obj = game.objects.get(event.source) if event is not None else None
+        if obj is None or not obj.is_live:
+            return []
+        zones = effect.targets.zones
+        return [obj] if not zones or obj.zone in zones else []
+
+    if effect.targets_its_player:
+        # "Exile target player's graveyard", "look at target opponent's
+        # hand": the player was the target (CR 115.1), and the objects are
+        # theirs - found now, as the instruction is carried out.
+        from ..kernel.matching import find
+
+        if chosen is None:
+            players = set(_players(resolution, effect))
+        else:
+            # The caller already read the targets; the cursor is not moved
+            # twice for one instruction.
+            players = {
+                pid
+                for pid in _targeted_players(resolution, effect, chosen)
+                if not game.player(pid).has_lost
+            }
+            resolution.chosen_players = list(players)
+        found = find(
+            game, effect.targets, source=resolution.source, controller=resolution.controller
+        )
+        return [
+            obj for obj in found
+            if (obj.controller if obj.zone is Zone.BATTLEFIELD else obj.owner) in players
+        ]
 
     if effect.is_targeted:
         from ..kernel.matching import matches
@@ -268,6 +409,36 @@ def _objects(
     return _narrowed_to_count(resolution, effect, matching)
 
 
+def _from_pile(resolution: Resolution, effect: Effect) -> list[GameObject]:
+    """The cards of the pile a filter picks out ("a creature card from among
+    them", "two of them", "the rest").
+
+    Only cards still where they were looked at count: one already put into a
+    hand is a new object (CR 400.7) and no longer "among them", and one put
+    back on top was taken out of the pile when it was. The filter's zones are
+    ignored - the pile is where the cards are - and its count is chosen by the
+    effect's controller like any other untargeted count (CR 608.2d).
+    """
+    from ..kernel.matching import matches
+
+    game = resolution.game
+    loose = replace(effect.targets, from_pile=False, count=None, up_to=False)
+    candidates: list[GameObject] = []
+    for object_id in resolution.pile:
+        obj = game.objects.get(object_id)
+        if obj is None or not obj.is_live:
+            continue
+        if matches(
+            game,
+            obj,
+            replace(loose, zones=frozenset({obj.zone})),
+            source=resolution.source,
+            controller=resolution.controller,
+        ):
+            candidates.append(obj)
+    return _narrowed_to_count(resolution, effect, candidates)
+
+
 def _narrowed_to_count(
     resolution: Resolution, effect: Effect, matching: list[GameObject]
 ) -> list[GameObject]:
@@ -284,6 +455,8 @@ def _narrowed_to_count(
     keeps a replay reproducible.
     """
     spec = effect.targets
+    if spec is not None and spec.count is None and spec.up_to and matching:
+        return _any_number_of(resolution.game, resolution.controller, effect, matching)
     if spec is None or spec.count is None or len(matching) <= 1:
         return matching
     wanted = _value_of(resolution, spec.count)
@@ -304,6 +477,26 @@ def _narrowed_to_count(
         if len(kept) == wanted:
             return kept
     return matching[:wanted]
+
+
+def _any_number_of(
+    game, player_id: PlayerId, effect: Effect, matching: list[GameObject]
+) -> list[GameObject]:
+    """"Sacrifice any number of lands", "exile any number of creature cards
+    from your graveyard": the player picks how many, from none to all of them
+    (CR 107.1c), as the effect resolves (CR 608.2d).
+
+    The agent is asked with the whole matching set as the ceiling, and any
+    subset it returns - including none - is the choice. With no agent to ask,
+    all of them are taken, as the largest number "up to N" takes.
+    """
+    chooser = getattr(game.agent_for(player_id), "choose_objects", None)
+    if chooser is None:
+        return matching
+    picked = chooser(game, player_id, effect, list(matching), len(matching))
+    if picked is None:
+        return matching
+    return [obj for obj in matching if obj in picked]
 
 
 def _value_of(resolution: Resolution, value) -> int:
@@ -335,11 +528,122 @@ def _targeted_players(resolution: Resolution, effect: Effect, chosen) -> list[Pl
     return [target_player(target) for target in chosen if is_player_target(target)]
 
 
+def _trigger_event(resolution: Resolution):
+    """The event a resolving triggered ability triggered on, if it has one."""
+    stack_object = resolution.stack_object
+    if stack_object is None:
+        return resolution.trigger_event
+    return getattr(stack_object, "trigger_event", None)
+
+
+def _last_known(resolution: Resolution, object_id: ObjectId, *, owner: bool):
+    """The controller or owner of an object as it last existed (CR 608.2h).
+
+    The object a zone change left behind keeps its old controller - that is
+    what ``superseded_by`` preserves - so it is read as it is, not followed
+    to the card it became, whose controller is its owner (CR 400.7).
+    """
+    obj = resolution.game.objects.get(object_id)
+    if obj is None:
+        return NO_PLAYER
+    return obj.owner if owner else obj.controller
+
+
+def _defending_players(resolution: Resolution) -> list[PlayerId]:
+    """"Defending player" (CR 506.2, 802.2a).
+
+    An ability of an attacking creature - or one that refers to an attacking
+    creature, such as the creature whose attack triggered it - means the
+    player that creature is attacking, or the controller or protector of the
+    permanent it attacks. Otherwise, with a single defending player, that
+    player. With several and nothing to say which, nobody: guessing one would
+    be a different card.
+    """
+    game = resolution.game
+    combat = getattr(game, "combat", None)
+    attacking = getattr(combat, "attacking", None) or {}
+    if not attacking:
+        return []
+    event = _trigger_event(resolution)
+    for object_id in (resolution.source, getattr(event, "object_id", NO_OBJECT)):
+        if object_id in attacking:
+            return [attacking[object_id]]
+    defenders = list(dict.fromkeys(attacking.values()))
+    return defenders if len(defenders) == 1 else []
+
+
+def _referred_players(resolution: Resolution, effect: Effect) -> list[PlayerId] | None:
+    """Players named by reference to something else the ability mentioned.
+
+    ``None`` when the effect's scope is not one of these, so the caller goes
+    on to the ordinary scopes. Each is answered from what this resolution
+    knows - the triggering event, the objects acted on so far, the targets
+    chosen for an earlier instruction - which is why ``resolve_players``,
+    which knows only the game, cannot answer them.
+    """
+    spec = effect.players
+    if spec is None:
+        return None
+    scope = spec.scope
+    if scope is PlayerScope.REFERRED_PLAYER:
+        # Never bound by the parser: nobody, rather than a guess.
+        return []
+    if scope is PlayerScope.DEFENDING_PLAYER:
+        return _defending_players(resolution)
+    if scope is PlayerScope.CHOSEN_PLAYER:
+        return [
+            pid for pid in resolution.chosen_players
+            if not resolution.game.player(pid).has_lost
+        ]
+    event = _trigger_event(resolution)
+    if scope is PlayerScope.TRIGGER_PLAYER:
+        if event is None or event.player == NO_PLAYER:
+            return []
+        return [event.player]
+    if scope in (PlayerScope.TRIGGER_OBJECT_CONTROLLER, PlayerScope.TRIGGER_OBJECT_OWNER):
+        if event is None or event.object_id == NO_OBJECT:
+            return []
+        found = _last_known(
+            resolution,
+            event.object_id,
+            owner=scope is PlayerScope.TRIGGER_OBJECT_OWNER,
+        )
+        return [] if found == NO_PLAYER else [found]
+    if scope in (PlayerScope.REMEMBERED_CONTROLLER, PlayerScope.REMEMBERED_OWNER):
+        owner = scope is PlayerScope.REMEMBERED_OWNER
+        found = [_last_known(resolution, oid, owner=owner) for oid in resolution.remembered]
+        return [pid for pid in dict.fromkeys(found) if pid != NO_PLAYER]
+    if scope is PlayerScope.AFFECTED_CONTROLLER:
+        # "Counter target spell unless its controller pays {3}": the payer is
+        # asked before the guarded instruction runs, so its object is peeked
+        # at without spending the target cursor it will read.
+        # "Target player loses 3 life unless they ...": a player target of
+        # the guarded instruction is the player it acts on.
+        if not effect.children:
+            return []
+        guarded = effect.children[0]
+        cursor = resolution.target_index
+        players: list[PlayerId] = []
+        if guarded.is_targeted:
+            chosen = resolution.targets_for(guarded)
+            objects = _objects(resolution, guarded, chosen=chosen)
+            players = _targeted_players(resolution, guarded, chosen)
+        else:
+            objects = _objects(resolution, guarded)
+        resolution.target_index = cursor
+        found = players + [obj.controller for obj in objects]
+        return [
+            pid for pid in dict.fromkeys(found)
+            if not resolution.game.player(pid).has_lost
+        ]
+    return None
+
+
 def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
     from ..kernel.matching import resolve_players
     from ..kernel.query import YOU
 
-    if effect.is_targeted and effect.targets is None:
+    if effect.targets_a_player:
         # "Target player draws two cards", "target opponent loses that much
         # life": the player was chosen as the spell or ability went on the
         # stack (CR 601.2c, 603.3d), and that choice is who it happens to.
@@ -349,15 +653,34 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
         # players cannot tell those apart, which is how it went unseen.
         game = resolution.game
         chosen = resolution.targets_for(effect)
-        return [
+        picked = [
             player_id
             for player_id in _targeted_players(resolution, effect, chosen)
             # CR 608.2b: a player who has left the game is no longer legal.
             if not game.player(player_id).has_lost
         ]
+        # "Target player mills three cards. That player ..." - the later
+        # sentence means the player chosen here (CR 608.2c).
+        resolution.chosen_players = list(picked)
+        return picked
+
+    referred = _referred_players(resolution, effect)
+    if referred is not None:
+        return referred
 
     if effect.players is not None and effect.players.scope is PlayerScope.THAT_PLAYER:
         return [] if resolution.that_player == NO_PLAYER else [resolution.that_player]
+    if (
+        effect.players is not None
+        and effect.players.scope is PlayerScope.TRIGGER_SOURCE_CONTROLLER
+    ):
+        # CR 702.21a: ward's "that player" controls the spell or ability that
+        # targeted - read off the event the ability triggered on, which
+        # captured the controller as it happened (CR 603.3d).
+        event = _trigger_event(resolution)
+        if event is None or event.source_controller == NO_PLAYER:
+            return []
+        return [event.source_controller]
     return resolve_players(
         resolution.game, effect.players or YOU, controller=resolution.controller
     )
@@ -385,14 +708,35 @@ def _condition_holds(resolution: Resolution, effect: Effect) -> bool:
         return True
     from ..kernel.conditions import holds
 
+    remembered = tuple(resolution.remembered)
+    if _asks_about_affected(effect.condition) and effect.children:
+        # "Counter target instant spell if it's blue": the referent is what
+        # the guarded effect would act on. Peeked without spending the
+        # target cursor, exactly as ``execute_one`` does.
+        cursor = resolution.target_index
+        remembered = tuple(
+            obj.id for obj in _objects(resolution, effect.children[0])
+        )
+        resolution.target_index = cursor
+    stack_object = resolution.stack_object
     return holds(
         resolution.game,
         effect.condition,
         source=resolution.source,
         controller=resolution.controller,
         # What "it" means in "if it's blue" - only the resolution knows.
-        remembered=tuple(resolution.remembered),
+        remembered=remembered,
+        # And in a triggered ability, what the trigger event was about.
+        event=getattr(stack_object, "trigger_event", None),
     )
+
+
+def _asks_about_affected(condition) -> bool:
+    from ..kernel.query import ConditionKind
+
+    if condition.kind is ConditionKind.AFFECTED_MATCHES:
+        return True
+    return any(_asks_about_affected(c) for c in condition.operands)
 
 
 # ---------------------------------------------------------------------------
@@ -422,9 +766,50 @@ def _do_optional(resolution: Resolution, effect: Effect) -> None:
     Routed through the agent so a bot can decline; with no agent the default is
     to take the option, which is right far more often than not.
     """
+    if effect.players is not None and effect.players.scope not in _CONTROLLER_CHOOSES:
+        _another_player_may(resolution, effect)
+        return
     agent = resolution.game.agent_for(resolution.controller)
     if agent is None or agent.choose_optional(resolution.game, resolution.controller, effect):
+        resolution.did_it = True
         execute(resolution, effect.children)
+    else:
+        resolution.did_it = False
+
+
+#: "May" scopes still decided by the ability's controller: "you may", and the
+#: plural forms, whose per-player handling is not built yet.
+_CONTROLLER_CHOOSES = frozenset(
+    {
+        PlayerScope.YOU,
+        PlayerScope.EACH_PLAYER,
+        PlayerScope.EACH_OPPONENT,
+        PlayerScope.OPPONENT,
+    }
+)
+
+
+def _another_player_may(resolution: Resolution, effect: Effect) -> None:
+    """"That player may pay {2}", "its controller may search their library".
+
+    CR 608.2d: the player the instruction names makes the choice, and the
+    instruction is theirs to carry out - the sentence has no other subject,
+    so its "search", "pay" and "put" are done by that player (the parser
+    refuses such a sentence if it also says "you"). Carried out by making
+    them the resolution's "you" for the length of it. Nobody named - a
+    referent that no longer exists - means nothing happens.
+    """
+    game = resolution.game
+    for player_id in _players(resolution, effect):
+        agent = game.agent_for(player_id)
+        if agent is not None and not agent.choose_optional(game, player_id, effect):
+            continue
+        saved = resolution.controller
+        resolution.controller = player_id
+        try:
+            execute(resolution, effect.children)
+        finally:
+            resolution.controller = saved
 
 
 def _do_unless_pays(resolution: Resolution, effect: Effect) -> None:
@@ -450,7 +835,9 @@ def _do_unless_pays(resolution: Resolution, effect: Effect) -> None:
 
     for player_id in payers:
         cost = effect.pay_cost
-        if cost is None or not can_pay_cost(game, player_id, cost):
+        if cost is None or not can_pay_cost(
+            game, player_id, cost, source=resolution.source
+        ):
             execute(resolution, effect.children)
             continue
         agent = game.agent_for(player_id)
@@ -460,7 +847,7 @@ def _do_unless_pays(resolution: Resolution, effect: Effect) -> None:
         # ``can_pay_cost`` is an upper bound, so a willing player can still
         # fail to pay. A payment that did not happen must not waive the
         # effect, or every "unless that player pays" is free to dodge.
-        if not (willing and pay_cost(game, player_id, cost)):
+        if not (willing and pay_cost(game, player_id, cost, source=resolution.source)):
             execute(resolution, effect.children)
 
 
@@ -481,13 +868,31 @@ def _do_draw(resolution: Resolution, effect: Effect) -> None:
 
 def _do_mill(resolution: Resolution, effect: Effect) -> None:
     count = _amount(resolution, effect)
+    game = resolution.game
+    milled: list[ObjectId] = []
     for player_id in _players(resolution, effect):
-        actions.mill(resolution.game, player_id, count, source=resolution.source)
+        top = list(game.player(player_id).library[: max(0, count)])
+        actions.mill(game, player_id, count, source=resolution.source)
+        # "Mill three cards. You may put a land card from among them into
+        # your hand" - the milled cards, as the objects they became in the
+        # graveyard (CR 400.7), are the pile the next sentence chooses from.
+        for object_id in top:
+            obj = game.objects.get(object_id)
+            while obj is not None and obj.superseded_by:
+                obj = game.objects.get(obj.superseded_by)
+            if obj is not None and obj.zone is Zone.GRAVEYARD:
+                milled.append(obj.id)
+    resolution.pile = milled
 
 
 def _do_destroy(resolution: Resolution, effect: Effect) -> None:
     for obj in _objects(resolution, effect):
-        actions.destroy(resolution.game, obj, source=resolution.source)
+        actions.destroy(
+            resolution.game,
+            obj,
+            source=resolution.source,
+            regenerate=not resolution.unregenerable,
+        )
 
 
 def _do_exile(resolution: Resolution, effect: Effect) -> None:
@@ -506,6 +911,8 @@ def _do_exile(resolution: Resolution, effect: Effect) -> None:
         # never exiled.
         return
 
+    from ..cr700_additional_rules.cr702_paid_costs import WARPED
+
     returning: list[ObjectId] = []
     # CR 406.3: "exile it face down".
     face_down = "face down" in effect.keywords
@@ -519,6 +926,12 @@ def _do_exile(resolution: Resolution, effect: Effect) -> None:
         )
         if until_source_leaves and exiled is not None:
             returning.append(exiled.id)
+        if exiled is not None and WARPED in effect.keywords:
+            # CR 702.185a: its owner may cast it once this turn has ended,
+            # for as long as it remains exiled - which CR 400.7 bounds.
+            exiled.playable_from_here_by = exiled.owner
+            exiled.playable_face = exiled.face_index
+            exiled.playable_from_turn = game.turn + 1
     if returning:
         _return_when_the_source_leaves(resolution, tuple(returning))
 
@@ -579,7 +992,9 @@ def _is_per_player_sacrifice(effect: Effect) -> bool:
     return (
         effect.kind is EffectKind.SACRIFICE
         and effect.players is not None
-        and not effect.is_targeted
+        # "Target player sacrifices a creature" (CR 115.1): the player is
+        # the target, and chooses what to sacrifice like any other.
+        and (not effect.is_targeted or effect.targets_its_player)
         and spec is not None
         and not spec.source_only
         and not spec.specific
@@ -619,6 +1034,8 @@ def _sacrifice_choice(
     mana value and then id, the default sacrifice costs use too.
     """
     spec = effect.targets
+    if spec.count is None and spec.up_to and theirs:
+        return _any_number_of(resolution.game, player_id, effect, theirs)
     if spec.count is None:
         return theirs
     wanted = _value_of(resolution, spec.count)
@@ -643,8 +1060,22 @@ def _do_return_to_hand(resolution: Resolution, effect: Effect) -> None:
 
 def _do_move_zone(resolution: Resolution, effect: Effect) -> None:
     destination = effect.zone or Zone.GRAVEYARD
-    for obj in _objects(resolution, effect):
+    objects = _objects(resolution, effect)
+    # "Reveal it and put it into your hand" (CR 701.20): the reveal is part
+    # of the instruction, and it is the card being moved that is shown.
+    _reveal_if_said(resolution, effect, objects)
+    for obj in objects:
         resolution.game.move_object(obj, destination, to_player=obj.owner)
+
+
+def _reveal_if_said(
+    resolution: Resolution, effect: Effect, objects: list[GameObject]
+) -> None:
+    if "reveal" not in effect.keywords:
+        return
+    game = resolution.game
+    for obj in objects:
+        game.emit(Event(EventKind.REVEALED, object_id=obj.id, player=obj.owner))
 
 
 def _do_discard(resolution: Resolution, effect: Effect) -> None:
@@ -694,19 +1125,65 @@ def _do_create_token(resolution: Resolution, effect: Effect) -> None:
     from ..cr100_game_concepts.cr111_tokens import create_tokens
 
     count = _count(resolution, effect)
-    for player_id in _players(resolution, effect):
+    spec = _token_size_now(resolution, effect.token)
+    # CR 707.2: a token copy is built from the copiable values of what it
+    # copies, one set for each object copied.
+    cards = [None]
+    if spec.copy_of is not None:
+        from ..cr700_additional_rules.cr702_cost_keyword_rules import (
+            copy_originals,
+            copy_token_card,
+        )
+
+        cards = [
+            copy_token_card(resolution.game, original, spec)
+            for original in copy_originals(resolution, effect)
+        ]
+    made: list = []
+    for player_id, card in (
+        (player_id, card) for player_id in _players(resolution, effect) for card in cards
+    ):
         created = create_tokens(
             resolution.game,
-            effect.token,
+            spec,
             player_id,
             count,
             source=resolution.source,
+            card=card,
         )
         # CR 607.2c: "tokens created with this" are these and no others.
         for token in created:
             actions.record_link(
                 resolution.game, resolution.source, token.id, _link_of(resolution)
             )
+        made.extend(token.id for token in created)
+    # CR 608.2c: "Create two 1/1 tokens. Sacrifice them at the beginning of
+    # the next end step" - "them" is the tokens this instruction made. The
+    # generic capture in ``_execute_one`` only sees an effect's *targets*,
+    # and creating a token has none, so without this the pronoun still meant
+    # whatever an earlier instruction acted on.
+    if made:
+        resolution.remembered = made
+
+
+def _token_size_now(resolution: Resolution, spec):
+    """CR 608.2h: "create an X/X Shark, where X is that spell's mana value"
+    - the size is worked out as the effect resolves, with everything the
+    resolution knows, and does not change afterwards.
+
+    Token creation evaluates a size against the source alone, which cannot
+    answer a value about the object the resolution is talking about.
+    """
+    from dataclasses import replace as _replace
+
+    from ..kernel.query import Value
+
+    changes = {}
+    for name in ("power", "toughness"):
+        value = getattr(spec, name)
+        if not value.is_constant:
+            changes[name] = Value.of(_value_of(resolution, value))
+    return _replace(spec, **changes) if changes else spec
 
 
 def _do_create_emblem(resolution: Resolution, effect: Effect) -> None:
@@ -730,23 +1207,56 @@ def _do_restriction(resolution: Resolution, effect: Effect) -> None:
     here is what made every "this turn" prohibition permanent - one Falter
     and those creatures could never block again.
     """
+    from ..kernel.query import PlayerFilter
+
+    # "Target player can't cast spells this turn": the player chosen as the
+    # spell was cast (CR 601.2c). Read once - the target cursor moves on.
+    chosen = _players(resolution, effect) if effect.targets_a_player else None
+    for restriction in effect.restrictions:
+        players = restriction.players or effect.players
+        if chosen is not None:
+            pinned = chosen
+        else:
+            pinned = (
+                _referred_players(resolution, replace(effect, players=players))
+                if players is not None
+                else None
+            )
+        if pinned is not None:
+            # "Defending player can't cast spells this turn", "that player
+            # can't ...": who is meant is known only now, so the standing
+            # prohibition names them rather than keeping a reference nothing
+            # will be able to answer later.
+            for player_id in pinned:
+                _register_restriction(
+                    resolution,
+                    effect,
+                    replace(
+                        restriction,
+                        players=PlayerFilter(PlayerScope.SPECIFIC, specific=player_id),
+                    ),
+                )
+            continue
+        _register_restriction(resolution, effect, restriction)
+
+
+def _register_restriction(resolution: Resolution, effect: Effect, restriction) -> None:
     from ..cr500_turn_structure.restrictions import Restriction, register_standing
 
-    for restriction in effect.restrictions:
-        register_standing(
-            resolution.game,
-            Restriction(
-                act=restriction.act,
-                subject=restriction.subject or effect.targets,
-                players=restriction.players or effect.players,
-                source=resolution.source,
-                controller=resolution.controller,
-                counterpart=restriction.counterpart,
-                text=restriction.text or effect.text,
-                duration=effect.duration,
-                created_turn=resolution.game.turn,
-            ),
-        )
+    register_standing(
+        resolution.game,
+        Restriction(
+            act=restriction.act,
+            subject=restriction.subject or effect.targets,
+            players=restriction.players or effect.players,
+            source=resolution.source,
+            controller=resolution.controller,
+            counterpart=restriction.counterpart,
+            text=restriction.text or effect.text,
+            duration=effect.duration,
+            created_turn=resolution.game.turn,
+        ),
+    )
 
 
 def _do_suspend_rule(resolution: Resolution, effect: Effect) -> None:
@@ -853,6 +1363,15 @@ def _do_choose_quality(resolution: Resolution, effect: Effect) -> None:
         return
 
     kind = effect.keywords[0] if effect.keywords else "creature type"
+    wanted = resolution.mana_color
+    if kind == "color" and wanted and bin(int(wanted)).count("1") == 1:
+        # A mana ability activated by the payment planner for a colour it
+        # needs ("Choose a color. Add ... mana of that color"): the colour
+        # chosen is the one the payment was planned around (CR 605.3b - the
+        # player activating it makes the choice).
+        obj.chosen_color = int(wanted)
+        game.invalidate_characteristics()
+        return
     agent = game.agent_for(resolution.controller)
     if agent is not None and hasattr(agent, "choose_quality"):
         picked = agent.choose_quality(game, resolution.controller, kind)
@@ -978,7 +1497,10 @@ def _do_replacement(resolution: Resolution, effect: Effect) -> None:
         or spec is None
         or not spec.source_only
     ):
-        _register_continuous(resolution, effect)
+        if effect.replacement_kind:
+            _register_replacement(resolution, effect)
+        else:
+            _register_continuous(resolution, effect)
         return
 
     for obj in _objects(resolution, effect):
@@ -997,6 +1519,77 @@ def _do_replacement(resolution: Resolution, effect: Effect) -> None:
                 text=effect.text,
             ),
         )
+
+
+def _register_replacement(resolution: Resolution, effect: Effect) -> None:
+    """CR 611.2, 614: a replacement effect a resolving spell or ability makes.
+
+    "Until end of turn, if one or more tokens would be created under your
+    control, twice that many are created instead." Such an effect was handed
+    to the layer system as a continuous effect, where nothing ever consulted
+    it - the replacement layer reads only its own registry and permanents'
+    static abilities - so every one of them did nothing at all.
+
+    It lasts for its stated duration (CR 611.2b), whether or not its source
+    is still around. What it applies to is settled here when the effect names
+    particular objects - a target, or "it" - because those objects are what
+    the words mean (CR 608.2c), and a filter left live would catch others.
+    """
+    from dataclasses import replace as _replace
+
+    from .cr614_replacement import register, replacement_from_effect
+
+    game = resolution.game
+    for targets, players in _bound_recipients(resolution, effect):
+        built = replacement_from_effect(
+            _replace(effect, targets=targets, players=players, is_targeted=False),
+            source=resolution.source,
+            controller=resolution.controller,
+            duration=int(effect.duration),
+            created_turn=game.turn,
+        )
+        if built is not None:
+            register(game, built)
+
+
+def _bound_recipients(resolution: Resolution, effect: Effect, *, each: bool = False):
+    """What a resolving replacement or prevention effect is about, as
+    ``(object filter, player filter)`` pairs - one pair per shield.
+
+    Targets and pronouns become the specific objects and players they name.
+    ``each`` asks for one pair per object or player a mass filter matches
+    right now: "prevent the next 1 damage that would be dealt to each creature
+    you control" is a shield on each creature, not one shield shared among
+    them that the first point of damage uses up. Otherwise a mass filter is
+    kept live, as the rules keep it - "prevent all damage that would be dealt
+    to creatures this turn" protects a creature that arrives later too.
+    """
+    from ..kernel.query import ObjectFilter, PlayerFilter, PlayerScope
+
+    def one(obj_id):
+        return ObjectFilter(specific=(obj_id,), zones=frozenset()), None
+
+    def player(pid):
+        return None, PlayerFilter(PlayerScope.SPECIFIC, specific=pid)
+
+    spec = effect.targets
+    if effect.is_targeted:
+        if effect.targets_a_player:
+            return [player(pid) for pid in _players(resolution, effect)]
+        chosen = resolution.targets_for(effect)
+        objects = _objects(resolution, effect, chosen=chosen)
+        players = _targeted_players(resolution, effect, chosen)
+        return [one(obj.id) for obj in objects] + [player(pid) for pid in players]
+    if spec is not None and spec.remembered:
+        return [one(obj.id) for obj in _objects(resolution, effect)]
+    if each and spec is not None and not spec.source_only:
+        pairs = [one(obj.id) for obj in _objects(resolution, effect)]
+        if effect.players is not None:
+            pairs += [player(pid) for pid in _players(resolution, effect)]
+        return pairs
+    if each and spec is None and effect.players is not None:
+        return [player(pid) for pid in _players(resolution, effect)]
+    return [(spec, effect.players)]
 
 
 def _do_control_player(resolution: Resolution, effect: Effect) -> None:
@@ -1073,6 +1666,8 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
     resolution already knows - if nothing was remembered, nothing happened,
     and the reflexive ability never triggers.
     """
+    if resolution.did_it is False:
+        return
     if not resolution.remembered and effect.condition.is_always is False:
         return
     game = resolution.game
@@ -1089,7 +1684,15 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
         PendingTrigger(
             resolution.source,
             ability,
-            Event(EventKind.ABILITY_TRIGGERED, object_id=resolution.source),
+            # "You may sacrifice another creature. When you do, this deals
+            # damage equal to that creature's power": what the reflexive
+            # ability refers to is what this resolution just acted on
+            # (CR 603.12), carried to it on the event it triggers on.
+            Event(
+                EventKind.ABILITY_TRIGGERED,
+                object_id=resolution.source,
+                data=tuple(resolution.remembered),
+            ),
             resolution.controller,
         )
     )
@@ -1143,28 +1746,59 @@ def create_delayed_trigger(
 # ---------------------------------------------------------------------------
 
 
+def _damage_dealer(resolution: Resolution, effect: Effect):
+    """Which object deals an effect's damage, and who controls it.
+
+    The ability's source unless the text names another dealer. "It deals
+    damage equal to its power to any target" in Warstorm Surge's trigger is
+    the creature that entered (CR 120.1: the damage is dealt by that
+    object), so its lifelink and deathtouch are what apply, not the
+    enchantment's. A named dealer that is gone and left no last-known
+    object deals nothing - there is no one to deal it.
+    """
+    if effect.damage_source is None or not effect.damage_source.remembered:
+        return resolution.source, resolution.controller
+    game = resolution.game
+    for object_id in resolution.remembered:
+        obj = game.objects.get(object_id)
+        if obj is not None:
+            return obj.id, obj.controller
+    return None, resolution.controller
+
+
 def _do_damage(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     amount = _amount(resolution, effect)
-    source_obj = game.objects.get(resolution.source)
+    dealer, dealer_controller = _damage_dealer(resolution, effect)
+    # The chosen targets are read once, here, and split by kind. Both halves
+    # come out of the same list (CR 115.4) and the cursor only moves forward
+    # - even when there is no dealer, or every later instruction would read
+    # the targets meant for this one.
+    chosen = resolution.targets_for(effect) if effect.is_targeted else ()
+    if dealer is None:
+        # CR 608.2b: the dealer was an illegal target, so nothing can be
+        # determined about it and no damage is dealt.
+        return
+    source_obj = game.objects.get(dealer)
     chars = game.characteristics(source_obj) if source_obj is not None else None
     deathtouch = bool(chars and chars.has_keyword("Deathtouch"))
     lifelink = bool(chars and chars.has_keyword("Lifelink"))
 
-    # The chosen targets are read once, here, and split by kind. Both halves
-    # come out of the same list (CR 115.4) and the cursor only moves forward.
-    chosen = resolution.targets_for(effect) if effect.is_targeted else ()
     for obj in _objects(resolution, effect, chosen=chosen):
         actions.deal_damage(
             game,
             obj,
             amount,
-            source=resolution.source,
-            source_controller=resolution.controller,
+            source=dealer,
+            source_controller=dealer_controller,
             deathtouch=deathtouch,
             lifelink=lifelink,
         )
     recipients = _targeted_players(resolution, effect, chosen)
+    if recipients:
+        # "... deals 2 damage to target player. That player discards two
+        # cards" (``PlayerScope.CHOSEN_PLAYER``).
+        resolution.chosen_players = list(recipients)
     if not recipients and effect.players is not None and not effect.is_targeted:
         recipients = _players(resolution, effect)
     for player_id in recipients:
@@ -1172,8 +1806,8 @@ def _do_damage(resolution: Resolution, effect: Effect) -> None:
             game,
             player_id,
             amount,
-            source=resolution.source,
-            source_controller=resolution.controller,
+            source=dealer,
+            source_controller=dealer_controller,
             lifelink=lifelink,
         )
 
@@ -1207,17 +1841,61 @@ def _do_add_poison(resolution: Resolution, effect: Effect) -> None:
         actions.add_poison(resolution.game, player_id, amount)
 
 
+def _do_designate(resolution: Resolution, effect: Effect) -> None:
+    """A target chosen to act in the next instruction (``EffectKind.DESIGNATE``).
+
+    Nothing happens to it. Reading its targets moves the cursor past them,
+    and ``_execute_one`` remembers the object if it is still a legal target
+    and nothing if it is not (CR 608.2b), so the dealer or fighter named next
+    is this object or no object - never something remembered before."""
+    _objects(resolution, effect)
+
+
+def _fighter(resolution: Resolution, effect: Effect) -> list[GameObject]:
+    """The creature told to fight (``damage_source`` on a FIGHT): the
+    source ("this creature fights"), the object the resolution remembers
+    ("it fights", or a designated target), or the one a description names
+    ("enchanted creature fights")."""
+    game = resolution.game
+    spec = effect.damage_source
+    if spec.source_only:
+        obj = game.objects.get(resolution.source)
+        return [obj] if obj is not None else []
+    if spec.remembered:
+        return _objects(resolution, Effect(EffectKind.FIGHT, targets=spec))
+    from ..kernel.matching import find
+
+    return list(find(game, spec, source=resolution.source, controller=resolution.controller))
+
+
 def _do_fight(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.12: each creature deals damage equal to its power to the other.
+    """CR 701.14a: each creature deals damage equal to its power to the other.
 
     Both deal damage even if the first one dies doing it, because the damage is
-    simultaneous.
+    simultaneous. With a ``damage_source`` the first creature is the one
+    told to fight and the second the instruction's object; without one, the
+    instruction's objects are the two creatures.
+
+    CR 701.14b: if either is no longer on the battlefield or no longer a
+    creature, or either is an illegal target, neither fights. CR 701.14c: a
+    creature that fights itself deals damage to itself twice.
     """
     game = resolution.game
-    combatants = _objects(resolution, effect)
-    if len(combatants) != 2:
-        return
+    if effect.damage_source is not None:
+        # The opponent is read first: the cursor moves past this
+        # instruction's targets whether or not the fight happens.
+        opponents = _objects(resolution, effect)
+        fighters = _fighter(resolution, effect)
+        if len(fighters) != 1 or len(opponents) != 1:
+            return
+        combatants = [fighters[0], opponents[0]]
+    else:
+        combatants = _objects(resolution, effect)
+        if len(combatants) != 2:
+            return
     first, second = combatants
+    if first.zone is not Zone.BATTLEFIELD or second.zone is not Zone.BATTLEFIELD:
+        return
     first_chars = game.characteristics(first)
     second_chars = game.characteristics(second)
     if not (first_chars.is_creature and second_chars.is_creature):
@@ -1283,6 +1961,24 @@ def _do_add_counters(resolution: Resolution, effect: Effect) -> None:
         actions.add_counters(
             resolution.game, obj, effect.counter_type, amount, source=resolution.source
         )
+
+
+def _do_double_counters(resolution: Resolution, effect: Effect) -> None:
+    """CR 701.10e: give each object as many of those counters as it already
+    has.
+
+    Counted per object as the effect reaches it, and put on as an ordinary
+    placing of counters, so a replacement that modifies how many are put
+    (Doubling Season, CR 614.1a) applies to the doubling too.
+    """
+    for obj in _objects(resolution, effect):
+        kinds = [effect.counter_type] if effect.counter_type else list(obj.counters)
+        for kind in kinds:
+            present = obj.counter_count(kind)
+            if present > 0:
+                actions.add_counters(
+                    resolution.game, obj, kind, present, source=resolution.source
+                )
 
 
 def _do_remove_counters(resolution: Resolution, effect: Effect) -> None:
@@ -1366,12 +2062,24 @@ def _do_copy_permanent(resolution: Resolution, effect: Effect) -> None:
 
 def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
     """CR 707.10: a copy on the stack, which was never cast."""
-    from ..cr700_additional_rules.cr707_faces import copy_spell
+    from ..cr700_additional_rules.cr707_faces import MAY_CHOOSE_NEW_TARGETS, copy_spell
 
     count = _count(resolution, effect)
+    made: list[ObjectId] = []
     for original in _objects(resolution, effect):
         for _ in range(count):
-            copy_spell(resolution.game, original, resolution.controller)
+            copy = copy_spell(
+                resolution.game,
+                original,
+                resolution.controller,
+                may_choose_new_targets=MAY_CHOOSE_NEW_TARGETS in effect.keywords,
+            )
+            if copy is not None:
+                made.append(copy.id)
+    if made:
+        # CR 707.10: "You may choose new targets for the copy" - the next
+        # sentence is about the copy, not the spell it copied.
+        resolution.remembered = made
 
 
 def _do_goad(resolution: Resolution, effect: Effect) -> None:
@@ -1409,7 +2117,7 @@ def _do_counter_spell(resolution: Resolution, effect: Effect) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _mana_kind(symbol: str, *, snow: bool, restriction=None):
+def _mana_kind(symbol: str, *, snow: bool, restriction=None, until_end_of_combat=False):
     """One printed mana symbol, as a unit of mana in a pool.
 
     Hybrid symbols in a mana-*production* ability ("Add {G/U}") are a choice;
@@ -1421,7 +2129,10 @@ def _mana_kind(symbol: str, *, snow: bool, restriction=None):
     parsed = parse_mana_symbol(symbol.strip("{}"))
     colors = list(parsed.colors)
     return ManaKind(
-        colors[0] if colors else Color.NONE, snow=snow, restriction=restriction
+        colors[0] if colors else Color.NONE,
+        snow=snow,
+        restriction=restriction,
+        until_end_of_combat=until_end_of_combat,
     )
 
 
@@ -1479,6 +2190,19 @@ def mana_color_choices(game, controller: PlayerId, effect: Effect):
 
 def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     """CR 106.1: add mana to a player's pool."""
+    if effect.players is not None and effect.players.scope is not PlayerScope.YOU:
+        # "Its controller adds an additional {G}", "that player adds {C}":
+        # the mana goes to the player named (CR 106.4), who is the "you" of
+        # the rest of the instruction. Adding it to the ability's controller
+        # put Wild Growth's extra mana in the aura's controller's pool.
+        saved = resolution.controller
+        try:
+            for player_id in _players(resolution, effect):
+                resolution.controller = player_id
+                _do_add_mana(resolution, replace(effect, players=None))
+        finally:
+            resolution.controller = saved
+        return
     from ..cr100_game_concepts.cr106_mana import ManaKind
     from ..kernel.enums import Supertype
 
@@ -1502,12 +2226,39 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
         # instead - which is what this did - turned "Add {G}{U}" into two
         # green *and* two blue, doubling the output of every dual land in the
         # format and quietly inflating every ramp statistic downstream.
+        # CR 702.189a: "until end of combat, you don't lose this mana".
+        combat_mana = effect.duration == int(Duration.END_OF_COMBAT)
         for _ in range(repeat):
             for symbol in effect.mana_produced:
                 player.mana_pool.add(
-                    _mana_kind(symbol, snow=snow, restriction=effect.mana_restriction),
+                    _mana_kind(
+                        symbol,
+                        snow=snow,
+                        restriction=effect.mana_restriction,
+                        until_end_of_combat=combat_mana,
+                    ),
                     1,
                 )
+    elif effect.colors_from_trigger:
+        # "One mana of any type that land produced": a type the tapping that
+        # triggered this produced (CR 106.12a), colorless included (CR
+        # 106.1b). No such event, no type: no mana (CR 106.5).
+        from ..kernel.enums import Color
+
+        event = _trigger_event(resolution)
+        produced = (
+            [Color(value) for value in event.data]
+            if event is not None and event.kind is EventKind.TAPPED_FOR_MANA
+            else []
+        )
+        if not produced:
+            return
+        amount = _count(resolution, effect)
+        wanted = resolution.mana_color
+        chosen = wanted if wanted in produced else produced[0]
+        player.mana_pool.add(
+            ManaKind(chosen, snow=snow, restriction=effect.mana_restriction), amount
+        )
     elif effect.colors_chosen:
         # "Add one mana of the chosen color" - the colour this permanent
         # recorded as it entered (CR 614.1b). Nothing on the card names it,
@@ -1539,6 +2290,42 @@ def _do_add_mana(resolution: Resolution, effect: Effect) -> None:
     game.emit(
         Event(EventKind.MANA_ADDED, player=resolution.controller, source=resolution.source)
     )
+
+
+def resolve_mana_ability(resolution: Resolution, effects, *, tapped: bool) -> None:
+    """Resolve an activated mana ability where it stands (CR 605.3b).
+
+    With ``tapped`` - {T} is in its cost (CR 106.12) - its permanent was
+    "tapped for mana" if it produced any: CR 106.12a triggers those
+    abilities when such a mana ability resolves and produces mana. Once per
+    activation, however many instructions added the mana, and never for mana
+    added any other way - a triggered ability's "adds an additional {G}" or
+    a spell taps nothing. The event's ``data`` is the types produced (colour
+    values, 0 for colorless), for "one mana of any type that land produced".
+    """
+    game = resolution.game
+    pool = game.player(resolution.controller).mana_pool
+    before = dict(pool.buckets)
+    execute(resolution, effects)
+    if not tapped:
+        return
+    produced = sorted(
+        {
+            int(kind.color)
+            for kind, amount in pool.buckets.items()
+            if amount > before.get(kind, 0)
+        }
+    )
+    if produced:
+        game.emit(
+            Event(
+                EventKind.TAPPED_FOR_MANA,
+                object_id=resolution.source,
+                player=resolution.controller,
+                source=resolution.source,
+                data=tuple(produced),
+            )
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -1693,7 +2480,10 @@ def _do_if_you_dont(resolution: Resolution, effect: Effect) -> None:
     the resolution records the same way the positive form reads it: an action
     that happened leaves something remembered.
     """
-    if resolution.remembered:
+    if resolution.did_it is not None:
+        if resolution.did_it:
+            return
+    elif resolution.remembered:
         return
     execute(resolution, effect.children)
 
@@ -1712,9 +2502,13 @@ def _do_pay_cost(resolution: Resolution, effect: Effect) -> None:
     cost = effect.pay_cost
     if cost is None:
         return
+    paid = False
     for player_id in _players(resolution, effect):
         if can_pay_cost(game, player_id, cost) and pay_cost(game, player_id, cost):
             resolution.remembered.append(resolution.source)
+            paid = True
+    # CR 608.2d: a cost that could not be paid is an option not taken.
+    resolution.did_it = paid
 
 
 def _do_start_engines(resolution: Resolution, effect: Effect) -> None:
@@ -1764,12 +2558,27 @@ def _do_search_library(resolution: Resolution, effect: Effect) -> None:
     The library is a hidden, *ordered* zone, so a search is followed by a
     shuffle (CR 701.23) - otherwise the searcher would learn the order of what
     they left behind.
+
+    How many: the amount ("a card" is one, "up to two" is two - CR 701.23b
+    lets the searcher find fewer of a stated quality, and the default finds
+    as many as it can). "Any number of" has no amount; the player picks from
+    everything that matches (CR 107.1c).
+
+    Where to: the effect's zone. The library is zone 0, so it is compared
+    with ``None`` rather than tested for truth - a test for truth sent every
+    "then shuffle and put that card on top" tutor to the hand. A card bound
+    for the top is put there *after* the shuffle, which is the order those
+    tutors print. "Put one onto the battlefield tapped and the other into
+    your hand" (``other to hand``) sends the first card found to the
+    battlefield and the rest to the hand.
     """
     from ..kernel.matching import matches
 
     game = resolution.game
+    spec = effect.targets
+    any_number = spec is not None and spec.count is None and spec.up_to
     wanted = max(1, _amount(resolution, effect))
-    destination = effect.zone or Zone.HAND
+    destination = effect.zone if effect.zone is not None else Zone.HAND
 
     for player_id in _players(resolution, effect):
         player = game.player(player_id)
@@ -1778,27 +2587,46 @@ def _do_search_library(resolution: Resolution, effect: Effect) -> None:
             obj = game.objects.get(object_id)
             if obj is None:
                 continue
-            if effect.targets is None or matches(
-                game, obj, effect.targets, source=resolution.source, controller=player_id
+            if spec is None or matches(
+                game, obj, spec, source=resolution.source, controller=player_id
             ):
                 found.append(obj)
-            if len(found) >= wanted:
+            if not any_number and len(found) >= wanted:
                 break
+        if any_number and found:
+            found = _any_number_of(game, player_id, effect, found)
 
         # "Search your library for a basic land card, put it onto the
         # battlefield *tapped*" (CR 614.1c). Every ramp spell in the format
         # says it, and a land that arrives untapped is a full turn of mana the
         # deck does not have.
-        tapped = "tapped" in effect.keywords and destination is Zone.BATTLEFIELD
-        for obj in found:
-            moved = game.move_object(obj, destination, to_player=player_id)
-            if tapped and moved.zone is Zone.BATTLEFIELD:
+        tapped = "tapped" in effect.keywords
+        on_top: list[GameObject] = []
+        for index, obj in enumerate(found):
+            where = destination
+            if "other to hand" in effect.keywords and index > 0:
+                where = Zone.HAND
+            if where is Zone.LIBRARY:
+                on_top.append(obj)
+                continue
+            moved = game.move_object(obj, where, to_player=player_id)
+            if tapped and where is Zone.BATTLEFIELD and moved.zone is Zone.BATTLEFIELD:
                 # A replacement effect may have sent it somewhere else.
                 moved.tapped = True
         game.emit(
             Event(EventKind.SEARCHED_LIBRARY, player=player_id, amount=len(found))
         )
-        game.shuffle_library(player_id)
+        if on_top:
+            # "Then shuffle and put that card on top": set the card aside,
+            # shuffle the rest, and put it back on top.
+            for obj in on_top:
+                player.library.remove(obj.id)
+            game.shuffle_library(player_id)
+            for obj in reversed(on_top):
+                player.library.insert(0, obj.id)
+        else:
+            game.shuffle_library(player_id)
+        resolution.remembered = [obj.id for obj in found]
 
 
 def _do_shuffle(resolution: Resolution, effect: Effect) -> None:
@@ -1806,8 +2634,151 @@ def _do_shuffle(resolution: Resolution, effect: Effect) -> None:
         resolution.game.shuffle_library(player_id)
 
 
+# ---------------------------------------------------------------------------
+# MTG Arena's digital-only mechanics (see digital_mechanics.py)
+# ---------------------------------------------------------------------------
+
+
+def _do_seek(resolution: Resolution, effect: Effect) -> None:
+    """Seek: cards at random from the library that match, into the hand.
+
+    The cards found are what a following "it" or "that card" means - "seek a
+    land card, then put it onto the battlefield tapped". Nothing found is
+    remembered as nothing, so a following sentence about "it" cannot fall
+    back on something an earlier sentence did.
+    """
+    from ..cr700_additional_rules.digital_mechanics import seek
+
+    game = resolution.game
+    count = _count(resolution, effect)
+    found: list[ObjectId] = []
+    for player_id in _players(resolution, effect):
+        found.extend(
+            obj.id
+            for obj in seek(
+                game,
+                player_id,
+                effect.targets,
+                count,
+                source=resolution.source,
+                controller=resolution.controller,
+                to_zone=(Zone.HAND if effect.zone is None else effect.zone),
+            )
+        )
+    resolution.remembered = found
+
+
+def _do_conjure(resolution: Resolution, effect: Effect) -> None:
+    """Conjure: cards created from outside the game, owned by who conjures.
+
+    By name, the card comes from the game's catalogue; as a duplicate or as
+    "a card named [this]", it is the card of the object named - and only a
+    duplicate keeps that object's perpetual changes. What was conjured is
+    what a following "it" means ("It perpetually gains flash").
+    """
+    from ..cr700_additional_rules.digital_mechanics import (
+        catalog_card,
+        conjure,
+        conjure_duplicate,
+        conjured_name,
+    )
+
+    game = resolution.game
+    zone = (Zone.HAND if effect.zone is None else effect.zone)
+    count = _count(resolution, effect)
+    tapped = "tapped" in effect.keywords
+    from_top = 0 if effect.amount2.is_constant and not effect.amount2.constant else _amount2(
+        resolution, effect
+    )
+    made: list[ObjectId] = []
+    players = _players(resolution, effect)
+    card_name = conjured_name(effect)
+    if card_name:
+        card = catalog_card(game, card_name)
+        if card is not None:
+            for player_id in players:
+                for _ in range(count):
+                    obj = conjure(
+                        game,
+                        player_id,
+                        card,
+                        zone,
+                        tapped=tapped,
+                        from_top=from_top,
+                        source=resolution.source,
+                    )
+                    if obj is not None:
+                        made.append(obj.id)
+    elif effect.targets is not None:
+        originals = _objects(resolution, effect)
+        duplicate = "duplicate" in effect.keywords
+        for player_id in players:
+            for original in originals:
+                for _ in range(count):
+                    obj = conjure_duplicate(
+                        game,
+                        player_id,
+                        original,
+                        zone,
+                        keep_perpetual=duplicate,
+                        tapped=tapped,
+                        source=resolution.source,
+                    )
+                    if obj is not None:
+                        made.append(obj.id)
+    resolution.remembered = made
+
+
+def _do_perpetually(resolution: Resolution, effect: Effect) -> None:
+    """Perpetually: bind each change to each of the objects, for good.
+
+    The objects are settled now, as any effect that changes characteristics
+    settles its set (CR 611.2c) - "creature cards in your hand" means the ones
+    there as this resolves, not cards drawn later. "A random" one is picked
+    from ``Game.rng``. Amounts are worked out now and fixed.
+    """
+    from ..cr700_additional_rules.digital_mechanics import PERPETUAL_KINDS, perpetually
+
+    game = resolution.game
+    objects = _perpetual_objects(resolution, effect)
+    changes = [node for node in effect.walk() if node.kind in PERPETUAL_KINDS]
+    for obj in objects:
+        for change in changes:
+            amounts = None
+            if change.kind in (EffectKind.MODIFY_PT, EffectKind.SET_PT):
+                amounts = (
+                    _amount(resolution, change),
+                    _amount(resolution, change, second=True),
+                )
+            perpetually(game, obj, change, resolution.controller, amounts=amounts)
+    if objects:
+        resolution.remembered = [obj.id for obj in objects]
+
+
+def _perpetual_objects(resolution: Resolution, effect: Effect) -> list[GameObject]:
+    if "at random" not in effect.keywords or effect.targets is None:
+        return _objects(resolution, effect)
+    from dataclasses import replace as _replace
+
+    from ..kernel.matching import find
+
+    spec = effect.targets
+    pool = find(
+        resolution.game,
+        _replace(spec, count=None, up_to=False),
+        source=resolution.source,
+        controller=resolution.controller,
+    )
+    wanted = _value_of(resolution, spec.count) if spec.count is not None else 1
+    picked: list[GameObject] = []
+    rng = resolution.game.rng
+    while pool and len(picked) < wanted:
+        picked.append(pool.pop(rng.randrange(len(pool))))
+    return picked
+
+
 def _do_reveal(resolution: Resolution, effect: Effect) -> None:
-    """CR 701.16. Revealing changes no zone; it only makes information public."""
+    """CR 701.20b. Revealing changes no zone; it only makes information public."""
     game = resolution.game
     for obj in _objects(resolution, effect):
         game.emit(Event(EventKind.REVEALED, object_id=obj.id, player=obj.owner))
@@ -1916,10 +2887,67 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_put_on_library(resolution: Resolution, effect: Effect) -> None:
+    """Put objects on top of or on the bottom of their owners' libraries.
+
+    "On the bottom" is ``keywords`` holding "bottom" (the older negative
+    ``amount`` still reads as bottom too). It was dropped by the grammar, so
+    Condemn put the attacker on *top* of its owner's library, where it is
+    drawn again next turn.
+
+    CR 401.4: several cards put into a library at once are ordered by their
+    owner - "in any order" is the controller's choice (with no agent, the
+    order they are listed in), and "in a random order" is the game's shuffle.
+
+    A card already in that library - one of the cards looked at a moment
+    ago - is moved *within* the zone: that is not a zone change (CR 400.7
+    needs a new zone), so it stays the same object and triggers nothing.
+    """
     game = resolution.game
-    on_top = effect.amount.constant >= 0
-    for obj in _objects(resolution, effect):
+    on_top = effect.amount.constant >= 0 and "bottom" not in effect.keywords
+    objects = list(_objects(resolution, effect))
+    _reveal_if_said(resolution, effect, objects)
+    if "random" in effect.keywords:
+        game.rng.shuffle(objects)
+    if on_top:
+        # Placed one at a time onto the top, so the last placed is on top:
+        # reversed, the list reads top-down in the order it was chosen.
+        objects.reverse()
+    placed: set[ObjectId] = set()
+    for obj in objects:
+        placed.add(obj.id)
+        library = game.player(obj.owner).library
+        if obj.is_live and obj.zone is Zone.LIBRARY and obj.id in library:
+            library.remove(obj.id)
+            if on_top:
+                library.insert(0, obj.id)
+            else:
+                library.append(obj.id)
+            continue
         game.move_object(obj, Zone.LIBRARY, to_player=obj.owner, to_top=on_top)
+    if placed and resolution.pile:
+        resolution.pile = [i for i in resolution.pile if i not in placed]
+
+
+def _do_look_at_top(resolution: Resolution, effect: Effect) -> None:
+    """"Look at the top N cards of your library" / "reveal the top N cards".
+
+    Looking changes nothing but what the player knows, and revealing only
+    shows the cards to everyone (CR 701.20) - no card moves. What the
+    instruction does is set the cards aside as the pile the following
+    instructions choose among, and name them as "them" for a pronoun. Fewer
+    cards than asked for is all of them: a short library is looked at in full.
+    """
+    game = resolution.game
+    count = max(0, _amount(resolution, effect))
+    pile: list[ObjectId] = []
+    for player_id in _players(resolution, effect):
+        pile.extend(game.player(player_id).library[:count])
+    resolution.pile = pile
+    resolution.remembered = list(pile)
+    if "reveal" in effect.keywords:
+        for object_id in pile:
+            obj = game.objects[object_id]
+            game.emit(Event(EventKind.REVEALED, object_id=object_id, player=obj.owner))
 
 
 def _do_explore(resolution: Resolution, effect: Effect) -> None:
@@ -2040,6 +3068,16 @@ def _do_monstrosity(resolution: Resolution, effect: Effect) -> None:
             continue
         actions.add_counters(resolution.game, obj, "+1/+1", amount, source=resolution.source)
         obj.add_counters("monstrous", 1)
+        # CR 701.37b: "when this becomes monstrous" watches this, not the
+        # counters that came with it.
+        resolution.game.emit(
+            Event(
+                EventKind.BECAME_MONSTROUS,
+                object_id=obj.id,
+                player=obj.controller,
+                source=resolution.source,
+            )
+        )
 
 
 def _do_adapt(resolution: Resolution, effect: Effect) -> None:
@@ -2103,27 +3141,36 @@ def _do_prevent_damage(resolution: Resolution, effect: Effect) -> None:
     names a player, which a shield with no subject and no players applies to
     everyone - a one-sided Fog that quietly protected the whole table.
     """
-    from .cr614_replacement import ReplacementEffect, ReplacementKind, register
+    from dataclasses import replace as _replace
 
-    if "combat" in effect.keywords:
-        watched = frozenset({EventKind.COMBAT_DAMAGE_DEALT})
-    else:
-        watched = frozenset({EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT})
+    from .cr614_replacement import register, replacement_from_effect
 
-    register(
-        resolution.game,
-        ReplacementEffect(
-            kind=ReplacementKind.PREVENT_DAMAGE,
-            event_kinds=watched,
-            subject=effect.targets,
-            players=effect.players,
+    game = resolution.game
+    # -1 is "all"; anything else is a shield of that size, worked out now
+    # (CR 608.2h) and spent as it prevents (CR 615.7). A size that came out
+    # at zero prevents nothing - it must not fall through to meaning "all".
+    everything = effect.amount.is_constant and effect.amount.constant < 0
+    size = -1 if everything else _amount(resolution, effect)
+    if not everything and size <= 0:
+        return
+
+    # The shield protects what the words name. A targeted shield used to be
+    # registered with the *targeting filter* as its subject, so "prevent all
+    # damage that would be dealt to target creature this turn" protected
+    # every creature on the battlefield.
+    for targets, players in _bound_recipients(resolution, effect, each=not everything):
+        built = replacement_from_effect(
+            _replace(effect, targets=targets, players=players, is_targeted=False),
             source=resolution.source,
             controller=resolution.controller,
-            amount=_amount(resolution, effect),
-            one_shot=effect.amount.constant > 0,
-            text=effect.text or "prevent damage",
-        ),
-    )
+            duration=int(effect.duration),
+            created_turn=game.turn,
+        )
+        if built is None:
+            continue
+        built.amount = size
+        built.one_shot = not everything
+        register(game, built)
 
 
 def _do_redirect_damage(resolution: Resolution, effect: Effect) -> None:
@@ -2212,6 +3259,101 @@ def _do_harness(resolution: Resolution, effect: Effect) -> None:
             obj.harnessed = True
             resolution.game.invalidate_characteristics()
             resolution.game.log.record(resolution.game, f"{obj} becomes harnessed", kind="designation")
+
+
+def _do_pair(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.95a/c: pair the soulbond creature with "that creature" - the
+    one whose entering triggered this - or, when the soulbond creature itself
+    entered, with an unpaired creature its controller chooses."""
+    from ..cr700_additional_rules.cr702_soulbond import is_still_paired, pair
+
+    game = resolution.game
+    source = game.objects.get(resolution.source)
+    if source is None:
+        return
+    event = getattr(resolution.stack_object, "trigger_event", None)
+    other = game.objects.get(event.object_id) if event is not None else None
+    if other is None or other.id == source.id:
+        candidates = [
+            obj
+            for obj in game.permanents(resolution.controller)
+            if obj.id != source.id
+            and game.characteristics(obj).is_creature
+            and not is_still_paired(game, obj)
+        ]
+        if not candidates:
+            return
+        chooser = getattr(game.agent_for(resolution.controller), "choose_pair", None)
+        other = chooser(game, resolution.controller, source, candidates) if chooser else None
+        if other not in candidates:
+            other = max(candidates, key=lambda o: (game.characteristics(o).power or 0, -o.id))
+    if _wants(resolution, effect):
+        pair(game, source, other, resolution.controller)
+
+
+def _do_become_saddled(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.171a/c: the permanent becomes saddled until end of turn, and
+    the creatures tapped to pay for it are what saddled it."""
+    game = resolution.game
+    for obj in _objects(resolution, effect):
+        if obj.zone is not Zone.BATTLEFIELD:
+            continue
+        obj.saddled_turn = game.turn
+        obj.saddled_by = tuple(obj.cost_paid_objects)
+        game.log.record(game, f"{obj} becomes saddled", kind="designation")
+        game.emit(Event(EventKind.BECAME_SADDLED, object_id=obj.id, player=obj.controller))
+
+
+def _do_become_renowned(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.112b: only a permanent can be or become renowned, and one that
+    is stays so until it leaves the battlefield."""
+    for obj in _objects(resolution, effect):
+        if obj.zone is Zone.BATTLEFIELD and not obj.renowned:
+            obj.renowned = True
+            resolution.game.invalidate_characteristics()
+            resolution.game.log.record(resolution.game, f"{obj} becomes renowned", kind="designation")
+            resolution.game.emit(
+                Event(
+                    EventKind.BECAME_RENOWNED,
+                    object_id=obj.id,
+                    player=obj.controller,
+                    source=resolution.source,
+                )
+            )
+
+
+def _do_blocks_source_if_able(resolution: Resolution, effect: Effect) -> None:
+    """A requirement (CR 509.1c) that each creature acted on blocks the source
+    if able, for the effect's duration. Pinned to these objects: a creature
+    or source that leaves and returns is a new object (CR 400.7) and no
+    longer under it."""
+    from ..cr500_turn_structure.restrictions import (
+        Act,
+        Requirement,
+        register_standing_requirement,
+    )
+    from ..kernel.query import ObjectFilter
+
+    game = resolution.game
+    source = game.objects.get(resolution.source)
+    if source is None or source.zone is not Zone.BATTLEFIELD:
+        return
+    for obj in _objects(resolution, effect):
+        if obj.zone is not Zone.BATTLEFIELD:
+            continue
+        register_standing_requirement(
+            game,
+            Requirement(
+                act=Act.BLOCK,
+                subject=ObjectFilter(specific=(obj.id,)),
+                counterpart=ObjectFilter(specific=(source.id,)),
+                source=source.id,
+                controller=resolution.controller,
+                text=effect.text or f"{obj} blocks {source} if able",
+                duration=effect.duration,
+                created_turn=game.turn,
+            ),
+        )
 
 
 def _do_enters_as_choice(resolution: Resolution, effect: Effect) -> None:
@@ -2341,7 +3483,14 @@ def _do_change_targets(resolution: Resolution, effect: Effect) -> None:
 
     game = resolution.game
     for obj in _objects(resolution, effect):
-        if obj.zone is not Zone.STACK or obj.ability is None:
+        if obj.zone is not Zone.STACK:
+            continue
+        if obj.ability is None:
+            # CR 115.7, 707.10c: a spell's new targets are its controller's
+            # choice, asked of the agent as a copy's are.
+            from ..cr700_additional_rules.cr707_faces import choose_new_targets
+
+            choose_new_targets(game, obj, resolution.controller)
             continue
         rebuilt: list[tuple[ObjectId, ...]] = []
         changed = False
@@ -2676,6 +3825,20 @@ def _do_roll_to_visit(resolution: Resolution, effect: Effect) -> None:
         resolution.die_results = (result,)
 
 
+def _do_repeat_per_payment(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.33d, 702.157a: once for each payment of a cost."""
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import do_repeat_per_payment
+
+    do_repeat_per_payment(resolution, effect)
+
+
+def _do_give_gift(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.174b: the gift, given to the opponent it was promised to."""
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import do_give_gift
+
+    do_give_gift(resolution, effect)
+
+
 def _wants(resolution: Resolution, effect: Effect) -> bool:
     """Whether the controller takes an optional effect."""
     if effect.kind is not EffectKind.OPTIONAL and not effect.children:
@@ -2720,11 +3883,13 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.SET_LIFE: _do_set_life,
     EffectKind.ADD_POISON: _do_add_poison,
     EffectKind.FIGHT: _do_fight,
+    EffectKind.DESIGNATE: _do_designate,
     EffectKind.TAP: _do_tap,
     EffectKind.UNTAP: _do_untap,
     EffectKind.ADD_COUNTERS: _do_add_counters,
     EffectKind.REMOVE_COUNTERS: _do_remove_counters,
     EffectKind.PROLIFERATE: _do_proliferate,
+    EffectKind.DOUBLE_COUNTERS: _do_double_counters,
     EffectKind.ATTACH: _do_attach,
     EffectKind.UNATTACH: _do_unattach,
     EffectKind.GAIN_CONTROL: _do_gain_control,
@@ -2745,11 +3910,15 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.EXTRA_TURN: _do_extra_turn,
     EffectKind.SEARCH_LIBRARY: _do_search_library,
     EffectKind.SHUFFLE: _do_shuffle,
+    EffectKind.SEEK: _do_seek,
+    EffectKind.CONJURE: _do_conjure,
+    EffectKind.PERPETUALLY: _do_perpetually,
     EffectKind.REVEAL: _do_reveal,
     EffectKind.SCRY: _do_scry,
     EffectKind.SURVEIL: _do_surveil,
     EffectKind.PUT_ONTO_BATTLEFIELD: _do_put_onto_battlefield,
     EffectKind.PUT_ON_LIBRARY: _do_put_on_library,
+    EffectKind.LOOK_AT_TOP: _do_look_at_top,
     EffectKind.EXPLORE: _do_explore,
     EffectKind.COPY_PERMANENT: _do_copy_permanent_effect,
     EffectKind.TURN_FACE_UP: _do_turn_face_up,
@@ -2772,7 +3941,11 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.DISCOVER: _do_discover,
     EffectKind.VILLAINOUS_CHOICE: _do_villainous_choice,
     EffectKind.HARNESS: _do_harness,
+    EffectKind.BECOME_RENOWNED: _do_become_renowned,
+    EffectKind.BLOCKS_SOURCE_IF_ABLE: _do_blocks_source_if_able,
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
+    EffectKind.BECOME_SADDLED: _do_become_saddled,
+    EffectKind.PAIR: _do_pair,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.
@@ -2798,6 +3971,8 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.OPEN_ATTRACTION: _do_open_attraction,
     EffectKind.ROLL_TO_VISIT: _do_roll_to_visit,
     EffectKind.CHOOSE_MODE: _do_choose_mode,
+    EffectKind.REPEAT_PER_PAYMENT: _do_repeat_per_payment,
+    EffectKind.GIVE_GIFT: _do_give_gift,
 }
 
 # Every continuous-effect opcode registers a continuous effect rather than

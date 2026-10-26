@@ -56,6 +56,9 @@ def check_state_based_actions(game: Game) -> bool:
         # game next looks at the board, and it runs before any player gets
         # priority, so nothing can observe the combat record in between.
         check_removal_from_combat(game)
+        # CR 704.3: one round is performed simultaneously - every creature
+        # it puts into a graveyard dies at the same time (CR 603.2c).
+        game.event_batch += 1
         if not _one_pass(game):
             break
         did_anything = True
@@ -84,6 +87,11 @@ def _one_pass(game: Game) -> bool:
     commander_moves = _check_commander_zone_choice(game)
 
     _grant_enduring_stories(game)
+    # CR 702.95e: a pair ends the moment either creature stops qualifying;
+    # checked here, where the board is looked at before each priority.
+    from .cr702_soulbond import end_broken_pairs
+
+    end_broken_pairs(game)
     _check_players(game, losers)
     _check_permanents(
         game,

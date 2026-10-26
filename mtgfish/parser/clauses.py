@@ -21,6 +21,7 @@ from typing import Callable
 from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
 from ..rules.kernel.enums import CardType, Duration, Zone
 from ..rules.kernel.query import (
+    ControllerRelation,
     ObjectFilter,
     PlayerFilter,
     PlayerScope,
@@ -29,6 +30,7 @@ from ..rules.kernel.query import (
 )
 from .nouns import (
     SELF_NOUNS,
+    chosen_count,
     parse_comparison,
     parse_description,
     parse_object_filter,
@@ -57,6 +59,11 @@ SELF = ObjectFilter(source_only=True)
 #: CR 115.4: "any target" means a creature, player, planeswalker or battle.
 #: Modelled as the object types, because the engine's damage executor already
 #: handles a player target through ``players``.
+#:
+#: Handed out as a fresh copy (``replace(ANY_TARGET)``) each time it is
+#: read: two instructions holding the *same* filter object are one word
+#: "target" read as two verbs (``compile._share_targets``), and two separate
+#: "any target"s sharing this constant would be merged into one choice.
 ANY_TARGET = ObjectFilter(
     types_any=CardType.CREATURE | CardType.PLANESWALKER | CardType.BATTLE,
     includes_players=True,
@@ -174,6 +181,7 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
     effects: list[Effect] = []
     used_or = False
     while True:
+        gap = stream.mark()
         stream.skip_punct(",", ".", ";")
         if stream.done:
             break
@@ -193,6 +201,20 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
             # back and its shallower give-up says less.
             stream.blocked = max(stream.blocked, stuck)
             return None
+        same_sentence = not any(
+            token.text == "." for token in stream.tokens[gap:stuck]
+        )
+        # The elided subject is the last one the sentence expressed. An
+        # instruction with no player of its own - the NOTHING that "of their
+        # choice" reads as, the "put it onto the battlefield" of a search -
+        # did not express one.
+        spoken = [e for e in effects if e.players is not None]
+        if spoken and same_sentence:
+            effect = _elided_subject(stream.tokens[stuck], effect, spoken[-1])
+            if effect is None:
+                stream.reset(stuck)
+                stream.blocked = max(stream.blocked, stuck)
+                return None
         effects.append(effect)
 
         # Some clauses modify the effect just read rather than following it.
@@ -234,6 +256,145 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
         # Nothing changed, so let the caller keep the ordinary reading.
         return None
     return _bind_x(_attach_mana_restriction(effects))
+
+
+#: Verbs in the third person that open a clause with no subject of its own:
+#: "that player loses 1 life *and mills a card*". An imperative ("mill a
+#: card") is the ability's controller; this form is the previous subject.
+_THIRD_PERSON_VERBS = frozenset(
+    {
+        "adds", "creates", "discards", "draws", "gains", "gets", "loses",
+        "mills", "pays", "reveals", "sacrifices", "scries", "shuffles",
+        "surveils",
+    }
+)
+
+#: Third-person verbs that move cards, which the sentence then goes on to put
+#: somewhere with no subject at all ("searches their library for a basic land
+#: card, puts it onto the battlefield tapped"). The engine carries those
+#: follow-ups out as the ability's controller, so the land would enter under
+#: the wrong player's control (CR 110.2a) - refused rather than half-read.
+_THIRD_PERSON_MOVERS = frozenset({"exiles", "puts", "searches"})
+
+
+def _elided_subject(first, effect: Effect, previous: Effect) -> Effect | None:
+    """"That player loses 1 life and discards a card" - the second verb's
+    subject is the first's, left out, not the ability's controller.
+
+    The clause grammar reads a subjectless verb as "you", which gave Gibbering
+    Descent's discard to the Descent's controller. A targeted subject is not
+    copied - that would be a second target - but named as "that player", for
+    ``referents`` to bind to the player chosen (CR 608.2c). None refuses
+    the sentence.
+    """
+    if first.kind is not TokenKind.WORD:
+        return effect
+    word = first.lower
+    if word not in _THIRD_PERSON_VERBS and word not in _THIRD_PERSON_MOVERS:
+        return effect
+    if effect.players is None or effect.players.scope is not PlayerScope.YOU:
+        return effect
+    subject = previous.players
+    if subject is None or subject.scope is PlayerScope.YOU:
+        return effect
+    if word in _THIRD_PERSON_MOVERS:
+        return None
+    if previous.is_targeted or subject.scope in (
+        PlayerScope.TARGET_PLAYER,
+        PlayerScope.TARGET_OPPONENT,
+    ):
+        # Even an instruction the grammar did not mark as targeting: copied,
+        # "target opponent" untargeted is read as every opponent.
+        subject = PlayerFilter(PlayerScope.REFERRED_PLAYER)
+    return replace(effect, players=subject)
+
+
+#: Instructions that set a pile aside for "from among them" and "the rest".
+PILE_MAKERS = frozenset({EffectKind.LOOK_AT_TOP, EffectKind.MILL})
+
+#: Children that run in a resolution of their own - a reflexive or delayed
+#: trigger goes on the stack later (CR 603.7, 603.12), and the pile does not
+#: go with it.
+_OWN_RESOLUTION = frozenset({EffectKind.REFLEXIVE_TRIGGER, EffectKind.DELAYED_TRIGGER})
+
+
+def pile_references_ok(effects, have_pile: bool = False, local: bool = False) -> bool:
+    """Whether every "from among them" / "the rest" in an ability has a pile.
+
+    The grammar reads those phrases wherever they stand, but they mean
+    something only after a look, a reveal or a mill *in the same
+    resolution*. Two shapes are refused:
+
+    * a pile reference with no pile before it - including one inside an "if
+      you do", which the engine resolves as a separate triggered ability;
+    * "the rest" anywhere but alongside the instruction that made the pile.
+      "You may put a land from among them onto the battlefield. If you
+      don't, put a card from among them into your hand. Put the rest on the
+      bottom" reads its last sentence into the "if you don't", where it
+      would happen only on one branch - a different card.
+
+    Also refused: "if you do / don't" straight after an optional pile move,
+    because the engine decides those by what was remembered, and the look
+    already remembered the whole pile.
+    """
+    previous = None
+    for effect in effects:
+        if effect.kind in (EffectKind.IF_YOU_DONT, EffectKind.REFLEXIVE_TRIGGER) and (
+            previous is not None
+            and previous.kind is EffectKind.OPTIONAL
+            and any(_uses_pile(node) for node in previous.walk())
+        ):
+            return False
+        if _uses_pile(effect):
+            if not (have_pile or local):
+                return False
+            if _is_the_rest(effect) and not local:
+                return False
+        if effect.kind is EffectKind.SEQUENCE:
+            # A sequence is the same level spelled as one node.
+            if not pile_references_ok(effect.children, have_pile, local):
+                return False
+            if any(child.kind in PILE_MAKERS for child in effect.children):
+                local = True
+        elif effect.kind is EffectKind.CHOOSE_MODE:
+            for mode in effect.children:
+                if not pile_references_ok((mode,), have_pile or local):
+                    return False
+        elif effect.children or effect.otherwise:
+            inherited = False if effect.kind in _OWN_RESOLUTION else (have_pile or local)
+            for branch in (effect.children, effect.otherwise):
+                if not _nested_ok(branch, inherited):
+                    return False
+        if effect.kind in PILE_MAKERS:
+            local = True
+        previous = effect
+    return True
+
+
+def _nested_ok(effects, have_pile: bool) -> bool:
+    """A nested branch: its pile references may lean on an outer pile, but
+    its "the rest" may not - only on a pile made in the same branch."""
+    if not effects:
+        return True
+    for effect in effects:
+        if _is_the_rest(effect) and not any(e.kind in PILE_MAKERS for e in effects):
+            return False
+    return pile_references_ok(effects, have_pile)
+
+
+def _uses_pile(effect: Effect) -> bool:
+    return effect.targets is not None and effect.targets.from_pile
+
+
+def _is_the_rest(effect: Effect) -> bool:
+    spec = effect.targets
+    return (
+        spec is not None
+        and spec.from_pile
+        and spec.count is None
+        and not spec.up_to
+        and spec == ObjectFilter(from_pile=True)
+    )
 
 
 def _attach_mana_restriction(effects: list[Effect]) -> list[Effect]:
@@ -443,6 +604,14 @@ def _for_each_tail(stream: Stream, effect: Effect) -> Effect | None:
         # ``amount2``, which ADD_MANA does not otherwise use.
         return _replace(effect, amount2=multiplier)
 
+    if effect.kind in (EffectKind.NOTHING, EffectKind.SACRIFICE):
+        # Neither reads ``amount``: a sacrifice counts in its filter, and a
+        # consumed "of their choice" does nothing at all. "Sacrifices a
+        # creature of their choice for each black creature you control"
+        # multiplied the words "of their choice" and sacrificed one.
+        stream.reset(mark)
+        return None
+
     scaled = _multiply(effect.amount, multiplier)
     if scaled is None:
         stream.reset(mark)
@@ -621,7 +790,7 @@ def _action_cost(stream: Stream):
     stream.next()
 
     spec = parse_object_filter(stream)
-    if spec is None:
+    if spec is None or chosen_count(spec):
         stream.reset(mark)
         return None
 
@@ -661,7 +830,7 @@ def _bind_x(effects: list[Effect]) -> list[Effect]:
     )
     if definition is None:
         return effects
-    return [
+    bound = [
         _substitute_x(effect, definition)
         for effect in effects
         if not (
@@ -669,21 +838,117 @@ def _bind_x(effects: list[Effect]) -> list[Effect]:
             and effect.text.startswith(_X_DEFINITION)
         )
     ]
+    bound = [_bind_combat_tax_x(effect, definition) for effect in bound]
+    if any(_mentions_x(effect) for effect in bound):
+        # An X the definition could not reach ("unless that player pays
+        # {X}"): paying the announced X - zero - is not what the card says.
+        return [Effect(EffectKind.UNPARSED, text="where X is (unbound X)")]
+    return bound
+
+
+def _bind_combat_tax_x(effect: Effect, value: Value) -> Effect:
+    """"Can't attack you unless their controller pays {X} for each of those
+    creatures, where X is the number of enchantments you control."
+
+    A cost to attack (CR 508.1h) is determined by the combat step, not
+    announced, so its {X} is the definition's number: {X} of generic mana is
+    exactly X times {1} (CR 107.3, 107.4b). Rewritten so - the definition
+    becomes a factor of the cost's scale - only for a lone generic {X} in a
+    cost that lifts a restriction; any other {X} stays unbound and the
+    sentence is refused.
+    """
+    import dataclasses
+
+    from ..rules.cr100_game_concepts.cr106_mana import ManaCost
+    from ..rules.cr100_game_concepts.cr118_costs import Cost, CostKind
+
+    if effect.kind is EffectKind.UNLESS_PAYS and any(
+        child.kind is EffectKind.RESTRICTION for child in effect.children
+    ):
+        cost = effect.pay_cost
+        if cost is None or cost.choices or len(cost.components) != 1:
+            return effect
+        component = cost.components[0]
+        symbols = tuple(component.mana) if component.kind is CostKind.MANA else ()
+        if len(symbols) != 1 or symbols[0].text != "{X}":
+            return effect
+        scale = (
+            value
+            if component.scale is None
+            else Value(kind=ValueKind.PRODUCT, operands=(component.scale, value))
+        )
+        component = dataclasses.replace(component, mana=ManaCost.generic(1), scale=scale)
+        return dataclasses.replace(effect, pay_cost=Cost((component,)))
+    if effect.kind is EffectKind.CONDITIONAL and effect.children:
+        children = tuple(_bind_combat_tax_x(child, value) for child in effect.children)
+        if any(a is not b for a, b in zip(children, effect.children)):
+            return dataclasses.replace(effect, children=children)
+    return effect
 
 
 def _substitute_x(effect: Effect, value: Value) -> Effect:
-    from dataclasses import replace
+    """Every X the effect uses, wherever it sits (CR 107.3b).
 
+    Not only the top-level amounts: "-X/-X" is arithmetic with X as an
+    operand, "mana value X or less" is a bound inside a filter, "an X/X
+    token" is the token's power and toughness. Substituting only the amounts
+    left all of those at the announced X - zero for a spell without X in its
+    cost - so the card parsed and did nothing.
+
+    An X that cannot be reached this way - a mana symbol, "pays {X}" - is left
+    as it is, and ``_bind_x`` refuses the sentence rather than pay {0}.
+    """
+    return _replace_x(effect, value)
+
+
+#: Fields that hold abilities of their own - a granted ability or a token's
+#: text - whose X, if any, is theirs rather than this sentence's.
+_OWN_X_FIELDS = frozenset({"granted_abilities", "abilities", "trigger"})
+
+
+def _replace_x(node, value: Value):
+    """``node`` with each ``Value`` of kind X replaced, rebuilt only where
+    something changed."""
+    import dataclasses
+
+    if isinstance(node, Value) and node.kind is ValueKind.X:
+        return value
+    if isinstance(node, tuple):
+        rebuilt = tuple(_replace_x(item, value) for item in node)
+        return rebuilt if any(a is not b for a, b in zip(rebuilt, node)) else node
+    if not dataclasses.is_dataclass(node) or isinstance(node, type):
+        return node
     changes = {}
-    if effect.amount.kind is ValueKind.X:
-        changes["amount"] = value
-    if effect.amount2.kind is ValueKind.X:
-        changes["amount2"] = value
-    if effect.children:
-        changes["children"] = tuple(
-            _substitute_x(child, value) for child in effect.children
-        )
-    return replace(effect, **changes) if changes else effect
+    for field in dataclasses.fields(node):
+        if field.name in _OWN_X_FIELDS:
+            continue
+        current = getattr(node, field.name)
+        if not isinstance(current, tuple) and not dataclasses.is_dataclass(current):
+            continue
+        rebuilt = _replace_x(current, value)
+        if rebuilt is not current:
+            changes[field.name] = rebuilt
+    return dataclasses.replace(node, **changes) if changes else node
+
+
+def _mentions_x(node) -> bool:
+    """Whether an X is still in the sentence after substitution - a value of
+    kind X, or an {X} mana symbol, which a value cannot replace."""
+    import dataclasses
+
+    if isinstance(node, Value) and node.kind is ValueKind.X:
+        return True
+    if getattr(node, "text", None) == "{X}":
+        return True
+    if isinstance(node, tuple):
+        return any(_mentions_x(item) for item in node)
+    if not dataclasses.is_dataclass(node) or isinstance(node, type):
+        return False
+    return any(
+        _mentions_x(getattr(node, field.name))
+        for field in dataclasses.fields(node)
+        if field.name not in _OWN_X_FIELDS
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -780,6 +1045,86 @@ def _shuffle(stream: Stream) -> Effect | None:
 def _damage(stream: Stream) -> Effect | None:
     """"[Source] deals N damage to [target]."."""
     mark = stream.mark()
+    found = _damage_body(stream)
+    if found is None:
+        stream.reset(mark)
+        return None
+    designated, effect = found
+    if designated is None:
+        return effect
+    if not _bite_recipient_ok(effect):
+        stream.reset(mark)
+        return None
+    # "Target creature you control deals damage equal to its power to
+    # target creature you don't control": two targets (CR 115.1), the first
+    # the damage's source (CR 120.3) and the owner of "its power". The
+    # first is chosen and remembered, and the damage names what was
+    # remembered - so when it has become an illegal target, nothing can be
+    # learned about it and no damage is dealt (CR 608.2b).
+    return Effect(
+        EffectKind.SEQUENCE, children=(designated, effect), text="deal damage"
+    )
+
+
+def _is_one(count) -> bool:
+    """Whether a filter's count is the number one ("up to one")."""
+    if isinstance(count, int):
+        return count == 1
+    return count.is_constant and count.constant == 1
+
+
+def _designate(spec: ObjectFilter) -> Effect | None:
+    """The instruction choosing one target to act next ("*target creature
+    you control* deals damage ...", "... fights ..."), or None where the
+    words chose more than one or maybe none."""
+    if spec.count is not None or spec.up_to or spec.includes_players:
+        return None
+    return Effect(
+        EffectKind.DESIGNATE, targets=spec, is_targeted=True, text="choose a target"
+    )
+
+
+def _bite_recipient_ok(effect: Effect) -> bool:
+    """Whether what a designated target deals damage to is read faithfully.
+
+    After a targeted dealer, "each *other* creature" means other than the
+    dealer, and an untargeted filter's "other" can only say "other than
+    the source" - wrong on a spell. ("Another *target* creature" is a
+    target, settled against the earlier one by ``compile``.) "That player"
+    names the dealer's controller, which nothing here binds, and "that
+    creature" something the choice of dealer has replaced.
+    """
+    from ..rules.kernel.query import ControllerRelation, PlayerScope
+
+    spec = effect.targets
+    if spec is not None:
+        if spec.remembered:
+            # "Target land deals 3 damage to that creature": choosing the
+            # dealer replaces what the resolution remembers, so "that
+            # creature" would name the dealer.
+            return False
+        if spec.other_than_source and not effect.is_targeted:
+            return False
+        if spec.controller == ControllerRelation.SPECIFIC:
+            return False
+        if spec.count is not None:
+            # "Each of two other target creatures", "each of X targets": a
+            # slot of several targets, whose number the engine does not
+            # enforce when they are chosen.
+            return False
+    players = effect.players
+    if players is not None and players.scope in (
+        PlayerScope.REFERRED_PLAYER,
+        PlayerScope.CONTROLLER_OF,
+    ):
+        return False
+    return True
+
+
+def _damage_body(stream: Stream):
+    """The damage clause, and the instruction designating its dealer when
+    the dealer is a target."""
+    mark = stream.mark()
     # Who deals it. "This creature deals ..." is the common case, but any
     # noun phrase can be the dealer - "Each creature deals 1 damage to its
     # controller", "Target creature you control deals damage equal to its
@@ -792,9 +1137,28 @@ def _damage(stream: Stream) -> Effect | None:
         dealer, _dealer_targeted = parse_target(stream)
         if dealer is None:
             stream.reset(look)
-    if not (stream.accept("deals", "deal") or stream.accept_phrase("it deals")):
+    if stream.accept_phrase("it deals"):
+        dealer, _dealer_targeted = ObjectFilter(remembered=True), False
+    elif not stream.accept("deals", "deal"):
         stream.reset(mark)
         return None
+    designated = None
+    if dealer is not None:
+        # The dealer is part of the event (CR 120.1): its lifelink and
+        # deathtouch apply, and "damage dealt by" watches it. Only a dealer
+        # the engine can name is kept - the source, the object the
+        # resolution is talking about, or one target chosen to deal it. Any
+        # other dealer ("each creature deals 1 damage to its controller")
+        # needs a per-object loop, and stays unread.
+        if dealer.source_only:
+            dealer = None
+        elif _dealer_targeted:
+            designated = _designate(dealer)
+            if designated is None:
+                return None
+            dealer = ObjectFilter(remembered=True)
+        elif not dealer.remembered:
+            return None
 
     amount = parse_value(stream)
     if not stream.accept("damage"):
@@ -812,11 +1176,12 @@ def _damage(stream: Stream) -> Effect | None:
     # CR 115.4: "any target" is a creature, player, planeswalker or battle.
     if stream.accept_phrase("any target"):
         after = parse_value(stream) if amount is None else None
-        return Effect(
+        return designated, Effect(
             EffectKind.DAMAGE,
-            targets=ANY_TARGET,
+            targets=replace(ANY_TARGET),
             amount=amount or after or Value.of(1),
             is_targeted=True,
+            damage_source=dealer,
             text="deal damage to any target",
         )
 
@@ -834,21 +1199,23 @@ def _damage(stream: Stream) -> Effect | None:
                 stream.reset(look)
         else:
             stream.reset(look)
-        return Effect(
+        return designated, Effect(
             EffectKind.DAMAGE,
             targets=targets,
             amount=_scaled(stream, amount or Value.of(1)),
             is_targeted=targeted,
+            damage_source=dealer,
             text="deal damage",
         )
     players, player_targeted = parse_player_filter(stream)
     if players is None:
         return None
-    return Effect(
+    return designated, Effect(
         EffectKind.DAMAGE,
         players=players,
         amount=_scaled(stream, amount or Value.of(1)),
         is_targeted=player_targeted,
+        damage_source=dealer,
         text="deal damage",
     )
 
@@ -994,16 +1361,23 @@ def _exile(stream: Stream) -> Effect | None:
 
 @clause("sacrifice")
 def _sacrifice(stream: Stream) -> Effect | None:
-    players, _ = parse_player_filter(stream)
+    players, player_targeted = parse_player_filter(stream)
     if not stream.accept("sacrifice", "sacrifices"):
         return None
-    targets, _targeted = parse_target(stream)
-    if targets is None:
+    targets, targeted = parse_target(stream)
+    if targets is None or targeted:
+        # Nothing is sacrificed as a target: CR 701.21a lets a player
+        # sacrifice only what they control, chosen as the instruction is
+        # carried out.
         return None
     return Effect(
         EffectKind.SACRIFICE,
         targets=targets,
         players=players or YOU,
+        # "Target player sacrifices a creature": the *player* is the target
+        # (CR 115.1), chosen as the spell or ability goes on the stack
+        # (CR 601.2c), and the spell fizzles if they are gone (CR 608.2b).
+        is_targeted=bool(players is not None and player_targeted),
         text="sacrifice",
     )
 
@@ -1329,8 +1703,12 @@ def _quoted_run(stream: Stream) -> tuple:
         # keywords that take an argument. The run reader only knew bare names,
         # so a list stopped dead at the first one that carried a parameter.
         parameterised = _keyword_with_argument(stream)
+        if parameterised == ():
+            # A parameterised keyword whose argument cannot be read: the whole
+            # grant fails rather than granting the keyword unqualified.
+            return ()
         if parameterised is not None:
-            granted.append(parameterised)
+            granted.extend(parameterised)
         elif stream.peek().text == '"':
             inner = _read_quotation(stream)
             if inner is None:
@@ -1344,21 +1722,79 @@ def _quoted_run(stream: Stream) -> tuple:
             if is_known(pair):
                 stream.next()
                 stream.next()
-                granted.append(
-                    Ability(AbilityKind.STATIC, keyword=pair, text=pair)
-                )
+                name = pair
             elif is_known(token.text):
                 stream.next()
-                granted.append(
-                    Ability(
-                        AbilityKind.STATIC, keyword=token.text, text=token.text
-                    )
-                )
+                name = token.text
             else:
                 break
+            built = _granted_keyword(name, stream)
+            if built is None:
+                return ()
+            granted.extend(built)
         if not _another_keyword_follows(stream):
             break
     return tuple(granted)
+
+
+def _granted_keyword(name: str, stream: Stream):
+    """A keyword named in a grant, expanded exactly as a printed one would be.
+
+    "Creatures you control have prowess" grants prowess - the triggered
+    ability CR 702.108a defines - not an inert ability that happens to be
+    called Prowess. Granted keywords used to be built as a bare name, which is
+    right for flying (the engine asks for it by name) and silently wrong for
+    every keyword that is really a trigger or carries a quality: granted
+    prowess, exalted, annihilator 2 and swampwalk all did nothing while the
+    card read as understood. So the keyword registry expands it, and the grant
+    fails when the registry's expansion is itself not understood - a keyword
+    the engine cannot run is not granted as if it could.
+
+    A numeric argument ("afflict 3", "toxic 1") or a mana cost ("ninjutsu
+    {2}{U}{B}") is read here; nothing else is. Where the expansion is just the
+    named static ability, the bare form is kept, which is the same ability.
+    """
+    from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from .compile import understood
+
+    amount = 0
+    cost = None
+    look = stream.mark()
+    number = stream.accept_number()
+    if number is not None:
+        # "mobilize X, where X is ..." is not read here; a plain number is.
+        amount = number
+    elif stream.peek().kind is TokenKind.SYMBOL:
+        from ..rules.cr100_game_concepts.cr118_costs import Cost
+
+        symbols = _mana_run(stream)
+        if not symbols:
+            stream.reset(look)
+            return None
+        cost = Cost.mana("".join(symbols))
+    elif stream.peek().text == "X":
+        return None
+
+    built = build(KeywordInstance(name, amount=amount, cost=cost, text=name))
+    if not built or not all(understood(ability) for ability in built):
+        stream.reset(look)
+        return None
+    if (
+        len(built) == 1
+        and amount == 0
+        and cost is None
+        and built[0].kind is AbilityKind.STATIC
+        and not built[0].effects
+        and built[0].quality is None
+        and built[0].trigger is None
+        and built[0].additional_cost is None
+        and built[0].alternative_cost is None
+    ):
+        # Not for conspire or casualty: shrunk to the bare name, a granted
+        # conspire lost the cost it lets the spell's controller pay.
+        return (Ability(AbilityKind.STATIC, keyword=name, text=name),)
+    return built
 
 
 def _another_keyword_follows(stream: Stream) -> bool:
@@ -1400,57 +1836,146 @@ _PARAMETERISED_KEYWORDS = ("protection", "ward", "hexproof", "landwalk")
 def _keyword_with_argument(stream: Stream):
     """"protection from black and from green", "ward {2}", "hexproof from blue".
 
-    The argument narrows the keyword rather than adding another one, so the
-    whole phrase is read here and kept as a single ability - "protection from
-    black and from green" is one keyword mentioned twice, not two keywords.
+    Returns the abilities the phrase grants; ``None`` when the next words are
+    not one of these keywords; and ``()`` when they are but the argument
+    cannot be read, which fails the grant.
+
+    CR 702.16g: "protection from black and from green" is two protection
+    abilities, one per quality. The quality is the whole point of the keyword.
+    Read as a bare "Protection", which is what this used to produce, every
+    Sword granted protection from *everything*; and the argument reader ate
+    up to fourteen words, so "gains protection from the color of your choice
+    until end of turn" lost its duration as well, and Mother of Runes handed
+    out permanent protection from everything.
     """
-    from ..rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from .compile import understood
 
     mark = stream.mark()
     word = stream.peek().lower
     if word not in _PARAMETERISED_KEYWORDS:
         return None
     stream.next()
-    name = word.capitalize()
 
-    # "ward {2}" and "ward - pay 3 life".
+    # "ward {2}". Built by the registry, so a granted ward is the same ability
+    # as a printed one - and, while the registry's ward cannot collect its
+    # payment, not understood either. It used to be a bare "Ward" that did
+    # nothing and counted as read.
     if word == "ward":
+        from ..rules.cr100_game_concepts.cr118_costs import Cost
+
         symbols = _mana_run(stream)
         if not symbols:
-            stream.skip_punct("-")
-            parse_value(stream)
-        return Ability(AbilityKind.STATIC, keyword=name, text=f"{name} ...")
+            stream.reset(mark)
+            return ()
+        built = build(
+            KeywordInstance("Ward", cost=Cost.mana("".join(symbols)), text="Ward")
+        )
+        if not all(understood(ability) for ability in built):
+            stream.reset(mark)
+            return ()
+        return built
 
-    if not stream.accept("from"):
+    if word == "landwalk" or not stream.at("from"):
         stream.reset(mark)
         return None
+    qualities = _protection_qualities(stream)
+    if qualities is None:
+        stream.reset(mark)
+        return ()
+    name = "Protection" if word == "protection" else "Hexproof from"
+    out: list = []
+    for quality in qualities:
+        out.extend(build(KeywordInstance(name, filter=quality, text=name)))
+    return tuple(out)
 
-    # "from each color", "from black and from green", "from the color of your
-    # choice", "from each color that's not in your commander's color
-    # identity". All of them narrow the same keyword.
-    steps = 0
-    while not stream.done:
-        token = stream.peek()
-        if token.text in (".", ";", '"'):
-            break
-        look = stream.mark()
-        # A following "and has ..." starts a new keyword, not more argument.
-        if stream.accept("and"):
-            if stream.at("has", "have", "gains", "gain") or stream.at(*_PARAMETERISED_KEYWORDS):
-                if not stream.accept("from"):
-                    stream.reset(look)
-                    break
-            elif not stream.accept("from"):
-                stream.reset(look)
-                break
-            continue
-        stream.next()
-        steps += 1
-        if steps > 14:
-            stream.reset(mark)
+
+#: The colour words a protection quality can name (CR 105.1).
+_COLOUR_QUALITIES = ("white", "blue", "black", "red", "green")
+
+#: "Protection from everything" (CR 702.16j): the keyword with no quality,
+#: which ``protected_from`` treats as matching any source.
+_EVERYTHING = object()
+
+
+def _protection_qualities(stream: Stream):
+    """"from red", "from red and from blue", "from everything", "from Humans".
+
+    One filter per quality, ``None`` standing for everything, or ``None``
+    overall for a quality that cannot be expressed. The filters carry no zone,
+    because a quality is asked of a source wherever it is - a spell on the
+    stack, an ability's source, an attacking creature.
+
+    Declined: "the color of your choice" and "the chosen color", which need a
+    choice this reader cannot make; qualities that name players ("from your
+    opponents"); and any noun phrase narrowing more than type and subtype.
+    """
+    qualities: list = []
+    while True:
+        if not stream.accept("from"):
             return None
+        quality = _one_quality(stream)
+        if quality is None:
+            return None
+        qualities.append(None if quality is _EVERYTHING else quality)
+        look = stream.mark()
+        stream.skip_punct(",")
+        stream.accept("and")
+        if stream.at("from"):
+            continue
+        stream.reset(look)
+        return qualities
 
-    return Ability(AbilityKind.STATIC, keyword=name, text=f"{name} from ...")
+
+def _one_quality(stream: Stream):
+    from ..rules.kernel.enums import Color
+
+    word = stream.peek().lower
+    if word == "everything":
+        stream.next()
+        return _EVERYTHING
+    if word in _COLOUR_QUALITIES:
+        stream.next()
+        return ObjectFilter(colors_any=Color[word.upper()], zones=frozenset())
+    if word == "multicolored":
+        stream.next()
+        return ObjectFilter(must_be_multicolored=True, zones=frozenset())
+    if word == "monocolored":
+        stream.next()
+        return ObjectFilter(must_be_monocolored=True, zones=frozenset())
+    if word == "colorless":
+        stream.next()
+        return ObjectFilter(must_be_colorless=True, zones=frozenset())
+    if stream.accept_phrase("all colors") or stream.accept_phrase("each color"):
+        # "Protection from all colors" is protection from each color: a
+        # source is stopped by it exactly when it has at least one.
+        if stream.at("that's", "that", "not"):
+            return None
+        return ObjectFilter(must_be_coloured=True, zones=frozenset())
+
+    look = stream.mark()
+    spec = parse_object_filter(stream)
+    if spec is None:
+        stream.reset(look)
+        return None
+    # "from Goblins" is subtypes_all, "from non-Spirit creatures" a type with
+    # subtypes_none: type and subtype words, and nothing that asks more.
+    simple = ObjectFilter(
+        types_any=spec.types_any,
+        types_all=spec.types_all,
+        types_none=spec.types_none,
+        subtypes_any=spec.subtypes_any,
+        subtypes_all=spec.subtypes_all,
+        subtypes_none=spec.subtypes_none,
+        is_ability=spec.is_ability,
+        zones=spec.zones,
+    )
+    if spec != simple or not (
+        spec.types_any or spec.types_all or spec.subtypes_any or spec.subtypes_all
+    ):
+        stream.reset(look)
+        return None
+    return replace(spec, zones=frozenset())
 
 
 def _read_quotation(stream: Stream):
@@ -1560,6 +2085,226 @@ def _trailing_pump(stream: Stream, targets, targeted):
         is_targeted=targeted,
         text=f"gets {token.text}",
     )
+
+
+# ---------------------------------------------------------------------------
+# MTG Arena's "perpetually" (see rules/cr700_additional_rules/digital_mechanics)
+# ---------------------------------------------------------------------------
+
+
+@clause("perpetually")
+def _perpetually(stream: Stream) -> Effect | None:
+    """"Creature cards in your hand perpetually get +1/+1", "It perpetually
+    gains flash", "A random land card in your library perpetually gains ...".
+
+    The subject is read here; what happens to it is read by the ordinary
+    continuous-effect clauses, applied to "this" - the same words, minus the
+    adverb, are a pump or a grant the grammar already knows. The result is
+    accepted only if every part is a layered change aimed at that "this" with
+    no duration of its own, which is what a perpetual change can be. Anything
+    else - "perpetually ... until end of turn", a change the clauses read
+    with a target of their own, a "for each" or "as long as" after it - is
+    left unread rather than re-aimed.
+
+    Also reads the two-sentence form "Choose a nonland card in your hand. It
+    perpetually gains flash." - the choice is the subject.
+    """
+    mark = stream.mark()
+    subject = _perpetual_subject(stream)
+    if subject is None:
+        stream.reset(mark)
+        return None
+    targets, targeted, at_random = subject
+    if not stream.accept("perpetually"):
+        stream.reset(mark)
+        return None
+
+    changes = _perpetual_changes(stream)
+    if changes is None:
+        stream.reset(mark)
+        return None
+    # "... and perpetually gains 'This spell costs {1} less to cast.'"
+    while True:
+        look = stream.mark()
+        stream.skip_punct(",")
+        if not stream.accept_phrase("and perpetually"):
+            stream.reset(look)
+            break
+        more = _perpetual_changes(stream)
+        if more is None:
+            stream.reset(mark)
+            return None
+        changes += more
+
+    # A trailing modifier would be applied to the wrapper rather than to the
+    # change: "for each" would scale nothing, and "as long as"/"during" would
+    # turn a continuous condition into a one-off check.
+    look = stream.mark()
+    stream.skip_punct(",")
+    if stream.at("for", "as", "during", "until", "this"):
+        if (
+            stream.at_phrase("for each")
+            or stream.at_phrase("as long as")
+            or stream.at("during", "until")
+            or stream.at_phrase("this turn")
+        ):
+            stream.reset(mark)
+            return None
+    stream.reset(look)
+
+    return Effect(
+        EffectKind.PERPETUALLY,
+        targets=targets,
+        is_targeted=targeted,
+        keywords=("at random",) if at_random else (),
+        children=tuple(changes),
+        text="perpetually",
+    )
+
+
+#: "The duplicate", "those duplicates": what a conjure just made.
+_DUPLICATE_PHRASES = (
+    "the duplicates", "the duplicate", "that duplicate", "those duplicates",
+)
+
+
+def _perpetual_subject(stream: Stream):
+    """(filter, targeted, at random) for the thing a perpetual change is on."""
+    mark = stream.mark()
+    for phrase in _DUPLICATE_PHRASES:
+        if stream.accept_phrase(phrase):
+            return ObjectFilter(remembered=True), False, False
+
+    # "Choose a creature card in your hand. It perpetually gets +1/+1."
+    if stream.accept("choose"):
+        start = stream.mark()
+        if not stream.accept("a", "an"):
+            stream.reset(mark)
+            return None
+        spec = parse_object_filter(stream)
+        if spec is None or not _cards_elsewhere(stream, start, spec):
+            stream.reset(mark)
+            return None
+        stream.skip_punct(".")
+        if not (
+            stream.accept("it")
+            or stream.accept_phrase("that card")
+            or stream.accept_phrase("that creature card")
+        ):
+            stream.reset(mark)
+            return None
+        spec = _owned_zone(stream, start, spec)
+        if spec is None:
+            stream.reset(mark)
+            return None
+        return replace(spec, count=Value.of(1), up_to=False), False, False
+
+    # "a random nonland card in your hand"
+    if stream.accept("a", "an") and stream.accept("random"):
+        start = stream.mark()
+        spec = parse_object_filter(stream)
+        if spec is None or spec.count is not None or spec.remembered:
+            stream.reset(mark)
+            return None
+        spec = _owned_zone(stream, start, spec)
+        if spec is None:
+            stream.reset(mark)
+            return None
+        return replace(spec, count=Value.of(1), up_to=False), False, True
+    stream.reset(mark)
+
+    start = stream.mark()
+    targets, targeted = parse_target(stream)
+    if targets is None or targets.includes_players:
+        stream.reset(mark)
+        return None
+    targets = _owned_zone(stream, start, targets)
+    if targets is None:
+        stream.reset(mark)
+        return None
+    return targets, targeted, False
+
+
+def _cards_elsewhere(stream: Stream, start: int, spec: ObjectFilter) -> bool:
+    """A chosen card must be named as a card in a zone - "a creature card in
+    your hand" - since "choose a creature" alone would be a permanent."""
+    return bool(spec.zones) and Zone.BATTLEFIELD not in spec.zones
+
+
+def _owned_zone(stream: Stream, start: int, spec: ObjectFilter):
+    """Hold "in your hand/graveyard/library" to *your* zone, or decline.
+
+    The noun reader reads "cards in your graveyard" as cards in any graveyard
+    - the "your" is dropped (reported; it is not this construct's to fix) -
+    and a perpetual change on every player's cards is not the card. So the
+    words consumed are checked here: "in your <zone>" pins the owner, and any
+    other player's zone ("in that player's hand") is declined outright, as is
+    a "permanent card" off the battlefield, which the noun reader reads as a
+    card of any type at all.
+    """
+    from ..rules.kernel.query import ControllerRelation
+
+    words = [token.lower for token in stream.tokens[start : stream.mark()]]
+    offboard = spec.zones and Zone.BATTLEFIELD not in spec.zones
+    if offboard and any(w in ("permanent", "permanents") for w in words):
+        return None
+    for index, word in enumerate(words):
+        if word != "in" or index + 1 >= len(words):
+            continue
+        owner_word = words[index + 1]
+        if owner_word == "your":
+            if spec.owner is ControllerRelation.ANY:
+                spec = replace(spec, owner=ControllerRelation.YOU)
+        elif owner_word in ("the",):
+            continue
+        else:
+            return None
+    return spec
+
+
+def _perpetual_changes(stream: Stream) -> list[Effect] | None:
+    """The change after "perpetually", read as if it were said of "this".
+
+    Returns the layered changes, re-aimed at the object they will be bound to
+    (``targets`` None), or ``None`` if what follows is not purely that.
+    """
+    from ..rules.cr700_additional_rules.digital_mechanics import PERPETUAL_KINDS
+    from .tokens import Token
+
+    start = stream.mark()
+    this = Token(TokenKind.WORD, "this")
+    sub = Stream([this, *stream.tokens[start:]])
+    inner = parse_effect(sub)
+    if inner is None or sub.mark() <= 1:
+        return None
+
+    out: list[Effect] = []
+    for node in inner.walk():
+        if node.kind is EffectKind.SEQUENCE:
+            if node.duration or not node.condition.is_always:
+                return None
+            continue
+        if node.kind not in PERPETUAL_KINDS:
+            return None
+        if node.duration or node.is_targeted or not node.condition.is_always:
+            return None
+        if node.text.startswith(CDA_MARK):
+            return None
+        if node.targets is not None and replace(
+            node.targets, zones=ObjectFilter().zones
+        ) != SELF:
+            return None
+        if node.kind is EffectKind.GRANT_ABILITY and any(
+            ability.keyword == "Ward" for ability in node.granted_abilities
+        ):
+            # "gains ward {1}" is read without its cost; granting a Ward that
+            # asks for nothing is not the card.
+            return None
+        out.append(replace(node, targets=None))
+    if not out:
+        return None
+    stream.reset(start + sub.mark() - 1)
+    return out
 
 
 @clause("create-token")
@@ -1680,7 +2425,9 @@ def _token_abilities(stream: Stream) -> tuple[tuple[str, ...], tuple]:
         stream.reset(mark)
         return (), ()
 
-    keywords = tuple(a.keyword for a in granted if a.keyword)
+    # One keyword can expand to several abilities (CR 702.16g: protection
+    # from two colours is two abilities), and the token spec keeps names.
+    keywords = tuple(dict.fromkeys(a.keyword for a in granted if a.keyword))
     written = tuple(a for a in granted if not a.keyword)
     return keywords, written
 
@@ -1804,7 +2551,6 @@ _COLOUR_SOURCES = (
     "of any colour",
     "of any one color",
     "of any type that a land you control could produce",
-    "of any type that land produced",
     "of any color that a land you control could produce",
     "of any of the exiled card's colors",
     "of any of the exiled cards' colors",
@@ -1868,8 +2614,16 @@ def _amount_of_mana(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
-    colours = _mana_colour_source(stream)
-    if colours is None:
+    # "of that color", "of the chosen color": the one colour the source
+    # chose, not a menu - Nykthos makes mana of the colour it chose.
+    chosen = (
+        stream.accept_phrase("of that color")
+        or stream.accept_phrase("of that colour")
+        or stream.accept_phrase("of the chosen color")
+        or stream.accept_phrase("of the chosen colour")
+    )
+    colours = None if chosen else _mana_colour_source(stream)
+    if colours is None and not chosen:
         stream.reset(mark)
         return None
     if not stream.accept_phrase("equal to"):
@@ -1881,6 +2635,14 @@ def _amount_of_mana(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
+    if chosen:
+        return Effect(
+            EffectKind.ADD_MANA,
+            players=YOU,
+            amount=amount,
+            colors_chosen=True,
+            text="add an amount of mana of the chosen colour",
+        )
     return Effect(
         EffectKind.ADD_MANA,
         players=YOU,
@@ -1891,9 +2653,21 @@ def _amount_of_mana(stream: Stream) -> Effect | None:
 
 
 def _chosen_colour_mana(stream: Stream):
-    """"mana of the chosen color" - the colour this permanent recorded."""
+    """"mana of the chosen color" - the colour this permanent recorded - and
+    "mana of any type that land produced", the types the tapping that
+    triggered the ability produced (CR 106.12a, 106.1b)."""
     mark = stream.mark()
     stream.accept("mana")
+    if stream.accept_phrase("of any type that land produced"):
+        # Not "any color": colorless is a type too, and a Forest's tapping
+        # offers green alone. Read off the triggering event at resolution.
+        return Effect(
+            EffectKind.ADD_MANA,
+            players=YOU,
+            amount=Value.of(1),
+            colors_from_trigger=True,
+            text="add mana of a type that land produced",
+        )
     if not (
         stream.accept_phrase("of the chosen color")
         or stream.accept_phrase("of the chosen colour")
@@ -2109,20 +2883,21 @@ def _more_targets(stream: Stream) -> list:
 def _in_any_order_tail(stream: Stream, effect: Effect) -> Effect | None:
     """A trailing "in any order" / "in a random order" on a library move.
 
-    Who picks the order is the only thing being said, and no decision in this
-    simulator picks better than random - so the phrase is consumed and the
-    effect is unchanged. Leaving it unread failed the sentence.
+    CR 401.4: several cards put into a library at once are ordered by their
+    owner unless the effect says otherwise - "in any order" is that choice,
+    "in a random order" takes it away. It was consumed after *any* effect and
+    changed nothing, so a random bottom was a chosen one. Only a move into a
+    library has an order to speak of.
     """
-    mark = stream.mark()
-    if not (
-        stream.accept_phrase("in any order")
-        or stream.accept_phrase("in a random order")
-        or stream.accept_phrase("in random order")
-    ):
+    if effect.kind is not EffectKind.PUT_ON_LIBRARY:
         return None
+    if "random" in effect.keywords:
+        return None
+    mark = stream.mark()
+    order = _library_order_words(stream)
     if stream.mark() == mark:
         return None
-    return effect
+    return replace(effect, keywords=(*effect.keywords, *order))
 
 
 def _under_control(stream: Stream) -> None:
@@ -2297,20 +3072,40 @@ def _player_cant(stream: Stream) -> Effect | None:
     of spells. Distinct from the bare "this creature can't block" form: the
     filter is the whole card, and reading it as a blanket "can't cast" would
     turn a tax effect into a lock.
+
+    The players are the whole point (CR 101.2): "your opponents can't cast
+    spells" leaves its caster free, and "target player can't ..." is one
+    player chosen as the spell is cast (CR 601.2c) - a target, not whoever
+    the engine could find later.
     """
     from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
+    opening = stream.peek().lower
     players, _ = parse_player_filter(stream)
     if players is None:
+        return None
+    if (
+        players.scope in (PlayerScope.CONTROLLER_OF, PlayerScope.OWNER_OF)
+        and opening != "its"
+    ):
+        # "Enchanted creature's controller can't ...": the object it is the
+        # controller of is not carried, so the restriction could only guess.
+        # "Its controller" is a back-reference the referent pass binds to
+        # what the ability acted on (Render Silent), and stays.
         return None
     if not (stream.accept("can't") or stream.accept("cannot")):
         return None
 
     # "can't cast spells *or activate abilities of* artifacts, creatures, or
     # enchantments" - one prohibition covering two acts, and reading only the
-    # first turned Grand Abolisher into half a card.
+    # first turned Grand Abolisher into half a card. Each act keeps its own
+    # object: the abilities are of artifacts, creatures or enchantments, the
+    # spells are any spells.
     acts: list = []
-    subject = None
+    #: Per act read: whether its object phrase named where from ("from your
+    #: hand"). Activations add three acts for one phrase; only the last
+    #: phrase's entry is consulted.
+    from_zone: list[bool] = []
     while True:
         if stream.accept("cast"):
             act = Act.CAST_SPELL
@@ -2331,21 +3126,75 @@ def _player_cant(stream: Stream) -> Effect | None:
         else:
             break
 
+        start = stream.mark()
         found = parse_object_filter(stream)
         stream.accept("card", "cards", "spell", "spells", "life")
-        if subject is None:
-            subject = found
-        acts.append(act)
+        if act is Act.CAST_SPELL and stream.accept_phrase("from anywhere other than"):
+            # Drannith Magistrate: "can't cast spells from anywhere other than
+            # their hands" - every zone a card can be cast from but the hand
+            # (CR 601.2a: the card is cast from where it is). "Their" is the
+            # prohibited players, and the hand is whichever one the card is in.
+            if found is None or not (
+                stream.accept_phrase("their hands")
+                or stream.accept_phrase("their hand")
+                or stream.accept_phrase("your hand")
+            ):
+                return None
+            found = replace(found, zones=_CAST_FROM_ELSEWHERE)
+        if found is not None and _names_the_prohibited_player(stream, start):
+            # "... with mana value greater than the number of lands *that
+            # player* controls": that player is whoever is casting, and the
+            # restriction evaluates its numbers for its own controller.
+            return None
+        if act in (Act.SEARCH_LIBRARY, Act.WIN_GAME):
+            # Nothing in the engine asks whether a search or a win is
+            # forbidden, so reading one would be a prohibition that stops
+            # nothing.
+            return None
+        if act in (Act.DRAW_CARD, Act.GAIN_LIFE):
+            # "can't draw cards", "can't gain life": the noun names what is
+            # drawn, not which draws. Anything narrower ("can't draw more
+            # than one card each turn") is a different rule.
+            if found is not None and found != ObjectFilter(zones=found.zones):
+                return None
+            found = None
+        if act is Act.CAST_SPELL and found is not None and found.source_only:
+            # "You can't cast this unless ...": a rule about a card in a hand,
+            # which the restrictions in force - read from the battlefield and
+            # the stack - never see.
+            return None
+        if act is Act.ACTIVATE_ABILITY:
+            # CR 602.1: mana abilities and loyalty abilities are activated
+            # abilities too, and the engine asks about each as its own act.
+            acts.extend(
+                (each, found)
+                for each in (
+                    Act.ACTIVATE_ABILITY,
+                    Act.ACTIVATE_MANA_ABILITY,
+                    Act.ACTIVATE_LOYALTY_ABILITY,
+                )
+            )
+        else:
+            acts.append((act, found))
+        from_zone.append(
+            any(t.lower == "from" for t in stream.tokens[start : stream.mark()])
+        )
 
         look = stream.mark()
         stream.skip_punct(",")
         if not stream.accept("or", "and"):
             stream.reset(look)
             break
+        if not stream.at(*_PROHIBITED_VERBS):
+            # "from graveyards *or exile*" is a second zone, not a second
+            # act: leave it for the caller to fail on rather than letting
+            # it start a sentence of its own.
+            stream.reset(look)
+            break
 
     if not acts:
         return None
-    act = acts[0]
+    acts = _share_the_origin(acts, from_zone)
     # "Your opponents can't cast spells *this turn*." A prohibition from a
     # resolved spell nearly always carries a duration, and reading it as
     # permanent turns a one-turn Silence into a lock.
@@ -2353,7 +3202,11 @@ def _player_cant(stream: Stream) -> Effect | None:
     return Effect(
         EffectKind.RESTRICTION,
         players=players,
-        targets=subject,
+        targets=acts[0][1],
+        # "Target player can't cast spells this turn": the player is chosen
+        # as the spell is cast (CR 601.2c) and the objects are not targets.
+        is_targeted=players.scope
+        in (PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT),
         restrictions=tuple(
             Restriction(
                 act=each,
@@ -2361,10 +3214,57 @@ def _player_cant(stream: Stream) -> Effect | None:
                 players=players,
                 text=f"can't {each.name.lower()}",
             )
-            for each in acts
+            for each, subject in acts
         ),
         duration=duration,
         text="a player can't ...",
+    )
+
+
+def _share_the_origin(acts: list, from_zone: list[bool]) -> list:
+    """"You can't play lands or cast spells *from your hand*": the zone at the
+    end of the list belongs to every play and cast in it, as it does in
+    English (Experimental Frenzy lets lands be played from the top of the
+    library and from nowhere else). Read as belonging to the casts alone, the
+    first prohibition stopped the very land plays the card permits.
+
+    Only a play or cast with no origin of its own takes it; a list whose last
+    act names none is left alone.
+    """
+    from ..rules.cr500_turn_structure.restrictions import Act
+
+    if len(from_zone) < 2 or not from_zone[-1] or any(from_zone[:-1]):
+        return acts
+    last_act, last = acts[-1]
+    if last_act not in (Act.CAST_SPELL, Act.PLAY_LAND) or last is None:
+        return acts
+    out = []
+    for act, subject in acts:
+        if act in (Act.CAST_SPELL, Act.PLAY_LAND) and subject is not None and subject is not last:
+            subject = replace(subject, zones=last.zones, owner=last.owner)
+        elif act not in (Act.CAST_SPELL, Act.PLAY_LAND):
+            # "can't activate abilities or cast spells from graveyards": the
+            # zone would have to say where the abilities' sources are too.
+            return acts
+        out.append((act, subject))
+    return out
+
+
+#: Every zone a card can be cast from except the hand.
+_CAST_FROM_ELSEWHERE = frozenset(
+    {Zone.LIBRARY, Zone.GRAVEYARD, Zone.EXILE, Zone.COMMAND}
+)
+
+#: The verbs ``_player_cant`` reads, for telling "or <another act>" apart
+#: from an "or" inside the object phrase.
+_PROHIBITED_VERBS = ("cast", "play", "search", "draw", "gain", "win", "activate")
+
+
+def _names_the_prohibited_player(stream: Stream, start) -> bool:
+    """Whether the words read since ``start`` say "that player"."""
+    words = [token.lower for token in stream.tokens[start : stream.mark()]]
+    return any(
+        words[i : i + 2] == ["that", "player"] for i in range(len(words) - 1)
     )
 
 
@@ -2384,24 +3284,47 @@ def _cant(stream: Stream) -> Effect | None:
         return None
 
     acts: list[Act] = []
+    #: Who or what an "attack" is forbidden against, per act: the player for
+    #: ATTACK_PLAYER, the planeswalker filter for ATTACK_PLANESWALKER.
+    protected_by_act: dict[Act, object] = {}
     while True:
         if stream.accept("block"):
             acts.append(Act.BLOCK)
         elif stream.accept("attack"):
-            acts.append(Act.ATTACK)
             # "can't attack *you*" / "can't attack you or planeswalkers you
             # control". Who the prohibition protects is the whole point of
-            # Propaganda and Ghostly Prison; without it the restriction reads
-            # as "can't attack at all", which is a far stronger card.
+            # Propaganda and Blazing Archon (CR 508.1c: a restriction on
+            # whom a creature attacks); read as "can't attack at all" it
+            # also stopped its controller's own creatures, and every attack
+            # on another opponent.
             look = stream.mark()
             protected, _ = parse_player_filter(stream)
             if protected is None:
                 stream.reset(look)
+                acts.append(Act.ATTACK)
             else:
+                if protected.scope is not PlayerScope.YOU:
+                    # "its owner", "that player", "a player it has already
+                    # attacked": a defender the restriction cannot name on
+                    # its own.
+                    return None
+                acts.append(Act.ATTACK_PLAYER)
+                protected_by_act[Act.ATTACK_PLAYER] = protected
                 look = stream.mark()
                 if stream.accept("or"):
-                    if parse_object_filter(stream) is None:
+                    walkers = parse_object_filter(stream)
+                    if walkers is None:
                         stream.reset(look)
+                    elif (
+                        walkers.types_all != CardType.PLANESWALKER
+                        or walkers.controller is not ControllerRelation.YOU
+                    ):
+                        # "you or permanents you control", "or block
+                        # creatures you control": not the planeswalkers.
+                        return None
+                    else:
+                        acts.append(Act.ATTACK_PLANESWALKER)
+                        protected_by_act[Act.ATTACK_PLANESWALKER] = walkers
         elif stream.accept_phrase("be blocked"):
             acts.append(Act.BE_BLOCKED)
         elif stream.accept_phrase("be countered"):
@@ -2448,10 +3371,7 @@ def _cant(stream: Stream) -> Effect | None:
     forbidden = Effect(
         EffectKind.RESTRICTION,
         targets=subject,
-        restrictions=tuple(
-            Restriction(act=act, subject=subject, text=f"can't {act.name.lower()}")
-            for act in acts
-        ),
+        restrictions=tuple(_cant_restriction(act, subject, protected_by_act) for act in acts),
         duration=duration,
         text="can't",
     )
@@ -2471,6 +3391,28 @@ def _cant(stream: Stream) -> Effect | None:
         ),
         text="can't, and has abilities",
     )
+
+
+def _cant_restriction(act, subject, protected_by_act):
+    """One act of a "can't" sentence, carrying whom an attack may not be
+    made against: the attacked player for ``ATTACK_PLAYER`` (asked with the
+    defending player), the attacked planeswalker for ``ATTACK_PLANESWALKER``
+    (asked with it as the counterpart)."""
+    from ..rules.cr500_turn_structure.restrictions import Act, Restriction
+
+    protected = protected_by_act.get(act)
+    if act is Act.ATTACK_PLAYER:
+        return Restriction(
+            act=act, subject=subject, players=protected, text="can't attack you"
+        )
+    if act is Act.ATTACK_PLANESWALKER:
+        return Restriction(
+            act=act,
+            subject=subject,
+            counterpart=protected,
+            text="can't attack planeswalkers you control",
+        )
+    return Restriction(act=act, subject=subject, text=f"can't {act.name.lower()}")
 
 
 #: The words that begin a prohibited act, for deciding whether a conjunction
@@ -2615,8 +3557,28 @@ def _you_may(stream: Stream) -> Effect | None:
     if not stream.accept("may"):
         stream.reset(mark)
         return None
+    body = stream.mark()
     inner = parse_effect(stream)
     if inner is None:
+        stream.reset(mark)
+        return None
+    if players.scope not in (
+        PlayerScope.YOU,
+        # Still decided by the controller in the engine; see
+        # ``resolve._CONTROLLER_CHOOSES``.
+        PlayerScope.EACH_PLAYER,
+        PlayerScope.EACH_OPPONENT,
+        PlayerScope.OPPONENT,
+    ) and any(
+        token.lower in ("you", "your", "yours", "you've", "you're")
+        for token in stream.tokens[body : stream.mark()]
+    ):
+        # The engine carries out another player's "may" with that player as
+        # its "you" (CR 608.2d) - which is what the sentence's own subject-
+        # less verbs and "their" mean. A "you" inside it is the ability's
+        # controller, a second player the IR cannot tell apart from the
+        # first, so the sentence is refused rather than handed to the wrong
+        # one.
         stream.reset(mark)
         return None
     return Effect(
@@ -2813,87 +3775,92 @@ _SEARCH_STEPS: tuple[tuple[str, "Zone | None"], ...] = (
     ("put that card onto the battlefield", Zone.BATTLEFIELD),
     ("put it onto the battlefield", Zone.BATTLEFIELD),
     ("put them onto the battlefield", Zone.BATTLEFIELD),
+    ("put those cards onto the battlefield", Zone.BATTLEFIELD),
     ("put that card into your hand", Zone.HAND),
     ("put it into your hand", Zone.HAND),
     ("put them into your hand", Zone.HAND),
+    ("put those cards into your hand", Zone.HAND),
     ("put that card into your graveyard", Zone.GRAVEYARD),
     ("put it into your graveyard", Zone.GRAVEYARD),
+    ("put them into your graveyard", Zone.GRAVEYARD),
+    # The tutors that leave the card on top (Vampiric Tutor, Worldly Tutor
+    # and their cycles) always shuffle *first* and then put it on top; the
+    # tail checks that order, because the other order would shuffle the card
+    # away.
     ("put that card on top of your library", Zone.LIBRARY),
     ("put it on top of your library", Zone.LIBRARY),
-    # "put that card on top" - the library is elided (Enlightened Tutor,
-    # Vampiric Tutor, Mystical Tutor and the rest of the cycle).
     ("put that card on top", Zone.LIBRARY),
+    ("put the card on top", Zone.LIBRARY),
     ("put it on top", Zone.LIBRARY),
-    # Cultivate and Kodama's Reach split the two cards between two zones.
-    # The battlefield is the half that matters for a mana curve; recording it
-    # keeps the ramp honest even though the second card's hand trip is not
-    # separately modelled.
-    (
-        "put one onto the battlefield tapped and the other into your hand",
-        Zone.BATTLEFIELD,
-    ),
-    ("put one onto the battlefield tapped", Zone.BATTLEFIELD),
-    ("put the rest into your graveyard", None),
-    ("put the rest on the bottom of your library in a random order", None),
-    ("put the rest on the bottom in a random order", None),
-    ("in any order", None),
-    ("those cards", None),
     ("exile that card", Zone.EXILE),
     ("exile it", Zone.EXILE),
+    ("exile them", Zone.EXILE),
+    ("exile those cards", Zone.EXILE),
+    # CR 701.23e: revealing is part of the instruction but changes nothing
+    # about where the card goes; the engine emits no reveal for a search.
     ("reveal that card", None),
     ("reveal those cards", None),
     ("reveal it", None),
     ("reveal them", None),
+    # The shuffle every search ends with (CR 701.23) - the executor does it.
     ("shuffle your library", None),
     ("shuffle their library", None),
     ("shuffle", None),
-    # Not a zone of its own, but not nothing either: ``_search_tail`` reads
-    # the word off any step it appears in and hands it to the effect.
-    ("tapped", None),
-    # Steps a search takes on the way that are not about where the card ends
-    # up. Each of them failed a whole tutor: Demonic Consultation, Vampiric
-    # Tutor, Worldly Tutor and their cycles.
-    ("discard a card at random", None),
-    ("discard a card", None),
-    ("put the card on top", Zone.LIBRARY),
-    ("put that card on top of your library", Zone.LIBRARY),
-    ("put it on top of your library", Zone.LIBRARY),
-    ("pay 2 life", None),
-    ("lose 2 life", None),
 )
 
+#: Cultivate and Kodama's Reach: of the (up to) two cards found, one goes onto
+#: the battlefield tapped and the other into the hand. Read as its own step,
+#: because it names two destinations, not one.
+_SEARCH_SPLIT = "put one onto the battlefield tapped and the other into your hand"
 
-def _search_tail(stream: Stream) -> tuple[Zone, bool]:
-    """Where a search puts what it finds, and whether it arrives tapped.
+
+def _search_tail(stream: Stream) -> tuple[Zone, bool, bool] | None:
+    """Where a search puts what it finds, whether it arrives tapped, and
+    whether the found cards are split between the battlefield and the hand.
 
     Defaults to the hand (CR 701.23c: a search with no stated destination
     reveals nothing and the card stays where the effect says - hand is the
-    overwhelmingly common templating).
+    overwhelmingly common templating). ``None`` when the steps are in an order
+    the executor would not follow: a card put on top and *then* shuffled is
+    not on top.
 
-    "Tapped" used to be in the step list as a word to swallow, which made
-    Rampant Growth, Cultivate, Farseek and the rest of the format's ramp put
-    their land in *untapped*. Every one of those decks came out a turn faster
-    than it plays, which is the one measurement a goldfishing tool exists to
-    make.
+    Only steps whose meaning is carried are read. "Discard a card at random",
+    "pay 2 life", "put the rest into your graveyard" were once consumed here
+    and dropped, which turned Gamble into a free Demonic Tutor; the tail now
+    stops at them and they must be read as effects of their own.
     """
     destination = Zone.HAND
     tapped = False
+    split = False
+    shuffled = False
     while True:
         before = stream.mark()
         stream.skip_punct(",")
         stream.accept("then", "and")
         stream.skip_punct(",")
 
+        if stream.accept_phrase(_SEARCH_SPLIT):
+            destination, tapped, split = Zone.BATTLEFIELD, True, True
+            continue
         for phrase, zone in _SEARCH_STEPS:
-            if stream.accept_phrase(phrase):
-                if zone is not None:
-                    destination = zone
-                if "tapped" in phrase:
-                    tapped = True
-                break
+            if not stream.accept_phrase(phrase):
+                continue
+            if zone is not None:
+                if zone is Zone.LIBRARY and not shuffled:
+                    return None
+                destination = zone
+            if phrase.startswith("shuffle"):
+                if destination is Zone.LIBRARY:
+                    return None
+                shuffled = True
+            # "put it onto the battlefield tapped" - how it arrives (CR
+            # 614.1c), a word after the step rather than a step of its own.
+            if zone is Zone.BATTLEFIELD and stream.accept("tapped"):
+                tapped = True
+            break
         else:
             stream.reset(before)
-            return destination, tapped
+            return destination, tapped, split
 
 
 @clause("search")
@@ -2911,18 +3878,311 @@ def _search(stream: Stream) -> Effect | None:
     if spec is None:
         return None
 
-    destination, tapped = _search_tail(stream)
+    tail = _search_tail(stream)
+    if tail is None:
+        return None
+    destination, tapped, split = tail
+    if split and not (spec.up_to and spec.count == Value.of(2)):
+        # "one ... and the other" names exactly two cards.
+        return None
 
+    keywords: tuple[str, ...] = ()
+    if tapped and destination is Zone.BATTLEFIELD:
+        # Carried the same way every other put-onto-the-battlefield carries
+        # it, so the executor has one thing to look for (CR 614.1c).
+        keywords += ("tapped",)
+    if split:
+        keywords += ("other to hand",)
     return Effect(
         EffectKind.SEARCH_LIBRARY,
         players=players or YOU,
         targets=spec,
         zone=destination,
-        amount=Value.of(1),
-        # Carried the same way every other put-onto-the-battlefield carries
-        # it, so the executor has one thing to look for (CR 614.1c).
-        keywords=("tapped",) if tapped and destination is Zone.BATTLEFIELD else (),
+        # "Up to two basic land cards" finds up to two: the count is the
+        # filter's, and "a card" is one. "Any number of" has no count; the
+        # executor reads that off the filter (``chosen_count``).
+        amount=spec.count if spec.count is not None else Value.of(1),
+        keywords=keywords,
         text="search library",
+    )
+
+
+# ---------------------------------------------------------------------------
+# MTG Arena's conjure and seek (see rules/cr700_additional_rules/digital_mechanics)
+# ---------------------------------------------------------------------------
+
+
+@clause("conjure")
+def _conjure(stream: Stream) -> Effect | None:
+    """"Conjure a card named Lightning Bolt into your hand", "conjure four
+    cards named Volcanic Geyser into your library, then shuffle", "conjure a
+    duplicate of it onto the battlefield", "conjure a card named this ...".
+
+    The name is everything between "named" and the destination, as printed -
+    the engine looks it up when the effect happens. Only the destinations the
+    engine can place a card in are read; "into the top five cards of your
+    library at random", "onto the battlefield attached to ...", and a library
+    with no position and no shuffle after it are left unread.
+    """
+    mark = stream.mark()
+    stream.accept("you")
+    if not stream.accept("conjure"):
+        stream.reset(mark)
+        return None
+
+    amount = _conjure_count(stream)
+    if amount is None:
+        stream.reset(mark)
+        return None
+
+    card_name = ""
+    targets = None
+    keywords: list[str] = []
+    if stream.accept("duplicate", "duplicates"):
+        if not stream.accept("of"):
+            stream.reset(mark)
+            return None
+        start = stream.mark()
+        targets, targeted = parse_target(stream)
+        if targets is None or targets.includes_players or targets.count is not None:
+            stream.reset(mark)
+            return None
+        if not _conjure_source_ok(stream, start, targets):
+            stream.reset(mark)
+            return None
+        keywords.append("duplicate")
+    elif stream.accept("card", "cards"):
+        if not stream.accept("named"):
+            stream.reset(mark)
+            return None
+        if stream.accept("this"):
+            # Normalisation wrote the card's own name as "this": a card with
+            # this card's name, which is this card's own definition.
+            targets, targeted = SELF, False
+        else:
+            card_name = _conjured_name(stream)
+            if not card_name:
+                stream.reset(mark)
+                return None
+            targeted = False
+    else:
+        stream.reset(mark)
+        return None
+
+    destination = _conjure_destination(stream)
+    if destination is None:
+        stream.reset(mark)
+        return None
+    zone, tapped, from_top = destination
+    if tapped:
+        keywords.append("tapped")
+    if card_name:
+        from ..rules.cr700_additional_rules.digital_mechanics import named
+
+        keywords.append(named(card_name))
+    return Effect(
+        EffectKind.CONJURE,
+        players=YOU,
+        targets=targets,
+        is_targeted=targeted,
+        zone=zone,
+        amount=amount,
+        amount2=Value.of(from_top),
+        keywords=tuple(keywords),
+        text="conjure",
+    )
+
+
+def _conjure_count(stream: Stream) -> Value | None:
+    number = stream.accept_number()
+    if number is not None:
+        return Value.of(number)
+    if stream.accept("X"):
+        return Value(kind=ValueKind.X)
+    return None
+
+
+def _conjure_source_ok(stream: Stream, start: int, spec: ObjectFilter) -> bool:
+    """A duplicate of a card elsewhere must name whose zone it is in."""
+    from ..rules.kernel.query import ControllerRelation
+
+    words = [token.lower for token in stream.tokens[start : stream.mark()]]
+    if "random" in words:
+        return False
+    offboard = spec.zones and Zone.BATTLEFIELD not in spec.zones
+    if offboard and "in" in words:
+        # "a duplicate of target card in an opponent's graveyard" is read with
+        # the opponent; "in your graveyard" loses its "your" in the noun
+        # reader, so only the opponent form is trusted.
+        return spec.controller is ControllerRelation.OPPONENT or spec.owner is not ControllerRelation.ANY
+    return True
+
+
+#: What may follow a conjured card's name.
+_CONJURE_DESTINATIONS = (
+    ("onto the battlefield tapped", Zone.BATTLEFIELD, True),
+    ("onto the battlefield", Zone.BATTLEFIELD, False),
+    ("into your hand", Zone.HAND, False),
+    ("into your graveyard", Zone.GRAVEYARD, False),
+    ("into your library", Zone.LIBRARY, False),
+    ("into exile", Zone.EXILE, False),
+    ("on top of your library", Zone.LIBRARY, False),
+)
+
+
+def _at_conjure_destination(stream: Stream) -> bool:
+    return any(stream.at_phrase(phrase) for phrase, _, _ in _CONJURE_DESTINATIONS)
+
+
+def _conjured_name(stream: Stream) -> str:
+    """The printed name after "named", up to the destination.
+
+    A name starts with a capital and runs to the first word that begins a
+    destination; commas and apostrophes are part of names ("Fblthp, the
+    Lost"). Nothing is guessed: no destination, no name.
+    """
+    words: list[str] = []
+    first = stream.peek()
+    if first.kind is not TokenKind.WORD or not first.text[:1].isupper():
+        return ""
+    while not stream.done:
+        if words and _at_conjure_destination(stream):
+            break
+        token = stream.peek()
+        if token.text in (".", ";", '"'):
+            return ""
+        words.append(token.text)
+        stream.next()
+        if len(words) > 10:
+            return ""
+    if stream.done:
+        return ""
+    name = ""
+    for word in words:
+        if word == ",":
+            name += ","
+        elif not name:
+            name = word
+        else:
+            name += " " + word
+    return name
+
+
+def _conjure_destination(stream: Stream):
+    """(zone, tapped, position from the top) - or ``None``."""
+    for phrase, zone, tapped in _CONJURE_DESTINATIONS:
+        if not stream.accept_phrase(phrase):
+            continue
+        if zone is Zone.BATTLEFIELD and stream.at("attached", "and", "under"):
+            if stream.at_phrase("and attacking") or stream.at("attached", "under"):
+                return None
+        if phrase == "on top of your library":
+            return zone, False, 1
+        if zone is Zone.LIBRARY:
+            ordinal = stream.peek().lower
+            from .tokens import ORDINALS
+
+            if ordinal in ORDINALS and stream.peek(1).lower == "from":
+                stream.next()
+                if not stream.accept_phrase("from the top"):
+                    return None
+                return zone, False, ORDINALS[ordinal]
+            # No position: only a library about to be shuffled is fine.
+            look = stream.mark()
+            stream.skip_punct(",", ".")
+            stream.accept("then")
+            shuffled = stream.accept("shuffle")
+            stream.reset(look)
+            if not shuffled:
+                return None
+            return zone, False, 0
+        return zone, tapped, 0
+    return None
+
+
+@clause("seek")
+def _seek(stream: Stream) -> Effect | None:
+    """"Seek a land card", "seek two nonland cards", "seek a land card and a
+    nonland card", "seek that many nonland cards".
+
+    Only from your own library, which is the only kind printed without a
+    subject; "seek ... from among the top ten cards" is a different pool and
+    is left unread.
+    """
+    mark = stream.mark()
+    stream.accept("you")
+    if not stream.accept("seek"):
+        stream.reset(mark)
+        return None
+
+    seeks = []
+    while True:
+        one = _one_seek(stream)
+        if one is None:
+            stream.reset(mark)
+            return None
+        seeks.append(one)
+        look = stream.mark()
+        if stream.accept("and") and stream.peek().kind is TokenKind.NUMBER:
+            continue
+        stream.reset(look)
+        break
+    if len(seeks) == 1:
+        return seeks[0]
+    return Effect(EffectKind.SEQUENCE, children=tuple(seeks), text="seek")
+
+
+def _one_seek(stream: Stream) -> Effect | None:
+    start = stream.mark()
+    # "seeks that many nonland cards" counts whatever the sentence before did
+    # ("discards all the cards in their hand"), which no value here can name.
+    amount = _conjure_count(stream)
+    if amount is None:
+        stream.reset(start)
+        return None
+    noun_start = stream.mark()
+    # "a land card *and a nonland card*" is two seeks; the noun reader would
+    # read both as one filter (a card that is land and nonland), so it is
+    # given only the words up to the second count.
+    end = noun_start
+    while end < len(stream.tokens) and stream.tokens[end].text not in (".", ";"):
+        if (
+            stream.tokens[end].lower == "and"
+            and end + 1 < len(stream.tokens)
+            and stream.tokens[end + 1].kind is TokenKind.NUMBER
+        ):
+            break
+        end += 1
+    sub = Stream(stream.tokens[:end], pos=noun_start)
+    spec = parse_object_filter(sub)
+    if spec is None:
+        stream.reset(start)
+        return None
+    stream.reset(sub.mark())
+    words = [t.lower for t in stream.tokens[noun_start : stream.mark()]]
+    if "card" not in words and "cards" not in words:
+        stream.reset(start)
+        return None
+    if (
+        spec.count is not None
+        or spec.remembered
+        or spec.source_only
+        or spec.zones not in (frozenset(), ObjectFilter().zones)
+        or spec.controller is not ObjectFilter().controller
+        or spec.owner is not ObjectFilter().owner
+        or any(w in ("permanent", "permanents") for w in words)
+    ):
+        # A zone, owner or controller of its own is a different pool; and
+        # "permanent card" is read as a card of any type by the noun reader.
+        stream.reset(start)
+        return None
+    return Effect(
+        EffectKind.SEEK,
+        players=YOU,
+        targets=replace(spec, zones=frozenset({Zone.LIBRARY})),
+        amount=amount,
+        zone=Zone.HAND,
+        text="seek",
     )
 
 
@@ -3158,6 +4418,38 @@ def _condition(stream: Stream):
     )
 
 
+#: "If it was bargained" and its kin: the keyword whose optional additional
+#: cost the participle reports as paid (CR 702.166b). "Kicked" stays any
+#: optional additional cost, as the spell clause reads it (CR 702.33b).
+_PAID_PARTICIPLES = {"kicked": "", "bargained": "bargain"}
+
+
+def _optional_cost_paid(stream: Stream):
+    """"This spell was kicked", "it was bargained", "this creature was
+    kicked": whether an optional additional cost was paid as the spell was
+    cast, which the permanent it became still knows (CR 702.33b, 702.166b).
+    """
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    mark = stream.mark()
+    if stream.accept("this"):
+        stream.accept("spell", "creature", "permanent", "artifact", "enchantment")
+    elif not stream.accept("it"):
+        return None
+    if not stream.accept("was"):
+        stream.reset(mark)
+        return None
+    for participle, keyword in _PAID_PARTICIPLES.items():
+        if stream.accept(participle):
+            return Condition(
+                kind=ConditionKind.WAS_KICKED,
+                keyword=keyword,
+                text=f"it was {participle}",
+            )
+    stream.reset(mark)
+    return None
+
+
 def _single_condition(stream: Stream):
     """The conditions that appear often enough to be worth reading.
 
@@ -3165,13 +4457,15 @@ def _single_condition(stream: Stream):
     than defaulting to true - a condition read as always-true makes the card
     do something it should only sometimes do, which is strictly worse than
     doing nothing.
+
+    Every branch reads its quantity itself and says exactly how it is
+    compared. An earlier "you have ..." branch accepted a number and then
+    skipped any of "or more", "or fewer", "life", "cards", "in hand" and
+    "this turn" as it found them, and answered with a life total: "as long as
+    you have one or fewer cards in hand" became "you have 1 or more life",
+    true for the whole game.
     """
-    from ..rules.kernel.query import (
-        Comparison,
-        Condition,
-        ConditionKind,
-        NumericConstraint,
-    )
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
 
@@ -3180,6 +4474,10 @@ def _single_condition(stream: Stream):
     designation = designation_condition(stream)
     if designation is not None:
         return designation
+
+    paid = _optional_cost_paid(stream)
+    if paid is not None:
+        return paid
 
     about_it = _about_the_remembered(stream)
     if about_it is not None:
@@ -3193,84 +4491,25 @@ def _single_condition(stream: Stream):
     if opponents is not None:
         return opponents
 
-    if stream.accept_phrase("there are") or stream.accept_phrase("there is"):
-        # "there are seven or more cards in your graveyard" - a count with no
-        # controller in it, which is why it is not the "you control" shape.
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        wanted = spec.count.constant if spec.count is not None else 1
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=spec,
-            constraint=(
-                NumericConstraint.at_most(wanted)
-                if spec.up_to
-                else NumericConstraint.at_least(wanted)
-            ),
-            text="there are ...",
-        )
-
-    if stream.accept_phrase("you control no"):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_yours(spec),
-            constraint=NumericConstraint.exactly(0),
-            text="you control no ...",
-        )
-
-    if stream.accept_phrase("you control"):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        wanted = spec.count.constant if spec.count is not None else 1
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_yours(spec),
-            constraint=NumericConstraint.at_least(wanted),
-            text="you control ...",
-        )
-
-    if stream.accept_phrase("you don't control") or stream.accept_phrase(
-        "you do not control"
-    ):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_yours(spec),
-            constraint=NumericConstraint.exactly(0),
-            text="you don't control ...",
-        )
+    there_are = _there_are(stream)
+    if there_are is not None:
+        return there_are
 
     comparison = _controls_more_than(stream)
     if comparison is not None:
         return comparison
 
-    if stream.accept_phrase("an opponent controls"):
-        spec = parse_object_filter(stream)
-        if spec is None:
-            stream.reset(mark)
-            return None
-        return Condition(
-            kind=ConditionKind.CONTROLS_MATCHING,
-            filter=_theirs(spec),
-            constraint=NumericConstraint.at_least(1),
-            text="an opponent controls ...",
-        )
+    controls = _player_controls(stream)
+    if controls is not None:
+        return controls
 
     # "<player> has N or more life", "<player> has no cards in hand".
     life = _life_condition(stream)
     if life is not None:
         return life
+    hand = _hand_condition(stream)
+    if hand is not None:
+        return hand
 
     # "this creature has four or more +1/+1 counters on it".
     counters = _counter_condition(stream)
@@ -3308,25 +4547,331 @@ def _single_condition(stream: Stream):
     if state is not None:
         return state
 
-    if stream.accept_phrase("you have") or stream.accept_phrase("you've gained"):
-        amount = parse_value(stream)
-        if amount is None:
-            stream.reset(mark)
-            return None
-        stream.accept("or")
-        stream.accept("more", "greater", "less", "fewer")
-        stream.accept("life", "cards")
-        stream.accept_phrase("in hand")
-        stream.accept_phrase("this turn")
-        return Condition(
-            kind=ConditionKind.LIFE,
-            players=YOU,
-            constraint=NumericConstraint(Comparison.GE, amount),
-            text="you have ...",
-        )
+    value = _value_condition(stream)
+    if value is not None:
+        return value
 
     stream.reset(mark)
     return None
+
+
+def _condition_quantity(stream: Stream):
+    """How many, in a condition: "three or more", "two or fewer", "no",
+    "exactly two", "at least five", "a", "one or more".
+
+    Read here rather than taken from the noun phrase, because the noun reader
+    folds "three or more" and a bare "three" into the same count - which is
+    right for choosing targets and wrong for a test. A bare number above one
+    is not a condition oracle text writes ("if you control three artifacts"
+    would be "three or more"), so it is declined rather than guessed at.
+    """
+    from ..rules.kernel.query import NumericConstraint
+
+    mark = stream.mark()
+    if stream.accept("no"):
+        return NumericConstraint.exactly(0)
+    if stream.at("another"):
+        # "another Goblin" - one, other than the source. The word itself is
+        # left for the noun reader, which records the exclusion.
+        return NumericConstraint.at_least(1)
+    if stream.accept("exactly"):
+        amount = stream.accept_number()
+        if amount is None:
+            stream.reset(mark)
+            return None
+        return NumericConstraint.exactly(amount)
+    if stream.accept_phrase("at least"):
+        amount = stream.accept_number()
+        if amount is None:
+            stream.reset(mark)
+            return None
+        return NumericConstraint.at_least(amount)
+    amount = stream.accept_number()
+    if amount is None:
+        return None
+    if stream.accept_phrase("or more") or stream.accept_phrase("or greater"):
+        return NumericConstraint.at_least(amount)
+    if stream.accept_phrase("or fewer") or stream.accept_phrase("or less"):
+        return NumericConstraint.at_most(amount)
+    if amount == 1:
+        # "a Forest", "an artifact", "one creature" - at least one.
+        return NumericConstraint.at_least(1)
+    stream.reset(mark)
+    return None
+
+
+def _counted_filter(stream: Stream):
+    """A quantity and the noun phrase it counts, or ``None`` for both.
+
+    The noun phrase must not carry a count of its own: the quantity was
+    already read, and a second one ("two or more three creatures") is not
+    something a condition says.
+    """
+    mark = stream.mark()
+    another = stream.at("another")
+    constraint = _condition_quantity(stream)
+    if constraint is None:
+        return None, None
+    spec = parse_object_filter(stream)
+    if (
+        another
+        and spec is not None
+        and spec.other_than_source
+        and spec.count == Value.of(1)
+        and not spec.up_to
+    ):
+        # "another Goblin" carries its "one" inside the word, and the noun
+        # reader counts it; the condition has already read that "one" as
+        # its constraint, so it is not a second count.
+        spec = replace(spec, count=None)
+    if spec is None or spec.count is not None:
+        stream.reset(mark)
+        return None, None
+    return constraint, spec
+
+
+def _there_are(stream: Stream):
+    """"there are seven or more cards in your graveyard", "there are no
+    creatures on the battlefield" - a count with no controller in it."""
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    mark = stream.mark()
+    if not (stream.accept_phrase("there are") or stream.accept_phrase("there is")):
+        return None
+    constraint, spec = _counted_filter(stream)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    return Condition(
+        kind=ConditionKind.OBJECT_COUNT,
+        filter=spec,
+        constraint=constraint,
+        text="there are ...",
+    )
+
+
+def _player_controls(stream: Stream):
+    """"you control three or more artifacts", "an opponent controls two or
+    more creatures", "no opponent controls a Forest", "you don't control a
+    Swamp".
+
+    Who counts matters as much as what is counted. "An opponent controls
+    three or more creatures" is about one opponent (CR 102.3), so it is asked
+    opponent by opponent; it used to be read as "an opponent controls a
+    creature", the count dropped outright.
+    """
+    from ..rules.kernel.query import (
+        Condition,
+        ConditionKind,
+        ControllerRelation,
+        NumericConstraint,
+        PlayerFilter,
+        PlayerScope,
+    )
+
+    mark = stream.mark()
+    negated = False
+    if stream.accept_phrase("you control"):
+        scope = PlayerScope.YOU
+    elif stream.accept_phrase("you don't control") or stream.accept_phrase(
+        "you do not control"
+    ):
+        scope, negated = PlayerScope.YOU, True
+    elif stream.accept_phrase("an opponent controls"):
+        scope = PlayerScope.OPPONENT
+    elif stream.accept_phrase("no opponent controls"):
+        scope, negated = PlayerScope.OPPONENT, True
+    elif stream.accept_phrase("each opponent controls"):
+        scope = PlayerScope.EACH_OPPONENT
+    else:
+        return None
+
+    constraint, spec = _counted_filter(stream)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    if negated:
+        # "you don't control a Swamp": the quantity is the indefinite article
+        # and nothing else. "You don't control three or more" is not a shape
+        # oracle text uses, and inverting it by hand is how a bound goes wrong.
+        if constraint != NumericConstraint.at_least(1):
+            stream.reset(mark)
+            return None
+        constraint = NumericConstraint.exactly(0)
+        if scope is PlayerScope.OPPONENT:
+            scope = PlayerScope.EACH_OPPONENT
+
+    if scope is PlayerScope.YOU:
+        from dataclasses import replace as _replace
+
+        return Condition(
+            kind=ConditionKind.CONTROLS_MATCHING,
+            filter=_replace(spec, controller=ControllerRelation.YOU, count=None),
+            constraint=constraint,
+            text="you control ...",
+        )
+    if spec.controller is not ControllerRelation.ANY:
+        stream.reset(mark)
+        return None
+    return Condition(
+        kind=ConditionKind.COMPARE_COUNTS,
+        players=PlayerFilter(scope),
+        filter=spec,
+        constraint=constraint,
+        text="a player controls ...",
+    )
+
+
+def _condition_player(stream: Stream):
+    """The player a "has ..." condition is about, and how it is quantified.
+
+    Returns the filters to ask and whether one of them is enough. "A player
+    has 13 or less life" is you *or* an opponent (CR 102.1), which no single
+    player scope says - the scope the noun reader gives "a player" is every
+    player, and every player at 13 life is a different condition.
+    """
+    from ..rules.kernel.query import PlayerFilter, PlayerScope
+
+    if stream.accept_phrase("a player") or stream.accept_phrase("any player"):
+        return (PlayerFilter(PlayerScope.YOU), PlayerFilter(PlayerScope.OPPONENT))
+    mark = stream.mark()
+    players, targeted = parse_player_filter(stream)
+    if players is None:
+        return None
+    if targeted or players.scope not in (
+        PlayerScope.YOU,
+        PlayerScope.OPPONENT,
+        PlayerScope.EACH_OPPONENT,
+        PlayerScope.EACH_PLAYER,
+    ):
+        # "that player", "target player", "defending player": the engine has
+        # no binding for who is meant when a condition is asked, so the
+        # question would always come out false. Declined rather than inert.
+        stream.reset(mark)
+        return None
+    if players.scope is PlayerScope.EACH_PLAYER and not stream.tokens[mark].lower == "each":
+        # "players" and "one or more players" - not a condition shape.
+        stream.reset(mark)
+        return None
+    return (players,)
+
+
+def _any_player(kind, players, constraint, text):
+    """One condition per player filter, joined by OR when there are several."""
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    parts = tuple(
+        Condition(kind=kind, players=each, constraint=constraint, text=text)
+        for each in players
+    )
+    if len(parts) == 1:
+        return parts[0]
+    return Condition(kind=ConditionKind.OR, operands=parts, text=text)
+
+
+def _hand_condition(stream: Stream):
+    """"you have seven or more cards in hand", "an opponent has no cards in
+    hand", "you have one or fewer cards in your hand"."""
+    from ..rules.kernel.query import ConditionKind
+
+    mark = stream.mark()
+    players = _condition_player(stream)
+    if players is None:
+        return None
+    if not stream.accept("has", "have"):
+        stream.reset(mark)
+        return None
+    constraint = _condition_quantity(stream)
+    if constraint is None or not stream.accept("card", "cards"):
+        stream.reset(mark)
+        return None
+    if not stream.accept("in"):
+        stream.reset(mark)
+        return None
+    stream.accept("your", "their", "his", "her")
+    if not stream.accept("hand"):
+        stream.reset(mark)
+        return None
+    return _any_player(
+        ConditionKind.CARDS_IN_HAND, players, constraint, "cards in hand"
+    )
+
+
+def _value_condition(stream: Stream):
+    """"your devotion to red is less than five", "X is 5 or more", "creatures
+    you control have total power 10 or greater", "your life total is less
+    than half your starting life total".
+
+    Only quantities whose meaning the value reader states exactly are taken:
+    devotion, X, a count, a total among a set, and your life total.
+    """
+    from ..rules.kernel.query import Condition, ConditionKind, ValueKind
+    from .nouns import parse_value
+
+    mark = stream.mark()
+    total = _total_power_among(stream)
+    if total is not None:
+        value = total
+    else:
+        value = parse_value(stream)
+        if value is None:
+            return None
+        if value.kind not in (
+            ValueKind.DEVOTION,
+            ValueKind.X,
+            ValueKind.COUNT,
+            ValueKind.TOTAL_AMONG,
+            ValueKind.LIFE_TOTAL,
+        ):
+            stream.reset(mark)
+            return None
+        if value.kind is ValueKind.LIFE_TOTAL and stream.tokens[mark].lower != "your":
+            stream.reset(mark)
+            return None
+        if not stream.accept("is", "are"):
+            stream.reset(mark)
+            return None
+    constraint = parse_comparison(stream)
+    if constraint is None:
+        stream.reset(mark)
+        return None
+    return Condition(
+        kind=ConditionKind.VALUE_COMPARE,
+        value=value,
+        constraint=constraint,
+        text="a value comparison",
+    )
+
+
+def _total_power_among(stream: Stream):
+    """"creatures you control have total power 10 or greater"."""
+    from ..rules.kernel.query import ValueKind
+
+    mark = stream.mark()
+    spec = parse_object_filter(stream)
+    if spec is None or spec.count is not None:
+        stream.reset(mark)
+        return None
+    if not stream.accept("have", "has"):
+        stream.reset(mark)
+        return None
+    if not stream.accept("total"):
+        stream.reset(mark)
+        return None
+    if stream.accept("power"):
+        inner = ValueKind.POWER
+    elif stream.accept("toughness"):
+        inner = ValueKind.TOUGHNESS
+    elif stream.accept_phrase("mana value"):
+        inner = ValueKind.MANA_VALUE
+    else:
+        stream.reset(mark)
+        return None
+    return Value(
+        kind=ValueKind.TOTAL_AMONG,
+        filter=spec,
+        operands=(Value(kind=inner, of_affected=True),),
+    )
 
 
 #: Who a "controls more X than" comparison is about, by the phrase it opens
@@ -3414,6 +4959,49 @@ def _controls_more_than(stream: Stream):
     )
 
 
+def _about_one_object(subject, narrowed, text: str):
+    """A test on one named object, by who that object is.
+
+    * "it", "that creature" - whatever the resolution last acted on, asked
+      of that object (REMEMBERED_MATCHES). Searching the board for *any*
+      object that fits - what counting the filter did - made "if it's
+      tapped" true whenever anything at all was tapped.
+    * "this creature" - the source, which ``find`` locates wherever it is.
+    * "enchanted creature", "equipped creature" and "a creature ..." - some
+      object on the battlefield that fits, which a count of one answers.
+
+    Anything else ("creatures you control are ...", "target creature is")
+    is not one known object and is declined.
+    """
+    from ..rules.kernel.query import (
+        Condition,
+        ConditionKind,
+        NumericConstraint,
+        ValueKind,
+    )
+
+    if subject.remembered:
+        return Condition(
+            kind=ConditionKind.REMEMBERED_MATCHES,
+            filter=replace(narrowed, remembered=True, count=None, zones=frozenset()),
+            text=text,
+        )
+    single = (
+        subject.count is not None
+        and subject.count.kind is ValueKind.CONSTANT
+        and subject.count.constant == 1
+        and not subject.up_to
+    )
+    if subject.source_only or subject.has_attached is not None or single:
+        return Condition(
+            kind=ConditionKind.CONTROLS_MATCHING,
+            filter=replace(narrowed, count=None),
+            constraint=NumericConstraint.at_least(1),
+            text=text,
+        )
+    return None
+
+
 def _is_supertype(stream: Stream):
     """"as long as equipped creature is legendary", "if that creature is a
     Dragon".
@@ -3422,8 +5010,6 @@ def _is_supertype(stream: Stream):
     as "does this object match" against the filter the sentence already
     built.
     """
-    from ..rules.kernel.query import Condition, ConditionKind, NumericConstraint
-
     mark = stream.mark()
     subject = parse_object_filter(stream)
     if subject is None:
@@ -3441,29 +5027,42 @@ def _is_supertype(stream: Stream):
     if narrowed is None:
         stream.reset(mark)
         return None
+    # Only the qualifiers carried across are allowed: anything else the
+    # description said would be read and then dropped.
+    carried = replace(
+        ObjectFilter(),
+        supertypes_all=narrowed.supertypes_all,
+        types_all=narrowed.types_all,
+        subtypes_all=narrowed.subtypes_all,
+        colors_any=narrowed.colors_any,
+    )
+    if replace(narrowed, count=None) != carried:
+        stream.reset(mark)
+        return None
 
-    from dataclasses import replace as _replace
-
-    return Condition(
-        kind=ConditionKind.CONTROLS_MATCHING,
-        filter=_replace(
+    condition = _about_one_object(
+        subject,
+        replace(
             subject,
             supertypes_all=subject.supertypes_all | narrowed.supertypes_all,
             types_all=subject.types_all | narrowed.types_all,
             subtypes_all=subject.subtypes_all + narrowed.subtypes_all,
             colors_any=subject.colors_any | narrowed.colors_any,
         ),
-        constraint=NumericConstraint.at_least(1),
-        text="that object is ...",
+        "that object is ...",
     )
+    if condition is None:
+        stream.reset(mark)
+    return condition
 
 
 def _life_condition(stream: Stream):
-    """"an opponent has 10 or less life", "you have 5 or more life"."""
-    from ..rules.kernel.query import Comparison, Condition, ConditionKind, NumericConstraint
+    """"an opponent has 10 or less life", "you have 5 or more life", "a
+    player has 13 or less life"."""
+    from ..rules.kernel.query import Comparison, ConditionKind, NumericConstraint
 
     mark = stream.mark()
-    players, _ = parse_player_filter(stream)
+    players = _condition_player(stream)
     if players is None:
         return None
     if not stream.accept("has", "have"):
@@ -3474,97 +5073,117 @@ def _life_condition(stream: Stream):
         stream.reset(mark)
         return None
 
-    comparison = Comparison.GE
     if stream.accept_phrase("or less") or stream.accept_phrase("or fewer"):
         comparison = Comparison.LE
     elif stream.accept_phrase("or more") or stream.accept_phrase("or greater"):
         comparison = Comparison.GE
+    else:
+        # "you have 20 life" - a bare number is not a threshold, and reading
+        # it as one would be a guess.
+        stream.reset(mark)
+        return None
 
     if not stream.accept("life"):
         stream.reset(mark)
         return None
-    return Condition(
-        kind=ConditionKind.LIFE,
-        players=players,
-        constraint=NumericConstraint(comparison, amount),
-        text="a life-total condition",
+    return _any_player(
+        ConditionKind.LIFE,
+        players,
+        NumericConstraint(comparison, amount),
+        "a life-total condition",
     )
 
 
 def _counter_condition(stream: Stream):
-    """"this creature has four or more +1/+1 counters on it"."""
-    from ..rules.kernel.query import (
-        Comparison,
-        Condition,
-        ConditionKind,
-        NumericConstraint,
-    )
+    """"this creature has four or more +1/+1 counters on it", "it has a
+    +1/+1 counter on it", "if it had no counters on it"."""
+    from ..rules.kernel.gameobject import GameObject
+    from ..rules.kernel.query import Condition, ConditionKind
 
     mark = stream.mark()
-    spec = parse_object_filter(stream)
-    if spec is None:
+    subject = parse_object_filter(stream)
+    if subject is None:
         return None
-    if not stream.accept("has", "have"):
+    if not stream.accept("has", "have", "had"):
         stream.reset(mark)
         return None
-    amount = parse_value(stream)
-    if amount is None:
+    constraint = _condition_quantity(stream)
+    if constraint is None:
         stream.reset(mark)
         return None
 
-    comparison = Comparison.GE
-    if stream.accept_phrase("or less") or stream.accept_phrase("or fewer"):
-        comparison = Comparison.LE
-    elif stream.accept_phrase("or more") or stream.accept_phrase("or greater"):
-        comparison = Comparison.GE
-
-    counter = _counter_word(stream)
-    if counter is None:
+    if stream.accept("counter", "counters"):
+        # "counters on it" with no kind named - any counter at all.
+        counter = GameObject.ANY_COUNTER
+    else:
+        counter = _counter_word(stream)
+        if counter is None:
+            stream.reset(mark)
+            return None
+    if not stream.accept("on"):
         stream.reset(mark)
         return None
-    stream.accept_phrase("on it")
+    if not stream.accept("it", "them"):
+        if not stream.accept("this"):
+            stream.reset(mark)
+            return None
+        stream.accept(*_SELF_NOUNS_FOR_COUNTERS)
 
-    return Condition(
-        kind=ConditionKind.COUNTER_COUNT,
-        filter=spec,
-        counter_type=counter,
-        constraint=NumericConstraint(comparison, amount),
-        text="a counter condition",
+    if subject.source_only or subject.remembered:
+        # "This creature has ...", and "it has ..." in a static ability of the
+        # creature itself ("has reach as long as it has a +1/+1 counter on
+        # it"), where "it" is the source. Asked of the source, as before.
+        return Condition(
+            kind=ConditionKind.COUNTER_COUNT,
+            filter=subject,
+            counter_type=counter,
+            constraint=constraint,
+            text="a counter condition",
+        )
+    condition = _about_one_object(
+        subject,
+        replace(subject, has_counter=counter, counter_constraint=constraint),
+        "a counter condition",
     )
+    if condition is None:
+        stream.reset(mark)
+    return condition
+
+
+_SELF_NOUNS_FOR_COUNTERS = (
+    "creature", "permanent", "artifact", "enchantment", "land", "card",
+    "planeswalker", "equipment", "aura", "vehicle", "saga",
+)
 
 
 def _state_condition(stream: Stream):
     """"<something> is tapped / untapped / attacking / blocking"."""
-    from dataclasses import replace
-
-    from ..rules.kernel.query import Condition, ConditionKind, NumericConstraint
-
     mark = stream.mark()
-    spec = parse_object_filter(stream)
-    if spec is None:
+    subject = parse_object_filter(stream)
+    if subject is None:
         return None
     if not stream.accept("is", "are"):
         stream.reset(mark)
         return None
 
     if stream.accept("tapped"):
-        spec = replace(spec, tapped=True)
+        narrowed = replace(subject, tapped=True)
     elif stream.accept("untapped"):
-        spec = replace(spec, tapped=False)
+        narrowed = replace(subject, tapped=False)
     elif stream.accept("attacking"):
-        spec = replace(spec, attacking=True)
+        narrowed = replace(subject, attacking=True)
     elif stream.accept("blocking"):
-        spec = replace(spec, blocking=True)
+        narrowed = replace(subject, blocking=True)
+    elif stream.accept("blocked"):
+        narrowed = replace(subject, blocked=True)
     else:
         stream.reset(mark)
         return None
 
-    return Condition(
-        kind=ConditionKind.CONTROLS_MATCHING,
-        filter=spec,
-        constraint=NumericConstraint.at_least(1),
-        text="a state condition",
-    )
+    condition = _about_one_object(subject, narrowed, "a state condition")
+    if condition is None:
+        stream.reset(mark)
+    return condition
 
 
 def _theirs(spec):
@@ -3575,24 +5194,29 @@ def _theirs(spec):
     return replace(spec, controller=ControllerRelation.OPPONENT, count=None)
 
 
-#: "<who> <did something> [N or more] this turn" - the events cards ask about
-#: after the fact, and whether the question is "how many times" or "how much".
+#: "<who> <did something> [N or more] <noun> this turn" - the events cards ask
+#: about after the fact: the verb as it can be written (past tense and
+#: participle), the event, whether the question is "how many times" or "how
+#: much", and the only nouns the verb may take.
 #:
-#: One table rather than one clause per card: the sentence is always the same
-#: shape and only the verb changes.
-_THIS_TURN_EVENTS: tuple[tuple[str, str, bool], ...] = (
-    ("lost", "LIFE_LOST", False),
-    ("lose", "LIFE_LOST", False),
-    ("gained", "LIFE_GAINED", False),
-    ("was dealt", "DAMAGE_DEALT", False),
-    ("were dealt", "DAMAGE_DEALT", False),
-    ("cast", "CAST_SPELL", True),
-    ("has cast", "CAST_SPELL", True),
-    ("drew", "DREW_CARD", True),
-    ("has drawn", "DREW_CARD", True),
-    ("attacked with", "ATTACKS", True),
-    ("sacrificed", "SACRIFICED", True),
-    ("discarded", "DISCARDED", True),
+#: The noun is part of the question and has to be one the tally can answer.
+#: The game keeps a count per event kind and player, nothing finer, so "cast
+#: a spell" can be asked and "cast a noncreature spell" cannot; a noun with
+#: any qualifier on it is declined rather than read as the bare noun. Damage
+#: is absent on purpose: the tally files damage to a creature under its
+#: controller, so "was dealt damage this turn" cannot be told apart from
+#: "controls a creature that was".
+_THIS_TURN_EVENTS: tuple[tuple[tuple[str, ...], str, bool, tuple[str, ...]], ...] = (
+    (("lost", "lose"), "LIFE_LOST", False, ("life",)),
+    (("gained",), "LIFE_GAINED", False, ("life",)),
+    (("cast",), "CAST_SPELL", True, ("spell", "spells")),
+    (("drew", "drawn"), "DREW_CARD", True, ("card", "cards")),
+    (("attacked with",), "ATTACKS", True, ("creature", "creatures")),
+    (("sacrificed",), "SACRIFICED", True, ("permanent", "permanents")),
+    (("discarded",), "DISCARDED", True, ("card", "cards")),
+    # "if you attacked this turn" (raid): one attack event per attacking
+    # creature, so having attacked at all is a count of at least one.
+    (("attacked",), "ATTACKS", True, ()),
 )
 
 
@@ -3657,47 +5281,65 @@ def _about_the_remembered(stream: Stream):
 
 
 def _happened_this_turn(stream: Stream):
-    """"if an opponent lost 2 or more life this turn" and its family.
+    """"if an opponent lost 2 or more life this turn", "if you've cast two or
+    more spells this turn", "if you attacked this turn".
 
     The trailing "this turn" is what makes it a question about history rather
-    than about the board, and the engine now keeps a per-turn tally to answer
-    it. An amount ("7 or more damage") and a count ("three or more spells") are
-    both expressible; which one is meant depends on the verb.
+    than about the board, and the engine keeps a per-turn tally to answer it.
+    An amount ("3 or more life") and a count ("two or more spells") are both
+    expressible; which one is meant depends on the verb.
     """
     from ..rules.kernel.events import EventKind
-    from ..rules.kernel.query import Condition, ConditionKind
+    from ..rules.kernel.query import Condition, ConditionKind, PlayerScope
 
     mark = stream.mark()
-    players, _ = parse_player_filter(stream)
-    if players is None:
-        stream.reset(mark)
-        return None
+    if stream.accept("you've"):
+        players = (YOU,)
+    else:
+        players = _condition_player(stream)
+        if players is None:
+            stream.reset(mark)
+            return None
+        stream.accept("has", "have")
 
-    for phrase, event_name, counting in sorted(
-        _THIS_TURN_EVENTS, key=lambda entry: -len(entry[0].split())
-    ):
-        look = stream.mark()
-        if not stream.accept_phrase(phrase):
-            continue
-
-        constraint = parse_comparison(stream)
-        # The noun after the number is decoration - "2 or more *life*",
-        # "three or more *spells*" - and the verb already said which event.
-        while not stream.done and not stream.at_phrase("this turn"):
-            if stream.peek().text in (".", ",", ";"):
-                break
-            stream.next()
-
-        if stream.accept_phrase("this turn"):
-            return Condition(
-                kind=ConditionKind.EVENT_THIS_TURN,
-                players=players,
-                constraint=constraint,
-                counter_type="count" if counting else "",
-                event_kinds=(int(getattr(EventKind, event_name)),),
-                text=f"{phrase} ... this turn",
+    for phrases, event_name, counting, nouns in _THIS_TURN_EVENTS:
+        for phrase in phrases:
+            look = stream.mark()
+            if not stream.accept_phrase(phrase):
+                continue
+            constraint = _condition_quantity(stream)
+            if nouns:
+                if not stream.accept(*nouns):
+                    stream.reset(look)
+                    continue
+            elif constraint is not None:
+                stream.reset(look)
+                continue
+            if not stream.accept_phrase("this turn"):
+                stream.reset(look)
+                continue
+            if constraint is not None and constraint.comparison.name == "GE" and (
+                constraint.value.constant == 1
+            ):
+                # "a spell", "one or more cards": it happened at all.
+                constraint = None
+            if any(p.scope is PlayerScope.EACH_PLAYER for p in players):
+                stream.reset(mark)
+                return None
+            parts = tuple(
+                Condition(
+                    kind=ConditionKind.EVENT_THIS_TURN,
+                    players=each,
+                    constraint=constraint,
+                    counter_type="count" if counting else "",
+                    event_kinds=(int(getattr(EventKind, event_name)),),
+                    text=f"{phrase} ... this turn",
+                )
+                for each in players
             )
-        stream.reset(look)
+            if len(parts) == 1:
+                return parts[0]
+            return Condition(kind=ConditionKind.OR, operands=parts, text=phrase)
 
     stream.reset(mark)
     return None
@@ -3980,6 +5622,11 @@ def _becomes_type(stream: Stream) -> Effect | None:
                 amount=_pt_value(left),
                 amount2=_pt_value(right),
                 duration=Duration.PERMANENT,
+                # The same "target" as the type change: without it "up to one
+                # other target creature ... becomes a Lizard with base power
+                # and toughness 4/4" set the base of whichever creature the
+                # filter found, not the one targeted (CR 115.1).
+                is_targeted=targeted,
                 text=f"base {token.text}",
             )
         )
@@ -4218,7 +5865,13 @@ def _loses_keyword(stream: Stream) -> Effect | None:
         return None
     if not stream.accept("loses", "lose"):
         return None
-    stream.accept_phrase("your choice of")
+    # "loses your choice of flying, first strike, or trample" and "loses
+    # first strike or swampwalk" take away *one* of the list, chosen as the
+    # effect resolves. Read as a list both lost every keyword named - a
+    # stronger card - so the choice is declined until there is an opcode
+    # that chooses.
+    if stream.at_phrase("your choice of"):
+        return None
 
     names: list[str] = []
     while True:
@@ -4235,8 +5888,13 @@ def _loses_keyword(stream: Stream) -> Effect | None:
             names.append(token.text)
         else:
             break
+        look = stream.mark()
         stream.skip_punct(",")
-        stream.accept("and", "or")
+        if stream.accept("or"):
+            return None
+        stream.reset(look)
+        stream.skip_punct(",")
+        stream.accept("and")
 
     if not names:
         return None
@@ -4434,25 +6092,16 @@ def _reveal_hand(stream: Stream) -> Effect | None:
 
 @clause("reveal-top")
 def _reveal_top(stream: Stream) -> Effect | None:
-    """"Reveal the top card of your library."."""
-    players, _ = parse_player_filter(stream)
-    if not stream.accept("reveal", "reveals"):
-        return None
-    stream.accept("the")
-    amount = parse_value(stream) or Value.of(1)
-    if not stream.accept("card", "cards"):
-        return None
-    if not stream.accept_phrase("of your library") and not stream.accept_phrase(
-        "of their library"
-    ):
-        return None
-    return Effect(
-        EffectKind.REVEAL,
-        players=players or YOU,
-        from_zone=Zone.LIBRARY,
-        amount=amount,
-        text="reveal from library",
-    )
+    """"Reveal the top four cards of your library." (CR 701.20).
+
+    The same instruction as looking at them, shown to everyone: the cards stay
+    where they are and become the pile the next sentences choose among. It
+    used to be read by a clause that could not get past the word "top", and
+    what did read it produced a reveal of *this* object, so "reveal the top
+    card of your library. If it's a creature card, put it into your hand"
+    asked its question about the wrong card.
+    """
+    return _top_cards_pile(stream, ("reveal", "reveals"), reveal=True)
 
 
 @clause("sacrifice-it")
@@ -4478,29 +6127,89 @@ def _sacrifice_it(stream: Stream) -> Effect | None:
 def _look_at_top(stream: Stream) -> Effect | None:
     """"Look at the top four cards of your library."
 
-    Looking is scrying with nothing put on the bottom: the cards are seen and
-    stay where they are, which is exactly what SCRY with no reordering does.
-    Whatever the card does next - put one in your hand, exile them - is a
-    separate sentence the grammar reads on its own.
+    This was read as SCRY, which it is not: scrying *moves* the cards it
+    rejects to the bottom (CR 701.22a), and the default agent bottoms
+    anything it does not like, so "look at the top card" dug through the
+    library, and Impulse's "put one of them into your hand" then took
+    whatever the resolution happened to remember. Looking moves nothing. It
+    sets the cards aside as a pile (``EffectKind.LOOK_AT_TOP``) that "one of
+    them", "a creature card from among them" and "the rest" choose among.
     """
-    if not stream.accept("look"):
+    return _top_cards_pile(stream, ("look", "looks"), reveal=False)
+
+
+def _top_cards_pile(
+    stream: Stream, verbs: tuple[str, ...], *, reveal: bool
+) -> Effect | None:
+    """[subject] look at / reveal "the top N cards of <whose> library".
+
+    Whose library is said three ways, and each is kept: "your library" is
+    the controller's; "target player's library" / "target opponent's
+    library" is a player chosen as the ability is put on the stack (CR
+    115.1); and a named subject's "their library" is that player's. Anything
+    else - "each player's library", "that player's library" - names a player
+    this cannot pin down and is left unread.
+    """
+    mark = stream.mark()
+    subject, subject_targeted = parse_player_filter(stream)
+    if not stream.accept(*verbs):
+        stream.reset(mark)
         return None
-    if not stream.accept("at"):
+    if not reveal and not stream.accept("at"):
+        stream.reset(mark)
         return None
-    stream.accept("the")
-    if not stream.accept("top"):
+    if not stream.accept_phrase("the top"):
+        stream.reset(mark)
         return None
-    amount = parse_value(stream) or Value.of(1)
-    if not stream.accept("card", "cards"):
+    amount = Value.of(1)
+    if stream.accept("card"):
+        pass
+    else:
+        amount = parse_value(stream)
+        if amount is None or not stream.accept("cards"):
+            stream.reset(mark)
+            return None
+    if not stream.accept("of"):
+        stream.reset(mark)
         return None
-    if not (
-        stream.accept_phrase("of your library")
-        or stream.accept_phrase("of their library")
-        or stream.accept_phrase("of target player's library")
+
+    players, targeted = None, False
+    if stream.accept_phrase("your library"):
+        players = YOU
+        if subject is not None and subject.scope is not PlayerScope.YOU:
+            stream.reset(mark)
+            return None
+    elif stream.accept_phrase("target player's library"):
+        players, targeted = PlayerFilter(PlayerScope.TARGET_PLAYER), True
+    elif stream.accept_phrase("target opponent's library"):
+        players, targeted = PlayerFilter(PlayerScope.TARGET_OPPONENT), True
+    elif stream.accept_phrase("their library") or stream.accept_phrase(
+        "his or her library"
     ):
+        if subject is None or subject.scope not in (
+            PlayerScope.TARGET_PLAYER,
+            PlayerScope.TARGET_OPPONENT,
+            PlayerScope.REFERRED_PLAYER,
+        ):
+            stream.reset(mark)
+            return None
+        players, targeted = subject, subject_targeted
+    else:
+        stream.reset(mark)
         return None
+    if subject is not None and players is not subject and subject.scope is not (
+        PlayerScope.YOU
+    ):
+        stream.reset(mark)
+        return None
+
     return Effect(
-        EffectKind.SCRY, players=YOU, amount=amount, text="look at the top"
+        EffectKind.LOOK_AT_TOP,
+        players=players,
+        is_targeted=targeted,
+        amount=amount,
+        keywords=("reveal",) if reveal else (),
+        text="reveal the top" if reveal else "look at the top",
     )
 
 
@@ -4542,6 +6251,9 @@ def _put_on_library(stream: Stream) -> Effect | None:
     if not stream.accept("on"):
         return None
     stream.accept("the")
+    # Top or bottom is the whole difference between Condemn and a card that
+    # hands the attacker back as next turn's draw; it was accepted and dropped.
+    bottom = stream.at("bottom")
     if not stream.accept("top", "bottom"):
         return None
     if not (
@@ -4550,12 +6262,13 @@ def _put_on_library(stream: Stream) -> Effect | None:
         or stream.accept_phrase("of its owner's library")
     ):
         return None
-    stream.accept_phrase("in a random order")
+    order = _library_order_words(stream)
     return Effect(
         EffectKind.PUT_ON_LIBRARY,
         targets=targets,
         players=YOU,
         is_targeted=targeted,
+        keywords=("bottom", *order) if bottom else order,
         text="put on library",
     )
 
@@ -4685,21 +6398,36 @@ def _copy(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
-    # "You may choose new targets for the copy" is a rider on the copy, and
-    # the engine's copy already offers the choice.
+    # "You may choose new targets for the copy" is a rider on the copy (CR
+    # 707.10c): the choice is made as the copy is created, and a copy keeps
+    # the original's targets unless the effect allows it. It may sit in the
+    # same sentence or open the next one ("Copy target instant or sorcery
+    # spell. You may choose new targets for the copy."); either way it is
+    # carried as the copy's MAY_CHOOSE_NEW_TARGETS keyword. The closing period
+    # is left for the sentence reader.
+    may_retarget = False
     look = stream.mark()
-    if stream.accept("you") and stream.accept("may"):
-        if not stream.accept_phrase("choose new targets for the copy"):
-            stream.reset(look)
+    stream.accept(".")
+    if (
+        stream.accept("you")
+        and stream.accept("may")
+        and stream.accept_phrase("choose new targets for")
+        and stream.accept("the")
+        and stream.accept("copy", "copies")
+    ):
+        may_retarget = True
     else:
         stream.reset(look)
 
     on_stack = targets.zones == frozenset({Zone.STACK}) or targets.remembered
+    from ..rules.cr700_additional_rules.cr707_faces import MAY_CHOOSE_NEW_TARGETS
+
     return Effect(
         EffectKind.COPY_SPELL if on_stack else EffectKind.COPY_PERMANENT,
         targets=targets,
         is_targeted=targeted,
         players=YOU,
+        keywords=(MAY_CHOOSE_NEW_TARGETS,) if may_retarget and on_stack else (),
         text="copy",
     )
 
@@ -4850,7 +6578,9 @@ def _retarget(stream: Stream) -> Effect | None:
     # the rest - which failed every card in this family.
     look = stream.mark()
     if stream.accept("or"):
-        if not stream.accept("ability", "abilities"):
+        if stream.accept("ability", "abilities"):
+            targets = replace(targets, is_ability=None)
+        else:
             stream.reset(look)
 
     stream.accept_phrase("with a single target")
@@ -5198,6 +6928,40 @@ def _double_pt(stream: Stream) -> Effect | None:
     )
 
 
+@clause("double-counters")
+def _double_counters(stream: Stream) -> Effect | None:
+    """"Double the number of +1/+1 counters on each creature you control",
+    "double the number of each kind of counter on target permanent"
+    (CR 701.10e).
+    """
+    from .nouns import _counter_type
+
+    mark = stream.mark()
+    if not stream.accept_phrase("double the number of"):
+        return None
+    if stream.accept_phrase("each kind of counter"):
+        counter = ""
+    else:
+        counter = _counter_type(stream)
+        if not counter:
+            stream.reset(mark)
+            return None
+    if not stream.accept("on"):
+        stream.reset(mark)
+        return None
+    targets, targeted = parse_target(stream)
+    if targets is None:
+        stream.reset(mark)
+        return None
+    return Effect(
+        EffectKind.DOUBLE_COUNTERS,
+        targets=targets,
+        counter_type=counter,
+        is_targeted=targeted,
+        text="double counters",
+    )
+
+
 @clause("look-at-hand")
 def _look_at_hand(stream: Stream) -> Effect | None:
     """"Look at target player's hand." - information, not a card moved."""
@@ -5342,70 +7106,298 @@ def _poison(stream: Stream) -> Effect | None:
 
 @clause("library-order")
 def _library_order(stream: Stream) -> Effect | None:
-    """"put them back in any order", "put the rest on the bottom of your
-    library in a random order".
+    """What happens to the cards a look or a reveal set aside.
 
-    The tail of every look-at-the-top-N card. It moves cards the resolution is
-    already holding and the *order* is the only thing being said, which is why
-    it is one clause rather than a variation on each verb that can precede it.
+    "Put one of them into your hand and the rest on the bottom of your
+    library in any order", "Put all Goblin cards revealed this way into your
+    hand and the rest into your graveyard", "put them back in any order".
+    Each part names some of the pile and a place, and a sentence may list
+    several parts with the verb said once (Telling Time: "one into your hand,
+    one on top of your library, and one on the bottom").
+
+    The parts used to become moves of whatever the resolution *remembered*,
+    with no filter and no count: "put a creature card from among them into
+    your hand" moved every remembered card, and "the rest" was the same set
+    again. Now a part chooses from the pile (``ObjectFilter.from_pile``) by
+    its own description and count, and "the rest" is what is left.
     """
     mark = stream.mark()
+    if not stream.accept("put", "puts"):
+        return None
+
+    # "put them back in any order" - the whole pile, where it already is.
+    look = stream.mark()
+    if stream.accept("them", "it") or stream.accept_phrase("those cards"):
+        if stream.accept("back"):
+            _library_words(stream, "on top of")
+            return Effect(
+                EffectKind.PUT_ON_LIBRARY,
+                targets=ObjectFilter(remembered=True),
+                keywords=_library_order_words(stream),
+                text="put them back",
+            )
+        stream.reset(look)
+
+    parts = _pile_parts(stream)
+    if not parts:
+        stream.reset(mark)
+        return None
+    if len(parts) == 1:
+        return parts[0]
+    return Effect(EffectKind.SEQUENCE, children=tuple(parts), text="put them")
+
+
+def _pile_parts(stream: Stream, *, after_first: bool = False) -> list[Effect]:
+    """One or more "<some of the pile> <place>" parts, joined by commas and
+    "and". The ones after the first may be a bare number ("one on top of your
+    library"), which only makes sense once "of them" has been said."""
+    parts: list[Effect] = []
+    while True:
+        look = stream.mark()
+        if parts or after_first:
+            stream.skip_punct(",")
+            stream.accept("and")
+        part = _pile_part(stream, continuation=bool(parts) or after_first)
+        if part is None:
+            stream.reset(look)
+            break
+        parts.append(part)
+    return parts
+
+
+def _pile_part(stream: Stream, *, continuation: bool) -> Effect | None:
+    mark = stream.mark()
+    spec = _pile_object(stream, continuation=continuation)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    part = _pile_destination(stream, spec)
+    if part is None:
+        stream.reset(mark)
+        return None
+    return part
+
+
+#: "The rest", however a card spells it: everything in the pile not yet put
+#: somewhere. "The other" is the same thing when two cards were looked at.
+_THE_REST = (
+    "all other cards revealed this way",
+    "all the other cards revealed this way",
+    "all cards revealed this way that weren't put onto the battlefield",
+    "the rest of the cards revealed this way",
+    "the rest of the revealed cards",
+    "the rest of them",
+    "the rest",
+    "the others",
+    "the other",
+)
+
+
+def _pile_object(stream: Stream, *, continuation: bool) -> ObjectFilter | None:
+    """Which of the pile a part is about.
+
+    "the rest" is all that is left; "two of them" / "up to one of them" /
+    "one of those cards" is a count from the pile; "a creature card from among
+    them" and "all land cards revealed this way" are descriptions, read by the
+    noun grammar, which marks them as choosing from the pile.
+    """
+    for phrase in _THE_REST:
+        if stream.accept_phrase(phrase):
+            return ObjectFilter(from_pile=True)
+
+    mark = stream.mark()
+    up_to = stream.accept_phrase("up to")
+    number = stream.accept_number()
+    if number is None and stream.accept("X"):
+        count = Value(kind=ValueKind.X)
+    elif number is not None:
+        count = Value.of(number)
+    else:
+        count = None
+    if count is not None:
+        if stream.accept_phrase("of them") or stream.accept_phrase("of those cards"):
+            return ObjectFilter(from_pile=True, count=count, up_to=up_to)
+        if continuation and not up_to:
+            # "..., one on top of your library, and one on the bottom" - the
+            # "of them" was said once for the whole list.
+            return ObjectFilter(from_pile=True, count=count)
+    stream.reset(mark)
+
+    any_number = stream.at_phrase("any number of")
+    spec = parse_object_filter(stream)
+    if spec is None or not spec.from_pile:
+        stream.reset(mark)
+        return None
+    if any_number:
+        # "any number of" is a choice of how many, which is not "all" - it is
+        # kept apart so the round-trip says which. The engine's choice with
+        # no agent is every match, which is one legal answer.
+        spec = replace(spec, count=None, up_to=True)
+    return spec
+
+
+def _library_order_words(stream: Stream) -> tuple[str, ...]:
+    """CR 401.4: "in any order" is the owner's choice (with no agent, the
+    order the cards are in), "in a random order" is not a choice at all."""
+    if stream.accept_phrase("in any order"):
+        return ()
+    if stream.accept_phrase("in a random order") or stream.accept_phrase(
+        "in random order"
+    ):
+        return ("random",)
+    return ()
+
+
+def _pile_destination(stream: Stream, spec: ObjectFilter) -> Effect | None:
+    """Where a part of the pile goes, as the effect that puts it there."""
+    if (
+        stream.accept_phrase("into your hand")
+        or stream.accept_phrase("into their owner's hand")
+        or stream.accept_phrase("into its owner's hand")
+        or stream.accept_phrase("into their owners' hands")
+    ):
+        return Effect(
+            EffectKind.MOVE_ZONE, targets=spec, zone=Zone.HAND, text="put into hand"
+        )
+    if (
+        stream.accept_phrase("into your graveyard")
+        or stream.accept_phrase("into their owner's graveyard")
+        or stream.accept_phrase("into its owner's graveyard")
+        or stream.accept_phrase("into their owners' graveyards")
+        or stream.accept_phrase("into that player's graveyard")
+    ):
+        return Effect(
+            EffectKind.MOVE_ZONE,
+            targets=spec,
+            zone=Zone.GRAVEYARD,
+            text="put into graveyard",
+        )
+    if stream.accept_phrase("onto the battlefield"):
+        keywords: tuple[str, ...] = ()
+        look = stream.mark()
+        if stream.accept("tapped"):
+            if stream.at("and"):
+                # "tapped and attacking" - what it attacks is not said here.
+                stream.reset(look)
+                return None
+            keywords = ("tapped",)
+        # CR 110.2a: a permanent is controlled by the player who put it onto
+        # the battlefield, which is what the executor does - so "under your
+        # control" is that default said aloud.
+        stream.accept_phrase("under your control")
+        return Effect(
+            EffectKind.PUT_ONTO_BATTLEFIELD,
+            targets=spec,
+            zone=Zone.BATTLEFIELD,
+            keywords=keywords,
+            text="put onto the battlefield",
+        )
+
+    top = None
+    if stream.accept("back"):
+        top = True
+        _library_words(stream, "on top of")
+    elif _library_words(stream, "on top of") or _library_words(stream, "on the top of"):
+        top = True
+    elif stream.accept_phrase("on top"):
+        top = True
+    elif _library_words(stream, "on the bottom of"):
+        top = False
+    elif stream.accept_phrase("on the bottom"):
+        top = False
+    if top is None:
+        return None
+    order = _library_order_words(stream)
+    keywords = order if top else ("bottom", *order)
+    return Effect(
+        EffectKind.PUT_ON_LIBRARY,
+        targets=spec,
+        keywords=keywords,
+        text="put on top of library" if top else "put on the bottom of library",
+    )
+
+
+def _library_words(stream: Stream, preposition: str) -> bool:
+    """"<preposition> your library" and its owner-naming spellings. CR 400.3
+    sends a card to its *owner's* library whatever the sentence says, so the
+    spellings all mean the same place."""
+    for owner in (
+        "your library",
+        "their library",
+        "its owner's library",
+        "their owner's library",
+        "their owners' libraries",
+        "that player's library",
+    ):
+        if stream.accept_phrase(f"{preposition} {owner}"):
+            return True
+    return False
+
+
+@clause("pile-reveal-and-put")
+def _pile_reveal_and_put(stream: Stream) -> Effect | None:
+    """"Reveal a creature card from among them and put it into your hand."
+
+    CR 701.20: the reveal shows the card; the put moves it. One card, chosen
+    once, does both - so the pair is one effect carrying "reveal", not a
+    reveal of one choice and a move of whatever the resolution remembered.
+    """
+    mark = stream.mark()
+    if not stream.accept("reveal", "reveals"):
+        return None
+    spec = _pile_object(stream, continuation=False)
+    if spec is None:
+        stream.reset(mark)
+        return None
+    stream.skip_punct(",")
+    if not (stream.accept("and") or stream.accept("then")):
+        stream.reset(mark)
+        return None
     if not stream.accept("put"):
         stream.reset(mark)
         return None
-
-    # "put them back", "put the rest on the bottom", "put one of them into
-    # your hand" - the same verb over a pile the resolution is holding, said
-    # three ways, differing only in how much of the pile is meant.
-    stream.accept_number()
-    stream.accept_phrase("of them")
     if not (
-        stream.accept("them", "it")
-        or stream.accept_phrase("the rest of them")
-        or stream.accept_phrase("the rest")
-        or stream.mark() != mark + 1
+        stream.accept("it", "them")
+        or stream.accept_phrase("that card")
+        or stream.accept_phrase("those cards")
+        or stream.accept_phrase("the revealed cards")
+        or stream.accept_phrase("the revealed card")
     ):
         stream.reset(mark)
         return None
-
-    if stream.accept_phrase("into your hand"):
+    moved = _pile_destination(stream, spec)
+    if moved is None or moved.kind is EffectKind.PUT_ONTO_BATTLEFIELD:
+        stream.reset(mark)
+        return None
+    moved = replace(moved, keywords=("reveal", *moved.keywords), text="reveal and put")
+    # "..., then put that card on top of your library and the rest on the
+    # bottom" - the rest of the pile, in the same sentence.
+    rest = _pile_parts(stream, after_first=True)
+    if rest:
         return Effect(
-            EffectKind.MOVE_ZONE,
-            targets=ObjectFilter(remembered=True),
-            zone=Zone.HAND,
-            text="put them into your hand",
+            EffectKind.SEQUENCE, children=(moved, *rest), text="reveal and put"
         )
+    return moved
 
-    if stream.accept("back"):
-        from_top = True
-    elif stream.accept_phrase("on top of your library") or stream.accept_phrase(
-        "on the top of your library"
+
+@clause("pile-exile")
+def _pile_exile(stream: Stream) -> Effect | None:
+    """"Exile one of them face down", "exile two of those cards" - a count
+    from the pile, which the ordinary exile clause's noun grammar cannot read
+    ("of them" has no head noun)."""
+    mark = stream.mark()
+    if not stream.accept("exile"):
+        return None
+    number = stream.accept_number()
+    if number is None or not (
+        stream.accept_phrase("of them") or stream.accept_phrase("of those cards")
     ):
-        from_top = True
-    elif (
-        stream.accept_phrase("on the bottom of your library")
-        or stream.accept_phrase("on the bottom of their library")
-        or stream.accept_phrase("on the bottom")
-    ):
-        from_top = False
-    else:
         stream.reset(mark)
         return None
-
-    # "In any order" and "in a random order" differ only in who picks, and no
-    # decision in this simulator picks better than random - so both are
-    # consumed and neither changes the effect.
-    (
-        stream.accept_phrase("in any order")
-        or stream.accept_phrase("in a random order")
-        or stream.accept_phrase("in random order")
-    )
-
     return Effect(
-        EffectKind.MOVE_ZONE,
-        targets=ObjectFilter(remembered=True, from_top=from_top),
-        zone=Zone.LIBRARY,
-        text="put them back",
+        EffectKind.EXILE,
+        targets=ObjectFilter(from_pile=True, count=Value.of(number)),
+        text="exile from the pile",
     )
 
 
@@ -5591,46 +7583,24 @@ def _and_the_rest(stream: Stream) -> Effect | None:
     """"... and the rest on the bottom of your library in any order."
 
     The verb is elided: "Put one of them into your hand *and the rest on the
-    bottom*" says "put" once and means it twice. Read as its own effect
-    because that is what it is - the second half moves different cards to a
-    different place.
+    bottom*" says "put" once and means it twice. The put clause reads the
+    whole list itself; this is for the rest standing after something else
+    took the first half.
     """
     mark = stream.mark()
     stream.skip_punct(",")
-    # The "and" is optional: when this half follows another effect the
-    # sentence chainer has already taken it, and when it opens a sentence
-    # there is none to take.
     stream.accept("and")
-    if not (
-        stream.accept_phrase("the rest of them") or stream.accept_phrase("the rest")
-    ):
-        stream.reset(mark)
-        return None
-
-    if (
-        stream.accept_phrase("on the bottom of your library")
-        or stream.accept_phrase("on the bottom of their library")
-        or stream.accept_phrase("on the bottom")
-    ):
-        from_top = False
-    elif stream.accept_phrase("on top of your library"):
-        from_top = True
+    for phrase in _THE_REST:
+        if stream.at_phrase(phrase):
+            break
     else:
         stream.reset(mark)
         return None
-
-    (
-        stream.accept_phrase("in any order")
-        or stream.accept_phrase("in a random order")
-        or stream.accept_phrase("in random order")
-    )
-
-    return Effect(
-        EffectKind.MOVE_ZONE,
-        targets=ObjectFilter(remembered=True, from_top=from_top),
-        zone=Zone.LIBRARY,
-        text="and the rest",
-    )
+    part = _pile_part(stream, continuation=False)
+    if part is None:
+        stream.reset(mark)
+        return None
+    return part
 
 
 @clause("becomes-a-copy")
@@ -6402,56 +8372,87 @@ def _prevent_damage(stream: Stream) -> Effect | None:
     if not stream.accept("damage"):
         return None
     marker = ("combat",) if combat_only else ()
-    stream.accept_phrase("that would be dealt")
+    if not stream.accept_phrase("that would be dealt"):
+        return None
+    # "that would be dealt *by* non-Spider creatures" - whose damage, rather
+    # than to whom. It can sit before the recipient or after the duration.
+    source = _dealt_by(stream)
     # "that would be dealt *to and dealt by* that creature" - the shield runs
-    # both ways round one object. Read before the recipient because that is
-    # where the card writes it.
-    look = stream.mark()
-    both_ways = bool(
-        stream.accept("to") and stream.accept_phrase("and dealt by")
-    )
-    if not both_ways:
-        stream.reset(look)
-    if not both_ways and not stream.accept("to"):
-        # "Prevent all combat damage that would be dealt this turn" - no
-        # recipient named, so it protects everything.
-        duration = _duration(stream)
-        return Effect(
-            EffectKind.PREVENT_DAMAGE,
-            amount=amount,
-            duration=duration,
-            keywords=marker,
-            text="prevent damage",
-        )
-
-    targets, targeted = parse_target(stream)
-    players = None
-    if targets is None:
-        players, targeted = parse_player_filter(stream)
-        if players is None:
+    # both ways round one object (CR 615). Read before the recipient because
+    # that is where the card writes it. It used to be consumed and dropped,
+    # so Maze of Ith stopped the damage dealt *to* the attacker and let the
+    # attacker's own damage through.
+    both_ways = source is None and stream.accept_phrase("to and dealt by")
+    targets = players = None
+    targeted = False
+    if both_ways or stream.accept("to"):
+        if stream.accept_phrase("any target"):
+            targets, targeted = replace(ANY_TARGET), True
+        else:
+            targets, targeted = parse_target(stream)
+        if targets is None:
+            players, targeted = parse_player_filter(stream)
+            if players is None:
+                return None
+        elif stream.accept_phrase("and each player"):
+            # "to each creature and each player" (Kitsune Palliator).
+            players = PlayerFilter(PlayerScope.EACH_PLAYER)
+        # "dealt to that creature *and dealt by* it" - the trailing form.
+        if not both_ways and targets is not None and source is None:
+            look = stream.mark()
+            if stream.accept_phrase("and dealt by") and stream.accept_phrase(
+                "that creature"
+            ) or _accepted_pronoun(stream, look):
+                both_ways = True
+            else:
+                stream.reset(look)
+        if both_ways and (targets is None or players is not None):
             return None
-    # "dealt to *and dealt by* that creature" - the same shield in both
-    # directions, which is one prevention over one object either way.
-    look = stream.mark()
-    if stream.accept("and"):
-        if not (
-            stream.accept_phrase("dealt by that creature")
-            or stream.accept_phrase("dealt by it")
-            or stream.accept_phrase("dealt by")
-        ):
-            stream.reset(look)
-    else:
-        stream.reset(look)
     duration = _duration(stream)
+    if source is None and not both_ways:
+        source = _dealt_by(stream)
+        if duration is Duration.PERMANENT:
+            duration = _duration(stream)
+    if targets is None and players is None and source is None and targeted:
+        return None
     return Effect(
         EffectKind.PREVENT_DAMAGE,
         targets=targets,
         players=players,
+        damage_source=source,
+        both_ways=both_ways,
         amount=amount,
         duration=duration,
         is_targeted=targeted,
         keywords=marker,
         text="prevent damage",
+    )
+
+
+def _dealt_by(stream: Stream):
+    """"by <sources>" after "damage that would be dealt" - ``None`` if absent.
+
+    The filter is kept as the noun reader gives it: "by creatures" means
+    creatures on the battlefield, "by this artifact" the source itself.
+    """
+    mark = stream.mark()
+    if not stream.accept("by"):
+        return None
+    if stream.at("a", "an") and stream.at_phrase("a source of your choice"):
+        stream.reset(mark)
+        return None
+    spec = parse_object_filter(stream)
+    if spec is None or spec.includes_players:
+        stream.reset(mark)
+        return None
+    return replace(spec, count=None, up_to=False)
+
+
+def _accepted_pronoun(stream: Stream, look: int) -> bool:
+    """"and dealt by it" / "and dealt by them" - the recipient again."""
+    stream.reset(look)
+    return stream.accept_phrase("and dealt by it") or stream.accept_phrase(
+        "and dealt by them"
     )
 
 
@@ -6497,6 +8498,10 @@ def _leading_duration(stream: Stream) -> Effect | None:
     onto whatever came back.
     """
     mark = stream.mark()
+    # "Whenever a creature enters this turn, you may draw a card": the
+    # trigger reader stops before "this turn", which names how long the
+    # trigger lasts, not its effects - a permanent change it makes stays.
+    window = stream.at("this")
     duration = _duration(stream)
     if duration is Duration.PERMANENT:
         stream.reset(mark)
@@ -6509,17 +8514,34 @@ def _leading_duration(stream: Stream) -> Effect | None:
         return None
     return Effect(
         EffectKind.SEQUENCE,
-        children=tuple(_stamp(effect, duration) for effect in inner),
+        children=tuple(inner) if window else tuple(_stamp(effect, duration) for effect in inner),
         duration=duration,
         text="for a duration",
     )
 
 
+#: Wrappers whose children happen as part of the same instruction, and so
+#: fall under a leading duration. Not a delayed trigger or a choice of modes:
+#: their children are not this sentence's effects.
+_DURATION_WRAPPERS = frozenset({EffectKind.SEQUENCE, EffectKind.OPTIONAL, EffectKind.CONDITIONAL})
+
+
 def _stamp(effect: Effect, duration: Duration) -> Effect:
-    """Give an effect a duration, unless it already chose one of its own."""
+    """Give an effect a duration, unless it already chose one of its own.
+
+    Into the wrappers too: the engine reads a duration off each effect it
+    runs, never off a SEQUENCE. "Until end of turn, target creature loses
+    all abilities and becomes a blue Frog with base power and toughness 1/1"
+    is one SEQUENCE of three, and only the SEQUENCE got the duration - Turn to
+    Frog was permanent (auditor's F33).
+    """
     from dataclasses import replace
 
-    if effect.duration is not Duration.PERMANENT:
+    if effect.kind in _DURATION_WRAPPERS and effect.children:
+        effect = replace(effect, children=tuple(_stamp(c, duration) for c in effect.children))
+    # ``!=``, not ``is not``: a duration is often a plain int, and 0 is not
+    # the enum member - which skipped every one of them.
+    if effect.duration != Duration.PERMANENT:
         return effect
     return replace(effect, duration=duration)
 
@@ -6876,7 +8898,8 @@ def _kicked(stream: Stream) -> Effect | None:
     if not stream.accept("was"):
         stream.reset(mark)
         return None
-    if not stream.accept("kicked"):
+    participle = next((w for w in _PAID_PARTICIPLES if stream.accept(w)), None)
+    if participle is None:
         stream.reset(mark)
         return None
     stream.skip_punct(",")
@@ -6885,13 +8908,18 @@ def _kicked(stream: Stream) -> Effect | None:
     if inner is None:
         stream.reset(mark)
         return None
+    # "Bargained" is linked to bargain's own cost (CR 607, 702.166b);
+    # "kicked" is any optional additional cost, as before (CR 702.33b).
+    keyword = _PAID_PARTICIPLES[participle]
     return Effect(
         EffectKind.CONDITIONAL,
         condition=Condition(
-            kind=ConditionKind.WAS_KICKED, text="this spell was kicked"
+            kind=ConditionKind.WAS_KICKED,
+            keyword=keyword,
+            text=f"this spell was {participle}",
         ),
         children=tuple(inner),
-        text="if this spell was kicked",
+        text=f"if this spell was {participle}",
     )
 
 
@@ -6954,6 +8982,69 @@ def _attraction_action(stream: Stream) -> Effect | None:
     return None
 
 
+@clause("fight")
+def _fight(stream: Stream) -> Effect | None:
+    """"[Creature] fights [another creature]" (CR 701.14a).
+
+    The creature told to fight is held as the instruction's
+    ``damage_source`` and the one it fights as its object. A fighter that
+    is a target ("target creature you control fights target creature you
+    don't control") is chosen by a ``DESIGNATE`` instruction first, so it
+    is a target of its own (CR 115.1) and the fight names what was
+    remembered of it. Read for the source ("this creature fights"), a
+    pronoun ("it fights", "then that creature fights"), and the permanent
+    an Aura or Equipment is attached to; any other fighter - "creatures you
+    control fight", "each of those creatures fights" - stays unread.
+    """
+    mark = stream.mark()
+    fighter, fighter_targeted = parse_target(stream)
+    if fighter is None or not stream.accept("fights", "fight"):
+        stream.reset(mark)
+        return None
+    designated = None
+    if fighter_targeted:
+        designated = _designate(fighter)
+        if designated is None:
+            stream.reset(mark)
+            return None
+        fighter = ObjectFilter(remembered=True)
+    elif not (
+        fighter.source_only
+        or fighter.remembered
+        or (
+            fighter.has_attached is not None
+            and fighter.has_attached.source_only
+            and fighter.count is None
+        )
+    ):
+        stream.reset(mark)
+        return None
+    opponent, targeted = parse_target(stream)
+    if (
+        opponent is None
+        or opponent.includes_players
+        or (opponent.count is not None and not (opponent.up_to and _is_one(opponent.count)))
+        or (opponent.other_than_source and not targeted)
+        or (designated is not None and opponent.remembered)
+    ):
+        # One creature to fight; "each other creature" or two of them would
+        # be several fights, and an untargeted "other" after the fighter
+        # means other than the fighter, which a filter cannot say. After a
+        # designated fighter, "that creature" would name the fighter.
+        stream.reset(mark)
+        return None
+    fight = Effect(
+        EffectKind.FIGHT,
+        targets=opponent,
+        is_targeted=targeted,
+        damage_source=fighter,
+        text="fight",
+    )
+    if designated is None:
+        return fight
+    return Effect(EffectKind.SEQUENCE, children=(designated, fight), text="fight")
+
+
 @clause("keyword-action")
 def _keyword_action(stream: Stream) -> Effect | None:
     """A bare keyword action: "proliferate", "investigate", "populate".
@@ -6999,12 +9090,33 @@ def _keyword_action(stream: Stream) -> Effect | None:
             break
         words.pop()
 
-    if matched is None:
+    if matched is None or matched == "fight":
+        # Fights are read by ``_fight``, which keeps the creature told to
+        # fight; read here, the subject was dropped and the fight had one
+        # creature in it.
         stream.reset(mark)
         return None
 
     amount = parse_value(stream)
+    if amount is not None and not amount.is_constant:
+        # The builders take a printed number. A computed one ("amass X",
+        # "reveal the number of ...") would be dropped to nothing, which is
+        # swallowing the quantity; left unread instead.
+        stream.reset(mark)
+        return None
     spec, targeted = parse_target(stream)
+    if (
+        spec is not None
+        and spec.up_to
+        and spec.count is None
+        and matched.lower() not in _ANY_NUMBER_ACTIONS
+    ):
+        # "Discard any number of cards": the player's chosen count (CR
+        # 107.1c) lives on the filter, and only the actions whose executor
+        # picks from the filter can honour it. Discard counts by amount and
+        # would discard one.
+        stream.reset(mark)
+        return None
     if spec is None and subject is not None:
         spec, targeted = subject, subject_targeted
     effects = build(
@@ -7028,6 +9140,13 @@ def _keyword_action(stream: Stream) -> Effect | None:
     return Effect(
         EffectKind.SEQUENCE, children=tuple(effects), text=" ".join(words)
     )
+
+
+#: Keyword actions whose executor acts on the objects its filter picks, and so
+#: can carry "any number of" as the player's choice (``resolve._objects``).
+_ANY_NUMBER_ACTIONS = frozenset(
+    {"destroy", "exile", "sacrifice", "tap", "untap", "reveal"}
+)
 
 
 def _known_action(phrase: str, builders) -> str | None:
@@ -7083,182 +9202,509 @@ def _amount_replacement(stream: Stream) -> Effect | None:
     each produce a second batch rather than a bigger one: a card that still
     runs and does the wrong thing.
 
-    So the event half chooses the ReplacementKind and the substitute half
-    supplies a multiplier and an addend, and both are written once for the
-    family rather than once per card.
+    So the event half chooses the ReplacementKind and says exactly which
+    events it catches - whose damage, dealt to whom, which kind of counter,
+    which tokens, whose life - and the substitute half supplies a multiplier
+    and an addend. Every word of the substitute is either the number or a
+    restatement of the event ("to that permanent or player", "of those
+    tokens"); anything else declines. The first version of this clause
+    skipped up to 24 words before "instead", and with them "plus 1", "minus
+    1", "draw ... cards" and "that many 4/4 Angel tokens" - so Lich gained
+    life instead of drawing and every "+1" damage and life card was a no-op.
     """
     mark = stream.mark()
     if not stream.accept("if"):
-        stream.reset(mark)
         return None
 
     event = _replaced_event(stream)
-    if event is None:
+    if event is None or not stream.accept(","):
         stream.reset(mark)
         return None
-    kind, subject, players, counter = event
-    stream.skip_punct(",")
 
-    scale = _replacement_amount(stream)
-    if scale is None:
+    resized = _resized_event(stream, event)
+    if resized is None or not stream.accept("instead"):
         stream.reset(mark)
         return None
-    multiplier, extra = scale
-
-    # Whatever spells out where the new number lands - "of those counters are
-    # put on it", "to that permanent or player" - up to "instead".
-    steps = 0
-    while not stream.done and not stream.at("instead"):
-        if stream.peek().text in (".", ";"):
-            break
-        stream.next()
-        steps += 1
-        if steps > 24:
-            stream.reset(mark)
-            return None
-    if not stream.accept("instead"):
-        stream.reset(mark)
-        return None
+    kind, multiplier, extra = resized
 
     return Effect(
         EffectKind.REPLACEMENT,
-        targets=subject,
-        players=players,
-        counter_type=counter,
+        targets=event.subject,
+        players=event.players,
+        counter_type=event.counter,
         amount=Value.of(extra),
         multiplier=multiplier,
         replacement_kind=int(kind),
+        damage_source=event.damage_source,
+        actor=event.actor,
+        keywords=event.keywords,
+        condition=event.condition,
         duration=Duration.PERMANENT,
         text="replacement: change the amount",
     )
 
 
+class _ReplacedEvent:
+    """What the "if ... would ..." half of an amount replacement catches."""
+
+    __slots__ = (
+        "kind", "family", "subject", "players", "counter", "actor",
+        "damage_source", "keywords", "condition", "recipient_words",
+    )
+
+    def __init__(self, kind, family, **fields) -> None:
+        from ..rules.kernel.query import ALWAYS
+
+        self.kind = kind
+        self.family = family
+        self.subject = fields.get("subject")
+        self.players = fields.get("players")
+        self.counter = fields.get("counter", "")
+        self.actor = fields.get("actor")
+        self.damage_source = fields.get("damage_source")
+        self.keywords = fields.get("keywords", ())
+        self.condition = fields.get("condition", ALWAYS)
+        self.recipient_words = fields.get("recipient_words", ())
+
+
 def _replaced_event(stream: Stream):
-    """Which event a replacement catches.
+    """Which event a replacement catches, or ``None``.
 
-    Returns ``(kind, object subject, player subject, counter type)``. One
-    reader for the whole family: the events are written to a template and the
-    differences between them are two or three words.
+    Four families, each with its own reader because each names different
+    participants: counters (a kind and a recipient), tokens (a kind of token
+    and whose control), damage (a source and a recipient) and life (a player).
+    Draws are not here: the engine does not replace draws event by event.
     """
-    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
-
-    mark = stream.mark()
-
-    # English puts the subject of the replaced event in one of two places,
-    # and both are common:
-    #
-    #   "If ONE OR MORE COUNTERS would be put on ..."   - the thing itself
-    #   "If A SOURCE YOU CONTROL would deal damage ..." - whoever acts
-    #
-    # Trying the first shape before the second matters, because "one or more
-    # +1/+1 counters" is not a noun phrase the object grammar can read, so the
-    # second reader gets no subject and then fails on the word "would".
-    subject_led = _subject_led_event(stream)
-    if subject_led is not None:
-        return subject_led
-
-    actor_objects = None
-    actor_players, _ = parse_player_filter(stream)
-    if actor_players is None:
-        actor_objects = parse_object_filter(stream)
-    stream.accept_phrase("an effect")
-
-    if not stream.accept("would"):
+    for reader in (_counter_event, _token_event, _damage_event, _life_event):
+        mark = stream.mark()
+        event = reader(stream)
+        if event is not None:
+            return event
         stream.reset(mark)
-        return None
-    after_would = stream.mark()
-
-    # -- counters ----------------------------------------------------------
-    stream.accept("put", "be")
-    stream.accept("put")
-    stream.accept_number()
-    stream.accept_phrase("or more")
-    counter = _any_counter(stream)
-    if counter is not None and stream.accept("on"):
-        spec = parse_object_filter(stream)
-        stream.accept("or")
-        stream.accept("player", "players")
-        if spec is not None:
-            return ReplacementKind.MODIFY_COUNTERS, spec, None, counter
-    stream.reset(after_would)
-
-    # -- tokens ------------------------------------------------------------
-    # The token count may have been eaten as the actor ("one or more tokens
-    # would be created"), so both shapes end up here.
-    if _token_event(stream, actor_objects):
-        return ReplacementKind.MODIFY_TOKENS, None, YOU, ""
-    stream.reset(after_would)
-
-    # -- damage ------------------------------------------------------------
-    if stream.accept("deal", "deals"):
-        stream.accept("noncombat", "combat")
-        if stream.accept("damage"):
-            stream.accept("to")
-            parse_object_filter(stream)
-            stream.accept("or")
-            parse_player_filter(stream)
-            stream.accept("player", "players")
-            return ReplacementKind.MODIFY_DAMAGE, actor_objects, None, ""
-    stream.reset(after_would)
-
-    # -- life --------------------------------------------------------------
-    if stream.accept("gain", "gains", "lose", "loses"):
-        if stream.accept("life"):
-            stream.accept_phrase("during your turn")
-            return ReplacementKind.MODIFY_LIFE_CHANGE, None, actor_players, ""
-    stream.reset(after_would)
-
-    # -- cards -------------------------------------------------------------
-    if stream.accept("draw", "draws"):
-        stream.accept("a", "an")
-        if stream.accept("card", "cards"):
-            return ReplacementKind.MODIFY_DRAW, None, actor_players, ""
-
-    stream.reset(mark)
     return None
 
 
-def _subject_led_event(stream: Stream):
-    """"If one or more <counters|tokens> would be <put|created> ...".
-
-    The counters or tokens are the grammatical subject rather than whoever
-    causes them, which is why this cannot go through the object grammar: "one
-    or more +1/+1 counters" is a quantity of a thing that is not a permanent.
-    """
+def _counter_event(stream: Stream):
+    """"one or more +1/+1 counters would be put on a creature you control",
+    "an effect / you / an opponent would put one or more counters on ..."."""
     from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
 
-    mark = stream.mark()
-    stream.accept_number()
-    if not stream.accept_phrase("or more"):
-        stream.reset(mark)
-        return None
-
-    counter = _any_counter(stream)
-    if counter is not None:
-        if stream.accept_phrase("would be put on") or stream.accept_phrase(
-            "would be placed on"
+    actor = None
+    keywords: tuple[str, ...] = ()
+    if stream.accept_phrase("one or more"):
+        counter = _any_counter(stream)
+        if counter is None:
+            return None
+        if not (
+            stream.accept_phrase("would be put on")
+            or stream.accept_phrase("would be placed on")
         ):
-            spec = parse_object_filter(stream)
-            stream.accept("or")
-            stream.accept("player", "players")
-            if spec is not None:
-                return ReplacementKind.MODIFY_COUNTERS, spec, None, counter
-        stream.reset(mark)
-        return None
+            return None
+    else:
+        if stream.accept_phrase("an effect"):
+            # CR 118: counters put as a *cost* are not put by an effect, and
+            # neither are the turn-based lore counters of CR 714.3b.
+            keywords = ("an effect",)
+        elif stream.accept("you"):
+            actor = YOU
+        elif stream.accept_phrase("an opponent"):
+            actor = PlayerFilter(PlayerScope.OPPONENT)
+        else:
+            return None
+        if not stream.accept_phrase("would put one or more"):
+            return None
+        counter = _any_counter(stream)
+        if counter is None or not stream.accept("on"):
+            return None
 
-    # "one or more creature tokens would be created under your control".
-    # The noun reader may take the word "tokens" itself, in which case the
-    # filter says so and there is nothing left here to accept.
+    start = stream.mark()
+    spec = parse_object_filter(stream)
+    if spec is None:
+        return None
+    if stream.at("or"):
+        # "on a permanent or player", "or on yourself": the counters a player
+        # gets (poison, energy, experience) do not pass through the
+        # replacement layer, so a card that multiplies them cannot be
+        # represented and is left unread rather than half-applied.
+        return None
+    return _ReplacedEvent(
+        ReplacementKind.MODIFY_COUNTERS,
+        "counters",
+        subject=replace(spec, count=None, up_to=False),
+        counter=counter,
+        actor=actor,
+        keywords=keywords,
+        recipient_words=_words_since(stream, start),
+    )
+
+
+def _token_event(stream: Stream):
+    """"one or more [creature] tokens would be created [under your control]",
+    "an effect would create one or more tokens", "you would create ..."."""
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+
+    players = None
+    passive = stream.accept_phrase("one or more")
+    if not passive:
+        # CR 111.1: tokens are only ever created by effects, so "an effect
+        # would create" says nothing "would be created" does not.
+        if stream.accept("you"):
+            players = YOU
+        elif not stream.accept_phrase("an effect"):
+            return None
+        if not stream.accept_phrase("would create one or more"):
+            return None
+
     spec = parse_object_filter(stream)
     took_token = spec is not None and spec.is_token
-    if (stream.accept("token", "tokens") or took_token) and stream.accept_phrase(
-        "would be created"
-    ):
-        stream.accept_phrase("under your control")
-        return ReplacementKind.MODIFY_TOKENS, None, YOU, ""
+    if not (stream.accept("token", "tokens") or took_token):
+        return None
+    wanted = _token_kind(spec)
+    if wanted is False:
+        return None
 
+    if passive and not stream.accept_phrase("would be created"):
+        return None
+    if stream.accept_phrase("under your control"):
+        players = YOU
+    return _ReplacedEvent(
+        ReplacementKind.MODIFY_TOKENS, "tokens", subject=wanted, players=players
+    )
+
+
+def _token_kind(spec):
+    """The kind of token a token replacement names - ``None`` for any token,
+    or ``False`` when the description says something a token definition that
+    does not exist yet cannot answer ("tokens you control with flying")."""
+    if spec is None:
+        return None
+    blank = ObjectFilter()
+    kind = ObjectFilter(
+        types_any=spec.types_any,
+        types_all=spec.types_all,
+        types_none=spec.types_none,
+        subtypes_any=spec.subtypes_any,
+        subtypes_all=spec.subtypes_all,
+        subtypes_none=spec.subtypes_none,
+        colors_any=spec.colors_any,
+        colors_all=spec.colors_all,
+        colors_none=spec.colors_none,
+    )
+    rest = replace(
+        spec,
+        types_any=blank.types_any,
+        types_all=blank.types_all,
+        types_none=blank.types_none,
+        subtypes_any=(),
+        subtypes_all=(),
+        subtypes_none=(),
+        colors_any=blank.colors_any,
+        colors_all=blank.colors_all,
+        colors_none=blank.colors_none,
+        is_token=None,
+        count=None,
+        up_to=False,
+        zones=blank.zones,
+    )
+    if rest != blank:
+        return False
+    return None if kind == blank else kind
+
+
+def _damage_event(stream: Stream):
+    """"a source you control would deal [combat|noncombat] damage [to ...]"."""
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+
+    start = stream.mark()
+    source = parse_object_filter(stream)
+    if source is None:
+        return None
+    named = {w.lower() for w in _words_since(stream, start)}
+    if not stream.accept_phrase("would deal"):
+        return None
+    keywords: tuple[str, ...] = ()
+    if stream.accept("combat"):
+        keywords = ("combat",)
+    elif stream.accept("noncombat"):
+        keywords = ("noncombat",)
+    if not stream.accept("damage"):
+        return None
+
+    source = replace(source, count=None, up_to=False)
+    if named & {"source", "sources"}:
+        # CR 609.7: a source of damage is an object wherever it is - a spell
+        # on the stack as much as a permanent - so the noun "source" carries
+        # no zone. Left at the battlefield, "a source you control" never
+        # caught a Lightning Bolt.
+        source = replace(source, zones=frozenset())
+    if source == ObjectFilter(zones=frozenset()):
+        source = None  # "a source": any damage at all.
+
+    subject = players = None
+    words: tuple[str, ...] = ()
+    if stream.accept("to"):
+        recipient = _damage_recipient(stream)
+        if recipient is None:
+            return None
+        subject, players, words = recipient
+    return _ReplacedEvent(
+        ReplacementKind.MODIFY_DAMAGE,
+        "damage",
+        subject=subject,
+        players=players,
+        damage_source=source,
+        keywords=keywords,
+        recipient_words=words,
+    )
+
+
+#: The players a damage or prevention recipient can name, as the words say
+#: them. "an opponent" is any one of them: the replacement asks whether the
+#: player being dealt damage is an opponent.
+_RECIPIENT_PLAYERS = (
+    ("you", PlayerScope.YOU),
+    ("an opponent", PlayerScope.OPPONENT),
+    ("a player", PlayerScope.EACH_PLAYER),
+    ("player", PlayerScope.EACH_PLAYER),
+)
+
+
+def _damage_recipient(stream: Stream):
+    """Who is dealt the damage: an object, a player, or "X or Y" of the two.
+
+    Returns ``(object filter, player filter, the words read)``. More than one
+    object description or more than one kind of player declines - the shield
+    and the replacement hold one of each.
+    """
+    start = stream.mark()
+    subject = players = None
+    while True:
+        for phrase, scope in _RECIPIENT_PLAYERS:
+            if stream.accept_phrase(phrase):
+                if players is not None:
+                    return None
+                players = PlayerFilter(scope)
+                break
+        else:
+            spec = parse_object_filter(stream)
+            if spec is None or subject is not None:
+                return None
+            if spec.includes_players:
+                # "a permanent or player" - the noun reader folds the player
+                # into the filter as it does for "any target".
+                if players is not None:
+                    return None
+                players = PlayerFilter(PlayerScope.EACH_PLAYER)
+                spec = replace(spec, includes_players=False)
+            subject = replace(spec, count=None, up_to=False)
+        if not stream.accept("or"):
+            break
+    return subject, players, _words_since(stream, start)
+
+
+def _life_event(stream: Stream):
+    """"you would gain life", "an opponent would lose life during your turn"."""
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+    from ..rules.kernel.query import Condition, ConditionKind
+
+    players = None
+    for phrase, scope in (
+        ("you", PlayerScope.YOU),
+        ("an opponent", PlayerScope.OPPONENT),
+        ("a player", PlayerScope.EACH_PLAYER),
+    ):
+        if stream.accept_phrase(phrase):
+            players = PlayerFilter(scope)
+            break
+    if players is None or not stream.accept("would"):
+        return None
+    if stream.accept("gain"):
+        kind, family = ReplacementKind.MODIFY_LIFE_CHANGE, "gain"
+    elif stream.accept("lose"):
+        kind, family = ReplacementKind.MODIFY_LIFE_LOSS, "loss"
+    else:
+        return None
+    if not stream.accept("life"):
+        return None
+    condition = None
+    if stream.accept_phrase("during your turn"):
+        condition = Condition(kind=ConditionKind.IS_YOUR_TURN, text="during your turn")
+    event = _ReplacedEvent(kind, family, players=players)
+    if condition is not None:
+        event.condition = condition
+    return event
+
+
+def _words_since(stream: Stream, start: int) -> tuple[str, ...]:
+    return tuple(token.lower for token in stream.tokens[start : stream.mark()])
+
+
+#: What each family's substitute may say it does, and who may say it.
+_RESIZE_VERBS = {
+    "counters": ("put", "puts"),
+    "tokens": ("create", "creates"),
+    "damage": ("deal", "deals"),
+    "gain": ("gain", "gains"),
+    "loss": ("lose", "loses"),
+}
+_RESIZE_SUBJECTS = {
+    "counters": ("it", "they", "you"),
+    "tokens": ("it", "they", "you"),
+    "damage": ("it", "that source"),
+}
+
+#: Pronouns that point back at the event's own recipient. Each is only a
+#: restatement when the event named that kind of recipient.
+_ANAPHORA = {
+    "that permanent or player": ("object", "player"),
+    "that player or permanent": ("object", "player"),
+    "that player": ("player",),
+    "that permanent": ("object",),
+    "that creature": ("object",),
+    "it": ("object",),
+    "them": ("object",),
+}
+
+
+def _resized_event(stream: Stream, event):
+    """The substitute half: the same event with a different number.
+
+    Returns ``(kind, multiplier, addend)``, or ``None`` when the substitute is
+    anything other than the event resized.
+    """
+    from ..rules.cr600_spells_and_abilities.cr614_replacement import ReplacementKind
+
+    family = event.family
+    kind = event.kind
+
+    # Who does it: a pronoun for the actor or the source, or for a life event
+    # the player it happens to.
+    if family in ("gain", "loss"):
+        scope = event.players.scope
+        if scope is PlayerScope.YOU:
+            if not stream.accept("you"):
+                return None
+        elif not (stream.accept("they") or stream.accept_phrase("that player")):
+            return None
+    else:
+        for word in _RESIZE_SUBJECTS.get(family, ()):
+            if stream.accept_phrase(word):
+                break
+
+    verb = stream.accept(*_RESIZE_VERBS[family])
+    if family == "gain" and not verb and stream.accept("lose", "loses"):
+        # CR 614.1a: "that player loses that much life instead" - the gain
+        # becomes a loss of the same size (Tainted Remedy).
+        if not (stream.accept_phrase("that much life")):
+            return None
+        return ReplacementKind.LIFE_GAIN_BECOMES_LOSS, 1, 0
+    if family in ("gain", "loss", "damage") and not verb:
+        return None
+
+    multiplier = 1
+    if stream.accept("twice", "double"):
+        multiplier = 2
+    elif stream.accept("triple"):
+        multiplier = 3
+    else:
+        mark = stream.mark()
+        count = stream.accept_number()
+        if count is not None and stream.accept("times"):
+            multiplier = count
+        else:
+            stream.reset(mark)
+    if not stream.accept("that"):
+        return None
+    stream.accept("many", "much")
+
+    extra = _plus_minus(stream)
+    if not _resized_noun(stream, event):
+        return None
+    if extra is None:
+        extra = _plus_minus(stream)
+    if extra is None:
+        extra = 0
+
+    if not verb:
+        passive = {"counters": ("are put", "are placed"), "tokens": ("are created",)}
+        if not any(stream.accept_phrase(p) for p in passive.get(family, ())):
+            return None
+    if not _restated_recipient(stream, event):
+        return None
+    if multiplier == 1 and extra == 0:
+        return None  # "that many" and nothing else changes nothing.
+    return kind, multiplier, extra
+
+
+def _plus_minus(stream: Stream) -> int | None:
+    mark = stream.mark()
+    sign = 1 if stream.accept("plus") else -1 if stream.accept("minus") else 0
+    if not sign:
+        return None
+    number = stream.accept_number()
+    if number is None:
+        stream.reset(mark)
+        return None
+    return sign * number
+
+
+def _resized_noun(stream: Stream, event) -> bool:
+    """The thing counted, restated: "+1/+1 counters", "of those tokens"."""
+    family = event.family
+    if family == "counters":
+        for phrase in (
+            "of each of those kinds of counters",
+            "of those kinds of counters",
+            "of those counters",
+        ):
+            if stream.accept_phrase(phrase):
+                return True
+        mark = stream.mark()
+        named = _counter_word(stream)
+        if named is None:
+            stream.reset(mark)
+            return True  # "that many plus one are put on it"
+        # A named kind has to be the kind the event caught.
+        return bool(event.counter) and named == event.counter
+    if family == "tokens":
+        stream.accept_phrase("of those tokens")
+        return True
+    if family == "damage":
+        stream.accept("damage")
+        return True
+    stream.accept("life")
+    return True
+
+
+def _restated_recipient(stream: Stream, event) -> bool:
+    """"on that permanent", "to that permanent or player", "to you" - where
+    the resized event lands, which must be where it was going anyway."""
+    family = event.family
+    if family == "counters":
+        preposition = "on"
+    elif family == "damage":
+        preposition = "to"
+    else:
+        return True
+    mark = stream.mark()
+    if not stream.accept(preposition):
+        return True
+    has = set()
+    if event.subject is not None:
+        has.add("object")
+    if event.players is not None:
+        has.add("player")
+    for phrase, needs in _ANAPHORA.items():
+        if stream.accept_phrase(phrase):
+            if set(needs) <= has:
+                return True
+            stream.reset(mark)
+            return False
+    words = event.recipient_words
+    if words and stream.accept_phrase(" ".join(words)):
+        return True
     stream.reset(mark)
-    return None
+    return False
 
 
 def _any_counter(stream: Stream) -> str | None:
@@ -7276,84 +9722,6 @@ def _any_counter(stream: Stream) -> str | None:
     stream.reset(mark)
     if stream.accept("counter", "counters"):
         return ""
-    stream.reset(mark)
-    return None
-
-
-def _token_event(stream: Stream, actor: object) -> bool:
-    """Whether this is "one or more tokens would be created"."""
-    if actor is not None and getattr(actor, "is_token", None):
-        stream.accept("be")
-        if stream.accept("created", "create"):
-            stream.accept_phrase("under your control")
-            return True
-        return False
-
-    stream.accept("create", "be")
-    stream.accept("created", "create")
-    stream.accept_number()
-    stream.accept_phrase("or more")
-    # The noun reader takes the word "tokens" itself when nothing follows it,
-    # so the filter is where to look for it rather than the stream.
-    spec = parse_object_filter(stream)
-    if stream.accept("token", "tokens") or (spec is not None and spec.is_token):
-        stream.accept_phrase("under your control")
-        return True
-    return False
-
-
-def _replacement_amount(stream: Stream):
-    """"twice that many", "double that damage", "that many plus one".
-
-    Returns ``(multiplier, addend)``, or ``None`` when the substitute is a
-    fresh effect rather than a resized event - which the general replacement
-    clause handles instead.
-    """
-    mark = stream.mark()
-    # Deliberately not a bare "that": "that many" and "that much" are read as
-    # phrases below, and eating the "that" here left them unmatchable.
-    stream.accept("it", "they", "you")
-    stream.accept_phrase("that player")
-    stream.accept(
-        "creates", "create", "are", "is", "puts", "put", "deals", "deal",
-        "gain", "gains", "lose", "loses", "draw", "draws",
-    )
-
-    for word, factor in (("twice", 2), ("double", 2), ("triple", 3)):
-        if stream.accept(word):
-            stream.accept("that")
-            if stream.accept("many", "much", "damage", "life"):
-                return factor, 0
-            stream.reset(mark)
-            return None
-
-    count = stream.accept_number()
-    if count is not None and stream.accept("times"):
-        if not (
-            stream.accept_phrase("that many") or stream.accept_phrase("that much")
-        ):
-            stream.reset(mark)
-            return None
-        return count, 0
-    if count is not None:
-        stream.reset(mark)
-        return None
-
-    if stream.accept_phrase("that many") or stream.accept_phrase("that much"):
-        if stream.accept("plus"):
-            extra = stream.accept_number()
-            if extra is None:
-                stream.reset(mark)
-                return None
-            return 1, extra
-        if stream.accept("minus"):
-            extra = stream.accept_number()
-            if extra is None:
-                stream.reset(mark)
-                return None
-            return 1, -extra
-        return 1, 0
-
     stream.reset(mark)
     return None
 

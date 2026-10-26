@@ -80,6 +80,10 @@ def _land_plays(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Ac
     out: list[Action] = []
     for object_id in player.hand:
         obj = game.objects[object_id]
+        # "Players can't play lands": a prohibition with a subject is asked
+        # of the card, and the check above (no card) skips every one of them.
+        if prohibited(game, Act.PLAY_LAND, obj=obj, player=player_id) is not None:
+            continue
         # CR 712.12: a modal double-faced card with a land on the back is a
         # land drop for that face, and it enters with that face up.
         for face_index in playable_land_face_indices(game, obj):
@@ -117,6 +121,7 @@ def _face_characteristics(game: Game, obj: GameObject, face_index: int):
 
 def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Action]:
     from ..cr500_turn_structure.restrictions import Act, permitted, prohibited
+    from ..cr600_spells_and_abilities.cr601_casting import as_it_would_be_cast
     from ..cr700_additional_rules.cr707_faces import castable_face_indices
 
     out: list[Action] = []
@@ -165,6 +170,9 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             ):
                 continue
             chars = _face_characteristics(game, obj, face_index)
+            # CR 601.2a-b: what "spells you cast have ..." gives it counts
+            # when its costs are chosen.
+            chars = as_it_would_be_cast(game, obj, chars)
             if chars.is_land:
                 continue  # Lands are played, not cast.
 
@@ -194,7 +202,12 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             # below.
             may_cast_from_here = zone in (Zone.HAND, Zone.COMMAND) or (
                 obj.playable_from_here_by == player_id
+                and game.turn >= obj.playable_from_turn
             )
+            # CR 702.127a: an aftermath half may be cast from a graveyard,
+            # and from no other zone.
+            if chars.has_keyword("Aftermath"):
+                may_cast_from_here = zone is Zone.GRAVEYARD
             if may_cast_from_here and chars.has_mana_cost:
                 if _affordable(game, player_id, obj, zone, chars):
                     out.append(
@@ -204,9 +217,30 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                             face_index=face_index,
                         )
                     )
+                    # CR 601.2b, 118.8a: announcing an optional additional
+                    # cost - kicker, buyback - is a different way to cast
+                    # the spell, offered when it too can be paid.
+                    for announced in _optional_cost_choices(chars):
+                        # CR 702.33a, 702.56a, 702.157a: multikicker,
+                        # replicate and squad may be paid any number of
+                        # times - offered as often as they can be afforded.
+                        while _affordable(
+                            game, player_id, obj, zone, chars, optional=announced
+                        ):
+                            out.append(
+                                Action(
+                                    ActionKind.CAST_SPELL,
+                                    source=object_id,
+                                    face_index=face_index,
+                                    additional_costs=announced,
+                                )
+                            )
+                            if not _repeatable_alone(chars, announced):
+                                break
+                            announced = announced + announced[:1]
 
         # CR 113.6: a granted alternative cost works in the card's zone too.
-        chars = game.characteristics(obj)
+        chars = as_it_would_be_cast(game, obj, game.characteristics(obj))
         if chars.is_land:
             continue
 
@@ -222,6 +256,12 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             ):
                 continue
             if not _affordable_alternative(game, player_id, alternative, obj, zone):
+                continue
+            # CR 601.2c holds whatever is paid: a Force of Will or a Fierce
+            # Guardianship with no spell to counter cannot be cast at all, and
+            # offering it anyway paid the life and exiled the card for a cast
+            # the engine then had to rewind.
+            if not _targets_available(game, obj, player_id):
                 continue
             out.append(
                 Action(ActionKind.CAST_SPELL, source=object_id, alternative_cost=index)
@@ -294,6 +334,12 @@ def _affordable_alternative(
 
     player = game.player(player_id)
     cost = alternative.cost.mana_component
+    if alternative.pays_mana_cost:
+        # CR 702.133a: the spell's own mana cost, with this one added.
+        chars = game.characteristics(obj)
+        if not chars.has_mana_cost:
+            return False
+        cost = chars.mana_cost.plus(cost)
     if zone is Zone.COMMAND and obj.is_commander:
         # CR 903.8 with CR 118.9d: the tax is a cost *increase*, and an
         # alternative cost replaces the mana cost rather than the increases
@@ -303,7 +349,11 @@ def _affordable_alternative(
         cost = cost.increased_by(
             player.commander_tax(game.commander_identity(obj.id))
         )
-    if find_payment(player.mana_pool, cost, life_available=player.life - 1):
+    # CR 702.119a: an emerge cost is cheaper by what is sacrificed for it.
+    from ..cr700_additional_rules.cr702_paid_costs import emerge_discount
+
+    cost = cost.reduced_by(emerge_discount(game, player_id, alternative))
+    if find_payment(player.mana_pool, cost, life_available=player.life):
         return True
 
     available = player.mana_pool.total
@@ -344,7 +394,7 @@ def can_afford(game: Game, player_id: PlayerId, cost) -> bool:
     player = game.player(player_id)
     if cost is None or cost.mana_value == 0:
         return True
-    if find_payment(player.mana_pool, cost, life_available=player.life - 1):
+    if find_payment(player.mana_pool, cost, life_available=player.life):
         return True
 
     # Solved exactly, as payment will solve it: counting untapped sources said
@@ -354,8 +404,45 @@ def can_afford(game: Game, player_id: PlayerId, cost) -> bool:
     return can_produce(game, player_id, cost)
 
 
+def _optional_cost_choices(chars) -> list[tuple[int, ...]]:
+    """Each optional additional cost alone, then all of them together.
+
+    Not every combination: a spell with several optional costs would multiply
+    the actions offered, and alone or all covers what a player usually wants.
+    """
+    indices = tuple(
+        index
+        for index, additional in enumerate(chars.additional_costs)
+        if additional.optional and not additional.cost.is_unparsed
+    )
+    choices = [(index,) for index in indices]
+    if len(indices) > 1:
+        choices.append(indices)
+    return choices
+
+
+#: Most payments of one repeatable optional cost a single cast is offered
+#: with - enough for any real mana base, and a bound on the actions listed.
+_MOST_REPEATS = 10
+
+
+def _repeatable_alone(chars, announced: tuple[int, ...]) -> bool:
+    """Whether ``announced`` is one cost that may be paid again."""
+    from ..cr600_spells_and_abilities.cr601_casting import _PAID_ANY_NUMBER_OF_TIMES
+
+    if not announced or len(set(announced)) != 1 or len(announced) >= _MOST_REPEATS:
+        return False
+    keyword = chars.additional_costs[announced[0]].keyword.lower()
+    return keyword in _PAID_ANY_NUMBER_OF_TIMES
+
+
 def _affordable(
-    game: Game, player_id: PlayerId, obj: GameObject, zone: Zone, chars=None
+    game: Game,
+    player_id: PlayerId,
+    obj: GameObject,
+    zone: Zone,
+    chars=None,
+    optional: tuple[int, ...] = (),
 ) -> bool:
     """Whether the player could plausibly pay for this spell.
 
@@ -370,6 +457,36 @@ def _affordable(
     chars = chars if chars is not None else game.characteristics(obj)
     cost = chars.mana_cost
 
+    # CR 601.2h: a mandatory additional cost is paid with the rest, so a Bone
+    # Splinters with no creature to sacrifice is not a spell that can be
+    # cast. Asked of the dry run payment itself uses.
+    from ..cr600_spells_and_abilities.cr601_casting import CastError, _check_payable
+
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import chosen_cost
+
+    for index, additional in enumerate(chars.additional_costs):
+        times = optional.count(index) if additional.optional else 1
+        if not times:
+            continue
+        # CR 601.2f: an announced optional cost adds its mana to the total -
+        # for a cost written as a choice, the choice that would be paid -
+        # once for each time it is paid.
+        charged = chosen_cost(game, player_id, additional.cost, obj)
+        for _ in range(times):
+            cost = cost.plus(charged.mana_component)
+        for component in charged.non_mana_components:
+            try:
+                _check_payable(game, player_id, component, obj, spell=obj)
+            except CastError:
+                return False
+
+    # CR 702.172a: a spree spell costs at least its cheapest mode.
+    from ..cr700_additional_rules.cr702_cost_keyword_rules import cheapest_mode_cost
+
+    cheapest = cheapest_mode_cost(game, obj)
+    if cheapest is not None:
+        cost = cost.plus(cheapest.mana_component)
+
     increase = sum(cost_increases(game, obj, player_id))
     if zone is Zone.COMMAND and obj.is_commander:
         increase += player.commander_tax(game.commander_identity(obj.id))
@@ -382,7 +499,7 @@ def _affordable(
     # be abandoned mid-cast - a bot then wastes the turn on a play the card
     # never allowed.
     if find_payment(
-        player.mana_pool, cost, life_available=player.life - 1, context=obj
+        player.mana_pool, cost, life_available=player.life, context=obj
     ):
         return True
 
@@ -395,9 +512,12 @@ def _affordable(
     if helpers and player.mana_pool.usable_for(obj) + helpers >= cost.mana_value:
         return True
     if helpers:
-        # Helpers and mana together: at least the generic part the helpers can
-        # stand in for is off what the mana sources must make.
-        cost = cost.reduced_by(helpers)
+        # Helpers and mana together: what the helpers can stand in for -
+        # coloured pips included, for convoke - is off what the mana sources
+        # must make.
+        from ..cr600_spells_and_abilities.cr601_casting import cost_left_for_sources
+
+        cost = cost_left_for_sources(game, obj, player_id, cost)
 
     # Exact, and the same search the payment runs, so a spell offered as legal
     # is one the bot can actually pay for. The count-based upper bound this
@@ -447,11 +567,13 @@ def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool
             nodes.insert(0, enchant)
 
     for node in nodes:
-        if node.targets is None:
+        # A player is always there to be targeted - "target player
+        # sacrifices a creature" is castable at a player with none.
+        if node.targets_a_player:
             continue
         # "Up to N" can legally be cast with none, so an empty board
         # is no obstacle.
-        if node.targets.up_to:
+        if node.target_optional:
             continue
         # CR 115.4: a spell that can target a player always has one,
         # so an empty board never makes it uncastable. Without this,
@@ -460,6 +582,18 @@ def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool
             continue
         if not find(game, node.targets, source=obj.id, controller=player_id):
             return False
+    if any(node.distinct_from_earlier_targets for node in nodes):
+        # "Another target creature": each slot having a candidate is not
+        # enough when the only candidate for two of them is one creature
+        # (CR 601.2c).
+        from ..cr600_spells_and_abilities.cr601_casting import (
+            _candidates_for,
+            distinct_targets_available,
+        )
+
+        return distinct_targets_available(
+            nodes, [_candidates_for(game, obj, node, player_id) for node in nodes]
+        )
     return True
 
 

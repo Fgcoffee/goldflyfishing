@@ -17,7 +17,7 @@ from ..rules.cr600_spells_and_abilities.effects import Effect, EffectKind
 from ..rules.cr700_additional_rules.keywords import lookup as keyword_lookup
 from ..rules.kernel.enums import Timing, Zone
 from ..rules.kernel.query import ALWAYS
-from .clauses import parse_effects
+from .clauses import parse_effects, pile_references_ok
 from .errors import ParseFailure
 from .normalize import normalize
 from .split import Line, LineKind, split_abilities
@@ -69,6 +69,10 @@ class ParsedFace:
 
     abilities: tuple[Ability, ...] = ()
     failures: list[ParseFailure] = field(default_factory=list)
+    #: Whether a line read so far is a mandatory additional cost that
+    #: consumes an object (CR 601.2h), whose record the spell's own text may
+    #: go on to read ("the sacrificed creature's power").
+    pays_with_objects: bool = field(default=False, repr=False, compare=False)
 
     @property
     def total(self) -> int:
@@ -123,7 +127,7 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
     except (AttributeError, IndexError):
         return ParsedFace()
 
-    text = normalize(face.oracle_text or "", card_name=face.name)
+    text = normalize(face.oracle_text or "", card_name=face.name, **_self_names(face))
     if not text:
         return ParsedFace()
 
@@ -135,8 +139,80 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
         ability = _parse_line(line, result, is_permanent=is_permanent)
         abilities.extend(ability)
 
-    result.abilities = tuple(abilities)
+    result.abilities = tuple(_refuse_borrowed_kicker(abilities, result))
     return result
+
+
+#: The keywords whose payment "it was kicked / bargained" can report about
+#: the card itself (CR 702.33b, 702.33d, 702.166b).
+_PAID_KEYWORDS = frozenset({"kicker", "multikicker", "bargain"})
+
+
+def _refuse_borrowed_kicker(abilities: list[Ability], result: ParsedFace) -> list[Ability]:
+    """"Counter target spell if it was kicked" (Ertai's Trickery): "it" is the
+    target, not the card - a card without kicker or bargain of its own has no
+    payment of its own to ask about. The condition grammar reads "it was
+    kicked" as the card's own payment, so on such a face the ability is
+    refused rather than read about the wrong spell (auditor's F25).
+    """
+    if any(a.keyword.lower() in _PAID_KEYWORDS for a in abilities):
+        return abilities
+    out = []
+    for ability in abilities:
+        if _asks_own_payment(ability):
+            result.failures.append(
+                ParseFailure(
+                    ability.text,
+                    "'it was kicked' names another spell; this card has no such cost",
+                    rule="condition",
+                )
+            )
+            ability = Ability.unreadable(ability.text)
+        out.append(ability)
+    return out
+
+
+def _asks_own_payment(ability: Ability) -> bool:
+    from ..rules.kernel.query import ConditionKind
+
+    if ability.keyword:
+        # Built by a keyword (squad, offspring): its condition names its own
+        # cost, which the card has by definition.
+        return False
+
+    def kicked(condition) -> bool:
+        if condition is None:
+            return False
+        if condition.kind is ConditionKind.WAS_KICKED and (condition.keyword or "") in ("", "bargain"):
+            return True
+        return any(kicked(c) for c in getattr(condition, "operands", ()) or ())
+
+    if kicked(getattr(ability.trigger, "intervening_if", None)):
+        return True
+    if kicked(ability.static_condition) or kicked(ability.activation_condition):
+        return True
+    return any(kicked(node.condition) for effect in ability.effects for node in effect.walk())
+
+
+
+def _self_names(face) -> dict:
+    """What normalization needs to know to find a face's shortened name.
+
+    CR 201.5c: a legendary card may call itself by a shortened name, and a
+    planeswalker's shortened name is also its own planeswalker type - so a
+    face's type line decides which forms of its name are self-references.
+    """
+    from ..rules.kernel.enums import CardType, Supertype
+
+    type_line = getattr(face, "type_line", None)
+    if type_line is None:
+        return {}
+    legendary = bool(type_line.supertypes & Supertype.LEGENDARY)
+    walker = bool(type_line.types & CardType.PLANESWALKER)
+    return {
+        "legendary": legendary,
+        "planeswalker_types": tuple(type_line.subtypes) if walker else (),
+    }
 
 
 def _is_permanent(face) -> bool:
@@ -176,6 +252,14 @@ def _gate_on_max_speed(ability: Ability) -> Ability:
     gate = Condition(kind=ConditionKind.AT_MAX_SPEED, text="at max speed")
 
     if ability.kind is AbilityKind.TRIGGERED and ability.trigger is not None:
+        written = ability.trigger.intervening_if
+        if not written.is_always:
+            # "Max speed - Whenever ..., if ...": both are checked (CR 603.4).
+            gate = Condition(
+                kind=ConditionKind.AND,
+                operands=(gate, written),
+                text=f"at max speed and {written.text}",
+            )
         return replace(
             ability, trigger=replace(ability.trigger, intervening_if=gate)
         )
@@ -220,8 +304,41 @@ def _keyword(line: Line, result: ParsedFace) -> list[Ability]:
     if name.lower() in _BODY_KEYWORDS:
         return [_keyword_with_body(name, argument, line, result)]
 
+    if name.lower() in ("protection", "hexproof from"):
+        return _protection_keyword(name, argument, line, result)
+
     instance = _keyword_instance(name, argument, line.text)
     return list(build(instance))
+
+
+def _protection_keyword(name: str, argument: str, line: Line, result: ParsedFace) -> list[Ability]:
+    """"Protection from black", "Hexproof from blue", "Protection from red
+    and from white" (CR 702.16a, 702.11d), one ability per quality.
+
+    Read by the same quality reader as a granted protection. The general
+    keyword argument reader could not read a bare colour, so every printed
+    "protection from <colour>" reached the engine with no quality - which is
+    protection from everything (auditor's F27): Lightning Bolt could not
+    target White Knight. A quality the reader cannot express is refused.
+    """
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from .clauses import _protection_qualities
+
+    text = argument.strip()
+    if name.lower() == "hexproof from":
+        text = "from " + text
+    stream = Stream.of(text)
+    qualities = _protection_qualities(stream)
+    stream.accept(".")
+    if qualities is None or not stream.done:
+        result.failures.append(
+            ParseFailure(line.text, "a protection quality that cannot be read", rule="keyword")
+        )
+        return [Ability.unreadable(line.text)]
+    out: list[Ability] = []
+    for quality in qualities:
+        out.extend(build(KeywordInstance(name, filter=quality, text=line.text)))
+    return out
 
 
 #: Keywords whose argument is ordinary effect text rather than a number, a
@@ -342,7 +459,56 @@ def _keyword_cost(text: str):
 # ---------------------------------------------------------------------------
 
 
+def _chapter(line: Line, result: ParsedFace) -> list[Ability]:
+    """CR 714.2b: "{rN} - [Effect]" is a triggered ability whose trigger is
+    the chapter symbol itself - the text after the symbol is only the effect,
+    so it is read with the effect grammar, never as a trigger condition.
+
+    CR 714.2c: "I, II - [Effect]" is one ability per chapter number, each with
+    the same effect.
+    """
+    stream = Stream.of(line.text)
+    effects = _modal_effects(line, stream, result) if line.modes else parse_effects(stream)
+    ability = _finish(
+        line.text,
+        stream,
+        effects,
+        result,
+        rule="chapter",
+        build=lambda body: chapter_ability(line.chapters[0], *body, text=line.text),
+    )
+    if ability.unparsed:
+        return [ability]
+    if _opens_with_a_back_reference(ability.effects):
+        # "III - Return the exiled card to the battlefield": the card is the
+        # one chapter I exiled, a link between two abilities (CR 607) that
+        # the reading "whatever this ability just acted on" does not make. A
+        # chapter ability has no triggering object to fall back on either,
+        # so it would do nothing.
+        result.failures.append(
+            ParseFailure(line.text, "refers back to another chapter", rule="chapter")
+        )
+        return [Ability.unreadable(line.text)]
+    return [
+        chapter_ability(chapter, *ability.effects, text=line.text)
+        for chapter in line.chapters
+    ]
+
+
+def _opens_with_a_back_reference(effects) -> bool:
+    """Whether the first thing an ability acts on is "whatever was just
+    referred to" - which, first thing in a resolution, is nothing."""
+    for effect in effects:
+        for node in effect.walk():
+            if node.children or node.otherwise:
+                continue
+            return node.targets is not None and node.targets.remembered
+    return False
+
+
 def _triggered(line: Line, result: ParsedFace) -> list[Ability]:
+    if line.chapters:
+        return _chapter(line, result)
     stream = Stream.of(line.text)
     trigger = parse_trigger(stream)
     if trigger is None:
@@ -373,17 +539,9 @@ def _triggered(line: Line, result: ParsedFace) -> list[Ability]:
             AbilityKind.TRIGGERED,
             effects=tuple(body),
             trigger=trigger,
-            chapter=line.chapters[0] if line.chapters else 0,
             text=line.text,
         ),
     )
-    if line.chapters and not ability.unparsed:
-        # A Saga line can carry several chapter numbers (CR 714.2c), each of
-        # which is its own ability with the same effect.
-        return [
-            chapter_ability(chapter, *ability.effects, text=line.text)
-            for chapter in line.chapters
-        ]
     return [ability]
 
 
@@ -665,14 +823,27 @@ def _modal_effects(line: Line, stream: Stream, result: ParsedFace):
     two-thirds right - it is a card that can make a choice the engine cannot
     carry out.
     """
-    # Consume the header up to the dash rather than listing the words it may
-    # contain. "choose one or more" broke a word list that knew "one", "or"
-    # and "both" but not "more", and the next set will invent another one.
-    while not stream.done:
-        if stream.peek().text in ("-", "--"):
-            stream.next()
-            break
-        stream.next()
+    # The header is read, not skipped. Skipping to the dash made every
+    # "choose two", "choose one or both" and "choose up to one" a "choose
+    # one", and swallowed whatever else stood between the trigger and the
+    # dash ("you may pay {1}. When you do, choose one").
+    header = _mode_header(stream, len(line.modes))
+    if header is not None and line.kind is LineKind.ACTIVATED:
+        # CR 602.5b: "Choose one. Activate only once each turn." The
+        # restriction was already read off the effect text by
+        # ``_activation_condition``, which fails the ability when it cannot.
+        _activation_sentence(stream)
+    if header is None or not stream.done:
+        result.failures.append(
+            ParseFailure(
+                line.text,
+                "unreadable modal header",
+                consumed=stream.pos,
+                remaining=stream.remaining(),
+                rule="modal",
+            )
+        )
+        return None
 
     children: list[Effect] = []
     for mode in line.modes:
@@ -693,15 +864,181 @@ def _modal_effects(line: Line, stream: Stream, result: ParsedFace):
             Effect(EffectKind.SEQUENCE, children=tuple(parsed), text=mode)
         )
 
-    if not stream.done:
-        return None
     return [
-        Effect(EffectKind.CHOOSE_MODE, children=tuple(children), text=line.text)
+        Effect(
+            EffectKind.CHOOSE_MODE,
+            children=tuple(children),
+            text=line.text,
+            **header,
+        )
     ]
+
+
+def _activation_sentence(stream: Stream) -> None:
+    """Consume an "Activate only ..." sentence, which compile reads itself."""
+    mark = stream.mark()
+    if not stream.accept("activate"):
+        return
+    stream.accept_phrase("this ability")
+    if not stream.accept("only"):
+        stream.reset(mark)
+        return
+    while not stream.done and stream.peek().text != ".":
+        stream.next()
+    stream.skip_punct(".")
+
+
+def _mode_header(
+    stream: Stream, modes: int, *, is_spell: bool = False
+) -> dict | None:
+    """How many modes the instruction asks for (CR 700.2, 700.2d).
+
+    Returns the CHOOSE_MODE fields the header sets, or ``None`` for a header
+    the engine cannot honour. Every word is accounted for: "choose one that
+    hasn't been chosen this turn" is not "choose one", and a header read as
+    something it does not say chooses modes the card does not allow.
+
+    - "choose one" / "choose two" / "choose three": exactly that many
+    - "choose up to N": at most N, possibly none
+    - "choose one or both" / "choose one or more": at least one, at most all
+    - "choose any number": at most all, possibly none (Rankle's rulings)
+    - then optionally "You may choose the same mode more than once." (700.2d)
+    - or an upgrade: "If <condition>, [you may] choose both instead."
+    """
+    from ..rules.kernel.query import Value
+
+    if not stream.accept("choose"):
+        return None
+    counted = _mode_count(stream, modes)
+    if counted is None:
+        return None
+    count, fields = counted
+    if count != 1 or fields:
+        fields["amount"] = Value.of(count)
+    if stream.at(".") and stream.peek(1).lower == "you":
+        stream.next()
+        if not stream.accept_phrase("you may choose the same mode more than once"):
+            return None
+        fields["modes_may_repeat"] = True
+    elif stream.at(".") and stream.peek(1).lower == "if":
+        stream.next()
+        instead = _mode_upgrade(stream, modes, count, fields, is_spell=is_spell)
+        if instead is None:
+            return None
+        fields["modes_instead"] = instead
+    stream.skip_punct(".", "-", "--")
+    if not fields.get("modes_may_repeat") and count > modes:
+        # More modes demanded than printed, with no licence to repeat one.
+        return None
+    return fields
+
+
+def _mode_count(stream: Stream, modes: int) -> tuple[int, dict] | None:
+    """The number in a modal header, as a budget and the fields it sets."""
+    fields: dict = {}
+    if stream.accept_phrase("up to"):
+        count = stream.accept_number()
+        if count is None or count < 1:
+            return None
+        fields.update(modes_up_to=True)
+    elif stream.accept_phrase("one or both"):
+        if modes != 2:
+            return None
+        count = 2
+        fields.update(modes_up_to=True, modes_at_least=1)
+    elif stream.accept_phrase("one or more"):
+        count = modes
+        fields.update(modes_up_to=True, modes_at_least=1)
+    elif stream.accept_phrase("any number"):
+        count = modes
+        fields.update(modes_up_to=True)
+    elif stream.accept("both"):
+        if modes != 2:
+            return None
+        count = 2
+    else:
+        count = stream.accept_number()
+        if count is None or count < 1:
+            return None
+    return count, fields
+
+
+def _mode_upgrade(
+    stream: Stream, modes: int, count: int, fields: dict, *, is_spell: bool
+) -> tuple | None:
+    """"If <condition>, [you may] choose both instead." (CR 700.2).
+
+    Returns ``(condition, budget, up_to, at_least)`` for the header that
+    replaces the printed one when the condition holds as the modes are
+    chosen - which for a spell is as it is cast, the moment "as you cast this
+    spell" names. "You may choose both instead" keeps the printed count as a
+    floor: the player may still choose one.
+
+    Only conditions this grammar reads exactly are accepted. The general
+    condition reader turns "you control an artifact and an enchantment"
+    into "... or ...", and a mode choice widened on the wrong condition is
+    a card doing something it does not allow.
+    """
+    from ..rules.kernel.query import Condition, ConditionKind
+    from .clauses import parse_condition_text
+
+    if not stream.accept("if"):
+        return None
+    if stream.accept_phrase("this spell was kicked"):
+        if not is_spell:
+            return None
+        condition = Condition(
+            kind=ConditionKind.WAS_KICKED, text="this spell was kicked"
+        )
+    elif stream.at_phrase("you control a commander"):
+        condition = parse_condition_text(stream)
+        if condition is None:
+            return None
+        if stream.at_phrase("as you cast this spell"):
+            if not is_spell:
+                return None
+            stream.accept_phrase("as you cast this spell")
+    else:
+        return None
+    stream.skip_punct(",")
+    optional = stream.accept_phrase("you may")
+    if not stream.accept("choose"):
+        return None
+    counted = _mode_count(stream, modes)
+    if counted is None or not stream.accept("instead"):
+        return None
+    upgraded, upgraded_fields = counted
+    if fields or upgraded > modes or upgraded <= count:
+        return None
+    if optional:
+        if upgraded_fields:
+            # "you may choose any number instead" does not say whether the
+            # printed one is still owed; nothing prints it.
+            return None
+        return (condition, upgraded, True, count)
+    return (
+        condition,
+        upgraded,
+        upgraded_fields.get("modes_up_to", False),
+        upgraded_fields.get("modes_at_least", 0),
+    )
 
 
 def _modal(line: Line, result: ParsedFace) -> list[Ability]:
     """CR 700.2: a modal spell, whose modes are chosen on announcement."""
+    stream = Stream.of(line.text)
+    header = _mode_header(stream, len(line.modes), is_spell=True)
+    if header is None or not stream.done:
+        result.failures.append(
+            ParseFailure(
+                line.text,
+                "unreadable modal header",
+                consumed=stream.pos,
+                remaining=stream.remaining(),
+                rule="modal",
+            )
+        )
+        return [Ability.unreadable(line.text)]
     children: list[Effect] = []
     for mode in line.modes:
         stream = Stream.of(mode)
@@ -722,14 +1059,41 @@ def _modal(line: Line, result: ParsedFace) -> list[Ability]:
         )
 
     return [
-        Ability.spell(
-            Effect(EffectKind.CHOOSE_MODE, children=tuple(children), text=line.text),
-            text=line.text,
+        _bound(
+            line.text,
+            Ability.spell(
+                Effect(
+                    EffectKind.CHOOSE_MODE,
+                    children=tuple(children),
+                    text=line.text,
+                    **header,
+                ),
+                text=line.text,
+            ),
+            result,
+            rule="modal",
         )
     ]
 
 
 def _plain(line: Line, result: ParsedFace, *, is_permanent: bool) -> list[Ability]:
+    additional = _additional_cost_line(line.text)
+    if additional is not None:
+        # CR 601.2f-h: "As an additional cost to cast this spell, sacrifice a
+        # creature" is paid while the spell is cast, alongside its mana
+        # cost - not carried out on resolution, where a countered spell kept
+        # its creature. The engine pays ``Ability.additional_cost`` at CR
+        # 601.2h and records on the spell what the payment consumed.
+        if _consumes_an_object(additional.cost):
+            result.pays_with_objects = True
+        return [
+            Ability(
+                AbilityKind.STATIC,
+                additional_cost=additional,
+                functions_in=frozenset({Zone.HAND, Zone.STACK}),
+                text=line.text,
+            )
+        ]
     alternative = _alternative_cost_line(line.text)
     if alternative is not None:
         # CR 118.9: an alternative cost is a property of the *ability*, not an
@@ -804,6 +1168,90 @@ def _lift_static_condition(body):
     if not all(child.kind in CONTINUOUS_KINDS for child in node.children):
         return ALWAYS, body
     return node.condition, list(node.children)
+
+
+#: Cost components the engine records the object of (``cr601_casting``), so
+#: that "the sacrificed creature's power" can be read off the spell.
+_CONSUMING_COSTS = frozenset(
+    {
+        "SACRIFICE",
+        "DISCARD",
+        "DISCARD_AT_RANDOM",
+        "EXILE_FROM_GRAVEYARD",
+        "EXILE_FROM_HAND",
+        "EXILE_FROM_LIBRARY",
+        "EXILE_FROM_BATTLEFIELD",
+        "RETURN_TO_HAND",
+        "TAP_OTHER",
+    }
+)
+
+
+def _consumes_an_object(cost) -> bool:
+    return any(component.kind.name in _CONSUMING_COSTS for component in cost.components)
+
+
+def _mentions_x(thing, depth: int = 0) -> bool:
+    """Whether a cost component anywhere asks for X.
+
+    A cost component's amount is evaluated against the board alone when it
+    is paid, so "pay X life" or "sacrifice X creatures" would be charged as
+    zero. Such a line stays with the clause grammar.
+    """
+    from dataclasses import fields, is_dataclass
+
+    from ..rules.kernel.query import Value, ValueKind
+
+    if depth > 6:
+        return False
+    if isinstance(thing, Value) and thing.kind is ValueKind.X:
+        return True
+    if isinstance(thing, (tuple, list)):
+        return any(_mentions_x(item, depth + 1) for item in thing)
+    if is_dataclass(thing) and not isinstance(thing, type):
+        return any(_mentions_x(getattr(thing, f.name), depth + 1) for f in fields(thing))
+    return False
+
+
+def _additional_cost_line(text: str):
+    """"As an additional cost to cast this spell, sacrifice a creature."
+
+    A mandatory additional cost (CR 118.8), read with the cost grammar so it
+    is charged exactly as an activated ability's cost is. ``None`` for
+    anything else - an optional one ("you may sacrifice"), a choice between
+    two ("sacrifice a creature or pay 3 life"), one whose amount depends on
+    X - which the clause grammar goes on to read as before.
+    """
+    from ..rules.cr100_game_concepts.cr118_costs import AdditionalCost, CostKind
+    from .costs import parse_cost
+
+    stream = Stream.of(text)
+    if not (
+        stream.accept("as")
+        and stream.accept_phrase("an additional cost to cast this spell")
+    ):
+        return None
+    stream.skip_punct(",")
+    words: list[str] = []
+    while not stream.done:
+        token = stream.next()
+        if token.text in (".", ";"):
+            break
+        words.append(token.text)
+    if not stream.done or not words:
+        return None
+    cost, _reason = parse_cost(" ".join(words))
+    if cost is None or _mentions_x(cost.components):
+        return None
+    if any(
+        component.kind in (CostKind.MANA, CostKind.TAP_SELF, CostKind.UNTAP_SELF)
+        or getattr(component.filter, "source_only", False)
+        for component in cost.components
+    ):
+        # "{T}" or "sacrifice this" names nothing a spell on the stack can
+        # pay with, and a mana additional cost stays with the clause grammar.
+        return None
+    return AdditionalCost(cost=cost, text="as an additional cost")
 
 
 def _alternative_cost_line(text: str):
@@ -946,9 +1394,10 @@ def parse_inner_ability(text: str) -> Ability | None:
     if scratch.failures or len(abilities) != 1:
         return None
     ability = abilities[0]
-    if ability.unparsed or any(
-        node.is_unparsed for effect in ability.effects for node in effect.walk()
-    ):
+    # ``understood`` rather than a walk for UNPARSED nodes: a quoted "Ward -
+    # Pay 2 life" builds a trigger whose *condition* is unread, which the walk
+    # never looked at, so the grant counted as read while granting nothing.
+    if not understood(ability):
         return None
     return ability
 
@@ -985,7 +1434,289 @@ def _finish(
             )
         )
         return Ability.unreadable(text)
-    return build(effects)
+    if not pile_references_ok(effects):
+        # "The rest" with nothing looked at, or on only one branch of an "if
+        # you don't": every word was read, and the sentences do not fit
+        # together into something the engine would do as printed.
+        result.failures.append(
+            ParseFailure(text, "pile reference without a pile", rule=rule)
+        )
+        return Ability.unreadable(text)
+    return _bound(text, build(effects), result, rule=rule)
+
+
+def _share_targets(effects):
+    """Mark the verbs that share one word "target" (CR 115.3, 601.2c).
+
+    "Target creature gets +2/+0 and gains first strike" is read as two
+    instructions, and the clause readers build both around the *same*
+    filter object - one noun phrase, read once. Each targeted instruction
+    held a target of its own, so the spell asked for two choices and could
+    pump one creature and give first strike to another. The second of such
+    a pair is marked ``same_target``: it holds no target and acts on the
+    one chosen for the first.
+
+    Only the targeted instruction just before counts, in the order the
+    targets are chosen (``targeted_nodes``), because that is the choice the
+    resolver has just handed out. A filter shared with an earlier target
+    across a different one is not something the engine can line up, and
+    ``None`` refuses the ability.
+    """
+    from dataclasses import replace
+
+    slots: list = []  # the filter of every target slot so far, in order
+    refused = False
+
+    def visit(node):
+        nonlocal refused
+        if node.kind is EffectKind.CHOOSE_MODE and node.children:
+            # Each mode's targets follow those before the modal instruction
+            # (CR 700.2c); no mode's verbs share another mode's target.
+            before = list(slots)
+            modes = []
+            for mode in node.children:
+                slots[:] = before
+                modes.append(visit(mode))
+            slots[:] = before + [object()]
+            return replace(node, children=tuple(modes))
+        if node.is_targeted and not node.same_target:
+            spec = node.targets
+            if spec is not None and not node.targets_its_player and slots and slots[-1] is spec:
+                node = replace(node, same_target=True)
+            else:
+                if spec is not None and any(earlier is spec for earlier in slots):
+                    refused = True
+                slots.append(spec if spec is not None else object())
+        children = tuple(visit(child) for child in node.children)
+        otherwise = tuple(visit(child) for child in node.otherwise)
+        if any(a is not b for a, b in zip(children + otherwise, node.children + node.otherwise)):
+            node = replace(node, children=children, otherwise=otherwise)
+        return node
+
+    shared = tuple(visit(effect) for effect in effects)
+    return None if refused else shared
+
+
+def _refers_back(node) -> bool:
+    """Whether an instruction names an object by what the resolution
+    remembers: "it", "those creatures", "that creature's power"."""
+
+    def value_refers(value) -> bool:
+        if value is None:
+            return False
+        spec = getattr(value, "filter", None)
+        if spec is not None and spec.remembered:
+            return True
+        return any(value_refers(op) for op in getattr(value, "operands", ()))
+
+    return bool(
+        (node.targets is not None and node.targets.remembered)
+        or (node.damage_source is not None and node.damage_source.remembered)
+        or value_refers(node.amount)
+        or value_refers(node.amount2)
+    )
+
+
+def _other_than_earlier_targets(effects):
+    """"Target creature gets +2/+2. Another target creature gets -2/-2":
+    after a target, "other" means other than *that target* (CR 115.3 lets
+    one object be chosen for each instance of the word "target" unless the
+    card says otherwise). The parser's filter says "other than this
+    object's source", which on a spell excludes nothing - the same creature
+    could be chosen twice - and on a permanent's ability excludes the wrong
+    object. Such a target is rewritten to one that must differ from every
+    earlier target of the ability (``Effect.distinct_from_earlier_targets``,
+    enforced as targets are chosen, CR 601.2c) and no longer excludes the
+    source. With no earlier target ("exile up to one other target
+    creature") the word means the source and is left alone.
+
+    Returns the rewritten effects, the effects unchanged, or ``None`` to
+    refuse. Refused, as before, where the engine cannot say which earlier
+    targets are meant:
+
+    * inside a modal ability - which earlier targets exist depends on the
+      modes chosen;
+    * under a condition - "if this spell was kicked, ... another target
+      creature" is a target only a kicked spell has (CR 601.2c), and the
+      engine asks for every target whether or not the condition holds.
+
+    A verb sharing the target of the one before it (``same_target``) is not
+    a new target; it is rewritten along with the one whose choice it shares.
+    A player chosen as the target is not an object "other" could be
+    distinct from.
+    """
+    from dataclasses import replace
+
+    if not any(
+        node.kind is EffectKind.CHOOSE_MODE or node.kind is EffectKind.CONDITIONAL
+        for effect in effects
+        for node in effect.walk()
+    ):
+        guarded = False
+    else:
+        guarded = True
+
+    seen = 0
+    rewritten: dict[int, object] = {}
+    refused = False
+    distinct_so_far = False
+
+    def visit(node):
+        nonlocal seen, refused, distinct_so_far
+        if distinct_so_far and _refers_back(node):
+            # "... up to one other target creature gets +1/+1. Those
+            # creatures gain vigilance": the resolution remembers only what
+            # the last instruction acted on, and "those creatures" means
+            # every target. A singular "it" and a plural "those" read the
+            # same here, so neither is read.
+            refused = True
+        if node.is_targeted and node.targets is not None and not node.targets_a_player:
+            spec = node.targets
+            if node.same_target:
+                if id(spec) in rewritten:
+                    node = replace(node, targets=rewritten[id(spec)])
+            else:
+                if spec.other_than_source and seen:
+                    if guarded:
+                        refused = True
+                    else:
+                        new = replace(spec, other_than_source=False)
+                        rewritten[id(spec)] = new
+                        node = replace(
+                            node, targets=new, distinct_from_earlier_targets=True
+                        )
+                        distinct_so_far = True
+                seen += 1
+        children = tuple(visit(child) for child in node.children)
+        otherwise = tuple(visit(child) for child in node.otherwise)
+        if any(a is not b for a, b in zip(children + otherwise, node.children + node.otherwise)):
+            node = replace(node, children=children, otherwise=otherwise)
+        return node
+
+    out = tuple(visit(effect) for effect in effects)
+    return None if refused else out
+
+
+def _actor_behind_a_condition(effects) -> bool:
+    """"Put a +1/+1 counter on target creature you control if it's
+    legendary. Then it fights target creature an opponent controls": the
+    fighter (or dealer) is what the resolution remembers, and the only
+    instruction that would have it remembered sits under a condition. When
+    the condition fails nothing is remembered, and the fight the card
+    promises regardless would not happen. Refused rather than read so.
+    """
+
+    def visit(siblings) -> bool:
+        gated = False
+        for node in siblings:
+            dealer = node.damage_source
+            if (
+                gated
+                and node.kind in (EffectKind.FIGHT, EffectKind.DAMAGE)
+                and dealer is not None
+                and dealer.remembered
+            ):
+                return True
+            if visit(node.children) or visit(node.otherwise):
+                return True
+            if node.kind is EffectKind.CONDITIONAL and not node.condition.is_always:
+                gated = True
+            elif node.is_targeted and node.kind is not EffectKind.SEQUENCE:
+                # A target of its own, acted on whatever the condition did,
+                # is what the next "it" names.
+                gated = False
+        return False
+
+    return visit(effects)
+
+
+def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Ability:
+    """The ability with its references settled: "its power" and "that
+    card's mana value" to the object they mean (``object_referents``), "that
+    player" and "its controller" to the player (``referents``) - or
+    unreadable if the text does not say."""
+    from .object_referents import settle_referents
+    from .referents import Unbound, bind_ability
+
+    shared = _share_targets(ability.effects)
+    if shared is None:
+        result.failures.append(
+            ParseFailure(text, "one target shared across another", rule=rule)
+        )
+        return Ability.unreadable(text)
+    from dataclasses import replace
+
+    if any(a is not b for a, b in zip(shared, ability.effects)):
+        ability = replace(ability, effects=shared)
+    distinct = _other_than_earlier_targets(ability.effects)
+    if distinct is not None and any(a is not b for a, b in zip(distinct, ability.effects)):
+        ability = replace(ability, effects=distinct)
+    if distinct is None:
+        result.failures.append(
+            ParseFailure(text, "'other target' after another target", rule=rule)
+        )
+        return Ability.unreadable(text)
+    settled = settle_referents(ability, spell_paid=result.pays_with_objects)
+    if settled is None:
+        # "Its power" with no object the engine can read it off - the target
+        # of the very instruction being carried out, or an object a delayed
+        # ability no longer remembers. Answered off the source instead, it
+        # would be a different card.
+        result.failures.append(
+            ParseFailure(text, "characteristic of an object it cannot name", rule=rule)
+        )
+        return Ability.unreadable(text)
+    if _actor_behind_a_condition(settled.effects):
+        result.failures.append(
+            ParseFailure(text, "the one who acts was named under a condition", rule=rule)
+        )
+        return Ability.unreadable(text)
+    try:
+        bound = bind_ability(settled)
+    except Unbound as reason:
+        result.failures.append(ParseFailure(text, str(reason), rule=rule))
+        return Ability.unreadable(text)
+    # "Can't attack you unless their controller pays {2}" is charged as
+    # attackers are declared (CR 508.1h), and only in the shapes the combat
+    # step can charge. Any other is refused, not read and never charged.
+    from ..rules.cr500_turn_structure.combat_costs import tax_refusal
+
+    refusal = tax_refusal(bound)
+    if refusal is not None:
+        result.failures.append(ParseFailure(text, refusal, rule=rule))
+        return Ability.unreadable(text)
+    if _copy_retarget_not_carried(bound):
+        result.failures.append(
+            ParseFailure(text, "a copy's 'choose new targets' is not carried onto the copy", rule=rule)
+        )
+        return Ability.unreadable(text)
+    return bound
+
+
+def _copy_retarget_not_carried(ability: Ability) -> bool:
+    """Whether a spell is copied and its "you may choose new targets for the
+    copy" was read as a later, separate change of targets.
+
+    CR 707.10c: the new targets are chosen as the copy is created, and the
+    engine's copy keeps the original's targets unless the COPY_SPELL carries
+    MAY_CHOOSE_NEW_TARGETS. The copy clause carries the rider when it follows
+    the copy directly; when another instruction sits between ("Copy target
+    spell, then return it to its owner's hand. You may choose new targets for
+    the copy."), the rider became a CHANGE_TARGETS on the remembered copy,
+    which the engine no longer honours - the copy would keep its targets.
+    """
+    copies = changes = False
+    for effect in ability.effects:
+        for node in effect.walk():
+            if node.kind is EffectKind.COPY_SPELL and "may choose new targets" not in node.keywords:
+                copies = True
+            if node.kind is EffectKind.CHANGE_TARGETS and node.targets is not None and (
+                node.targets.remembered
+            ):
+                changes = True
+    return copies and changes
+
+
 
 
 # ---------------------------------------------------------------------------
@@ -1007,12 +1738,19 @@ class OracleAbilities:
     simulation actually does.
     """
 
-    def __init__(self, verdicts=None) -> None:
+    def __init__(self, verdicts=None, store=None) -> None:
         self._cache: dict[tuple[str, int], tuple[Ability, ...]] = {}
         self.failures: list[ParseFailure] = []
         self.verdicts = verdicts
         #: Cards served inert because a person said so, for the run report.
         self.suppressed: set[str] = set()
+        #: The parse computed ahead of time (``parser.store``), opened on first
+        #: use. A stale store answers nothing and every card is parsed live.
+        self._store = store
+        self._store_opened = store is not None
+        #: Faces served from the store and parsed live, for the curious.
+        self.served_from_store = 0
+        self.parsed_live = 0
 
     def abilities_for(self, card, face_index: int) -> tuple[Ability, ...]:
         key = (getattr(card, "oracle_id", "") or getattr(card, "name", ""), face_index)
@@ -1026,10 +1764,38 @@ class OracleAbilities:
             self._cache[key] = ()
             return ()
 
+        stored = self._stored(card, face_index)
+        if stored is not None:
+            abilities, failures = stored
+            self.served_from_store += 1
+            self.failures.extend(failures)
+            self._cache[key] = abilities
+            return abilities
+
         parsed = parse_face(card, face_index)
+        self.parsed_live += 1
         self.failures.extend(parsed.failures)
         self._cache[key] = parsed.abilities
         return parsed.abilities
+
+    def _stored(self, card, face_index: int):
+        from . import store as parse_store
+
+        if not self._store_opened:
+            self._store_opened = True
+            if parse_store.enabled():
+                try:
+                    from ..data.db import CardDatabase
+
+                    self._store = parse_store.ParseStore.open(CardDatabase())
+                except Exception:  # noqa: BLE001 - no store is the old behaviour
+                    self._store = None
+        if self._store is None:
+            return None
+        try:
+            return self._store.get(card, face_index)
+        except Exception:  # noqa: BLE001 - a damaged entry is parsed live
+            return None
 
     def clear(self) -> None:
         self._cache.clear()
