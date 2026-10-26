@@ -799,7 +799,9 @@ def _noun(stream: Stream, spec: ObjectFilter) -> tuple[ObjectFilter, bool]:
                 saw = True
                 continue
             if base in ("spell", "spells"):
-                spec = replace(spec, zones=frozenset({Zone.STACK}))
+                # CR 112.1: a spell, not an ability on the stack (CR 113.7).
+                # Without it Counterspell could counter a triggered ability.
+                spec = replace(spec, zones=frozenset({Zone.STACK}), is_ability=False)
             elif base in ("card", "cards") and spec.zones == frozenset(
                 {Zone.BATTLEFIELD}
             ):
