@@ -239,3 +239,16 @@ Parser 18e91f0 contains rules 64bbd26; neither branch moved Oct 18-26. Census vs
 9 FULLY READ cards: convoke (Chief Engineer, Eirdu), cascade (Flamekin Herald, The First Sliver), improvise (Inspiring Statuary, Ironheart), conspire (Wort, Raiding Schemes), delve (Teval).
 
 18e91f0 full suite `pytest tests`: **2938 passed, 10 xfailed, 0 failed** (matches the parser's report). No test covers F26.
+
+## Round 13 (2026-10-26): rules d4f6a3e, parser ccd2b9a
+
+Heads diverged again: rules d4f6a3e contains parser 18e91f0, but not parser ccd2b9a, and vice versa. Scratch merge 9c309aa is CLEAN.
+- **Back-face MV FIXED** (95b6ba6): a transformed Delver // Insectile Aberration has MV 1 on the merge; 0 without the fix (712.8e).
+- **F26 NOT fixed on real cards.** On d4f6a3e alone (Wort fully read there), Wort + 2 Goblin Pikers still offers Bolt only (). Cause: the engine part works (as_it_would_be_cast gives the Bolt Wort's granted ability), but the PARSED granted ability is a bare `STATIC keyword="conspire"` with no AdditionalCost and functions_in={BATTLEFIELD}. It's a marker, not the keyword built by its builder. The rules session's scripted test passes a real conspire ability, so it doesn't exercise this.
+- **Parser ccd2b9a refuses only the cost-type grants** (conspire: Wort, Raiding Schemes; prowl: Hunting Velociraptor; casualty: Silverquill), -4. On the merge those are unread (OK). **Still FULLY READ and wrong** on the merge:
+  - Chief Engineer (convoke): Mind Stone not payable by tapping creatures. Control: Siege Wurm works.
+  - Inspiring Statuary (improvise): Bears not payable with an artifact. Control: Reverse Engineer works.
+  - The First Sliver (cascade): no cascade. Control: Bloodbraid Elf works.
+  - Teval (delve): Hill Giant not payable with Mountain + 3 graveyard cards. Control: Treasure Cruise works.
+  - Also Eirdu, Flamekin Herald and Ironheart (same grants).
+  **F26 stays BLOCK for these 7.**
