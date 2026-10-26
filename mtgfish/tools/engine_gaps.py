@@ -223,7 +223,7 @@ FINDINGS: tuple[Finding, ...] = (
             "Conspire", "Embalm", "Emerge", "Entwine", "Escalate",
             "Eternalize", "Freerunning", "Gift", "Impending", "Miracle",
             "More Than Meets the Eye", "Multikicker", "Offspring", "Prowl",
-            "Retrace", "Spectacle", "Splice", "Spree", "Squad", "Warp",
+            "Spectacle", "Splice", "Spree", "Squad", "Warp",
         )
     ),
 )
@@ -302,8 +302,8 @@ REFUSAL_CAUSES: dict[str, tuple[str, str]] = {
     "player reference on REVEAL": (ENGINE, "the reveal opcode cannot name who reveals"),
     "player reference on EXILE": (ENGINE, "the exile opcode cannot name a player"),
     "a combat cost other than mana": (ENGINE, "attack costs can only be mana"),
-    "a cost granted to spells on the stack is not offered as they are cast": (
-        ENGINE, "the cast-cost menu is built before a grant to spells applies"),
+    "a keyword granted to spells is not applied while they are cast": (
+        ENGINE, "convoke, improvise, delve, cascade and prowl granted to spells are ignored"),
     "a combat cost scaled by something the engine cannot count": (
         ENGINE, "the attack cost needs a count the engine has no value for"),
     "'its controller' with no single antecedent": (

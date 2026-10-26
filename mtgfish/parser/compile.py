@@ -1657,11 +1657,11 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
             ParseFailure(text, "a copy's 'choose new targets' is not carried onto the copy", rule=rule)
         )
         return Ability.unreadable(text)
-    if _grants_a_cost_to_spells(bound):
+    if _grants_an_unapplied_keyword_to_spells(bound):
         result.failures.append(
             ParseFailure(
                 text,
-                "a cost granted to spells on the stack is not offered as they are cast",
+                "a keyword granted to spells is not applied while they are cast",
                 rule=rule,
             )
         )
@@ -1669,15 +1669,22 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
     return bound
 
 
-def _grants_a_cost_to_spells(ability: Ability) -> bool:
-    """Whether a spell on the stack is granted an additional or alternative
-    cost ("Each red or green instant or sorcery spell you cast has conspire").
+#: Keywords that, granted to "spells you cast", the engine does not yet apply
+#: while the spell is cast, checked on the board from the real cards (Chief
+#: Engineer, Inspiring Statuary, Teval, The First Sliver). Prowl is here
+#: because its alternative cost is read off the card before it is a spell.
+#: Conspire and casualty, granted, work (rules session d4f6a3e).
+_UNAPPLIED_SPELL_GRANTS = frozenset({"convoke", "improvise", "delve", "cascade", "prowl"})
 
-    CR 601.2a-b puts the spell on the stack before its costs are chosen, so
-    the grant applies to that choice. The engine builds the menu of optional
-    and alternative costs from the card before it moves, which a grant to
-    spells does not reach: Wort, the Raidmother never offered conspire
-    (auditor's F26). Refused until the engine reads the menu from the spell.
+
+def _grants_an_unapplied_keyword_to_spells(ability: Ability) -> bool:
+    """Whether spells on the stack are granted a keyword the engine ignores
+    there ("Artifact spells you cast have convoke").
+
+    CR 601.2a-b puts the spell on the stack before its costs are chosen and
+    paid, so the grant applies to casting it. Read while the engine ignores
+    it, Chief Engineer counted as understood and never convoked (auditor's
+    F26). Refused until the engine applies these while casting.
     """
     for effect in ability.effects:
         for node in effect.walk():
@@ -1685,26 +1692,12 @@ def _grants_a_cost_to_spells(ability: Ability) -> bool:
                 continue
             if Zone.STACK not in (node.targets.zones or ()):
                 continue
-            if any(_is_a_cast_cost(granted) for granted in node.granted_abilities):
+            if any(
+                granted.keyword.lower() in _UNAPPLIED_SPELL_GRANTS
+                for granted in node.granted_abilities
+            ):
                 return True
     return False
-
-
-def _is_a_cast_cost(granted: Ability) -> bool:
-    """Whether a granted ability is, or builds into, an additional or
-    alternative cost. A granted keyword is carried by name ("conspire"), so
-    it is built here to see what it is."""
-    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
-
-    candidates = [granted]
-    if granted.keyword:
-        try:
-            candidates += build(KeywordInstance(granted.keyword, text=granted.keyword))
-        except Exception:  # noqa: BLE001 - a keyword needing a parameter
-            pass
-    return any(
-        a.additional_cost is not None or a.alternative_cost is not None for a in candidates
-    )
 
 
 def _copy_retarget_not_carried(ability: Ability) -> bool:

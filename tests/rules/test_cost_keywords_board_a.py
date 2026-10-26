@@ -561,10 +561,6 @@ def test_miracle_is_not_a_hand_alternative_cost_at_any_time(card_db):
     assert not offered(board, card, alternative_cost=alternative_index(board, card, "Miracle"))
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Retrace is built as an alternative cost (free when the "
-    "keyword has no cost) instead of permission to cast from the graveyard "
-    "for the mana cost plus discarding a land card"))
 def test_retrace_needs_the_mana_cost_and_a_land_to_discard(card_db):
     board = setup(card_db, {"Lava Spike": (
         Ability.spell(GAIN_2), *build(KeywordInstance("Retrace")))})

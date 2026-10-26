@@ -1279,7 +1279,7 @@ def _alternative(
     )
 
 
-@register("Flashback", "Retrace", "Escape", "Aftermath", "Encore")
+@register("Flashback", "Escape", "Aftermath", "Encore")
 def _graveyard_alternative(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Alternative costs that let a card be cast from a graveyard (CR 702.34)."""
     return _alternative(instance, Zone.GRAVEYARD)
@@ -1301,6 +1301,26 @@ def _jump_start(instance: KeywordInstance) -> tuple[Ability, ...]:
         Zone.GRAVEYARD,
         pays_mana_cost=True,
         cost=Cost((CostComponent(CostKind.DISCARD, amount=Value.of(1), text="discard a card"),)),
+    )
+
+
+@register("Retrace")
+def _retrace(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.81a: "You may cast this card from your graveyard by discarding
+    a land card in addition to paying its other costs." Its mana cost is paid
+    too. Built as a bare graveyard alternative cost, it was free."""
+    return _alternative(
+        instance,
+        Zone.GRAVEYARD,
+        pays_mana_cost=True,
+        cost=Cost((
+            CostComponent(
+                CostKind.DISCARD,
+                amount=Value.of(1),
+                filter=ObjectFilter(types_all=CardType.LAND),
+                text="discard a land card",
+            ),
+        )),
     )
 
 

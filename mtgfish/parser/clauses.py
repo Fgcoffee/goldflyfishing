@@ -1788,7 +1788,11 @@ def _granted_keyword(name: str, stream: Stream):
         and not built[0].effects
         and built[0].quality is None
         and built[0].trigger is None
+        and built[0].additional_cost is None
+        and built[0].alternative_cost is None
     ):
+        # Not for conspire or casualty: shrunk to the bare name, a granted
+        # conspire lost the cost it lets the spell's controller pay.
         return (Ability(AbilityKind.STATIC, keyword=name, text=name),)
     return built
 

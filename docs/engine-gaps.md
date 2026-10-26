@@ -19,8 +19,8 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 224 | 39 |
-| Missing, not understood | 302 | 494 |
-| Suspected, counted as read | 266 | 0 |
+| Missing, not understood | 311 | 494 |
+| Suspected, counted as read | 254 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
 first; *(read)* marks a card the parser currently counts as fully read.
@@ -145,6 +145,12 @@ HULK SMASH!, We Say Thee Nay!, Earth's Mightiest Heroes, Go Nuts!, Too Evil to S
 
 Pentad Prism, Etched Oracle, Engineered Explosives, Suntouched Myr, Clearwater Goblet, Solarion, Suncrusher, Skyreach Manta, Infused Arrows, Lunar Avenger, Opaline Bracers, Spinal Parasite, Heliophial, Sawtooth Thresher, Baton of Courage
 
+#### refused: a keyword granted to spells is not applied while they are cast (14 cards, 0 counted as read)
+
+- **Likely cause:** convoke, improvise, delve, cascade and prowl granted to spells are ignored
+
+Inspiring Statuary, Dazzling Theater // Prop Room, Imoti, Celebrant of Bounty, Hunting Velociraptor, The First Sliver, Invasion of Segovia // Caetus, Sea Tyrant of Segovia, Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight, Fallaji Wayfarer, Chief Engineer, Flamekin Herald, We Ride at Dawn, Ironheart, Clever Champion, Teval, Arbiter of Virtue, Mothlight Processionist
+
 #### Harmonize (12 cards, 0 counted as read)
 
 - **Likely cause:** no harmonize cost (tap a creature to reduce it)
@@ -198,12 +204,6 @@ Vraska, Betrayal's Sting, Nissa, Ascended Animist, Jace, the Perfected Mind, Aja
 - **Evidence:** IR: two COPY_SPELL for you
 
 Incarnation Technique, Replication Technique, Creative Technique, Healing Technique, Transforming Flourish, Excavation Technique
-
-#### refused: a cost granted to spells on the stack is not offered as they are cast (5 cards, 0 counted as read)
-
-- **Likely cause:** the cast-cost menu is built before a grant to spells applies
-
-Hunting Velociraptor, Ezio Auditore da Firenze, Silverquill, the Disputant, Wort, the Raidmother, Raiding Schemes
 
 #### refused: player reference on REVEAL (2 cards, 0 counted as read)
 
@@ -338,15 +338,6 @@ Everflowing Chalice, Comet Storm, Joraga Warcaller, Marshal's Anthem, Wolfbriar 
 - **Evidence:** code: no use of the keyword outside the keyword table
 
 Reforge the Soul *(read)*, Temporal Mastery, Metamorphosis Fanatic, Redress Fate *(read)*, Devastation Tide *(read)*, Terminus, Entreat the Angels *(read)*, Bonfire of the Damned, Zephyrim *(read)*, Triumph of Saint Katherine, Entreat the Dead *(read)*, Sister Repentia *(read)*, Revenge of the Hunted, Banishing Stroke *(read)*, Vanishment *(read)*, Thunderous Wrath *(read)*, Blessings of Nature *(read)*
-
-#### Retrace (17 cards, 12 counted as read)
-
-- **Likely cause:** the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)
-- **Card says:** an alternative or additional cost with its own consequences
-- **Engine does:** the cost can be paid; nothing in the engine reads the keyword afterwards
-- **Evidence:** code: no use of the keyword outside the keyword table
-
-Formless Genesis *(read)*, Throes of Chaos *(read)*, Embrace the Unknown, Decaying Time Loop, Waves of Aggression, Reality Scramble, Spitting Image *(read)*, Worm Harvest *(read)*, Flame Jab *(read)*, Glamerdye, Raven's Crime *(read)*, Oona's Grace *(read)*, Call the Skybreaker *(read)*, Cenn's Enlistment *(read)*, Syphon Life *(read)*, Monstrify *(read)*, Savage Conception *(read)*
 
 #### Assist (16 cards, 11 counted as read)
 
