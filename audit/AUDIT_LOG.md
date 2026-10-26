@@ -294,3 +294,20 @@ f0a71f4 contains parser ccd2b9a: one head.
 
 f0a71f4 full suite `pytest tests`: **2950 passed, 1 skipped, 10 xfailed, 0 failed.** No test covers F27-F39.
 **F29 confirmed on the bench:** `simulate bench/decks/combo.txt --games 50 --seed 0` on f0a71f4: win 20.0%, stalls 14.0%, **7 runaways "RESOLVE ?"** (the peer reported the same 7 in games 1-50). The replay of game 1 shows the loop: Nim Deathmantle's "you may pay {4}. If you do, return ..." resolving repeatedly while that player's lands are tapped, alongside a "whenever this or another creature you control dies, each opponent loses 1 life" trigger, until the priority loop's iteration cap stops it. The engine's runaway label blames "a card"; the cause is F29.
+
+## Round 16 (2026-10-26): parser e298898, rules 636daa5
+
+Diverged again: parser e298898 merges rules 15f6b8f but not 0fb749b or 636daa5. Scratch merge 5dd7ecf (e298898 + 636daa5) is CLEAN. Checked on the merge unless noted.
+- **F39 FIXED** (0fb749b). From lands: Siege Wurm (4 Forests + 3 Bears), Reverse Engineer (2 Islands + 3 Ornithopters) and Treasure Cruise (1 Island + 7 graveyard cards; 2 Islands + 6) all resolve. A forced Treasure Cruise with only a Mountain fails and its 7 graveyard cards stay in the graveyard (601.2h).
+- **F29 FIXED** (636daa5):
+  - Mentor of the Meek with 0 mana: no draw. With a Plains: draws and taps it. With an agent that declines: no draw, Plains untapped.
+  - Nim Deathmantle with 0 mana: no return. With 4 Swamps: returns, all 4 tapped.
+- **F26 CLOSED** (e298898 + 15f6b8f + 0fb749b), all on real cards:
+  - Chief Engineer convoke: Mind Stone, Engineer + Bears tapped.
+  - Inspiring Statuary improvise: Bears paid with Forest + Statuary.
+  - Teval delve: Hill Giant, Mountain + 3 graveyard cards exiled.
+  - The First Sliver cascade: Hivelord cascades into Muscle Sliver.
+  - Wort conspire end to end: Bolt + copy, opp to 34; it tapped Wort + a Piker, legal since Wort is red (702.78a).
+  - Rassilon's "cast from exile" conspire is NOT given to a Bolt cast from hand (correct scope).
+- **Retrace (part of F34) FIXED:** Raven's Crime is offered only with a land in hand and {B}; it discards the Forest, the opponent discards, and the card returns to the graveyard.
+- Census e298898 vs 18e91f0: +0/-0, 22 abilities on 16 cards changed STRUCTURALLY (hash), all with identical rendered text: 19 printed retrace cards, Deeproot Historian and Six (granted retrace), Wort, Raiding Schemes and Rassilon (granted conspire). All explained by the retrace and granted-keyword builders. ACCEPTED. (Methodology: I now diff hashes as well as rendered text.)
