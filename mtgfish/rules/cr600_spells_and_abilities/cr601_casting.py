@@ -1282,12 +1282,19 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
             payment = find_payment(
                 player.mana_pool, mana_cost, life_available=player.life, context=context
             )
-        if payment is None:
+        if payment is None and context is not None:
             # CR 702.51a / 702.126a / 702.66a: convoke, improvise and delve
-            # let other permanents and cards stand in for mana. Tried after
-            # ordinary mana sources so nothing is tapped or exiled that was
-            # not needed.
-            _pay_with_helpers(game, player_id, mana_cost, context)
+            # let other permanents and cards stand in for mana. As few as
+            # will do, with the lands and other sources paying the rest -
+            # the helpers alone rarely cover a coloured cost, and tapping
+            # for the whole cost first found nothing to tap.
+            from .mana_plan import can_produce
+
+            for helped in range(1, helper_capacity(game, context, player_id) + 1):
+                if can_produce(game, player_id, mana_cost.reduced_by(helped), context):
+                    _pay_with_helpers(game, player_id, mana_cost, context, most=helped)
+                    _tap_for_mana(game, player_id, mana_cost, context)
+                    break
             payment = find_payment(
                 player.mana_pool, mana_cost, life_available=player.life, context=context
             )
@@ -1320,7 +1327,9 @@ _COST_HELPERS = (
 )
 
 
-def _pay_with_helpers(game: Game, player_id: PlayerId, cost, context) -> None:
+def _pay_with_helpers(
+    game: Game, player_id: PlayerId, cost, context, most: int | None = None
+) -> None:
     """Tap or exile things that may stand in for mana.
 
     Adds the mana to the pool rather than reducing the cost, because that is
@@ -1337,6 +1346,8 @@ def _pay_with_helpers(game: Game, player_id: PlayerId, cost, context) -> None:
 
     player = game.player(player_id)
     shortfall = max(0, cost.mana_value - player.mana_pool.total)
+    if most is not None:
+        shortfall = min(shortfall, most)
     if shortfall <= 0:
         return
 
@@ -2274,6 +2285,7 @@ def _mana_checkpoint(game: Game, player_id: PlayerId) -> tuple:
         dict(player.mana_pool.buckets),
         player.life,
         len(game.pending_triggers),
+        tuple(player.graveyard),
     )
 
 
@@ -2284,8 +2296,15 @@ def _restore_mana_checkpoint(game: Game, player_id: PlayerId, checkpoint: tuple)
     triggers the tapping set off are dropped. A mana ability that sacrificed
     its own source - a Treasure - cannot be put back, and is left.
     """
-    tapped, pool, life, pending = checkpoint
+    tapped, pool, life, pending, graveyard = checkpoint
     player = game.player(player_id)
+    # CR 601.2h: nothing of an unmade payment stands - a card exiled for
+    # delve goes back to the graveyard it was exiled from.
+    for object_id in graveyard:
+        obj = game.objects.get(object_id)
+        became = game.objects.get(obj.superseded_by) if obj is not None else None
+        if became is not None and became.is_live and became.zone is Zone.EXILE:
+            game.move_object(became, Zone.GRAVEYARD)
     for object_id, was_tapped in tapped.items():
         obj = game.objects.get(object_id)
         if obj is not None:

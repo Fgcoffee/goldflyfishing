@@ -67,6 +67,11 @@ class Resolution:
     #: kind - life lost, life gained, damage dealt - so "you gain life equal
     #: to the life lost this way" can read it. Totals, not counts.
     this_way: dict = field(default_factory=dict)
+    #: CR 603.9, 608.2d: whether the last "you may" was carried out - taken,
+    #: and its cost, if it had one, paid. ``None`` before any. "If you do" and
+    #: "when you do" read it; ``remembered`` cannot say, since it may already
+    #: hold the object the ability triggered on.
+    did_it: bool | None = None
     #: The cards a "look at / reveal the top N" instruction set aside, in
     #: library order, for "from among them" and "the rest" to choose among
     #: (``ObjectFilter.from_pile``). A card leaves the pile when something is
@@ -78,6 +83,9 @@ class Resolution:
     #: The players an earlier instruction of this resolution targeted, for
     #: "that player" after "target player ..." (``PlayerScope.CHOSEN_PLAYER``).
     chosen_players: list[PlayerId] = field(default_factory=list)
+    #: CR 701.19c: set while a destroy that says its permanents can't be
+    #: regenerated is carried out, so their shields are not applied.
+    unregenerable: bool = False
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -99,12 +107,44 @@ class Resolution:
 
 def execute(resolution: Resolution, effects: tuple[Effect, ...]) -> None:
     """Run a list of effects in order (CR 608.2a)."""
-    for effect in effects:
+    for index, effect in enumerate(effects):
         # CR 608.2c: instructions are followed one after another, so what one
         # does does not happen at the same time as what the next does - a
         # "whenever one or more" ability sees them as separate (CR 603.2c).
         resolution.game.event_batch += 1
+        # CR 701.19c: "Destroy all creatures. They can't be regenerated." The
+        # second sentence is read as a prohibition on what the destroy acted
+        # on, which exists only once the destroy has run - too late for the
+        # shields it was meant to stop. The destroy reads it ahead instead.
+        if effect.kind is EffectKind.DESTROY and _forbids_regenerating_them(
+            effects[index + 1 : index + 2]
+        ):
+            resolution.unregenerable = True
+            try:
+                execute_one(resolution, effect)
+            finally:
+                resolution.unregenerable = False
+            continue
         execute_one(resolution, effect)
+
+
+def _forbids_regenerating_them(following: tuple[Effect, ...]) -> bool:
+    """Whether the instruction after a destroy says that what it destroyed
+    can't be regenerated (CR 701.19c)."""
+    from ..cr500_turn_structure.restrictions import Act
+
+    if not following or following[0].kind is not EffectKind.RESTRICTION:
+        return False
+    effect = following[0]
+    for restriction in effect.restrictions:
+        subject = restriction.subject or effect.targets
+        if (
+            restriction.act is Act.BE_REGENERATED
+            and subject is not None
+            and subject.remembered
+        ):
+            return True
+    return False
 
 
 #: Opcodes whose subject a following sentence can refer to as "it". A draw or
@@ -731,7 +771,10 @@ def _do_optional(resolution: Resolution, effect: Effect) -> None:
         return
     agent = resolution.game.agent_for(resolution.controller)
     if agent is None or agent.choose_optional(resolution.game, resolution.controller, effect):
+        resolution.did_it = True
         execute(resolution, effect.children)
+    else:
+        resolution.did_it = False
 
 
 #: "May" scopes still decided by the ability's controller: "you may", and the
@@ -844,7 +887,12 @@ def _do_mill(resolution: Resolution, effect: Effect) -> None:
 
 def _do_destroy(resolution: Resolution, effect: Effect) -> None:
     for obj in _objects(resolution, effect):
-        actions.destroy(resolution.game, obj, source=resolution.source)
+        actions.destroy(
+            resolution.game,
+            obj,
+            source=resolution.source,
+            regenerate=not resolution.unregenerable,
+        )
 
 
 def _do_exile(resolution: Resolution, effect: Effect) -> None:
@@ -1618,6 +1666,8 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
     resolution already knows - if nothing was remembered, nothing happened,
     and the reflexive ability never triggers.
     """
+    if resolution.did_it is False:
+        return
     if not resolution.remembered and effect.condition.is_always is False:
         return
     game = resolution.game
@@ -2430,7 +2480,10 @@ def _do_if_you_dont(resolution: Resolution, effect: Effect) -> None:
     the resolution records the same way the positive form reads it: an action
     that happened leaves something remembered.
     """
-    if resolution.remembered:
+    if resolution.did_it is not None:
+        if resolution.did_it:
+            return
+    elif resolution.remembered:
         return
     execute(resolution, effect.children)
 
@@ -2449,9 +2502,13 @@ def _do_pay_cost(resolution: Resolution, effect: Effect) -> None:
     cost = effect.pay_cost
     if cost is None:
         return
+    paid = False
     for player_id in _players(resolution, effect):
         if can_pay_cost(game, player_id, cost) and pay_cost(game, player_id, cost):
             resolution.remembered.append(resolution.source)
+            paid = True
+    # CR 608.2d: a cost that could not be paid is an option not taken.
+    resolution.did_it = paid
 
 
 def _do_start_engines(resolution: Resolution, effect: Effect) -> None:

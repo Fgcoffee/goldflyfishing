@@ -615,3 +615,45 @@ def test_a_name_typed_in_full_is_offered_first(box):
 def test_a_partial_name_still_ranks_by_play_rate(box):
     names = [card["name"] for card in box.search("lightning b")]
     assert names[0] == "Lightning Bolt"
+
+
+def test_resolving_puts_waiting_triggers_on_the_stack_first(box):
+    """CR 117.5: triggers go on the stack before anyone receives priority.
+
+    Lightning Bolt aimed at Kappa Cannoneer triggers its ward. Resolving the
+    top of the stack without settling first used to resolve the Bolt under
+    the waiting ward trigger, so the unpaid Bolt dealt its 3 damage. The ward
+    trigger goes on top and resolves first, and the Bolt is countered.
+    """
+    from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
+    from mtgfish.rules.kernel.enums import Color, Zone
+    from mtgfish.rules.kernel.ids import PlayerId
+
+    if box.db.lookup("Kappa Cannoneer") is None:
+        pytest.skip("Kappa Cannoneer is not in this card pool")
+    box.put("Kappa Cannoneer", "battlefield", 1)
+    box.settle()
+    while box.game.stack:
+        box.resolve_top()
+    (kappa,) = [
+        obj
+        for obj in box.game.objects.values()
+        if obj.is_live and obj.card is not None and obj.card.name == "Kappa Cannoneer"
+    ]
+
+    box.put("Lightning Bolt", "hand", 0)
+    # One red: the Bolt, and nothing left over to pay ward {4} with.
+    box.game.player(PlayerId(0)).mana_pool.add(ManaKind(Color.RED), 1)
+    bolt = next(a for a in box.legal() if "Lightning Bolt" in a["description"])
+    box.perform(bolt["index"], targets=[[kappa.id]])
+
+    box.resolve_top()
+
+    assert kappa.damage == 0
+    assert not box.game.stack
+    (bolt_card,) = [
+        obj
+        for obj in box.game.objects.values()
+        if obj.is_live and obj.card is not None and obj.card.name == "Lightning Bolt"
+    ]
+    assert bolt_card.zone is Zone.GRAVEYARD
