@@ -3,9 +3,8 @@
 The engine reads a grant to spells while the spell's costs are chosen (CR
 601.2a-b, rules session d4f6a3e). Before that, every such grant was ignored
 while the card counted as read (auditor's F26): Wort never offered conspire,
-Chief Engineer never convoked. Conspire and casualty, granted, now work and are
-checked on the board here, with no grant as the control; the keywords the
-engine still ignores while casting are refused.
+Chief Engineer never convoked. Each granted keyword is checked on the board
+here from the real card, with no grant as the control.
 """
 
 from __future__ import annotations
@@ -13,7 +12,6 @@ from __future__ import annotations
 import pytest
 from harness import FixedAgent, make_board
 
-from mtgfish.parser import parse_card
 from mtgfish.parser.compile import OracleAbilities
 from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
 from mtgfish.rules.cr100_game_concepts.cr117_priority import ActionKind
@@ -70,27 +68,61 @@ def test_granted_casualty(board, granter):
     assert offered == ([(), (0,)] if granter else [()])
 
 
-@pytest.mark.parametrize(
-    "name",
-    [
-        "Chief Engineer",  # convoke
-        "Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight",  # convoke
-        "Inspiring Statuary",  # improvise
-        "Teval, Arbiter of Virtue",  # delve
-        "The First Sliver",  # cascade
-        "Hunting Velociraptor",  # prowl
-    ],
-)
-def test_grants_the_engine_ignores_while_casting_are_refused(card_db, name):
-    """On d4f6a3e, Mind Stone cannot be convoked with Chief Engineer out,
-    Grizzly Bears cannot be improvised with Inspiring Statuary, a Hill Giant
-    cannot delve with Teval, and a Sliver Hivelord does not cascade with The
-    First Sliver. Until it can, the grant is unread rather than a card that
-    looks right and does nothing."""
-    face = parse_card(card_db.lookup(name)).faces[0]
-    grants = [a for a in face.abilities if "spells you cast ha" in a.text.lower()]
-    assert grants and all(a.unparsed for a in grants)
-    assert any("granted to spells" in f.reason for f in face.failures)
+@pytest.mark.parametrize("granter", ["Chief Engineer", None])
+def test_granted_convoke(board, granter):
+    """Mind Stone ({2}) cast by tapping two creatures and no mana."""
+    if granter:
+        board.play(granter)
+    board.play("Grizzly Bears")
+    board.play("Llanowar Elves")
+    stone = board.hand("Mind Stone")
+    assert bool(casts(board, stone)) == bool(granter)
+
+
+@pytest.mark.parametrize("granter", ["Inspiring Statuary", None])
+def test_granted_improvise(board, granter):
+    """Grizzly Bears ({1}{G}) with {G} and an untapped artifact for the {1}."""
+    if granter:
+        board.play(granter)
+    board.play("Ornithopter")
+    bears = board.hand("Grizzly Bears")
+    give(board, 1, Color.GREEN)
+    assert bool(casts(board, bears)) == bool(granter)
+
+
+@pytest.mark.parametrize("granter", ["Teval, Arbiter of Virtue", None])
+def test_granted_delve(board, granter):
+    """Hill Giant ({3}{R}) with {R} and three cards to exile from the graveyard."""
+    from mtgfish.rules.kernel.enums import Zone
+
+    if granter:
+        board.play(granter)
+    for name in ("Forest", "Island", "Swamp"):
+        board.game.move_object(board.hand(name), Zone.GRAVEYARD, to_player=P0)
+    giant = board.hand("Hill Giant")
+    give(board, 1, Color.RED)
+    assert bool(casts(board, giant)) == bool(granter)
+
+
+@pytest.mark.parametrize("granter", ["The First Sliver", None])
+def test_granted_cascade(board, granter):
+    """Sliver Hivelord ({W}{U}{B}{R}{G}) cascades into the Bears on top."""
+    from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+    from mtgfish.rules.kernel.enums import Zone
+
+    if granter:
+        board.play(granter)
+    game = board.game
+    game.move_object(board.hand("Grizzly Bears"), Zone.LIBRARY, to_player=P0, to_top=True)
+    hivelord = board.hand("Sliver Hivelord")
+    for color in (Color.WHITE, Color.BLUE, Color.BLACK, Color.RED, Color.GREEN):
+        give(board, 1, color)
+    (action,) = casts(board, hivelord)
+    cast_spell(game, P0, action)
+    for _ in range(3):
+        board.settle()
+        board.resolve_stack()
+    assert ("Grizzly Bears" in board.alive(0)) == bool(granter)
 
 
 @pytest.mark.parametrize("granter", ["Deeproot Historian", None])
@@ -170,3 +202,26 @@ def test_retrace_will_not_discard_a_nonland_card(board):
     board.hand("Grizzly Bears")
     give(board, 1, Color.BLACK)
     assert _graveyard_casts(board, "Raven's Crime") == []
+
+
+@pytest.mark.parametrize("damage", [True, False])
+def test_granted_prowl_after_a_dinosaur_dealt_combat_damage(board, damage):
+    """CR 702.76a: Hunting Velociraptor gives Dinosaur spells prowl {2}{R};
+    after it (a Dinosaur) deals combat damage to a player, Carnage Tyrant
+    ({4}{G}{G}) is castable for {2}{R}."""
+    from mtgfish.rules.cr100_game_concepts.actions import deal_damage
+
+    raptor = board.play("Hunting Velociraptor")
+    if damage:
+        deal_damage(board.game, PlayerId(1), 2, source=raptor.id,
+                    source_controller=P0, combat=True)
+    tyrant = board.hand("Carnage Tyrant")
+    give(board, 3, Color.RED)
+    prowled = [a for a in casts(board, tyrant) if a.alternative_cost >= 0]
+    assert bool(prowled) == damage
+    if damage:
+        from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
+
+        cast_spell(board.game, P0, prowled[0])
+        assert board.game.player(P0).mana_pool.total == 0
+        assert board.game.objects[board.game.stack[-1]].alternative_cost_paid.lower() == "prowl"

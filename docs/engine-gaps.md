@@ -19,7 +19,7 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 224 | 39 |
-| Missing, not understood | 311 | 494 |
+| Missing, not understood | 297 | 494 |
 | Suspected, counted as read | 254 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
@@ -144,12 +144,6 @@ HULK SMASH!, We Say Thee Nay!, Earth's Mightiest Heroes, Go Nuts!, Too Evil to S
 - **Evidence:** IR: flat ADD_COUNTERS 1
 
 Pentad Prism, Etched Oracle, Engineered Explosives, Suntouched Myr, Clearwater Goblet, Solarion, Suncrusher, Skyreach Manta, Infused Arrows, Lunar Avenger, Opaline Bracers, Spinal Parasite, Heliophial, Sawtooth Thresher, Baton of Courage
-
-#### refused: a keyword granted to spells is not applied while they are cast (14 cards, 0 counted as read)
-
-- **Likely cause:** convoke, improvise, delve, cascade and prowl granted to spells are ignored
-
-Inspiring Statuary, Dazzling Theater // Prop Room, Imoti, Celebrant of Bounty, Hunting Velociraptor, The First Sliver, Invasion of Segovia // Caetus, Sea Tyrant of Segovia, Eirdu, Carrier of Dawn // Isilu, Carrier of Twilight, Fallaji Wayfarer, Chief Engineer, Flamekin Herald, We Ride at Dawn, Ironheart, Clever Champion, Teval, Arbiter of Virtue, Mothlight Processionist
 
 #### Harmonize (12 cards, 0 counted as read)
 

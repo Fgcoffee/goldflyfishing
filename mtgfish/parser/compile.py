@@ -1657,47 +1657,7 @@ def _bound(text: str, ability: Ability, result: ParsedFace, *, rule: str) -> Abi
             ParseFailure(text, "a copy's 'choose new targets' is not carried onto the copy", rule=rule)
         )
         return Ability.unreadable(text)
-    if _grants_an_unapplied_keyword_to_spells(bound):
-        result.failures.append(
-            ParseFailure(
-                text,
-                "a keyword granted to spells is not applied while they are cast",
-                rule=rule,
-            )
-        )
-        return Ability.unreadable(text)
     return bound
-
-
-#: Keywords that, granted to "spells you cast", the engine does not yet apply
-#: while the spell is cast, checked on the board from the real cards (Chief
-#: Engineer, Inspiring Statuary, Teval, The First Sliver). Prowl is here
-#: because its alternative cost is read off the card before it is a spell.
-#: Conspire and casualty, granted, work (rules session d4f6a3e).
-_UNAPPLIED_SPELL_GRANTS = frozenset({"convoke", "improvise", "delve", "cascade", "prowl"})
-
-
-def _grants_an_unapplied_keyword_to_spells(ability: Ability) -> bool:
-    """Whether spells on the stack are granted a keyword the engine ignores
-    there ("Artifact spells you cast have convoke").
-
-    CR 601.2a-b puts the spell on the stack before its costs are chosen and
-    paid, so the grant applies to casting it. Read while the engine ignores
-    it, Chief Engineer counted as understood and never convoked (auditor's
-    F26). Refused until the engine applies these while casting.
-    """
-    for effect in ability.effects:
-        for node in effect.walk():
-            if node.kind is not EffectKind.GRANT_ABILITY or node.targets is None:
-                continue
-            if Zone.STACK not in (node.targets.zones or ()):
-                continue
-            if any(
-                granted.keyword.lower() in _UNAPPLIED_SPELL_GRANTS
-                for granted in node.granted_abilities
-            ):
-                return True
-    return False
 
 
 def _copy_retarget_not_carried(ability: Ability) -> bool:
