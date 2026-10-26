@@ -219,3 +219,14 @@ Scratch merge f0bc5e6 (parser 24774b2 + rules 06453f8) full suite: **2931 passed
 ## Round 11 (2026-10-18): rules 64bbd26, the single head
 
 64bbd26 contains parser 24774b2 (and 810e89c); the parser head has not moved. **F24 FIXED:** Pyromatics with 1 red: (); with 3 red: (), (0,), (0,0) (exactly affordable); Powder Ganger squad up to 7 payments within 18 mana; Capsize buyback still once. Every earlier board script rerun on 64bbd26: all as before (taxes, flashback, aftermath, jump-start, dash, blitz, buyback, dies triggers, LKI, Modular, Crew, Saddle, granted triggers, bloodthirst, spectacle, prowl, replicate retarget, offspring, squad, kicker, bargain, unearth, Twincast with both paths). **F25 still reproduces** (Ertai's Trickery). **New F26** (granted conspire).
+
+64bbd26 full suite: **2933 passed, 9 xfailed, 0 failed.**
+
+## Round 12 (2026-10-26): single head 18e91f0
+
+Parser 18e91f0 contains rules 64bbd26; neither branch moved Oct 18-26. Census vs 24774b2: **+9** (Afterlife Insurance, Antler Skulkin, Dusk Legion Sergeant, Eirdu, Indebted Spirit, Mikaeus, Rattleblaze Scarecrow, Undying Evil, Wingrattle Scarecrow; the F22 grant refusal lifted), **-1** (Ertai's Trickery, F25 refused), 0 rendered-IR changes. ACCEPTED.
+- **F25 RESOLVED** (Trickery unread; Bushwhacker still read and correct).
+- **F22 lift verified on real cards:** Mikaeus-granted undying returns once, then stays dead; Rattleblaze persist returns once with a black creature, never without one, and stays dead the 2nd time; Afterlife Insurance + a Bolted Bear leaves a Spirit.
+- Narset's Reversal, Lumaret's Favor and Mica stay refused (the parser board-checked that the engine's CHANGE_TARGETS path doesn't redirect there; strict xfail recorded). Logged for the rules session.
+- All regression scripts rerun on 18e91f0: unchanged and correct.
+- **F26 STILL OPEN:** Wort + 2 Goblin Pikers, Bolt offered only (); Burn Trail offered () and (0,).
