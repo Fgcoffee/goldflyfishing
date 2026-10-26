@@ -465,6 +465,51 @@ def _matches_being_cast(game, spell, effect, obj) -> bool:
     return matches(game, spell, spec, source=obj.id, controller=obj.controller)
 
 
+def as_it_would_be_cast(game: Game, card: GameObject, chars):
+    """``chars`` with the abilities the card will have as a spell.
+
+    CR 601.2a-b: the card is on the stack before its costs are announced, so
+    "each red or green instant or sorcery spell you cast has conspire" is
+    already giving it conspire when the conspire cost is chosen. Asked of a
+    card that is still in hand or elsewhere, which a grant aimed at spells on
+    the stack does not reach until it moves; read here with the zone dropped,
+    as cost modifications are.
+    """
+    from .abilities import AbilityKind
+    from .effects import EffectKind
+
+    if card.zone is Zone.STACK:
+        return chars
+    granted: list = []
+    for obj in game.permanents():
+        for ability in game.characteristics(obj).abilities:
+            if ability.kind is not AbilityKind.STATIC or ability.unparsed:
+                continue
+            for effect in ability.effects:
+                if (
+                    effect.kind is not EffectKind.GRANT_ABILITY
+                    or effect.targets is None
+                    or Zone.STACK not in effect.targets.zones
+                    or not _matches_being_cast(game, card, effect, obj)
+                ):
+                    continue
+                if not ability.static_condition.is_always:
+                    from ..kernel.conditions import holds
+
+                    if not holds(
+                        game, ability.static_condition, source=obj.id, controller=obj.controller
+                    ):
+                        continue
+                granted.extend(effect.granted_abilities)
+                granted.extend(
+                    Ability(AbilityKind.STATIC, keyword=word, text=word)
+                    for word in effect.keywords
+                )
+    if not granted:
+        return chars
+    return chars.with_abilities(chars.abilities + tuple(granted))
+
+
 def _cost_deltas(game: Game, spell: GameObject, player_id: PlayerId) -> list[int]:
     """Every cost modification that applies to this spell, as signed amounts.
 

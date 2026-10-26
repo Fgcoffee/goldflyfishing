@@ -121,6 +121,7 @@ def _face_characteristics(game: Game, obj: GameObject, face_index: int):
 
 def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Action]:
     from ..cr500_turn_structure.restrictions import Act, permitted, prohibited
+    from ..cr600_spells_and_abilities.cr601_casting import as_it_would_be_cast
     from ..cr700_additional_rules.cr707_faces import castable_face_indices
 
     out: list[Action] = []
@@ -169,6 +170,9 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             ):
                 continue
             chars = _face_characteristics(game, obj, face_index)
+            # CR 601.2a-b: what "spells you cast have ..." gives it counts
+            # when its costs are chosen.
+            chars = as_it_would_be_cast(game, obj, chars)
             if chars.is_land:
                 continue  # Lands are played, not cast.
 
@@ -236,7 +240,7 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
                             announced = announced + announced[:1]
 
         # CR 113.6: a granted alternative cost works in the card's zone too.
-        chars = game.characteristics(obj)
+        chars = as_it_would_be_cast(game, obj, game.characteristics(obj))
         if chars.is_land:
             continue
 
