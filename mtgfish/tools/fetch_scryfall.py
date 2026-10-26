@@ -81,6 +81,14 @@ def main(argv: list[str] | None = None) -> int:
 
         unknown = json.loads(db.meta("unknown_type_words", "{}") or "{}")
 
+    if args.output is None:
+        # New card data: the stored parse (mtgfish.parser.store) is rebuilt
+        # for it, in the background. Until it is, cards whose text changed
+        # are parsed live.
+        from .parse_store import main as parse_store
+
+        parse_store(["ensure", "--background"])
+
     if unknown:
         # A Commander-legal card whose type line we cannot fully read means the
         # engine is missing a card type. Loud and non-zero, never a warning

@@ -1,0 +1,11 @@
+#!/bin/sh
+# Rebuild the stored parse (mtgfish.parser.store) in the background when the
+# parser or rules code, or the card data, no longer matches it. Never fails
+# the git command it runs after: a stale store is simply not used.
+cd "$(git rev-parse --show-toplevel)" || exit 0
+if [ -x .venv/bin/python ]; then PY=.venv/bin/python
+elif [ -x .venv/Scripts/python.exe ]; then PY=.venv/Scripts/python.exe
+elif command -v python3 >/dev/null 2>&1; then PY=python3
+else PY=python; fi
+"$PY" -m mtgfish.tools.parse_store ensure --background >/dev/null 2>&1 || true
+exit 0

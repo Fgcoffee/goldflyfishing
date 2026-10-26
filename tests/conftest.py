@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
 
 from mtgfish.data.db import CardDatabase
@@ -12,6 +14,10 @@ from mtgfish.rules.cr200_parts_of_a_card.cr205_typeline import (
     install_registry,
 )
 from mtgfish.rules.kernel.enums import CardType
+
+# Every card is parsed live under test: a test that patches the parser must see
+# its patch, not a stored parse. The store's own tests pass one explicitly.
+os.environ["MTGFISH_PARSE_STORE"] = "off"
 
 
 @pytest.fixture(scope="session")
