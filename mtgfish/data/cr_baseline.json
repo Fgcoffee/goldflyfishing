@@ -594,6 +594,7 @@
     "701.14b": "If one or both creatures instructed to fight are no longer on the battlefield or are no longer creatures, neither of them fights or deals damage. If one or both creatures are illegal targets for a resolving spell or ability that instructs them to fight, neither of them fights or deals damage.",
     "701.14c": "If a creature fights itself, it deals damage to itself equal to twice its power.",
     "701.15": "Goad",
+    "701.15a": "Certain spells and abilities can goad a creature. Until the next turn of the controller of that spell or ability, that creature is goaded.",
     "701.16": "Investigate",
     "701.17": "Mill",
     "701.18": "Play",

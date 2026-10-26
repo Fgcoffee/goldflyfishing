@@ -98,8 +98,9 @@ class GameObject:
     attachments: list[ObjectId] = field(default_factory=list)
     #: Damage prevention shields and regeneration shields pending this turn.
     regeneration_shields: int = 0
-    #: CR 701.38: players this creature has been goaded by. A goaded creature
+    #: CR 701.15: players this creature has been goaded by. A goaded creature
     #: must attack, and must attack someone other than a player who goaded it.
+    #: Each goad ends as the goading player's next turn begins (701.15a).
     goaded_by: set = field(default_factory=set)
     #: CR 310.9: the player designated as this battle's protector. A
     #: designation rather than a characteristic - it is not copiable, and a

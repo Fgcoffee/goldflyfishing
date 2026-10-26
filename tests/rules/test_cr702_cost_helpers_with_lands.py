@@ -128,3 +128,27 @@ def test_convoke_with_creatures_and_a_land_for_a_coloured_pip(box):
     box.put("Siege Wurm", "hand", 0)
     assert cast(box, "Siege Wurm")
     assert [o.zone for o in live(box, "Siege Wurm")] == [Zone.STACK]
+
+
+def offered(box, name):
+    game = box.game
+    return any(
+        a.kind.name.startswith("CAST") and game.objects[a.source].card.name == name
+        for a in legal_actions(game, P0)
+    )
+
+
+def test_helpers_are_not_offered_for_pips_they_cannot_pay(box):
+    """F48: green creatures cannot convoke {R}{R}; delve and improvise pay
+    generic only (CR 702.51a, 702.66a, 702.126a)."""
+    need(box, "Stoke the Flames", "Grizzly Bears", "Treasure Cruise", "Reverse Engineer",
+         "Ornithopter")
+    box.put("Grizzly Bears", "battlefield", 0, count=4)
+    box.put("Stoke the Flames", "hand", 0)
+    box.put("Grizzly Bears", "graveyard", 0, count=8)
+    box.put("Treasure Cruise", "hand", 0)
+    box.put("Ornithopter", "battlefield", 0, count=5)
+    box.put("Reverse Engineer", "hand", 0)
+    assert not offered(box, "Stoke the Flames")
+    assert not offered(box, "Treasure Cruise")
+    assert not offered(box, "Reverse Engineer")

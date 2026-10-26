@@ -509,8 +509,9 @@ def _affordable(
     from ..cr600_spells_and_abilities.cr601_casting import helper_capacity
 
     helpers = helper_capacity(game, obj, player_id)
-    if helpers and player.mana_pool.usable_for(obj) + helpers >= cost.mana_value:
-        return True
+    # No count-only shortcut: the helpers' mana is not any colour (CR
+    # 702.51a, 702.126a, 702.66a), so whether they cover a cost is the
+    # colour-aware question below.
     if helpers:
         # Helpers and mana together: what the helpers can stand in for -
         # coloured pips included, for convoke - is off what the mana sources

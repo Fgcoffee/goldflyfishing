@@ -526,6 +526,13 @@ def _untap_step(game: Game) -> None:
     for player in game.players:
         player.speed_increased_this_turn = False
 
+    # CR 701.15a: goad lasts until the goading player's next turn - which is
+    # this one, if it is theirs.
+    for object_id in game.battlefield:
+        obj = game.objects.get(object_id)
+        if obj is not None and active in obj.goaded_by:
+            obj.goaded_by.discard(active)
+
     # CR 502.1: phasing happens first, before untapping. A permanent with
     # phasing alternates every one of its controller's untap steps, so both
     # directions are handled here and nowhere else.
