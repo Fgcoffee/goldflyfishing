@@ -524,8 +524,8 @@ def _watchers(game: Game) -> dict:
 def _trigger_abilities(game: Game, obj: GameObject) -> tuple:
     """The abilities that may trigger for this object.
 
-    Printed ones off the battlefield; on it, and face down, the ones the
-    layers leave it with. CR 708.2: a
+    Printed ones in hidden and resting zones; on the battlefield, on the
+    stack and face down, the ones the layers leave it with. CR 708.2: a
     face-down permanent has only what turned it face down lists, so the
     card's own triggered abilities do not exist (and CR 708.3's "enters"
     abilities never see it), while a disguised or cloaked one's ward does.
@@ -534,7 +534,9 @@ def _trigger_abilities(game: Game, obj: GameObject) -> tuple:
     # CR 613.1f: on the battlefield, abilities granted or removed by
     # continuous effects - an Aura's "enchanted creature has 'When this
     # creature dies, ...'" - count like printed ones.
-    if obj.face_down or obj.zone is Zone.BATTLEFIELD:
+    # CR 601.2a: a spell has what "spells you cast have cascade" gives it
+    # while it is on the stack - which is where its cast triggers trigger.
+    if obj.face_down or obj.zone is Zone.BATTLEFIELD or obj.zone is Zone.STACK:
         return game.characteristics(obj).abilities
     return game.printed_characteristics(obj).abilities
 
