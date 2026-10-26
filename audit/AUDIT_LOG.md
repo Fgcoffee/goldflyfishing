@@ -237,3 +237,5 @@ Parser 18e91f0 contains rules 64bbd26; neither branch moved Oct 18-26. Census vs
 - The First Sliver (Sliver spells have cascade): Sliver Hivelord cast, no cascade. Control Bloodbraid Elf: cascades.
 - Wort (conspire): see above.
 9 FULLY READ cards: convoke (Chief Engineer, Eirdu), cascade (Flamekin Herald, The First Sliver), improvise (Inspiring Statuary, Ironheart), conspire (Wort, Raiding Schemes), delve (Teval).
+
+18e91f0 full suite `pytest tests`: **2938 passed, 10 xfailed, 0 failed** (matches the parser's report). No test covers F26.
