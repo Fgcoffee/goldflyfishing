@@ -67,6 +67,11 @@ class Resolution:
     #: kind - life lost, life gained, damage dealt - so "you gain life equal
     #: to the life lost this way" can read it. Totals, not counts.
     this_way: dict = field(default_factory=dict)
+    #: CR 603.9, 608.2d: whether the last "you may" was carried out - taken,
+    #: and its cost, if it had one, paid. ``None`` before any. "If you do" and
+    #: "when you do" read it; ``remembered`` cannot say, since it may already
+    #: hold the object the ability triggered on.
+    did_it: bool | None = None
     #: The cards a "look at / reveal the top N" instruction set aside, in
     #: library order, for "from among them" and "the rest" to choose among
     #: (``ObjectFilter.from_pile``). A card leaves the pile when something is
@@ -731,7 +736,10 @@ def _do_optional(resolution: Resolution, effect: Effect) -> None:
         return
     agent = resolution.game.agent_for(resolution.controller)
     if agent is None or agent.choose_optional(resolution.game, resolution.controller, effect):
+        resolution.did_it = True
         execute(resolution, effect.children)
+    else:
+        resolution.did_it = False
 
 
 #: "May" scopes still decided by the ability's controller: "you may", and the
@@ -1618,6 +1626,8 @@ def _do_reflexive_trigger(resolution: Resolution, effect: Effect) -> None:
     resolution already knows - if nothing was remembered, nothing happened,
     and the reflexive ability never triggers.
     """
+    if resolution.did_it is False:
+        return
     if not resolution.remembered and effect.condition.is_always is False:
         return
     game = resolution.game
@@ -2430,7 +2440,10 @@ def _do_if_you_dont(resolution: Resolution, effect: Effect) -> None:
     the resolution records the same way the positive form reads it: an action
     that happened leaves something remembered.
     """
-    if resolution.remembered:
+    if resolution.did_it is not None:
+        if resolution.did_it:
+            return
+    elif resolution.remembered:
         return
     execute(resolution, effect.children)
 
@@ -2449,9 +2462,13 @@ def _do_pay_cost(resolution: Resolution, effect: Effect) -> None:
     cost = effect.pay_cost
     if cost is None:
         return
+    paid = False
     for player_id in _players(resolution, effect):
         if can_pay_cost(game, player_id, cost) and pay_cost(game, player_id, cost):
             resolution.remembered.append(resolution.source)
+            paid = True
+    # CR 608.2d: a cost that could not be paid is an option not taken.
+    resolution.did_it = paid
 
 
 def _do_start_engines(resolution: Resolution, effect: Effect) -> None:
