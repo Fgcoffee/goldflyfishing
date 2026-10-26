@@ -19,7 +19,7 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 224 | 39 |
-| Missing, not understood | 297 | 494 |
+| Missing, not understood | 302 | 494 |
 | Suspected, counted as read | 266 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
@@ -198,6 +198,12 @@ Vraska, Betrayal's Sting, Nissa, Ascended Animist, Jace, the Perfected Mind, Aja
 - **Evidence:** IR: two COPY_SPELL for you
 
 Incarnation Technique, Replication Technique, Creative Technique, Healing Technique, Transforming Flourish, Excavation Technique
+
+#### refused: a cost granted to spells on the stack is not offered as they are cast (5 cards, 0 counted as read)
+
+- **Likely cause:** the cast-cost menu is built before a grant to spells applies
+
+Hunting Velociraptor, Ezio Auditore da Firenze, Silverquill, the Disputant, Wort, the Raidmother, Raiding Schemes
 
 #### refused: player reference on REVEAL (2 cards, 0 counted as read)
 
