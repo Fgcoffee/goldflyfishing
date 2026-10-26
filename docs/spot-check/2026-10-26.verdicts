@@ -1,0 +1,500 @@
+1|UNREAD|
+2|UNREAD|
+3|PARTIAL|static "enters with an additional counter" for Wolves/Werewolves unread; -2 token right
+4|OK|
+5|PARTIAL|"Enchanted land is a Swamp" unread; tap trigger right
+6|UNREAD|third mode unread, so the whole modal spell is inert
+7|UNSURE|haste and the quoted end-step sacrifice are granted to the copy while it is a spell on the stack; whether they survive onto the token permanent needs a board check
+8|OK|
+9|OK|
+10|UNREAD|
+11|PARTIAL|second conjure ability unread (cost "three lands named this")
+12|OK|
+13|UNREAD|
+14|WRONG|"look at the top three cards of target player's library" reads as TARGET PLAYER looking and reordering; you look and choose the order
+15|OK|
+16|UNREAD|first mode's "if it would die, exile it instead" unread, so the modal spell is inert
+17|PARTIAL|end-step draw unread; partner read
+18|OK|
+19|OK|
+20|OK|
+21|OK|
+22|OK|
+23|OK|
+24|UNREAD|
+25|OK|
+26|PARTIAL|"costs {1} less if it targets a blocking creature" unread (the spell is never cheaper - weaker, honest); pump right
+27|UNREAD|
+28|OK|
+29|PARTIAL|cast trigger unread; mana ability right
+30|UNREAD|enters-with counters unread; plot inert
+31|OK|
+32|OK|
+33|UNREAD|only "Enchant creature you control" read
+34|UNREAD|
+35|WRONG|toxic 1 gives a poison counter to EACH opponent when this deals combat damage to one player (IR: ADD_POISON players=EACH_OPPONENT) - in multiplayer only the damaged player should; death trigger unread
+36|UNREAD|
+37|PARTIAL|hideaway and its play ability inert; enters tapped and mana right
+38|UNREAD|extra turn unread; buyback shown only as "Has Buyback" with a sacrifice-three-Islands cost
+39|OK|
+40|OK|"you don't control" read as "an opponent controls" - the same in free-for-all
+41|OK|
+42|PARTIAL|"must be blocked if able" unread; draw right
+43|WRONG|"It's an enchantment. (It's not a creature.)" reads as "is also" an enchantment - it would return as a creature, and its own "if it was a creature" dies trigger would return it again every time
+44|UNREAD|
+45|UNREAD|
+46|UNREAD|
+47|PARTIAL|"play the top card while it attacked" unread; look-at-top renders garbled but is information only; crew right
+48|UNREAD|
+49|UNREAD|
+50|OK|
+51|PARTIAL|graveyard return unread; flying right
+52|PARTIAL|both triggers unread
+53|UNREAD|
+54|OK|
+55|PARTIAL|cost reduction unread; the return has count 2, up to (IR checked - only the rendering hides counts)
+56|PARTIAL|delirium upgrade inert; the basic search right
+57|OK|IR: destroy count 1, up_to - the rendering hides "up to"
+58|OK|
+59|PARTIAL|saddled-attack blink unread; scry and saddle right
+60|OK|
+61|OK|
+62|OK|vanilla
+63|OK|
+64|OK|
+65|OK|IR: ADD_TYPE land with the Forest subtype
+66|OK|
+67|OK|IR: exile every graveyard
+68|OK|
+69|OK|
+70|UNREAD|
+71|OK|
+72|PARTIAL|chapter III (Wicked Role) unread; I and II right
+73|UNREAD|
+74|OK|
+75|OK|
+76|OK|
+77|OK|
+78|UNREAD|
+79|OK|
+80|UNREAD|
+81|WRONG|board: after 3 draws + its own, Grizzly Bears got +1/+0, not +4/+0 - the per-card-drawn scaling sits on a wrapper the engine does not read
+82|OK|
+83|WRONG|IR: counts cards in ALL hands (no owner on the filter), not that player's hand
+84|WRONG|IR: outlast cost is {1}{W} with no {T} - it can be activated any number of times
+85|OK|
+86|OK|
+87|PARTIAL|cast-from-top unread; look-at-top information only
+88|PARTIAL|-1 delayed trigger unread; +1 renders "target creature" for "up to one" - see 57
+89|OK|
+90|PARTIAL|Vampire type and granted trigger unread; flying right
+91|OK|
+92|UNREAD|splice inert (F34)
+93|OK|
+94|UNREAD|
+95|PARTIAL|"becomes prepared" trigger unread; Boltwave right
+96|UNREAD|
+97|OK|
+98|WRONG|+2 "You may sacrifice an artifact or discard a card. If you do, draw a card" reads as a choose-one of three modes (sacrifice / discard / "when you do, draw") - the draw is a separate mode, not the reward; static, 0 and -7 unread
+99|UNREAD|evolve inert
+100|OK|vanilla
+101|OK|
+102|PARTIAL|granted scavenge unread; regenerate right
+103|PARTIAL|tap-and-doesn't-untap unread; flash, prowess right
+104|OK|
+105|PARTIAL|graveyard shuffle trigger unread; P/T right
+106|OK|IR carries up_to; -X/-X and the X>=5 return right
+107|OK|
+108|OK|
+109|UNREAD|
+110|OK|
+111|UNREAD|digital
+112|UNREAD|
+113|OK|
+114|PARTIAL|+2 refused (sacrificed creature's mana value); +1 and -1 right
+115|OK|
+116|PARTIAL|graveyard return unread
+117|OK|
+118|WRONG|toxic as 35; first strike on your turn right
+119|UNREAD|
+120|OK|
+121|WRONG|+1 "Discard up to three cards, then draw that many cards" reads as "discards 1 card" - up to three became exactly one; -8 unread
+122|UNREAD|
+123|UNREAD|
+124|OK|
+125|WRONG|"Equip Hero {3}" reads as "Pay no cost: attach to target creature you control" - a free equip onto any creature; should cost {3} and reach only Heroes
+126|UNREAD|only "Enchant creature" read
+127|WRONG|board: declining the cumulative upkeep payment does not sacrifice it, and accepting with no mana keeps it too - a drawback that never happens
+128|PARTIAL|tribute-not-paid trigger unread
+129|UNREAD|
+130|OK|
+131|OK|
+132|OK|
+133|OK|
+134|PARTIAL|energy-paid ability unread
+135|OK|
+136|UNREAD|
+137|PARTIAL|combat-damage draw unread; crew right
+138|OK|
+139|PARTIAL|plot inert; rest right
+140|UNREAD|
+141|PARTIAL|bounce trigger unread
+142|UNREAD|
+143|PARTIAL|copy-token trigger unread; ninjutsu right
+144|PARTIAL|tribute-not-paid trigger unread
+145|UNREAD|
+146|PARTIAL|graveyard return unread
+147|UNREAD|
+148|PARTIAL|trample/hexproof by oil counters unread; enters-with and upkeep right
+149|PARTIAL|chapter III unread; I and II right
+150|UNREAD|
+151|OK|
+152|OK|
+153|OK|
+154|PARTIAL|chapters I and II unread; III and IV right
+155|WRONG|"another target attacking creature can't be blocked" reads as ALL other attacking creatures can't be blocked
+156|PARTIAL|leaves-the-battlefield mill unread; unearth right
+157|WRONG|IR: "up to four target creatures" has count 4, up_to, but is_targeted is not set - hexproof and ward are ignored
+158|OK|
+159|PARTIAL|"cast only during combat on your turn" unread, so it is castable at any time (stronger than the card); modes and entwine right
+160|UNREAD|
+161|OK|
+162|OK|
+163|OK|
+164|OK|
+165|PARTIAL|flanking right (IR: the trigger source, the blocker); removal-from-combat trigger unread
+166|PARTIAL|Rowan +1, -4 and Will -7 unread; cost reductions, Will +1/-3 right (Will +1 "up to one" - see 57)
+167|OK|
+168|UNREAD|
+169|UNREAD|protection from Arcane refused (F27)
+170|PARTIAL|enters-with counters unread
+171|UNSURE|"enter as a copy of any Equipment" renders as "copy all Equipment" - check it is one chosen Equipment
+172|OK|
+173|PARTIAL|"As an additional cost, discard X cards" read as an effect on resolution (auditor F37 family); search unread
+174|OK|
+175|OK|
+176|PARTIAL|coin-flip trigger, loyalty entry, -2, -8 unread; cost reductions and +1 right
+177|UNREAD|
+178|OK|
+179|UNREAD|only flash and enchant read
+180|OK|vanilla
+181|UNREAD|
+182|PARTIAL|myriad inert; devoid and the Spawn trigger right
+183|OK|
+184|OK|
+185|WRONG|"Affinity for snow lands" reads as a reduction per ARTIFACT you control - it counts the wrong permanents
+186|OK|
+187|OK|
+188|PARTIAL|combat-damage draw unread
+189|OK|
+190|UNREAD|kicker read but the damage ability unread
+191|UNREAD|
+192|UNREAD|
+193|OK|
+194|OK|
+195|PARTIAL|annihilator inert; cast trigger and hexproof from each color right
+196|UNREAD|
+197|PARTIAL|0 ability unread; end-step damage and +1 mana right
+198|UNREAD|
+199|PARTIAL|amass unread; Treasure right
+200|PARTIAL|prepare abilities unread; Demonic Tutor face right
+201|PARTIAL|blocking restriction unread; megamorph and face-up trigger right
+202|OK|
+203|WRONG|cumulative upkeep as 127; tap ability unread
+204|PARTIAL|God-Pharaoh's Gift search unread; dies trigger right
+205|OK|
+206|OK|
+207|OK|
+208|OK|
+209|UNREAD|
+210|OK|
+211|UNREAD|
+212|UNREAD|
+213|PARTIAL|3-life targeting tax unread (weaker); enters-damage trigger right
+214|PARTIAL|deck-construction line unread (no effect in play); both mill abilities right
+215|WRONG|"Exile each opponent's graveyard" reads as "exile all object in graveyard" - your own graveyard too
+216|OK|
+217|UNREAD|
+218|UNREAD|
+219|OK|
+220|PARTIAL|can't attack/block/activate unread; conjure right
+221|OK|
+222|UNREAD|
+223|OK|
+224|PARTIAL|choice-of-keyword ability unread
+225|OK|
+226|PARTIAL|bear-count trigger unread
+227|UNREAD|
+228|PARTIAL|champion inert - so the Titan never exiles or sacrifices anything (stronger than the card); changeling right
+229|UNSURE|"two mana of any one color" renders as "2 mana of any color" - check both must be the same color
+230|OK|
+231|UNREAD|
+232|UNREAD|retrace read but the spell's effect unread
+233|OK|
+234|OK|
+235|OK|
+236|OK|
+237|PARTIAL|energy-paid attack pump unread
+238|UNREAD|
+239|OK|
+240|OK|
+241|OK|
+242|UNREAD|
+243|PARTIAL|mana-copy trigger unread; Meteorite token renders as an unnamed "Token with 2 written abilities" - tapped/artifact not visible in the rendering
+244|UNREAD|
+245|OK|
+246|PARTIAL|Treasure-reanimation trigger unread
+247|UNREAD|
+248|UNREAD|
+249|OK|
+250|UNREAD|
+251|WRONG|"becomes a Frog" reads as "is also" a Frog - CR 205.1b: it replaces the creature's other creature types (minor)
+252|OK|
+253|OK|
+254|OK|
+255|OK|
+256|PARTIAL|both per-target cost changes unread
+257|PARTIAL|upkeep exile-and-play unread; conspire grant right
+258|OK|
+259|PARTIAL|Cosima's exile and the Omenkeel trigger unread; crew right
+260|UNREAD|
+261|OK|
+262|WRONG|"Equip planeswalker {1}" reads as "Pay no cost: attach to target creature you control" - a free equip onto any creature (same fault as 125); P/T and type statics unread
+263|OK|
+264|OK|
+265|OK|
+266|PARTIAL|counter-and-cast trigger unread
+267|PARTIAL|restricted mana ability unread; ETB modes right
+268|OK|
+269|PARTIAL|Benevolent Geist's "exile instead" inert - it goes to the graveyard and can be disturbed again (stronger than the card); rest right
+270|UNREAD|
+271|PARTIAL|
+272|WRONG|IR: detain's three restrictions carry no duration - they last forever, not until your next turn
+273|OK|
+274|PARTIAL|enters/monstrous exile trigger unread; monstrosity right
+275|UNREAD|
+276|UNSURE|"that player exiles the top card of their library" renders as "exile 1 object from the top 1 of library" - check whose library; play-from-exile static unread
+277|OK|
+278|OK|
+279|OK|
+280|OK|
+281|PARTIAL|chapter IV unread; tokens render as "1/1 Token" without the Insect name and colors - see 243
+282|PARTIAL|lieutenant unread
+283|OK|
+284|PARTIAL|Elf-to-Dinosaur ability unread
+285|OK|
+286|PARTIAL|equipped-indestructible static unread
+287|OK|
+288|UNREAD|stickers
+289|OK|
+290|OK|
+291|OK|
+292|WRONG|echo never sacrifices (board: declined, still alive), and its "came under your control since your last upkeep" condition is just "you control it"
+293|UNREAD|
+294|OK|
+295|PARTIAL|energy trigger unread
+296|WRONG|"Add {B} or {G}. This land deals 1 damage to you." reads as choose one of {B} / ({G} then 1 damage) - tapping for {B} is painless
+297|OK|
+298|OK|
+299|OK|
+300|PARTIAL|exile-until trigger unread; granted ward right
+301|PARTIAL|coin-flip upkeep unread
+302|PARTIAL|storm inert
+303|UNREAD|
+304|PARTIAL|damage-to-counters replacement unread
+305|OK|
+306|WRONG|"Affinity for enchantments" reads as a reduction per ARTIFACT you control (same fault as 185)
+307|OK|
+308|PARTIAL|chapters II and III unread; I renders "2 Powerstone token(s)" without "tapped" - check
+309|PARTIAL|chapter III (domain) unread
+310|PARTIAL|Cave-mana bat trigger unread
+311|PARTIAL|cost reduction unread (weaker)
+312|OK|
+313|WRONG|mode 1 "cards in target opponent's hand" reads as all objects any opponent controls in hand, untargeted - counts every opponent's hand in multiplayer
+314|UNREAD|
+315|PARTIAL|cycle trigger unread; cycling right
+316|OK|
+317|UNREAD|
+318|UNREAD|
+319|OK|
+320|OK|
+321|OK|
+322|OK|
+323|UNREAD|
+324|OK|flanking right (see 165)
+325|PARTIAL|block-Dragons-as-though-reach unread; protection from Dragons right
+326|OK|
+327|OK|
+328|UNREAD|
+329|PARTIAL|any-player lose-trample ability unread (the creature keeps trample - stronger for its controller)
+330|WRONG|"Sacrifice another creature or a Treasure" reads as sacrifice "another Treasure creature" - an AND where the card says OR, so the cost almost never can be paid
+331|OK|IR carries up_to
+332|PARTIAL|clone-a-land entry unread; mana right
+333|PARTIAL|"As an additional cost, sacrifice a legendary creature or pay {2}" read as a choose-one effect, not a cost (F37 family); counter unread
+334|OK|
+335|WRONG|"Target creature can't block this turn" reads as ALL creatures can't block
+336|PARTIAL|both point-counter triggers unread; mana ability right
+337|UNREAD|spree inert
+338|OK|
+339|UNREAD|
+340|PARTIAL|energy trigger and exhaust unread; trample right
+341|UNREAD|
+342|PARTIAL|copy trigger unread
+343|OK|
+344|OK|
+345|UNREAD|the artifact-creature "instead" unread, so the spell is inert
+346|PARTIAL|attach-and-fight trigger refused; granted reach and ward, equip right
+347|PARTIAL|unblocked ping trigger unread
+348|PARTIAL|chosen-type protection unread
+349|UNREAD|
+350|OK|IR: destroy count 2
+351|OK|
+352|PARTIAL|
+353|OK|
+354|PARTIAL|kicked counters unread
+355|UNREAD|seek mode (digital) unread, so the modal spell is inert
+356|OK|
+357|OK|
+358|OK|
+359|OK|
+360|PARTIAL|Boar-per-opponent trigger unread
+361|PARTIAL|attach-as-turned-up unread
+362|PARTIAL|sunburst inert, so it never gets counters
+363|UNREAD|
+364|PARTIAL|prepare trigger unread; Secret Rendezvous right
+365|WRONG|echo as 292; both damage triggers right
+366|OK|
+367|PARTIAL|"sacrifice it unless you return another creature" unread - no drawback (stronger than the card)
+368|UNREAD|
+369|OK|
+370|WRONG|bolster 1 reads as a counter on EVERY creature you control; it is one creature with the least toughness
+371|OK|
+372|OK|
+373|OK|
+374|PARTIAL|return-and-clash unread; self-exile right
+375|OK|
+376|OK|vanilla
+377|OK|
+378|PARTIAL|clone entry unread
+379|PARTIAL|bargained Role trigger unread
+380|PARTIAL|evasion unread; Aura count right
+381|WRONG|"a creature card and/or a land card" reads as one card that is a creature or a land - you may take one of each (minor, weaker)
+382|OK|
+383|OK|
+384|OK|
+385|OK|
+386|OK|
+387|PARTIAL|coin-flip Treasure ability unread
+388|UNREAD|
+389|UNREAD|
+390|OK|
+391|OK|
+392|OK|
+393|UNREAD|
+394|OK|
+395|UNREAD|flashback read but the spell unread
+396|PARTIAL|collect-evidence ability unread
+397|PARTIAL|prevention ability unread
+398|UNREAD|
+399|WRONG|basic landcycling reads as "search for ALL basic land in library" - it finds one; "Exile up to two target" renders as one target (see 55)
+400|OK|
+401|PARTIAL|maximum hand size unread
+402|PARTIAL|end-step Bird trigger unread
+403|UNREAD|
+404|UNREAD|
+405|UNREAD|overload read but the spell unread
+406|PARTIAL|block trigger unread
+407|WRONG|"Target opponent exiles two cards from their hand and loses 2 life" reads as "exile 2 object in hand, then YOU lose 2 life" - wrong player loses life, untargeted hand
+408|OK|
+409|UNREAD|
+410|PARTIAL|ninjutsu cost reduction unread
+411|OK|
+412|OK|IR carries up_to
+413|OK|
+414|OK|combat damage emits only COMBAT_DAMAGE_DEALT, so it triggers once
+415|UNREAD|
+416|PARTIAL|void replacement and its sacrifice ability unread
+417|WRONG|"target creature an opponent controls can't block this turn. Goad it." reads as ALL creatures opponents control can't block (same fault as 335)
+418|WRONG|cumulative upkeep as 127; granted pump right
+419|OK|
+420|OK|
+421|OK|
+422|OK|
+423|OK|IR carries up_to
+424|OK|
+425|WRONG|IR: incubate creates an Incubator with no +1/+1 counters and no "{2}: Transform" ability
+426|UNREAD|
+427|OK|
+428|OK|
+429|PARTIAL|discard ETB and craft unread; back face right
+430|OK|
+431|PARTIAL|-6 unread; +1 and -1 right
+432|PARTIAL|"enters tapped with two charge counters" unread - it enters untapped with none
+433|PARTIAL|-8 unread
+434|OK|
+435|PARTIAL|aftermath inert (F34 list); Road and Ruin's damage right
+436|OK|
+437|UNREAD|digital; also split mid-quotation by the line splitter
+438|PARTIAL|Human lifelink unread
+439|OK|
+440|OK|
+441|UNREAD|
+442|UNREAD|
+443|OK|
+444|OK|
+445|OK|
+446|UNREAD|
+447|OK|
+448|UNREAD|
+449|OK|
+450|UNREAD|
+451|OK|
+452|UNREAD|
+453|OK|
+454|OK|vanilla
+455|PARTIAL|pump-and-granted-trigger unread; equip right
+456|PARTIAL|-8 and commander line unread
+457|UNREAD|
+458|OK|
+459|OK|
+460|UNSURE|"that player exiles the top two cards of their library" - whose library, see 276; "play" renders as cast-without-paying (lands?)
+461|OK|as 414
+462|UNREAD|
+463|UNREAD|
+464|UNREAD|
+465|OK|
+466|UNREAD|
+467|WRONG|"They can't be regenerated" reads as a separate effect after the destroy (auditor's F32) - a regeneration shield still saves the creature
+468|PARTIAL|delirium upkeep trigger unread
+469|OK|
+470|OK|
+471|OK|
+472|WRONG|IR: "Saga or enchantment creature" is types_all creature + subtype Saga - it asks for a Saga that is a creature
+473|OK|
+474|OK|
+475|PARTIAL|same-name punish trigger unread
+476|PARTIAL|discard-a-land replacement unread - Mox Diamond enters for free (stronger than the card)
+477|PARTIAL|-X unread
+478|PARTIAL|end-step trigger unread; investigate trigger listens for both damage events (see 414)
+479|PARTIAL|chapters I and III unread
+480|OK|
+481|OK|
+482|PARTIAL|alone-unblockable unread; granted connive puts the counter on unconditionally (should be only after discarding a nonland)
+483|OK|
+484|PARTIAL|perpetual trigger unread
+485|OK|IR: reflexive draw if you discarded
+486|OK|
+487|OK|
+488|UNREAD|
+489|UNREAD|
+490|OK|vanilla
+491|OK|
+492|OK|
+493|OK|
+494|OK|
+495|UNREAD|
+496|PARTIAL|cascade-like trigger unread; anthem right
+497|OK|
+498|UNREAD|
+499|UNREAD|
+500|PARTIAL|addendum unread (weaker)

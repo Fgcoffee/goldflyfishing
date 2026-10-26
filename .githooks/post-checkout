@@ -1,2 +1,5 @@
 #!/bin/sh
-exec "$(git rev-parse --show-toplevel)/.githooks/rebuild-parse-store"
+# A checkout of an older commit has no rebuild script: nothing to do.
+f="$(git rev-parse --show-toplevel)/.githooks/rebuild-parse-store"
+[ -x "$f" ] && exec "$f"
+exit 0
