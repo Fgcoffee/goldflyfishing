@@ -254,7 +254,8 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
         # CR 601.2g: what was actually spent. Zero means the spell was free,
         # which several cards key off - and which is not the same as a cost
         # that happened to be reduced to nothing on a card with no mana cost.
-        spell.mana_spent = 0 if spell.cast_without_paying else total.base.mana_value
+        if spell.cast_without_paying:
+            spell.mana_spent = 0
         _record_alternative_cost(game, spell, action)
 
     except CastError:
@@ -1265,6 +1266,7 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
     """
     player = game.player(player_id)
     mana_cost = total.final_mana()
+    helped_with = 0
 
     # CR 118.3 / 601.2h: a cost is paid in full or not at all. Every non-mana
     # component is checked *before* any mana leaves the pool, or a spell with an
@@ -1292,7 +1294,9 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
 
             for helped in range(1, helper_capacity(game, context, player_id) + 1):
                 if can_produce(game, player_id, mana_cost.reduced_by(helped), context):
-                    _pay_with_helpers(game, player_id, mana_cost, context, most=helped)
+                    helped_with = _pay_with_helpers(
+                        game, player_id, mana_cost, context, most=helped
+                    )
                     _tap_for_mana(game, player_id, mana_cost, context)
                     break
             else:
@@ -1300,7 +1304,7 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
                 # colour too, which a generic reduction cannot say. With no
                 # mix of helpers and sources found, the helpers pay all they
                 # can - colours included - and the sources the rest.
-                _pay_with_helpers(game, player_id, mana_cost, context)
+                helped_with = _pay_with_helpers(game, player_id, mana_cost, context)
                 _tap_for_mana(game, player_id, mana_cost, context)
             payment = find_payment(
                 player.mana_pool, mana_cost, life_available=player.life, context=context
@@ -1308,6 +1312,12 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
         if payment is None:
             raise CastError(f"cannot pay {mana_cost}")
 
+        # CR 601.2h, 702.51a, 702.66a: the mana actually spent - not what a
+        # creature tapped or a card exiled paid "rather than pay that mana".
+        if context is not None and context.zone is Zone.STACK:
+            context.mana_spent = max(
+                0, sum(amount for _, amount in payment.mana) - helped_with
+            )
         for kind, amount in payment.mana:
             player.mana_pool.remove(kind, amount)
             # CR 702.44a and "converge": which colours were spent casting it -
@@ -1336,7 +1346,7 @@ _COST_HELPERS = (
 
 def _pay_with_helpers(
     game: Game, player_id: PlayerId, cost, context, most: int | None = None
-) -> None:
+) -> int:
     """Tap or exile things that may stand in for mana.
 
     Adds the mana to the pool rather than reducing the cost, because that is
@@ -1349,21 +1359,22 @@ def _pay_with_helpers(
 
     chars = game.characteristics(context) if context is not None else None
     if chars is None:
-        return
+        return 0
 
     player = game.player(player_id)
     shortfall = max(0, cost.mana_value - player.mana_pool.total)
     if most is not None:
         shortfall = min(shortfall, most)
     if shortfall <= 0:
-        return
+        return 0
+    paid = 0
 
     for keyword, resource, coloured in _COST_HELPERS:
         if not chars.has_keyword(keyword.lower()):
             continue
         for source in _helper_sources(game, player_id, resource):
             if shortfall <= 0:
-                return
+                return paid
             if resource == "graveyard":
                 game.move_object(source, Zone.EXILE)
                 player.mana_pool.add(ManaKind(), 1)
@@ -1380,6 +1391,8 @@ def _pay_with_helpers(
                     ManaKind(colours[0]) if colours else ManaKind(), 1
                 )
             shortfall -= 1
+            paid += 1
+    return paid
 
 
 def helper_capacity(game: Game, spell: GameObject, player_id: PlayerId) -> int:
