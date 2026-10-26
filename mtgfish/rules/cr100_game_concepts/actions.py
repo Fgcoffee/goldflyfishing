@@ -29,13 +29,20 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
-def destroy(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> bool:
+def destroy(
+    game: Game,
+    obj: GameObject,
+    *,
+    source: ObjectId = NO_OBJECT,
+    regenerate: bool = True,
+) -> bool:
     """Destroy a permanent (CR 701.7).
 
     Returns whether it actually went to the graveyard. Two things stop it:
     indestructible (CR 702.12b), and a regeneration shield, which replaces the
     destruction with tapping, removing from combat, and clearing damage
-    (CR 701.15).
+    (CR 701.15). ``regenerate`` is False for a destruction that says the
+    permanent can't be regenerated.
     """
     # CR 110.1: a permanent is an object on the battlefield - and only the live
     # one. CR 400.7 leaves the pre-move object behind still reading the zone it
@@ -56,7 +63,13 @@ def destroy(game: Game, obj: GameObject, *, source: ObjectId = NO_OBJECT) -> boo
         game.log.record(game, f"{obj} can't be destroyed ({blocked})", kind="restriction")
         return False
 
-    if obj.regeneration_shields > 0:
+    # CR 701.19c: "can't be regenerated" does not remove the shield, it stops
+    # it being applied - so it is left in place, unused, for a later
+    # destruction that allows it.
+    if regenerate and prohibited(game, Act.BE_REGENERATED, obj=obj) is not None:
+        regenerate = False
+
+    if regenerate and obj.regeneration_shields > 0:
         obj.regeneration_shields -= 1
         obj.tapped = True
         obj.damage = 0
