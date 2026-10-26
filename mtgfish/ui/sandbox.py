@@ -693,10 +693,13 @@ class Sandbox:
         from ..rules.cr100_game_concepts.cr117_priority import settle
         from ..rules.cr600_spells_and_abilities.cr608_stack import resolve_top
 
+        # CR 117.5: before a player would receive priority, state-based
+        # actions are checked and waiting triggers are put on the stack - so
+        # what resolves is whatever is on top after that, not before it. A
+        # ward trigger goes above the spell that targeted its permanent.
+        settle(self.game)
         if not self.game.stack:
-            settle(self.game)
-            if not self.game.stack:
-                return self.state(message="nothing on the stack")
+            return self.state(message="nothing on the stack")
         resolve_top(self.game)
         settle(self.game)
         return self.state(message="resolved the top of the stack")

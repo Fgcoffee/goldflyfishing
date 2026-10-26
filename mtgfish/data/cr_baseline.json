@@ -597,6 +597,7 @@
     "701.16": "Investigate",
     "701.17": "Mill",
     "701.18": "Play",
+    "701.19c": "Neither activating an ability that creates a regeneration shield nor casting a spell that creates a regeneration shield is the same as regenerating a permanent. Effects that say that a permanent can’t be regenerated don’t preclude such abilities from being activated or such spells from being cast; rather, they cause regeneration shields to not be applied.",
     "701.2": "Activate",
     "701.20": "Reveal",
     "701.20b": "Revealing a card doesn’t cause it to leave the zone it’s in.",

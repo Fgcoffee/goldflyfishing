@@ -83,6 +83,9 @@ class Resolution:
     #: The players an earlier instruction of this resolution targeted, for
     #: "that player" after "target player ..." (``PlayerScope.CHOSEN_PLAYER``).
     chosen_players: list[PlayerId] = field(default_factory=list)
+    #: CR 701.19c: set while a destroy that says its permanents can't be
+    #: regenerated is carried out, so their shields are not applied.
+    unregenerable: bool = False
 
     def targets_for(self, effect: Effect) -> tuple[ObjectId, ...]:
         """The targets chosen for this effect at announcement."""
@@ -104,12 +107,44 @@ class Resolution:
 
 def execute(resolution: Resolution, effects: tuple[Effect, ...]) -> None:
     """Run a list of effects in order (CR 608.2a)."""
-    for effect in effects:
+    for index, effect in enumerate(effects):
         # CR 608.2c: instructions are followed one after another, so what one
         # does does not happen at the same time as what the next does - a
         # "whenever one or more" ability sees them as separate (CR 603.2c).
         resolution.game.event_batch += 1
+        # CR 701.19c: "Destroy all creatures. They can't be regenerated." The
+        # second sentence is read as a prohibition on what the destroy acted
+        # on, which exists only once the destroy has run - too late for the
+        # shields it was meant to stop. The destroy reads it ahead instead.
+        if effect.kind is EffectKind.DESTROY and _forbids_regenerating_them(
+            effects[index + 1 : index + 2]
+        ):
+            resolution.unregenerable = True
+            try:
+                execute_one(resolution, effect)
+            finally:
+                resolution.unregenerable = False
+            continue
         execute_one(resolution, effect)
+
+
+def _forbids_regenerating_them(following: tuple[Effect, ...]) -> bool:
+    """Whether the instruction after a destroy says that what it destroyed
+    can't be regenerated (CR 701.19c)."""
+    from ..cr500_turn_structure.restrictions import Act
+
+    if not following or following[0].kind is not EffectKind.RESTRICTION:
+        return False
+    effect = following[0]
+    for restriction in effect.restrictions:
+        subject = restriction.subject or effect.targets
+        if (
+            restriction.act is Act.BE_REGENERATED
+            and subject is not None
+            and subject.remembered
+        ):
+            return True
+    return False
 
 
 #: Opcodes whose subject a following sentence can refer to as "it". A draw or
@@ -852,7 +887,12 @@ def _do_mill(resolution: Resolution, effect: Effect) -> None:
 
 def _do_destroy(resolution: Resolution, effect: Effect) -> None:
     for obj in _objects(resolution, effect):
-        actions.destroy(resolution.game, obj, source=resolution.source)
+        actions.destroy(
+            resolution.game,
+            obj,
+            source=resolution.source,
+            regenerate=not resolution.unregenerable,
+        )
 
 
 def _do_exile(resolution: Resolution, effect: Effect) -> None:

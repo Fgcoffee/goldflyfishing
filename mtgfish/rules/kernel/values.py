@@ -37,6 +37,12 @@ def evaluate(
     resolution has them; everywhere else they are empty, and a value that
     needs them is zero rather than a guess.
     """
+    # CR 107.1: a number written as a plain int is that number. A filter
+    # built with a bare count ("exile all graveyards" carries count=0) has
+    # no Value around it, and reading ``.kind`` off it aborted the resolution.
+    if isinstance(value, int):
+        return value
+
     kind = value.kind
 
     if kind is ValueKind.CONSTANT:
