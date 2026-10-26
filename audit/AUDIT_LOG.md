@@ -311,3 +311,12 @@ Diverged again: parser e298898 merges rules 15f6b8f but not 0fb749b or 636daa5. 
   - Rassilon's "cast from exile" conspire is NOT given to a Bolt cast from hand (correct scope).
 - **Retrace (part of F34) FIXED:** Raven's Crime is offered only with a land in hand and {B}; it discards the Forest, the opponent discards, and the card returns to the graveyard.
 - Census e298898 vs 18e91f0: +0/-0, 22 abilities on 16 cards changed STRUCTURALLY (hash), all with identical rendered text: 19 printed retrace cards, Deeproot Historian and Six (granted retrace), Wort, Raiding Schemes and Rassilon (granted conspire). All explained by the retrace and granted-keyword builders. ACCEPTED. (Methodology: I now diff hashes as well as rendered text.)
+- Bench on merge 5dd7ecf: `combo.txt --games 50 --seed 0`: win 20.0%, **stalls 0.0%, 0 runaways** (f0a71f4 had 14.0% stalls and 7 runaways). F29 confirmed fixed in play. `stax.txt --games 20 --seed 0` **still aborts** (AttributeError 'int' object has no attribute 'kind', Rest in Peace): **F36 still open**.
+- e298898 full suite: **2967 passed, 9 xfailed, 0 failed.**
+
+Open BLOCKs after round 16:
+- parser: F27 (protection), F28 (overload), F31 (Counterspell targets abilities), F33 (lost "until end of turn"), F34 (emerge/miracle/splice/bestow/embalm/eternalize still read; inert costs still offered), F37 (Toxic Deluge cost).
+- rules: F30 (simultaneous-death look-back), F35 (Doubling Season loyalty).
+- shared: F32 (can't be regenerated), F36 (Rest in Peace crash; stax bench aborts).
+- WARN: F38 (sandbox resolve_top), the web Inert-cards list.
+- PROCESS: one head needed (parser e298898 lacks rules 0fb749b and 636daa5).
