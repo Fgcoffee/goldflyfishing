@@ -166,6 +166,17 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "encore": "CR 702.141a: an activated ability exiling it for token copies;"
     " was an alternative cost to cast it",
     "training": "CR 702.149a: only attacking beside a stronger creature; was any attack",
+    # The auditing session's F34, matching the rules session's strict xfails.
+    "miracle": "CR 702.94a: cast for its cost when revealed as the first card"
+    " drawn this turn; was an alternative cost from hand at any time",
+    "splice": "CR 702.47a: reveal it to add its text to another spell; was an"
+    " additional cost of the card itself",
+    "bestow": "CR 702.103a: cast as an Aura spell; was a plain alternative cost,"
+    " never an Aura",
+    "embalm": "CR 702.128a: exile it from the graveyard to create a token copy;"
+    " was the card itself cast from the graveyard",
+    "eternalize": "CR 702.129a: exile it from the graveyard to create a 4/4"
+    " token copy; was the card itself cast from the graveyard",
 }
 
 
@@ -2112,7 +2123,22 @@ def _upkeep_keyword(instance: KeywordInstance) -> tuple[Ability, ...]:
 # ---------------------------------------------------------------------------
 
 
-@register("Overload", "Foretell", "Emerge", "Bestow", "Miracle",
+@register("Emerge")
+def _emerge(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.119a: "You may cast this spell by paying [cost] and sacrificing
+    a creature rather than paying its mana cost", reduced by the sacrificed
+    creature's mana value (the engine's ``emerge_discount``). Built without
+    the sacrifice, it was a plain cheaper cost."""
+    sacrifice = CostComponent(
+        CostKind.SACRIFICE,
+        amount=Value.of(1),
+        filter=ObjectFilter(types_all=CardType.CREATURE, controller=ControllerRelation.YOU),
+        text="sacrifice a creature",
+    )
+    return _alternative(instance, None, cost=(instance.cost or Cost(())).with_component(sacrifice))
+
+
+@register("Overload", "Foretell", "Bestow", "Miracle",
           "Warp", "Impending", "Offering", "Cleave", "Gift", "Disturb",
           "Embalm", "Eternalize", "Mutate")
 def _more_alternatives(instance: KeywordInstance) -> tuple[Ability, ...]:
