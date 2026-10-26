@@ -25,7 +25,7 @@ from ..cr100_game_concepts.player import Player
 from ..cr200_parts_of_a_card.characteristics import Characteristics, from_face
 from ..cr600_spells_and_abilities.abilities import Ability
 from ..cr600_spells_and_abilities.effects import Effect
-from .enums import CardType, LossReason, Phase, Step, Zone
+from .enums import CardType, Layout, LossReason, Phase, Step, Zone
 from .events import Event, EventKind
 from .gameobject import GameObject, ObjectKind
 from .ids import NO_OBJECT, NO_PLAYER, IdAllocator, ObjectId, PlayerId
@@ -65,6 +65,11 @@ class UnparsedAbilityProvider:
 
 
 
+
+#: Nonmodal double-faced layouts whose back face can be up (CR 712.1, 310.11).
+#: A melded permanent's mana value is the sum of its fronts (CR 712.8g) and is
+#: not this.
+_TRANSFORMING_LAYOUTS = frozenset({Layout.TRANSFORM, Layout.BATTLE})
 
 #: Alternative costs whose payment exiles the spell, instead of letting it go
 #: anywhere else, when it leaves the stack - lower-cased keyword names, as
@@ -1105,6 +1110,11 @@ class Game:
                     else top.colors
                 ),
             )
+        elif face_index == 1 and getattr(card, "layout", None) in _TRANSFORMING_LAYOUTS:
+            # CR 712.8c, 712.8e: transformed or converted, it has only its back
+            # face's characteristics but its front face's mana value.
+            front = card.faces[0]  # type: ignore[attr-defined]
+            printed = printed.replace(mana_value_from_front=front.mana_cost.mana_value)
         return printed
 
     # ---------------------------------------------------------------------

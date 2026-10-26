@@ -192,7 +192,12 @@ def copiable_characteristics(game: Game, obj: GameObject):
         from .cr708_face_down import face_down_characteristics
 
         return face_down_characteristics(obj)
-    return game.printed_characteristics(obj)
+    printed = game.printed_characteristics(obj)
+    if printed.mana_value_from_front is not None:
+        # CR 712.8e: a copy of a back face has mana value 0, the back face's
+        # own mana cost being none.
+        printed = printed.replace(mana_value_from_front=None)
+    return printed
 
 
 def copy_permanent(
