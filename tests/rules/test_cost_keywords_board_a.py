@@ -536,9 +536,6 @@ def test_emerge_sacrifices_the_creature_the_discount_came_from(emerge):
     assert permanent(emerge, "Grizzly Bears") is not None
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Emerge is built as a bare alternative cost with no "
-    "'sacrifice a creature' component"))
 def test_the_emerge_builder_requires_a_sacrifice(card_db):
     board = setup(card_db, {"Craw Wurm": keyword("Emerge", "{4}{G}")})
     card = board.hand("Craw Wurm")
@@ -561,10 +558,6 @@ def test_miracle_is_not_a_hand_alternative_cost_at_any_time(card_db):
     assert not offered(board, card, alternative_cost=alternative_index(board, card, "Miracle"))
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Retrace is built as an alternative cost (free when the "
-    "keyword has no cost) instead of permission to cast from the graveyard "
-    "for the mana cost plus discarding a land card"))
 def test_retrace_needs_the_mana_cost_and_a_land_to_discard(card_db):
     board = setup(card_db, {"Lava Spike": (
         Ability.spell(GAIN_2), *build(KeywordInstance("Retrace")))})
@@ -572,9 +565,8 @@ def test_retrace_needs_the_mana_cost_and_a_land_to_discard(card_db):
     assert not offered(board, card), "no mana and no land card in hand"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: Splice is built as an additional cost on the splice card "
-    "itself; the engine has no way to reveal it while casting another spell"))
+# Splice is built inert (MISBUILT_KEYWORDS): the engine has no way to reveal
+# it while casting another spell.
 def test_splice_is_not_an_additional_cost_of_the_card_itself(card_db):
     board = setup(card_db, {"Glacial Ray": keyword("Splice", "{1}{R}")})
     card = board.hand("Glacial Ray")
@@ -594,22 +586,10 @@ def test_a_bestowed_spell_is_an_aura_spell(card_db):
     assert "Aura" in board.chars(spell).type_line.subtypes
 
 
-_TOKEN_KEYWORD_BUILDER_BUG = pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG: built as an alternative cost to cast the card from the "
-    "graveyard; the rule is an activated ability that exiles the card and "
-    "creates token copies"))
-
-
-# Encore is built inert (MISBUILT_KEYWORDS) until it can be built faithfully,
-# so it is already not castable from the graveyard.
-@pytest.mark.parametrize(
-    "name",
-    [
-        pytest.param("Embalm", marks=_TOKEN_KEYWORD_BUILDER_BUG),
-        pytest.param("Eternalize", marks=_TOKEN_KEYWORD_BUILDER_BUG),
-        "Encore",
-    ],
-)
+# Encore, embalm and eternalize are built inert (MISBUILT_KEYWORDS) until
+# they can be built faithfully - an activated ability exiling the card for
+# token copies - so none is castable from the graveyard.
+@pytest.mark.parametrize("name", ["Embalm", "Eternalize", "Encore"])
 def test_graveyard_token_keywords_are_activated_not_cast(card_db, name):
     board = setup(card_db, {"Hill Giant": keyword(name, "{1}")})
     card = board.graveyard("Hill Giant")

@@ -8,6 +8,49 @@ Ghastly Remains,29072,False,engine,Amplify,missing,no 'reveal any number of card
 Glowering Rogon,31230,False,engine,Amplify,missing,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
 Kilnmouth Dragon,17444,False,engine,Amplify,missing,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
 Zombie Brute,29823,False,engine,Amplify,missing,no 'reveal any number of cards from hand' step,always enters with N +1/+1 counters
+Baleful Eidolon,18681,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Boon Satyr,16775,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Cavern Lampad,24299,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Celestial Archon,12971,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Chromanticore,9753,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Crystalline Nautilus,27241,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Detective's Phoenix,8550,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Eidolon of Countless Battles,3413,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Erebos's Emissary,23707,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Everflame Eidolon,25114,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Flitterstep Eidolon,17303,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Ghostblade Eidolon,16170,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Glyph Elemental,10025,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Gnarled Scarhide,19171,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Heliod's Emissary,21264,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Herald of Torment,19473,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Hopeful Eidolon,15198,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Hypnotic Siren,11786,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Indebted Spirit,8495,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+"Kestia, the Cultivator",13684,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Leafcrown Dryad,21131,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Mogis's Warhound,22959,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nighthowler,4343,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nimbus Naiad,22936,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Noble Quarry,15418,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nylea's Emissary,21743,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nyxborn Eidolon,26265,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nyxborn Hydra,3397,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nyxborn Rollicker,20813,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nyxborn Shieldmate,21330,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nyxborn Triton,25921,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nyxborn Unicorn,12869,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Nyxborn Wolf,23022,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Observant Alseid,21426,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Purphoros's Emissary,22015,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Sightless Brawler,27562,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Spearpoint Oread,26714,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Spirespine,27392,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Spiteful Returned,22225,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Springheart Nantuko,697,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Thassa's Emissary,15276,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Trickster's Elk,5943,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
+Triton Wavebreaker,12993,False,engine,Bestow,missing,unclassified,a plain alternative cost; never an Aura
 "Ajani, Sleeper Agent",6819,False,engine,Compleated,missing,no record of Phyrexian mana paid with life,continuously removes X loyalty counters
 "Jace, the Perfected Mind",5694,False,engine,Compleated,missing,no record of Phyrexian mana paid with life,continuously removes X loyalty counters
 "Lukka, Bound to Ruin",13930,False,engine,Compleated,missing,no record of Phyrexian mana paid with life,continuously removes X loyalty counters
@@ -72,6 +115,33 @@ Thayan Evokers,,False,engine,Double team,missing,no conjure-on-attack (digital),
 Thoughtsteal Sprites,,False,engine,Double team,missing,no conjure-on-attack (digital),nothing (inert)
 Tiefling Outcasts,,False,engine,Double team,missing,no conjure-on-attack (digital),nothing (inert)
 Warriors of Tiamat,,False,engine,Double team,missing,no conjure-on-attack (digital),nothing (inert)
+Angel of Sanctions,8809,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Anointer Priest,11396,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Aven Initiate,27922,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Aven Wind Guide,9511,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Glyph Keeper,21290,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Heart-Piercer Manticore,19429,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Honored Hydra,17729,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Labyrinth Guardian,28483,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Oketra's Attendant,22372,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Sacred Cat,8264,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Tah-Crop Skirmisher,29673,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+"Temmet, Vizier of Naktamun",19500,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Trueheart Duelist,25492,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Unwavering Initiate,28384,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Vizier of Many Faces,4317,False,engine,Embalm,missing,unclassified,"the card itself cast from the graveyard, again and again"
+Adorned Pouncer,6825,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Champion of Wits,7148,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Dreamstealer,16596,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Earthshaker Khenra,22826,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Fanatic of Rhonas,407,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Proven Combatant,28655,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Resilient Khenra,28447,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Sinuous Striker,29819,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Steadfast Sentinel,28849,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Sunscourge Champion,25107,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Timeless Dragon,9029,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
+Timeless Witness,1298,False,engine,Eternalize,missing,unclassified,the card itself cast from the graveyard
 Channeled Dragonfire,16013,False,engine,Harmonize,missing,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
 Glacial Dragonhunt,13280,False,engine,Harmonize,missing,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
 Mammoth Bellow,23069,False,engine,Harmonize,missing,no harmonize cost (tap a creature to reduce it),pay the cost: put a +1/+1 counter on this
@@ -94,6 +164,23 @@ Graven Dominator,30291,False,engine,Haunt,missing,no haunting relation between a
 Orzhov Euthanist,26176,False,engine,Haunt,missing,no haunting relation between a card in exile and a creature,"when it dies, exile it; nothing haunted"
 Orzhov Pontiff,25101,False,engine,Haunt,missing,no haunting relation between a card in exile and a creature,"when it dies, exile it; nothing haunted"
 Seize the Soul,25964,False,engine,Haunt,missing,no haunting relation between a card in exile and a creature,"when it dies, exile it; nothing haunted"
+Banishing Stroke,17099,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Blessings of Nature,20066,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Bonfire of the Damned,11279,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Devastation Tide,3971,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Entreat the Angels,4990,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Entreat the Dead,14471,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Metamorphosis Fanatic,2853,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Redress Fate,3533,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Reforge the Soul,1692,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Revenge of the Hunted,16956,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Sister Repentia,16353,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Temporal Mastery,2621,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Terminus,4929,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Thunderous Wrath,19953,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Triumph of Saint Katherine,13501,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Vanishment,19142,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
+Zephyrim,11729,False,engine,Miracle,missing,unclassified,an alternative cost from hand at any time
 Banshee of the Dread Choir,12713,False,engine,Myriad,missing,no token copies attacking each other opponent,nothing (inert)
 Battle Angels of Tyr,1781,False,engine,Myriad,missing,no token copies attacking each other opponent,nothing (inert)
 Broodbirth Viper,13116,False,engine,Myriad,missing,no token copies attacking each other opponent,nothing (inert)
@@ -214,6 +301,36 @@ Sarevok the Usurper,,False,engine,Specialize,missing,no specialize faces (digita
 "Viconia, Nightsinger's Disciple",,False,engine,Specialize,missing,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Wilson, Bear Comrade",,False,engine,Specialize,missing,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
 "Wyll, Pact-Bound Duelist",,False,engine,Specialize,missing,no specialize faces (digital),pay the cost: put a +1/+1 counter on this
+Blessed Breath,16188,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Candles' Glow,26608,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Consuming Vortex,20576,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Dampen Thought,22385,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Desperate Ritual,955,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Everdream,20001,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Evermind,20214,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Fell Beast's Shriek,14602,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Glacial Ray,21134,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Goryo's Vengeance,11449,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Hideous Laughter,25270,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Horobi's Whisper,22093,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Hundred-Talon Strike,26407,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Into the Fray,24287,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Kodama's Might,20989,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Lifted by Clouds,25363,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Overblaze,16044,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Psychic Puppetry,18471,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Reweave,17120,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Roar of Jukai,25232,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Shifting Borders,18597,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Soulless Revival,19866,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Spiritual Visit,20936,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Splicer's Skill,19501,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Strange Inversion,26866,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Through the Breach,17740,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Torrent of Stone,28053,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Veil of Secrecy,15539,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Vital Surge,25021,False,engine,Splice,missing,unclassified,an additional cost of the card itself
+Wear Away,17831,False,engine,Splice,missing,unclassified,an additional cost of the card itself
 Baton of Courage,28480,False,engine,Sunburst,missing,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
 Clearwater Goblet,17522,False,engine,Sunburst,missing,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
 Engineered Explosives,12831,False,engine,Sunburst,missing,no record of the colors of mana spent to cast a spell,always exactly one +1/+1 counter
@@ -249,11 +366,6 @@ Widow's Bite,23310,False,engine,Teamwork,missing,no tap-creatures-by-total-power
 Exalted Dragon,31045,False,engine,refused: a combat cost other than mana,missing,attack costs can only be mana,This creature can't attack unless you sacrifice a land.
 Leviathan,25441,False,engine,refused: a combat cost other than mana,missing,attack costs can only be mana,This creature can't attack unless you sacrifice two Islands.
 Elephant Grass,10224,False,engine,refused: a combat cost scaled by something the engine cannot count,missing,the attack cost needs a count the engine has no value for,Nonblack creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you
-Ezio Auditore da Firenze,7461,False,engine,refused: a cost granted to spells on the stack is not offered as they are cast,missing,the cast-cost menu is built before a grant to spells applies,Assassin spells you cast have freerunning {B}{B}.
-Hunting Velociraptor,3853,False,engine,refused: a cost granted to spells on the stack is not offered as they are cast,missing,the cast-cost menu is built before a grant to spells applies,Dinosaur spells you cast have prowl {2}{R}.
-Raiding Schemes,13401,False,engine,refused: a cost granted to spells on the stack is not offered as they are cast,missing,the cast-cost menu is built before a grant to spells applies,Each noncreature spell you cast has conspire.
-"Silverquill, the Disputant",7730,False,engine,refused: a cost granted to spells on the stack is not offered as they are cast,missing,the cast-cost menu is built before a grant to spells applies,Each instant and sorcery spell you cast has casualty 1.
-"Wort, the Raidmother",12994,False,engine,refused: a cost granted to spells on the stack is not offered as they are cast,missing,the cast-cost menu is built before a grant to spells applies,Each red or green instant or sorcery spell you cast has conspire.
 A-Ellywick Tumblestrum,,False,engine,refused: pile reference without a pile,missing,the engine has no piles,-2: Look at the top six cards of your library. You may reveal a creature card from among them and put it into your hand.
 Ainok Wayfarer,11919,False,engine,refused: pile reference without a pile,missing,the engine has no piles,"When this creature enters, mill three cards. You may put a land card from among them into your hand. If you don't, put a"
 Airlift Chaplain,18030,False,engine,refused: pile reference without a pile,missing,the engine has no piles,"When this creature enters, mill three cards. You may put a Plains card or a creature card with mana value 3 or less from"
@@ -340,49 +452,6 @@ Tenacious Tomeseeker,20262,True,engine,Bargain,suspect,"the cost can be paid; th
 Thunderous Debut,13061,False,engine,Bargain,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Torch the Tower,16440,False,engine,Bargain,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Troublemaker Ouphe,20349,True,engine,Bargain,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Baleful Eidolon,18681,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Boon Satyr,16775,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Cavern Lampad,24299,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Celestial Archon,12971,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Chromanticore,9753,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Crystalline Nautilus,27241,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Detective's Phoenix,8550,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Eidolon of Countless Battles,3413,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Erebos's Emissary,23707,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Everflame Eidolon,25114,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Flitterstep Eidolon,17303,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Ghostblade Eidolon,16170,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Glyph Elemental,10025,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Gnarled Scarhide,19171,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Heliod's Emissary,21264,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Herald of Torment,19473,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Hopeful Eidolon,15198,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Hypnotic Siren,11786,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Indebted Spirit,8495,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-"Kestia, the Cultivator",13684,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Leafcrown Dryad,21131,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Mogis's Warhound,22959,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nighthowler,4343,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nimbus Naiad,22936,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Noble Quarry,15418,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nylea's Emissary,21743,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nyxborn Eidolon,26265,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nyxborn Hydra,3397,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nyxborn Rollicker,20813,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nyxborn Shieldmate,21330,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nyxborn Triton,25921,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nyxborn Unicorn,12869,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Nyxborn Wolf,23022,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Observant Alseid,21426,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Purphoros's Emissary,22015,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Sightless Brawler,27562,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Spearpoint Oread,26714,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Spirespine,27392,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Spiteful Returned,22225,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Springheart Nantuko,697,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Thassa's Emissary,15276,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Trickster's Elk,5943,True,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Triton Wavebreaker,12993,False,engine,Bestow,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Caldaia Guardian,18553,True,engine,Blitz,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Caldaia Strongarm,23540,True,engine,Blitz,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Effluence Devourer,,False,engine,Blitz,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -466,36 +535,6 @@ Memory Sluice,22253,True,engine,Conspire,suspect,"the cost can be paid; the cast
 Mine Excavation,20557,True,engine,Conspire,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Rally the Galadhrim,10582,True,engine,Conspire,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Traitor's Roar,27507,True,engine,Conspire,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Angel of Sanctions,8809,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Anointer Priest,11396,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Aven Initiate,27922,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Aven Wind Guide,9511,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Glyph Keeper,21290,False,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Heart-Piercer Manticore,19429,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Honored Hydra,17729,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Labyrinth Guardian,28483,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Oketra's Attendant,22372,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Sacred Cat,8264,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Tah-Crop Skirmisher,29673,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-"Temmet, Vizier of Naktamun",19500,False,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Trueheart Duelist,25492,False,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Unwavering Initiate,28384,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Vizier of Many Faces,4317,True,engine,Embalm,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Abundant Maw,21802,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Adipose Offspring,17591,False,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Crabomination,6649,False,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Cresting Mosasaurus,11039,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Decimator of the Provinces,9875,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Distended Mindbender,19156,False,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Drownyard Behemoth,19415,False,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Elder Deep-Fiend,7905,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-"Herigast, Erupting Nullkite",6359,False,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-It of the Horrid Swarm,19982,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Lashweed Lurker,23579,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Mockery of Nature,19825,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Twisted Riddlekeeper,20102,False,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Vexing Scuttler,17211,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Wretched Gryff,21211,True,engine,Emerge,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Abuna's Chant,22932,True,engine,Entwine,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Barbed Lightning,21361,True,engine,Entwine,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Betrayal of Flesh,22033,True,engine,Entwine,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -537,18 +576,6 @@ Collective Defiance,7650,False,engine,Escalate,suspect,"the cost can be paid; th
 Collective Effort,3197,True,engine,Escalate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Collective Resistance,775,True,engine,Escalate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Savage Alliance,18216,True,engine,Escalate,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Adorned Pouncer,6825,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Champion of Wits,7148,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Dreamstealer,16596,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Earthshaker Khenra,22826,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Fanatic of Rhonas,407,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Proven Combatant,28655,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Resilient Khenra,28447,False,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Sinuous Striker,29819,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Steadfast Sentinel,28849,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Sunscourge Champion,25107,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Timeless Dragon,9029,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Timeless Witness,1298,True,engine,Eternalize,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Achilles Davenport,7087,True,engine,Freerunning,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Brotherhood Ambushers,16009,True,engine,Freerunning,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Chain Assassination,7202,False,engine,Freerunning,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -596,23 +623,6 @@ Overlord of the Boilerbilges,4504,False,engine,Impending,suspect,"the cost can b
 Overlord of the Floodpits,2883,False,engine,Impending,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Overlord of the Hauntwoods,1721,False,engine,Impending,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Overlord of the Mistmoors,4234,False,engine,Impending,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Banishing Stroke,17099,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Blessings of Nature,20066,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Bonfire of the Damned,11279,False,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Devastation Tide,3971,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Entreat the Angels,4990,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Entreat the Dead,14471,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Metamorphosis Fanatic,2853,False,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Redress Fate,3533,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Reforge the Soul,1692,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Revenge of the Hunted,16956,False,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Sister Repentia,16353,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Temporal Mastery,2621,False,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Terminus,4929,False,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Thunderous Wrath,19953,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Triumph of Saint Katherine,13501,False,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Vanishment,19142,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Zephyrim,11729,True,engine,Miracle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 "Arcee, Sharpshooter // Arcee, Acrobatic Coupe",13548,False,engine,More Than Meets the Eye,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 "Blaster, Combat DJ // Blaster, Morale Booster",13947,False,engine,More Than Meets the Eye,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 "Blitzwing, Cruel Tormentor // Blitzwing, Adaptive Assailant",8375,False,engine,More Than Meets the Eye,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -678,23 +688,6 @@ Noggin Whack,26817,False,engine,Prowl,suspect,"the cost can be paid; the casting
 Notorious Throng,4255,False,engine,Prowl,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Stinkdrinker Bandit,13020,False,engine,Prowl,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Thieves' Fortune,20544,True,engine,Prowl,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Call the Skybreaker,19840,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Cenn's Enlistment,21900,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Decaying Time Loop,7066,False,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Embrace the Unknown,6639,False,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Flame Jab,12487,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Formless Genesis,5318,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Glamerdye,14790,False,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Monstrify,27384,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Oona's Grace,15804,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Raven's Crime,15773,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Reality Scramble,10021,False,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Savage Conception,30432,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Spitting Image,11543,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Syphon Life,25207,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Throes of Chaos,5443,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Waves of Aggression,9065,False,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Worm Harvest,11760,True,engine,Retrace,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Blade Juggler,23321,True,engine,Spectacle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Body Count,7979,False,engine,Spectacle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Dead Revels,18764,True,engine,Spectacle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -706,36 +699,6 @@ Rix Maadi Reveler,22135,False,engine,Spectacle,suspect,"the cost can be paid; th
 Skewer the Critics,9104,True,engine,Spectacle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Spawn of Mayhem,10726,True,engine,Spectacle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Spikewheel Acrobat,28481,True,engine,Spectacle,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Blessed Breath,16188,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Candles' Glow,26608,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Consuming Vortex,20576,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Dampen Thought,22385,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Desperate Ritual,955,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Everdream,20001,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Evermind,20214,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Fell Beast's Shriek,14602,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Glacial Ray,21134,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Goryo's Vengeance,11449,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Hideous Laughter,25270,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Horobi's Whisper,22093,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Hundred-Talon Strike,26407,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Into the Fray,24287,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Kodama's Might,20989,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Lifted by Clouds,25363,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Overblaze,16044,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Psychic Puppetry,18471,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Reweave,17120,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Roar of Jukai,25232,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Shifting Borders,18597,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Soulless Revival,19866,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Spiritual Visit,20936,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Splicer's Skill,19501,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Strange Inversion,26866,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Through the Breach,17740,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Torrent of Stone,28053,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Veil of Secrecy,15539,False,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Vital Surge,25021,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Wear Away,17831,True,engine,Splice,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Caught in the Crossfire,16035,False,engine,Spree,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Dance of the Tumbleweeds,6797,False,engine,Spree,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Explosive Derailment,12199,False,engine,Spree,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -771,7 +734,7 @@ Thrill-Kill Disciple,16374,True,engine,Squad,suspect,"the cost can be paid; the 
 Ultramarines Honour Guard,6576,True,engine,Squad,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Vanguard Suppressor,9079,True,engine,Squad,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Wasteland Raider,8210,True,engine,Squad,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
-Zephyrim,11729,True,engine,Squad,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
+Zephyrim,11729,False,engine,Squad,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 All-Fates Stalker,11262,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Anticausal Vestige,2006,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
 Astelli Reclaimer,8678,True,engine,Warp,suspect,"the cost can be paid; the casting code never applies what paying it means (Buyback's return to hand, Dash's return, ...)",the cost can be paid; nothing in the engine reads the keyword afterwards
@@ -1685,6 +1648,15 @@ Lumaret's Favor,22442,False,parser,refused: a copy's 'choose new targets' is not
 "Mica, Reader of Ruins",14196,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"Whenever you cast an instant or sorcery spell, you may sacrifice an artifact. If you do, copy that spell and you may cho"
 Narset's Reversal,726,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"Copy target instant or sorcery spell, then return it to its owner's hand. You may choose new targets for the copy."
 Tomb of Horrors Adventurer,6165,False,parser,refused: a copy's 'choose new targets' is not carried onto the copy,missing,unclassified refusal,"Whenever you cast your second spell each turn, copy it. If you've completed a dungeon, copy that spell twice instead. Yo"
+"Emrakul, the Aeons Torn",,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,protection from spells that are one or more colors
+"Emrakul, the World Anew",2472,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,protection from spells and from permanents that were cast this turn
+Geyadrone Dihada,9291,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,Protection from permanents with corruption counters on them
+Icewind Stalwart,11258,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,"Protection Fighting Style - When this creature enters, exile up to one target non-Warrior creature you control, then ret"
+Kitsune Riftwalker,29921,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,Protection from Spirits and from Arcane
+Mistmeadow Skulk,16624,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,protection from mana value 3 or greater
+Ronom Hulk,31621,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,Protection from snow
+Tsabo Tavoc,23749,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,protection from legendary creatures
+Volatile Stormdrake,2038,False,parser,refused: a protection quality that cannot be read,missing,unclassified refusal,hexproof from activated and triggered abilities
 "Varchild, Betrayer of Kjeldor",6018,False,parser,refused: a standing prohibition on whatever was just referred to,missing,a lasting 'can't' on an object the parser cannot keep hold of,"Survivors your opponents control can't block, and they can't attack you or planeswalkers you control."
 Artillery Enthusiast,,False,parser,refused: characteristic of an object it cannot name,missing,the parser cannot bind 'its power' (etc.) to an object,"When this enters, you may discard a card. If you do, seek a card with mana value equal to that card's mana value."
 "Ayara, Widow of the Realm // Ayara, Furnace Queen",7107,False,parser,refused: characteristic of an object it cannot name,missing,the parser cannot bind 'its power' (etc.) to an object,"{T}, Sacrifice another creature or artifact: this deals X damage to target opponent or battle and you gain X life, where"

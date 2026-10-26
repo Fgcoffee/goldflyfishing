@@ -1788,7 +1788,11 @@ def _granted_keyword(name: str, stream: Stream):
         and not built[0].effects
         and built[0].quality is None
         and built[0].trigger is None
+        and built[0].additional_cost is None
+        and built[0].alternative_cost is None
     ):
+        # Not for conspire or casualty: shrunk to the bare name, a granted
+        # conspire lost the cost it lets the spell's controller pay.
         return (Ability(AbilityKind.STATIC, keyword=name, text=name),)
     return built
 
@@ -1954,13 +1958,20 @@ def _one_quality(stream: Stream):
     if spec is None:
         stream.reset(look)
         return None
+    # "from Goblins" is subtypes_all, "from non-Spirit creatures" a type with
+    # subtypes_none: type and subtype words, and nothing that asks more.
     simple = ObjectFilter(
         types_any=spec.types_any,
         types_all=spec.types_all,
+        types_none=spec.types_none,
         subtypes_any=spec.subtypes_any,
+        subtypes_all=spec.subtypes_all,
+        subtypes_none=spec.subtypes_none,
         zones=spec.zones,
     )
-    if spec != simple or not (spec.types_any or spec.types_all or spec.subtypes_any):
+    if spec != simple or not (
+        spec.types_any or spec.types_all or spec.subtypes_any or spec.subtypes_all
+    ):
         stream.reset(look)
         return None
     return replace(spec, zones=frozenset())

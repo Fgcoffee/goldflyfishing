@@ -202,6 +202,26 @@ FINDINGS: tuple[Finding, ...] = (
             "exile it from the graveyard: a token copy attacking each opponent",
             "an alternative cost to cast it",
             "code: registered as a graveyard alternative cost"),
+    # The auditing session's F34; built inert, so listed as missing.
+    Finding("Miracle", WRONG, "702.94a",
+            "cast for its cost when revealed as the first card drawn this turn",
+            "an alternative cost from hand at any time",
+            "auditor board: Terminus castable for {W} from hand"),
+    Finding("Splice", WRONG, "702.47a",
+            "reveal it to add its text to an Arcane spell being cast",
+            "an additional cost of the card itself",
+            "rules session strict xfail"),
+    Finding("Bestow", WRONG, "702.103a", "cast as an Aura spell with enchant creature",
+            "a plain alternative cost; never an Aura",
+            "rules session strict xfail"),
+    Finding("Embalm", WRONG, "702.128a",
+            "exile it from the graveyard: a white Zombie token copy",
+            "the card itself cast from the graveyard, again and again",
+            "auditor board: Sacred Cat recast from the graveyard"),
+    Finding("Eternalize", WRONG, "702.129a",
+            "exile it from the graveyard: a 4/4 black Zombie token copy",
+            "the card itself cast from the graveyard",
+            "rules session strict xfail"),
     # -- missing: inert placeholder, honestly not understood -----------------
     Finding("Plot", MISSING, "702.170a", "exile from hand, cast later for free",
             "nothing (inert)", "IR: UNPARSED placeholder"),
@@ -219,11 +239,11 @@ FINDINGS: tuple[Finding, ...] = (
                 "the cost can be paid; nothing in the engine reads the keyword afterwards",
                 "code: no use of the keyword outside the keyword table")
         for name in (
-            "Assist", "Bargain", "Bestow", "Blitz", "Buyback", "Cleave",
-            "Conspire", "Embalm", "Emerge", "Entwine", "Escalate",
-            "Eternalize", "Freerunning", "Gift", "Impending", "Miracle",
+            "Assist", "Bargain", "Blitz", "Buyback", "Cleave",
+            "Conspire", "Entwine", "Escalate",
+            "Freerunning", "Gift", "Impending",
             "More Than Meets the Eye", "Multikicker", "Offspring", "Prowl",
-            "Retrace", "Spectacle", "Splice", "Spree", "Squad", "Warp",
+            "Spectacle", "Spree", "Squad", "Warp",
         )
     ),
 )
@@ -302,8 +322,6 @@ REFUSAL_CAUSES: dict[str, tuple[str, str]] = {
     "player reference on REVEAL": (ENGINE, "the reveal opcode cannot name who reveals"),
     "player reference on EXILE": (ENGINE, "the exile opcode cannot name a player"),
     "a combat cost other than mana": (ENGINE, "attack costs can only be mana"),
-    "a cost granted to spells on the stack is not offered as they are cast": (
-        ENGINE, "the cast-cost menu is built before a grant to spells applies"),
     "a combat cost scaled by something the engine cannot count": (
         ENGINE, "the attack cost needs a count the engine has no value for"),
     "'its controller' with no single antecedent": (

@@ -107,12 +107,6 @@ def test_granted_cascade_triggers(box):
     assert len(box.game.stack) >= 2 and "cascade" in texts
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="the parser grants a bare 'conspire' keyword with no cost; the grant "
-    "needs the conspire builder's ability (its tap-two cost). The engine side is "
-    "test_cr601_granted_cast_abilities.py; remove this marker when the grant is built",
-)
 def test_granted_conspire_is_offered(box):
     need(box, "Wort, the Raidmother", "Goblin Piker", "Lightning Bolt")
     grant_is_read(box, "Wort, the Raidmother")
