@@ -8498,6 +8498,10 @@ def _leading_duration(stream: Stream) -> Effect | None:
     onto whatever came back.
     """
     mark = stream.mark()
+    # "Whenever a creature enters this turn, you may draw a card": the
+    # trigger reader stops before "this turn", which names how long the
+    # trigger lasts, not its effects - a permanent change it makes stays.
+    window = stream.at("this")
     duration = _duration(stream)
     if duration is Duration.PERMANENT:
         stream.reset(mark)
@@ -8510,17 +8514,34 @@ def _leading_duration(stream: Stream) -> Effect | None:
         return None
     return Effect(
         EffectKind.SEQUENCE,
-        children=tuple(_stamp(effect, duration) for effect in inner),
+        children=tuple(inner) if window else tuple(_stamp(effect, duration) for effect in inner),
         duration=duration,
         text="for a duration",
     )
 
 
+#: Wrappers whose children happen as part of the same instruction, and so
+#: fall under a leading duration. Not a delayed trigger or a choice of modes:
+#: their children are not this sentence's effects.
+_DURATION_WRAPPERS = frozenset({EffectKind.SEQUENCE, EffectKind.OPTIONAL, EffectKind.CONDITIONAL})
+
+
 def _stamp(effect: Effect, duration: Duration) -> Effect:
-    """Give an effect a duration, unless it already chose one of its own."""
+    """Give an effect a duration, unless it already chose one of its own.
+
+    Into the wrappers too: the engine reads a duration off each effect it
+    runs, never off a SEQUENCE. "Until end of turn, target creature loses
+    all abilities and becomes a blue Frog with base power and toughness 1/1"
+    is one SEQUENCE of three, and only the SEQUENCE got the duration - Turn to
+    Frog was permanent (auditor's F33).
+    """
     from dataclasses import replace
 
-    if effect.duration is not Duration.PERMANENT:
+    if effect.kind in _DURATION_WRAPPERS and effect.children:
+        effect = replace(effect, children=tuple(_stamp(c, duration) for c in effect.children))
+    # ``!=``, not ``is not``: a duration is often a plain int, and 0 is not
+    # the enum member - which skipped every one of them.
+    if effect.duration != Duration.PERMANENT:
         return effect
     return replace(effect, duration=duration)
 
