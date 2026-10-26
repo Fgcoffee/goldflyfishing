@@ -1992,19 +1992,27 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
     """
     from ..kernel.enums import Supertype
 
+    # CR 702.29e: "a [type] card" - one card. A filter with no count
+    # means every matching card, which is what the ability claimed to find.
+    one = Value.of(1)
     key = instance.key
     if key in _CYCLING_SEARCH:
         wanted = ObjectFilter(
-            subtypes_any=(_CYCLING_SEARCH[key],), zones=frozenset({Zone.LIBRARY})
+            subtypes_any=(_CYCLING_SEARCH[key],),
+            zones=frozenset({Zone.LIBRARY}),
+            count=one,
         )
     elif key == "basic landcycling":
         wanted = ObjectFilter(
             types_all=CardType.LAND,
             supertypes_all=Supertype.BASIC,
             zones=frozenset({Zone.LIBRARY}),
+            count=one,
         )
     else:
-        wanted = ObjectFilter(types_all=CardType.LAND, zones=frozenset({Zone.LIBRARY}))
+        wanted = ObjectFilter(
+            types_all=CardType.LAND, zones=frozenset({Zone.LIBRARY}), count=one
+        )
 
     cost = _discard_this_card(instance.cost)
     return (
