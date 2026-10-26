@@ -90,6 +90,7 @@ def collect_triggers(game: Game, event: Event) -> None:
     if event.looks_back_in_time:
         _collect_departed_token(game, event, found)
         _collect_departed_card(game, event, found)
+        _collect_departed_together(game, event, found)
 
     if not found:
         return
@@ -271,6 +272,45 @@ def _collect_departed_card(
             continue
         if condition_met(game, departed, trigger, event):
             found.append((departed, ability))
+
+
+def _collect_departed_together(
+    game: Game, event: Event, found: list[tuple[GameObject, Ability]]
+) -> None:
+    """Permanents that left at the same time as this one (CR 603.10a).
+
+    A destroy-all or a round of state-based actions moves its permanents one
+    after another, though they leave together. Looking back, each of them
+    sees the others still on the battlefield - so a Blood Artist destroyed
+    with four other creatures triggers for all five. The ones already moved
+    are gone from the index, and are asked through their last-known
+    abilities instead.
+    """
+    if game.departed_batch != game.event_batch:
+        return
+    own = event.data[0] if event.data else event.object_id
+    for departed_id in game.departed_in_batch:
+        if departed_id == own:
+            continue
+        departed = game.objects.get(departed_id)
+        if departed is None or departed.phased_out or departed.face_down:
+            continue
+        if any(obj.id == departed_id for obj, _ in found):
+            continue
+        for ability in _last_known_abilities(game, departed):
+            if ability.kind is not AbilityKind.TRIGGERED or ability.unparsed:
+                continue
+            trigger = ability.trigger
+            if trigger is None or event.kind not in _kinds_watched(trigger):
+                continue
+            if Zone.BATTLEFIELD not in trigger.functions_in:
+                continue
+            # Already found through the object it became, where the ability
+            # also works.
+            if any(obj.id == departed.superseded_by and other == ability for obj, other in found):
+                continue
+            if condition_met(game, departed, trigger, event):
+                found.append((departed, ability))
 
 
 def _extra_triggers(game: Game, obj: GameObject, event: Event) -> int:

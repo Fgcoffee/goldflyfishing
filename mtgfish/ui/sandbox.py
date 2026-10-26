@@ -499,12 +499,14 @@ class Sandbox:
             apply_self_entry_replacements(self.game, obj)
             # CR 306.5b, 310.4b: skipping move_object also skips the loyalty
             # and defense counters a planeswalker or battle enters with.
+            from ..rules.cr100_game_concepts.actions import add_counters
             from ..rules.cr300_card_types.cr300_characteristics import (
                 entering_counters,
             )
 
+            # CR 122.6: put on, so the counter replacements apply to them.
             for kind, amount in entering_counters(self.game.characteristics(obj)):
-                obj.add_counters(kind, amount)
+                add_counters(self.game, obj, kind, amount, source=obj.id)
             # Placing a permanent skips move_object, so nothing announced that
             # it entered and no enters-the-battlefield trigger fired. An
             # instrument that silently drops ETB triggers would report a card
