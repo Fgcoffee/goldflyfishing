@@ -252,6 +252,12 @@ class Game:
     #: state-based actions (CR 704.3), each time triggers are put on the
     #: stack. A "whenever one or more ..." ability triggers once per value.
     event_batch: int = 0
+    #: CR 603.10a: the permanents that have left the battlefield so far in
+    #: ``departed_batch``, as their pre-move objects. Objects leaving at the
+    #: same time are moved one after another, so a later one's look-back
+    #: triggers must still find the earlier ones as they were.
+    departed_in_batch: list = field(default_factory=list)
+    departed_batch: int = -1
     #: The triggered abilities that said "this ability triggers only once each
     #: turn" and have triggered this turn, as (object id, ability). Cleared
     #: with ``turn_history``; a new object is a new id (CR 400.7).
@@ -689,6 +695,11 @@ class Game:
         if from_zone is Zone.BATTLEFIELD:
             # CR 603.10a: read before anything attached to it falls off.
             obj.last_known_characteristics = self.characteristics(obj)
+            # CR 603.10a: noted for whatever else leaves in this same batch.
+            if self.departed_batch != self.event_batch:
+                self.departed_batch = self.event_batch
+                self.departed_in_batch = []
+            self.departed_in_batch.append(obj.id)
         self._detach_all(obj)
         self._remove_from_zone(obj)
 
