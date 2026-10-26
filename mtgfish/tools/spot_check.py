@@ -12,9 +12,11 @@ with its oracle text beside the parser's reading of every ability and a
 
 Verdicts, one per card:
 
-``OK``       everything read, and the reading is what the card does
-``WRONG``    something read as understood does something else - the worst
-             outcome, a card that plays wrong while counted as understood
+``OK``       everything read, and the reading is what the card says
+``ENGINE``   read correctly, but the rules engine (or a keyword's expansion
+             there) plays it wrong - logged, and not a misreading
+``WRONG``    misread: something counted as understood was read as something
+             the card does not say - the worst outcome for the parser
 ``PARTIAL``  some abilities unread (honestly), the ones read are right
 ``UNREAD``   nothing usable read, and the card says so
 ``UNSURE``   the reading cannot be judged from the rendering alone
@@ -34,7 +36,7 @@ import time
 from collections import Counter
 from pathlib import Path
 
-VERDICTS = ("OK", "WRONG", "PARTIAL", "UNREAD", "UNSURE")
+VERDICTS = ("OK", "ENGINE", "WRONG", "PARTIAL", "UNREAD", "UNSURE")
 
 
 def draw(db, count: int) -> list:
@@ -125,9 +127,11 @@ def cmd_summarize(args) -> int:
     read = [r for r in rows if r["read"]]
     if read:
         wrong = sum(1 for r in read if r["verdict"] == "WRONG")
-        print(f"of {len(read)} counted fully read, {wrong} wrong ({100 * wrong / len(read):.1f}%)")
+        engine = sum(1 for r in read if r["verdict"] == "ENGINE")
+        print(f"of {len(read)} counted fully read, {wrong} misread ({100 * wrong / len(read):.1f}%),"
+              f" {engine} read right but played wrong by the engine")
     for row in rows:
-        if row["verdict"] in ("WRONG", "UNSURE"):
+        if row["verdict"] in ("WRONG", "ENGINE", "UNSURE"):
             print(f"  {row['verdict']}: {row['name']} - {row['note']}")
     return 0
 

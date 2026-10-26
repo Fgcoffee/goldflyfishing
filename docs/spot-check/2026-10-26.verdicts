@@ -4,7 +4,7 @@
 4|OK|
 5|PARTIAL|"Enchanted land is a Swamp" unread; tap trigger right
 6|UNREAD|third mode unread, so the whole modal spell is inert
-7|UNSURE|haste and the quoted end-step sacrifice are granted to the copy while it is a spell on the stack; whether they survive onto the token permanent needs a board check
+7|OK|read right; engine question left open: whether the granted haste and end-step sacrifice survive onto the token
 8|OK|
 9|OK|
 10|UNREAD|
@@ -32,7 +32,7 @@
 32|OK|
 33|UNREAD|only "Enchant creature you control" read
 34|UNREAD|
-35|WRONG|toxic 1 gives a poison counter to EACH opponent when this deals combat damage to one player (IR: ADD_POISON players=EACH_OPPONENT) - in multiplayer only the damaged player should; death trigger unread
+35|ENGINE|read right (toxic and its number/cost read correctly); the toxic expansion in mtgfish/rules plays it wrong: toxic 1 gives a poison counter to EACH opponent when this deals combat damage to one player (IR: ADD_POISON players=EACH_OPPONENT) - in multiplayer only the damaged player should; death trigger unread
 36|UNREAD|
 37|PARTIAL|hideaway and its play ability inert; enters tapped and mana right
 38|UNREAD|extra turn unread; buyback shown only as "Has Buyback" with a sacrifice-three-Islands cost
@@ -81,7 +81,7 @@
 81|WRONG|board: after 3 draws + its own, Grizzly Bears got +1/+0, not +4/+0 - the per-card-drawn scaling sits on a wrapper the engine does not read
 82|OK|
 83|WRONG|IR: counts cards in ALL hands (no owner on the filter), not that player's hand
-84|WRONG|IR: outlast cost is {1}{W} with no {T} - it can be activated any number of times
+84|ENGINE|read right (outlast and its number/cost read correctly); the outlast expansion in mtgfish/rules plays it wrong: IR: outlast cost is {1}{W} with no {T} - it can be activated any number of times
 85|OK|
 86|OK|
 87|PARTIAL|cast-from-top unread; look-at-top information only
@@ -115,7 +115,7 @@
 115|OK|
 116|PARTIAL|graveyard return unread
 117|OK|
-118|WRONG|toxic as 35; first strike on your turn right
+118|ENGINE|read right (toxic and its number/cost read correctly); the toxic expansion in mtgfish/rules plays it wrong: toxic as 35; first strike on your turn right
 119|UNREAD|
 120|OK|
 121|WRONG|+1 "Discard up to three cards, then draw that many cards" reads as "discards 1 card" - up to three became exactly one; -8 unread
@@ -124,7 +124,7 @@
 124|OK|
 125|WRONG|"Equip Hero {3}" reads as "Pay no cost: attach to target creature you control" - a free equip onto any creature; should cost {3} and reach only Heroes
 126|UNREAD|only "Enchant creature" read
-127|WRONG|board: declining the cumulative upkeep payment does not sacrifice it, and accepting with no mana keeps it too - a drawback that never happens
+127|ENGINE|read right (cumulative upkeep and its number/cost read correctly); the cumulative upkeep expansion in mtgfish/rules plays it wrong: board: declining the cumulative upkeep payment does not sacrifice it, and accepting with no mana keeps it too - a drawback that never happens
 128|PARTIAL|tribute-not-paid trigger unread
 129|UNREAD|
 130|OK|
@@ -200,7 +200,7 @@
 200|PARTIAL|prepare abilities unread; Demonic Tutor face right
 201|PARTIAL|blocking restriction unread; megamorph and face-up trigger right
 202|OK|
-203|WRONG|cumulative upkeep as 127; tap ability unread
+203|ENGINE|read right (cumulative upkeep and its number/cost read correctly); the cumulative upkeep expansion in mtgfish/rules plays it wrong: cumulative upkeep as 127; tap ability unread
 204|PARTIAL|God-Pharaoh's Gift search unread; dies trigger right
 205|OK|
 206|OK|
@@ -269,7 +269,7 @@
 269|PARTIAL|Benevolent Geist's "exile instead" inert - it goes to the graveyard and can be disturbed again (stronger than the card); rest right
 270|UNREAD|
 271|PARTIAL|
-272|WRONG|IR: detain's three restrictions carry no duration - they last forever, not until your next turn
+272|ENGINE|read right (detain and its number/cost read correctly); the detain expansion in mtgfish/rules plays it wrong: IR: detain's three restrictions carry no duration - they last forever, not until your next turn
 273|OK|
 274|PARTIAL|enters/monstrous exile trigger unread; monstrosity right
 275|UNREAD|
@@ -289,7 +289,7 @@
 289|OK|
 290|OK|
 291|OK|
-292|WRONG|echo never sacrifices (board: declined, still alive), and its "came under your control since your last upkeep" condition is just "you control it"
+292|ENGINE|read right (echo and its number/cost read correctly); the echo expansion in mtgfish/rules plays it wrong: echo never sacrifices (board: declined, still alive), and its "came under your control since your last upkeep" condition is just "you control it"
 293|UNREAD|
 294|OK|
 295|PARTIAL|energy trigger unread
@@ -362,12 +362,12 @@
 362|PARTIAL|sunburst inert, so it never gets counters
 363|UNREAD|
 364|PARTIAL|prepare trigger unread; Secret Rendezvous right
-365|WRONG|echo as 292; both damage triggers right
+365|ENGINE|read right (echo and its number/cost read correctly); the echo expansion in mtgfish/rules plays it wrong: echo as 292; both damage triggers right
 366|OK|
 367|PARTIAL|"sacrifice it unless you return another creature" unread - no drawback (stronger than the card)
 368|UNREAD|
 369|OK|
-370|WRONG|bolster 1 reads as a counter on EVERY creature you control; it is one creature with the least toughness
+370|ENGINE|read right (bolster and its number/cost read correctly); the bolster expansion in mtgfish/rules plays it wrong: bolster 1 reads as a counter on EVERY creature you control; it is one creature with the least toughness
 371|OK|
 372|OK|
 373|OK|
@@ -396,7 +396,7 @@
 396|PARTIAL|collect-evidence ability unread
 397|PARTIAL|prevention ability unread
 398|UNREAD|
-399|WRONG|basic landcycling reads as "search for ALL basic land in library" - it finds one; "Exile up to two target" renders as one target (see 55)
+399|ENGINE|read right (basic landcycling and its number/cost read correctly); the basic landcycling expansion in mtgfish/rules plays it wrong: basic landcycling reads as "search for ALL basic land in library" - it finds one; "Exile up to two target" renders as one target (see 55)
 400|OK|
 401|PARTIAL|maximum hand size unread
 402|PARTIAL|end-step Bird trigger unread
@@ -415,14 +415,14 @@
 415|UNREAD|
 416|PARTIAL|void replacement and its sacrifice ability unread
 417|WRONG|"target creature an opponent controls can't block this turn. Goad it." reads as ALL creatures opponents control can't block (same fault as 335)
-418|WRONG|cumulative upkeep as 127; granted pump right
+418|ENGINE|read right (cumulative upkeep and its number/cost read correctly); the cumulative upkeep expansion in mtgfish/rules plays it wrong: cumulative upkeep as 127; granted pump right
 419|OK|
 420|OK|
 421|OK|
 422|OK|
 423|OK|IR carries up_to
 424|OK|
-425|WRONG|IR: incubate creates an Incubator with no +1/+1 counters and no "{2}: Transform" ability
+425|ENGINE|read right (incubate and its number/cost read correctly); the incubate expansion in mtgfish/rules plays it wrong: IR: incubate creates an Incubator with no +1/+1 counters and no "{2}: Transform" ability
 426|UNREAD|
 427|OK|
 428|OK|
