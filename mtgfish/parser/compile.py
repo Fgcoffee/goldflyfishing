@@ -1738,12 +1738,19 @@ class OracleAbilities:
     simulation actually does.
     """
 
-    def __init__(self, verdicts=None) -> None:
+    def __init__(self, verdicts=None, store=None) -> None:
         self._cache: dict[tuple[str, int], tuple[Ability, ...]] = {}
         self.failures: list[ParseFailure] = []
         self.verdicts = verdicts
         #: Cards served inert because a person said so, for the run report.
         self.suppressed: set[str] = set()
+        #: The parse computed ahead of time (``parser.store``), opened on first
+        #: use. A stale store answers nothing and every card is parsed live.
+        self._store = store
+        self._store_opened = store is not None
+        #: Faces served from the store and parsed live, for the curious.
+        self.served_from_store = 0
+        self.parsed_live = 0
 
     def abilities_for(self, card, face_index: int) -> tuple[Ability, ...]:
         key = (getattr(card, "oracle_id", "") or getattr(card, "name", ""), face_index)
@@ -1757,10 +1764,38 @@ class OracleAbilities:
             self._cache[key] = ()
             return ()
 
+        stored = self._stored(card, face_index)
+        if stored is not None:
+            abilities, failures = stored
+            self.served_from_store += 1
+            self.failures.extend(failures)
+            self._cache[key] = abilities
+            return abilities
+
         parsed = parse_face(card, face_index)
+        self.parsed_live += 1
         self.failures.extend(parsed.failures)
         self._cache[key] = parsed.abilities
         return parsed.abilities
+
+    def _stored(self, card, face_index: int):
+        from . import store as parse_store
+
+        if not self._store_opened:
+            self._store_opened = True
+            if parse_store.enabled():
+                try:
+                    from ..data.db import CardDatabase
+
+                    self._store = parse_store.ParseStore.open(CardDatabase())
+                except Exception:  # noqa: BLE001 - no store is the old behaviour
+                    self._store = None
+        if self._store is None:
+            return None
+        try:
+            return self._store.get(card, face_index)
+        except Exception:  # noqa: BLE001 - a damaged entry is parsed live
+            return None
 
     def clear(self) -> None:
         self._cache.clear()
