@@ -274,3 +274,20 @@ A separate audit session (session_016Cy2ntzq8cWGNRNT9B8Ngr, "Codebase audit and 
 | — | unverified | web | Peer: web Results shows "Inert cards: none" while the CLI lists 6 for the same run. Not re-run by me. | — |
 
 d4f6a3e full suite: **2944 passed, 10 xfailed in 645.66s (0:10:45)**. No test covers F26 on real cards or F27-F38.
+
+## Round 15 (2026-10-26): single head f0a71f4 (rules 15f6b8f + parser ccd2b9a)
+
+f0a71f4 contains parser ccd2b9a: one head.
+- **F26 resolved for offering and triggering, not for payment.**
+  - Granted convoke (Chief Engineer + Bears casts Mind Stone, both tapped): OK.
+  - Granted cascade (The First Sliver: Hivelord cascades into Muscle Sliver): OK.
+  - Wort and Raiding Schemes: unread (OK).
+  - Granted improvise (Inspiring Statuary) and delve (Teval) are now OFFERED but FAIL to pay when the rest of the mana must come from a land: "cannot pay {1}{G}", "cannot pay {3}{R}". That is F39 below, not specific to grants.
+- **F39 BLOCK (rules, pre-existing on main): convoke, improvise and delve can't be paid whenever any of the remaining mana has to come from tapping lands.** They only work when the mana is already in the pool, which is why the unit tests (and my earlier "controls", which only checked the spell was OFFERED) passed. On main and on the head:
+  - Siege Wurm {5}{G}{G} with 4 Forests + 3 Bears: offered, "cannot pay".
+  - Reverse Engineer {3}{U}{U} with 2 Islands + 3 Ornithopters: offered, "cannot pay".
+  - Treasure Cruise {7}{U} with 1 Island + 7 graveyard cards: offered, "cannot pay".
+  **Worse, a failed delve payment keeps the delved cards in exile** even though the log says "Cast rewound; the game state is unchanged": all 7 graveyard cards stay exiled (601.2h: no partial payment; the rewind must restore them). Every convoke, improvise and delve card in the pool plays wrong.
+- **Peer follow-ups confirmed on f0a71f4:**
+  - F36: `python -m mtgfish.tools.simulate bench/decks/stax.txt --games 20 --seed 0` aborts the whole run (exit 1, traceback, AttributeError 'int' object has no attribute 'kind'; stax.txt contains Rest in Peace). No report is produced.
+  - The web "Inert cards: none" is VERIFIED in code: `report.unparsed_cards` is filled only by tools/simulate.py:81 (`_inert_cards`); ui/bridge.py reads the field but its run path never sets it, so the web always shows none. Owner: rules/ui. WARN, because it hides unread cards from the user.
