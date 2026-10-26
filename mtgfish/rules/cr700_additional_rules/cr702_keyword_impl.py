@@ -1913,21 +1913,42 @@ def _infect(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Toxic", "Poisonous")
+@register("Toxic")
 def _toxic(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.164a / 702.70a: combat damage to a player also gives poison."""
+    """CR 702.164a: toxic is a static ability. "Toxic N" is read by the
+    damage routine (CR 702.164c, 120.3g): the player this creature deals
+    combat damage to gets poison counters equal to its total toxic value.
+
+    Built as a trigger poisoning each opponent, it hit players the creature
+    never touched, and only after a trip through the stack.
+    """
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword="Toxic",
+            # CR 702.164b: this instance's N, summed across instances.
+            quality=Value.of(max(1, instance.amount)),
+            text=instance.text or f"{instance.name} {instance.amount}",
+        ),
+    )
+
+
+@register("Poisonous")
+def _poisonous(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.70a: "Whenever this creature deals combat damage to a player,
+    that player gets N poison counters." That player is the one damaged."""
     return (
         Ability.triggered(
             TriggerCondition(
                 event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
                 source=ObjectFilter(source_only=True),
-                players=EACH_OPPONENT,
+                players=PlayerFilter(PlayerScope.EACH_PLAYER),
                 functions_in=BATTLEFIELD,
                 text="whenever this deals combat damage to a player",
             ),
             Effect(
                 EffectKind.ADD_POISON,
-                players=EACH_OPPONENT,
+                players=PlayerFilter(PlayerScope.TRIGGER_PLAYER),
                 amount=Value.of(max(1, instance.amount)),
             ),
             text=instance.text or f"{instance.name} {instance.amount}",

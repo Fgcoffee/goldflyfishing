@@ -514,6 +514,8 @@ def _damage_player(
         )
         if lifelink and source_controller != NO_PLAYER:
             gain_life(game, source_controller, amount, source=source)
+        if combat:
+            _toxic_poison(game, player_id, source_chars)
         return amount
 
     life_lost = replaced_life_loss(game, player_id, amount, source=source)
@@ -549,7 +551,23 @@ def _damage_player(
         )
     if lifelink and source_controller != NO_PLAYER:
         gain_life(game, source_controller, amount, source=source)
+    if combat:
+        _toxic_poison(game, player_id, source_chars)
     return amount
+
+
+def _toxic_poison(game: Game, player_id: PlayerId, source_chars) -> None:
+    """CR 120.3g, 702.164c: combat damage from a creature with toxic also
+    gives the damaged player poison counters equal to its total toxic value
+    (CR 702.164b), in addition to the damage's other results."""
+    if source_chars is None:
+        return
+    total = sum(
+        getattr(ability.quality, "constant", 0)
+        for ability in source_chars.keyword_abilities("Toxic")
+    )
+    if total > 0:
+        add_poison(game, player_id, total)
 
 
 def gain_life(
