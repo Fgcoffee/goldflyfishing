@@ -291,3 +291,6 @@ f0a71f4 contains parser ccd2b9a: one head.
 - **Peer follow-ups confirmed on f0a71f4:**
   - F36: `python -m mtgfish.tools.simulate bench/decks/stax.txt --games 20 --seed 0` aborts the whole run (exit 1, traceback, AttributeError 'int' object has no attribute 'kind'; stax.txt contains Rest in Peace). No report is produced.
   - The web "Inert cards: none" is VERIFIED in code: `report.unparsed_cards` is filled only by tools/simulate.py:81 (`_inert_cards`); ui/bridge.py reads the field but its run path never sets it, so the web always shows none. Owner: rules/ui. WARN, because it hides unread cards from the user.
+
+f0a71f4 full suite `pytest tests`: **2950 passed, 1 skipped, 10 xfailed, 0 failed.** No test covers F27-F39.
+**F29 confirmed on the bench:** `simulate bench/decks/combo.txt --games 50 --seed 0` on f0a71f4: win 20.0%, stalls 14.0%, **7 runaways "RESOLVE ?"** (the peer reported the same 7 in games 1-50). The replay of game 1 shows the loop: Nim Deathmantle's "you may pay {4}. If you do, return ..." resolving repeatedly while that player's lands are tapped, alongside a "whenever this or another creature you control dies, each opponent loses 1 life" trigger, until the priority loop's iteration cap stops it. The engine's runaway label blames "a card"; the cause is F29.
