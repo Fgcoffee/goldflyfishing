@@ -68,6 +68,10 @@ class Characteristics:
     hand_modifier: int = 0
     life_modifier: int = 0
     text: str = ""
+    #: CR 712.8c, 712.8e: a transforming double-faced card with its back face
+    #: up takes its mana value from its front face's mana cost. Not a
+    #: copiable value - a copy of that back face has mana value 0.
+    mana_value_from_front: int | None = None
 
     # -- base power and toughness (CR 208.4b) --------------------------------
 
@@ -128,6 +132,8 @@ class Characteristics:
     @property
     def mana_value(self) -> int:
         """CR 202.3. Callers on the stack must add the chosen X themselves."""
+        if self.mana_value_from_front is not None:
+            return self.mana_value_from_front
         return self.mana_cost.mana_value
 
     # -- ability queries ----------------------------------------------------
