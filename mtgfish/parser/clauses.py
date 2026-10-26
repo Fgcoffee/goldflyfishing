@@ -1967,6 +1967,7 @@ def _one_quality(stream: Stream):
         subtypes_any=spec.subtypes_any,
         subtypes_all=spec.subtypes_all,
         subtypes_none=spec.subtypes_none,
+        is_ability=spec.is_ability,
         zones=spec.zones,
     )
     if spec != simple or not (
@@ -6577,7 +6578,9 @@ def _retarget(stream: Stream) -> Effect | None:
     # the rest - which failed every card in this family.
     look = stream.mark()
     if stream.accept("or"):
-        if not stream.accept("ability", "abilities"):
+        if stream.accept("ability", "abilities"):
+            targets = replace(targets, is_ability=None)
+        else:
             stream.reset(look)
 
     stream.accept_phrase("with a single target")
