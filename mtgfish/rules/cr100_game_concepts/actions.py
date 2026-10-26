@@ -765,8 +765,11 @@ def _protected_from(game: Game, target, source_obj) -> bool:
 
     for ability in game.characteristics(target).keyword_abilities("Protection"):
         quality = ability.quality
+        # CR 702.16a: protection is from a stated quality. One whose quality
+        # was not read states none and matches nothing; protection from
+        # everything (CR 702.16j) carries a filter every object matches.
         if quality is None:
-            return True  # Protection from everything, if a card ever says so.
+            continue
         if matches(game, source_obj, quality, allow_stale=True):
             return True
     return False
