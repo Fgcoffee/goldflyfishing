@@ -1370,7 +1370,9 @@ def helper_capacity(game: Game, spell: GameObject, player_id: PlayerId) -> int:
     An upper bound, like every other affordability check: over-reporting costs
     a rewound cast, under-reporting hides a legal play entirely.
     """
-    chars = game.characteristics(spell)
+    # CR 601.2a-b: a convoke or improvise granted to "spells you cast" is the
+    # spell's by the time it is paid for.
+    chars = as_it_would_be_cast(game, spell, game.characteristics(spell))
     total = 0
     for keyword, resource, _coloured in _COST_HELPERS:
         if chars.has_keyword(keyword.lower()):
