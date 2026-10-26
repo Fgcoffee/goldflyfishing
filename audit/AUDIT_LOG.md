@@ -230,3 +230,10 @@ Parser 18e91f0 contains rules 64bbd26; neither branch moved Oct 18-26. Census vs
 - Narset's Reversal, Lumaret's Favor and Mica stay refused (the parser board-checked that the engine's CHANGE_TARGETS path doesn't redirect there; strict xfail recorded). Logged for the rules session.
 - All regression scripts rerun on 18e91f0: unchanged and correct.
 - **F26 STILL OPEN:** Wort + 2 Goblin Pikers, Bolt offered only (); Burn Trail offered () and (0,).
+
+**F26 widened (2026-10-26):** it isn't only conspire. On 18e91f0 EVERY keyword granted to "spells you cast" is ignored, while the printed keyword works:
+- Chief Engineer (artifact spells have convoke): Mind Stone not castable by tapping 2 creatures. Control Siege Wurm (printed convoke): castable.
+- Inspiring Statuary (nonartifact spells have improvise): Grizzly Bears not castable with Forest + 2 artifacts. Control Reverse Engineer (printed improvise): castable.
+- The First Sliver (Sliver spells have cascade): Sliver Hivelord cast, no cascade. Control Bloodbraid Elf: cascades.
+- Wort (conspire): see above.
+9 FULLY READ cards: convoke (Chief Engineer, Eirdu), cascade (Flamekin Herald, The First Sliver), improvise (Inspiring Statuary, Ironheart), conspire (Wort, Raiding Schemes), delve (Teval).
