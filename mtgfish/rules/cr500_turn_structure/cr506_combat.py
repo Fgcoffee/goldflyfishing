@@ -78,6 +78,14 @@ class Combat:
     #: CR 506.4 takes a permanent out of combat when its controller changes,
     #: and the only way to notice a change is to have recorded what it was.
     controllers: dict[ObjectId, PlayerId] = field(default_factory=dict)
+    #: CR 702.49c: what each attacker that has since left combat was
+    #: attacking - the player, and the planeswalker or battle if any. A
+    #: creature returned to hand for ninjutsu leaves combat at once (CR
+    #: 506.4), and the Ninja attacks what it was attacking by last known
+    #: information when the ability resolves.
+    left_attacking: dict[ObjectId, tuple[PlayerId, ObjectId]] = field(
+        default_factory=dict
+    )
 
     def is_attacking(self, object_id: ObjectId) -> bool:
         return object_id in self.attacking
@@ -103,6 +111,11 @@ class Combat:
         being attacked - and losing one of those card types ends only the
         role that card type gave it.
         """
+        if object_id in self.attacking:
+            self.left_attacking[object_id] = (
+                self.attacking[object_id],
+                self.attacking_permanent.get(object_id, NO_OBJECT),
+            )
         self.attacking.pop(object_id, None)
         self.attacking_permanent.pop(object_id, None)
         self.was_blocked.discard(object_id)
@@ -131,6 +144,7 @@ class Combat:
     def clear(self) -> None:
         self.attacking.clear()
         self.attacking_permanent.clear()
+        self.left_attacking.clear()
         self.blockers.clear()
         self.blocking.clear()
         self.was_blocked.clear()
@@ -607,6 +621,11 @@ def enter_attacking(
         if object_id in combat.attacking:
             defender = combat.attacking[object_id]
             attacked = combat.attacking_permanent.get(object_id, NO_OBJECT)
+            break
+        # CR 702.49c: one that has already left combat, by what it was
+        # attacking when it left.
+        if object_id in combat.left_attacking:
+            defender, attacked = combat.left_attacking[object_id]
             break
     if defender is None:
         opponents = game.opponents(permanent.controller)
