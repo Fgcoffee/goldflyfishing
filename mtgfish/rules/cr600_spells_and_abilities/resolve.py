@@ -21,7 +21,7 @@ from ..kernel.enums import Duration, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
 from ..kernel.ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
-from ..kernel.query import PlayerScope, ValueKind
+from ..kernel.query import ZERO, PlayerScope, ValueKind
 from .effects import CONTINUOUS_KINDS, Effect, EffectKind
 
 if TYPE_CHECKING:
@@ -2502,6 +2502,10 @@ def _do_pay_cost(resolution: Resolution, effect: Effect) -> None:
     cost = effect.pay_cost
     if cost is None:
         return
+    if effect.amount != ZERO:
+        # CR 702.24a: "pay its upkeep cost for each age counter on it" - the
+        # cost charged as many times as ``amount`` says, as one payment.
+        cost = _cost_times(cost, _amount(resolution, effect))
     paid = False
     for player_id in _players(resolution, effect):
         if can_pay_cost(game, player_id, cost) and pay_cost(game, player_id, cost):
@@ -2509,6 +2513,43 @@ def _do_pay_cost(resolution: Resolution, effect: Effect) -> None:
             paid = True
     # CR 608.2d: a cost that could not be paid is an option not taken.
     resolution.did_it = paid
+
+
+def _cost_times(cost, times: int):
+    """A cost charged ``times`` times over: the mana added together and each
+    other component's amount multiplied, so the total is paid or nothing is."""
+    from ..cr100_game_concepts.cr106_mana import ZERO_COST
+    from ..cr100_game_concepts.cr118_costs import (
+        CONSUMING_COSTS,
+        Cost,
+        CostComponent,
+        CostKind,
+    )
+    from ..kernel.query import Value
+
+    if times == 1:
+        return cost
+    if times <= 0:
+        return Cost(())
+    mana = ZERO_COST
+    others = []
+    for component in cost.components:
+        if component.is_mana:
+            for _ in range(times):
+                mana = mana.plus(component.mana)
+        else:
+            each = component.amount
+            if each == ZERO and component.kind in CONSUMING_COSTS:
+                each = Value.of(1)  # "sacrifice a creature" is one each time
+            others.append(
+                replace(
+                    component,
+                    amount=Value(ValueKind.PRODUCT, constant=times, operands=(each,)),
+                )
+            )
+    if mana:
+        others.insert(0, CostComponent(CostKind.MANA, mana=mana))
+    return Cost(tuple(others))
 
 
 def _do_start_engines(resolution: Resolution, effect: Effect) -> None:

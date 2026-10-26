@@ -574,6 +574,9 @@ def _untap_step(game: Game) -> None:
     # CR 302.6: everything the active player controls has now been controlled
     # since their turn began, so summoning sickness ends here.
     for obj in game.permanents(active):
+        # CR 702.30a: still sick as the turn began means it came under this
+        # player's control since their last turn - echo's intervening-if.
+        obj.arrived_since_last_turn = obj.summoning_sick
         obj.summoning_sick = False
 
     game.invalidate_characteristics()

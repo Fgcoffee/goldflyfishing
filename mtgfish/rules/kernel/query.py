@@ -638,6 +638,9 @@ class ObjectFilter:
     #: "a creature that entered the battlefield this turn", etc.
     entered_this_turn: bool | None = None
     summoning_sick: bool | None = None
+    #: CR 702.30a: "came under your control since the beginning of your last
+    #: upkeep", as recorded by the untap step.
+    arrived_since_last_turn: bool | None = None
 
     # -- numeric ------------------------------------------------------------
     power: NumericConstraint | None = None
@@ -817,6 +820,11 @@ class ObjectFilter:
                 self.entered_this_turn,
             ),
             ("summoning sick", "not summoning sick", self.summoning_sick),
+            (
+                "that came under its controller's control since their last upkeep",
+                "controlled since its controller's last upkeep",
+                self.arrived_since_last_turn,
+            ),
             # On the stack: an ability, or a spell and not an ability.
             ("that is an ability", "that is a spell", self.is_ability),
         )

@@ -3130,6 +3130,34 @@ def _haunt(instance: KeywordInstance) -> tuple[Ability, ...]:
 # -- upkeep costs ------------------------------------------------------------
 
 
+def _pay_or_sacrifice(
+    cost: Cost, text: str, times: Value | None = None
+) -> tuple[Effect, ...]:
+    """"Sacrifice it unless you pay [cost]": you may pay; if you don't -
+    declined, or the payment could not be made - sacrifice it.
+
+    CR 608.2d: the choice is made on resolution, and an unpaid cost is an
+    option not taken, which ``IF_YOU_DONT`` reads from the resolution.
+    """
+    pay = Effect(
+        EffectKind.PAY_COST,
+        players=YOU,
+        pay_cost=cost,
+        amount=times if times is not None else Value.of(0),
+        text=text,
+    )
+    return (
+        Effect(EffectKind.OPTIONAL, children=(pay,), text=f"you may {text}"),
+        Effect(
+            EffectKind.IF_YOU_DONT,
+            children=(
+                Effect(EffectKind.SACRIFICE, targets=SOURCE_ONLY, text="sacrifice it"),
+            ),
+            text="if you don't, sacrifice it",
+        ),
+    )
+
+
 @register("Echo")
 def _echo(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.30a: "At the beginning of your upkeep, if this came under your
@@ -3141,24 +3169,16 @@ def _echo(instance: KeywordInstance) -> tuple[Ability, ...]:
     return (
         Ability(
             AbilityKind.TRIGGERED,
-            effects=(
-                Effect(
-                    EffectKind.OPTIONAL,
-                    otherwise=(
-                        Effect(
-                            EffectKind.SACRIFICE, targets=SOURCE_ONLY, text="sacrifice it"
-                        ),
-                    ),
-                    text="pay the echo cost, or sacrifice it",
-                ),
+            effects=_pay_or_sacrifice(
+                instance.cost or Cost(()), "pay the echo cost"
             ),
-            cost=instance.cost or Cost(()),
             trigger=TriggerCondition(
                 event_kinds=frozenset({EventKind.UPKEEP}),
                 players=PlayerFilter(PlayerScope.YOU),
+                # CR 702.30a, 603.4: checked as it triggers and as it resolves.
                 intervening_if=Condition(
                     kind=ConditionKind.CONTROLS_MATCHING,
-                    filter=ObjectFilter(source_only=True, entered_this_turn=None),
+                    filter=ObjectFilter(source_only=True, arrived_since_last_turn=True),
                     constraint=NumericConstraint.at_least(1),
                     text="it came under your control since your last upkeep",
                 ),
@@ -3179,6 +3199,7 @@ def _cumulative_upkeep(instance: KeywordInstance) -> tuple[Ability, ...]:
     The counter goes on first, so the first upkeep already costs one - a
     detail that decides whether a Fading-style card lives an extra turn.
     """
+    age = Value(ValueKind.COUNTERS, counter_type="age")
     return (
         Ability(
             AbilityKind.TRIGGERED,
@@ -3190,17 +3211,13 @@ def _cumulative_upkeep(instance: KeywordInstance) -> tuple[Ability, ...]:
                     amount=Value.of(1),
                     text="put an age counter on it",
                 ),
-                Effect(
-                    EffectKind.OPTIONAL,
-                    otherwise=(
-                        Effect(
-                            EffectKind.SACRIFICE, targets=SOURCE_ONLY, text="sacrifice it"
-                        ),
-                    ),
-                    text="pay the cumulative upkeep, or sacrifice it",
+                # CR 702.24a: the cost once for each age counter, as one payment.
+                *_pay_or_sacrifice(
+                    instance.cost or Cost(()),
+                    "pay the upkeep cost for each age counter",
+                    times=age,
                 ),
             ),
-            cost=instance.cost or Cost(()),
             trigger=TriggerCondition(
                 event_kinds=frozenset({EventKind.UPKEEP}),
                 players=PlayerFilter(PlayerScope.YOU),
