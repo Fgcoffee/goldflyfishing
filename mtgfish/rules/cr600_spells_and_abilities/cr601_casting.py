@@ -1295,6 +1295,13 @@ def _pay(game: Game, player_id: PlayerId, total: TotalCost, context: GameObject)
                     _pay_with_helpers(game, player_id, mana_cost, context, most=helped)
                     _tap_for_mana(game, player_id, mana_cost, context)
                     break
+            else:
+                # CR 702.51a: a creature pays for a coloured pip of its own
+                # colour too, which a generic reduction cannot say. With no
+                # mix of helpers and sources found, the helpers pay all they
+                # can - colours included - and the sources the rest.
+                _pay_with_helpers(game, player_id, mana_cost, context)
+                _tap_for_mana(game, player_id, mana_cost, context)
             payment = find_payment(
                 player.mana_pool, mana_cost, life_available=player.life, context=context
             )
@@ -1389,6 +1396,42 @@ def helper_capacity(game: Game, spell: GameObject, player_id: PlayerId) -> int:
         if chars.has_keyword(keyword.lower()):
             total += len(_helper_sources(game, player_id, resource))
     return total
+
+
+def cost_left_for_sources(game: Game, spell: GameObject, player_id: PlayerId, cost):
+    """What lands and other mana sources must still make once convoke,
+    improvise and delve have paid all they can.
+
+    CR 702.51a: a creature tapped for convoke pays for one generic mana or
+    one coloured mana of its own colour; improvise and delve pay generic
+    only (702.126a, 702.66a). Coloured pips go to creatures of that colour
+    first, and what helpers remain come off the generic part.
+    """
+    from ..cr100_game_concepts.cr106_mana import ManaCost, ManaSymbolKind
+    from ..kernel.enums import CardType
+
+    chars = as_it_would_be_cast(game, spell, game.characteristics(spell))
+    spare = 0
+    symbols = list(cost.symbols)
+    for keyword, resource, coloured in _COST_HELPERS:
+        if not chars.has_keyword(keyword.lower()):
+            continue
+        for source in _helper_sources(game, player_id, resource):
+            if resource != "graveyard":
+                if source.tapped:
+                    continue
+                if resource == "creature" and not game.characteristics(source).has_type(
+                    CardType.CREATURE
+                ):
+                    continue
+            colours = int(game.characteristics(source).colors) if coloured else 0
+            for index, symbol in enumerate(symbols):
+                if symbol.kind is ManaSymbolKind.COLORED and int(symbol.colors) & colours:
+                    del symbols[index]
+                    break
+            else:
+                spare += 1
+    return ManaCost(tuple(symbols)).reduced_by(spare)
 
 
 def _helper_sources(game: Game, player_id: PlayerId, resource: str):

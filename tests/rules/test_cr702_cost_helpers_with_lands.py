@@ -109,3 +109,22 @@ def test_an_unmade_payment_puts_delved_cards_back(card_db):
     zones = [o.zone for o in board.game.objects.values()
              if o.is_live and o.card is not None and o.card.name == "Grizzly Bears"]
     assert zones == [Zone.GRAVEYARD]
+
+
+def test_convoke_with_creatures_alone_pays_coloured_pips(box):
+    """CR 702.51a: a green creature pays for {G}. Seven Bears, no lands."""
+    need(box, "Siege Wurm", "Grizzly Bears")
+    box.put("Grizzly Bears", "battlefield", 0, count=7)
+    box.put("Siege Wurm", "hand", 0)
+    assert cast(box, "Siege Wurm")
+    assert [o.zone for o in live(box, "Siege Wurm")] == [Zone.STACK]
+
+
+def test_convoke_with_creatures_and_a_land_for_a_coloured_pip(box):
+    """Six Bears and one Forest pay {5}{G}{G}: a Bear covers one {G}."""
+    need(box, "Siege Wurm", "Forest", "Grizzly Bears")
+    box.put("Forest", "battlefield", 0)
+    box.put("Grizzly Bears", "battlefield", 0, count=6)
+    box.put("Siege Wurm", "hand", 0)
+    assert cast(box, "Siege Wurm")
+    assert [o.zone for o in live(box, "Siege Wurm")] == [Zone.STACK]

@@ -11,7 +11,7 @@ import pytest
 from mtgfish.parser.verdicts import VerdictStore
 from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
 from mtgfish.rules.cr100_game_concepts.cr117_priority import _perform
-from mtgfish.rules.kernel.enums import Color, Zone
+from mtgfish.rules.kernel.enums import Color
 from mtgfish.rules.kernel.ids import PlayerId
 from mtgfish.rules.kernel.legality import legal_actions
 from mtgfish.ui.sandbox import PassiveOpponent, Sandbox

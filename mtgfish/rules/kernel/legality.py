@@ -512,9 +512,12 @@ def _affordable(
     if helpers and player.mana_pool.usable_for(obj) + helpers >= cost.mana_value:
         return True
     if helpers:
-        # Helpers and mana together: at least the generic part the helpers can
-        # stand in for is off what the mana sources must make.
-        cost = cost.reduced_by(helpers)
+        # Helpers and mana together: what the helpers can stand in for -
+        # coloured pips included, for convoke - is off what the mana sources
+        # must make.
+        from ..cr600_spells_and_abilities.cr601_casting import cost_left_for_sources
+
+        cost = cost_left_for_sources(game, obj, player_id, cost)
 
     # Exact, and the same search the payment runs, so a spell offered as legal
     # is one the bot can actually pay for. The count-based upper bound this
