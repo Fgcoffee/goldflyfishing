@@ -19,7 +19,7 @@ the card - the worst case), **missing** (honestly reported as not understood) an
 | | Rules engine | Parser allocation |
 |---|---|---|
 | Wrong, counted as read | 224 | 39 |
-| Missing, not understood | 297 | 494 |
+| Missing, not understood | 297 | 502 |
 | Suspected, counted as read | 254 | 0 |
 
 A card can appear under more than one mechanic. Cards are listed most played
@@ -659,6 +659,12 @@ Torens, Fist of the Angels, Hopeful Initiate, Jenny Flint, Savior of Ollenbock, 
 - **Likely cause:** two targets the parser cannot keep apart
 
 Hidden Strings, Urborg Repossession, Toils of Night and Day, Markov Retribution, Arm the Cathars, Rhino, Terrible Trampler, Rushing River, Dwarven Landslide, Jilt
+
+#### refused: a protection quality that cannot be read (9 cards, 0 counted as read)
+
+- **Likely cause:** unclassified refusal
+
+Volatile Stormdrake, Emrakul, the World Anew, Geyadrone Dihada, Icewind Stalwart, Mistmeadow Skulk, Tsabo Tavoc, Kitsune Riftwalker, Ronom Hulk, Emrakul, the Aeons Torn
 
 #### Recover (7 cards, 0 counted as read)
 

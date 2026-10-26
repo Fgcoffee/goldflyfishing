@@ -304,8 +304,41 @@ def _keyword(line: Line, result: ParsedFace) -> list[Ability]:
     if name.lower() in _BODY_KEYWORDS:
         return [_keyword_with_body(name, argument, line, result)]
 
+    if name.lower() in ("protection", "hexproof from"):
+        return _protection_keyword(name, argument, line, result)
+
     instance = _keyword_instance(name, argument, line.text)
     return list(build(instance))
+
+
+def _protection_keyword(name: str, argument: str, line: Line, result: ParsedFace) -> list[Ability]:
+    """"Protection from black", "Hexproof from blue", "Protection from red
+    and from white" (CR 702.16a, 702.11d), one ability per quality.
+
+    Read by the same quality reader as a granted protection. The general
+    keyword argument reader could not read a bare colour, so every printed
+    "protection from <colour>" reached the engine with no quality - which is
+    protection from everything (auditor's F27): Lightning Bolt could not
+    target White Knight. A quality the reader cannot express is refused.
+    """
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance, build
+    from .clauses import _protection_qualities
+
+    text = argument.strip()
+    if name.lower() == "hexproof from":
+        text = "from " + text
+    stream = Stream.of(text)
+    qualities = _protection_qualities(stream)
+    stream.accept(".")
+    if qualities is None or not stream.done:
+        result.failures.append(
+            ParseFailure(line.text, "a protection quality that cannot be read", rule="keyword")
+        )
+        return [Ability.unreadable(line.text)]
+    out: list[Ability] = []
+    for quality in qualities:
+        out.extend(build(KeywordInstance(name, filter=quality, text=line.text)))
+    return out
 
 
 #: Keywords whose argument is ordinary effect text rather than a number, a
