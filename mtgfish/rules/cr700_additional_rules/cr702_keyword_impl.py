@@ -2587,7 +2587,31 @@ def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Outlast", "Level Up", "Boast", "Exhaust",
+@register("Outlast")
+def _outlast(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.107a: "[Cost], {T}: Put a +1/+1 counter on this creature.
+    Activate only as a sorcery." Built without the {T}, it could be
+    activated any number of times a turn, and by a creature still sick."""
+    return (
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(
+                Effect(
+                    EffectKind.ADD_COUNTERS,
+                    counter_type="+1/+1",
+                    amount=Value.of(1),
+                    text="put a +1/+1 counter on this creature",
+                ),
+            ),
+            cost=(instance.cost or Cost(())).plus(Cost.tap()),
+            timing=Timing.SORCERY,
+            keyword=instance.name,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Level Up", "Boast", "Exhaust",
           "Harmonize", "Craft", "Job select", "Specialize")
 def _counter_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Activated keywords whose effect is putting counters on this permanent."""
