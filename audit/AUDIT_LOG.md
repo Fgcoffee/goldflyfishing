@@ -320,3 +320,60 @@ Open BLOCKs after round 16:
 - shared: F32 (can't be regenerated), F36 (Rest in Peace crash; stax bench aborts).
 - WARN: F38 (sandbox resolve_top), the web Inert-cards list.
 - PROCESS: one head needed (parser e298898 lacks rules 0fb749b and 636daa5).
+
+## Round 17 (2026-10-26): merging PR #18 (rules 7fbd923) and PR #17 (parser 2c48a11) into main, at the user's request
+
+The user asked for both PRs to be merged. The rules head 7fbd923 already merges parser 8a5b950; the parser head adds 28dd319 (F31) and 2c48a11 (F33). Scratch merge f41ece1 (7fbd923 + 2c48a11) is CLEAN. Everything below was checked on f41ece1, the tree main gets.
+
+Fixed, checked on the board:
+- **F27 FIXED** (b05a6e6, ea4baf7): Lightning Bolt can target White Knight (pro-black); Giant Growth targets my Soltari Priest (pro-red); green Bears can block White Knight.
+- **F30 FIXED** (2664b34): Damnation with Blood Artist + 4 Bears: 5 triggers, opp 35, me 45. Pyroclasm killing Blood Artist + 4 Bears (Nighthawk and Hill Giant survive): 5 triggers.
+- **F31 FIXED** (28dd319): with only Blood Artist's trigger on the stack, Counterspell is not offered; with Shock on the stack it targets Shock.
+- **F32 FIXED** (fe2be18): Drudge Skeletons with a regeneration shield is destroyed by Wrath of God.
+- **F33 FIXED** (2c48a11): Turn to Frog makes Hill Giant 1/1 this turn and 3/3 next turn. Control: Giant Growth 5, then 2.
+- **F34 FIXED** (8a5b950): Sacred Cat, Champion of Wits, Boon Satyr, Glacial Ray, Desperate Ritual and Terminus are no longer fully read. Sacred Cat offers no embalm from the graveyard. Terminus offers only its normal cost. Emerge on Wretched Gryff ({5}{U}):
+  - 2 Islands + Hill Giant (MV 4): cast for {1}{U}, Hill Giant sacrificed.
+  - 1 Island + Ulamog's Crusher (MV 8): cast for {U}.
+  - Refused with 1 Island + Hill Giant, 2 Islands + Bears (MV 2), and no lands + Crusher.
+- **F35 FIXED** (2a8f147): Doubling Season + Liliana Vess enters with loyalty 10.
+- **F36 FIXED** (dfa605c): Rest in Peace exiles both graveyards; the stax bench completes.
+- **F38 FIXED** (287f498): Bolt at Kappa Cannoneer, resolve_top without settle: ward counters it.
+- Ninjutsu (98f0d96): Ninja of the Deep Hours for {1}{U} after blockers: the Bears go back to hand, and the Ninja enters tapped and attacking the same player.
+
+Census f41ece1 vs e298898: +5 / -88, 1364 abilities changed. ACCEPTED.
+- LOST 88: 24 bestow, 21 splice, 13 miracle, 12 embalm, 11 eternalize (F34, now honest refusals) and 7 protection qualities now refused instead of misread (Emrakul the World Anew, Geyadrone Dihada, Icewind Stalwart, ...).
+- GAINED 5: protection from a creature type, now read (Feline Sovereign, Haytham Kenway, Hungry Lynx, Masked Gorgon, Spare from Evil).
+- CHANGED: about 1000 are "in stack" becoming "that is a spell" (F31); 133 protection hash-only (F27); 59 abilities gain "until end of turn" / "until your next turn" from a leading duration (F33); 9 emerge hash-only.
+- Cross-sentence reach (F44 below): 4 cards.
+
+Still open after this merge:
+- **F28** (overload): Cyclonic Rift is still fully read, and its overload still bounces only the target.
+- **F37** (Toxic Deluge): still fully read, and "pay X life" is still an effect, not a cost.
+
+New findings (all pre-existing, not introduced by these PRs):
+
+| # | Sev | Owner | Finding (CR) | My board evidence |
+|---|---|---|---|---|
+| F40 | **BLOCK** | rules | A spell's `mana_spent` is its base mana value (`cr601_casting.py:257`, since 56e8bfd), not the mana actually spent (601.2h). Reductions and increases are ignored, and creatures tapped for convoke and cards exiled for delve count as mana, though they pay "rather than pay that mana" (702.51a, 702.66a). Expend (700.14) and every "mana spent to cast" check read it. | Emerged Wretched Gryff paid with 2 Islands: EXPENDED 1-6. Treasure Cruise with 3 Islands + 5 delved: MANA_SPENT 8, EXPENDED 1-8. |
+| F41 | **BLOCK** | rules (+ parser) | A spell's own "When you cast this spell" trigger never triggers. It functions on the stack (113.6k) and triggers as the spell becomes cast (601.2i). 27 fully-read cards (cascade excluded: it is built separately and works), among them Ulamog the Ceaseless Hunger, Sowing Mycospawn, Bruna the Fading Light, Emrakul the World Anew, Desolation Twin, World Breaker, Elder Deep-Fiend, Hope-Ender Coatl, Wretched Gryff. Same on e298898 and f0a71f4. | Wretched Gryff cast for {7}{U}: no draw. Sowing Mycospawn: no land. Kozilek, Butcher of Truth (not fully read): no draw. Control: Maelstrom Wanderer cascades twice. |
+| F42 | **BLOCK** | rules | Goad never ends: `goaded_by` is only ever added to, never cleared (701.15a: goaded "until the next turn of the controller of that spell or ability"). The goaded creature must attack forever and can never attack the goader. Also on main. (The comment cites 701.38, which is voting in this CR.) | Disrupt Decorum on turn 1: opp's Hill Giant still goaded by me on turns 2, 3 and 4. |
+| F43 | **BLOCK** | parser | Sly Instigator's "target creature an opponent controls can't be blocked. Goad that creature." is read as ALL creatures an opponent controls, with no target (rule 3/4). Counted as read. Same IR on e298898. | The ability is offered with no target group; IR "all creature an opponent controls can't be_blocked". |
+| F47 | **BLOCK** (regression, red suite) | rules | 0fb749b (the F39 fix) broke convoke paying COLOURED mana (702.51a: a creature of that colour may pay a coloured pip). The new plan asks whether the lands can pay `mana_cost.reduced_by(helped)`, and `reduced_by` only reduces generic mana. The old whole-shortfall fallback is gone, so a cast paid by creatures alone is offered (helper_capacity upper bound) and then abandoned. Creatures + 1 land for coloured pips is still never offered (F39 remainder). `tests/rules/test_end_to_end_cards.py::test_convoke_lets_creatures_pay_for_a_spell` and `::test_convoke_taps_only_what_it_needs` FAIL on 0fb749b, 636daa5, 00a6db5, 2fc5b8f, 7fbd923 (PR #18 head) and f41ece1; they pass on 15f6b8f and on the parser head 2c48a11. **My round-16 F39 verification tested only mixed payments and missed this, and I ran the suite only on e298898, not on the rules head.** | 15f6b8f → 0fb749b: Siege Wurm with 7 Bears and Stoke the Flames with 4 Raging Goblins both go from cast to 'Action abandoned: cannot pay'; Chord of Calling (X=0) with 3 Bears likewise. Siege Wurm with 3 Bears + 4 Forests goes from abandoned to cast. Not offered at either commit: 6 Bears + Forest, 3 Goblins + Mountain, Chord with 2 Bears + Forest. |
+| F44 | WARN | parser | 2c48a11's leading duration reaches past its own sentence: Algorithmic Ferocity (the fight), Besmirch (untap, goad), Sly Instigator (goad), Teferi's Protection (phase out). Harmless on the board today (the fight happens; phasing still returns on my next untap step), but goad "until end of turn" would be wrong once F42 is fixed. Fatal Frenzy, Voyager Glidecar and Dowsing Device are scoped correctly. | Census sentence scan (8 cards with a leading duration followed by another sentence). |
+| F45 | WARN | rules | Emerge's cast is offered when the reduced cost's coloured part can't be paid. The cast is then rewound, so the state stays legal. | 1 Mountain + Ulamog's Crusher: Wretched Gryff offered; perform rewinds. |
+
+Harness note: `Sandbox.next_turn()` runs a WHOLE further turn for the active player, then hands over ("Turn 2: You"). Two of my checks first misread a phase-in on my own turn 2 as the opponent's turn; re-run, Teferi's Protection is correct.
+| F46 | **BLOCK** | parser | Harnesser of Storms' "Whenever you cast a noncreature or Otter spell" is read as a noncreature Otter spell (AND instead of OR). Counted as read; same IR on e298898. | Shock cast with Harnesser on the battlefield: no trigger, nothing exiled. |
+
+Suite on f41ece1: **2 failed, 3020 passed, 5 xfailed** (929.88s). Both failures are F47.
+
+Benches on f41ece1 ():
+
+| Deck | Win rate | Stall-outs | Notes |
+|---|---|---|---|
+| stax | 30.0% | **45.0%** | Completes now (F36). No baseline: it always crashed before. It plays three copies of itself, so lock-piece stalls are plausible, but I haven't checked them. 12 inert cards. |
+| combo | 15.0% | 0.0% | |
+| aggro | 20.0% | 0.0% | |
+| control | 35.0% | 0.0% | |
+
+**Merge verdict: BLOCK, on F47.** A red suite and a convoke regression would land on main. The other new findings (F40-F43, F46) are pre-existing and don't get worse with this merge. F28 and F37 remain open. The merge decision goes back to the user.
