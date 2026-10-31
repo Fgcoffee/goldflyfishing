@@ -12,11 +12,13 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 As of round 18 (2026-10-26): PRs #17 (parser) and #18 (rules) are **merged into main** (228bb35, 19:41 UTC, merged by the rules session). The merged tree is byte-identical to the head I verified (scratch merge 9b45447, tree b51470f): suite 3031 passed, 5 xfailed, 0 failed, and all four benches complete. The earlier per-branch verdicts are in the round records below.
 
-Open BLOCKs on main (all pre-existing, none introduced by that merge):
-- **parser:** F28 (overload), F37 (Toxic Deluge cost), F43 (Sly Instigator target read as "all"), F46 (Harnesser "or" read as AND), F49 (spot check: 19 misread + 7 stronger-than-printed cards, owner-reported).
-- **rules:** F40 (mana_spent is the base mana value), F41 ("When you cast this spell" never triggers), F42 (goad never ends), F49 keyword builders (echo, cumulative upkeep, toxic, outlast, affinity for X, bolster, incubate, basic landcycling, equip [quality]).
+Open BLOCKs on main after round 19 (2026-10-31, PR #20 merged): all pre-existing, none introduced by a merge.
+- **parser:** F28 (overload), F37 (Toxic Deluge cost), F43 (Sly Instigator target read as "all"), F46 (Harnesser "or" read as AND), F49 (spot check: 19 misread + 7 stronger-than-printed cards, owner-reported), F51 (Ulamog's two targets read as one).
+- **rules:** F49 keyword builders (echo, cumulative upkeep, toxic, outlast, affinity for X, bolster, incubate, basic landcycling, equip [quality]).
 
-Open WARNs: F44 (a leading duration reaching past its own sentence), F45/F48 (helper and emerge casts offered and then rewound), stored-parse fingerprint missing data/db.py, the web Inert-cards list.
+Fixed in round 19: F40, F41, F42, F48.
+
+Open WARNs: F44 (a leading duration reaching past its own sentence), F45 (emerge offered and then rewound), F50 (greedy colour assignment hides a multicoloured convoke cast), F52 (intervening-if trigger put on the stack when false), stored-parse fingerprint missing data/db.py, the web Inert-cards list.
 
 ## Verified on the sandbox (parser branch @ 043206d)
 
@@ -412,3 +414,39 @@ Scratch merge 9b45447 (995d45d + 0a9c068) is CLEAN; the two heads have criss-cro
 Suite on 9b45447: **3031 passed, 5 xfailed, 0 failed** (932s). Benches (`--games 20 --seed 0`): stax 30% / 45% stalls, combo 15% / 0%, aggro 20% / 0%, control 35% / 0%, identical to round 17. All four complete.
 
 **Merged.** At 19:41-19:42 UTC, PRs #18, #17 and #16 were merged into main by the rules session (per its 19:46 message, acting on the user's instruction to merge once ready; GitHub shows the owner's account), main 228bb35 then fa48e1b with this log. I didn't run that merge. The rules session's own suite on d0bd33c (-n 6): 3030 passed, 5 xfailed, 1 test_cancel timing failure that passed alone; my serial run on the identical tree had 0 failures. I checked what landed: 228bb35's tree equals my tested 9b45447 tree (b51470f), and fa48e1b adds only audit/AUDIT_LOG.md. So main carries the verified head and none of the round 17-18 BLOCKs.
+
+## Round 19 (2026-10-31): PR #20, rules main-n8yjai @ f8bbf67 (F40, F41, F42, F48), merged at the user's request
+
+Three commits on top of main fa48e1b, rules code and tests only. Suite on f8bbf67: **3037 passed, 5 xfailed, 0 failed** (943s). Checked on f8bbf67:
+- **F42 FIXED** (7e2ff1c). Disrupt Decorum on my turn: still goaded through the opponent's turn, where the goaded Hill Giant attacks me (40 to 37); the goad ends as my next turn begins. The gameobject.py citation is corrected to 701.15.
+- **F48 FIXED** (7e2ff1c). Stoke the Flames with 4 green Bears, Treasure Cruise with 8 graveyard cards and no land, and Reverse Engineer with 5 Ornithopters are no longer offered. Every legal convoke case from rounds 17-18 is still offered and cast.
+- **F41 FIXED** (0758f74). Each cast trigger goes on the stack above the spell and resolves first:
+  - Wretched Gryff draws a card. Sowing Mycospawn fetches a Forest. Desolation Twin makes its 10/10 Eldrazi.
+  - No false triggers: Gryff on the battlefield doesn't draw when Shock is cast.
+  - No doubles: Maelstrom Wanderer cascades exactly twice, and each cascaded Writhing Chrysalis's own cast trigger makes 2 Spawn (4 in all).
+  - Sowing Mycospawn kicked exiles the opponent's Mountain; unkicked keeps it.
+- **F40 FIXED** (f8bbf67). `mana_spent` (with EXPENDED as shown):
+
+  | Cast | mana_spent | EXPENDED |
+  |---|---|---|
+  | Emerged Gryff, 2 Islands | 2 | 1-2 |
+  | Treasure Cruise, 3 Islands + 5 delved | 3 | 1-3 |
+  | Siege Wurm, 7 Bears | 0 | none |
+  | Siege Wurm, 4 Forests + 3 Bears | 4 | |
+  | Divination under Thalia, 4 Islands | 4 | |
+
+New findings:
+
+| # | Sev | Owner | Finding | Evidence |
+|---|---|---|---|---|
+| F50 | WARN | rules | `cost_left_for_sources` assigns coloured pips greedily in source order, so a multicoloured convoke creature can take the pip a mono-coloured one needed. Legality then hides a legal cast. Same on main (from 3c609c0). | Rosemane Centaur ({3}{G}{W}, convoke) with 3 Islands, Watchwolf (G/W) and Grizzly Bears: not offered when Watchwolf is put first; offered and cast (Bears G, Watchwolf W) when Bears is first. |
+| F51 | **BLOCK** | parser | Ulamog, the Ceaseless Hunger's "When you cast this spell, exile two target permanents" is read as ONE target ("exile target object"). Counted as read. Pre-existing; only visible now that F41 makes the trigger fire. | Opp has Sol Ring + Hill Giant: only Sol Ring is exiled. |
+| F52 | WARN | rules | An intervening-if trigger goes on the stack when its condition is false and does nothing on resolution (603.4: it should not trigger). The board outcome is right. | Unkicked Sowing Mycospawn: 2 cast triggers on the stack (the "if it was kicked" one included); the Mountain is kept. |
+
+Not a regression: Grapeshot isn't fully read (storm is inert, honestly), so a third-spell Grapeshot deals 1, same as main.
+
+Benches on f8bbf67 (`--games 20 --seed 0`): stax 30% / 45% stalls, combo 15% / 0%, aggro 20% / 0%, control 35% / 0%, identical to round 18. All four complete.
+
+**Verdict: OK to merge.** Every fix is verified on the board, the suite is green, and the benches are unchanged. F50 and F52 are WARNs, and F51 is a pre-existing parser BLOCK that this PR only exposes. The user asked for all progress to be merged into main; I merged PR #20 (rules) and then PR #19 (this log).
+
+Open BLOCKs on main after this merge: parser F28, F37, F43, F46, F49, F51; rules F49 keyword builders. WARN: F44, F45, F50, F52, stored-parse fingerprint missing data/db.py, the web Inert-cards list.
