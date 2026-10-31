@@ -1212,7 +1212,22 @@ def _do_restriction(resolution: Resolution, effect: Effect) -> None:
     # "Target player can't cast spells this turn": the player chosen as the
     # spell was cast (CR 601.2c). Read once - the target cursor moves on.
     chosen = _players(resolution, effect) if effect.targets_a_player else None
+    # "Target creature can't block this turn", "detain target permanent": the
+    # objects chosen as it was put on the stack (CR 601.2c), still legal
+    # (CR 608.2b) - not everything the target's description fits.
+    pinned_objects = None
+    if effect.is_targeted and not effect.targets_a_player:
+        from ..kernel.query import ObjectFilter
+
+        found = tuple(obj.id for obj in _objects(resolution, effect))
+        if not found:
+            return
+        pinned_objects = ObjectFilter(
+            specific=found, zones=frozenset({Zone.BATTLEFIELD})
+        )
     for restriction in effect.restrictions:
+        if pinned_objects is not None and restriction.subject in (None, effect.targets):
+            restriction = replace(restriction, subject=pinned_objects)
         players = restriction.players or effect.players
         if chosen is not None:
             pinned = chosen

@@ -493,10 +493,16 @@ def _status_action(instance: ActionInstance) -> tuple[Effect, ...]:
     from ..cr500_turn_structure.restrictions import Act, Restriction
 
     acts = {
-        "detain": (Act.ATTACK, Act.BLOCK, Act.ACTIVATE_ABILITY),
+        # CR 701.35a: can't attack or block, and none of its activated
+        # abilities - mana abilities among them - can be activated.
+        "detain": (
+            Act.ATTACK, Act.BLOCK, Act.ACTIVATE_ABILITY, Act.ACTIVATE_MANA_ABILITY,
+        ),
         "suspect": (Act.BLOCK,),
         "exert": (Act.UNTAP,),
     }[instance.key]
+    # CR 701.35a: detain lasts until the detaining player's next turn.
+    duration = Duration.YOUR_NEXT_TURN if instance.key == "detain" else Duration.PERMANENT
     return (
         Effect(
             EffectKind.RESTRICTION,
@@ -505,6 +511,7 @@ def _status_action(instance: ActionInstance) -> tuple[Effect, ...]:
                 Restriction(act=act, subject=instance.filter, text=instance.name)
                 for act in acts
             ),
+            duration=int(duration),
             text=instance.text or instance.name,
         ),
     )

@@ -620,6 +620,7 @@
     "701.31": "Planeswalk",
     "701.34": "Proliferate",
     "701.35": "Detain",
+    "701.35a": "Certain spells and abilities can detain a permanent. Until the next turn of the controller of that spell or ability, that permanent can’t attack or block and its activated abilities can’t be activated.",
     "701.36": "Populate",
     "701.37b": "Monstrous is a designation that has no rules meaning other than to act as a marker that the monstrosity action and other spells and abilities can identify. Only permanents can be or become monstrous. Once a permanent becomes monstrous, it stays monstrous until it leaves the battlefield. Monstrous is neither an ability nor part of the permanent’s copiable values.",
     "701.38": "Vote",
