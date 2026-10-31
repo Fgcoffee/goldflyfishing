@@ -79,7 +79,9 @@ def collect_triggers(game: Game, event: Event) -> None:
         obj = game.objects.get(object_id)
         if obj is None or obj.phased_out:
             continue
-        if obj.zone not in ability.trigger.functions_in:
+        if obj.zone not in ability.trigger.functions_in and not _cast_trigger_on_the_stack(
+            obj, ability.trigger
+        ):
             continue
         if not _has_the_ability_now(game, obj, ability):
             continue
@@ -167,6 +169,18 @@ def _source_for(
     ):
         return obj.id, obj.controller
     return became.id, obj.controller
+
+
+def _cast_trigger_on_the_stack(obj: GameObject, trigger) -> bool:
+    """CR 113.6k: "when you cast this spell" can't trigger from the
+    battlefield - the object is a spell when it is cast - so it functions on
+    the stack, whatever zones the ability otherwise works in."""
+    return (
+        obj.zone is Zone.STACK
+        and EventKind.CAST_SPELL in trigger.event_kinds
+        and trigger.subject is not None
+        and trigger.subject.source_only
+    )
 
 
 def _fold_into_batch(game: Game, obj: GameObject, ability: Ability, event: Event) -> bool:

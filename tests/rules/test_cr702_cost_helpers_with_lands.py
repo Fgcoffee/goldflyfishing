@@ -128,3 +128,48 @@ def test_convoke_with_creatures_and_a_land_for_a_coloured_pip(box):
     box.put("Siege Wurm", "hand", 0)
     assert cast(box, "Siege Wurm")
     assert [o.zone for o in live(box, "Siege Wurm")] == [Zone.STACK]
+
+
+def offered(box, name):
+    game = box.game
+    return any(
+        a.kind.name.startswith("CAST") and game.objects[a.source].card.name == name
+        for a in legal_actions(game, P0)
+    )
+
+
+def test_helpers_are_not_offered_for_pips_they_cannot_pay(box):
+    """F48: green creatures cannot convoke {R}{R}; delve and improvise pay
+    generic only (CR 702.51a, 702.66a, 702.126a)."""
+    need(box, "Stoke the Flames", "Grizzly Bears", "Treasure Cruise", "Reverse Engineer",
+         "Ornithopter")
+    box.put("Grizzly Bears", "battlefield", 0, count=4)
+    box.put("Stoke the Flames", "hand", 0)
+    box.put("Grizzly Bears", "graveyard", 0, count=8)
+    box.put("Treasure Cruise", "hand", 0)
+    box.put("Ornithopter", "battlefield", 0, count=5)
+    box.put("Reverse Engineer", "hand", 0)
+    assert not offered(box, "Stoke the Flames")
+    assert not offered(box, "Treasure Cruise")
+    assert not offered(box, "Reverse Engineer")
+
+
+def test_mana_spent_is_the_mana_paid_not_what_delve_covered(box):
+    """CR 601.2h, 702.66a: delve pays "rather than pay that mana". Treasure
+    Cruise with 3 Islands and 5 cards exiled had 3 mana spent on it."""
+    need(box, "Treasure Cruise", "Island", "Grizzly Bears")
+    box.put("Island", "battlefield", 0, count=3)
+    box.put("Grizzly Bears", "graveyard", 0, count=5)
+    box.put("Treasure Cruise", "hand", 0)
+    assert cast(box, "Treasure Cruise")
+    (spell,) = [o for o in live(box, "Treasure Cruise") if o.zone is Zone.STACK]
+    assert spell.mana_spent == 3
+
+
+def test_mana_spent_on_an_ordinary_cast(box):
+    need(box, "Divination", "Island")
+    box.put("Island", "battlefield", 0, count=3)
+    box.put("Divination", "hand", 0)
+    assert cast(box, "Divination")
+    (spell,) = [o for o in live(box, "Divination") if o.zone is Zone.STACK]
+    assert spell.mana_spent == 3
