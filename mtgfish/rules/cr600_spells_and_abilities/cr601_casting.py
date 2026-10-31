@@ -1369,27 +1369,52 @@ def _pay_with_helpers(
         return 0
     paid = 0
 
+    from ..cr100_game_concepts.cr106_mana import ManaSymbolKind
+    from ..kernel.enums import Color
+
+    pip_colours = [
+        int(symbol.colors)
+        for symbol in cost.symbols
+        if symbol.kind is ManaSymbolKind.COLORED
+    ]
     for keyword, resource, coloured in _COST_HELPERS:
         if not chars.has_keyword(keyword.lower()):
             continue
-        for source in _helper_sources(game, player_id, resource):
+        sources = [
+            source
+            for source in _helper_sources(game, player_id, resource)
+            if resource == "graveyard"
+            or (
+                not source.tapped
+                and (
+                    resource != "creature"
+                    or game.characteristics(source).has_type(CardType.CREATURE)
+                )
+            )
+        ]
+        colour_of: dict = {}
+        if coloured:
+            # CR 702.51a: each creature makes the colour of the pip the
+            # matching gives it, and those creatures are tapped first.
+            masks = [int(game.characteristics(source).colors) for source in sources]
+            assigned = colour_matching(masks, pip_colours)
+            for source, mask, pip in zip(sources, masks, assigned):
+                if pip >= 0:
+                    colour_of[source.id] = Color(pip_colours[pip] & mask & -(pip_colours[pip] & mask))
+            sources.sort(key=lambda source: source.id not in colour_of)
+        for source in sources:
             if shortfall <= 0:
                 return paid
             if resource == "graveyard":
                 game.move_object(source, Zone.EXILE)
                 player.mana_pool.add(ManaKind(), 1)
             else:
-                if source.tapped:
-                    continue
-                if resource == "creature" and not game.characteristics(
-                    source
-                ).has_type(CardType.CREATURE):
-                    continue
                 source.tapped = True
-                colours = list(game.characteristics(source).colors) if coloured else []
-                player.mana_pool.add(
-                    ManaKind(colours[0]) if colours else ManaKind(), 1
-                )
+                colour = colour_of.get(source.id)
+                if colour is None and coloured:
+                    colours = list(game.characteristics(source).colors)
+                    colour = colours[0] if colours else None
+                player.mana_pool.add(ManaKind(colour) if colour else ManaKind(), 1)
             shortfall -= 1
             paid += 1
     return paid
@@ -1411,6 +1436,39 @@ def helper_capacity(game: Game, spell: GameObject, player_id: PlayerId) -> int:
     return total
 
 
+def colour_matching(helper_colours: list[int], pip_colours: list[int]) -> list[int]:
+    """Which coloured pip each helper pays, as a maximum matching.
+
+    CR 702.51a: a convoke creature pays for one coloured mana of one of its
+    colours. Handing pips out in order lets a two-colour creature take the
+    pip only it and a one-colour creature could pay, and the one-colour
+    creature is left with nothing - so legality hid a cast that could be
+    made. Returns, per helper, the index of the pip it pays, or -1.
+    A spell has a handful of pips and a board a handful of creatures; the
+    augmenting-path search is small.
+    """
+    owner = [-1] * len(pip_colours)
+
+    def place(helper: int, seen: set) -> bool:
+        for pip, colours in enumerate(pip_colours):
+            if pip in seen or not colours & helper_colours[helper]:
+                continue
+            seen.add(pip)
+            if owner[pip] < 0 or place(owner[pip], seen):
+                owner[pip] = helper
+                return True
+        return False
+
+    for helper in range(len(helper_colours)):
+        if helper_colours[helper]:
+            place(helper, set())
+    assigned = [-1] * len(helper_colours)
+    for pip, helper in enumerate(owner):
+        if helper >= 0:
+            assigned[helper] = pip
+    return assigned
+
+
 def cost_left_for_sources(game: Game, spell: GameObject, player_id: PlayerId, cost):
     """What lands and other mana sources must still make once convoke,
     improvise and delve have paid all they can.
@@ -1424,8 +1482,7 @@ def cost_left_for_sources(game: Game, spell: GameObject, player_id: PlayerId, co
     from ..kernel.enums import CardType
 
     chars = as_it_would_be_cast(game, spell, game.characteristics(spell))
-    spare = 0
-    symbols = list(cost.symbols)
+    helper_colours: list[int] = []
     for keyword, resource, coloured in _COST_HELPERS:
         if not chars.has_keyword(keyword.lower()):
             continue
@@ -1437,14 +1494,19 @@ def cost_left_for_sources(game: Game, spell: GameObject, player_id: PlayerId, co
                     CardType.CREATURE
                 ):
                     continue
-            colours = int(game.characteristics(source).colors) if coloured else 0
-            for index, symbol in enumerate(symbols):
-                if symbol.kind is ManaSymbolKind.COLORED and int(symbol.colors) & colours:
-                    del symbols[index]
-                    break
-            else:
-                spare += 1
-    return ManaCost(tuple(symbols)).reduced_by(spare)
+            helper_colours.append(
+                int(game.characteristics(source).colors) if coloured else 0
+            )
+    pips = [
+        index
+        for index, symbol in enumerate(cost.symbols)
+        if symbol.kind is ManaSymbolKind.COLORED
+    ]
+    assigned = colour_matching(helper_colours, [int(cost.symbols[i].colors) for i in pips])
+    paid = {pips[pip] for pip in assigned if pip >= 0}
+    spare = sum(1 for pip in assigned if pip < 0)
+    left = tuple(symbol for index, symbol in enumerate(cost.symbols) if index not in paid)
+    return ManaCost(left).reduced_by(spare)
 
 
 def _helper_sources(game: Game, player_id: PlayerId, resource: str):
