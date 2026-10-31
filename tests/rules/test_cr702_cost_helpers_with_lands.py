@@ -173,3 +173,19 @@ def test_mana_spent_on_an_ordinary_cast(box):
     assert cast(box, "Divination")
     (spell,) = [o for o in live(box, "Divination") if o.zone is Zone.STACK]
     assert spell.mana_spent == 3
+
+
+@pytest.mark.parametrize("watchwolf_first", [True, False])
+def test_a_two_colour_creature_does_not_take_a_pip_only_it_could_share(box, watchwolf_first):
+    """F50, CR 702.51a: Rosemane Centaur ({3}{G}{W}) with three Islands,
+    Watchwolf (G/W) and Grizzly Bears (G). The Bears pay {G} and the Watchwolf
+    {W}, whichever is first on the battlefield."""
+    need(box, "Rosemane Centaur", "Watchwolf", "Grizzly Bears", "Island")
+    box.put("Island", "battlefield", 0, count=3)
+    first, second = ("Watchwolf", "Grizzly Bears") if watchwolf_first else (
+        "Grizzly Bears", "Watchwolf")
+    box.put(first, "battlefield", 0)
+    box.put(second, "battlefield", 0)
+    box.put("Rosemane Centaur", "hand", 0)
+    assert cast(box, "Rosemane Centaur")
+    assert [o.zone for o in live(box, "Rosemane Centaur")] == [Zone.STACK]
