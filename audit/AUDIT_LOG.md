@@ -12,13 +12,16 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 As of round 18 (2026-10-26): PRs #17 (parser) and #18 (rules) are **merged into main** (228bb35, 19:41 UTC, merged by the rules session). The merged tree is byte-identical to the head I verified (scratch merge 9b45447, tree b51470f): suite 3031 passed, 5 xfailed, 0 failed, and all four benches complete. The earlier per-branch verdicts are in the round records below.
 
-Open BLOCKs on main after round 19 (2026-10-31, PR #20 merged): all pre-existing, none introduced by a merge.
-- **parser:** F28 (overload), F37 (Toxic Deluge cost), F43 (Sly Instigator target read as "all"), F46 (Harnesser "or" read as AND), F49 (spot check: 19 misread + 7 stronger-than-printed cards, owner-reported), F51 (Ulamog's two targets read as one).
-- **rules:** F49 keyword builders (echo, cumulative upkeep, toxic, outlast, affinity for X, bolster, incubate, basic landcycling, equip [quality]).
+Open BLOCKs on main after round 20 (2026-10-31, PRs #20, #21 and #22 merged; main 0be4605). All pre-existing; none introduced by a merge.
+- **parser:** F28 (overload), F37 (Toxic Deluge cost), F43 (Sly Instigator target read as "all"), F46 (Harnesser "or" read as AND), F49 (spot check: 19 misread + 7 stronger-than-printed cards, owner-reported).
+- **rules:**
+  - F49 keyword builders (echo, cumulative upkeep, toxic, outlast, affinity for X, bolster, incubate, basic landcycling, equip [quality]).
+  - F51 (every target chooser takes one target per group, so "two target" effects hit one).
+  - F53 (a player's protection from everything does nothing for targeting).
 
-Fixed in round 19: F40, F41, F42, F48.
+Fixed in rounds 19-20: F40, F41, F42, F48, F50, the protection-from-everything regression (PR #21), and the stored-parse fingerprint WARN.
 
-Open WARNs: F44 (a leading duration reaching past its own sentence), F45 (emerge offered and then rewound), F50 (greedy colour assignment hides a multicoloured convoke cast), F52 (intervening-if trigger put on the stack when false), stored-parse fingerprint missing data/db.py, the web Inert-cards list.
+Open WARNs: F44 (a leading duration reaching past its own sentence), F45 (emerge offered and then rewound), F52 (intervening-if trigger put on the stack when false), the web Inert-cards list.
 
 ## Verified on the sandbox (parser branch @ 043206d)
 
@@ -450,3 +453,32 @@ Benches on f8bbf67 (`--games 20 --seed 0`): stax 30% / 45% stalls, combo 15% / 0
 **Verdict: OK to merge.** Every fix is verified on the board, the suite is green, and the benches are unchanged. F50 and F52 are WARNs, and F51 is a pre-existing parser BLOCK that this PR only exposes. The user asked for all progress to be merged into main; I merged PR #20 (rules) and then PR #19 (this log).
 
 Open BLOCKs on main after this merge: parser F28, F37, F43, F46, F49, F51; rules F49 keyword builders. WARN: F44, F45, F50, F52, stored-parse fingerprint missing data/db.py, the web Inert-cards list.
+
+## Round 20 (2026-10-31): PR #21, parser acc2374 (protection from everything, exile all graveyards)
+
+**Regression on main, found by the parser session:** since rules ea4baf7 (F27: a quality of None protects from NOTHING), "protection from everything", which the parser emitted with quality None, protects from nothing. On main 799f347, Lightning Bolt targets the opponent's Progenitus, my Giant Growth targets my Progenitus, and Grizzly Bears can block it. **I passed F27 in round 17 after testing only colour protection; I should have tested "everything" too.** Affected cards include Progenitus, Hexdrinker, The Stasis Coffin, Vexilus Praetor, The One Ring and Teferi's Protection.
+
+Checked on acc2374 (one commit on main 799f347, parser only):
+- **Fixed:** Bolt can't target Progenitus; Giant Growth can't target it; Bears can't block it. Wrath of God still destroys it (protection doesn't stop an untargeted destroy, 702.16).
+- Controls unchanged: Bolt targets White Knight and Disfigure can't; Raging Goblin can't block Foothill Guide (pro-Goblins) and Grizzly Bears can.
+- "Exile all graveyards" now has no count, where it was 0. Rest in Peace and Relic of Progenitus empty both graveyards on main and on the PR alike, so this is a cleanup.
+- The stored-parse fingerprint now includes data/db.py (my round-18 WARN, closed).
+- Census acc2374 vs main's parser (f41ece1): +0 / -0, 12 cards, 18 abilities changed, all protection from everything or "exile all graveyards". ACCEPTED.
+
+New findings:
+
+| # | Sev | Owner | Finding | Evidence |
+|---|---|---|---|---|
+| F51 | **BLOCK** (reassigned to rules) | rules + AI | The parser reads Ulamog's "two target permanents" as count=2, targeted (the user's rule: a correct reading is the parser's job done). Every target chooser (PassingAgent, the sandbox agent, and the bots' SimpleAgent `choose_targets`) takes ONE target per group whatever the count, and the cast accepts it (601.2c: "two target" needs two). So every "N target" spell or ability resolves on one target in simulations. | Wicked Pact ("destroy two target nonblack creatures") with the default choice: only Grizzly Bears dies. With both targets passed explicitly: both die, so resolution is right. |
+| F53 | **BLOCK** | rules | A player's "protection from everything" (Teferi's Protection, The One Ring, The Stasis Coffin) does nothing for targeting. Teferi's Protection is counted fully read. Same on main and on acc2374. | After Teferi's Protection resolves, the opponent's Lightning Bolt still lists "You" as a target. |
+
+Suite on acc2374: **3038 passed, 5 xfailed, 0 failed.** **Verdict: OK.** The user asked for all progress to be merged; I merged PR #21 into main (1cedc9c).
+
+### Rules 350af08: convoke creatures matched to pips (F50)
+
+One commit on 799f347; checked merged with main 1cedc9c (scratch a38da50, clean). `colour_matching` is a maximum bipartite matching (augmenting paths), used by both legality (`cost_left_for_sources`) and payment (`_pay_with_helpers`, which taps the matched creatures first for their matched colour).
+- **F50 FIXED.** Rosemane Centaur ({3}{G}{W}) with 3 Islands + Watchwolf + Bears casts in either order. With 2 Watchwolves + 3 Islands it casts. With 4 mixed creatures + 1 Island it casts.
+- Correctly not offered: 2 Bears (no white source) and 1 Watchwolf + 4 Islands (one pip unpaid).
+- Every earlier convoke, delve and improvise case (rounds 17-19) gives the same result. mana_spent and EXPENDED are unchanged (2, 3, 0, 4, 4).
+- Suite on a38da50: **3040 passed, 5 xfailed, 0 failed.** Benches (`--games 20 --seed 0`): stax 30% / 45% stalls, combo 15% / 0%, aggro 20% / 0%, control 35% / 0%, identical to rounds 18-19.
+- **Verdict: OK.** There was no PR for it, so at the user's request ("merge all the progress into main") I opened PR #22 for main-n8yjai and merged it (main 0be4605).
