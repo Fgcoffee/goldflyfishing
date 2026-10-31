@@ -41,9 +41,14 @@ def test_protection_from_two_colours_is_two_abilities_with_qualities():
     assert all(not a.quality.zones for a in granted)
 
 
-def test_protection_from_everything_has_no_quality():
+def test_protection_from_everything_is_a_quality_everything_matches():
+    """CR 702.16j. Not ``None``: the engine reads a missing quality as one
+    that was never stated, which protects from nothing."""
+    from mtgfish.rules.kernel.query import ObjectFilter
+
     (ability,) = _grants(_read("You gain protection from everything until your next turn."))
-    assert ability.keyword == "Protection" and ability.quality is None
+    assert ability.keyword == "Protection"
+    assert ability.quality == ObjectFilter(zones=frozenset())
 
 
 def test_protection_from_a_choice_is_not_read():

@@ -81,3 +81,13 @@ def test_protection_from_a_creature_type(board):
     guide = board.play("Foothill Guide", controller=1)
     assert not can_block(board.game, board.play("Goblin Piker"), guide)
     assert can_block(board.game, board.play("Grizzly Bears"), guide)
+
+
+def test_protection_from_everything(board):
+    """CR 702.16j, Progenitus. Read with no quality, it protected from
+    nothing once the engine stopped treating a missing quality as
+    everything."""
+    progenitus = board.play("Progenitus", controller=1)
+    assert not targetable(board, "Lightning Bolt", progenitus)
+    assert not targetable(board, "Giant Growth", progenitus)
+    assert not can_block(board.game, board.play("Grizzly Bears"), progenitus)
