@@ -41,7 +41,7 @@ _PACKAGE = Path(__file__).resolve().parent.parent
 
 #: The source the parser's output depends on.
 _CODE_ROOTS = ("parser", "rules")
-_CODE_FILES = ("data/cards.py",)
+_CODE_FILES = ("data/cards.py", "data/db.py")
 
 
 def store_path() -> Path:

@@ -1893,16 +1893,17 @@ def _keyword_with_argument(stream: Stream):
 #: The colour words a protection quality can name (CR 105.1).
 _COLOUR_QUALITIES = ("white", "blue", "black", "red", "green")
 
-#: "Protection from everything" (CR 702.16j): the keyword with no quality,
-#: which ``protected_from`` treats as matching any source.
+#: "Protection from everything" (CR 702.16j): a quality every object matches -
+#: no constraint and no zone. Not ``None``, which the engine reads as a quality
+#: that was never stated and so protects from nothing.
 _EVERYTHING = object()
 
 
 def _protection_qualities(stream: Stream):
     """"from red", "from red and from blue", "from everything", "from Humans".
 
-    One filter per quality, ``None`` standing for everything, or ``None``
-    overall for a quality that cannot be expressed. The filters carry no zone,
+    One filter per quality (everything is a filter with no constraint), or
+    ``None`` overall for a quality that cannot be expressed. The filters carry no zone,
     because a quality is asked of a source wherever it is - a spell on the
     stack, an ability's source, an attacking creature.
 
@@ -1917,7 +1918,7 @@ def _protection_qualities(stream: Stream):
         quality = _one_quality(stream)
         if quality is None:
             return None
-        qualities.append(None if quality is _EVERYTHING else quality)
+        qualities.append(ObjectFilter(zones=frozenset()) if quality is _EVERYTHING else quality)
         look = stream.mark()
         stream.skip_punct(",")
         stream.accept("and")
@@ -7420,7 +7421,7 @@ def _exile_zone(stream: Stream) -> Effect | None:
         return None
     return Effect(
         EffectKind.EXILE,
-        targets=ObjectFilter(zones=frozenset({Zone.GRAVEYARD}), count=0),
+        targets=ObjectFilter(zones=frozenset({Zone.GRAVEYARD})),
         zone=Zone.EXILE,
         text="exile every graveyard",
     )
