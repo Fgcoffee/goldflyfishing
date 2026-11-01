@@ -362,6 +362,9 @@ class TokenSpec:
     enters_attacking: bool = False
     #: A token copy of an existing object rather than a fresh definition.
     copy_of: ObjectFilter | None = None
+    #: CR 111.10i, 712: a double-faced token's back face. The token is made
+    #: front face up and transforms into this.
+    back: TokenSpec | None = None
 
     def __str__(self) -> str:
         """What this token is, for the round-trip explainer.

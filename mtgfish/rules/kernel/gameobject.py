@@ -139,6 +139,11 @@ class GameObject:
     #: their most recent turn began" - without having to reconstruct when each
     #: player's last turn was.
     summoning_sick: bool = True
+    #: CR 702.30a: whether this permanent was summoning sick as its
+    #: controller's latest untap step ended it - that is, it came under their
+    #: control since their previous turn, and so since their last upkeep.
+    #: Read at the upkeep that follows; recomputed every untap step.
+    arrived_since_last_turn: bool = False
     #: For "entered the battlefield this turn" queries, which is a different
     #: question from summoning sickness.
     entered_battlefield_turn: int = -1

@@ -1913,21 +1913,42 @@ def _infect(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Toxic", "Poisonous")
+@register("Toxic")
 def _toxic(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.164a / 702.70a: combat damage to a player also gives poison."""
+    """CR 702.164a: toxic is a static ability. "Toxic N" is read by the
+    damage routine (CR 702.164c, 120.3g): the player this creature deals
+    combat damage to gets poison counters equal to its total toxic value.
+
+    Built as a trigger poisoning each opponent, it hit players the creature
+    never touched, and only after a trip through the stack.
+    """
+    return (
+        Ability(
+            AbilityKind.STATIC,
+            keyword="Toxic",
+            # CR 702.164b: this instance's N, summed across instances.
+            quality=Value.of(max(1, instance.amount)),
+            text=instance.text or f"{instance.name} {instance.amount}",
+        ),
+    )
+
+
+@register("Poisonous")
+def _poisonous(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.70a: "Whenever this creature deals combat damage to a player,
+    that player gets N poison counters." That player is the one damaged."""
     return (
         Ability.triggered(
             TriggerCondition(
                 event_kinds=frozenset({EventKind.COMBAT_DAMAGE_DEALT}),
                 source=ObjectFilter(source_only=True),
-                players=EACH_OPPONENT,
+                players=PlayerFilter(PlayerScope.EACH_PLAYER),
                 functions_in=BATTLEFIELD,
                 text="whenever this deals combat damage to a player",
             ),
             Effect(
                 EffectKind.ADD_POISON,
-                players=EACH_OPPONENT,
+                players=PlayerFilter(PlayerScope.TRIGGER_PLAYER),
                 amount=Value.of(max(1, instance.amount)),
             ),
             text=instance.text or f"{instance.name} {instance.amount}",
@@ -1971,19 +1992,27 @@ def _typecycling(instance: KeywordInstance) -> tuple[Ability, ...]:
     """
     from ..kernel.enums import Supertype
 
+    # CR 702.29e: "a [type] card" - one card. A filter with no count
+    # means every matching card, which is what the ability claimed to find.
+    one = Value.of(1)
     key = instance.key
     if key in _CYCLING_SEARCH:
         wanted = ObjectFilter(
-            subtypes_any=(_CYCLING_SEARCH[key],), zones=frozenset({Zone.LIBRARY})
+            subtypes_any=(_CYCLING_SEARCH[key],),
+            zones=frozenset({Zone.LIBRARY}),
+            count=one,
         )
     elif key == "basic landcycling":
         wanted = ObjectFilter(
             types_all=CardType.LAND,
             supertypes_all=Supertype.BASIC,
             zones=frozenset({Zone.LIBRARY}),
+            count=one,
         )
     else:
-        wanted = ObjectFilter(types_all=CardType.LAND, zones=frozenset({Zone.LIBRARY}))
+        wanted = ObjectFilter(
+            types_all=CardType.LAND, zones=frozenset({Zone.LIBRARY}), count=one
+        )
 
     cost = _discard_this_card(instance.cost)
     return (
@@ -2566,7 +2595,31 @@ def _station(instance: KeywordInstance) -> tuple[Ability, ...]:
     )
 
 
-@register("Outlast", "Level Up", "Boast", "Exhaust",
+@register("Outlast")
+def _outlast(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.107a: "[Cost], {T}: Put a +1/+1 counter on this creature.
+    Activate only as a sorcery." Built without the {T}, it could be
+    activated any number of times a turn, and by a creature still sick."""
+    return (
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(
+                Effect(
+                    EffectKind.ADD_COUNTERS,
+                    counter_type="+1/+1",
+                    amount=Value.of(1),
+                    text="put a +1/+1 counter on this creature",
+                ),
+            ),
+            cost=(instance.cost or Cost(())).plus(Cost.tap()),
+            timing=Timing.SORCERY,
+            keyword=instance.name,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Level Up", "Boast", "Exhaust",
           "Harmonize", "Craft", "Job select", "Specialize")
 def _counter_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Activated keywords whose effect is putting counters on this permanent."""
@@ -3130,6 +3183,34 @@ def _haunt(instance: KeywordInstance) -> tuple[Ability, ...]:
 # -- upkeep costs ------------------------------------------------------------
 
 
+def _pay_or_sacrifice(
+    cost: Cost, text: str, times: Value | None = None
+) -> tuple[Effect, ...]:
+    """"Sacrifice it unless you pay [cost]": you may pay; if you don't -
+    declined, or the payment could not be made - sacrifice it.
+
+    CR 608.2d: the choice is made on resolution, and an unpaid cost is an
+    option not taken, which ``IF_YOU_DONT`` reads from the resolution.
+    """
+    pay = Effect(
+        EffectKind.PAY_COST,
+        players=YOU,
+        pay_cost=cost,
+        amount=times if times is not None else Value.of(0),
+        text=text,
+    )
+    return (
+        Effect(EffectKind.OPTIONAL, children=(pay,), text=f"you may {text}"),
+        Effect(
+            EffectKind.IF_YOU_DONT,
+            children=(
+                Effect(EffectKind.SACRIFICE, targets=SOURCE_ONLY, text="sacrifice it"),
+            ),
+            text="if you don't, sacrifice it",
+        ),
+    )
+
+
 @register("Echo")
 def _echo(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.30a: "At the beginning of your upkeep, if this came under your
@@ -3141,24 +3222,16 @@ def _echo(instance: KeywordInstance) -> tuple[Ability, ...]:
     return (
         Ability(
             AbilityKind.TRIGGERED,
-            effects=(
-                Effect(
-                    EffectKind.OPTIONAL,
-                    otherwise=(
-                        Effect(
-                            EffectKind.SACRIFICE, targets=SOURCE_ONLY, text="sacrifice it"
-                        ),
-                    ),
-                    text="pay the echo cost, or sacrifice it",
-                ),
+            effects=_pay_or_sacrifice(
+                instance.cost or Cost(()), "pay the echo cost"
             ),
-            cost=instance.cost or Cost(()),
             trigger=TriggerCondition(
                 event_kinds=frozenset({EventKind.UPKEEP}),
                 players=PlayerFilter(PlayerScope.YOU),
+                # CR 702.30a, 603.4: checked as it triggers and as it resolves.
                 intervening_if=Condition(
                     kind=ConditionKind.CONTROLS_MATCHING,
-                    filter=ObjectFilter(source_only=True, entered_this_turn=None),
+                    filter=ObjectFilter(source_only=True, arrived_since_last_turn=True),
                     constraint=NumericConstraint.at_least(1),
                     text="it came under your control since your last upkeep",
                 ),
@@ -3179,6 +3252,7 @@ def _cumulative_upkeep(instance: KeywordInstance) -> tuple[Ability, ...]:
     The counter goes on first, so the first upkeep already costs one - a
     detail that decides whether a Fading-style card lives an extra turn.
     """
+    age = Value(ValueKind.COUNTERS, counter_type="age")
     return (
         Ability(
             AbilityKind.TRIGGERED,
@@ -3190,17 +3264,13 @@ def _cumulative_upkeep(instance: KeywordInstance) -> tuple[Ability, ...]:
                     amount=Value.of(1),
                     text="put an age counter on it",
                 ),
-                Effect(
-                    EffectKind.OPTIONAL,
-                    otherwise=(
-                        Effect(
-                            EffectKind.SACRIFICE, targets=SOURCE_ONLY, text="sacrifice it"
-                        ),
-                    ),
-                    text="pay the cumulative upkeep, or sacrifice it",
+                # CR 702.24a: the cost once for each age counter, as one payment.
+                *_pay_or_sacrifice(
+                    instance.cost or Cost(()),
+                    "pay the upkeep cost for each age counter",
+                    times=age,
                 ),
             ),
-            cost=instance.cost or Cost(()),
             trigger=TriggerCondition(
                 event_kinds=frozenset({EventKind.UPKEEP}),
                 players=PlayerFilter(PlayerScope.YOU),
