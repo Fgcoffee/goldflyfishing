@@ -3278,7 +3278,7 @@ def _cant(stream: Stream) -> Effect | None:
     """
     from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
-    subject, _ = parse_target(stream)
+    subject, targeted = parse_target(stream)
     if subject is None:
         return None
     if not stream.accept_phrase("can't") and not stream.accept("cannot"):
@@ -3369,9 +3369,13 @@ def _cant(stream: Stream) -> Effect | None:
     # left the phrase unconsumed and failed the whole ability - which is why
     # "this turn ." was the single largest remaining failure cluster.
     duration = _duration(stream)
+    # "Target creature can't block this turn": the creature chosen as a
+    # target, not every creature (auditor's F43 - read untargeted, Chainwhip
+    # Cyclops stopped all creatures from blocking).
     forbidden = Effect(
         EffectKind.RESTRICTION,
         targets=subject,
+        is_targeted=targeted,
         restrictions=tuple(_cant_restriction(act, subject, protected_by_act) for act in acts),
         duration=duration,
         text="can't",
