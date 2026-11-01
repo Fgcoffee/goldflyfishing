@@ -8509,16 +8509,43 @@ def _leading_duration(stream: Stream) -> Effect | None:
         return None
     stream.skip_punct(",")
 
-    inner = parse_effects(stream)
-    if inner is None:
+    # Only this sentence: "Until end of turn, target creature gains flying.
+    # Goad it." - the goad is not until end of turn (auditor's F44). The
+    # sentence is read on its own and the cursor moves past it; what follows
+    # is read by the caller as the next sentence.
+    end = _sentence_end(stream)
+    sentence = Stream(stream.tokens[stream.pos:end])
+    inner = parse_effects(sentence)
+    if inner is None or not sentence.done:
         stream.reset(mark)
         return None
+    # A reader can step past the end of its tokens; the sentence ends here.
+    stream.pos += min(sentence.pos, len(sentence.tokens))
     return Effect(
         EffectKind.SEQUENCE,
         children=tuple(inner) if window else tuple(_stamp(effect, duration) for effect in inner),
         duration=duration,
         text="for a duration",
     )
+
+
+def _sentence_end(stream: Stream) -> int:
+    """The index of the period closing the sentence at the cursor.
+
+    The period itself is left for the caller: it is what tells the effect
+    reader that a following "If that creature is legendary, draw a card." is
+    a sentence of its own, not an "if" trailing the effect just read (Venat).
+    A period inside a quoted ability ("... gains "{T}: Add {G}."") does not
+    close the sentence it sits in.
+    """
+    quoted = False
+    for index in range(stream.pos, len(stream.tokens)):
+        text = stream.tokens[index].text
+        if text == '"':
+            quoted = not quoted
+        elif text == "." and not quoted:
+            return index
+    return len(stream.tokens)
 
 
 #: Wrappers whose children happen as part of the same instruction, and so
