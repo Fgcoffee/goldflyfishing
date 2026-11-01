@@ -41,7 +41,7 @@ from ..cr100_game_concepts.cr118_costs import (
 from ..kernel.enums import Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.gameobject import GameObject
-from ..kernel.ids import NO_OBJECT, ObjectId, PlayerId
+from ..kernel.ids import NO_OBJECT, NO_PLAYER, ObjectId, PlayerId
 from .abilities import Ability, AbilityKind
 from .effects import Effect, EffectKind
 
@@ -1015,7 +1015,13 @@ def choose_targets(game: Game, source: GameObject, effects: list, player_id: Pla
     else:
         picked = chooser(game, player_id, source.id, candidates)
 
-    return settle_target_choices(effects, candidates, picked, fill_required=True)
+    bounds = [
+        target_bounds(game, effect, player_id, getattr(source, "x_value", 0))
+        for effect in effects
+    ]
+    return settle_target_choices(
+        effects, candidates, picked, fill_required=True, bounds=bounds
+    )
 
 
 def _required(effect) -> bool:
@@ -1077,7 +1083,28 @@ def distinct_targets_available(effects, candidates) -> bool:
     return distinct_assignment(effects, candidates) is not None
 
 
-def settle_target_choices(effects, candidates, picked, *, fill_required: bool) -> tuple:
+def target_bounds(game: Game, effect, controller=NO_PLAYER, x_value: int = 0) -> tuple:
+    """How many targets one targeting instruction takes: (fewest, most).
+
+    CR 601.2c, 115.1d: "two target creatures" is exactly two, "up to two"
+    is none to two, "any number of target" is none to all; a plain "target"
+    is one. ``None`` for "most" is no limit. A player named as the target is
+    one player, however many of their objects the instruction acts on.
+    """
+    spec = effect.targets
+    if spec is None or effect.targets_its_player:
+        return 1, 1
+    if spec.count is None:
+        return (0, None) if spec.up_to else (1, 1)
+    from ..kernel.values import evaluate
+
+    most = max(0, evaluate(game, spec.count, controller=controller, x_value=x_value))
+    return (0 if spec.up_to else most), most
+
+
+def settle_target_choices(
+    effects, candidates, picked, *, fill_required: bool, bounds=None
+) -> tuple:
     """What an agent chose, cut down to what the rules allow.
 
     Anything not offered is dropped. CR 115.3: the same object can't be
@@ -1099,14 +1126,22 @@ def settle_target_choices(effects, candidates, picked, *, fill_required: bool) -
                 and not (effect.distinct_from_earlier_targets and object_id in earlier)
             )
         )
-        if fill_required and not kept and legal and _required(effect):
+        fewest, most = bounds[index] if bounds is not None and index < len(bounds) else (
+            0, None
+        )
+        if most is not None:
+            kept = kept[:most]
+        # CR 601.2c: "two target creatures" takes two whenever two can be
+        # chosen - an agent that names one has the rest filled for it.
+        wanted = max(fewest, 1 if fill_required and _required(effect) else 0)
+        if len(kept) < wanted and legal:
             free = [
                 object_id
                 for object_id in candidates[index]
-                if not (effect.distinct_from_earlier_targets and object_id in earlier)
+                if object_id not in kept
+                and not (effect.distinct_from_earlier_targets and object_id in earlier)
             ]
-            if free:
-                kept = (free[0],)
+            kept = kept + tuple(free[: wanted - len(kept)])
         cleaned.append(kept)
         earlier.update(kept)
     if fill_required and any(
@@ -1158,6 +1193,12 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
         optional = effect.target_optional
         if not chosen and not optional:
             raise CastError("a required target was not chosen")
+        # CR 601.2c: the stated number of targets, no fewer and no more.
+        fewest, most = target_bounds(game, effect, spell.controller, spell.x_value)
+        if len(chosen) < fewest:
+            raise CastError(f"{fewest} targets are required, {len(chosen)} chosen")
+        if most is not None and len(chosen) > most:
+            raise CastError(f"at most {most} targets may be chosen")
         for object_id in chosen:
             if object_id < 0:
                 # A player target (CR 115.4). Players cannot be destroyed or
