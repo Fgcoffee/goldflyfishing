@@ -906,6 +906,7 @@ def _candidates_for(
     flat list, because the chooser picks from it and the encoding keeps the
     two apart.
     """
+    from ..cr100_game_concepts.actions import player_shielded_from
     from ..kernel.ids import player_target
     from ..kernel.matching import find
 
@@ -916,7 +917,11 @@ def _candidates_for(
         # Prismari Command in one deck was enough to fail every simulation.
         # "Target player sacrifices a creature" has a filter, but it says what
         # the player will sacrifice, not what is targeted (CR 115.1).
-        return [player_target(pid) for pid in _targetable_players(game, effect.players, player_id)]
+        return [
+            player_target(pid)
+            for pid in _targetable_players(game, effect.players, player_id)
+            if not player_shielded_from(game, pid, source, player_id)
+        ]
 
     out = [
         candidate.id
@@ -929,6 +934,9 @@ def _candidates_for(
         out.extend(
             player_target(player.id)
             for player in game.living_players
+            # CR 702.16b, 702.11b, 702.18a: a player can have abilities that
+            # stop them being targeted.
+            if not player_shielded_from(game, player.id, source, player_id)
         )
     return out
 
@@ -1208,6 +1216,12 @@ def _validate_targets(game: Game, spell: GameObject, targets: tuple) -> None:
 
                 if game.player(target_player(object_id)).has_lost:
                     raise CastError("that player has left the game")
+                from ..cr100_game_concepts.actions import player_shielded_from
+
+                if player_shielded_from(
+                    game, target_player(object_id), spell, spell.controller
+                ):
+                    raise CastError("that player can't be the target of this")
                 _check_player_target(game, effect, object_id, spell.controller)
                 continue
             if effect.targets_a_player:

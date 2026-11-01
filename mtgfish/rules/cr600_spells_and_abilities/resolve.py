@@ -2406,6 +2406,38 @@ def _register_continuous(resolution: Resolution, effect: Effect) -> None:
     game = resolution.game
     resolved_effect = effect
 
+    if (
+        effect.kind is EffectKind.GRANT_ABILITY
+        and effect.targets is None
+        and effect.players is not None
+    ):
+        # CR 702.11a, 702.16a: "you gain protection from everything", "you
+        # have hexproof" - an ability a player has. Registered per player,
+        # aimed at no object, so it lasts its duration like any other effect.
+        from dataclasses import replace as _replace
+
+        from ..kernel.game import ContinuousEffect
+        from ..kernel.query import ObjectFilter, PlayerFilter
+
+        for player_id in _players(resolution, effect):
+            game.continuous_effects.append(
+                ContinuousEffect(
+                    effect=_replace(
+                        effect,
+                        players=PlayerFilter(effect.players.scope, specific=player_id),
+                        targets=ObjectFilter(specific=(NO_OBJECT,)),
+                    ),
+                    source=resolution.source,
+                    controller=resolution.controller,
+                    timestamp=game.ids.timestamp(),
+                    layer=int(layer_for(effect)),
+                    duration=effect.duration or int(Duration.PERMANENT),
+                    created_turn=game.turn,
+                )
+            )
+        game.invalidate_characteristics()
+        return
+
     # CR 611.2c: an effect that modifies characteristics or changes control
     # settles the set of objects it affects when it begins, and that set never
     # changes afterwards. An effect that does neither modifies the rules of the

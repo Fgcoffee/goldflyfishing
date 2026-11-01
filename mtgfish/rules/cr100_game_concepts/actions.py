@@ -482,6 +482,12 @@ def _damage_player(
     """Damage to a player causes that much life loss (CR 120.3a)."""
     player = game.player(player_id)
 
+    # CR 702.16e: damage from a source the player has protection from is
+    # prevented.
+    if player_protected_from(game, player_id, game.objects.get(source)):
+        game.log.record(game, f"{player.name} has protection; damage prevented", kind="protection")
+        return 0
+
     # CR 800.4e: "If combat damage would be assigned to a player who has left
     # the game, that damage isn't assigned." A creature can still be attacking
     # a player who died earlier in the combat, and this is the moment that
@@ -804,6 +810,66 @@ def _protected_from(game: Game, target, source_obj) -> bool:
         if matches(game, source_obj, quality, allow_stale=True):
             return True
     return False
+
+
+def player_abilities(game: Game, player_id) -> tuple:
+    """The abilities a player has from effects (CR 702.11a, 702.16a, 702.18a).
+
+    Only granted ones: a player has no printed abilities. Read from the
+    continuous effects a resolving spell registered for that player.
+    """
+    from ..cr600_spells_and_abilities.effects import EffectKind
+    from ..kernel.ids import NO_OBJECT
+
+    out: list = []
+    for ce in game.continuous_effects:
+        effect = ce.effect
+        if (
+            effect.kind is EffectKind.GRANT_ABILITY
+            and effect.players is not None
+            and effect.players.specific == player_id
+            and effect.targets is not None
+            and effect.targets.specific == (NO_OBJECT,)
+        ):
+            out.extend(effect.granted_abilities)
+    return tuple(out)
+
+
+def player_shielded_from(game: Game, player_id, source_obj, source_controller) -> bool:
+    """Whether a player can't be targeted by, or (for protection) dealt
+    damage by, this source: protection from a quality it has (CR 702.16b,
+    702.16e), hexproof against an opponent's source (702.11b), shroud
+    (702.18a)."""
+    from ..kernel.matching import matches
+
+    for ability in player_abilities(game, player_id):
+        keyword = ability.keyword.lower()
+        if keyword == "shroud":
+            return True
+        if keyword == "hexproof" and source_controller != player_id:
+            return True
+        if (
+            keyword == "protection"
+            and source_obj is not None
+            and ability.quality is not None
+            and matches(game, source_obj, ability.quality, allow_stale=True)
+        ):
+            return True
+    return False
+
+
+def player_protected_from(game: Game, player_id, source_obj) -> bool:
+    """CR 702.16e: damage from a source the player has protection from."""
+    from ..kernel.matching import matches
+
+    if source_obj is None:
+        return False
+    return any(
+        ability.keyword.lower() == "protection"
+        and ability.quality is not None
+        and matches(game, source_obj, ability.quality, allow_stale=True)
+        for ability in player_abilities(game, player_id)
+    )
 
 
 def protected_from(game: Game, target, source_obj) -> bool:
