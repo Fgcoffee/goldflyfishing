@@ -7724,6 +7724,12 @@ def _extra_trigger(stream: Stream) -> Effect | None:
         # "entering", "being cast", "you casting or copying an instant" - the
         # participle names the event, which the collector does not need: the
         # cause filter and the affected filter together are what decide.
+        # It starts with the participle: anything else is the cause's noun
+        # phrase going on unread ("a land *or Bird you control* entering" -
+        # skipped, Traveling Chocobo counted only lands).
+        if not stream.peek().lower.endswith("ing"):
+            stream.reset(mark)
+            return None
         while not stream.done and not stream.at("causes"):
             if stream.peek().text in (".", ";", ","):
                 stream.reset(mark)
