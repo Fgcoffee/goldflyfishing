@@ -73,6 +73,15 @@ def can_transform(game: Game, obj: GameObject) -> bool:
     return True
 
 
+def can_enter_transformed(obj: GameObject) -> bool:
+    """CR 712.14a: whether this card can be put onto the battlefield
+    transformed - a double-faced card whose back face is a permanent."""
+    if layout_of(obj) not in TRANSFORMABLE_LAYOUTS or face_count(obj) < 2:
+        return False
+    back = obj.card.faces[1]
+    return not back.type_line.types & (CardType.INSTANT | CardType.SORCERY)
+
+
 def other_face(obj: GameObject):
     faces = getattr(obj.card, "faces", ())
     if len(faces) < 2:

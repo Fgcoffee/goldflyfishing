@@ -78,6 +78,9 @@ class KeywordInstance:
     text: str = ""
     #: Where an alternative-cost keyword lets the card be cast from.
     from_zone: Zone | None = None
+    #: For a keyword whose parameter is a kind of player rather than an
+    #: object - "enchant player", "enchant opponent" (CR 702.5a).
+    players: PlayerFilter | None = None
     #: The keyword's body, for the keywords that have one. Channel, forecast
     #: and "max speed" are shapes around an arbitrary effect - "[Cost],
     #: Discard this card: [effect]" - so the shape is built here and the
@@ -122,7 +125,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     " was every creature you control",
     "living weapon": "CR 702.92a: create a 0/0 Germ and attach to it; created no Germ",
     "for mirrodin!": "CR 702.163a: create a 2/2 Rebel and attach to it; created no Rebel",
-    "craft": "CR 702.167a: exile with materials, return transformed; was a +1/+1 counter",
     "harmonize": "CR 702.180a: cast from the graveyard; was a +1/+1 counter",
     "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
     "specialize": "a digital (Alchemy) mechanic, not in the CR: perpetually specialize; was a +1/+1 counter",
@@ -2649,7 +2651,7 @@ def _outlast(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 
 @register("Level Up", "Boast", "Exhaust",
-          "Harmonize", "Craft", "Job select", "Specialize")
+          "Harmonize", "Job select", "Specialize")
 def _counter_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Activated keywords whose effect is putting counters on this permanent."""
     counter = "level" if instance.key == "level up" else "+1/+1"
@@ -2664,6 +2666,55 @@ def _counter_activated(instance: KeywordInstance) -> tuple[Ability, ...]:
                 ),
             ),
             cost=instance.cost or Cost(()),
+            timing=Timing.SORCERY,
+            keyword=instance.name,
+            text=instance.text or instance.name,
+        ),
+    )
+
+
+@register("Craft")
+def _craft(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.167a: "[Cost], Exile this permanent, Exile [materials] from
+    among permanents you control and/or cards in your graveyard: Return this
+    card to the battlefield transformed under its owner's control. Activate
+    only as a sorcery."
+
+    The cards exiled as materials are recorded as what paid the cost, which
+    is what "the exiled cards used to craft it" reads (CR 702.167c). With
+    the materials or the cost not read, the ability is reported as not
+    understood.
+    """
+    if instance.filter is None or instance.cost is None:
+        return (_inert_keyword(instance),)
+    cost = instance.cost.with_component(
+        CostComponent(
+            CostKind.EXILE_MATERIALS,
+            filter=instance.filter,
+            amount=Value.of(max(1, instance.amount)),
+            text="exile the materials",
+        )
+    ).with_component(
+        CostComponent(
+            CostKind.EXILE_FROM_BATTLEFIELD,
+            filter=ObjectFilter(source_only=True),
+            amount=Value.of(1),
+            text="exile this permanent",
+        )
+    )
+    return (
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(
+                Effect(
+                    EffectKind.PUT_ONTO_BATTLEFIELD,
+                    targets=ObjectFilter(source_only=True, zones=frozenset({Zone.EXILE})),
+                    keywords=("transformed",),
+                    under_owners_control=True,
+                    text="return this card to the battlefield transformed",
+                ),
+            ),
+            cost=cost,
             timing=Timing.SORCERY,
             keyword=instance.name,
             text=instance.text or instance.name,
@@ -4590,11 +4641,14 @@ def _enchant(instance: KeywordInstance) -> tuple[Ability, ...]:
     when it enters, and CR 704.5n puts it into the graveyard if it is ever
     attached to something it does not match.
     """
+    # CR 303.4b: an Aura can enchant a player; "enchant player" and "enchant
+    # opponent" carry a player filter as the quality instead.
+    quality = instance.filter if instance.filter is not None else instance.players
     return (
         Ability(
             AbilityKind.STATIC,
             keyword=instance.name,
-            quality=instance.filter,
+            quality=quality,
             functions_in=frozenset({Zone.BATTLEFIELD, Zone.STACK}),
             text=instance.text or instance.name,
         ),

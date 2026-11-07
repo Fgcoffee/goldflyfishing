@@ -703,9 +703,17 @@ def _objects_in_zone(game: Game, zone: Zone) -> Iterator[GameObject]:
 
 
 def resolve_players(
-    game: Game, spec: PlayerFilter, *, controller: PlayerId = NO_PLAYER
+    game: Game,
+    spec: PlayerFilter,
+    *,
+    controller: PlayerId = NO_PLAYER,
+    source: ObjectId = NO_OBJECT,
 ) -> list[PlayerId]:
-    """Which players a PlayerFilter refers to, in APNAP order (CR 101.4)."""
+    """Which players a PlayerFilter refers to, in APNAP order (CR 101.4).
+
+    ``source`` is the object whose ability is asking, for the scopes that
+    are read off it ("enchanted player").
+    """
     scope = spec.scope
 
     if scope is PlayerScope.SPECIFIC and spec.specific is not None:
@@ -716,6 +724,12 @@ def resolve_players(
         return [game.active_player]
     if scope is PlayerScope.MONARCH:
         return [p.id for p in game.players if p.is_monarch and not p.has_lost]
+    if scope is PlayerScope.ENCHANTED_PLAYER:
+        # CR 303.4b: the player the source Aura is attached to.
+        aura = game.objects.get(source)
+        if aura is None or aura.attached_player == NO_PLAYER:
+            return []
+        return [] if game.player(aura.attached_player).has_lost else [aura.attached_player]
     if scope in (PlayerScope.EACH_OPPONENT, PlayerScope.OPPONENT, PlayerScope.TARGET_OPPONENT):
         return [p for p in game.apnap_order() if p != controller]
     if scope is PlayerScope.EACH_PLAYER:

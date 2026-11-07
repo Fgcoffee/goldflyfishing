@@ -682,7 +682,10 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
             return []
         return [event.source_controller]
     return resolve_players(
-        resolution.game, effect.players or YOU, controller=resolution.controller
+        resolution.game,
+        effect.players or YOU,
+        controller=resolution.controller,
+        source=resolution.source,
     )
 
 
@@ -2980,7 +2983,14 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
         # CR 610.3c: a card coming back from an "until" exile returns to its
         # owner, not to whoever exiled it.
         to = obj.owner if effect.under_owners_control else resolution.controller
-        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to, face_down=face_down)
+        # CR 712.14a: "put it onto the battlefield transformed".
+        permanent = game.move_object(
+            obj,
+            Zone.BATTLEFIELD,
+            to_player=to,
+            face_down=face_down,
+            transformed="transformed" in effect.keywords,
+        )
         permanent.controller = to
         if permanent is not obj:
             # CR 607.2c: what was "put onto the battlefield with" the source.
