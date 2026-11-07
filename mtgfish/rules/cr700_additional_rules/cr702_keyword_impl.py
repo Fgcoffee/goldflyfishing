@@ -19,7 +19,7 @@ is an enters-with-counters replacement *and* a dies trigger.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable
 
 from ..cr100_game_concepts.cr106_mana import ManaCost
@@ -1505,13 +1505,18 @@ def _equip(instance: KeywordInstance) -> tuple[Ability, ...]:
     # was not read whole - "Equip legendary creature {3}" lost both.
     if instance.cost is None:
         return (_inert_keyword(instance),)
+    # CR 702.6c: the quality narrows the target; it is still a creature you
+    # control (CR 702.6a), so the quality is one more condition on top.
+    target = CREATURES_YOU_CONTROL
+    if instance.filter is not None:
+        target = replace(CREATURES_YOU_CONTROL, any_of=(instance.filter,))
     return (
         Ability(
             AbilityKind.ACTIVATED,
             effects=(
                 Effect(
                     EffectKind.ATTACH,
-                    targets=CREATURES_YOU_CONTROL,
+                    targets=target,
                     is_targeted=True,
                     text="attach to target creature you control",
                 ),
