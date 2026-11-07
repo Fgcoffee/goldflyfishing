@@ -2082,11 +2082,18 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
     count = _count(resolution, effect)
     made: list[ObjectId] = []
     for original in _objects(resolution, effect):
+        copier = resolution.controller
+        if effect.players is not None and effect.players.scope is PlayerScope.OPPONENT:
+            # CR 702.144a: an opponent chosen as this resolves makes the copy,
+            # and so controls it (CR 707.10).
+            copier = _choose_copying_opponent(resolution, original)
+            if copier is None:
+                continue
         for _ in range(count):
             copy = copy_spell(
                 resolution.game,
                 original,
-                resolution.controller,
+                copier,
                 may_choose_new_targets=MAY_CHOOSE_NEW_TARGETS in effect.keywords,
             )
             if copy is not None:
@@ -2095,6 +2102,23 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
         # CR 707.10: "You may choose new targets for the copy" - the next
         # sentence is about the copy, not the spell it copied.
         resolution.remembered = made
+
+
+def _choose_copying_opponent(resolution: Resolution, spell: GameObject) -> PlayerId | None:
+    """CR 702.144a: the opponent who also copies the spell.
+
+    Asked of the controller's agent through ``choose_copying_opponent(game,
+    player, spell, opponents)``; without one, or with an answer that is no
+    opponent, the first opponent in turn order.
+    """
+    game = resolution.game
+    me = resolution.controller
+    opponents = [p.id for p in game.living_players if p.id != me]
+    if not opponents:
+        return None
+    chooser = getattr(game.agent_for(me), "choose_copying_opponent", None)
+    chosen = chooser(game, me, spell, tuple(opponents)) if chooser is not None else None
+    return chosen if chosen in opponents else opponents[0]
 
 
 def _do_goad(resolution: Resolution, effect: Effect) -> None:
@@ -3459,6 +3483,25 @@ def _do_become_renowned(resolution: Resolution, effect: Effect) -> None:
             )
 
 
+def _do_haunt(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.55a-b: exile the haunt card, haunting the targeted creature.
+
+    The card is the one the source became in its graveyard (CR 400.7: one
+    move and no more); once it has left the graveyard, it is out of reach.
+    """
+    game = resolution.game
+    haunted = _objects(resolution, effect)
+    card = game.objects.get(resolution.source)
+    if card is not None and not card.is_live:
+        card = game.objects.get(card.superseded_by)
+    if card is None or not card.is_live or card.zone is not Zone.GRAVEYARD:
+        return
+    exiled = game.move_object(card, Zone.EXILE, to_player=card.owner)
+    if haunted:
+        exiled.haunting = haunted[0].id
+        game.log.record(game, f"{exiled} haunts {haunted[0]}", kind="effect")
+
+
 def _do_blocks_source_if_able(resolution: Resolution, effect: Effect) -> None:
     """A requirement (CR 509.1c) that each creature acted on blocks the source
     if able, for the effect's duration. Pinned to these objects: a creature
@@ -4080,6 +4123,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.HARNESS: _do_harness,
     EffectKind.BECOME_RENOWNED: _do_become_renowned,
     EffectKind.BLOCKS_SOURCE_IF_ABLE: _do_blocks_source_if_able,
+    EffectKind.HAUNT: _do_haunt,
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
     EffectKind.BECOME_SADDLED: _do_become_saddled,
     EffectKind.PAIR: _do_pair,

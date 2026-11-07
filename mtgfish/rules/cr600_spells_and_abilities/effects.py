@@ -252,6 +252,10 @@ class EffectKind(IntEnum):
     #: object in ``targets`` is under a blocking requirement (CR 509.1c)
     #: naming the source as what it must block, for ``duration``.
     BLOCKS_SOURCE_IF_ABLE = 18002
+    #: CR 702.55a-b: "exile it haunting target creature" - the card the
+    #: source became in its graveyard is exiled, haunting the creature in
+    #: ``targets``.
+    HAUNT = 18003
     #: CR 208.2b: "as this enters [or is turned face up], it becomes your
     #: choice of" - ``children`` are the options, each the continuous effects
     #: that make it that choice. Applied as a self-entry replacement.

@@ -127,7 +127,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
     "specialize": "a digital (Alchemy) mechanic, not in the CR: perpetually specialize; was a +1/+1 counter",
     "boast": "CR 702.142a: the printed ability, only if it attacked; was a +1/+1 counter",
-    "amplify": "CR 702.38a: counters per revealed card; was a flat N",
     "devour": "CR 702.82a: counters per creature sacrificed; was a flat N",
     "backup": "CR 702.165a: counters on target creature, which gains abilities;"
     " was counters on this",
@@ -137,12 +136,10 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "soulbond": "CR 702.95a: pair with one creature; was attached to every creature",
     "compleated": "CR 702.150a: fewer loyalty per Phyrexian mana paid with life;"
     " was a static removing X loyalty",
-    "haunt": "CR 702.55a: exile haunting a creature, trigger again; was exile only",
     "recover": "CR 702.59a: when a creature card goes to your graveyard, pay or exile;"
     " was a free return on your creatures dying",
     "hideaway": "CR 702.75a: exile one of the top N face down, rest on the bottom;"
     " was reveal N and exile the top card",
-    "demonstrate": "CR 702.144a: you and an opponent copy it; was two copies for you",
     "storm": "CR 702.40a: a copy per spell cast before it this turn; was one copy",
     "gravestorm": "CR 702.69a: a copy per permanent put into a graveyard; was one copy",
     "ripple": "CR 702.60a: cast revealed cards with the same name; was every card"
@@ -2120,7 +2117,7 @@ def _cast_copy_trigger(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Exploit", "Soulbond", "Soulshift", "Champion", "Tribute", "Unleash",
           "Riot", "Demonstrate", "Ravenous", "Backup", "For Mirrodin!", "Hideaway",
-          "Ingest", "Awaken", "Amplify", "Devour", "Fabricate", "Sunburst",
+          "Ingest", "Awaken", "Devour", "Fabricate", "Sunburst",
           )
 def _etb_trigger(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Keywords that trigger, or modify how the permanent enters.
@@ -2129,7 +2126,7 @@ def _etb_trigger(instance: KeywordInstance) -> tuple[Ability, ...]:
     battlefield, and differ only in what they then do.
     """
     amount = Value.of(max(1, instance.amount))
-    if instance.key in ("amplify", "devour", "fabricate", "sunburst", "backup"):
+    if instance.key in ("devour", "fabricate", "sunburst", "backup"):
         return (
             Ability.static(
                 Effect(
@@ -2977,6 +2974,31 @@ def _champion(instance: KeywordInstance) -> tuple[Ability, ...]:
     return (exile_one, return_it)
 
 
+@register("Amplify")
+def _amplify(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.38a: "As this object enters, reveal any number of cards from
+    your hand that share a creature type with it. This permanent enters with
+    N +1/+1 counters on it for each card revealed this way."
+
+    A replacement on entering (CR 614.1c). N is the amount per card; how many
+    cards are revealed is asked as it enters
+    (``cr614_replacement.amplify_reveals``), each instance on its own
+    (CR 702.38b).
+    """
+    amount = max(1, instance.amount)
+    return (
+        Ability.static(
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(amount),
+                text=f"enters with {amount} +1/+1 counters for each card revealed",
+            ),
+            text=instance.text or instance.name,
+        ),
+    )
+
+
 @register("Riot")
 def _riot(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.136a: "This creature enters with your choice of a +1/+1 counter
@@ -3183,12 +3205,21 @@ def _recover(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Haunt")
 def _haunt(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.55a: "When this permanent dies, exile it haunting target
-    creature."
+    """CR 702.55a: on a permanent, "When this permanent is put into a
+    graveyard from the battlefield, exile it haunting target creature"; on an
+    instant or sorcery, "When this spell is put into a graveyard during its
+    resolution, exile it haunting target creature."
 
-    The exile is the linked half (CR 607); what the haunt *does* is printed on
-    the card as a second trigger, so only the exile lives here.
+    Both halves are built: each can only trigger for its own kind of card.
+    What the haunt does is printed on the card as a further trigger that
+    names "the creature it haunts" (CR 702.55b-c), which works from exile.
     """
+    haunting = Effect(
+        EffectKind.HAUNT,
+        targets=ObjectFilter(types_all=CardType.CREATURE),
+        is_targeted=True,
+        text="exile it haunting target creature",
+    )
     return (
         Ability.triggered(
             TriggerCondition(
@@ -3197,11 +3228,19 @@ def _haunt(instance: KeywordInstance) -> tuple[Ability, ...]:
                 uses_last_known_information=True,
                 text="when this permanent dies",
             ),
-            Effect(
-                EffectKind.EXILE,
-                targets=SOURCE_ONLY,
-                text="exile it haunting target creature",
+            haunting,
+            text=instance.text or instance.name,
+        ),
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.PUT_INTO_GRAVEYARD}),
+                subject=SOURCE_ONLY,
+                from_zones=frozenset({Zone.STACK}),
+                during_own_resolution=True,
+                functions_in=frozenset({Zone.GRAVEYARD}),
+                text="when this spell is put into a graveyard during its resolution",
             ),
+            haunting,
             text=instance.text or instance.name,
         ),
     )
@@ -3880,9 +3919,17 @@ def _tribute(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Demonstrate")
 def _demonstrate(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.144a: "When you cast this spell, you may copy it. If you do,
-    choose an opponent to also copy it."
+    """CR 702.144a: "When you cast this spell, you may copy it and you may
+    choose new targets for the copy. If you copy the spell, choose an
+    opponent. That player copies the spell and may choose new targets for
+    that copy."
+
+    The second copy is the chosen opponent's (``players`` OPPONENT on the
+    COPY_SPELL), so it is theirs to control and to retarget (CR 707.10,
+    707.10c). It goes on the stack above the caster's copy.
     """
+    from .cr707_faces import MAY_CHOOSE_NEW_TARGETS
+
     return (
         Ability.triggered(
             TriggerCondition(
@@ -3898,16 +3945,18 @@ def _demonstrate(instance: KeywordInstance) -> tuple[Ability, ...]:
                         EffectKind.COPY_SPELL,
                         targets=SOURCE_ONLY,
                         players=YOU,
+                        keywords=(MAY_CHOOSE_NEW_TARGETS,),
                         text="copy it",
                     ),
                     Effect(
                         EffectKind.COPY_SPELL,
                         targets=SOURCE_ONLY,
                         players=PlayerFilter(PlayerScope.OPPONENT),
-                        text="an opponent copies it too",
+                        keywords=(MAY_CHOOSE_NEW_TARGETS,),
+                        text="the chosen opponent copies it",
                     ),
                 ),
-                text="you may copy it, and an opponent also copies it",
+                text="you may copy it; if you do, an opponent you choose copies it",
             ),
             text=instance.text or instance.name,
         ),
