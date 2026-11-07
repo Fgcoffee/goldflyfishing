@@ -9,9 +9,13 @@ from mtgfish.rules.kernel.enums import Zone
 
 def test_replicate_on_a_targeted_spell_is_read(card_db):
     """CR 702.56a: each copy may choose new targets, and the engine's
-    replicate copies carry that permission (CR 707.10c), so Reiterating Bolt
-    is read again."""
-    assert parse_card(card_db.lookup("Reiterating Bolt")).fully_parsed
+    replicate copies carry that permission (CR 707.10c), so Pyromatics
+    ("Replicate {1}{R}", 1 damage to any target) is read.
+
+    Not Reiterating Bolt: its "Replicate - Pay {E}{E}{E}" cost cannot be read,
+    and read as a bare "Replicate" it copied for nothing."""
+    assert parse_card(card_db.lookup("Pyromatics")).fully_parsed
+    assert not parse_card(card_db.lookup("Reiterating Bolt")).fully_parsed
 
 
 def test_warp_casts_from_hand_only():

@@ -191,26 +191,10 @@ def _read(source: str) -> str:
 
 
 def _inert_cards(db: CardDatabase, decklist: str) -> list[str]:
-    """Cards in the deck the parser could not read.
+    """See ``mtgfish.sim.stats.inert_cards``."""
+    from ..sim.stats import inert_cards
 
-    Surfaced with the report because every number in it is standing on these:
-    a deck with ten inert cards is being measured as a deck with ten blanks.
-    """
-    from ..data.decks import parse_decklist
-    from ..parser import parse_card
-
-    deck = parse_decklist(decklist, db, name="hero")
-    inert = []
-    # The commander counts: an inert commander is the loudest finding a run
-    # can produce, and it would be absurd to leave it out of the list.
-    for entry in list(deck.entries) + list(deck.commanders):
-        card = getattr(entry, "card", entry)
-        if card is None:
-            continue
-        parsed = parse_card(card)
-        if parsed.failures:
-            inert.append(card.name)
-    return sorted(set(inert))
+    return inert_cards(db, decklist)
 
 
 def _print_replay(config: RunConfig, index: int, detail: str = "normal") -> None:

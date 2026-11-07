@@ -355,17 +355,11 @@ def _affordable_alternative(
     cost = cost.reduced_by(emerge_discount(game, player_id, alternative))
     if find_payment(player.mana_pool, cost, life_available=player.life):
         return True
+    # Exact, colours included, as payment will solve it. Counting untapped
+    # sources offered an emerge whose coloured remainder no source could make.
+    from ..cr600_spells_and_abilities.mana_plan import can_produce
 
-    available = player.mana_pool.total
-    for permanent in game.permanents(player_id):
-        if permanent.tapped:
-            continue
-        chars = game.characteristics(permanent)
-        if chars.is_creature and permanent.summoning_sick:
-            continue
-        if any(a.is_mana_ability and not a.unparsed for a in chars.abilities):
-            available += 1
-    return available >= cost.mana_value
+    return can_produce(game, player_id, cost, obj)
 
 
 def _spell_timing(chars) -> Timing:

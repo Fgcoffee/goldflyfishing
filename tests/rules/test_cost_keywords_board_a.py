@@ -573,9 +573,6 @@ def test_splice_is_not_an_additional_cost_of_the_card_itself(card_db):
     assert not board.chars(card).additional_costs
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUILDER BUG / ENGINE GAP: Bestow is built as a plain alternative cost; "
-    "the spell is never an Aura (CR 702.103b)"))
 def test_a_bestowed_spell_is_an_aura_spell(card_db):
     board = setup(card_db, {"Nyxborn Rollicker": keyword("Bestow", "{1}{R}")})
     board.play("Grizzly Bears")

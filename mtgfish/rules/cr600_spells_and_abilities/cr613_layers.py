@@ -292,6 +292,8 @@ def _apply_layer(
     if layer is Layer.FACE_DOWN:
         _apply_face_down(game, state, by_id)
         return
+    if layer is Layer.TYPE:
+        _apply_bestowed(state, by_id)
     if layer is Layer.ABILITY:
         # CR 613.1f puts keyword counters in this layer, alongside the effects
         # that add and remove abilities. Applied before them, so an
@@ -1144,6 +1146,34 @@ def _affects_control(
     return matches(
         game, obj, spec, source=ce.source, controller=ce.controller, override=chars
     )
+
+
+def _apply_bestowed(state: dict, by_id: dict) -> None:
+    """CR 702.103b: a bestowed spell or permanent is an Aura enchantment with
+    enchant creature, and no longer a creature, while it stays bestowed."""
+    from ..kernel.enums import CardType
+    from ..kernel.query import ObjectFilter
+    from .abilities import Ability, AbilityKind
+
+    for object_id, obj in by_id.items():
+        if not obj.bestowed or obj.zone not in (Zone.STACK, Zone.BATTLEFIELD):
+            continue
+        chars = state[object_id]
+        line = chars.type_line
+        line = type(line)(
+            supertypes=line.supertypes,
+            types=CardType.ENCHANTMENT,
+            subtypes=("Aura",),
+        )
+        enchant = Ability(
+            AbilityKind.STATIC,
+            keyword="Enchant",
+            quality=ObjectFilter(types_all=CardType.CREATURE),
+            text="Enchant creature",
+        )
+        state[object_id] = chars.replace(
+            type_line=line, abilities=chars.abilities + (enchant,)
+        )
 
 
 def _apply_face_down(

@@ -9,6 +9,7 @@ cards that looked read. These run the real oracle text on a real board.
 
 from __future__ import annotations
 
+import pytest
 from harness import FixedAgent, make_board
 
 from mtgfish.parser.compile import OracleAbilities, parse_card
@@ -340,3 +341,40 @@ def test_the_taxes_the_engine_charges_are_read(card_db):
         "Sphere of Safety",
     ):
         assert _read(card_db, name, "unless"), name
+
+
+def test_a_creature_tapped_to_enlist_cannot_also_pay_the_tax(card_db):
+    """CR 508.1g-j, 702.154b: enlist is part of the one total cost to attack.
+    With one Forest, Ghostly Prison's {2} and the Elves chosen to enlist, the
+    Elves can't both be tapped for enlist and tapped for mana: that total
+    can't be paid, so the creature does not attack. Paying the tax first used
+    the Elves' mana and then dropped the enlist without a word."""
+    from test_cr702_combat_keywords import _Enlister
+
+    if card_db.lookup("Balduvian Berserker") is None:
+        pytest.skip("no enlist card in this pool")
+    board = board_for(card_db)
+    board.play("Ghostly Prison", controller=1)
+    (forest,) = lands(board, "Forest", 1)
+    elf = board.play("Llanowar Elves")
+    berserker = board.play("Balduvian Berserker")
+    board.game.agents[PlayerId(0)] = _Enlister(elf.id, attackers={berserker.id: 1})
+    declare_attackers(board.game)
+    assert berserker.id not in board.game.combat.attacking
+    assert not elf.tapped and not forest.tapped
+
+
+def test_an_unpaid_tax_undoes_the_enlist(card_db):
+    from test_cr702_combat_keywords import _Enlister
+
+    if card_db.lookup("Balduvian Berserker") is None:
+        pytest.skip("no enlist card in this pool")
+    board = board_for(card_db)
+    board.play("Ghostly Prison", controller=1)
+    elf = board.play("Llanowar Elves")
+    berserker = board.play("Balduvian Berserker")
+    board.game.agents[PlayerId(0)] = _Enlister(elf.id, attackers={berserker.id: 1})
+    declare_attackers(board.game)
+    assert berserker.id not in board.game.combat.attacking
+    assert not elf.tapped
+    assert not any(p.ability.keyword == "Enlist" for p in board.game.pending_triggers)

@@ -812,13 +812,61 @@ def apply_self_entry_replacements(game: Game, obj) -> None:
                     # applies only while its condition holds as it enters.
                     if not _entry_condition_holds(game, obj, node):
                         continue
+                    amount = max(1, node.amount.constant)
+                    if ability.keyword.lower() == "amplify":
+                        # CR 702.38a: N counters for each card revealed.
+                        amount *= amplify_reveals(game, obj)
+                    if amount <= 0:
+                        continue
                     add_counters(
                         game,
                         obj,
                         node.counter_type or "+1/+1",
-                        max(1, node.amount.constant),
+                        amount,
                         source=obj.id,
                     )
+
+
+def amplify_reveals(game: Game, obj) -> int:
+    """CR 702.38a: how many cards its controller reveals from their hand as
+    ``obj`` enters, each sharing a creature type with it.
+
+    The entering card is not in the hand, so it cannot reveal itself. The
+    agent is asked through ``choose_amplify_reveals(game, player, obj,
+    eligible)``, which returns the cards it reveals; without one, every
+    eligible card is revealed, which is the most counters.
+    """
+    mine = {name.lower() for name in game.characteristics(obj).type_line.creature_types()}
+    if not mine:
+        return 0
+    player = game.player(obj.controller)
+    eligible = [
+        card_id
+        for card_id in player.hand
+        if card_id != obj.id
+        and (card := game.objects.get(card_id)) is not None
+        and mine & {
+            name.lower() for name in game.characteristics(card).type_line.creature_types()
+        }
+    ]
+    if not eligible:
+        return 0
+    revealed = list(eligible)
+    chooser = getattr(game.agent_for(obj.controller), "choose_amplify_reveals", None)
+    if chooser is not None:
+        picked = chooser(game, obj.controller, obj, tuple(eligible))
+        if picked is not None:
+            revealed = [card_id for card_id in eligible if card_id in set(picked)]
+    for card_id in revealed:
+        game.emit(Event(EventKind.REVEALED, object_id=card_id, player=obj.controller))
+    if revealed:
+        game.log.record(
+            game,
+            f"{obj} amplify: revealed {len(revealed)} card(s)",
+            kind="replace",
+            player=obj.controller,
+        )
+    return len(revealed)
 
 
 def _entry_condition_holds(game: Game, obj, node) -> bool:

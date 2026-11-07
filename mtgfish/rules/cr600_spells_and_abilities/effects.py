@@ -252,6 +252,10 @@ class EffectKind(IntEnum):
     #: object in ``targets`` is under a blocking requirement (CR 509.1c)
     #: naming the source as what it must block, for ``duration``.
     BLOCKS_SOURCE_IF_ABLE = 18002
+    #: CR 702.55a-b: "exile it haunting target creature" - the card the
+    #: source became in its graveyard is exiled, haunting the creature in
+    #: ``targets``.
+    HAUNT = 18003
     #: CR 208.2b: "as this enters [or is turned face up], it becomes your
     #: choice of" - ``children`` are the options, each the continuous effects
     #: that make it that choice. Applied as a self-entry replacement.
@@ -262,6 +266,13 @@ class EffectKind(IntEnum):
     #: control - "that creature" from the triggering event if there is one,
     #: otherwise one you choose.
     PAIR = 286
+    #: CR 700.3: ``actor`` separates the ``targets`` objects (a filter, or
+    #: ``from_pile`` for cards just revealed) into two piles, and ``players``
+    #: chooses one. ``children`` act on the chosen pile and ``otherwise`` on
+    #: the other, each as "them"/"it" (``remembered``). "Put one pile into
+    #: your hand and the other into your graveyard", "sacrifices all
+    #: permanents in the pile of their choice".
+    SEPARATE_INTO_PILES = 287
     #: CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread -
     #: ``keywords[0]`` says which. Put the ``targets`` cards onto the
     #: battlefield face down, one at a time; for manifest dread, look at the

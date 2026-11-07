@@ -151,6 +151,12 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     spell.controller = player_id
     spell.cast_from = origin_zone
     spell.alternative_cost_offered = offered
+    # CR 702.103b: as a spell cast bestowed is put onto the stack it becomes
+    # an Aura with enchant creature - before its target is chosen.
+    chosen_alternative = offered or chosen_alternative_cost(game, card_object, action)
+    if chosen_alternative is not None and chosen_alternative.keyword.lower() == "bestow":
+        spell.bestowed = True
+        game.invalidate_characteristics()
     # CR 118.5: permission to cast "without paying its mana cost" is given to
     # the card before it moves, and CR 400.7 makes the spell a new object. Not
     # carried over, every cascade, suspend and discover cast was charged its

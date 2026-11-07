@@ -12,16 +12,20 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 As of round 18 (2026-10-26): PRs #17 (parser) and #18 (rules) are **merged into main** (228bb35, 19:41 UTC, merged by the rules session). The merged tree is byte-identical to the head I verified (scratch merge 9b45447, tree b51470f): suite 3031 passed, 5 xfailed, 0 failed, and all four benches complete. The earlier per-branch verdicts are in the round records below.
 
-Open BLOCKs on main after round 20 (2026-10-31, PRs #20, #21 and #22 merged; main 0be4605). All pre-existing; none introduced by a merge.
-- **parser:** F28 (overload), F37 (Toxic Deluge cost), F43 (Sly Instigator target read as "all"), F46 (Harnesser "or" read as AND), F49 (spot check: 19 misread + 7 stronger-than-printed cards, owner-reported).
+Open BLOCKs on main after round 21 (2026-11-07; PRs #24 and #25 merged, then rules @ 1f97c70 and parser @ 77fe879). None of them makes play worse than before the merge.
+- **parser:**
+  - F28 (overload), F37 (Toxic Deluge cost).
+  - F49 (spot check: the 7 stronger-than-printed cards and the remaining misreads).
+  - F58 (Replication Technique's token copy read as "copy target object").
 - **rules:**
-  - F49 keyword builders (echo, cumulative upkeep, toxic, outlast, affinity for X, bolster, incubate, basic landcycling, equip [quality]).
-  - F51 (every target chooser takes one target per group, so "two target" effects hit one).
-  - F53 (a player's protection from everything does nothing for targeting).
+  - F53b (static player hexproof and shroud don't stop targeting).
+  - F54 (echo and cumulative upkeep are free when accepted).
+  - F55 (Sly Instigator's "goad that creature" goads nothing).
+  - F56 (Force of Will's alternative cost never offered).
 
-Fixed in rounds 19-20: F40, F41, F42, F48, F50, the protection-from-everything regression (PR #21), and the stored-parse fingerprint WARN.
+Fixed in rounds 19-21: F40, F41, F42, F43, F44, F45, F46, F48, F50, F51, F52, F53 (granted protection), most F49 keyword builders (outlast, typecycling, landcycling, bolster, incubate, detain, affinity for X), bestow, amplify, demonstrate, and the web Inert-cards list.
 
-Open WARNs: F44 (a leading duration reaching past its own sentence), F45 (emerge offered and then rewound), F52 (intervening-if trigger put on the stack when false), the web Inert-cards list.
+Open WARNs: F57 (bestow offered with no creature to enchant); the rendering of "up to N target ... can't" hides N.
 
 ## Verified on the sandbox (parser branch @ 043206d)
 
@@ -482,3 +486,76 @@ One commit on 799f347; checked merged with main 1cedc9c (scratch a38da50, clean)
 - Every earlier convoke, delve and improvise case (rounds 17-19) gives the same result. mana_spent and EXPENDED are unchanged (2, 3, 0, 4, 4).
 - Suite on a38da50: **3040 passed, 5 xfailed, 0 failed.** Benches (`--games 20 --seed 0`): stax 30% / 45% stalls, combo 15% / 0%, aggro 20% / 0%, control 35% / 0%, identical to rounds 18-19.
 - **Verdict: OK.** There was no PR for it, so at the user's request ("merge all the progress into main") I opened PR #22 for main-n8yjai and merged it (main 0be4605).
+
+## Round 21 (2026-11-01 to 11-07): PR #25 (rules), PR #24 (docs), then rules @ 1f97c70 and parser @ 77fe879 (PR #26), merged at the user's request
+
+The user asked for all progress to be merged into main ("merge all the progress across into main", then "Try again" twice after interrupted turns).
+
+### PR #25, rules 0b62905: merged as b104cbd
+
+- **F51 FIXED** (390cbfe):
+  - Wicked Pact destroys both targets by default; it isn't offered with one legal creature; one named target is refused ("2 targets are required").
+  - Ulamog's cast trigger exiles both targets; Decimate needs all four types.
+  - "Up to two" (Dual Shot) takes up to two, and Ravenous Chupacabra's single ETB target is unchanged.
+- **F53 PARTIAL** (0b62905):
+  - Teferi's Protection and The One Ring (granted on resolution) stop every Bolt targeting me, mine included (protection from everything), until my next turn.
+  - **Still open (F53b, BLOCK, rules):** the static "You have hexproof/shroud" (True Believer, Aegis of the Gods, both fully read; Leyline of Sanctity) still leaves me targetable.
+- **F49 builders:**
+  - Fixed on the board: outlast ({T}, sorcery speed), swampcycling and basic landcycling (one card), bolster (least toughness only), incubate (Incubator with N counters, transforms to a 3/3 Phyrexian), detain (only the target; the detained Hill Giant didn't attack).
+  - Echo and cumulative upkeep: declining now sacrifices. **New F54 (BLOCK, rules):** accepting is FREE. Mogg War Marshal and Mystic Remora stay with no mana paid, no land tapped, even with no lands at all, while the F29 path (Mentor of the Meek) does charge.
+  - Note: the sandbox defaults to `no_summoning_sickness=True`, which hides echo. Checked with sickness on.
+- Census vs main: +0 / -0. 342 IR-text changes, all from the builders (cycling 94, cumulative upkeep 81, echo 53, toxic 48, bolster 18, incubate 16, outlast 13, detain 11). 28,962 hash-only changes, because `TokenSpec.back` and `ObjectFilter.arrived_since_last_turn` entered every repr. ACCEPTED.
+- Suite: 3074 passed, 5 xfailed.
+- Benches: stax 30% / 35% stalls (was 45%), combo 15/0, aggro 20/0, control 50% / 5% (1 stall-out, no runaway, normal game times; was 35/0). The shift fits the bots now taking the full target count.
+
+### PR #24 (README and docs, another session): merged as 2b4604d
+
+Docs only; it also repairs `.\scripts\review.ps1`, where `\r` had been written as a line break.
+
+### Rules 1f97c70 + parser 77fe879, merged by me on claude/modest-bohr-yqrqm7
+
+Tested merge 8a11126 (main 2b4604d + rules 1f97c70 + parser 77fe879), tree 742fd2a. The merge I pushed has the same tree.
+
+Parser:
+- **F44 FIXED** (c34cd27):
+  - Durations that should stay still do: Turn to Frog 1/1 then 3/3; Aspirant's Ascent 3/5 flying then 2/2.
+  - Besmirch's goad now outlives the end of turn and ends as my next turn begins (F42).
+  - Algorithmic Ferocity still fights; Teferi's Protection's phase out still returns.
+- **F43 FIXED (parser half)** (2dd722c, 25a4a97): Sly Instigator now targets one creature, and Chainwhip Cyclops restricts only its target (strict xfail lifted). "Up to two/three target creatures can't block" keeps its count (two named targets accepted; castable with none), though the rendering hides it.
+- **F46 FIXED** (9fb62ae):
+  - Mixed "or" lists and part-read keyword qualities are now unread: Harnesser of Storms, Skullport Merchant, Satsuki, Icebreaker Kraken, Equip Hero, Partner with, Enchant creature or Vehicle.
+  - Affinity counts its quality: Brine Giant is castable with 2 enchantments + 5 Islands, not with 2 Ornithopters (main counted artifacts).
+- **F52 FIXED** (77fe879):
+  - Unkicked Sowing Mycospawn puts 1 cast trigger on the stack, kicked 2. Felidar Sovereign triggers at 40 life (and wins), not at 39.
+  - Geological Appraiser plays as on main: it discovers when cast, not when put.
+
+Rules:
+- **F45 FIXED** (7a05098): emerge isn't offered with Mountain + Ulamog's Crusher, and is with an Island. Evoke, Fireblast, dash and flashback are still offered.
+- Bestow (f4e36c6, test fix 93a566e): Boon Satyr bestowed is an Aura spell, then an Aura giving +4/+2. When the enchanted creature dies it becomes a 4/2 creature (702.103f). With its target gone on resolution it resolves as a creature (702.103e). Cast normally it's a 4/2.
+- Amplify (adaba6f): Canopy Crawler gets 2 counters with 2 Beasts in hand and 0 with none (a Bear doesn't count).
+- Demonstrate (cc9d8d4): Excavation Technique plays legally. My agents keep the copies' targets, so the copies fizzle; the rules session's own tests cover retargeting.
+- Alongside: affinity and equip with an unread quality reported as not understood (bbdcc2f); the web report lists unread cards (84cd906; that WARN is closed); enlist paid as part of the attack cost (f1b4fc4); two piles, ObjectFilter.any_of and equip [quality] (93a566e, 0163cee, 1f97c70). No card gains full read from the last three yet: the parser still leaves those texts unread.
+
+Census vs main's parser:
+- Parser commits: +1 (Valley Floodcaller) / -166.
+  - The 166 are honest refusals: 79 mixed "or" lists, 16 equip qualities, 14 partner-with, 9 enchant qualities, 1 affinity, 47 others (e.g. non-mana cumulative upkeep).
+  - Changed: 137 targeted "can't", 22 affinity, 6 leading durations, Reign of Chaos (now two targets), and 177 intervening-ifs moved onto the trigger.
+- Rules commits: +24 bestow and +12 (7 amplify, 5 demonstrate) / -0, plus 21,741 hash-only (new ObjectFilter fields).
+- ACCEPTED.
+
+Suite on 8a11126: **3125 passed, 4 xfailed, 0 failed.** (Before 93a566e, rules f4e36c6 was red on its own: its F34 test still asserted that bestow was misbuilt.)
+
+New findings:
+
+| # | Sev | Owner | Finding | Evidence |
+|---|---|---|---|---|
+| F53b | **BLOCK** | rules | Static player hexproof and shroud ("You have hexproof/shroud") don't stop targeting; only granted protection does. | True Believer, Aegis of the Gods (fully read): the opponent's Bolt still lists me. |
+| F54 | **BLOCK** | rules | Echo and cumulative upkeep cost nothing when the controller accepts: no mana is paid, and the permanent stays even with no lands. | Mogg War Marshal and Mystic Remora with 0 lands and an accepting agent are kept; with lands, none are tapped. |
+| F55 | **BLOCK** | rules | Sly Instigator: "Goad that creature" after a "can't be blocked" effect goads nothing (the reference isn't carried). Same on main. | Hill Giant targeted: goaded_by empty. Besmirch's "goad it" works. |
+| F56 | **BLOCK** | rules or parser | Force of Will's alternative cost (pay 1 life, exile a blue card) is never offered, though the card counts as fully read. Same on main. | No mana, Brainstorm in hand, opponent's Divination on the stack: no alt cost offered. |
+| F57 | WARN | rules | Bestow is offered with no creature to enchant. Taken, it resolves as a creature for the higher bestow cost. A bestowed spell needs a target (702.103b); casting it as an Aura spell could dodge "counter target creature spell". 93a566e replaced the test that caught this. | Boon Satyr with 5 Forests and no creature: bestow offered and cast. |
+| F58 | **BLOCK** | parser (or engine COPY) | Replication Technique's "Create a token that's a copy of target permanent you control" is read as "Copy target object you control" and makes no token. It became fully read when demonstrate left the misbuilt list. In play it's the same as main, where it was unread and did nothing. | Cast with demonstrate declined: no Bears token. |
+
+Benches on 8a11126 (`--games 20 --seed 0`): stax 35% / 30% stalls, combo 15% / 0%, aggro 30% / 0% (was 20%), control 50% / 5%. All complete, with normal game times and no runaways.
+
+**Verdict: OK to merge.** The suite is green and every claimed fix holds on the board. F53b, F54, F55, F56 and F58 are open but don't make play worse than main; F57 is a WARN. I merged exactly the verified heads (rules 1f97c70, parser 77fe879) through this branch, so later pushes wait for the next round.
