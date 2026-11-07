@@ -308,6 +308,11 @@ def _keyword(line: Line, result: ParsedFace) -> list[Ability]:
         return _protection_keyword(name, argument, line, result)
 
     instance = _keyword_instance(name, argument, line.text)
+    if instance is None:
+        result.failures.append(
+            ParseFailure(line.text, "a keyword argument that cannot be read whole", rule="keyword")
+        )
+        return [Ability.unreadable(line.text)]
     return list(build(instance))
 
 
@@ -382,7 +387,8 @@ def _split_keyword(text: str) -> tuple[str | None, str]:
 
 
 def _keyword_instance(name: str, argument: str, text: str):
-    """Turn "Ward {2}" or "Annihilator 2" into a parameterised instance."""
+    """Turn "Ward {2}" or "Annihilator 2" into a parameterised instance, or
+    None when its argument names a quality that cannot be read whole."""
     from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance
     from .nouns import parse_object_filter
 
@@ -418,7 +424,29 @@ def _keyword_instance(name: str, argument: str, text: str):
                 cost = parsed
             else:
                 stream.accept("from")
+                # "Affinity for snow lands": the quality, after "for". Read
+                # as no quality, every affinity counted artifacts.
+                affinity = name.lower() == "affinity" and stream.accept("for")
                 spec = parse_object_filter(stream)
+                if affinity and spec is not None:
+                    # CR 702.41a: "for each [quality] you control".
+                    from dataclasses import replace
+
+                    from ..rules.kernel.query import ControllerRelation
+
+                    spec = replace(spec, controller=ControllerRelation.YOU)
+                # "Enchant creature *or Vehicle*": a quality read only in part
+                # would be built as the part ("Enchant creature"), the rest
+                # silently dropped. Not read at all instead.
+                stream.accept(".")
+                if spec is not None and not stream.done:
+                    return None
+                if spec is None and name.lower() != "ward":
+                    # No cost and no quality could be read. Built bare, a
+                    # morph or cumulative upkeep would cost nothing. Ward is
+                    # the exception: its builder takes a cost it cannot charge
+                    # and builds an honestly inert ward from it.
+                    return None
 
     return KeywordInstance(
         name, amount=amount, cost=cost, filter=spec, text=text

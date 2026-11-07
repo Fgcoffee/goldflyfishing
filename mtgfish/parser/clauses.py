@@ -3278,7 +3278,7 @@ def _cant(stream: Stream) -> Effect | None:
     """
     from ..rules.cr500_turn_structure.restrictions import Act, Restriction
 
-    subject, _ = parse_target(stream)
+    subject, targeted = parse_target(stream)
     if subject is None:
         return None
     if not stream.accept_phrase("can't") and not stream.accept("cannot"):
@@ -3369,9 +3369,13 @@ def _cant(stream: Stream) -> Effect | None:
     # left the phrase unconsumed and failed the whole ability - which is why
     # "this turn ." was the single largest remaining failure cluster.
     duration = _duration(stream)
+    # "Target creature can't block this turn": the creature chosen as a
+    # target, not every creature (auditor's F43 - read untargeted, Chainwhip
+    # Cyclops stopped all creatures from blocking).
     forbidden = Effect(
         EffectKind.RESTRICTION,
         targets=subject,
+        is_targeted=targeted,
         restrictions=tuple(_cant_restriction(act, subject, protected_by_act) for act in acts),
         duration=duration,
         text="can't",
@@ -7720,6 +7724,12 @@ def _extra_trigger(stream: Stream) -> Effect | None:
         # "entering", "being cast", "you casting or copying an instant" - the
         # participle names the event, which the collector does not need: the
         # cause filter and the affected filter together are what decide.
+        # It starts with the participle: anything else is the cause's noun
+        # phrase going on unread ("a land *or Bird you control* entering" -
+        # skipped, Traveling Chocobo counted only lands).
+        if not stream.peek().lower.endswith("ing"):
+            stream.reset(mark)
+            return None
         while not stream.done and not stream.at("causes"):
             if stream.peek().text in (".", ";", ","):
                 stream.reset(mark)
@@ -8509,16 +8519,43 @@ def _leading_duration(stream: Stream) -> Effect | None:
         return None
     stream.skip_punct(",")
 
-    inner = parse_effects(stream)
-    if inner is None:
+    # Only this sentence: "Until end of turn, target creature gains flying.
+    # Goad it." - the goad is not until end of turn (auditor's F44). The
+    # sentence is read on its own and the cursor moves past it; what follows
+    # is read by the caller as the next sentence.
+    end = _sentence_end(stream)
+    sentence = Stream(stream.tokens[stream.pos:end])
+    inner = parse_effects(sentence)
+    if inner is None or not sentence.done:
         stream.reset(mark)
         return None
+    # A reader can step past the end of its tokens; the sentence ends here.
+    stream.pos += min(sentence.pos, len(sentence.tokens))
     return Effect(
         EffectKind.SEQUENCE,
         children=tuple(inner) if window else tuple(_stamp(effect, duration) for effect in inner),
         duration=duration,
         text="for a duration",
     )
+
+
+def _sentence_end(stream: Stream) -> int:
+    """The index of the period closing the sentence at the cursor.
+
+    The period itself is left for the caller: it is what tells the effect
+    reader that a following "If that creature is legendary, draw a card." is
+    a sentence of its own, not an "if" trailing the effect just read (Venat).
+    A period inside a quoted ability ("... gains "{T}: Add {G}."") does not
+    close the sentence it sits in.
+    """
+    quoted = False
+    for index in range(stream.pos, len(stream.tokens)):
+        text = stream.tokens[index].text
+        if text == '"':
+            quoted = not quoted
+        elif text == "." and not quoted:
+            return index
+    return len(stream.tokens)
 
 
 #: Wrappers whose children happen as part of the same instruction, and so
