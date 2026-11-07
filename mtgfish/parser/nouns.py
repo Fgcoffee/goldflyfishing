@@ -194,10 +194,26 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
         if not first and stream.peek().text == ",":
             break
         first = False
+        had_alternatives = bool(spec.any_of)
         spec, saw = _noun(stream, spec)
         saw_noun = saw_noun or saw
+        if had_alternatives and (spec.types_all or spec.subtypes_all):
+            # "Saga or enchantment *creature*": a type word after a mixed
+            # list may qualify every alternative or only the last one ("a
+            # Saga, or an enchantment creature"), and the two read
+            # differently. Left unread rather than guessed.
+            stream.reset(mark)
+            return None
         before = stream.mark()
         spec = _alternatives(stream, spec)
+        if spec.any_of and not had_alternatives:
+            # "another creature or a Blood *token*": a qualifier after a
+            # mixed list may belong to the last alternative only. Read with
+            # nothing after it but a head noun, or not at all.
+            qualified = _qualifiers(stream, spec)
+            if qualified != spec:
+                stream.reset(mark)
+                return None
         # "creature tokens you control", "artifact creature tokens" - English
         # puts the qualifier after the head noun as readily as before it, and
         # running the qualifier pass only once, up front, stranded every one
@@ -834,6 +850,7 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     nothing.
     """
     mark = stream.mark()
+    entry = spec
     collected = spec.types_all
     subtypes = list(spec.subtypes_all)
     matched = False
@@ -849,6 +866,10 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
 
     while True:
         look = stream.mark()
+        # A qualifier read on an alternative that turns out not to be one
+        # ("artifact spells and *colorless* spells", whose second half is a
+        # whole phrase) must not stay on the filter.
+        spec_at_look = spec
         # A comma alone continues the list: "artifact, enchantment, or
         # planeswalker" spells "or" once, before the last item only. Requiring
         # a conjunction at every step stopped dead at the first comma, which
@@ -876,7 +897,7 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
             stream.reset(look)
             break
         elif before_comma is None:
-            before_comma = (look, collected, tuple(subtypes), matched)
+            before_comma = (look, collected, tuple(subtypes), matched, spec_at_look)
 
         # "a Swamp or *a* Mountain" - each alternative may carry its own
         # determiner. The check-land cycle is written this way and every one
@@ -914,11 +935,12 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
                 matched = True
                 continue
         stream.reset(look)
+        spec = spec_at_look
         break
 
     if before_comma is not None and not joined_once:
         # Commas all the way and never a conjunction: this was not a list.
-        position, collected, kept, matched = before_comma
+        position, collected, kept, matched, spec = before_comma
         stream.reset(position)
         subtypes = list(kept)
 
@@ -928,9 +950,10 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
 
     # "artifact or Goblin spell", "noncreature or Otter spell", "another
     # creature or a Treasure": the alternatives are a card type and a
-    # subtype. The filter has no disjunction across its fields, so the list
-    # read as an AND - an artifact that is a Goblin (auditor's F46, Harnesser
-    # of Storms; Skullport Merchant, Satsuki). Left unread rather than misread.
+    # subtype. Pooled into one filter the list read as an AND - an artifact
+    # that is a Goblin (auditor's F46, Harnesser of Storms; Skullport
+    # Merchant, Satsuki). It is a disjunction across fields, ``any_of``: one
+    # alternative for the card types, one for the subtypes.
     added_types = collected != spec.types_all
     added_subtypes = len(subtypes) > len(spec.subtypes_all)
     first_is_type = bool(spec.types_all or spec.types_none or spec.types_any)
@@ -938,8 +961,53 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     if (added_types and (added_subtypes or first_is_subtype)) or (
         added_subtypes and first_is_type
     ):
-        stream.reset(mark)
-        return spec
+        # Only the plain shape: bare type words and subtype names. A negated
+        # type ("noncreature or Otter"), a type list already open, or a
+        # qualifier read on a later alternative ("artifact or legendary
+        # Goblin") would belong to one alternative, and this reader pools
+        # those onto the whole phrase - so those stay unread.
+        # And nothing but a determiner before the first one: "nontoken
+        # creature or Treasure" puts "nontoken" on the creature only.
+        bare = ObjectFilter(
+            types_all=entry.types_all,
+            subtypes_all=entry.subtypes_all,
+            other_than_source=entry.other_than_source,
+            count=entry.count,
+            up_to=entry.up_to,
+        )
+        if (
+            spec != entry
+            or entry != bare
+            or entry.types_any
+            or entry.types_none
+            or entry.subtypes_any
+            or entry.any_of
+            or not collected
+            or not subtypes
+        ):
+            stream.reset(mark)
+            return entry
+        # "artifact creature or Plan": a first noun of two types is one
+        # alternative that is both, never "artifact or creature or Plan".
+        added = collected & ~entry.types_all
+        if entry.types_all and added:
+            if bin(entry.types_all.value).count("1") > 1:
+                stream.reset(mark)
+                return entry
+            types = ObjectFilter(types_any=collected, zones=frozenset())
+        elif entry.types_all:
+            types = ObjectFilter(types_all=entry.types_all, zones=frozenset())
+        else:
+            types = ObjectFilter(types_any=added, zones=frozenset())
+        return replace(
+            entry,
+            types_all=CardType.NONE,
+            subtypes_all=(),
+            any_of=(
+                types,
+                ObjectFilter(subtypes_any=tuple(subtypes), zones=frozenset()),
+            ),
+        )
 
     if len(subtypes) > len(spec.subtypes_all):
         # A list of subtypes is a disjunction too: "Elf or Goblin" must not
@@ -1907,6 +1975,43 @@ def _dimensions(spec: ObjectFilter) -> set[str]:
     return out
 
 
+_IDENTITY_FIELDS = {
+    "types_any": CardType.NONE,
+    "types_all": CardType.NONE,
+    "types_none": CardType.NONE,
+    "supertypes_all": Supertype.NONE,
+    "subtypes_any": (),
+    "subtypes_all": (),
+    "colors_any": Color.NONE,
+    "must_be_colorless": False,
+}
+
+
+def _any_of_halves(spec: ObjectFilter, other: ObjectFilter) -> ObjectFilter | None:
+    """"artifact spells and colorless spells" as one filter: ``any_of`` the
+    two halves' identities, the rest shared. None when the halves differ in
+    anything but identity, controller and count."""
+    if spec.any_of or other.any_of or spec.zones != other.zones:
+        return None
+    rest_first = replace(spec, **_IDENTITY_FIELDS)
+    rest_second = replace(other, **_IDENTITY_FIELDS)
+    controller = (
+        other.controller if other.controller is not ControllerRelation.ANY else spec.controller
+    )
+    if spec.controller not in (ControllerRelation.ANY, controller):
+        return None
+    shared = {"controller": controller, "count": spec.count, "up_to": spec.up_to}
+    if replace(rest_first, **shared) != replace(rest_second, **shared):
+        return None
+
+    def identity(half: ObjectFilter) -> ObjectFilter:
+        return ObjectFilter(
+            zones=frozenset(), **{name: getattr(half, name) for name in _IDENTITY_FIELDS}
+        )
+
+    return replace(rest_first, **shared, any_of=(identity(spec), identity(other)))
+
+
 def _whole_phrase_disjunction(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     """"artifact spells and colorless spells", "target spell or nonland
     permanent an opponent controls".
@@ -1931,6 +2036,9 @@ def _whole_phrase_disjunction(stream: Stream, spec: ObjectFilter) -> ObjectFilte
     if stream.at("or", "and"):
         stream.reset(mark)
         return spec
+    # "target Plains and *target* white creature": a determiner of its own
+    # after the conjunction makes the second half a second object.
+    second_object = stream.at("target", "a", "an", "another", "each", "all", "up")
 
     other = parse_object_filter(stream)
     if other is None:
@@ -1964,8 +2072,16 @@ def _whole_phrase_disjunction(stream: Stream, spec: ObjectFilter) -> ObjectFilte
     # half could contradict.
     first, second = _dimensions(spec), _dimensions(other)
     if len(first) > 1 or len(second) > 1 or (first and second and first != second):
-        stream.reset(mark)
-        return spec
+        # Across fields it is ``any_of``: each half's identity is one
+        # alternative, and everything else must be the same on both halves
+        # (or set on one only, as a trailing "an opponent controls" is), so
+        # it can sit on the outer filter. Halves in different zones are
+        # left unread: the alternatives inherit one set of zones.
+        merged = None if second_object else _any_of_halves(spec, other)
+        if merged is None:
+            stream.reset(mark)
+            return spec
+        return merged
 
     return replace(
         spec,
