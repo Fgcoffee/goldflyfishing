@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 from ..cr200_parts_of_a_card.cr205_typeline import TypeLine
 from ..cr600_spells_and_abilities.abilities import Ability, AbilityKind
 from ..cr600_spells_and_abilities.effects import TokenSpec
-from ..kernel.enums import CardType, Color, Zone
+from ..kernel.enums import CardType, Color, Layout, Zone
 from ..kernel.events import Event, EventKind
 from ..kernel.ids import NO_OBJECT, ObjectId, PlayerId
 from .cr106_mana import ZERO_COST, ManaCost
@@ -93,6 +93,12 @@ class SyntheticCard:
     color_identity: Color = Color.NONE
     commander_legal: bool = False
     oracle_id: str = ""
+    #: CR 111.10i: a double-faced token transforms like a card does, so it
+    #: says so the way a card does.
+    layout: Layout = Layout.NORMAL
+    #: Each face's own abilities, for a token with more than one face; empty
+    #: means ``abilities`` serves every face.
+    face_abilities: tuple[tuple[Ability, ...], ...] = ()
 
     def __str__(self) -> str:
         return self.name
@@ -109,6 +115,25 @@ def token_name(spec: TokenSpec) -> str:
 
 def build_token_card(game: Game, spec: TokenSpec, source: ObjectId) -> SyntheticCard:
     """Turn a TokenSpec into something the characteristics layer can read."""
+    face, abilities = _token_face(game, spec, source)
+    if spec.back is None:
+        return SyntheticCard(name=face.name, faces=(face,), abilities=abilities)
+    # CR 111.10i, 712.8: a double-faced token has the front face's
+    # characteristics until it transforms, and its back face's after.
+    back, back_abilities = _token_face(game, spec.back, source)
+    return SyntheticCard(
+        name=face.name,
+        faces=(face, back),
+        abilities=abilities,
+        layout=Layout.DOUBLE_FACED_TOKEN,
+        face_abilities=(abilities, back_abilities),
+    )
+
+
+def _token_face(
+    game: Game, spec: TokenSpec, source: ObjectId
+) -> tuple[_SyntheticFace, tuple[Ability, ...]]:
+    """One face of a token, and the abilities that face has."""
     from ..kernel.values import evaluate
 
     power = evaluate(game, spec.power, source=source)
@@ -130,7 +155,7 @@ def build_token_card(game: Game, spec: TokenSpec, source: ObjectId) -> Synthetic
         colors=spec.colors,
         keywords=spec.keywords,
     )
-    return SyntheticCard(name=name, faces=(face,), abilities=abilities)
+    return face, abilities
 
 
 def _replaced_count(

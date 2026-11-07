@@ -1110,10 +1110,15 @@ def _choose_trigger_targets(
     # nothing is left (CR 608.2b). The same cut spells get: no object twice
     # for one "target", nothing chosen earlier in an "another target" slot
     # (CR 115.3, 601.2c).
-    from .cr601_casting import settle_target_choices
+    from .cr601_casting import settle_target_choices, target_bounds
 
     # With no agent the engine chose for it, and a collision of its own
-    # making is its own to repair.
+    # making is its own to repair. CR 603.3d with 601.2c: "two target
+    # permanents" takes two whoever chooses.
+    bounds = [
+        target_bounds(game, effect, controller, getattr(stack_object, "x_value", 0))
+        for effect in effects
+    ]
     return settle_target_choices(
-        effects, candidates, chosen, fill_required=chooser is None
+        effects, candidates, chosen, fill_required=chooser is None, bounds=bounds
     )
