@@ -7,7 +7,6 @@ Sly Instigator made every creature an opponent controls unblockable.
 
 from __future__ import annotations
 
-import pytest
 from harness import FixedAgent, make_board
 
 from mtgfish.parser import parse_card
@@ -34,10 +33,6 @@ def test_the_restriction_is_targeted(card_db):
         assert node.is_targeted, name
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "ENGINE: resolve._register_restriction registers the restriction against "
-    "the effect's filter, not the target chosen for it - every creature is "
-    "restricted. The parser now marks it targeted (F43)."))
 def test_chainwhip_cyclops_stops_only_its_target_blocking(card_db):
     board = make_board(card_db, OracleAbilities())
     for player in board.game.players:
