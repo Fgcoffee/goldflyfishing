@@ -3379,6 +3379,55 @@ def _do_pair(resolution: Resolution, effect: Effect) -> None:
         pair(game, source, other, resolution.controller)
 
 
+def _do_separate_into_piles(resolution: Resolution, effect: Effect) -> None:
+    """CR 700.3: separate objects into two piles, then a player picks one.
+
+    CR 700.3a: a pile can be empty. CR 700.3d: an object can't be in both.
+    The separating player is ``actor`` (by default this ability's
+    controller), asked through ``separate_piles``; the choosing player is
+    ``players``, asked through ``choose_pile``. An agent without a hook
+    separates by alternating the objects from the highest mana value down,
+    and chooses the pile with the greater total mana value.
+    """
+    from ..kernel.matching import resolve_players
+    from ..kernel.query import YOU
+
+    game = resolution.game
+    objects = _objects(resolution, effect)
+    if not objects:
+        return
+    ids = [obj.id for obj in objects]
+
+    def worth(object_id) -> int:
+        return game.characteristics(game.objects[object_id]).mana_value
+
+    separators = resolve_players(game, effect.actor or YOU, controller=resolution.controller)
+    separator = separators[0] if separators else resolution.controller
+    hook = getattr(game.agent_for(separator), "separate_piles", None)
+    first = hook(game, separator, list(ids)) if hook else None
+    if first is None:
+        ordered = sorted(ids, key=lambda i: (-worth(i), i))
+        first = ordered[0::2]
+    first = [i for i in ids if i in set(first)]
+    second = [i for i in ids if i not in set(first)]
+    game.log.record(game, f"Piles: {len(first)} and {len(second)}", kind="effect")
+
+    choosers = _players(resolution, effect) if effect.players is not None else [
+        resolution.controller
+    ]
+    chooser = choosers[0] if choosers else resolution.controller
+    pick = getattr(game.agent_for(chooser), "choose_pile", None)
+    chosen = pick(game, chooser, list(first), list(second)) if pick else None
+    if chosen not in (0, 1):
+        chosen = 0 if sum(map(worth, first)) >= sum(map(worth, second)) else 1
+    picked, other = (first, second) if chosen == 0 else (second, first)
+
+    resolution.remembered = list(picked)
+    execute(resolution, effect.children)
+    resolution.remembered = list(other)
+    execute(resolution, effect.otherwise)
+
+
 def _do_become_saddled(resolution: Resolution, effect: Effect) -> None:
     """CR 702.171a/c: the permanent becomes saddled until end of turn, and
     the creatures tapped to pay for it are what saddled it."""
@@ -4034,6 +4083,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
     EffectKind.BECOME_SADDLED: _do_become_saddled,
     EffectKind.PAIR: _do_pair,
+    EffectKind.SEPARATE_INTO_PILES: _do_separate_into_piles,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.

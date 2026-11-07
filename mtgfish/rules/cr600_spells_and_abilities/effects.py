@@ -262,6 +262,13 @@ class EffectKind(IntEnum):
     #: control - "that creature" from the triggering event if there is one,
     #: otherwise one you choose.
     PAIR = 286
+    #: CR 700.3: ``actor`` separates the ``targets`` objects (a filter, or
+    #: ``from_pile`` for cards just revealed) into two piles, and ``players``
+    #: chooses one. ``children`` act on the chosen pile and ``otherwise`` on
+    #: the other, each as "them"/"it" (``remembered``). "Put one pile into
+    #: your hand and the other into your graveyard", "sacrifices all
+    #: permanents in the pile of their choice".
+    SEPARATE_INTO_PILES = 287
     #: CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread -
     #: ``keywords[0]`` says which. Put the ``targets`` cards onto the
     #: battlefield face down, one at a time; for manifest dread, look at the
