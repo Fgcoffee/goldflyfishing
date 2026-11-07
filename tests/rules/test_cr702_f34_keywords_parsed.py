@@ -51,7 +51,7 @@ def casts(board, name):
 
 
 @pytest.mark.parametrize(
-    "name", ["Sacred Cat", "Terminus", "Champion of Wits", "Boon Satyr", "Glacial Ray",
+    "name", ["Sacred Cat", "Terminus", "Champion of Wits", "Glacial Ray",
              "Desperate Ritual"],
 )
 def test_the_misbuilt_keyword_is_not_read(card_db, name):
@@ -77,10 +77,14 @@ def test_miracle_is_not_offered_from_hand_at_any_time(board):
     assert casts(board, "Terminus") == []
 
 
-def test_bestow_cost_is_not_offered(board):
+def test_bestow_is_offered_now_that_it_is_faithful(board):
+    """Bestow left the misbuilt table with its faithful build (CR 702.103;
+    tests/rules/test_cr702_bestow.py): Boon Satyr's bestow {3}{G}{G} is
+    offered when there is a creature to enchant."""
+    board.play("Grizzly Bears")
     board.hand("Boon Satyr")
     give(board, 5, Color.GREEN)
-    assert all(a.alternative_cost < 0 for a in casts(board, "Boon Satyr"))
+    assert any(a.alternative_cost >= 0 for a in casts(board, "Boon Satyr"))
 
 
 def test_emerge_sacrifices_a_creature_and_is_reduced_by_its_mana_value(board):

@@ -2082,11 +2082,18 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
     count = _count(resolution, effect)
     made: list[ObjectId] = []
     for original in _objects(resolution, effect):
+        copier = resolution.controller
+        if effect.players is not None and effect.players.scope is PlayerScope.OPPONENT:
+            # CR 702.144a: an opponent chosen as this resolves makes the copy,
+            # and so controls it (CR 707.10).
+            copier = _choose_copying_opponent(resolution, original)
+            if copier is None:
+                continue
         for _ in range(count):
             copy = copy_spell(
                 resolution.game,
                 original,
-                resolution.controller,
+                copier,
                 may_choose_new_targets=MAY_CHOOSE_NEW_TARGETS in effect.keywords,
             )
             if copy is not None:
@@ -2095,6 +2102,23 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
         # CR 707.10: "You may choose new targets for the copy" - the next
         # sentence is about the copy, not the spell it copied.
         resolution.remembered = made
+
+
+def _choose_copying_opponent(resolution: Resolution, spell: GameObject) -> PlayerId | None:
+    """CR 702.144a: the opponent who also copies the spell.
+
+    Asked of the controller's agent through ``choose_copying_opponent(game,
+    player, spell, opponents)``; without one, or with an answer that is no
+    opponent, the first opponent in turn order.
+    """
+    game = resolution.game
+    me = resolution.controller
+    opponents = [p.id for p in game.living_players if p.id != me]
+    if not opponents:
+        return None
+    chooser = getattr(game.agent_for(me), "choose_copying_opponent", None)
+    chosen = chooser(game, me, spell, tuple(opponents)) if chooser is not None else None
+    return chosen if chosen in opponents else opponents[0]
 
 
 def _do_goad(resolution: Resolution, effect: Effect) -> None:
@@ -3379,6 +3403,55 @@ def _do_pair(resolution: Resolution, effect: Effect) -> None:
         pair(game, source, other, resolution.controller)
 
 
+def _do_separate_into_piles(resolution: Resolution, effect: Effect) -> None:
+    """CR 700.3: separate objects into two piles, then a player picks one.
+
+    CR 700.3a: a pile can be empty. CR 700.3d: an object can't be in both.
+    The separating player is ``actor`` (by default this ability's
+    controller), asked through ``separate_piles``; the choosing player is
+    ``players``, asked through ``choose_pile``. An agent without a hook
+    separates by alternating the objects from the highest mana value down,
+    and chooses the pile with the greater total mana value.
+    """
+    from ..kernel.matching import resolve_players
+    from ..kernel.query import YOU
+
+    game = resolution.game
+    objects = _objects(resolution, effect)
+    if not objects:
+        return
+    ids = [obj.id for obj in objects]
+
+    def worth(object_id) -> int:
+        return game.characteristics(game.objects[object_id]).mana_value
+
+    separators = resolve_players(game, effect.actor or YOU, controller=resolution.controller)
+    separator = separators[0] if separators else resolution.controller
+    hook = getattr(game.agent_for(separator), "separate_piles", None)
+    first = hook(game, separator, list(ids)) if hook else None
+    if first is None:
+        ordered = sorted(ids, key=lambda i: (-worth(i), i))
+        first = ordered[0::2]
+    first = [i for i in ids if i in set(first)]
+    second = [i for i in ids if i not in set(first)]
+    game.log.record(game, f"Piles: {len(first)} and {len(second)}", kind="effect")
+
+    choosers = _players(resolution, effect) if effect.players is not None else [
+        resolution.controller
+    ]
+    chooser = choosers[0] if choosers else resolution.controller
+    pick = getattr(game.agent_for(chooser), "choose_pile", None)
+    chosen = pick(game, chooser, list(first), list(second)) if pick else None
+    if chosen not in (0, 1):
+        chosen = 0 if sum(map(worth, first)) >= sum(map(worth, second)) else 1
+    picked, other = (first, second) if chosen == 0 else (second, first)
+
+    resolution.remembered = list(picked)
+    execute(resolution, effect.children)
+    resolution.remembered = list(other)
+    execute(resolution, effect.otherwise)
+
+
 def _do_become_saddled(resolution: Resolution, effect: Effect) -> None:
     """CR 702.171a/c: the permanent becomes saddled until end of turn, and
     the creatures tapped to pay for it are what saddled it."""
@@ -3408,6 +3481,25 @@ def _do_become_renowned(resolution: Resolution, effect: Effect) -> None:
                     source=resolution.source,
                 )
             )
+
+
+def _do_haunt(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.55a-b: exile the haunt card, haunting the targeted creature.
+
+    The card is the one the source became in its graveyard (CR 400.7: one
+    move and no more); once it has left the graveyard, it is out of reach.
+    """
+    game = resolution.game
+    haunted = _objects(resolution, effect)
+    card = game.objects.get(resolution.source)
+    if card is not None and not card.is_live:
+        card = game.objects.get(card.superseded_by)
+    if card is None or not card.is_live or card.zone is not Zone.GRAVEYARD:
+        return
+    exiled = game.move_object(card, Zone.EXILE, to_player=card.owner)
+    if haunted:
+        exiled.haunting = haunted[0].id
+        game.log.record(game, f"{exiled} haunts {haunted[0]}", kind="effect")
 
 
 def _do_blocks_source_if_able(resolution: Resolution, effect: Effect) -> None:
@@ -4031,9 +4123,11 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.HARNESS: _do_harness,
     EffectKind.BECOME_RENOWNED: _do_become_renowned,
     EffectKind.BLOCKS_SOURCE_IF_ABLE: _do_blocks_source_if_able,
+    EffectKind.HAUNT: _do_haunt,
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
     EffectKind.BECOME_SADDLED: _do_become_saddled,
     EffectKind.PAIR: _do_pair,
+    EffectKind.SEPARATE_INTO_PILES: _do_separate_into_piles,
     EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT: _do_sacrifice_blockers_at_end_of_combat,
     EffectKind.SET_CLASS_LEVEL: _do_set_class_level,
     # A static ability, read by the trigger collector rather than resolved.
