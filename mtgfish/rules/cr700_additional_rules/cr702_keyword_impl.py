@@ -180,6 +180,21 @@ MISBUILT_KEYWORDS: dict[str, str] = {
 }
 
 
+def _names_a_quality_beyond(instance: KeywordInstance, plain: str) -> bool:
+    """Whether the printed keyword says more than ``plain`` plus its cost -
+    "Affinity for Slivers", "Equip legendary creature {3}" - so a quality the
+    instance does not carry was left behind."""
+    text = (instance.text or "").strip().lower()
+    if not text.startswith(instance.name.lower()):
+        return False
+    rest = text[len(plain):] if text.startswith(plain) else None
+    if rest is None:
+        return True
+    rest = rest.split("(")[0].strip()
+    # What may follow: a mana cost, an "—" cost, nothing.
+    return bool(rest) and not rest.startswith(("{", "—", "-")) and not rest[0].isdigit()
+
+
 def _inert_keyword(instance: KeywordInstance) -> Ability:
     """An inert placeholder for a keyword in ``MISBUILT_KEYWORDS``."""
     return Ability(
@@ -1486,6 +1501,15 @@ def _cost_helper(instance: KeywordInstance) -> tuple[Ability, ...]:
 @register("Equip")
 def _equip(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.6a: attach to a creature you control. Sorcery speed only."""
+    # CR 702.6c: "equip [quality] [cost]" may attach only to a creature of
+    # that quality. With the quality (or the cost) not read, the ability is
+    # reported as not understood rather than equipping anything for free.
+    if instance.filter is None and _names_a_quality_beyond(instance, "equip"):
+        return (_inert_keyword(instance),)
+    # Every equip ability has a cost (CR 702.6a); none read means the line
+    # was not read whole - "Equip legendary creature {3}" lost both.
+    if instance.cost is None:
+        return (_inert_keyword(instance),)
     return (
         Ability(
             AbilityKind.ACTIVATED,
@@ -2361,6 +2385,11 @@ def _conspire(instance: KeywordInstance) -> tuple[Ability, ...]:
 @register("Affinity")
 def _affinity(instance: KeywordInstance) -> tuple[Ability, ...]:
     """CR 702.41: this spell costs {1} less for each matching permanent."""
+    # CR 702.41a: "affinity for [text]" counts what the text names. Without
+    # the quality read, counting artifacts would be a wrong reading of every
+    # "affinity for Slivers"; it is reported as not understood instead.
+    if instance.filter is None and _names_a_quality_beyond(instance, "affinity for artifacts"):
+        return (_inert_keyword(instance),)
     return (
         Ability.static(
             Effect(
