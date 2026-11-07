@@ -67,3 +67,25 @@ def test_an_equip_whose_quality_and_cost_were_lost_is_not_free(box):
     game.player(P0).mana_pool.add(ManaKind(Color.NONE), 7)
     assert [a for a in legal_actions(game, P0)
             if a.kind.name == "ACTIVATE_ABILITY" and a.source == blade.id], "Equip {7} still works"
+
+
+def test_emerge_is_not_offered_when_the_coloured_remainder_cannot_be_paid(box):
+    """F45: Wretched Gryff, emerge {5}{U}, sacrificing Ulamog's Crusher (8):
+    the remainder is {U}, and a Mountain cannot make it."""
+    need(box, "Wretched Gryff", "Ulamog's Crusher", "Mountain", "Island")
+    box.put("Ulamog's Crusher", "battlefield", 0)
+    box.put("Mountain", "battlefield", 0)
+    box.put("Wretched Gryff", "hand", 0)
+    game = box.game
+
+    def emerge_offered():
+        return any(
+            a.kind.name.startswith("CAST")
+            and game.objects[a.source].card.name == "Wretched Gryff"
+            and a.alternative_cost >= 0
+            for a in legal_actions(game, P0)
+        )
+
+    assert not emerge_offered()
+    box.put("Island", "battlefield", 0)
+    assert emerge_offered(), "with an Island it is"
