@@ -12,6 +12,8 @@ should, and shows up as a rules test failure rather than an illegal game state.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from typing import TYPE_CHECKING, Iterator
 
 from .enums import Color, Zone
@@ -84,6 +86,22 @@ def matches(
     if spec.specific and obj.id not in spec.specific:
         return False
     if spec.linked_to_source and not _linked(game, obj, spec, source):
+        return False
+    # A disjunction across fields ("artifact or Goblin spell"): one of the
+    # alternatives must match, as well as everything else below. Each is
+    # asked without zones, which this filter's own zones already settle.
+    if spec.any_of and not any(
+        matches(
+            game,
+            obj,
+            replace(alternative, zones=frozenset()),
+            source=source,
+            controller=controller,
+            override=override,
+            allow_stale=allow_stale,
+        )
+        for alternative in spec.any_of
+    ):
         return False
 
     # "This" names one object wherever it is: the zones a source-only filter

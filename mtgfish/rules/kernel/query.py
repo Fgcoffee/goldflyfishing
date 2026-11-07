@@ -669,6 +669,11 @@ class ObjectFilter:
     #: mass effects like Wrath of God want.
     count: Value | None = None
     up_to: bool = False
+    #: "Creature or Vehicle", "instant, sorcery, or Wizard spell": the object
+    #: must match at least one of these as well as every other field here.
+    #: Each alternative is a whole filter, matched with the same source and
+    #: controller; leave its zones empty to inherit this filter's.
+    any_of: tuple = ()
 
     def describe(self, *, quantified: bool = True) -> str:
         """Say every constraint this filter carries, in English.
@@ -695,6 +700,11 @@ class ObjectFilter:
         parts.extend(self._numeric())
         parts.extend(self._state())
         parts.extend(self._attachments())
+        if self.any_of:
+            parts.append(
+                "that is "
+                + " or ".join(alt.describe(quantified=False) for alt in self.any_of)
+            )
         parts.extend(self._zone_phrase())
         return " ".join(parts)
 
