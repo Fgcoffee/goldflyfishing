@@ -141,7 +141,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     " was a free return on your creatures dying",
     "hideaway": "CR 702.75a: exile one of the top N face down, rest on the bottom;"
     " was reveal N and exile the top card",
-    "demonstrate": "CR 702.144a: you and an opponent copy it; was two copies for you",
     "storm": "CR 702.40a: a copy per spell cast before it this turn; was one copy",
     "gravestorm": "CR 702.69a: a copy per permanent put into a graveyard; was one copy",
     "ripple": "CR 702.60a: cast revealed cards with the same name; was every card"
@@ -3807,9 +3806,17 @@ def _tribute(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Demonstrate")
 def _demonstrate(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.144a: "When you cast this spell, you may copy it. If you do,
-    choose an opponent to also copy it."
+    """CR 702.144a: "When you cast this spell, you may copy it and you may
+    choose new targets for the copy. If you copy the spell, choose an
+    opponent. That player copies the spell and may choose new targets for
+    that copy."
+
+    The second copy is the chosen opponent's (``players`` OPPONENT on the
+    COPY_SPELL), so it is theirs to control and to retarget (CR 707.10,
+    707.10c). It goes on the stack above the caster's copy.
     """
+    from .cr707_faces import MAY_CHOOSE_NEW_TARGETS
+
     return (
         Ability.triggered(
             TriggerCondition(
@@ -3825,16 +3832,18 @@ def _demonstrate(instance: KeywordInstance) -> tuple[Ability, ...]:
                         EffectKind.COPY_SPELL,
                         targets=SOURCE_ONLY,
                         players=YOU,
+                        keywords=(MAY_CHOOSE_NEW_TARGETS,),
                         text="copy it",
                     ),
                     Effect(
                         EffectKind.COPY_SPELL,
                         targets=SOURCE_ONLY,
                         players=PlayerFilter(PlayerScope.OPPONENT),
-                        text="an opponent copies it too",
+                        keywords=(MAY_CHOOSE_NEW_TARGETS,),
+                        text="the chosen opponent copies it",
                     ),
                 ),
-                text="you may copy it, and an opponent also copies it",
+                text="you may copy it; if you do, an opponent you choose copies it",
             ),
             text=instance.text or instance.name,
         ),

@@ -2067,11 +2067,18 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
     count = _count(resolution, effect)
     made: list[ObjectId] = []
     for original in _objects(resolution, effect):
+        copier = resolution.controller
+        if effect.players is not None and effect.players.scope is PlayerScope.OPPONENT:
+            # CR 702.144a: an opponent chosen as this resolves makes the copy,
+            # and so controls it (CR 707.10).
+            copier = _choose_copying_opponent(resolution, original)
+            if copier is None:
+                continue
         for _ in range(count):
             copy = copy_spell(
                 resolution.game,
                 original,
-                resolution.controller,
+                copier,
                 may_choose_new_targets=MAY_CHOOSE_NEW_TARGETS in effect.keywords,
             )
             if copy is not None:
@@ -2080,6 +2087,23 @@ def _do_copy_spell(resolution: Resolution, effect: Effect) -> None:
         # CR 707.10: "You may choose new targets for the copy" - the next
         # sentence is about the copy, not the spell it copied.
         resolution.remembered = made
+
+
+def _choose_copying_opponent(resolution: Resolution, spell: GameObject) -> PlayerId | None:
+    """CR 702.144a: the opponent who also copies the spell.
+
+    Asked of the controller's agent through ``choose_copying_opponent(game,
+    player, spell, opponents)``; without one, or with an answer that is no
+    opponent, the first opponent in turn order.
+    """
+    game = resolution.game
+    me = resolution.controller
+    opponents = [p.id for p in game.living_players if p.id != me]
+    if not opponents:
+        return None
+    chooser = getattr(game.agent_for(me), "choose_copying_opponent", None)
+    chosen = chooser(game, me, spell, tuple(opponents)) if chooser is not None else None
+    return chosen if chosen in opponents else opponents[0]
 
 
 def _do_goad(resolution: Resolution, effect: Effect) -> None:
