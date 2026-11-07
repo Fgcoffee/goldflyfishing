@@ -257,6 +257,9 @@ class Game:
     #: same time are moved one after another, so a later one's look-back
     #: triggers must still find the earlier ones as they were.
     departed_in_batch: list = field(default_factory=list)
+    #: CR 608.2: the spell resolving right now, if any - which "put into a
+    #: graveyard during its resolution" (CR 702.55a) asks about.
+    resolving_spell: ObjectId = NO_OBJECT
     departed_batch: int = -1
     #: The triggered abilities that said "this ability triggers only once each
     #: turn" and have triggered this turn, as (object id, ability). Cleared

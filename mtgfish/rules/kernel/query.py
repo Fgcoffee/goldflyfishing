@@ -608,6 +608,9 @@ class ObjectFilter:
     #: CR 702.95b: this creature and the creature it is paired with - "each
     #: of those creatures has ...". Matches nothing while it is unpaired.
     in_pair_with_source: bool | None = None
+    #: CR 702.55b: "the creature it haunts" - the object the source, a card
+    #: exiled by its haunt ability, haunts. Matches nothing otherwise.
+    haunted_by_source: bool | None = None
     #: CR 700.10: the source of an ability activated this turn.
     activated_this_turn: bool | None = None
     face_down: bool | None = None
@@ -666,6 +669,11 @@ class ObjectFilter:
     #: mass effects like Wrath of God want.
     count: Value | None = None
     up_to: bool = False
+    #: "Creature or Vehicle", "instant, sorcery, or Wizard spell": the object
+    #: must match at least one of these as well as every other field here.
+    #: Each alternative is a whole filter, matched with the same source and
+    #: controller; leave its zones empty to inherit this filter's.
+    any_of: tuple = ()
 
     def describe(self, *, quantified: bool = True) -> str:
         """Say every constraint this filter carries, in English.
@@ -692,6 +700,11 @@ class ObjectFilter:
         parts.extend(self._numeric())
         parts.extend(self._state())
         parts.extend(self._attachments())
+        if self.any_of:
+            parts.append(
+                "that is "
+                + " or ".join(alt.describe(quantified=False) for alt in self.any_of)
+            )
         parts.extend(self._zone_phrase())
         return " ".join(parts)
 
