@@ -240,6 +240,18 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         targets=obj.targets,
         x_value=obj.x_value,
     )
+    # CR 608.2: from here to the move below is the spell's resolution, which
+    # "put into a graveyard during its resolution" asks about (CR 702.55a).
+    outer, game.resolving_spell = game.resolving_spell, obj.id
+    try:
+        _resolve_nonpermanent(game, obj, chars, resolution)
+    finally:
+        game.resolving_spell = outer
+
+
+def _resolve_nonpermanent(game: Game, obj: GameObject, chars, resolution: Resolution) -> None:
+    """CR 608.2c-m: an instant or sorcery follows its instructions, then
+    leaves the stack."""
     for ability in chars.abilities:
         if ability.kind is AbilityKind.SPELL:
             execute(resolution, ability.effects)

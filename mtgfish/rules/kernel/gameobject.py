@@ -228,6 +228,9 @@ class GameObject:
     #: CR 702.95b: the creature this one is paired with, and the player it
     #: was paired under (CR 702.95e ends it if control changes).
     paired_with: ObjectId = NO_OBJECT
+    #: CR 702.55b: the object a card exiled by its haunt ability haunts - the
+    #: one that ability targeted, kept as the id it had then.
+    haunting: ObjectId = NO_OBJECT
     pair_controller: PlayerId = NO_PLAYER
     saddled_by: tuple = ()
     #: CR 702.112b: the renowned designation. Not copiable, and it lasts until

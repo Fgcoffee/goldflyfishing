@@ -766,6 +766,12 @@ def condition_met(
     if trigger.ordinal and not _is_nth_this_turn(game, trigger, event):
         return False
 
+    # CR 702.55a
+    if trigger.during_own_resolution and (
+        not event.data or event.data[0] != game.resolving_spell
+    ):
+        return False
+
     # CR 603.4: the intervening-if clause is checked here, and again on
     # resolution. Failing either time means the ability does nothing.
     return check_intervening_if(game, source, trigger, event)

@@ -136,7 +136,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "soulbond": "CR 702.95a: pair with one creature; was attached to every creature",
     "compleated": "CR 702.150a: fewer loyalty per Phyrexian mana paid with life;"
     " was a static removing X loyalty",
-    "haunt": "CR 702.55a: exile haunting a creature, trigger again; was exile only",
     "recover": "CR 702.59a: when a creature card goes to your graveyard, pay or exile;"
     " was a free return on your creatures dying",
     "hideaway": "CR 702.75a: exile one of the top N face down, rest on the bottom;"
@@ -3126,12 +3125,21 @@ def _recover(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Haunt")
 def _haunt(instance: KeywordInstance) -> tuple[Ability, ...]:
-    """CR 702.55a: "When this permanent dies, exile it haunting target
-    creature."
+    """CR 702.55a: on a permanent, "When this permanent is put into a
+    graveyard from the battlefield, exile it haunting target creature"; on an
+    instant or sorcery, "When this spell is put into a graveyard during its
+    resolution, exile it haunting target creature."
 
-    The exile is the linked half (CR 607); what the haunt *does* is printed on
-    the card as a second trigger, so only the exile lives here.
+    Both halves are built: each can only trigger for its own kind of card.
+    What the haunt does is printed on the card as a further trigger that
+    names "the creature it haunts" (CR 702.55b-c), which works from exile.
     """
+    haunting = Effect(
+        EffectKind.HAUNT,
+        targets=ObjectFilter(types_all=CardType.CREATURE),
+        is_targeted=True,
+        text="exile it haunting target creature",
+    )
     return (
         Ability.triggered(
             TriggerCondition(
@@ -3140,11 +3148,19 @@ def _haunt(instance: KeywordInstance) -> tuple[Ability, ...]:
                 uses_last_known_information=True,
                 text="when this permanent dies",
             ),
-            Effect(
-                EffectKind.EXILE,
-                targets=SOURCE_ONLY,
-                text="exile it haunting target creature",
+            haunting,
+            text=instance.text or instance.name,
+        ),
+        Ability.triggered(
+            TriggerCondition(
+                event_kinds=frozenset({EventKind.PUT_INTO_GRAVEYARD}),
+                subject=SOURCE_ONLY,
+                from_zones=frozenset({Zone.STACK}),
+                during_own_resolution=True,
+                functions_in=frozenset({Zone.GRAVEYARD}),
+                text="when this spell is put into a graveyard during its resolution",
             ),
+            haunting,
             text=instance.text or instance.name,
         ),
     )

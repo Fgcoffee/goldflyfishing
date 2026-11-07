@@ -3346,6 +3346,25 @@ def _do_become_renowned(resolution: Resolution, effect: Effect) -> None:
             )
 
 
+def _do_haunt(resolution: Resolution, effect: Effect) -> None:
+    """CR 702.55a-b: exile the haunt card, haunting the targeted creature.
+
+    The card is the one the source became in its graveyard (CR 400.7: one
+    move and no more); once it has left the graveyard, it is out of reach.
+    """
+    game = resolution.game
+    haunted = _objects(resolution, effect)
+    card = game.objects.get(resolution.source)
+    if card is not None and not card.is_live:
+        card = game.objects.get(card.superseded_by)
+    if card is None or not card.is_live or card.zone is not Zone.GRAVEYARD:
+        return
+    exiled = game.move_object(card, Zone.EXILE, to_player=card.owner)
+    if haunted:
+        exiled.haunting = haunted[0].id
+        game.log.record(game, f"{exiled} haunts {haunted[0]}", kind="effect")
+
+
 def _do_blocks_source_if_able(resolution: Resolution, effect: Effect) -> None:
     """A requirement (CR 509.1c) that each creature acted on blocks the source
     if able, for the effect's duration. Pinned to these objects: a creature
@@ -3967,6 +3986,7 @@ EXECUTORS: dict[EffectKind, Executor] = {
     EffectKind.HARNESS: _do_harness,
     EffectKind.BECOME_RENOWNED: _do_become_renowned,
     EffectKind.BLOCKS_SOURCE_IF_ABLE: _do_blocks_source_if_able,
+    EffectKind.HAUNT: _do_haunt,
     EffectKind.ENTERS_AS_CHOICE: _do_enters_as_choice,
     EffectKind.BECOME_SADDLED: _do_become_saddled,
     EffectKind.PAIR: _do_pair,

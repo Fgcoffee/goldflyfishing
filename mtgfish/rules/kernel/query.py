@@ -608,6 +608,9 @@ class ObjectFilter:
     #: CR 702.95b: this creature and the creature it is paired with - "each
     #: of those creatures has ...". Matches nothing while it is unpaired.
     in_pair_with_source: bool | None = None
+    #: CR 702.55b: "the creature it haunts" - the object the source, a card
+    #: exiled by its haunt ability, haunts. Matches nothing otherwise.
+    haunted_by_source: bool | None = None
     #: CR 700.10: the source of an ability activated this turn.
     activated_this_turn: bool | None = None
     face_down: bool | None = None

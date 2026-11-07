@@ -177,6 +177,15 @@ def matches(
         if in_pair != spec.in_pair_with_source:
             return False
 
+    if spec.haunted_by_source is not None:
+        # CR 702.55b
+        anchor = game.objects.get(source)
+        haunted = (
+            anchor is not None and anchor.haunting != NO_OBJECT and obj.id == anchor.haunting
+        )
+        if haunted != spec.haunted_by_source:
+            return False
+
     if spec.modified is not None or spec.activated_this_turn is not None:
         from ..cr700_additional_rules.cr700_general import (
             is_modified,

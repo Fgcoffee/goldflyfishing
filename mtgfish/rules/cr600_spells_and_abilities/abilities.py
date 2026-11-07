@@ -148,6 +148,10 @@ class TriggerCondition:
     #: the engine knows to evaluate them against last-known information
     #: (CR 603.6e, 608.2g).
     uses_last_known_information: bool = False
+    #: CR 702.55a: the object was put where the event says during its own
+    #: resolution - "when this spell is put into a graveyard during its
+    #: resolution", which a countered spell is not.
+    during_own_resolution: bool = False
 
     text: str = ""
 
