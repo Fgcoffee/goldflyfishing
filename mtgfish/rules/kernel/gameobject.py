@@ -213,6 +213,9 @@ class GameObject:
     #: cast for, if any - what "if its sneak cost was paid" asks. Empty for a
     #: spell cast for its mana cost.
     alternative_cost_paid: str = ""
+    #: CR 702.103b: a spell cast bestowed, and the permanent it becomes, is an
+    #: Aura with enchant creature until it ceases to be bestowed (702.103e-g).
+    bestowed: bool = False
     #: CR 601.2a: the zone the card was in when it was cast, for the rules
     #: that ask where a spell was cast from (CR 702.127a aftermath).
     cast_from: object | None = None

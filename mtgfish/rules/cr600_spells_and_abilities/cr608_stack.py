@@ -178,6 +178,12 @@ def _cease(game: Game, obj: GameObject) -> None:
 
 
 def _resolve_spell(game: Game, obj: GameObject) -> None:
+    if obj.bestowed and _all_targets_illegal(game, obj):
+        # CR 702.103e, 608.3b: a bestowed Aura spell whose target is illegal
+        # ceases to be bestowed and resolves as the creature spell it is.
+        obj.bestowed = False
+        obj.targets = ()
+        game.invalidate_characteristics()
     chars = game.characteristics(obj)
 
     if _all_targets_illegal(game, obj):
@@ -202,6 +208,11 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # control effect ended the permanent went to the thief rather than
         # back to its caster.
         permanent.base_controller = obj.base_controller
+        # CR 702.103b: the permanent a bestowed Aura spell becomes is a
+        # bestowed Aura.
+        if obj.bestowed:
+            permanent.bestowed = True
+            game.invalidate_characteristics()
         _carry_effects_onto_the_permanent(game, obj, permanent)
         # CR 607.2q: cards exiled to pay for the spell are "exiled with" the
         # permanent it became.

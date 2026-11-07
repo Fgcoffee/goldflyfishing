@@ -171,8 +171,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     " drawn this turn; was an alternative cost from hand at any time",
     "splice": "CR 702.47a: reveal it to add its text to another spell; was an"
     " additional cost of the card itself",
-    "bestow": "CR 702.103a: cast as an Aura spell; was a plain alternative cost,"
-    " never an Aura",
     "embalm": "CR 702.128a: exile it from the graveyard to create a token copy;"
     " was the card itself cast from the graveyard",
     "eternalize": "CR 702.129a: exile it from the graveyard to create a 4/4"

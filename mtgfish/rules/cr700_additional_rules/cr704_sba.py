@@ -364,6 +364,14 @@ def _check_permanents(
         # put into its owner's graveyard.
         if chars.has_subtype("Aura"):
             if not _attachment_is_legal(game, obj, require_host=True):
+                if obj.bestowed:
+                    # CR 702.103f, an exception to 704.5m: a bestowed Aura
+                    # that is unattached, or on something illegal, becomes
+                    # unattached and ceases to be bestowed - a creature again.
+                    obj.bestowed = False
+                    to_unattach.append(obj)
+                    game.invalidate_characteristics()
+                    continue
                 to_graveyard.append(obj)
                 continue
 
