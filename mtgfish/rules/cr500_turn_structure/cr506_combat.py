@@ -212,8 +212,18 @@ def declare_attackers(game: Game) -> None:
     # them.
     from .combat_costs import pay
 
+    # CR 508.1g-j: enlist is an optional cost to attack, part of the same
+    # total as any tax. It is paid first, so a creature committed to enlist
+    # is not also tapped for the tax's mana; an attacker whose tax then goes
+    # unpaid has its enlist undone with the rest of its declaration.
+    enlisted = _pay_enlist_costs(game, combat, active, agent)
+
     if costs and not pay(game, active, costs, what="attack"):
         for attacker_id in costs:
+            for creature, pending in enlisted.get(attacker_id, ()):
+                creature.tapped = False
+                if pending in game.pending_triggers:
+                    game.pending_triggers.remove(pending)
             combat.attacking.pop(attacker_id, None)
             combat.attacking_permanent.pop(attacker_id, None)
             combat.controllers.pop(attacker_id, None)
@@ -226,7 +236,6 @@ def declare_attackers(game: Game) -> None:
             game.log.record(game, f"{obj} does not attack: its cost was not paid", kind="combat")
 
     game.invalidate_characteristics()
-    _pay_enlist_costs(game, combat, active, agent)
     for attacker_id in sorted(combat.attacking):
         game.emit(
             Event(
@@ -285,7 +294,7 @@ def _attack_costs(
     return paid
 
 
-def _pay_enlist_costs(game: Game, combat, active: PlayerId, agent) -> None:
+def _pay_enlist_costs(game: Game, combat, active: PlayerId, agent) -> dict:
     """CR 702.154a-b, 508.1g-h: enlist is an optional cost to attack.
 
     For each instance of enlist on each attacker, the attacking player may tap
@@ -302,8 +311,9 @@ def _pay_enlist_costs(game: Game, combat, active: PlayerId, agent) -> None:
     agent without one never enlists.
     """
     chooser = getattr(agent, "choose_enlist", None)
+    paid: dict = {}
     if chooser is None:
-        return
+        return paid
     from ..cr100_game_concepts.actions import tap
     from ..cr600_spells_and_abilities.abilities import Ability, AbilityKind
     from ..cr600_spells_and_abilities.cr603_triggers import PendingTrigger
@@ -343,8 +353,7 @@ def _pay_enlist_costs(game: Game, combat, active: PlayerId, agent) -> None:
                 ValueKind.POWER,
                 filter=ObjectFilter(specific=(enlisted.id,), zones=frozenset()),
             )
-            game.pending_triggers.append(
-                PendingTrigger(
+            pending = PendingTrigger(
                     attacker_id,
                     Ability(
                         AbilityKind.TRIGGERED,
@@ -364,7 +373,9 @@ def _pay_enlist_costs(game: Game, combat, active: PlayerId, agent) -> None:
                     Event(EventKind.ABILITY_TRIGGERED, object_id=attacker_id),
                     active,
                 )
-            )
+            game.pending_triggers.append(pending)
+            paid.setdefault(attacker_id, []).append((enlisted, pending))
+    return paid
 
 
 def can_attack(game: Game, obj: GameObject) -> bool:
