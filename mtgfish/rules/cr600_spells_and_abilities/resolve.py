@@ -406,7 +406,31 @@ def _objects(
     matching = find(
         game, effect.targets, source=resolution.source, controller=resolution.controller
     )
+    if _players_say_whose(effect):
+        # "Exile each opponent's graveyard": the objects are those players'
+        # - their permanents, or their cards elsewhere (CR 108.3, 110.2).
+        theirs = set(_players(resolution, effect))
+        matching = [
+            obj for obj in matching
+            if (obj.controller if obj.zone is Zone.BATTLEFIELD else obj.owner) in theirs
+        ]
     return _narrowed_to_count(resolution, effect, matching)
+
+
+#: Instructions whose players, when they are the opponents, say whose objects
+#: are acted on. "You" there is who carries the instruction out - "put
+#: enchanted creature on top of its owner's library" - so it narrows nothing.
+_WHOSE_KINDS = frozenset(
+    {EffectKind.EXILE, EffectKind.REVEAL, EffectKind.MOVE_ZONE, EffectKind.PUT_ON_LIBRARY}
+)
+
+
+def _players_say_whose(effect: Effect) -> bool:
+    return (
+        effect.kind in _WHOSE_KINDS
+        and effect.players is not None
+        and effect.players.scope in (PlayerScope.EACH_OPPONENT, PlayerScope.OPPONENT)
+    )
 
 
 def _from_pile(resolution: Resolution, effect: Effect) -> list[GameObject]:
