@@ -31,6 +31,7 @@ from ..cr600_spells_and_abilities.effects import Effect, EffectKind, TokenSpec
 from ..kernel.enums import CardType, Color, Duration, Zone
 from ..kernel.events import EventKind
 from ..kernel.query import (
+    Comparison,
     ControllerRelation,
     NumericConstraint,
     ObjectFilter,
@@ -206,8 +207,20 @@ def _counters(
 def _bolster(instance: ActionInstance) -> tuple[Effect, ...]:
     """CR 701.39: N +1/+1 counters on the creature you control with the least
     toughness. "Least toughness" is a choice among ties, so the filter narrows
-    to your creatures and the chooser breaks the tie."""
-    return _counters(instance, CREATURES_YOU_CONTROL)
+    to your creatures with that toughness and the chooser breaks the tie."""
+    least = Value(
+        ValueKind.LEAST_AMONG,
+        filter=CREATURES_YOU_CONTROL,
+        operands=(Value(ValueKind.TOUGHNESS),),
+    )
+    # CR 701.39a: one creature, chosen as it resolves, among those tied for
+    # the least toughness.
+    chosen = replace(
+        CREATURES_YOU_CONTROL,
+        toughness=NumericConstraint(Comparison.EQ, least),
+        count=Value.of(1),
+    )
+    return _counters(instance, chosen)
 
 
 @register("Support")
@@ -262,22 +275,56 @@ def _amass(instance: ActionInstance) -> tuple[Effect, ...]:
     )
 
 
+#: CR 111.10i: the Incubator token's back face, a 0/0 colourless Phyrexian
+#: artifact creature named Phyrexian Token.
+_PHYREXIAN_TOKEN = TokenSpec(
+    name="Phyrexian Token",
+    types=CardType.ARTIFACT | CardType.CREATURE,
+    subtypes=("Phyrexian",),
+    power=Value.of(0),
+    toughness=Value.of(0),
+)
+#: CR 111.10i: the front face, a colourless Incubator artifact with
+#: "{2}: Transform this token."
+INCUBATOR_TOKEN = TokenSpec(
+    name="Incubator Token",
+    types=CardType.ARTIFACT,
+    subtypes=("Incubator",),
+    abilities=(
+        Ability(
+            AbilityKind.ACTIVATED,
+            effects=(Effect(EffectKind.TRANSFORM, text="transform this token"),),
+            cost=Cost.mana("{2}"),
+            text="{2}: Transform this token.",
+        ),
+    ),
+    back=_PHYREXIAN_TOKEN,
+)
+
+
 @register("Incubate")
 def _incubate(instance: ActionInstance) -> tuple[Effect, ...]:
-    """CR 701.53: an Incubator token with N +1/+1 counters on it."""
-    incubator = TokenSpec(
-        name="Incubator",
-        types=CardType.ARTIFACT,
-        subtypes=("Incubator",),
-        power=Value.of(0),
-        toughness=Value.of(0),
-    )
+    """CR 701.53a: create an Incubator token with N +1/+1 counters on it.
+
+    Built as a plain 0/0 artifact, it had no counters and no way to turn
+    into the creature, so incubating did nothing at all.
+    """
     return (
         Effect(
             EffectKind.CREATE_TOKEN,
-            token=incubator,
+            token=INCUBATOR_TOKEN,
             players=YOU,
+            amount=Value.of(1),
             text=instance.text or instance.name,
+        ),
+        # CR 701.53a: the counters go on the token just made - "it" is what
+        # CREATE_TOKEN remembers.
+        Effect(
+            EffectKind.ADD_COUNTERS,
+            targets=ObjectFilter(remembered=True),
+            counter_type="+1/+1",
+            amount=_amount(instance),
+            text=f"with {_amount(instance)} +1/+1 counters on it",
         ),
     )
 
@@ -446,10 +493,16 @@ def _status_action(instance: ActionInstance) -> tuple[Effect, ...]:
     from ..cr500_turn_structure.restrictions import Act, Restriction
 
     acts = {
-        "detain": (Act.ATTACK, Act.BLOCK, Act.ACTIVATE_ABILITY),
+        # CR 701.35a: can't attack or block, and none of its activated
+        # abilities - mana abilities among them - can be activated.
+        "detain": (
+            Act.ATTACK, Act.BLOCK, Act.ACTIVATE_ABILITY, Act.ACTIVATE_MANA_ABILITY,
+        ),
         "suspect": (Act.BLOCK,),
         "exert": (Act.UNTAP,),
     }[instance.key]
+    # CR 701.35a: detain lasts until the detaining player's next turn.
+    duration = Duration.YOUR_NEXT_TURN if instance.key == "detain" else Duration.PERMANENT
     return (
         Effect(
             EffectKind.RESTRICTION,
@@ -458,6 +511,7 @@ def _status_action(instance: ActionInstance) -> tuple[Effect, ...]:
                 Restriction(act=act, subject=instance.filter, text=instance.name)
                 for act in acts
             ),
+            duration=int(duration),
             text=instance.text or instance.name,
         ),
     )

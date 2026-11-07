@@ -581,7 +581,12 @@ def _targets_available(game: Game, obj: GameObject, player_id: PlayerId) -> bool
         # burn is uncastable on turn one and can never win a game.
         if node.targets.includes_players:
             continue
-        if not find(game, node.targets, source=obj.id, controller=player_id):
+        # CR 601.2c: "two target creatures" needs two to choose from.
+        from ..cr600_spells_and_abilities.cr601_casting import target_bounds
+
+        fewest, _most = target_bounds(game, node, player_id)
+        found = find(game, node.targets, source=obj.id, controller=player_id)
+        if len(found) < max(1, fewest):
             return False
     if any(node.distinct_from_earlier_targets for node in nodes):
         # "Another target creature": each slot having a candidate is not

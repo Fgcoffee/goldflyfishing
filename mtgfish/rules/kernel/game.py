@@ -1102,7 +1102,11 @@ class Game:
         # provider is a lookup by card face name, and a token's face name is
         # something it invented for itself.
         own = getattr(card, "abilities", None)
-        if own is not None:
+        # CR 111.10i: a double-faced token's faces each have their own.
+        per_face = getattr(card, "face_abilities", ())
+        if ability_face < len(per_face):
+            abilities = tuple(per_face[ability_face])
+        elif own is not None:
             abilities = tuple(own)
         else:
             abilities = self.ability_provider.abilities_for(card, ability_face)

@@ -528,7 +528,7 @@ ENGINE_READS = frozenset(
         "Skulk", "Banding",
         # -- damage --------------------------------------------------------
         "Deathtouch", "Lifelink", "Trample", "First strike", "Double strike",
-        "Infect", "Wither",
+        "Infect", "Wither", "Toxic",
         # -- state, read by SBAs, zone changes and targeting ---------------
         "Indestructible", "Hexproof", "Shroud", "Ward", "Phasing",
         # -- casting and timing, read by casting.py and legality.py --------

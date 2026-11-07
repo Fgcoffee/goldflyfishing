@@ -164,6 +164,11 @@ def matches(
         return False
     if spec.summoning_sick is not None and obj.summoning_sick != spec.summoning_sick:
         return False
+    if (
+        spec.arrived_since_last_turn is not None
+        and obj.arrived_since_last_turn != spec.arrived_since_last_turn
+    ):
+        return False
     if spec.entered_this_turn is not None:
         if obj.entered_this_turn(game.turn) != spec.entered_this_turn:
             return False
