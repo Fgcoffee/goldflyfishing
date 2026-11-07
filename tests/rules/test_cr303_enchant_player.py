@@ -172,3 +172,51 @@ def test_protection_unattaches_equipment_of_that_quality(board):
     board.sba()
     assert blade.zone is Zone.BATTLEFIELD
     assert blade.attached_to != bears.id
+
+
+# ---------------------------------------------------------------------------
+# CR 303.4f, 303.4g: an Aura put onto the battlefield without being cast
+# ---------------------------------------------------------------------------
+
+
+def pacifism_in_graveyard(board):
+    board.scripts.add("Pacifism", *build(KeywordInstance(
+        "Enchant", filter=ObjectFilter(types_all=CardType.CREATURE), text="Enchant creature")))
+    board.refresh()
+    return board.graveyard("Pacifism")
+
+
+def test_a_returned_aura_enters_attached_to_a_legal_object(board):
+    bears = board.play("Grizzly Bears", controller=1)
+    aura = board.game.move_object(pacifism_in_graveyard(board), Zone.BATTLEFIELD)
+    assert aura.zone is Zone.BATTLEFIELD
+    assert aura.attached_to == bears.id
+    board.sba()
+    assert aura.is_live and aura.zone is Zone.BATTLEFIELD
+
+
+def test_with_nothing_to_enchant_it_stays_where_it_was(board):
+    """CR 303.4g: no creature, so Pacifism stays in the graveyard."""
+    card = pacifism_in_graveyard(board)
+    assert board.game.move_object(card, Zone.BATTLEFIELD) is card
+    assert card.zone is Zone.GRAVEYARD and card.is_live
+
+
+def test_protection_rules_out_a_host_but_hexproof_does_not(board):
+    """It is not targeted, so hexproof doesn't matter; protection does
+    (CR 303.4f, 702.16c)."""
+    from harness import keyword
+
+    board.scripts.add("Grizzly Bears", protection(ObjectFilter(colors_any=Color.WHITE)))
+    board.scripts.add("Hill Giant", keyword("Hexproof"))
+    board.play("Grizzly Bears", controller=1)
+    giant = board.play("Hill Giant", controller=1)
+    aura = board.game.move_object(pacifism_in_graveyard(board), Zone.BATTLEFIELD)
+    assert aura.attached_to == giant.id
+
+
+def test_a_returned_curse_enchants_an_opponent(board):
+    board.scripts.add(CURSE, enchant(PlayerScope.EACH_OPPONENT), UPKEEP_PING)
+    board.refresh()
+    curse = board.game.move_object(board.graveyard(CURSE), Zone.BATTLEFIELD)
+    assert curse.attached_player == P1
