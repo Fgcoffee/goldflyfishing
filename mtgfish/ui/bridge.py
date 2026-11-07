@@ -453,6 +453,11 @@ class Bridge(QObject):
                 progress=lambda done, total: self.progressed.emit(done, total),
                 cancel=cancel,
             )
+            # The deck's unread cards, as the command line reports them -
+            # every number in the report stands on them.
+            from ..sim.stats import inert_cards
+
+            result.unparsed_cards = inert_cards(self.db, config.decklists[0])
             report = summarize(result)
             self._config = config
             self._result = result
