@@ -3598,7 +3598,15 @@ def _if_it_happened(stream: Stream) -> Effect | None:
     CR 603.9's reflexive shape written about the *object* the preceding
     effect acted on rather than about the player's choice. "This way" is the
     giveaway: it refers back to what just happened, which the resolution
-    already remembers, so the condition is whether anything was acted on.
+    already remembers, so the condition is whether anything was acted on -
+    and, when the subject names a kind of object ("if a *creature card* is
+    exiled this way", "if you put an *artifact* onto the battlefield this
+    way"), whether one of those was.
+
+    The subject used to be skipped unread, up to "this way": "If you didn't
+    put a card into your hand this way" read as its opposite, and Oviya's
+    "If you put an artifact onto the battlefield this way" put counters on
+    any creature. It is read now, or the sentence is not.
 
     Massimo, the Magician is the motivating card, and it is worth being exact
     about what it does: the second half *grants the creature an ability*.
@@ -3613,17 +3621,8 @@ def _if_it_happened(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
-    # The subject of the condition, up to "this way".
-    steps = 0
-    while not stream.done and not stream.at_phrase("this way"):
-        if stream.peek().text in (".", ";", ","):
-            break
-        stream.next()
-        steps += 1
-        if steps > 12:
-            stream.reset(mark)
-            return None
-    if not stream.accept_phrase("this way"):
+    spec = _this_way_subject(stream)
+    if spec is None or not stream.accept_phrase("this way"):
         stream.reset(mark)
         return None
     stream.skip_punct(",")
@@ -3632,14 +3631,123 @@ def _if_it_happened(stream: Stream) -> Effect | None:
     if body is None:
         stream.reset(mark)
         return None
+    children = tuple(body)
+    if spec is not _ANYTHING:
+        # The reflexive ability is about what the resolution acted on
+        # (CR 603.12), so "a creature card" is asked of those objects.
+        children = (
+            Effect(
+                EffectKind.CONDITIONAL,
+                children=children,
+                condition=Condition(
+                    kind=ConditionKind.REMEMBERED_MATCHES,
+                    filter=replace(spec, remembered=True, count=None, up_to=False,
+                                   zones=frozenset()),
+                    text="if one of them is ...",
+                ),
+                text="if ... this way",
+            ),
+        )
     return Effect(
         EffectKind.REFLEXIVE_TRIGGER,
-        children=tuple(body),
+        children=children,
         condition=Condition(
             kind=ConditionKind.NEVER, text="if it happened this way"
         ),
         text="if ... this way",
     )
+
+
+#: A "this way" subject that names nothing narrower than what was acted on:
+#: "if you revealed it", "if a card is put into exile".
+_ANYTHING = ObjectFilter(zones=frozenset())
+
+#: The verbs a "this way" subject is written with, active and passive.
+_THIS_WAY_VERBS = frozenset({
+    "put", "exiled", "exile", "discarded", "discard", "sacrificed", "sacrifice",
+    "milled", "mill", "revealed", "reveal", "returned", "return", "destroyed",
+    "destroy", "drawn", "draw",
+})
+
+#: Where it went, which the action already says.
+_THIS_WAY_DESTINATIONS = (
+    "into your hand", "into their hand", "into its owner's hand", "to your hand",
+    "to its owner's hand", "onto the battlefield", "into exile", "into a graveyard",
+    "into your graveyard", "into their graveyard",
+)
+
+
+def _this_way_subject(stream: Stream):
+    """The subject of "if ... this way": "you exiled a nonland card", "a
+    creature card is exiled", "it was returned". A filter on what was acted
+    on, ``_ANYTHING`` for a pronoun or a bare "card", None if not read."""
+    mark = stream.mark()
+    if stream.accept("you"):
+        # "you put an artifact onto the battlefield", "you discarded a card".
+        if not _accept_this_way_verb(stream):
+            stream.reset(mark)
+            return None
+        spec = _this_way_object(stream)
+    else:
+        # "a creature card is exiled", "it was returned", "at least one
+        # Zombie card is milled", "a Werewolf is dealt damage".
+        stream.accept_phrase("at least one")
+        spec = _this_way_object(stream)
+        if spec is None or not stream.accept("is", "are", "was", "were"):
+            stream.reset(mark)
+            return None
+        if stream.at("sacrificed"):
+            # "If a Saproling was sacrificed this way" is about the cost
+            # (Thallid Omnivore), which the resolution does not remember.
+            stream.reset(mark)
+            return None
+        if stream.accept_phrase("dealt damage"):
+            pass
+        elif not _accept_this_way_verb(stream):
+            stream.reset(mark)
+            return None
+    if spec is None:
+        stream.reset(mark)
+        return None
+    for phrase in _THIS_WAY_DESTINATIONS:
+        if stream.accept_phrase(phrase):
+            break
+    if not stream.at_phrase("this way"):
+        stream.reset(mark)
+        return None
+    return spec
+
+
+def _accept_this_way_verb(stream: Stream) -> bool:
+    if stream.peek().lower in _THIS_WAY_VERBS:
+        stream.next()
+        return True
+    return False
+
+
+def _this_way_object(stream: Stream):
+    """"it", "that card", "a card", "a creature card", "an instant or sorcery
+    card": what was acted on, narrowed or not."""
+    if stream.accept("it", "them") or stream.accept_phrase("that card"):
+        return _ANYTHING
+    spec = parse_object_filter(stream)
+    if spec is None or spec.source_only or spec.remembered:
+        return None
+    bare = replace(
+        spec,
+        count=None,
+        up_to=False,
+        zones=frozenset(),
+        controller=ControllerRelation.ANY,
+        owner=ControllerRelation.ANY,
+    )
+    if bare == _ANYTHING:
+        return _ANYTHING
+    if spec.controller is not ControllerRelation.ANY or spec.owner is not ControllerRelation.ANY:
+        # "a creature you controlled": whose it was is a second question,
+        # asked of an object that has left; not read.
+        return None
+    return bare
 
 
 @clause("if-you-dont")
