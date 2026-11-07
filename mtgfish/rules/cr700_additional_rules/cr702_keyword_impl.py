@@ -127,7 +127,6 @@ MISBUILT_KEYWORDS: dict[str, str] = {
     "job select": "CR 702.182a: create a Hero token and attach; was a +1/+1 counter",
     "specialize": "a digital (Alchemy) mechanic, not in the CR: perpetually specialize; was a +1/+1 counter",
     "boast": "CR 702.142a: the printed ability, only if it attacked; was a +1/+1 counter",
-    "amplify": "CR 702.38a: counters per revealed card; was a flat N",
     "devour": "CR 702.82a: counters per creature sacrificed; was a flat N",
     "backup": "CR 702.165a: counters on target creature, which gains abilities;"
     " was counters on this",
@@ -2069,7 +2068,7 @@ def _cast_copy_trigger(instance: KeywordInstance) -> tuple[Ability, ...]:
 
 @register("Exploit", "Soulbond", "Soulshift", "Champion", "Tribute", "Unleash",
           "Riot", "Demonstrate", "Ravenous", "Backup", "For Mirrodin!", "Hideaway",
-          "Ingest", "Awaken", "Amplify", "Devour", "Fabricate", "Sunburst",
+          "Ingest", "Awaken", "Devour", "Fabricate", "Sunburst",
           )
 def _etb_trigger(instance: KeywordInstance) -> tuple[Ability, ...]:
     """Keywords that trigger, or modify how the permanent enters.
@@ -2078,7 +2077,7 @@ def _etb_trigger(instance: KeywordInstance) -> tuple[Ability, ...]:
     battlefield, and differ only in what they then do.
     """
     amount = Value.of(max(1, instance.amount))
-    if instance.key in ("amplify", "devour", "fabricate", "sunburst", "backup"):
+    if instance.key in ("devour", "fabricate", "sunburst", "backup"):
         return (
             Ability.static(
                 Effect(
@@ -2895,6 +2894,31 @@ def _champion(instance: KeywordInstance) -> tuple[Ability, ...]:
         text="champion (leave)",
     )
     return (exile_one, return_it)
+
+
+@register("Amplify")
+def _amplify(instance: KeywordInstance) -> tuple[Ability, ...]:
+    """CR 702.38a: "As this object enters, reveal any number of cards from
+    your hand that share a creature type with it. This permanent enters with
+    N +1/+1 counters on it for each card revealed this way."
+
+    A replacement on entering (CR 614.1c). N is the amount per card; how many
+    cards are revealed is asked as it enters
+    (``cr614_replacement.amplify_reveals``), each instance on its own
+    (CR 702.38b).
+    """
+    amount = max(1, instance.amount)
+    return (
+        Ability.static(
+            Effect(
+                EffectKind.ADD_COUNTERS,
+                counter_type="+1/+1",
+                amount=Value.of(amount),
+                text=f"enters with {amount} +1/+1 counters for each card revealed",
+            ),
+            text=instance.text or instance.name,
+        ),
+    )
 
 
 @register("Riot")
