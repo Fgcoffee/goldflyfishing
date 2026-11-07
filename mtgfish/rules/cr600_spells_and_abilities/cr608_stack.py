@@ -344,6 +344,18 @@ def _attach_aura_on_entry(game: Game, spell: GameObject, permanent: GameObject) 
     host_id = next((t for t in chosen), None)
     if host_id is None:
         return
+    from ..kernel.ids import is_player_target, target_player
+
+    if is_player_target(host_id):
+        # CR 303.4b: an Aura can enchant a player. One who has left the game
+        # is no longer there to attach to (CR 608.2b); the state-based
+        # actions handle the Aura.
+        player_id = target_player(host_id)
+        if not game.player(player_id).has_lost:
+            from ..cr100_game_concepts import actions
+
+            actions.attach_to_player(game, permanent, player_id)
+        return
     host = game.objects.get(host_id)
     if host is None or host.zone is not Zone.BATTLEFIELD:
         # CR 608.2b: the target is gone, so the Aura has nothing to attach to.

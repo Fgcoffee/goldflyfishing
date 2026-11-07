@@ -388,7 +388,9 @@ def _check_permanents(
         if chars.has_subtype("Equipment") or chars.has_subtype("Fortification"):
             if obj.attached_to and not _attachment_is_legal(game, obj, require_host=False):
                 to_unattach.append(obj)
-        elif obj.attached_to and not chars.has_subtype("Aura"):
+        elif (obj.attached_to or obj.attached_player != NO_PLAYER) and not chars.has_subtype(
+            "Aura"
+        ):
             to_unattach.append(obj)
 
         # CR 704.5s: a Saga with no lore counters left to add and no chapter
@@ -411,20 +413,31 @@ def _attachment_is_legal(game: Game, obj: GameObject, *, require_host: bool) -> 
     behaviour, which is to stay put. Destroying it on a restriction the engine
     cannot see would be worse than leaving it.
     """
+    from ..cr100_game_concepts.actions import protected_from
+    from ..kernel.matching import matches
+    from ..kernel.query import PlayerFilter
+
+    chars = game.characteristics(obj)
+    if obj.attached_player != NO_PLAYER:
+        return _enchanted_player_is_legal(game, obj, chars)
     if not obj.attached_to:
         return not require_host
     host = game.objects.get(obj.attached_to)
     if host is None or host.zone is not Zone.BATTLEFIELD:
         return False
+    # CR 702.16c, 702.16d: a permanent with protection can't be enchanted,
+    # equipped or fortified by something with the stated quality.
+    if protected_from(game, host, obj):
+        return False
 
-    from ..kernel.matching import matches
-
-    chars = game.characteristics(obj)
     for ability in chars.abilities:
         if ability.keyword.lower() not in ("enchant", "equip", "fortify"):
             continue
         if ability.quality is None:
             continue
+        if isinstance(ability.quality, PlayerFilter):
+            # CR 303.4c: an Aura that may enchant only players is on an object.
+            return False
         if not matches(
             game, host, ability.quality, source=obj.id, controller=obj.controller
         ):
@@ -439,6 +452,31 @@ def _attachment_is_legal(game: Game, obj: GameObject, *, require_host: bool) -> 
     if chars.has_subtype("Fortification") and not host_chars.has_type(CardType.LAND):
         return False
     return True
+
+
+def _enchanted_player_is_legal(game: Game, obj: GameObject, chars) -> bool:
+    """CR 303.4c for an Aura on a player: they are still in the game, its
+    enchant ability allows them, and they have no protection from it
+    (CR 702.16c)."""
+    from ..cr100_game_concepts.actions import player_protected_from
+    from ..cr600_spells_and_abilities.cr601_casting import enchantable_scope
+    from ..kernel.query import PlayerFilter, PlayerScope
+
+    player_id = obj.attached_player
+    if game.player(player_id).has_lost:
+        return False
+    if not chars.has_subtype("Aura"):
+        return False
+    for ability in chars.abilities:
+        if ability.keyword.lower() != "enchant" or ability.quality is None:
+            continue
+        if not isinstance(ability.quality, PlayerFilter):
+            # CR 303.4c: enchant [object] can't be on a player.
+            return False
+        opponents_only = enchantable_scope(ability.quality) is PlayerScope.TARGET_OPPONENT
+        if opponents_only and player_id == obj.controller:
+            return False
+    return not player_protected_from(game, player_id, obj)
 
 
 def _has_eligible_protector(game: Game, obj: GameObject) -> bool:

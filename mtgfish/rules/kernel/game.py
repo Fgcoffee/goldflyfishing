@@ -996,6 +996,7 @@ class Game:
             if host is not None and obj.id in host.attachments:
                 host.attachments.remove(obj.id)
             obj.attached_to = NO_OBJECT
+        obj.attached_player = NO_PLAYER
         for attachment_id in list(obj.attachments):
             attachment = self.objects.get(attachment_id)
             if attachment is not None:

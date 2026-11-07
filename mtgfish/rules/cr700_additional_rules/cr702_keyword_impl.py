@@ -78,6 +78,9 @@ class KeywordInstance:
     text: str = ""
     #: Where an alternative-cost keyword lets the card be cast from.
     from_zone: Zone | None = None
+    #: For a keyword whose parameter is a kind of player rather than an
+    #: object - "enchant player", "enchant opponent" (CR 702.5a).
+    players: PlayerFilter | None = None
     #: The keyword's body, for the keywords that have one. Channel, forecast
     #: and "max speed" are shapes around an arbitrary effect - "[Cost],
     #: Discard this card: [effect]" - so the shape is built here and the
@@ -4590,11 +4593,14 @@ def _enchant(instance: KeywordInstance) -> tuple[Ability, ...]:
     when it enters, and CR 704.5n puts it into the graveyard if it is ever
     attached to something it does not match.
     """
+    # CR 303.4b: an Aura can enchant a player; "enchant player" and "enchant
+    # opponent" carry a player filter as the quality instead.
+    quality = instance.filter if instance.filter is not None else instance.players
     return (
         Ability(
             AbilityKind.STATIC,
             keyword=instance.name,
-            quality=instance.filter,
+            quality=quality,
             functions_in=frozenset({Zone.BATTLEFIELD, Zone.STACK}),
             text=instance.text or instance.name,
         ),

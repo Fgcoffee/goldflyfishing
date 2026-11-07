@@ -682,7 +682,10 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
             return []
         return [event.source_controller]
     return resolve_players(
-        resolution.game, effect.players or YOU, controller=resolution.controller
+        resolution.game,
+        effect.players or YOU,
+        controller=resolution.controller,
+        source=resolution.source,
     )
 
 

@@ -431,6 +431,9 @@ class PlayerScope(IntEnum):
     #: The player an earlier instruction of the same resolution targeted -
     #: "Target player mills three cards. *That player* ..." (CR 115.1, 608.2c).
     CHOSEN_PLAYER = 13008
+    #: CR 303.4b: "enchanted player" - the player the source Aura is
+    #: attached to. Nobody when the source enchants no player.
+    ENCHANTED_PLAYER = 14001
 
 
 @dataclass(frozen=True, slots=True)
@@ -476,6 +479,7 @@ class PlayerFilter:
             PlayerScope.TRIGGER_OBJECT_OWNER: "the owner of the object the trigger is about",
             PlayerScope.AFFECTED_CONTROLLER: "the player it acts on (or its controller)",
             PlayerScope.CHOSEN_PLAYER: "the player targeted earlier",
+            PlayerScope.ENCHANTED_PLAYER: "enchanted player",
         }
         base = names.get(self.scope, self.scope.name.lower().replace("_", " "))
         if self.controls is not None:

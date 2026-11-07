@@ -95,6 +95,8 @@ class GameObject:
     counters: dict[str, int] = field(default_factory=dict)
     #: CR 301.5, 303.4: what this Equipment or Aura is attached to.
     attached_to: ObjectId = NO_OBJECT
+    #: CR 303.4b: the player this Aura enchants, when it enchants a player.
+    attached_player: PlayerId = NO_PLAYER
     attachments: list[ObjectId] = field(default_factory=list)
     #: Damage prevention shields and regeneration shields pending this turn.
     regeneration_shields: int = 0

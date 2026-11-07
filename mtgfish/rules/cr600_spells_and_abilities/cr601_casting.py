@@ -879,28 +879,41 @@ def aura_target_effect(chars):
     ability the parser could not read - those keep the old behaviour rather
     than being made uncastable.
 
-    That covers 1,167 of the 1,222 Commander-legal Auras in the pool. The
-    remaining 55 are "enchant player" - the Curses - where the enchant clause
-    parses with no filter because a player is not an object filter, and four
-    whose enchant ability does not parse at all. Attaching to a *player* needs
-    more than a filter here: ``attached_to`` holds an ObjectId, so there is
-    nowhere to put one. Left alone deliberately rather than half-built, so a
-    Curse behaves as it did before instead of targeting a player and then
-    failing to attach to them.
+    CR 303.4a, 303.4b: an Aura with "enchant player" or "enchant opponent"
+    targets a player; its quality is a player filter rather than an object
+    filter.
     """
+    from ..kernel.query import PlayerFilter
     from .effects import Effect, EffectKind
 
     if not chars.has_subtype("Aura"):
         return None
     for ability in chars.abilities:
-        if ability.keyword.lower() == "enchant" and ability.quality is not None:
+        if ability.keyword.lower() != "enchant" or ability.quality is None:
+            continue
+        if isinstance(ability.quality, PlayerFilter):
             return Effect(
                 EffectKind.NOTHING,
-                targets=ability.quality,
+                players=PlayerFilter(enchantable_scope(ability.quality)),
                 is_targeted=True,
                 text="enchant",
             )
+        return Effect(
+            EffectKind.NOTHING,
+            targets=ability.quality,
+            is_targeted=True,
+            text="enchant",
+        )
     return None
+
+
+def enchantable_scope(quality):
+    """CR 702.5a: the players an "enchant [player kind]" Aura may enchant, as
+    a target scope - opponents of the Aura's controller, or any player."""
+    from ..kernel.query import PlayerScope
+
+    opponents = (PlayerScope.OPPONENT, PlayerScope.EACH_OPPONENT, PlayerScope.TARGET_OPPONENT)
+    return PlayerScope.TARGET_OPPONENT if quality.scope in opponents else PlayerScope.TARGET_PLAYER
 
 
 def _candidates_for(
