@@ -1536,6 +1536,32 @@ def _intervening_if(stream: Stream) -> Condition | None:
 
     condition = _count_condition(stream)
     if condition is None:
+        # Any other condition the effect grammar reads: "When you cast this
+        # spell, if it was kicked, exile target land." CR 603.4 makes every
+        # "if" in this position an intervening-if - checked as the event
+        # happens and again on resolution. Left to the effect reader, it was
+        # wrapped around the effect instead, so the unkicked trigger still
+        # went on the stack and asked for a target (auditor's F52).
+        from .clauses import _condition
+
+        look = stream.mark()
+        condition = _condition(stream)
+        if (
+            condition is None
+            or not stream.at(",")
+            or _refers_back(condition)
+            or _names_kind(condition, ConditionKind.WAS_CAST)
+        ):
+            # "if its power is 6 or greater" names "the object just referred
+            # to", which nothing has referred to yet as the event happens:
+            # checked on the trigger it would never hold. Left on the effect,
+            # where it is checked on resolution. "If you cast it" stays there
+            # too for now: the engine does not yet know, as an enters trigger
+            # fires, that the permanent was cast (Geological Appraiser lost
+            # its discover) - an engine gap, reported to the rules session.
+            stream.reset(look)
+            condition = None
+    if condition is None:
         # Unreadable: rewind, so the caller's full-consumption check sees the
         # leftover "if ..." and fails the ability honestly.
         stream.reset(mark)
@@ -1543,6 +1569,26 @@ def _intervening_if(stream: Stream) -> Condition | None:
 
     stream.skip_punct(",")
     return condition
+
+
+def _names_kind(condition, kind) -> bool:
+    """Whether a condition is, or contains, one of this kind."""
+    if condition.kind is kind:
+        return True
+    return any(_names_kind(c, kind) for c in getattr(condition, "operands", ()) or ())
+
+
+def _refers_back(value) -> bool:
+    """Whether a condition, anywhere inside it, names a remembered object."""
+    from dataclasses import fields, is_dataclass
+
+    if isinstance(value, (tuple, list)):
+        return any(_refers_back(item) for item in value)
+    if not is_dataclass(value):
+        return False
+    if getattr(value, "remembered", False) is True or getattr(value, "of_affected", False) is True:
+        return True
+    return any(_refers_back(getattr(value, f.name)) for f in fields(value))
 
 
 def _count_condition(stream: Stream) -> Condition | None:
