@@ -109,27 +109,68 @@ simulate deck.txt --games 1000`, `mtgfish fetch`. Run `mtgfish` with no
 arguments for the list. The `python -m` forms above keep working either way,
 and are the ones to use when working in a clone.
 
-## Reviewing someone else's branch
+## How changes reach `main`
 
-Agents push branches named `claude/...`. `scripts/review.ps1` tries one without
-touching your own checkout: it copies the branch into its own directory beside
-the repository, merges `main` into that copy - a branch that was fine when it
-was written can still break against what `main` has learned since - and runs
-the tests there. The card database is shared rather than rebuilt per branch.
+`main` is the only branch that matters. Everything else is work in progress:
+each piece of work is done on its own branch, raised as a pull request, and
+merged into `main`. Once it is merged, the branch has nothing left in it and
+can be deleted. A branch that is 0 commits ahead of `main` is finished, not
+forgotten work.
+
+Most of the work is done by long-running Claude agents, each with one area and
+one branch it pushes to. The branch names are generated and say nothing about
+the work, so here is what each one is (as of November 2026):
+
+| Workstream | Branch it pushes to | What it changes |
+|---|---|---|
+| Parser | `claude/lucid-einstein-dml803` | `mtgfish/parser/`, `tests/parser/`, `docs/parser-*.md` |
+| Rules engine | `main-n8yjai` (not a second `main`, despite the name) | `mtgfish/rules/`, `mtgfish/data/`, `tests/rules/` |
+| Auditor | `claude/modest-bohr-yqrqm7` | `audit/AUDIT_LOG.md` only: it checks the other two against the Comprehensive Rules |
+
+Deleting an agent's branch after its work is merged loses nothing: the branch
+comes back the next time that agent pushes. The auditor's log says which findings are still
+open and blocking.
+
+### Keeping your copy up to date
+
+A clone does not update itself. If your launcher or `git log` shows an old
+commit on `main`, pull:
+
+```bash
+git switch main
+git pull --ff-only
+```
+
+If git refuses because you have uncommitted changes, either commit them on a
+branch of your own, or set them aside with `git stash` and bring them back
+afterwards with `git stash pop`. To clear out local branches that have already
+been merged:
+
+```bash
+git fetch --prune
+git branch --merged main
+```
+
+That lists them; delete each with `git branch -d <name>`, which refuses to
+delete anything that has not been merged.
+
+### Reviewing someone else's branch
+
+`scripts/review.ps1` tries a branch without touching your own checkout: it
+copies the branch into its own directory beside the repository, merges `main`
+into that copy - a branch that was fine when it was written can still break
+against what `main` has learned since - and runs the tests there. The card
+database is shared rather than rebuilt per branch. `list` shows only
+`claude/...` branches; give any other branch, such as `main-n8yjai`, to
+`diff`, `test` or `run` by name.
 
 ```powershell
-.\scripts
-eview.ps1 list                    # what is waiting, and how far ahead
-.\scripts
-eview.ps1 diff  <branch>          # what it changes, against main
-.\scripts
-eview.ps1 test  <branch>          # the suites, on branch merged with main
-.\scripts
-eview.ps1 run   <branch> -Port 8010   # open the web app on it
-.\scripts
-eview.ps1 merge <branch>          # fast-forward main when you are happy
-.\scripts
-eview.ps1 clean                   # remove the review copies
+.\scripts\review.ps1 list                    # what is waiting, and how far ahead
+.\scripts\review.ps1 diff  <branch>          # what it changes, against main
+.\scripts\review.ps1 test  <branch>          # the suites, on branch merged with main
+.\scripts\review.ps1 run   <branch> -Port 8010   # open the web app on it
+.\scripts\review.ps1 merge <branch>          # fast-forward main when you are happy
+.\scripts\review.ps1 clean                   # remove the review copies
 ```
 
 `test` skips the slow parser suite; add `-Full` for everything. `-AsIs` tests
@@ -138,6 +179,20 @@ what the agent saw. A branch that conflicts with `main` is reported as such
 rather than tested, because the merge is the thing that would land.
 
 ## What is in the repository
+
+| | |
+|---|---|
+| `mtgfish/` | The application itself. Its parts are described under [How it is put together](#how-it-is-put-together). |
+| `tests/` | The test suite, laid out like `mtgfish/`: `tests/rules` for `mtgfish/rules`, and so on. |
+| `docs/` | Reference notes on the parser and the rules engine, and the reports the tools generate. [docs/README.md](docs/README.md) says which is which. |
+| `audit/` | The auditor's log: findings against the parser and the rules engine, and which of them still block a merge. |
+| `cache/` | Card data that ships with the repository: Scryfall's dumps and the Comprehensive Rules text. The databases built from them land here too, but are not committed. |
+| `bench/` | The compute-cost benchmark: four archetype decks, the script that runs them, and its stored results. |
+| `build/` | Packaging the desktop application with PyInstaller. See [BUILD.md](BUILD.md). |
+| `scripts/` | `review.ps1`, for trying someone else's branch (above). |
+| `.githooks/` | Rebuilds the stored parse after commits, merges and checkouts; installed by `parse_store install-hooks`. |
+| `Dockerfile`, `docker-compose.yml` | Running the web app in a container. See [DEPLOY.md](DEPLOY.md). |
+| `MagicCompRules 20260925.pdf` | The September 2026 Comprehensive Rules, which the auditor checks against. The code reads `cache/comprehensive_rules.txt`, the August 2026 release; `python -m mtgfish.tools.rules diff` shows what changed between the two (see [docs/rules-citations.md](docs/rules-citations.md#comparing-two-releases)). |
 
 The card pool comes as Scryfall's own dumps - oracle cards, rulings, tagger
 tags and the type catalogs, about 35 MB in `cache/scryfall` - plus the
@@ -155,6 +210,8 @@ failure rather than a mystery in the numbers.
 
 ## How it is put together
 
+Inside `mtgfish/`:
+
 | | |
 |---|---|
 | `rules/` | The Comprehensive Rules, implemented. Knows nothing about oracle text, bots or statistics. Every legality check lives here. Code cites the rules by number, and `citations.py` checks those citations against the shipped rules text - see [docs/rules-citations.md](docs/rules-citations.md). The one exception is `relaxations.py`, a default-empty set of rules an instrument may suspend; a simulated game never constructs anything but `STRICT`. |
@@ -164,6 +221,7 @@ failure rather than a mystery in the numbers.
 | `sim/` | Reproducible parallel runs, statistics, replay, the swap lab. |
 | `ui/` | The shared front end, the bridge it talks to, and the sandbox. |
 | `web/` | The same bridge over HTTP, with server-sent events. No Qt required. |
+| `tools/` | The command-line entry points: simulation, the swap lab, card-data fetching, and the parser and engine reports that write to `docs/`. |
 
 Two rules govern the parser, and previous attempts at this died by breaking
 them. **Full consumption**: if any token of an ability is left over, the whole
@@ -188,7 +246,7 @@ like a property of the deck.
 ## Tests
 
 ```bash
-python -m pytest            # 1,895 tests
+python -m pytest            # about 3,000 tests
 python -m pytest tests/rules
 ```
 
@@ -202,6 +260,10 @@ been built, so a fresh clone can still run the pure-rules suite.
 * [DEPLOY.md](DEPLOY.md) - running the web app, in a container or behind a
   proxy, and what to settle before it is public.
 * [docs/parser-gaps.md](docs/parser-gaps.md) - what the parser cannot read yet.
+* [docs/README.md](docs/README.md) - every other document in `docs/`, and
+  which of them are written by hand and which are generated.
+* [audit/AUDIT_LOG.md](audit/AUDIT_LOG.md) - open findings against the parser
+  and the rules engine.
 
 ## Known limitations
 

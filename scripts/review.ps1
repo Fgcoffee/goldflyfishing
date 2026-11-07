@@ -29,8 +29,7 @@ $repo = Split-Path -Parent $PSScriptRoot
 $reviewRoot = Join-Path (Split-Path -Parent $repo) 'mtgfish-review'
 $dataDir = Join-Path $repo 'cache'
 # How to type this script again, in whatever way the user just typed it.
-$script = if ($PSCommandPath -and (Get-Location).Path -eq $repo) { '.\scripts
-eview.ps1' } else { $PSCommandPath }
+$script = if ($PSCommandPath -and (Get-Location).Path -eq $repo) { '.\scripts\review.ps1' } else { $PSCommandPath }
 
 function Say($text, $colour = 'Cyan') { if (-not $Quiet) { Write-Host $text -ForegroundColor $colour } }
 
