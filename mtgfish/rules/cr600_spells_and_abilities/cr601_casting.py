@@ -1654,6 +1654,7 @@ _PAYABLE_KINDS = frozenset(
         CostKind.DISCARD,
         CostKind.DISCARD_AT_RANDOM,
         *EXILE_ZONES,
+        CostKind.EXILE_MATERIALS,
         CostKind.MILL,
         CostKind.REMOVE_COUNTERS,
         CostKind.PUT_COUNTERS,
@@ -1824,6 +1825,20 @@ def _pay_component(
             _record_paid(game, context, obj)
             game_actions.exile(game, obj, source=context.id)
 
+    elif kind is CostKind.EXILE_MATERIALS:
+        candidates = material_candidates(game, player_id, component, context)
+        if len(candidates) < amount:
+            raise CastError("not enough materials to exile")
+        # Graveyard cards before permanents, then the cheapest: the same kind
+        # of deterministic default as the other consuming costs.
+        ordered = sorted(
+            candidates,
+            key=lambda o: (o.zone is Zone.BATTLEFIELD, game.characteristics(o).mana_value, o.id),
+        )
+        for obj in ordered[:amount]:
+            _record_paid(game, context, obj)
+            game_actions.exile(game, obj, source=context.id)
+
     elif kind is CostKind.MILL:
         if len(player.library) < amount:
             raise CastError("not enough cards in the library")
@@ -1900,6 +1915,9 @@ def _check_payable(
     if kind in EXILE_ZONES:
         if len(_exile_candidates(game, player_id, component, context, spell)) < amount:
             raise CastError(_exile_shortfall(component))
+    if kind is CostKind.EXILE_MATERIALS:
+        if len(material_candidates(game, player_id, component, context)) < amount:
+            raise CastError("not enough materials to exile")
     if kind is CostKind.UNTAP_SELF:
         obj = game.objects.get(context.source or context.id)
         if (
@@ -2090,6 +2108,41 @@ def _exile_candidates(
                 if matches(game, obj, spec, source=context.id, controller=player_id)
             ]
     return [obj for obj in pool if spell is None or obj.id != spell.id]
+
+
+def material_candidates(
+    game: Game, player_id: PlayerId, component: CostComponent, context: GameObject
+) -> list[GameObject]:
+    """What could pay craft's materials (CR 702.167a, 702.167b): permanents
+    the payer controls and cards in their graveyard that match, other than
+    the crafting permanent itself, which pays its own part of the cost."""
+    from dataclasses import replace
+
+    from ..kernel.matching import find, matches
+    from ..kernel.query import ControllerRelation
+
+    spec = component.filter
+    on_battlefield = (
+        find(
+            game,
+            replace(spec, zones=frozenset({Zone.BATTLEFIELD}), controller=ControllerRelation.YOU),
+            source=context.id,
+            controller=player_id,
+        )
+        if spec is not None
+        else []
+    )
+    in_graveyard = [
+        obj
+        for obj in (game.objects[i] for i in game.player(player_id).zone(Zone.GRAVEYARD))
+        if spec is None
+        or matches(
+            game, obj, replace(spec, zones=frozenset({Zone.GRAVEYARD})),
+            source=context.id, controller=player_id,
+        )
+    ]
+    crafter = context.source or context.id
+    return [obj for obj in on_battlefield + in_graveyard if obj.id != crafter]
 
 
 def _choose_exiled(

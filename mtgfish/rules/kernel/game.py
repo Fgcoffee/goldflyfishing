@@ -553,8 +553,12 @@ class Game:
         to_top: bool = False,
         position: int | None = None,
         face_down: str | None = None,
+        transformed: bool = False,
     ) -> GameObject:
         """Move an object to another zone, creating a new object (CR 400.7).
+
+        ``transformed`` puts a double-faced card onto the battlefield with its
+        back face up (CR 712.14a).
 
         ``face_down`` puts it there face down (CR 708.3, 406.3), naming what
         turned it face down - "Manifest", "Cloak", or "" for an effect that
@@ -659,6 +663,14 @@ class Game:
             and not self._may_enter_the_battlefield(obj)
         ):
             return obj
+
+        # CR 712.14a: a card that isn't double-faced, told to enter
+        # transformed, stays where it is.
+        if transformed and to_zone is Zone.BATTLEFIELD:
+            from ..cr700_additional_rules.cr707_faces import can_enter_transformed
+
+            if not can_enter_transformed(obj):
+                return obj
 
         # CR 303.4f, 303.4g: an Aura entering other than by resolving as an
         # Aura spell is attached to something its player chooses as it
@@ -765,7 +777,9 @@ class Game:
             base_controller=destination_player if to_zone is Zone.BATTLEFIELD else owner,
             zone=to_zone,
             card=obj.card,
-            face_index=0 if to_zone is not Zone.BATTLEFIELD else obj.face_index,
+            face_index=(
+                0 if to_zone is not Zone.BATTLEFIELD else 1 if transformed else obj.face_index
+            ),
             timestamp=self.ids.timestamp(),
             is_commander=obj.is_commander,
         )

@@ -47,6 +47,10 @@ class CostKind(IntEnum):
     #: because a chosen discard is a different, better cost: the payer keeps
     #: the card that matters and throws away a spare land.
     DISCARD_AT_RANDOM = 4001
+    #: CR 702.167a, 702.167b: craft's "exile [materials] from among
+    #: permanents you control and/or cards in your graveyard" - one cost
+    #: paid from two zones in any mix.
+    EXILE_MATERIALS = 4002
 
     PAY_LIFE = 30
     #: CR 107.14: {E} is one energy counter, paid by removing it from the
@@ -139,6 +143,11 @@ class CostComponent:
             if what == "this":
                 return f"exile this from {zone}"
             return f"exile {amount} {what or 'card'} from {zone}"
+        if kind is CostKind.EXILE_MATERIALS:
+            return (
+                f"exile {amount} {what or 'card'} from among permanents you control"
+                " and/or cards in your graveyard"
+            )
         if kind is CostKind.REMOVE_COUNTERS:
             return f"remove {amount} {self.counter_type} counter(s) from {what or 'this'}"
         if kind is CostKind.PUT_COUNTERS:
@@ -169,6 +178,7 @@ CONSUMING_COSTS = frozenset(
         CostKind.EXILE_FROM_GRAVEYARD,
         CostKind.EXILE_FROM_HAND,
         CostKind.EXILE_FROM_LIBRARY,
+        CostKind.EXILE_MATERIALS,
         CostKind.RETURN_TO_HAND,
         CostKind.PUT_ON_LIBRARY,
         CostKind.MILL,
