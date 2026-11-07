@@ -223,11 +223,9 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # CR 702.33e and its kin: "if it was kicked", "if no mana was spent to
         # cast it", "if its surge cost was paid" are asked by the permanent's
         # own abilities about the spell it was. ``move_object`` gave the
-        # permanent that record as it entered (``carry_payment_record``).
-        # It got here by resolving as a spell, which is what "if you cast it"
-        # asks. A permanent put onto the battlefield never passes through
-        # here and so is left with the default.
-        permanent.was_cast = True
+        # permanent that record as it entered (``carry_payment_record``),
+        # "if you cast it" included. A permanent put onto the battlefield
+        # never resolved as a spell and is left with the default.
         _apply_enters_with_counters(game, permanent)
         _attach_aura_on_entry(game, obj, permanent)
         _record_resolution(game, obj, chars)

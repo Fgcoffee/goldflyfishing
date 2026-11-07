@@ -150,6 +150,9 @@ def cast_spell(game: Game, player_id: PlayerId, action: Action) -> GameObject:
     spell = game.move_object(card_object, Zone.STACK, to_player=player_id)
     spell.controller = player_id
     spell.cast_from = origin_zone
+    # CR 601.2: this spell was cast - which a copy put on the stack was not
+    # (CR 707.10), and a copy cast as CR 707.12 allows was.
+    spell.was_cast = True
     spell.alternative_cost_offered = offered
     # CR 702.103b: as a spell cast bestowed is put onto the stack it becomes
     # an Aura with enchant creature - before its target is chosen.

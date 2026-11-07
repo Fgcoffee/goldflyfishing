@@ -167,7 +167,7 @@ class GameObject:
     #: card type, or a colour (CR 614.1b). Kept on the object because that is
     #: how long the choice lasts: it is made as the permanent enters and the
     #: permanent is what every "of the chosen type" sentence asks.
-    #: Whether this permanent arrived by being cast, rather than by being
+    #: Whether this spell was cast, or this permanent arrived by being cast, rather than by being
     #: put onto the battlefield. "When this enters, *if you cast it*" turns
     #: on the difference and nothing recorded it.
     was_cast: bool = False
