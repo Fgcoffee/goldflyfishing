@@ -13,7 +13,11 @@ ENV PYTHONUNBUFFERED=1 \
     MTGFISH_NO_QT=1 \
     MTGFISH_DATA_DIR=/data \
     MTGFISH_HOST=0.0.0.0 \
-    PORT=8000
+    PORT=8000 \
+    # The container is meant to sit behind a TLS proxy, whose address is not
+    # known in advance; trust its X-Forwarded-* headers. Never publish the
+    # container's port directly to the internet with this set.
+    FORWARDED_ALLOW_IPS=*
 
 WORKDIR /app
 COPY requirements-web.txt .

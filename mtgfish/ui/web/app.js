@@ -23,6 +23,15 @@ Backend.ready.then(() => {
   // call is what froze the window.
   Backend.on("run_finished", (payload) => onRunFinished(JSON.parse(payload)));
   Backend.on("lab_finished", (payload) => onLabFinished(JSON.parse(payload)));
+  // The web server queues runs when the machine is busy; say so rather than
+  // showing a progress bar that does not move.
+  Backend.on("job_status", (payload) => {
+    const job = JSON.parse(payload);
+    if (job.status === "queued") {
+      setStatus(`queued (position ${job.position}) - it starts when the run ahead finishes`);
+      showStop(true);
+    }
+  });
   buildDeckSlots();
   labModeHint();
   refreshSandbox();
