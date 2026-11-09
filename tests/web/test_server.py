@@ -26,6 +26,7 @@ def base_url():
     server = make_server("127.0.0.1", 0)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
+    assert server.wait_started()
     yield f"http://127.0.0.1:{server.server_address[1]}"
     server.shutdown()
     server.server_close()
@@ -135,11 +136,18 @@ def test_static_files_revalidate_and_cannot_escape(client):
     assert status == 404
 
 
+def _state(**settings):
+    from mtgfish.web.app import AppState
+    from mtgfish.web.server import Settings
+
+    return AppState(Settings(**settings))
+
+
 def test_events_are_replayed_to_a_page_that_reconnects(base_url):
     """A run finishing while the page's connection drops must still arrive."""
-    from mtgfish.web.server import App, Session, Settings
+    from mtgfish.web.server import Session
 
-    app = App(Settings())
+    app = _state()
     session = Session("x" * 24, app.api, app.sessions)
     session.publish("run_finished", ['{"games": 1}'])
     session.publish("progressed", [1, 2])
@@ -156,13 +164,22 @@ def test_stopping_when_nothing_runs_says_so(client):
 
 
 def _session_with_fake_run(grace: int):
-    from mtgfish.web.server import App, Session, Settings
+    """A session whose bridge "runs" until told to stop, through the job queue."""
+    from mtgfish.web.server import Session
 
-    app = App(Settings(abandon_grace=grace))
+    app = _state(abandon_grace=grace)
     session = Session(secrets_token(), app.api, app.sessions)
     stopped: list[bool] = []
-    session.bridge.cancel_run = lambda: stopped.append(True) or '{"cancelled": true}'
-    session.running = True
+
+    def cancel_run():
+        stopped.append(True)
+        session.publish("run_finished", ['{"cancelled": true}'])
+        return '{"cancelled": true}'
+
+    session.bridge.start_run = lambda *a: '{"started": true}'
+    session.bridge.cancel_run = cancel_run
+    reply = session.start_job("start_run", [], 10)
+    assert reply["started"] and session.running
     return session, stopped
 
 
@@ -179,7 +196,7 @@ def test_a_run_stops_when_its_page_stays_closed(base_url):
     session.unsubscribe(session.subscribe(None))
     time.sleep(0.5)
     assert stopped == [True]
-    session.running = False
+    assert not session.running
     session.close()
 
 
@@ -192,8 +209,67 @@ def test_reloading_the_page_does_not_stop_the_run(base_url):
     session.subscribe(None)  # the reloaded page reconnects
     time.sleep(1.5)
     assert stopped == []
-    session.running = False
+    session.cancel()
     session.close()
+
+
+def test_a_queued_run_waits_for_the_last_worker_to_exit(base_url):
+    """The bridge says "finished" from inside its worker thread; the next run
+    must not be started (and refused as "already in progress") before that
+    thread is gone."""
+    import threading
+    import time
+
+    from mtgfish.web.jobs import JobStatus
+    from mtgfish.web.server import Session
+
+    app = _state()
+    session = Session(secrets_token(), app.api, app.sessions)
+    bridge = session.bridge
+    bridge._worker = None
+
+    def work():
+        time.sleep(0.2)
+        session.publish("run_finished", ['{"games": 1}'])
+        time.sleep(0.3)  # still alive after announcing the result
+
+    def start_run(*args):
+        if bridge._worker is not None and bridge._worker.is_alive():
+            return '{"error": "a run is already in progress"}'
+        bridge._worker = threading.Thread(target=work, daemon=True)
+        bridge._worker.start()
+        return '{"started": true}'
+
+    bridge.start_run = start_run
+    first = session.start_job("start_run", [], 10)
+    second = session.start_job("start_run", [], 10)
+    assert second.get("queued")
+    deadline = time.time() + 5
+    job = app.sessions.jobs.get(second["job"])
+    while job.status is JobStatus.QUEUED and time.time() < deadline:
+        time.sleep(0.05)
+    time.sleep(0.2)
+    assert app.sessions.jobs.get(first["job"]).status is JobStatus.DONE
+    assert job.status is JobStatus.RUNNING, job.error
+    session.close()
+
+
+def test_events_stream_says_hello(client):
+    """The SSE endpoint answers with the hello event the page waits for."""
+    req = urllib.request.Request(client.base + "/api/events")
+    if client.cookie:
+        req.add_header("Cookie", client.cookie)
+    with urllib.request.urlopen(req, timeout=10) as response:
+        assert response.headers["Content-Type"].startswith("text/event-stream")
+        first = response.readline().decode()
+    assert first.startswith("event: hello")
+
+
+def test_jobs_list_is_per_browser(client):
+    status, body, _ = client.request("/api/jobs")
+    assert status == 200 and body and json.loads(body)["jobs"] == []
+    status, body, _ = client.request("/api/jobs/nope/cancel", {}, method="POST")
+    assert status == 404
 
 
 def test_the_shutdown_endpoint_is_invisible_without_the_token(client):

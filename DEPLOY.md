@@ -5,13 +5,55 @@ end and the same `Bridge`. The window talks to it over a QWebChannel; a browser
 talks to it through `mtgfish.web` over HTTP. `ui/web/transport.js` picks
 whichever is there.
 
+The web server is a FastAPI app served by uvicorn:
+
+| module | what it holds |
+|---|---|
+| `mtgfish/web/app.py` | the routes (`create_app()` builds the ASGI app) |
+| `mtgfish/web/sessions.py` | one `Bridge` per browser, each on its own thread |
+| `mtgfish/web/jobs.py` | simulations as jobs: queued, running, done, cancelled, failed |
+| `mtgfish/web/settings.py` | every setting, from the environment (and a local `.env`) |
+| `mtgfish/web/server.py` | puts the app on a socket for `python -m mtgfish.web` |
+
 ## Locally
 
 ```bash
+pip install -r requirements-web.txt
 python -m mtgfish.web --reload
 ```
 
 Open http://127.0.0.1:8000. The card database is read from `cache/` as usual.
+Secrets for local use go in a `.env` file in the folder you start the server
+from. It is ignored by version control; never commit it. A variable already
+set in the environment always wins over `.env`.
+
+To run the ASGI app under your own uvicorn (or gunicorn with uvicorn workers -
+**one worker process only**, since sessions and the job queue live in memory):
+
+```bash
+uvicorn "mtgfish.web.app:create_app" --factory --host 0.0.0.0 --port 8000 --proxy-headers
+```
+
+## Simulations are jobs
+
+No request waits for a game. `start_run`, `start_lab`, `start_cutlab` and
+`start_queue_test` create a job and return at once. If the machine has room the
+job starts immediately and the reply is the bridge's own; otherwise it waits in
+order and the page is told its place (`job_status` event). Results arrive as
+the usual `*_finished` events on `/api/events`, and the job ends with them.
+
+* `GET /api/jobs` lists this browser's jobs; `POST /api/jobs/<id>/cancel` stops
+  one (someone else's job id is reported as not found).
+* **Stop run** cancels everything the browser has waiting or running.
+* Limits: `MTGFISH_MAX_RUNS` at once across everyone, `MTGFISH_MAX_RUNS_PER_USER`
+  at once per browser, `MTGFISH_MAX_QUEUED_PER_USER` waiting per browser.
+
+The queue is behind an interface (`jobs.JobQueue`). `LocalJobQueue` plays jobs
+on this machine through the browser's bridge and its process pool. To move
+simulations to separate worker machines, implement the same interface over RQ,
+Celery or Dramatiq: enqueue the job's `RunConfig` (everything a run is), let a
+worker play it, and call `complete()` with the result so the finish event
+reaches the page.
 
 ## In a container
 
@@ -75,7 +117,12 @@ cleaning up (killed from Task Manager, a crash), so nothing is left spinning.
 | `MTGFISH_DATA_DIR` | `cache/` | holds `cards.sqlite` |
 | `MTGFISH_MAX_SESSIONS` | `16` | browser sessions, each with its own bridge (~30 MB each, more once a deck is loaded) |
 | `MTGFISH_SESSION_TTL` | `14400` | idle seconds before a session is closed |
-| `MTGFISH_MAX_RUNS` | `1` | simulations at once across everyone. A run already uses every core. |
+| `MTGFISH_MAX_RUNS` | `1` | simulations at once across everyone. A run already uses every core; more wait in the queue. |
+| `MTGFISH_MAX_RUNS_PER_USER` | `1` | simulations one browser may have running at once |
+| `MTGFISH_MAX_QUEUED_PER_USER` | `2` | simulations one browser may have waiting; past this a start is refused |
+| `PUBLIC_BASE_URL` | `http://127.0.0.1:8000` | the address people use to reach the site (OAuth redirects are built from it) |
+| `FORWARDED_ALLOW_IPS` | `127.0.0.1` | proxies trusted to set `X-Forwarded-*` headers |
+| `MTGFISH_LOG_LEVEL` | `warning` | uvicorn's log level (`--verbose` sets `info`) |
 | `MTGFISH_ABANDON_GRACE` | `30` | seconds a page may be gone before its run is stopped; long enough to survive a reload. Negative never stops it. |
 | `MTGFISH_RELOAD_MAX_WAIT` | `900` | seconds `--reload` waits for a busy run before restarting anyway |
 | `MTGFISH_CALL_TIMEOUT` | `180` | seconds one call may take |
@@ -92,7 +139,7 @@ Three things are fine for a private deployment and not for an open one:
 * **Log in / Register and Manage subscription are placeholders.** The dialogs
   send nothing.
 * **Sessions are anonymous.** A session is a random cookie; there is no account
-  behind it, so no limit per person beyond `MTGFISH_MAX_RUNS`.
+  behind it, so the per-person limits are per browser.
 
 ## Archidekt import
 
