@@ -926,6 +926,21 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         stream.reset(mark)
         return spec
 
+    # "artifact or Goblin spell", "noncreature or Otter spell", "another
+    # creature or a Treasure": the alternatives are a card type and a
+    # subtype. The filter has no disjunction across its fields, so the list
+    # read as an AND - an artifact that is a Goblin (auditor's F46, Harnesser
+    # of Storms; Skullport Merchant, Satsuki). Left unread rather than misread.
+    added_types = collected != spec.types_all
+    added_subtypes = len(subtypes) > len(spec.subtypes_all)
+    first_is_type = bool(spec.types_all or spec.types_none or spec.types_any)
+    first_is_subtype = bool(spec.subtypes_all)
+    if (added_types and (added_subtypes or first_is_subtype)) or (
+        added_subtypes and first_is_type
+    ):
+        stream.reset(mark)
+        return spec
+
     if len(subtypes) > len(spec.subtypes_all):
         # A list of subtypes is a disjunction too: "Elf or Goblin" must not
         # become "a permanent that is both an Elf and a Goblin".
@@ -1876,6 +1891,22 @@ def qualifiers_only(stream: Stream) -> ObjectFilter | None:
     return spec
 
 
+def _dimensions(spec: ObjectFilter) -> set[str]:
+    """Which identity dimensions a filter constrains: card types, negated
+    types, subtypes, colors. Zones are not among them - an "or" across zones
+    is what ``zones`` already is."""
+    out = set()
+    if spec.types_any or spec.types_all:
+        out.add("types")
+    if spec.types_none:
+        out.add("types_none")
+    if spec.subtypes_any or spec.subtypes_all:
+        out.add("subtypes")
+    if spec.colors_any or spec.must_be_colorless:
+        out.add("colors")
+    return out
+
+
 def _whole_phrase_disjunction(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     """"artifact spells and colorless spells", "target spell or nonland
     permanent an opponent controls".
@@ -1919,6 +1950,20 @@ def _whole_phrase_disjunction(stream: Stream, spec: ObjectFilter) -> ObjectFilte
         or other.colors_any
         or other.must_be_colorless
     ):
+        stream.reset(mark)
+        return spec
+
+    # The merge below pools each half's fields into one filter, all of which
+    # must match - which is a faithful "or" only when the two halves differ
+    # along the same single dimension ("artifact or enchantment", "Elf or
+    # Goblin"). "artifact or Goblin spell" became an artifact that is a
+    # Goblin, and "artifact spells and colorless spells" a colorless artifact
+    # (auditor's F46). The filter has no disjunction across fields, so such
+    # a phrase is left unread rather than misread. A half that names only a
+    # zone ("target spell or nonland permanent") constrains nothing the other
+    # half could contradict.
+    first, second = _dimensions(spec), _dimensions(other)
+    if len(first) > 1 or len(second) > 1 or (first and second and first != second):
         stream.reset(mark)
         return spec
 

@@ -42,3 +42,39 @@ def test_turn_to_frog_wears_off_at_end_of_turn(card_db):
     assert board.pt(angel) == (4, 4)
     assert {"Flying", "Vigilance"} <= board.keywords(angel)
     assert "Frog" not in board.chars(angel).type_line.subtypes
+
+
+def _kinds_with_durations(card_db, name, face=0):
+    from mtgfish.parser import parse_card
+
+    out = {}
+    for ability in parse_card(card_db.lookup(name)).faces[face].abilities:
+        for effect in ability.effects:
+            for node in effect.walk():
+                out.setdefault(node.kind.name, set()).add(int(node.duration))
+    return out
+
+
+def test_a_leading_duration_covers_only_its_own_sentence(card_db):
+    """Auditor's F44: "Until end of turn, ... Goad it." - the goad and the
+    untap are separate sentences, not until end of turn."""
+    besmirch = _kinds_with_durations(card_db, "Besmirch")
+    assert besmirch["GAIN_CONTROL"] == {1}
+    assert besmirch["GOAD"] == {0} and besmirch["UNTAP"] == {0}
+    teferi = _kinds_with_durations(card_db, "Teferi's Protection")
+    assert teferi["PHASE_OUT"] == {0}
+
+
+def test_an_if_sentence_after_a_leading_duration_stays_its_own(card_db):
+    """Venat's back face: "Until your next turn, it gains indestructible. If
+    that creature is legendary, draw a card." - the "if" governs the draw,
+    not the indestructible."""
+    from mtgfish.parser import parse_card
+
+    card = card_db.lookup("Venat, Heart of Hydaelyn // Hydaelyn, the Mothercrystal")
+    (ability,) = [a for a in parse_card(card).faces[1].abilities if "legendary" in a.text]
+    conditionals = [
+        n for e in ability.effects for n in e.walk() if n.kind.name == "CONDITIONAL" and n.text == "if"
+    ]
+    (gate,) = conditionals
+    assert [c.kind.name for c in gate.children] == ["DRAW"]
