@@ -7,7 +7,17 @@ from __future__ import annotations
 import datetime as dt
 import uuid
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -130,3 +140,69 @@ class UserVerdicts(Base):
     )
     data: Mapped[str] = mapped_column(Text, default="{}")
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class Deck(Base):
+    """A saved deck. Its lists are versions: saving a changed list adds one,
+    so a run can always point at the exact list it played."""
+
+    __tablename__ = "decks"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    name: Mapped[str] = mapped_column(String(120))
+    commander: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+    versions: Mapped[list[DeckVersion]] = relationship(
+        back_populates="deck", cascade="all, delete-orphan", passive_deletes=True
+    )
+
+
+class DeckVersion(Base):
+    __tablename__ = "deck_versions"
+    __table_args__ = (UniqueConstraint("deck_id", "number", name="uq_deck_versions_number"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    deck_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("decks.id", ondelete="CASCADE"), index=True
+    )
+    number: Mapped[int] = mapped_column(Integer)
+    decklist: Mapped[str] = mapped_column(Text)
+    #: Of the list with blank lines and trailing spaces ignored: how a run's
+    #: decklist is matched back to the version it played.
+    text_hash: Mapped[str] = mapped_column(String(64), index=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+    deck: Mapped[Deck] = relationship(back_populates="versions")
+
+
+class Run(Base):
+    """One simulation in someone's history: the full ``RunConfig`` (enough to
+    replay any of its games from the seed) and the report it produced."""
+
+    __tablename__ = "runs"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    deck_version_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("deck_versions.id", ondelete="SET NULL"), nullable=True
+    )
+    label: Mapped[str] = mapped_column(String(200))
+    status: Mapped[str] = mapped_column(String(16), default="done")
+    #: JSON: decklists, games, max_rounds, run_seed, hero, card_db_hash.
+    config: Mapped[str] = mapped_column(Text)
+    #: JSON: the report the Results screen draws (win rate, stall-outs, ending
+    #: reasons, unread cards, card impact, ...).
+    report: Mapped[str | None] = mapped_column(Text, nullable=True)
+    win_rate: Mapped[float | None] = mapped_column(Float, nullable=True)
+    games: Mapped[int] = mapped_column(Integer)
+    run_seed: Mapped[int] = mapped_column(Integer)
+    card_db_hash: Mapped[str] = mapped_column(String(64), default="")
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
+    finished_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

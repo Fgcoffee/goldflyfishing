@@ -920,3 +920,17 @@ button.danger { color: var(--bad); border-color: var(--bad); }
 .row.compact input { flex: 1; min-width: 0; }
 #btn-login .avatar { width: 20px; height: 20px; border-radius: 50%; vertical-align: -5px; margin-right: 6px; }
 #authmessage.bad, #acct-message.bad { color: var(--bad); }
+
+/* ------------------------------------------------------ my decks, history */
+
+.libtable { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 10px;
+  overflow: hidden; margin: 8px 0 16px; font-size: 13px; }
+.libtable th { text-align: left; color: var(--dim); font-weight: 550; font-size: 12px;
+  padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.libtable td { padding: 7px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+.libtable td.strong { font-weight: 600; }
+.libtable td.dim { color: var(--dim); }
+.libtable td.actions { text-align: right; white-space: nowrap; }
+.libtable td.actions button { margin-left: 4px; }
+.libtable.compare td:first-child { width: 160px; }
+#lib-deckmsg.bad, #lib-runmsg.bad { color: var(--bad); }

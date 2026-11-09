@@ -58,7 +58,7 @@ class Api:
         from ..ui.qtcompat import is_slot, signal_names
 
         self.bridge_class = Bridge
-        self.signals = signal_names(Bridge) + ["job_status"]
+        self.signals = signal_names(Bridge) + ["job_status", "history_changed"]
         self.methods = sorted(
             name
             for name in dir(Bridge)
@@ -117,7 +117,7 @@ class Session:
         for name in self.api.signals:
             signal = getattr(bridge, name, None)
             if signal is None:
-                continue  # job_status is the server's own, not the bridge's
+                continue  # job_status and history_changed are the server's own
             listener = self._listener(name)
             if HAS_QT:  # pragma: no cover - the server normally runs without Qt
                 from PySide6.QtCore import Qt
@@ -243,6 +243,12 @@ class Session:
             elif payload.get("error"):
                 status, error = JobStatus.FAILED, str(payload["error"])
         self.manager.jobs.complete(self.sid, signal, status, error)
+        hook = self.manager.on_finished
+        if hook is not None and isinstance(payload, dict):
+            try:
+                hook(self, signal, status, payload)
+            except Exception:  # noqa: BLE001 - history is not worth losing a result over
+                log.warning("session %s: finish hook failed", self.sid[:6], exc_info=True)
 
     def subscribe(self, last_event_id: int | None, loop=None):
         """A queue of events, primed with any this page missed while away.
@@ -342,6 +348,8 @@ class SessionManager:
         )
         self._sessions: dict[str, Session] = {}
         self._lock = threading.Lock()
+        #: Called as (session, signal, status, payload) when a job finishes.
+        self.on_finished = None
         self._reaper = threading.Thread(target=self._reap_forever, daemon=True, name="reaper")
         self._reaper.start()
 
