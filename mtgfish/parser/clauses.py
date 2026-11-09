@@ -444,6 +444,15 @@ def _unless_tail(stream: Stream, effect: Effect) -> Effect | None:
     payer, _ = parse_player_filter(stream)
     if payer is not None:
         cost = _payment_cost(stream)
+        if cost is not None and (
+            stream.at("or") or (stream.at("of") and stream.peek(1).lower == "their")
+        ):
+            # "unless they sacrifice a permanent of their choice *or discard
+            # a card*": a choice of two costs, which one cost cannot say.
+            # Read as the first, the rest became a separate "or" of effects
+            # (Torment of Scarabs).
+            stream.reset(mark)
+            return None
         if cost is not None:
             return Effect(
                 EffectKind.UNLESS_PAYS,
@@ -1342,6 +1351,18 @@ def _exile(stream: Stream) -> Effect | None:
     targets, targeted = parse_target(stream)
     if targets is None:
         return None
+    if (
+        who is not None
+        and who.scope is not PlayerScope.YOU
+        and (targets.count is not None or targeted)
+    ):
+        # "That player exiles two cards from their graveyard": that player
+        # chooses, from their own graveyard. The effect has no chooser and
+        # the zone no owner here, so it read as you exiling any two cards
+        # from any graveyard (Curse of Oblivion). "Each player exiles all
+        # ..." is the same whoever does it, and stays read.
+        stream.reset(mark)
+        return None
     # "exile them from your graveyard" - the zone says where they are, which
     # a pronoun noun phrase cannot carry on its own.
     origin = None
@@ -1370,6 +1391,14 @@ def _sacrifice(stream: Stream) -> Effect | None:
         # sacrifice only what they control, chosen as the instruction is
         # carried out.
         return None
+    # "a creature of their choice" says who picks, which is the player
+    # sacrificing anyway. Read here, as part of the noun phrase: left for
+    # the next clause it became an effect of its own, and "sacrifices a
+    # permanent of their choice unless they pay {1}" hung the "unless" on
+    # the empty "of their choice" and sacrificed unconditionally.
+    look = stream.mark()
+    if not (stream.accept("of") and stream.accept_phrase("their choice")):
+        stream.reset(look)
     return Effect(
         EffectKind.SACRIFICE,
         targets=targets,

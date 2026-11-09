@@ -397,6 +397,17 @@ def _keyword_instance(name: str, argument: str, text: str):
     spec = None
 
     argument = argument.strip().lstrip("-").strip()
+    if name.lower() == "enchant" and argument.lower().rstrip(".") in ("player", "opponent"):
+        # CR 303.4a: an Aura that enchants a player carries a player filter
+        # as its quality.
+        from ..rules.kernel.query import PlayerFilter, PlayerScope
+
+        scope = (
+            PlayerScope.EACH_PLAYER
+            if argument.lower().startswith("player")
+            else PlayerScope.EACH_OPPONENT
+        )
+        return KeywordInstance(name, players=PlayerFilter(scope), text=text)
     if argument:
         stream = Stream.of(argument)
         number = stream.accept_number()
