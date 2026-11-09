@@ -53,6 +53,7 @@ def place(box, name, *, new=True):
     box.put(name, "battlefield", 0)
     (obj,) = live(box, name)
     obj.summoning_sick = new
+    obj.newly_controlled = new  # CR 702.30a: under its control since before the last turn
     return obj
 
 
