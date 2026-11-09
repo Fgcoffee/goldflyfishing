@@ -3250,6 +3250,7 @@ def _do_exchange_control(resolution: Resolution, effect: Effect) -> None:
         first.base_controller,
     )
     first.summoning_sick = second.summoning_sick = True
+    first.newly_controlled = second.newly_controlled = True
     resolution.game.invalidate_characteristics()
     for obj in objects:
         resolution.game.emit(
