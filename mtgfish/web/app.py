@@ -40,6 +40,7 @@ os.environ.setdefault("MTGFISH_NO_QT", "1")
 from fastapi import FastAPI, Request  # noqa: E402
 from fastapi.responses import JSONResponse, Response, StreamingResponse  # noqa: E402
 
+from .auth.routes import AUTH_COOKIE  # noqa: E402
 from .jobs import QueueFull  # noqa: E402
 from .sessions import WEB, Api, ServerFull, SessionManager, Versions  # noqa: E402
 from .settings import Settings  # noqa: E402
@@ -64,8 +65,15 @@ _CSP = (
 class AppState:
     """Everything a request needs, built once per process."""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, accounts=None) -> None:
         self.settings = settings
+        if accounts is None:
+            from .auth import Accounts
+            from .db import Database
+
+            accounts = Accounts(Database())
+        self.accounts = accounts
+        accounts.on_forget = self.forget_user
         self.api = Api(settings)
         self.sessions = SessionManager(self.api, settings)
         self.versions = Versions()
@@ -73,6 +81,27 @@ class AppState:
         self.started = time.time()
         #: Set by whatever serves the app, so /api/_shutdown can stop it.
         self.stop_server = None
+
+    def bind_user(self, session, user_id: str | None) -> None:
+        """Make a browser session act as ``user_id`` (or as nobody).
+
+        Its sandbox verdicts follow: the account's own when signed in, a
+        fresh private set when not - never a store shared between people.
+        """
+        if session.user_id == user_id:
+            return
+        from .auth.verdicts import DbVerdictStore, MemoryVerdictStore, use_verdicts
+
+        session.user_id = user_id
+        store = (
+            DbVerdictStore(self.accounts.db, user_id) if user_id else MemoryVerdictStore()
+        )
+        session._thread.submit(use_verdicts, session.bridge, store).result(timeout=30)
+
+    def forget_user(self, user_id: str) -> None:
+        for session in self.sessions.all():
+            if session.user_id == user_id:
+                self.bind_user(session, None)
 
     def stop(self) -> None:
         """Shut down gracefully: runs stopped, sessions closed, then the server."""
@@ -87,8 +116,8 @@ def _valid_sid(value: str | None) -> bool:
     ).isalnum()
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
-    state = AppState(settings or Settings())
+def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
+    state = AppState(settings or Settings(), accounts)
 
     @contextlib.asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -137,17 +166,40 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             set_cookie(response, request, sid)
         return response
 
+    from .auth.routes import build_router
+
+    app.include_router(build_router(state.accounts))
+
+    allowed_origins = {state.accounts.settings.public_base_url.rstrip("/")}
+
     @app.middleware("http")
     async def security_headers(request: Request, call_next):
+        # Cross-site requests that change something are refused outright:
+        # a browser always says where a POST came from.
+        if request.method not in ("GET", "HEAD", "OPTIONS"):
+            origin = request.headers.get("origin")
+            if origin and origin != "null":
+                scheme = request.headers.get("x-forwarded-proto") or request.url.scheme
+                own = f"{scheme}://{request.headers.get('host', '')}"
+                if origin.rstrip("/") not in allowed_origins | {own}:
+                    return JSONResponse({"error": "cross-site request refused"}, status_code=403)
         response = await call_next(request)
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "same-origin")
         return response
 
+    def _session_and_user(sid: str, token: str | None):
+        session = state.sessions.get(sid)
+        user = state.accounts.user_for(token)
+        state.bind_user(session, user.id if user else None)
+        return session
+
     async def session_for(request: Request):
         sid = sid_of(request)
         try:
-            session = await asyncio.to_thread(state.sessions.get, sid[0])
+            session = await asyncio.to_thread(
+                _session_and_user, sid[0], request.cookies.get(AUTH_COOKIE)
+            )
         except ServerFull:
             return None, sid
         return session, sid

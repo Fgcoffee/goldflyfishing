@@ -129,17 +129,89 @@ cleaning up (killed from Task Manager, a crash), so nothing is left spinning.
 | `MTGFISH_WEB_DENY` | `read_file` | slots the browser may not call, comma separated |
 | `MTGFISH_SECURE_COOKIES` | off | mark the session cookie `Secure` (also automatic behind a proxy sending `X-Forwarded-Proto: https`) |
 
+## Accounts
+
+Built into the app (no auth vendor): email + password, and Discord. Anonymous
+use keeps working for simulations; signing in adds per-account sandbox
+verdicts and per-account run limits (and, next, saved decks and history).
+
+| route | |
+|---|---|
+| `GET /auth/me` | the signed-in user, or 401 |
+| `POST /auth/register`, `/auth/login`, `/auth/logout` | email + password |
+| `POST /auth/verify`, `/auth/verify/resend` | email verification |
+| `POST /auth/password/forgot`, `/auth/password/reset` | password reset |
+| `POST /auth/account`, `/auth/account/delete` | display name; delete everything |
+| `GET /auth/discord/login`, `/auth/discord/callback` | Discord sign-in (`?link=1` links it) |
+| `POST /auth/discord/unlink` | refused if it would leave no way to log in |
+
+How it behaves:
+
+* **Passwords**: argon2id, at least 10 characters, common ones refused. A wrong
+  email and a wrong password get the same answer; a reset request never says
+  whether the address has an account.
+* **Email links** (verify: 48 h, reset: 30 min) are random, single use, and only
+  their hash is stored. They land on the page (`/#verify=…`, `/#reset=…`), which
+  redeems them, so a mail scanner opening the link does not use it up.
+  Resetting a password signs that account out everywhere.
+* **Unverified accounts** can log in, but cannot save decks or runs until the
+  email is verified (or Discord is linked).
+* **Discord**: OAuth2 authorization code with PKCE (S256), scopes
+  `identify email`, a random `state` in a signed ten-minute cookie. Discord's
+  tokens are used for the token exchange and `/users/@me`, then dropped. A
+  Discord login joins an existing account only when Discord reports a
+  *verified* email equal to that account's *verified* email.
+* **Sessions**: a random id in an `HttpOnly`, `SameSite=Lax` cookie (`Secure` in
+  production); only its hash is stored, with a 30-day expiry. Logout deletes it.
+* **CSRF**: POSTs to `/auth/*` need the `X-CSRF-Token` header to match the
+  `mtgfish_csrf` cookie, and any state-changing request whose `Origin` is
+  another site is refused.
+* **Rate limits** on all of `/auth/*`, tighter on register, login, reset and the
+  Discord routes (in memory: one server process).
+* **Deleting an account** removes the user, sessions, tokens, verdicts and (once
+  they exist) decks and runs.
+* **Sandbox verdicts** belong to the account, in the database. Anonymous
+  browsers get a private set that lasts as long as the session. The desktop
+  app's `verdicts.json` is never used by the server.
+
+### Configuration
+
+All from the environment (or a local `.env`, which is never committed):
+
+| variable | meaning |
+|---|---|
+| `MTGFISH_ENV` | `production` turns on the strict checks: it requires `SESSION_SECRET`, an `https://` `PUBLIC_BASE_URL`, and email delivery; it forces `Secure` cookies; and it refuses the fake Discord login |
+| `SESSION_SECRET` | 32+ random characters; signs the OAuth state cookie. `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `DATABASE_URL` | `postgresql+psycopg://user:pass@host/db` in production; default `sqlite:///$MTGFISH_DATA_DIR/web.sqlite` |
+| `PUBLIC_BASE_URL` | e.g. `https://goldfisher.example` - redirect URIs and email links are built from it |
+| `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` | the Discord application. Without a secret, development gets a fake "Dev Discord User" login |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | email by SMTP (STARTTLS on 587, TLS on 465) |
+| `RESEND_API_KEY` | or email through Resend |
+| `MAIL_FROM` | sender, e.g. `Goldfisher <no-reply@goldfisher.example>`. With no mail settings, development writes emails (links included) to the log |
+
+### Discord redirect URIs
+
+Register each one exactly, under OAuth2 → Redirects in the Discord developer
+portal:
+
+* local: `http://127.0.0.1:8000/auth/discord/callback`
+* production: `https://<your domain>/auth/discord/callback` (add it once the
+  domain exists; `PUBLIC_BASE_URL` must match it)
+
+Keep "Public Client" off: the secret stays on the server.
+
+### The database
+
+The schema is owned by Alembic (`mtgfish/web/migrations`) and the server
+migrates at start-up. By hand: `alembic upgrade head` from the repository, with
+`DATABASE_URL` set. Run one server process per database for now: sessions and
+rate limits live in memory.
+
 ## Before it is public
 
-Three things are fine for a private deployment and not for an open one:
-
-* **Card verdicts are global.** "Wrong - switch it off" in the sandbox writes to
-  one `verdicts.json` and changes every user's simulations. Add
-  `sandbox_judge` to `MTGFISH_WEB_DENY` until verdicts belong to accounts.
-* **Log in / Register and Manage subscription are placeholders.** The dialogs
-  send nothing.
-* **Sessions are anonymous.** A session is a random cookie; there is no account
-  behind it, so the per-person limits are per browser.
+* **Manage subscription is a placeholder.** The dialog sends nothing.
+* **One process.** Rate limits, the job queue and browser sessions are in
+  memory; scaling out needs Redis (or similar) behind them first.
 
 ## Archidekt import
 

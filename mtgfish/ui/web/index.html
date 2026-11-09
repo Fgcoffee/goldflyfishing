@@ -352,21 +352,59 @@
 
 <!-- ------------------------------------------------------------ dialogs -->
 <dialog id="dlg-auth" class="modal">
-  <form method="dialog" class="modal-inner" id="authform">
-    <button class="modal-close" value="cancel" aria-label="Close">&times;</button>
-    <div class="seg modal-tabs" role="tablist">
+  <form class="modal-inner" id="authform" novalidate>
+    <button type="button" class="modal-close" data-close-dialog aria-label="Close">&times;</button>
+    <div class="seg modal-tabs" role="tablist" id="authtabs">
       <button type="button" data-auth="login" class="active">Log in</button>
       <button type="button" data-auth="register">Register</button>
     </div>
     <h2 id="authtitle">Welcome back</h2>
-    <div class="placeholder-note">Accounts are coming soon. This form is a preview and does not send anything yet.</div>
-    <label class="stack-label" data-auth-only="register">Display name <input type="text" autocomplete="nickname" disabled></label>
-    <label class="stack-label">Email <input type="email" autocomplete="email" disabled></label>
-    <label class="stack-label">Password <input type="password" autocomplete="current-password" disabled></label>
+    <a id="authdiscord" class="discord-button" href="/auth/discord/login" data-auth-only="login register">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+      Continue with Discord
+    </a>
+    <div class="or" data-auth-only="login register"><span>or</span></div>
+    <label class="stack-label" data-auth-only="register">Display name
+      <input id="authname" type="text" autocomplete="nickname" maxlength="64"></label>
+    <label class="stack-label" data-auth-only="login register forgot">Email
+      <input id="authemail" type="email" autocomplete="email"></label>
+    <label class="stack-label" data-auth-only="login register reset">Password
+      <input id="authpassword" type="password" autocomplete="current-password" minlength="10"></label>
+    <p class="hint small" data-auth-only="register reset">At least 10 characters. A few words make a good one.</p>
+    <p class="hint small" data-auth-only="forgot">We&rsquo;ll email you a link to set a new password.</p>
+    <div id="authmessage" class="hint" role="status"></div>
     <div class="modal-actions">
-      <button class="primary" value="cancel" id="authsubmit">Coming soon</button>
+      <button type="button" class="linklike" id="authforgot" data-auth-only="login">Forgot your password?</button>
+      <button type="button" class="linklike" id="authback" data-auth-only="forgot">Back to log in</button>
+      <span class="spacer"></span>
+      <button class="primary" type="submit" id="authsubmit">Log in</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="dlg-account" class="modal">
+  <div class="modal-inner">
+    <button type="button" class="modal-close" data-close-dialog aria-label="Close">&times;</button>
+    <h2>Your account</h2>
+    <div id="acct-verify" class="placeholder-note" hidden>
+      Your email isn&rsquo;t verified yet, so you can&rsquo;t save decks or runs.
+      <button type="button" class="linklike" id="acct-resend">Send the link again</button>
+    </div>
+    <label class="stack-label">Display name
+      <span class="row compact"><input id="acct-name" type="text" maxlength="64">
+      <button type="button" id="acct-savename">Save</button></span></label>
+    <div class="stack-label">Email <span id="acct-email" class="dim"></span></div>
+    <div class="stack-label">Discord
+      <span class="row compact"><span id="acct-discord" class="dim"></span>
+      <a id="acct-link" class="button-like" href="/auth/discord/login?link=1">Link Discord</a>
+      <button type="button" id="acct-unlink" class="ghost">Unlink</button></span></div>
+    <div id="acct-message" class="hint" role="status"></div>
+    <div class="modal-actions">
+      <button type="button" id="acct-delete" class="ghost danger">Delete account&hellip;</button>
+      <span class="spacer"></span>
+      <button type="button" id="acct-logout">Log out</button>
+    </div>
+  </div>
 </dialog>
 
 <dialog id="dlg-sub" class="modal">
@@ -450,5 +488,6 @@
 <script src="deck.js"></script>
 <script src="board.js"></script>
 <script src="shell.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>

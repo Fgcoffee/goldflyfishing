@@ -36,10 +36,12 @@ from .settings import Settings  # noqa: E402
 class Server:
     """One uvicorn server on one socket, startable from any thread."""
 
-    def __init__(self, host: str, port: int, settings: Settings | None = None) -> None:
+    def __init__(
+        self, host: str, port: int, settings: Settings | None = None, *, accounts=None
+    ) -> None:
         import uvicorn
 
-        self.asgi = create_app(settings)
+        self.asgi = create_app(settings, accounts=accounts)
         self.app: AppState = self.asgi.state.mtgfish
         self.app.stop_server = self.shutdown_soon
         family = socket.AF_INET6 if ":" in host else socket.AF_INET
@@ -87,8 +89,10 @@ class Server:
         return False
 
 
-def make_server(host: str, port: int, settings: Settings | None = None) -> Server:
-    return Server(host, port, settings)
+def make_server(
+    host: str, port: int, settings: Settings | None = None, *, accounts=None
+) -> Server:
+    return Server(host, port, settings, accounts=accounts)
 
 
 __all__ = [
