@@ -553,8 +553,12 @@ class Game:
         to_top: bool = False,
         position: int | None = None,
         face_down: str | None = None,
+        transformed: bool = False,
     ) -> GameObject:
         """Move an object to another zone, creating a new object (CR 400.7).
+
+        ``transformed`` puts a double-faced card onto the battlefield with its
+        back face up (CR 712.14a).
 
         ``face_down`` puts it there face down (CR 708.3, 406.3), naming what
         turned it face down - "Manifest", "Cloak", or "" for an effect that
@@ -660,6 +664,31 @@ class Game:
         ):
             return obj
 
+        # CR 712.14a: a card that isn't double-faced, told to enter
+        # transformed, stays where it is.
+        if transformed and to_zone is Zone.BATTLEFIELD:
+            from ..cr700_additional_rules.cr707_faces import can_enter_transformed
+
+            if not can_enter_transformed(obj):
+                return obj
+
+        # CR 303.4f, 303.4g: an Aura entering other than by resolving as an
+        # Aura spell is attached to something its player chooses as it
+        # enters; with nothing it could enchant, it stays where it is. A
+        # resolving Aura spell attaches to its target instead (CR 303.4a).
+        from ..cr300_card_types import cr303_auras
+
+        aura_enters_unattached = (
+            to_zone is Zone.BATTLEFIELD
+            and from_zone is not Zone.STACK
+            and not arrives_face_down
+            and cr303_auras.governs_entry(self, obj)
+        )
+        if aura_enters_unattached and not cr303_auras.legal_hosts(
+            self, obj, to_player if to_player is not None else owner
+        ):
+            return obj
+
         # CR 306.5b, 310.4b: a planeswalker enters with loyalty counters equal
         # to its printed loyalty, and a battle with defense counters. Read from
         # the object as it is *now*, before the move, because CR 306.5c would
@@ -748,7 +777,9 @@ class Game:
             base_controller=destination_player if to_zone is Zone.BATTLEFIELD else owner,
             zone=to_zone,
             card=obj.card,
-            face_index=0 if to_zone is not Zone.BATTLEFIELD else obj.face_index,
+            face_index=(
+                0 if to_zone is not Zone.BATTLEFIELD else 1 if transformed else obj.face_index
+            ),
             timestamp=self.ids.timestamp(),
             is_commander=obj.is_commander,
         )
@@ -822,6 +853,10 @@ class Game:
             target.append(new_obj.id)
 
         self.invalidate_characteristics()
+        if aura_enters_unattached:
+            cr303_auras.attach_as_it_enters(
+                self, new_obj, cr303_auras.legal_hosts(self, new_obj, new_obj.controller)
+            )
         if entering:
             # CR 122.6, 614.1c: entering with counters is having them put on
             # it, so the counter replacements (CR 614.1a) apply to them.
@@ -996,6 +1031,7 @@ class Game:
             if host is not None and obj.id in host.attachments:
                 host.attachments.remove(obj.id)
             obj.attached_to = NO_OBJECT
+        obj.attached_player = NO_PLAYER
         for attachment_id in list(obj.attachments):
             attachment = self.objects.get(attachment_id)
             if attachment is not None:

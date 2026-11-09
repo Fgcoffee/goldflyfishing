@@ -406,7 +406,31 @@ def _objects(
     matching = find(
         game, effect.targets, source=resolution.source, controller=resolution.controller
     )
+    if _players_say_whose(effect):
+        # "Exile each opponent's graveyard": the objects are those players'
+        # - their permanents, or their cards elsewhere (CR 108.3, 110.2).
+        theirs = set(_players(resolution, effect))
+        matching = [
+            obj for obj in matching
+            if (obj.controller if obj.zone is Zone.BATTLEFIELD else obj.owner) in theirs
+        ]
     return _narrowed_to_count(resolution, effect, matching)
+
+
+#: Instructions whose players, when they are the opponents, say whose objects
+#: are acted on. "You" there is who carries the instruction out - "put
+#: enchanted creature on top of its owner's library" - so it narrows nothing.
+_WHOSE_KINDS = frozenset(
+    {EffectKind.EXILE, EffectKind.REVEAL, EffectKind.MOVE_ZONE, EffectKind.PUT_ON_LIBRARY}
+)
+
+
+def _players_say_whose(effect: Effect) -> bool:
+    return (
+        effect.kind in _WHOSE_KINDS
+        and effect.players is not None
+        and effect.players.scope in (PlayerScope.EACH_OPPONENT, PlayerScope.OPPONENT)
+    )
 
 
 def _from_pile(resolution: Resolution, effect: Effect) -> list[GameObject]:
@@ -682,7 +706,10 @@ def _players(resolution: Resolution, effect: Effect) -> list[PlayerId]:
             return []
         return [event.source_controller]
     return resolve_players(
-        resolution.game, effect.players or YOU, controller=resolution.controller
+        resolution.game,
+        effect.players or YOU,
+        controller=resolution.controller,
+        source=resolution.source,
     )
 
 
@@ -2980,7 +3007,14 @@ def _do_put_onto_battlefield(resolution: Resolution, effect: Effect) -> None:
         # CR 610.3c: a card coming back from an "until" exile returns to its
         # owner, not to whoever exiled it.
         to = obj.owner if effect.under_owners_control else resolution.controller
-        permanent = game.move_object(obj, Zone.BATTLEFIELD, to_player=to, face_down=face_down)
+        # CR 712.14a: "put it onto the battlefield transformed".
+        permanent = game.move_object(
+            obj,
+            Zone.BATTLEFIELD,
+            to_player=to,
+            face_down=face_down,
+            transformed="transformed" in effect.keywords,
+        )
         permanent.controller = to
         if permanent is not obj:
             # CR 607.2c: what was "put onto the battlefield with" the source.

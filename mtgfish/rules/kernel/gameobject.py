@@ -95,6 +95,8 @@ class GameObject:
     counters: dict[str, int] = field(default_factory=dict)
     #: CR 301.5, 303.4: what this Equipment or Aura is attached to.
     attached_to: ObjectId = NO_OBJECT
+    #: CR 303.4b: the player this Aura enchants, when it enchants a player.
+    attached_player: PlayerId = NO_PLAYER
     attachments: list[ObjectId] = field(default_factory=list)
     #: Damage prevention shields and regeneration shields pending this turn.
     regeneration_shields: int = 0
@@ -165,7 +167,7 @@ class GameObject:
     #: card type, or a colour (CR 614.1b). Kept on the object because that is
     #: how long the choice lasts: it is made as the permanent enters and the
     #: permanent is what every "of the chosen type" sentence asks.
-    #: Whether this permanent arrived by being cast, rather than by being
+    #: Whether this spell was cast, or this permanent arrived by being cast, rather than by being
     #: put onto the battlefield. "When this enters, *if you cast it*" turns
     #: on the difference and nothing recorded it.
     was_cast: bool = False

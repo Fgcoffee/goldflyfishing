@@ -47,6 +47,9 @@ def carry_payment_record(spell: GameObject, permanent: GameObject) -> None:
     permanent.phyrexian_paid_with_life = spell.phyrexian_paid_with_life
     # CR 702.174a: the opponent a gift was promised to.
     permanent.chosen_player = spell.chosen_player
+    # CR 603.4: "when this enters, if you cast it" is checked as it enters,
+    # so the record is there before the event.
+    permanent.was_cast = spell.was_cast
 
 
 def times_paid_for(game: Game, resolution: Resolution, keyword: str) -> int:
