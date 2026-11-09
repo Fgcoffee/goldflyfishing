@@ -6789,9 +6789,25 @@ def _exile_graveyard(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
+    # Whose graveyard. A targeted player is found as the instruction is
+    # carried out (``targets_its_player``); anyone else has to be on the
+    # filter, or "exile each opponent's graveyard" exiled yours as well
+    # (Soul-Guide Lantern).
+    owner = ControllerRelation.ANY
+    if not targeted:
+        owners = {
+            PlayerScope.EACH_OPPONENT: ControllerRelation.OPPONENT,
+            PlayerScope.YOU: ControllerRelation.YOU,
+            PlayerScope.EACH_PLAYER: ControllerRelation.ANY,
+        }
+        if players.scope not in owners:
+            stream.reset(mark)
+            return None
+        owner = owners[players.scope]
+
     return Effect(
         EffectKind.EXILE,
-        targets=ObjectFilter(zones=frozenset({Zone.GRAVEYARD})),
+        targets=ObjectFilter(zones=frozenset({Zone.GRAVEYARD}), owner=owner),
         players=players,
         is_targeted=targeted,
         text="exile a graveyard",
@@ -7805,23 +7821,16 @@ def _becomes_a_copy(stream: Stream) -> Effect | None:
 
 
 def _copy_exceptions(stream: Stream) -> None:
-    """The ", except ..." tail on a copy.
+    """The ", except ..." tail on a copy - deliberately *not* consumed.
 
-    "Except it has this ability", "except the token isn't legendary", "except
-    it has haste". Every one of them adjusts the copy rather than choosing a
-    different original, and the layer system applies the copy effect before
-    anything the exception could change - so consuming the tail loses the
-    modification but never the copy, which is the larger half by far.
+    "Except it isn't legendary", "except it's a 1/1 Bird", "except it has
+    haste". This used to consume the tail and drop it, on the reasoning that
+    the copy is the larger half - but a dropped "it's a 1/1" or "isn't
+    legendary" plays a different card while the ability counts as read. The
+    copy carries no exceptions yet, so the tail is left in the stream and the
+    ability fails its full-consumption check: unread, not misread.
     """
-    mark = stream.mark()
-    stream.skip_punct(",")
-    if not stream.accept("except"):
-        stream.reset(mark)
-        return
-    while not stream.done and stream.peek().text not in (".", ";"):
-        if stream.at("until"):
-            return
-        stream.next()
+    return
 
 
 @clause("extra-trigger")
@@ -9009,7 +9018,7 @@ def _copy_permanent(stream: Stream) -> Effect | None:
     if not stream.accept("create", "creates"):
         stream.reset(mark)
         return None
-    parse_value(stream)
+    count = parse_value(stream)
     if not stream.accept("token", "tokens"):
         stream.reset(mark)
         return None
@@ -9025,11 +9034,18 @@ def _copy_permanent(stream: Stream) -> Effect | None:
     # the becomes-a-copy clause reads. Two clauses for one construct, and
     # only one of them knew about it.
     _copy_exceptions(stream)
+    # A new token, built from the target's copiable values (CR 707.2) - not
+    # COPY_PERMANENT, which makes the *source* become a copy. Read that way,
+    # "create a token that's a copy of target permanent you control" turned
+    # the resolving spell into the copy and made no token (auditor's F58,
+    # Replication Technique).
     return Effect(
-        EffectKind.COPY_PERMANENT,
+        EffectKind.CREATE_TOKEN,
         targets=targets,
         is_targeted=targeted,
         players=YOU,
+        amount=count if count is not None else Value.of(1),
+        token=TokenSpec(copy_of=targets),
         text="create a token copy",
     )
 
