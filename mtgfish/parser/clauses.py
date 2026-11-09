@@ -793,6 +793,35 @@ def _action_cost(stream: Stream):
 
     mark = stream.mark()
     word = stream.peek().lower
+    if word in ("return", "returns"):
+        # "unless you return another creature you control to its owner's
+        # hand" (Faerie Impostor): a cost the payer pays with their own
+        # permanent, as an activated ability's "Return a land you control
+        # to its owner's hand:" is.
+        stream.next()
+        spec = parse_object_filter(stream)
+        if (
+            spec is None
+            or chosen_count(spec)
+            or spec.controller is not ControllerRelation.YOU
+            or not (
+                stream.accept_phrase("to its owner's hand")
+                or stream.accept_phrase("to their owner's hand")
+                or stream.accept_phrase("to their owners' hands")
+            )
+        ):
+            stream.reset(mark)
+            return None
+        return Cost(
+            (
+                CostComponent(
+                    CostKind.RETURN_TO_HAND,
+                    filter=spec,
+                    amount=spec.count if spec.count is not None else Value.of(1),
+                    text="return to hand",
+                ),
+            )
+        )
     if word not in _ACTION_COSTS:
         stream.reset(mark)
         return None
@@ -3043,12 +3072,37 @@ def _enters_tapped(stream: Stream) -> Effect | None:
         return None
     if not stream.accept("tapped"):
         return None
-    return Effect(
+    tapped = Effect(
         EffectKind.TAP,
         targets=SELF,
         duration=Duration.PERMANENT,
         text="enters tapped",
     )
+    # "This land enters tapped *with two charge counters on it*" (the
+    # Vivid lands). Read without the counters, the tail was left over and
+    # the whole line failed - so the land entered untapped.
+    look = stream.mark()
+    if stream.accept("with"):
+        amount = parse_value(stream) or Value.of(1)
+        counter = _counter_word(stream)
+        if counter is None:
+            stream.reset(look)
+            return tapped
+        stream.accept_phrase("on it")
+        return Effect(
+            EffectKind.SEQUENCE,
+            children=(
+                tapped,
+                Effect(
+                    EffectKind.ADD_COUNTERS,
+                    counter_type=counter,
+                    amount=amount,
+                    text="enters with counters",
+                ),
+            ),
+            text="enters tapped with counters",
+        )
+    return tapped
 
 
 @clause("enters-with-counters")
