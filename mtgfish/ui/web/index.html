@@ -20,6 +20,8 @@
     <button data-tab="deck">Deck</button>
     <button data-tab="results">Results</button>
     <button data-tab="lab">Swap lab</button>
+    <button data-tab="mydecks" hidden>My decks</button>
+    <button data-tab="history" hidden>History</button>
     <button data-tab="replay">Replay</button>
     <button data-tab="sandbox">Sandbox</button>
   </nav>
@@ -195,6 +197,40 @@
 
   <div id="labresults"></div>
   <pre id="labproblems"></pre>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="mydecks" class="tab">
+  <div class="tabhead">
+    <div>
+      <h1>My decks</h1>
+      <p class="hint">
+        Saved decks keep every version you save, so a run in History always
+        points at the exact list it played.
+      </p>
+    </div>
+    <button id="lib-save" class="primary">Save the deck in slot 1</button>
+  </div>
+  <div id="lib-deckmsg" class="hint"></div>
+  <div id="lib-decks"></div>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="history" class="tab">
+  <div class="tabhead">
+    <div>
+      <h1>History</h1>
+      <p class="hint">
+        Every simulation you run while logged in, with the decks, seed and
+        card data it used &mdash; enough to replay any of its games. Tick two
+        to compare them.
+      </p>
+    </div>
+    <button id="lib-compare" disabled>Compare the two ticked</button>
+  </div>
+  <div id="lib-runmsg" class="hint"></div>
+  <div id="lib-comparison"></div>
+  <div id="lib-runs"></div>
 </section>
 
 <!-- ------------------------------------------------------------------ -->
@@ -489,5 +525,6 @@
 <script src="board.js"></script>
 <script src="shell.js"></script>
 <script src="auth.js"></script>
+<script src="library.js"></script>
 </body>
 </html>

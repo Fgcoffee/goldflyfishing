@@ -200,6 +200,28 @@ portal:
 
 Keep "Public Client" off: the secret stays on the server.
 
+### Saved decks and history
+
+Signed-in accounts with a verified email (or Discord) get **My decks** and
+**History**:
+
+| route | |
+|---|---|
+| `GET/POST /api/decks`, `GET/POST /api/decks/{id}`, `POST /api/decks/{id}/delete` | save, load, rename, new version, delete |
+| `GET /api/decks/{id}/versions/{n}` | an older version's list |
+| `GET /api/runs`, `GET /api/runs/{id}`, `POST /api/runs/{id}/delete` | history |
+| `POST /api/runs/{id}/open` | show a past run on Results, replays included |
+
+* Saving a changed list adds a version; saving the same list does not. A run
+  points at the version whose list it played (matched by content).
+* A run is recorded when a signed-in, verified person's simulation finishes:
+  the full `RunConfig` (decklists, games, max_rounds, run_seed, hero,
+  card_db_hash) and the report. That is enough to replay any game from its
+  seed; `card_db_hash` says which card data it used.
+* Every deck and run query is filtered by the signed-in user in the API (there
+  is no row-level security in the database). Another person's id is answered
+  exactly like a missing one, with a 404.
+
 ### The database
 
 The schema is owned by Alembic (`mtgfish/web/migrations`) and the server

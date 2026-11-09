@@ -76,6 +76,7 @@ class AppState:
         accounts.on_forget = self.forget_user
         self.api = Api(settings)
         self.sessions = SessionManager(self.api, settings)
+        self.sessions.on_finished = self.job_finished
         self.versions = Versions()
         self.gzip_cache: dict[tuple[str, str], bytes] = {}
         self.started = time.time()
@@ -97,6 +98,19 @@ class AppState:
             DbVerdictStore(self.accounts.db, user_id) if user_id else MemoryVerdictStore()
         )
         session._thread.submit(use_verdicts, session.bridge, store).result(timeout=30)
+
+    def job_finished(self, session, signal: str, status, payload: dict) -> None:
+        """A signed-in, verified person's finished run goes into their history."""
+        from .jobs import JobStatus
+        from .library import record_run
+
+        if signal != "run_finished" or status is not JobStatus.DONE or not session.user_id:
+            return
+        config = getattr(session.bridge, "_config", None)
+        if config is None:
+            return
+        if record_run(self.accounts.db, session.user_id, config, payload):
+            session.publish("history_changed", [])
 
     def forget_user(self, user_id: str) -> None:
         for session in self.sessions.all():
@@ -169,6 +183,9 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
     from .auth.routes import build_router
 
     app.include_router(build_router(state.accounts))
+    from .library import build_router as library_router
+
+    app.include_router(library_router(state.accounts))
 
     allowed_origins = {state.accounts.settings.public_base_url.rstrip("/")}
 
@@ -296,6 +313,54 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
 
         body = reply.encode() if isinstance(reply, str) else json.dumps(reply).encode()
         return json_reply(200, body, request, sid)
+
+    @app.post("/api/runs/{run_id}/open")
+    async def open_run(run_id: str, request: Request):
+        """A past run on this browser's Results screen, replays included.
+
+        Replays rebuild games from the run's config, so the browser's bridge
+        is given that config - exactly what the run was.
+        """
+        from .auth.service import user_for_session
+        from .models import Run
+        from ..sim.runner import RunConfig
+
+        if "application/json" not in request.headers.get("content-type", ""):
+            return json_reply(415, {"error": "send JSON"})
+        session, sid = await session_for(request)
+        if session is None:
+            return json_reply(503, {"error": "the server is full right now"}, request, sid)
+
+        def load():
+            with state.accounts.db.session() as db:
+                user = user_for_session(db, request.cookies.get(AUTH_COOKIE))
+                if user is None:
+                    return None
+                run = db.query(Run).filter(Run.id == run_id, Run.user_id == user.id).one_or_none()
+                return (run.config, run.report) if run else None
+
+        found = await asyncio.to_thread(load)
+        if found is None:
+            return json_reply(404, {"error": "no such run"}, request, sid)
+        config_json, report_json = found
+        raw = json.loads(config_json)
+        config = RunConfig(
+            decklists=tuple(raw["decklists"]),
+            games=raw["games"],
+            max_rounds=raw.get("max_rounds", 25),
+            run_seed=raw["run_seed"],
+            hero=raw.get("hero", 0),
+            card_db_hash=raw.get("card_db_hash", ""),
+        )
+
+        def install():
+            session.bridge._config = config
+            session.bridge._result = None
+            session.bridge._report = None
+
+        await asyncio.wrap_future(session._thread.submit(install))
+        return json_reply(200, {"report": json.loads(report_json) if report_json else None},
+                          request, sid)
 
     # -- jobs ---------------------------------------------------------------
 
