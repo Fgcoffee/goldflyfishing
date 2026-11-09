@@ -125,6 +125,12 @@ class Session:
                 signal.connect(listener, Qt.ConnectionType.DirectConnection)
             else:
                 signal.connect(listener)
+        # Never the desktop app's shared verdict file: on a server that file
+        # would be everyone's. Anonymous browsers judge cards privately; a
+        # signed-in one is switched to the account's own store (app.py).
+        from .auth.verdicts import MemoryVerdictStore, use_verdicts
+
+        use_verdicts(bridge, MemoryVerdictStore())
         return bridge
 
     def _listener(self, name: str):
@@ -386,6 +392,10 @@ class SessionManager:
                 session.cancel()
         for session in sessions:
             session.close()
+
+    def all(self) -> list[Session]:
+        with self._lock:
+            return list(self._sessions.values())
 
     @property
     def count(self) -> int:
