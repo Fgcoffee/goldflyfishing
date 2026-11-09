@@ -131,6 +131,42 @@ def _guard(fn):
     return wrapper
 
 
+def _live_row(raw: dict) -> dict:
+    """A card row, shaped like ``deckview.card_row``, for a card only Scryfall
+    knows - one newer than the local snapshot. It cannot be simulated until
+    the snapshot is rebuilt, which ``status: missing`` says."""
+    faces = raw.get("card_faces") or [{}]
+    images = raw.get("image_uris") or faces[0].get("image_uris") or {}
+    type_line = raw.get("type_line") or ""
+    return {
+        "name": raw.get("name", ""),
+        "quantity": 1,
+        "mana_cost": raw.get("mana_cost") or faces[0].get("mana_cost") or "",
+        "mana_value": raw.get("cmc") or 0,
+        "type_line": type_line,
+        "type_group": "Other",
+        "oracle_text": raw.get("oracle_text") or faces[0].get("oracle_text") or "",
+        "color_identity": "".join(raw.get("color_identity") or []),
+        "is_land": "Land" in type_line,
+        "images": (
+            {
+                "normal": images.get("normal"),
+                "large": images.get("large"),
+                "art": images.get("art_crop"),
+                "back": None,
+            }
+            if images
+            else None
+        ),
+        "scryfall_uri": raw.get("scryfall_uri") or "",
+        "status": "missing",
+        "abilities": 0,
+        "understood": 0,
+        "unread": [],
+        "missing": True,
+    }
+
+
 class Bridge(QObject):
     """What the page can ask for."""
 
@@ -144,6 +180,11 @@ class Bridge(QObject):
     #: because the payload is a table of variants rather than one report, and
     #: because the two screens must not overwrite each other's results.
     lab_finished = Signal(str)
+    #: The cut lab's and the recommendations queue's completion, and a line
+    #: of text naming the phase in progress. Separate again, so neither screen
+    #: overwrites the other's results.
+    cutlab_finished = Signal(str)
+    cutlab_status = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -641,6 +682,293 @@ class Bridge(QObject):
         self._config = variant.config
         self._result = None
         return _json(self._report_payload(variant.report))
+
+    # -- the cut lab and the recommendations queue ---------------------------
+
+    def _cut_pool(self, decklist: str, core_text: str, unsure_text: str, advanced: bool):
+        from ..sim.cutlab import split_pool
+
+        if advanced:
+            return split_pool(
+                "",
+                self.db,
+                core_text=self._resolve_decklist(core_text),
+                unsure_text=self._resolve_decklist(unsure_text),
+            )
+        return split_pool(self._resolve_decklist(decklist), self.db)
+
+    @Slot(str, str, str, bool, result=str)
+    @_guard
+    def cutlab_preview(
+        self, decklist: str, core_text: str, unsure_text: str, advanced: bool
+    ) -> str:
+        """The pool's shape before any game is played.
+
+        The confidence bars need it: how many cards are on trial, and how many
+        slots they compete for.
+        """
+        pool = self._cut_pool(decklist, core_text, unsure_text, advanced)
+        return _json(
+            {
+                "commanders": pool.commanders,
+                "fixed": sum(pool.fixed.values()),
+                "unsure": sum(pool.unsure.values()),
+                "slots": pool.slots,
+                "cuts": pool.cuts,
+                "problems": pool.problems,
+            }
+        )
+
+    @Slot(str, str, str, bool, int, int, int, result=str)
+    @_guard
+    def start_cutlab(
+        self,
+        decklists_json: str,
+        core_text: str,
+        unsure_text: str,
+        advanced: bool,
+        screen_games: int,
+        final_games: int,
+        seed: int,
+    ) -> str:
+        """Run the cut lab on a worker thread; the answer is ``cutlab_finished``.
+
+        ``decklists_json`` is the four deck slots: the first is the oversized
+        list (unless ``advanced``, when the two boxes say what is core and
+        what is on trial), the rest are the opponents, fixed for the whole lab.
+        """
+        if self._worker is not None and self._worker.is_alive():
+            return _json({"error": "a run is already in progress"})
+
+        decklists = json.loads(decklists_json) or [""]
+        pool = self._cut_pool(decklists[0], core_text, unsure_text, advanced)
+        if pool.cuts <= 0:
+            return _json(
+                {
+                    "error": f"nothing to cut - the cards fit in {pool.deck_size} already",
+                    "problems": pool.problems,
+                }
+            )
+        if pool.slots <= 0:
+            return _json(
+                {
+                    "error": "the core cards alone fill the deck - nothing on trial can fit",
+                    "problems": pool.problems,
+                }
+            )
+        self._start_cut_worker(
+            "cut",
+            {
+                "pool": pool,
+                "opponents": self._opponents(decklists, pool),
+                "screen_games": max(0, screen_games),
+                "final_games": max(0, final_games),
+                "seed": seed,
+            },
+        )
+        return _json({"started": True, "games": screen_games + final_games})
+
+    @Slot(str, str, int, int, int, result=str)
+    @_guard
+    def start_queue_test(
+        self,
+        decklists_json: str,
+        queue_json: str,
+        screen_games: int,
+        final_games: int,
+        seed: int,
+    ) -> str:
+        """Test queued recommendations against the deck's weakest cards."""
+        if self._worker is not None and self._worker.is_alive():
+            return _json({"error": "a run is already in progress"})
+        from ..sim.cutlab import queue_pool
+
+        decklists = json.loads(decklists_json) or [""]
+        deck = self._resolve_decklist(decklists[0])
+        queue = [str(name) for name in json.loads(queue_json) if str(name).strip()]
+        if not deck.strip():
+            return _json({"error": "load a deck on the Decks screen first"})
+        base, incoming = queue_pool(deck, queue, self.db)
+        if not incoming:
+            return _json(
+                {"error": "nothing in the queue can be tested", "problems": base.problems}
+            )
+        self._start_cut_worker(
+            "queue",
+            {
+                "base": base,
+                "incoming": incoming,
+                "opponents": self._opponents(decklists, base),
+                "screen_games": max(1, screen_games),
+                "final_games": max(0, final_games),
+                "seed": seed,
+            },
+        )
+        return _json({"started": True, "games": screen_games + final_games})
+
+    def _opponents(self, decklists: list[str], pool) -> tuple[str, ...]:
+        """The three opponents; an empty slot is a copy of the deck under test.
+
+        For an oversized list "a copy" is the list cut to size the plainest
+        way - the first cards on trial that fit - because an opponent's deck
+        has to be a legal size too.
+        """
+        import collections
+
+        from ..sim.cutlab import decklist_text
+
+        stand_in = decklist_text(
+            pool.commanders,
+            pool.fixed,
+            collections.Counter(pool.units()[: max(0, pool.slots)]),
+        )
+        out = [self._resolve_decklist(text) for text in decklists[1:4] if text.strip()]
+        while len(out) < 3:
+            out.append(stand_in)
+        return tuple(out)
+
+    def _start_cut_worker(self, kind: str, kwargs: dict) -> None:
+        # The content hash is read here, on the thread that owns the database
+        # connection - see ``start_lab``. Nothing the worker runs touches it.
+        kwargs["db_hash"] = self.db.content_hash
+        # The unread cards of everything that could end up in the final deck,
+        # worked out here for the same reason; the worker keeps the ones that
+        # made it, so the Results screen can say what the numbers stand on.
+        from ..sim.cutlab import decklist_text
+        from ..sim.stats import inert_cards
+
+        pool = kwargs.get("pool") or kwargs.get("base")
+        everything = decklist_text(
+            pool.commanders, pool.fixed, pool.unsure, kwargs.get("incoming") or {}
+        )
+        inert = set(inert_cards(self.db, everything))
+        self._cancel = threading.Event()
+        self._worker = threading.Thread(
+            target=self._cut_worker, args=(kind, kwargs, self._cancel, inert), daemon=True
+        )
+        self._worker.start()
+
+    def _cut_worker(
+        self, kind: str, kwargs: dict, cancel: threading.Event, inert: set[str]
+    ) -> None:
+        from ..sim.cutlab import paired_change, run_cut_lab, run_queue_test
+        from ..sim.runner import RunCancelled
+
+        try:
+            run_it = run_cut_lab if kind == "cut" else run_queue_test
+            result = run_it(
+                **kwargs,
+                progress=lambda done, total: self.progressed.emit(done, total),
+                status=lambda text: self.cutlab_status.emit(text),
+                cancel=cancel,
+            )
+            payload = {
+                "kind": kind,
+                "final_decklist": result.final_decklist,
+                "verdicts": [verdict.as_dict() for verdict in result.verdicts],
+                "rounds": result.rounds,
+                "screen_scores": result.screen_scores,
+                "played": result.played,
+                "screen_games": result.screen_games,
+                "final_games": result.final_games,
+                "problems": result.problems,
+                "change": paired_change(result.baseline_result, result.final_result),
+                "report": None,
+            }
+            if result.final_result is not None:
+                final = {
+                    line.split(" ", 1)[1]
+                    for line in result.final_decklist.splitlines()
+                    if line[:1].isdigit() and " " in line
+                }
+                result.final_result.unparsed_cards = sorted(inert & final)
+                report = summarize(result.final_result)
+                # The final deck becomes "the last run", so the Results screen
+                # and its replays show the deck the lab chose.
+                self._config = result.final_config
+                self._result = result.final_result
+                self._report = report
+                payload["report"] = self._report_payload(report)
+            self.cutlab_finished.emit(_json(payload))
+        except RunCancelled as exc:
+            self.cutlab_finished.emit(_json({"cancelled": True, "message": str(exc)}))
+        except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+            self.cutlab_finished.emit(_json({"error": f"{type(exc).__name__}: {exc}"}))
+
+    @Slot(str, result=str)
+    @_guard
+    def recommendations(self, options_json: str) -> str:
+        """Cards worth trying in deck 1, from EDHREC or from Scryfall's tags.
+
+        Options: ``decklist``, ``mode`` ("edhrec" | "similar"), ``goal``,
+        ``months`` (0 for any age), ``lands``, ``sort``, ``limit``. Each card
+        comes back as a Deck-tab row - image, parse status - plus why it was
+        recommended.
+        """
+        from ..data.decks import parse_decklist
+        from ..data.recs import GOALS, recommend
+        from ..rules.kernel.enums import color_letters
+        from .deckview import card_row
+
+        options = json.loads(options_json or "{}")
+        deck = parse_decklist(
+            self._resolve_decklist(options.get("decklist", "")), self.db, name="deck"
+        )
+        identity: set[str] = set()
+        for card in deck.commanders:
+            identity |= set(color_letters(card.color_identity))
+        if not deck.commanders:
+            for entry in deck.entries:
+                if entry.card is not None:
+                    identity |= set(color_letters(entry.card.color_identity))
+        identity &= set("WUBRG")
+
+        recs, notes = recommend(
+            self.db,
+            deck_names=[e.card.name for e in deck.entries if e.card is not None],
+            commanders=[card.name for card in deck.commanders],
+            identity=identity,
+            mode=options.get("mode", "edhrec"),
+            goal=options.get("goal") or None,
+            months=int(options.get("months") or 0) or None,
+            include_lands=bool(options.get("lands")),
+            sort=options.get("sort", "relevance"),
+            limit=int(options.get("limit") or 60),
+        )
+
+        rows = []
+        for rec in recs:
+            card = self.db.lookup(rec.name)
+            if card is not None:
+                row = card_row(card, self.db.raw_card(card.oracle_id), 1, self.sandbox.verdicts)
+            else:
+                row = _live_row(rec.live or {"name": rec.name})
+            row.update(
+                {
+                    "score": rec.score,
+                    "reason": rec.reason,
+                    "tags": rec.tags,
+                    "edhrec_rank": rec.edhrec_rank,
+                    "synergy": rec.synergy,
+                    "inclusion": rec.inclusion,
+                    "on_edhrec": rec.on_edhrec,
+                    "released_at": rec.released_at,
+                    "upcoming": rec.upcoming,
+                    # A card the snapshot lacks cannot be simulated yet.
+                    "testable": card is not None,
+                }
+            )
+            rows.append(row)
+        return _json(
+            {
+                "cards": rows,
+                "notes": notes,
+                "commanders": [card.name for card in deck.commanders],
+                "identity": "".join(c for c in "WUBRG" if c in identity),
+                "deck_size": sum(e.quantity for e in deck.entries) + len(deck.commanders),
+                "goals": {key: spec["label"] for key, spec in GOALS.items()},
+            }
+        )
 
     def _resolve_decklist(self, text: str) -> str:
         """Turn a deck *reference* into a decklist.

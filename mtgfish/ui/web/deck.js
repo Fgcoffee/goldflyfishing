@@ -644,14 +644,19 @@ function fillDrawer(row, fetchReading) {
     node.addEventListener("click", fn);
     actions.appendChild(node);
   };
-  if (!row.missing && !row.commander) {
+  if (row.drawerActions) {
+    // A card that is not in the deck (a recommendation) brings its own.
+    row.drawerActions(button);
+  } else if (!row.missing && !row.commander) {
     button("−", () => changeQuantity(row.name, -1));
     actions.appendChild(el("span", null, `x${row.quantity}`));
     button("+", () => changeQuantity(row.name, +1));
     if (row.can_be_commander) button("Make commander", () => makeCommander(row.name), "ghost");
   }
-  if (row.commander) button("Move into the deck", () => demoteCommander(row.name), "ghost");
-  button("Remove", () => { removeCard(row); closeDrawer(); }, "ghost");
+  if (!row.drawerActions) {
+    if (row.commander) button("Move into the deck", () => demoteCommander(row.name), "ghost");
+    button("Remove", () => { removeCard(row); closeDrawer(); }, "ghost");
+  }
   if (!row.missing) {
     button("Test in sandbox", () => {
       closeDrawer();
