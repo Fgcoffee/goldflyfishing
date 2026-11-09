@@ -188,6 +188,10 @@ _REMEMBERING = frozenset(
         # "Target creature you control deals damage equal to its power ...":
         # the target is chosen to be named next, and nothing else.
         EffectKind.DESIGNATE,
+        # "Target creature an opponent controls can't be blocked. Goad that
+        # creature" - the restriction names the creature the goad means.
+        EffectKind.RESTRICTION,
+        EffectKind.GOAD,
     }
 )
 
@@ -195,7 +199,9 @@ _REMEMBERING = frozenset(
 #: Remembering opcodes that do nothing to the object but describe it, so
 #: one about the source itself ("this creature gets +X/+X, where X is that
 #: spell's mana value") leaves "that spell" as it was.
-_NAMING_ONLY = frozenset({EffectKind.MODIFY_PT, EffectKind.GRANT_ABILITY})
+_NAMING_ONLY = frozenset(
+    {EffectKind.MODIFY_PT, EffectKind.GRANT_ABILITY, EffectKind.RESTRICTION}
+)
 
 
 #: Opcodes whose amounts "this way" can refer back to, and the events that
