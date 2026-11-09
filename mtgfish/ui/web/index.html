@@ -20,6 +20,8 @@
     <button data-tab="deck">Deck</button>
     <button data-tab="results">Results</button>
     <button data-tab="lab">Swap lab</button>
+    <button data-tab="cutlab" data-requires="start_cutlab">Cut lab</button>
+    <button data-tab="recs" data-requires="recommendations">Recs</button>
     <button data-tab="replay">Replay</button>
     <button data-tab="sandbox">Sandbox</button>
   </nav>
@@ -147,6 +149,7 @@
 <!-- ------------------------------------------------------------------ -->
 <section id="results" class="tab">
   <h1>Results</h1>
+  <div id="cutverdict" hidden></div>
   <div id="headline" class="cards"></div>
   <p class="hint">Click any point on a chart to replay a game that produced it.</p>
   <div class="charts">
@@ -195,6 +198,149 @@
 
   <div id="labresults"></div>
   <pre id="labproblems"></pre>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="cutlab" class="tab">
+  <h1>Cut lab</h1>
+  <p class="hint">
+    Got more cards than slots? Paste the whole list. Lands stay in; every other
+    card goes on trial. Phase&nbsp;1 plays many random hundred-card versions of
+    the deck to find the <em>core</em> &mdash; cards clearly worth their slot.
+    Phase&nbsp;2 puts the cards nearest the cut line head to head on the same
+    seeds, dropping the weakest each round until the deck fits.
+  </p>
+
+  <div class="panel">
+    <div id="cl-simple">
+      <textarea id="cl-deck" class="bigbox" spellcheck="false"
+        placeholder="Paste your full list - 120 cards is fine:&#10;1 Sol Ring&#10;1 Arcane Signet&#10;...&#10;&#10;or an Archidekt URL:&#10;https://archidekt.com/decks/1234567"></textarea>
+    </div>
+    <div id="cl-adv" class="cl-adv" hidden>
+      <label class="stack-label">Core cards (won&rsquo;t be cut or tested)
+        <textarea id="cl-core" spellcheck="false"
+          placeholder="Your commander, lands and the cards you will never cut&#10;&#10;// Commander&#10;1 ..."></textarea>
+      </label>
+      <label class="stack-label">Unsure (will be tested)
+        <textarea id="cl-unsure" spellcheck="false" placeholder="The cards competing for the remaining slots"></textarea>
+      </label>
+    </div>
+    <div class="row">
+      <label class="toggle"><input id="cl-advanced" type="checkbox"> Advanced settings</label>
+      <button id="cl-fromdeck" class="ghost small">Use the active deck</button>
+      <span class="spacer"></span>
+      <span id="cl-summary" class="hint small"></span>
+    </div>
+  </div>
+
+  <div class="panel budget">
+    <div class="budget-row">
+      <label>Phase 1 &mdash; find the core
+        <span class="budget-input"><input id="cl-x" type="number" value="1000" min="0" max="200000" step="100"> games</span>
+      </label>
+      <div class="meter" id="cl-xmeter"><div class="meter-fill"></div></div>
+      <span class="meter-label" id="cl-xlabel"></span>
+    </div>
+    <div class="budget-row">
+      <label>Phase 2 &mdash; test the contenders
+        <span class="budget-input"><input id="cl-y" type="number" value="10000" min="0" max="500000" step="500"> games</span>
+      </label>
+      <div class="meter" id="cl-ymeter"><div class="meter-fill"></div></div>
+      <span class="meter-label" id="cl-ylabel"></span>
+    </div>
+    <div class="row">
+      <label>Seed <input id="cl-seed" type="number" value="0"></label>
+      <span id="cl-eta" class="hint small"></span>
+      <span class="spacer"></span>
+      <button id="cl-run" class="primary">Find the cuts</button>
+    </div>
+  </div>
+
+  <div id="cl-phase" class="hint"></div>
+  <div id="cl-results"></div>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="recs" class="tab">
+  <div class="tabhead">
+    <div>
+      <h1>Recommendations</h1>
+      <p class="hint" id="rc-deckline">
+        Cards worth trying in your active deck. Only Commander-legal cards in
+        your commander&rsquo;s colours are shown, plus cards not released yet.
+      </p>
+    </div>
+  </div>
+
+  <div class="panel rc-filters">
+    <div class="rc-filter">
+      <span class="rc-label">Source</span>
+      <div class="seg" id="rc-mode" role="radiogroup">
+        <button data-value="edhrec" class="active" title="What other decks with this commander run">EDHREC</button>
+        <button data-value="similar" title="Cards whose Scryfall tags match what your deck already does">Similar cards</button>
+      </div>
+    </div>
+    <div class="rc-filter">
+      <span class="rc-label">Goal</span>
+      <select id="rc-goal"><option value="">Anything</option></select>
+    </div>
+    <div class="rc-filter">
+      <span class="rc-label">Released</span>
+      <select id="rc-months">
+        <option value="0">Any time</option>
+        <option value="1">In the last month</option>
+        <option value="3">In the last 3 months</option>
+        <option value="6">In the last 6 months</option>
+        <option value="12">In the last year</option>
+        <option value="24">In the last 2 years</option>
+        <option value="custom">Custom&hellip;</option>
+      </select>
+      <input id="rc-months-custom" type="number" min="1" max="600" value="9" hidden title="months">
+    </div>
+    <div class="rc-filter">
+      <span class="rc-label">Sort</span>
+      <select id="rc-sort">
+        <option value="relevance">Best match</option>
+        <option value="edhrec">EDHREC rank</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+    <label class="toggle"><input id="rc-lands" type="checkbox"> Lands</label>
+    <span class="spacer"></span>
+    <button id="rc-go" class="primary">Find cards</button>
+  </div>
+  <div id="rc-notes"></div>
+
+  <div class="rc-layout">
+    <div id="rc-cards"></div>
+    <aside id="rc-queue" class="panel">
+      <h3>Test queue <span id="rc-qcount" class="count"></span></h3>
+      <p class="hint small">
+        Cards added while your deck is full wait here. Testing plays them
+        against your deck&rsquo;s weakest cards to see what they should replace.
+      </p>
+      <ul id="rc-qlist" class="qlist"></ul>
+      <div class="budget compact">
+        <div class="budget-row">
+          <label>Rank your deck <span class="budget-input"><input id="rc-x" type="number" value="1000" min="1" max="200000" step="100"> games</span></label>
+          <div class="meter" id="rc-xmeter"><div class="meter-fill"></div></div>
+          <span class="meter-label" id="rc-xlabel"></span>
+        </div>
+        <div class="budget-row">
+          <label>Head to head <span class="budget-input"><input id="rc-y" type="number" value="5000" min="0" max="500000" step="500"> games</span></label>
+          <div class="meter" id="rc-ymeter"><div class="meter-fill"></div></div>
+          <span class="meter-label" id="rc-ylabel"></span>
+        </div>
+      </div>
+      <div class="row">
+        <span id="rc-eta" class="hint small"></span>
+        <span class="spacer"></span>
+        <button id="rc-test" class="primary" disabled>Test the queue</button>
+      </div>
+      <div id="rc-phase" class="hint small"></div>
+      <div id="rc-result"></div>
+    </aside>
+  </div>
 </section>
 
 <!-- ------------------------------------------------------------------ -->
@@ -448,6 +594,8 @@
 <script src="transport.js"></script>
 <script src="app.js"></script>
 <script src="deck.js"></script>
+<script src="cutlab.js"></script>
+<script src="recs.js"></script>
 <script src="board.js"></script>
 <script src="shell.js"></script>
 </body>

@@ -117,14 +117,21 @@ def _worker_state(decklists: tuple[str, ...]):
 
     state = _WORKER.setdefault(threading.get_ident(), {})
     if state.get("decklists") != decklists:
-        db = CardDatabase()
-        db.registry()
-        state["db"] = db
+        # The database and the ability provider do not depend on the decks,
+        # so a worker that moves on to a different decklist keeps them. The
+        # cut lab runs dozens of variant decks through one pool, and
+        # re-reading every card's abilities for each variant cost about forty
+        # seconds a time - longer than the games themselves.
+        db = state.get("db")
+        if db is None:
+            db = CardDatabase()
+            db.registry()
+            state["db"] = db
+            state["provider"] = OracleAbilities()
         state["decks"] = [
             parse_decklist(text, db, name=f"P{index}")
             for index, text in enumerate(decklists)
         ]
-        state["provider"] = OracleAbilities()
         state["decklists"] = decklists
     return state["decks"], state["provider"]
 
