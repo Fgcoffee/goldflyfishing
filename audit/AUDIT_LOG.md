@@ -12,16 +12,18 @@ Status: **BLOCK** (must not merge), **WARN** (fix soon, does not block),
 
 As of round 18 (2026-10-26): PRs #17 (parser) and #18 (rules) are **merged into main** (228bb35, 19:41 UTC, merged by the rules session). The merged tree is byte-identical to the head I verified (scratch merge 9b45447, tree b51470f): suite 3031 passed, 5 xfailed, 0 failed, and all four benches complete. The earlier per-branch verdicts are in the round records below.
 
-Open BLOCKs on main after round 21 (2026-11-07; PRs #24 and #25 merged, then rules @ 1f97c70 and parser @ 77fe879). None of them makes play worse than before the merge.
+Open BLOCKs on main after round 22 (2026-11-09; rules @ bee40c1 and parser @ c2b9eb6 merged). None of them makes play worse than before the merge.
 - **parser:**
   - F28 (overload), F37 (Toxic Deluge cost).
   - F49 (spot check: the 7 stronger-than-printed cards and the remaining misreads).
-  - F58 (Replication Technique's token copy read as "copy target object").
+  - F58 (Replication Technique's token copy).
+  - F59 (Soul-Guide Lantern's enters trigger can exile from your own graveyard).
 - **rules:**
-  - F53b (static player hexproof and shroud don't stop targeting).
-  - F54 (echo and cumulative upkeep are free when accepted).
-  - F55 (Sly Instigator's "goad that creature" goads nothing).
-  - F56 (Force of Will's alternative cost never offered).
+  - F53b (static player hexproof and shroud).
+  - F54 (echo and cumulative upkeep free when accepted).
+  - F55 (Sly Instigator's goad).
+  - F56 (Force of Will's alternative cost).
+  - Fixes for F53b, F55 and F57 are on the rules branch, for round 23.
 
 Fixed in rounds 19-21: F40, F41, F42, F43, F44, F45, F46, F48, F50, F51, F52, F53 (granted protection), most F49 keyword builders (outlast, typecycling, landcycling, bolster, incubate, detain, affinity for X), bestow, amplify, demonstrate, and the web Inert-cards list.
 
@@ -559,3 +561,42 @@ New findings:
 Benches on 8a11126 (`--games 20 --seed 0`): stax 35% / 30% stalls, combo 15% / 0%, aggro 30% / 0% (was 20%), control 50% / 5%. All complete, with normal game times and no runaways.
 
 **Verdict: OK to merge.** The suite is green and every claimed fix holds on the board. F53b, F54, F55, F56 and F58 are open but don't make play worse than main; F57 is a WARN. I merged exactly the verified heads (rules 1f97c70, parser 77fe879) through this branch, so later pushes wait for the next round.
+
+## Round 22 (2026-11-07 to 11-09): rules @ bee40c1 and parser @ c2b9eb6, merged at the user's request
+
+Tested merge 3872d47 (main 2ff070c + rules bee40c1 + parser c2b9eb6), tree 97ac283. The merge I pushed has the same tree.
+
+Parser:
+- **79e028d:** mixed type/subtype "or" lists read via `any_of`, and equip reads its quality.
+  - Bounce Off targets Bears and Smuggler's Copter, not Sol Ring.
+  - Blackblade Reforged equips only a legendary creature (Isamaru), not Bears.
+  - Hulkbuster Armor's "Equip Hero {3}" isn't offered without a Hero; only its plain "Equip {6}" is.
+- **c2b9eb6:** "If … this way" reads its subject. Smashing Success makes a Treasure for Sol Ring, not for a Forest.
+
+Rules:
+- **9935d45:** Auras can enchant players, and protection sheds Auras and Equipment of its quality. Curse cards are still honestly unread, so not testable end to end; see F60.
+- **4e4201a:** an Aura put onto the battlefield without being cast chooses a host. Replenish returns Pacifism attached to the Bears.
+- **9559379:** "if you cast it" holds as the permanent enters. Geological Appraiser discovers when cast, not when put.
+- **9446331:** craft. Inert on real cards until the parser passes craft materials.
+- **bee40c1:** "exile each opponent's graveyard" exiles only theirs. Soul-Guide Lantern's sacrifice keeps my graveyard.
+
+Census vs main's parser: +89 / -29 / 33 changed, consistent with the parser session's own review.
+- The 29 lost were misread before ("If … this way" subjects skipped).
+- The 89 gained are `any_of` lists and equip qualities.
+- The 33 changes are "this way" conditions.
+- ACCEPTED.
+
+Suite on 3872d47: **3149 passed, 4 xfailed, 0 failed.**
+
+Benches on 3872d47 (`--games 20 --seed 0`): stax 35% / 30% stalls, combo 15% / 0%, aggro 30% / 0%, control 50% / 5%, identical to round 21. All complete, no runaways.
+
+New findings:
+
+| # | Sev | Owner | Finding | Evidence |
+|---|---|---|---|---|
+| F59 | **BLOCK** | parser | Soul-Guide Lantern's enters trigger, "exile target card from an opponent's graveyard", reads as "exile target object in graveyard" and can take your own card. Same on main. | My Shock was exiled by the enters trigger. |
+| F60 | WARN | rules | An inert "Enchant player" Curse can resolve onto the battlefield attached to nothing (attached_player -1) instead of going to the graveyard (CR 704.5m). | Curse of the Pierced Heart cast: on the battlefield, unattached. |
+
+Also checked: PR #28 (deck-optimisation session, not merged by me) leaves parser and rules alone. Its runner change is deterministic (same game digests fresh or after another deck). Sanguine Bond / Exquisite Blood loops resolve correctly (the opponent dies at 0); the stats report files them as "noncombat damage".
+
+**Verdict: OK to merge.** I merged exactly rules bee40c1 and parser c2b9eb6. Later commits (rules to 1de754f with F53b, F54, F55, F57 and F60 work; parser to a64c185) are round 23. A first look on that merge: F53b fixed (Leyline of Sanctity stops only opponents; True Believer stops everyone), F55 fixed, F57 fixed; F56 still not offered; F54 still under review.

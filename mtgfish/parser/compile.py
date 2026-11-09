@@ -435,6 +435,18 @@ def _keyword_instance(name: str, argument: str, text: str):
                     from ..rules.kernel.query import ControllerRelation
 
                     spec = replace(spec, controller=ControllerRelation.YOU)
+                if name.lower() == "equip" and spec is not None:
+                    # "Equip legendary creature {3}", "Equip Hero {3}": the
+                    # quality, then the cost (CR 702.6c). Both or neither.
+                    spec = _equip_quality(spec)
+                    if spec is None or stream.peek().kind.name != "SYMBOL":
+                        return None
+                    rest = []
+                    while not stream.done:
+                        rest.append(stream.next().text)
+                    cost = _keyword_cost(" ".join(rest))
+                    if cost is None:
+                        return None
                 # "Enchant creature *or Vehicle*": a quality read only in part
                 # would be built as the part ("Enchant creature"), the rest
                 # silently dropped. Not read at all instead.
@@ -450,6 +462,31 @@ def _keyword_instance(name: str, argument: str, text: str):
 
     return KeywordInstance(
         name, amount=amount, cost=cost, filter=spec, text=text
+    )
+
+
+def _equip_quality(spec):
+    """The quality of "Equip [quality] [cost]" as the equip builder takes it:
+    an extra condition on a creature you control, so "creature" itself and
+    the default battlefield zone are dropped. None for a quality that names
+    something other than a creature - Luxior's "Equip planeswalker" attaches
+    to a planeswalker, which a condition on a creature cannot say."""
+    from dataclasses import replace
+
+    from ..rules.kernel.enums import CardType
+    from ..rules.kernel.query import ControllerRelation
+
+    if spec.types_all & ~CardType.CREATURE or spec.types_any or spec.any_of:
+        return None
+    if spec.controller not in (ControllerRelation.ANY, ControllerRelation.YOU):
+        return None
+    if spec.count is not None or spec.up_to:
+        return None
+    return replace(
+        spec,
+        types_all=CardType.NONE,
+        controller=ControllerRelation.ANY,
+        zones=frozenset(),
     )
 
 

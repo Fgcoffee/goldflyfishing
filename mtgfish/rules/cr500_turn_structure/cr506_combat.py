@@ -830,7 +830,7 @@ def can_block(game: Game, blocker: GameObject, attacker: GameObject) -> bool:
     ):
         return False
 
-    # CR 702.16d: protection stops blocks by creatures with the stated quality.
+    # CR 702.16f: protection stops blocks by creatures with the stated quality.
     from ..cr100_game_concepts.actions import protected_from
 
     if protected_from(game, attacker, blocker):

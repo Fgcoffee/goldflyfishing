@@ -731,7 +731,9 @@ def condition_met(
     if trigger.players is not None:
         if event.player == NO_PLAYER:
             return False
-        allowed = resolve_players(game, trigger.players, controller=source.controller)
+        allowed = resolve_players(
+            game, trigger.players, controller=source.controller, source=source.id
+        )
         if event.player not in allowed:
             return False
 

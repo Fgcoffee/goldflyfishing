@@ -197,8 +197,25 @@ def attach(game: Game, attachment: GameObject, host: GameObject) -> bool:
     return True
 
 
+def attach_to_player(game: Game, attachment: GameObject, player_id) -> bool:
+    """CR 303.4b: an Aura that enchants a player is attached to that player."""
+    if attachment.attached_player == player_id:
+        return False
+    detach(game, attachment)
+    attachment.attached_player = player_id
+    attachment.timestamp = game.ids.timestamp()
+    game.invalidate_characteristics()
+    game.emit(Event(EventKind.ATTACHED, object_id=attachment.id, player=player_id))
+    return True
+
+
 def detach(game: Game, attachment: GameObject) -> bool:
     """CR 701.3b."""
+    if attachment.attached_player != NO_PLAYER:
+        attachment.attached_player = NO_PLAYER
+        game.invalidate_characteristics()
+        game.emit(Event(EventKind.UNATTACHED, object_id=attachment.id))
+        return True
     if attachment.attached_to == NO_OBJECT:
         return False
     host = game.objects.get(attachment.attached_to)

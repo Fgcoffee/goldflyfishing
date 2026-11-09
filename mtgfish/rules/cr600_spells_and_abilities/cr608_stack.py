@@ -223,11 +223,9 @@ def _resolve_spell(game: Game, obj: GameObject) -> None:
         # CR 702.33e and its kin: "if it was kicked", "if no mana was spent to
         # cast it", "if its surge cost was paid" are asked by the permanent's
         # own abilities about the spell it was. ``move_object`` gave the
-        # permanent that record as it entered (``carry_payment_record``).
-        # It got here by resolving as a spell, which is what "if you cast it"
-        # asks. A permanent put onto the battlefield never passes through
-        # here and so is left with the default.
-        permanent.was_cast = True
+        # permanent that record as it entered (``carry_payment_record``),
+        # "if you cast it" included. A permanent put onto the battlefield
+        # never resolved as a spell and is left with the default.
         _apply_enters_with_counters(game, permanent)
         _attach_aura_on_entry(game, obj, permanent)
         _record_resolution(game, obj, chars)
@@ -343,6 +341,18 @@ def _attach_aura_on_entry(game: Game, spell: GameObject, permanent: GameObject) 
     chosen = spell.targets[0] if spell.targets else ()
     host_id = next((t for t in chosen), None)
     if host_id is None:
+        return
+    from ..kernel.ids import is_player_target, target_player
+
+    if is_player_target(host_id):
+        # CR 303.4b: an Aura can enchant a player. One who has left the game
+        # is no longer there to attach to (CR 608.2b); the state-based
+        # actions handle the Aura.
+        player_id = target_player(host_id)
+        if not game.player(player_id).has_lost:
+            from ..cr100_game_concepts import actions
+
+            actions.attach_to_player(game, permanent, player_id)
         return
     host = game.objects.get(host_id)
     if host is None or host.zone is not Zone.BATTLEFIELD:
