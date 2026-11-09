@@ -849,7 +849,45 @@ def player_abilities(game: Game, player_id) -> tuple:
             and effect.targets.specific == (NO_OBJECT,)
         ):
             out.extend(effect.granted_abilities)
+    out.extend(_static_player_grants(game, player_id))
     return tuple(out)
+
+
+def _static_player_grants(game: Game, player_id) -> list:
+    """CR 604.1, 611.3a: "You have hexproof" (Aegis of the Gods), "you have
+    shroud" (True Believer) - a static ability of a permanent giving its
+    controller, or other players, an ability for as long as it is there."""
+    from ..cr600_spells_and_abilities.abilities import AbilityKind
+    from ..cr600_spells_and_abilities.effects import EffectKind
+    from ..kernel.conditions import holds
+    from ..kernel.matching import resolve_players
+
+    out: list = []
+    for object_id in list(game.battlefield):
+        obj = game.objects.get(object_id)
+        if obj is None or obj.phased_out:
+            continue
+        for ability in game.characteristics(obj).abilities:
+            if ability.kind is not AbilityKind.STATIC or ability.unparsed:
+                continue
+            grants = [
+                effect for effect in ability.effects
+                if effect.kind is EffectKind.GRANT_ABILITY
+                and effect.players is not None
+                and effect.targets is None
+            ]
+            if not grants:
+                continue
+            if not holds(
+                game, ability.static_condition, source=obj.id, controller=obj.controller
+            ):
+                continue
+            for effect in grants:
+                if player_id in resolve_players(
+                    game, effect.players, controller=obj.controller, source=obj.id
+                ):
+                    out.extend(effect.granted_abilities)
+    return out
 
 
 def player_shielded_from(game: Game, player_id, source_obj, source_controller) -> bool:
