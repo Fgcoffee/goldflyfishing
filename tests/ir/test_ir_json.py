@@ -121,3 +121,20 @@ def test_faces_validate_against_the_schema(card_db):
             ))
             errors = list(validator.iter_errors(document))
             assert not errors, (name, errors[0].message[:300])
+
+
+def test_usage_counts_each_kind_once_per_face():
+    from mtgfish.tools.ir_export import _usage_of
+
+    seen: set = set()
+    _usage_of([
+        {"$": "Ability", "keyword": "Flying", "effects": [
+            {"$": "Effect", "kind": "EffectKind.DRAW"},
+            {"$": "Effect", "kind": "EffectKind.DRAW", "text": "Zone.HAND"},
+        ]},
+    ], None, seen)
+    assert ("EffectKind", "DRAW") in seen
+    assert ("keyword", "Flying") in seen
+    assert ("class", "Effect") in seen
+    # Only the enums the usage report is about; a Zone is not one.
+    assert not any(group == "Zone" for group, _ in seen)

@@ -8,6 +8,7 @@ are in [`docs/ir-json.md`](../docs/ir-json.md).
 |---|---|
 | `ir.schema.json` | JSON Schema for one face document. **The source of truth.** |
 | `samples/` | Every card of the four bench decks (`bench/decks/*.txt`), plus `samples/decks.json`. For the engine's tests. |
+| `usage.json` | For each effect, condition, cost, event, value and player kind, IR class and keyword: how many faces use it, how many of those are fully read, and how many bench-deck faces use it. Ordered by bench use, then pool use: the order the engine port pays off in. |
 
 The TypeScript types for the same shapes are `engine/src/ir/types.ts` and
 `defaults.ts`. They are generated from the same Python classes as the schema
@@ -19,6 +20,7 @@ and are the only TS copy.
 python -m mtgfish.tools.ir_export export                 # every card -> cache/ir/v1/
 python -m mtgfish.tools.ir_export export --out DIR       # ... or into DIR
 python -m mtgfish.tools.ir_export samples                # the bench decks -> schema/samples/
+python -m mtgfish.tools.ir_export usage                  # what the pool uses -> schema/usage.json
 python -m mtgfish.tools.ir_export schema                 # regenerate the schema and the TS types
 python -m mtgfish.tools.ir_export verify --schema        # every face round-trips; 0 problems expected
 ```

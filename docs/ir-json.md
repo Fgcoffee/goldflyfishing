@@ -98,6 +98,16 @@ bare number, and a bare number in an enum-typed field stays a number (some
 `Effect.duration` values are plain integers). The schema's unions say where
 this happens.
 
+## Things the engine must know
+
+* **Keyword names are not consistently cased.** An ability printed on the
+  card has `"keyword": "Haste"`; one granted by another card often has
+  `"haste"`. The Python engine compares them case-insensitively, and the
+  TypeScript engine must too. (`schema/usage.json` lists every keyword
+  name that occurs.)
+* **An unread ability is inert.** It has `unparsed: true` and must do
+  nothing; it is there so it can be shown.
+
 ## Versioning
 
 `ir_version` is in every document. It is bumped on any change a reader of
