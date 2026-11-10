@@ -21,6 +21,8 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
 - `6d3d451` `kernel/game.ts`: game state, `cloneGame` for the lookahead
   (copies every mutable container, the PRNG and log digest included),
   APNAP order, zone lists, permanents, player control, `createObject`.
+- `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
+  table), the event record, look-back-in-time kinds (CR 603.10).
 
 ## Interfaces for the parser session (mana/, match/)
 
@@ -62,7 +64,7 @@ in your way rather than working around it.
 
 ## Next
 
-1. `kernel/events.ts` (event kinds, the Event record) and the event bus.
+1. The event bus (`emit`, observers, per-turn records) with the layer work.
 2. Characteristics and the layer system (`cr613_layers.py`) on the IR, with
    `characteristics(game, obj)` and its epoch cache.
 3. Moving objects between zones (`move_object`), with replacements and
