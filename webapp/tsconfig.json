@@ -16,7 +16,9 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@goldfly/engine": ["../engine/src/index.ts"]
+      "@goldfly/engine": ["../engine/src/index.ts"],
+      "@goldfly/engine/ir": ["../engine/src/ir/index.ts"],
+      "@goldfly/engine/sim": ["../engine/src/sim/index.ts"]
     }
   },
   "include": ["src", "test"]

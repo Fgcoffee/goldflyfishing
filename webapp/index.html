@@ -17,6 +17,11 @@
       p { color: var(--muted); margin: 0 0 16px; }
       li { font-family: ui-monospace, monospace; font-size: 13px; overflow-wrap: anywhere; }
       .bad { color: var(--bad); }
+      h2 { font-size: 17px; margin: 24px 0 8px; }
+      textarea { box-sizing: border-box; width: 100%; font: 13px/1.4 ui-monospace, monospace;
+                 background: var(--bg); color: var(--fg); border: 1px solid var(--muted);
+                 border-radius: 6px; padding: 8px; }
+      button { margin-top: 8px; padding: 6px 14px; font: inherit; cursor: pointer; }
     </style>
   </head>
   <body>
@@ -24,6 +29,20 @@
       <h1>Engine harness</h1>
       <p id="status">Loading...</p>
       <ol id="workers"></ol>
+
+      <h2>Card IR</h2>
+      <p>Paste up to four decklists, separated by a line with three dashes.</p>
+      <textarea id="decks" rows="8" spellcheck="false">1 Sol Ring
+1 Lightning Bolt
+1 Goblin Guide
+
+// Commander
+1 Krenko, Mob Boss</textarea>
+      <button id="load" type="button">Fetch card IR</button>
+      <button id="run" type="button">Run 1000 stub games</button>
+      <p id="ir-status"></p>
+      <p id="run-status"></p>
+      <ul id="ir-cards"></ul>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>

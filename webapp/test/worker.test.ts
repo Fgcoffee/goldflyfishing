@@ -1,25 +1,35 @@
 import { ENGINE_VERSION } from "@goldfly/engine";
+import { runGames, stubEngine, type RunSetup } from "@goldfly/engine/sim";
 import { describe, expect, it } from "vitest";
 import { EngineClient, type WorkerLike } from "../src/client";
-import { handle } from "../src/worker/handle";
+import { WorkerPool } from "../src/pool";
+import { WorkerHandler } from "../src/worker/handle";
+import type { Reply } from "../src/worker/protocol";
 
 /**
- * A worker that answers in a later task, like a real one, and sends what it
- * receives through structuredClone, the same copy the browser makes.
+ * A worker in the same thread: messages go through structuredClone, the same
+ * copy the browser makes, and arrive in a later task, like a real worker's.
  */
 class FakeWorker implements WorkerLike {
   private onMessage: ((event: MessageEvent<unknown>) => void) | undefined;
   private onError: ((event: ErrorEvent) => void) | undefined;
+  private readonly handler: WorkerHandler;
   terminated = false;
 
-  constructor(private readonly answer: (data: unknown) => unknown = handle) {}
+  constructor(answer?: (data: unknown) => Reply) {
+    const deliver = (reply: Reply): void => {
+      const copy = structuredClone(reply);
+      setTimeout(() => this.onMessage?.({ data: copy } as MessageEvent<unknown>), 0);
+    };
+    this.handler = new WorkerHandler(deliver);
+    if (answer !== undefined) {
+      this.handler = { receive: async (data: unknown) => deliver(answer(data)) } as unknown as WorkerHandler;
+    }
+  }
 
   postMessage(message: unknown): void {
     const copy = structuredClone(message);
-    setTimeout(() => {
-      const reply = this.answer(copy);
-      this.onMessage?.({ data: structuredClone(reply) } as MessageEvent<unknown>);
-    }, 0);
+    setTimeout(() => void this.handler.receive(copy), 0);
   }
 
   addEventListener(type: "message" | "error", listener: (event: never) => void): void {
@@ -36,19 +46,55 @@ class FakeWorker implements WorkerLike {
   }
 }
 
+const doc = (id: string, name: string) =>
+  ({ ir_version: 1, oracle_id: id, name, card_hash: "h", faces: [] }) as never;
+
+const setup: RunSetup = {
+  decks: [0, 1, 2, 3].map((seat) => ({
+    commanders: [],
+    cards: [
+      { oracle_id: "land", count: 40 },
+      { oracle_id: `spell${seat}`, count: 59 },
+    ],
+  })),
+  cards: {
+    land: doc("land", "Island"),
+    spell0: doc("spell0", "Spell Zero"),
+    spell1: doc("spell1", "Spell One"),
+    spell2: doc("spell2", "Spell Two"),
+    spell3: doc("spell3", "Spell Three"),
+  },
+  runSeed: 42,
+  maxRounds: 25,
+};
+
 describe("worker message handling", () => {
-  it("answers a ping with the engine version and the payload", () => {
-    expect(handle({ type: "ping", id: 7, payload: { a: [1, 2] } })).toEqual({
-      type: "pong",
-      id: 7,
-      payload: { a: [1, 2] },
-      engineVersion: ENGINE_VERSION,
-    });
+  async function replies(message: unknown): Promise<Reply[]> {
+    const out: Reply[] = [];
+    await new WorkerHandler((r) => out.push(r)).receive(message);
+    return out;
+  }
+
+  it("answers a ping with the engine version and the payload", async () => {
+    expect(await replies({ type: "ping", id: 7, payload: { a: [1, 2] } })).toEqual([
+      { type: "pong", id: 7, payload: { a: [1, 2] }, engineVersion: ENGINE_VERSION },
+    ]);
   });
 
-  it("rejects a message it does not understand, keeping the id", () => {
-    expect(handle({ type: "dance", id: 3 })).toMatchObject({ type: "error", id: 3 });
-    expect(handle("nonsense")).toMatchObject({ type: "error", id: -1 });
+  it("rejects a message it does not understand, keeping the id", async () => {
+    expect(await replies({ type: "dance", id: 3 })).toMatchObject([{ type: "error", id: 3 }]);
+    expect(await replies("nonsense")).toMatchObject([{ type: "error", id: -1 }]);
+    expect(await replies({ type: "run", id: 4, setup, start: 0, end: 2, engine: "real" }))
+      .toMatchObject([{ type: "error", id: 4 }]);
+  });
+
+  it("runs a slice, reporting progress, then the result", async () => {
+    const out = await replies({ type: "run", id: 9, setup, start: 0, end: 12, engine: "stub" });
+    const progress = out.filter((r) => r.type === "progress").map((r) => (r as { done: number }).done);
+    expect(progress).toEqual([5, 10, 12]);
+    const last = out.at(-1);
+    expect(last?.type).toBe("result");
+    expect(last?.type === "result" && last.result).toEqual(await runGames(stubEngine, setup, 0, 12));
   });
 });
 
@@ -88,5 +134,56 @@ describe("EngineClient", () => {
     client.terminate();
     await expect(pending).rejects.toThrow("terminated");
     expect(worker.terminated).toBe(true);
+  });
+
+  it("runs games and reports progress", async () => {
+    const client = new EngineClient(new FakeWorker());
+    const seen: number[] = [];
+    const result = await client.run(setup, 3, 10, (done) => seen.push(done)).result;
+    expect(result.records.map((r) => r.index)).toEqual([3, 4, 5, 6, 7, 8, 9]);
+    expect(seen.at(-1)).toBe(7);
+  });
+
+  it("stops a run when cancelled, and still answers", async () => {
+    const client = new EngineClient(new FakeWorker());
+    const handle = client.run(setup, 0, 10_000);
+    client.cancel(handle.id);
+    const result = await handle.result;
+    expect(result.complete).toBe(false);
+    expect(result.records.length).toBeLessThan(10_000);
+  });
+});
+
+describe("WorkerPool", () => {
+  const pool = (size: number) => new WorkerPool(size, () => new EngineClient(new FakeWorker()));
+
+  it("gives the same games with one worker or several", async () => {
+    const one = await pool(1).run(setup, 40).result;
+    const three = await pool(3).run(setup, 40).result;
+    expect(three).toEqual(one);
+    expect(one.records.map((r) => r.index)).toEqual(Array.from({ length: 40 }, (_, i) => i));
+    expect(one).toEqual(await runGames(stubEngine, setup, 0, 40));
+  });
+
+  it("reports overall progress up to the total", async () => {
+    const seen: number[] = [];
+    await pool(4).run(setup, 30, (done, total) => {
+      expect(total).toBe(30);
+      seen.push(done);
+    }).result;
+    expect(seen.at(-1)).toBe(30);
+  });
+
+  it("cancels every worker", async () => {
+    const run = pool(3).run(setup, 30_000);
+    run.cancel();
+    const result = await run.result;
+    expect(result.complete).toBe(false);
+    expect(result.records.length).toBeLessThan(30_000);
+  });
+
+  it("uses no more workers than there are games", async () => {
+    const result = await pool(8).run(setup, 3).result;
+    expect(result.records.map((r) => r.index)).toEqual([0, 1, 2]);
   });
 });
