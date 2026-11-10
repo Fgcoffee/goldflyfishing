@@ -1,0 +1,54 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
+ "name": "Sign in Blood",
+ "card_hash": "403abcf9e81b9df32a14b3a1591d018c",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
+   "name": "Sign in Blood",
+   "face": 0,
+   "face_name": "Sign in Blood",
+   "card_hash": "403abcf9e81b9df32a14b3a1591d018c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TARGET_PLAYER"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "is_targeted": true,
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.CHOSEN_PLAYER"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Target player draws two cards and loses 2 life."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

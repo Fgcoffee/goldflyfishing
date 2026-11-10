@@ -1,0 +1,51 @@
+{
+ "ir_version": 1,
+ "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
+ "name": "Mystical Tutor",
+ "card_hash": "0889bd58f11391fcf1f3c6496a5cfaeb",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
+   "name": "Mystical Tutor",
+   "face": 0,
+   "face_name": "Mystical Tutor",
+   "card_hash": "0889bd58f11391fcf1f3c6496a5cfaeb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.INSTANT|SORCERY",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.LIBRARY",
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for an instant or sorcery card, reveal it, then shuffle and put that card on top."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

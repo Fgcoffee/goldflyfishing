@@ -1,0 +1,60 @@
+{
+ "ir_version": 1,
+ "oracle_id": "7efd5d62-6da2-428a-98e3-5b842f668656",
+ "name": "Mogg Fanatic",
+ "card_hash": "198e69f1d198e40f0b4770c4ef12bdbf",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "7efd5d62-6da2-428a-98e3-5b842f668656",
+   "name": "Mogg Fanatic",
+   "face": 0,
+   "face_name": "Mogg Fanatic",
+   "card_hash": "198e69f1d198e40f0b4770c4ef12bdbf",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DAMAGE",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "Sacrifice this creature: It deals 1 damage to any target.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

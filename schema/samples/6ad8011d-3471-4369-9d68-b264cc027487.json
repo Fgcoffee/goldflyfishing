@@ -1,0 +1,54 @@
+{
+ "ir_version": 1,
+ "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
+ "name": "Sol Ring",
+ "card_hash": "68eca73e2a59ca77c758e7628ac52eba",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
+   "name": "Sol Ring",
+   "face": 0,
+   "face_name": "Sol Ring",
+   "card_hash": "68eca73e2a59ca77c758e7628ac52eba",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

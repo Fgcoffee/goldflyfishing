@@ -1,0 +1,76 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
+ "name": "Path to Exile",
+ "card_hash": "7a596641ddb73283b0c03d0c992a80fd",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
+   "name": "Path to Exile",
+   "face": 0,
+   "face_name": "Path to Exile",
+   "card_hash": "7a596641ddb73283b0c03d0c992a80fd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEARCH_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.LAND",
+          "supertypes_all": "Supertype.BASIC",
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": "Zone.BATTLEFIELD",
+         "keywords": [
+          "tapped"
+         ],
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Exile target creature. Its controller may search their library for a basic land card, put that card onto the battlefield tapped, then shuffle."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

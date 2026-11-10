@@ -1,0 +1,85 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
+ "name": "Goblin Piledriver",
+ "card_hash": "4138a21d675f9d742f0c4e3be0629f72",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
+   "name": "Goblin Piledriver",
+   "face": 0,
+   "face_name": "Goblin Piledriver",
+   "card_hash": "4138a21d675f9d742f0c4e3be0629f72",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Protection from blue",
+     "keyword": "Protection",
+     "quality": {
+      "$": "ObjectFilter",
+      "colors_any": "Color.BLUE",
+      "zones": {
+       "$set": []
+      }
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_PT",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.PRODUCT",
+        "operands": [
+         {
+          "$": "Value",
+          "constant": 2
+         },
+         {
+          "$": "Value",
+          "kind": "ValueKind.COUNT",
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_all": [
+            "Goblin"
+           ],
+           "other_than_source": true,
+           "attacking": true
+          }
+         }
+        ]
+       },
+       "duration": "Duration.END_OF_TURN",
+       "text": "gets +2/+0"
+      }
+     ],
+     "text": "Whenever this creature attacks, it gets +2/+0 until end of turn for each other attacking Goblin.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ATTACKS"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

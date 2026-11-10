@@ -1,0 +1,53 @@
+{
+ "ir_version": 1,
+ "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
+ "name": "Hallowed Burial",
+ "card_hash": "76d55ef394430cf9f217ac0823280686",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
+   "name": "Hallowed Burial",
+   "face": 0,
+   "face_name": "Hallowed Burial",
+   "card_hash": "76d55ef394430cf9f217ac0823280686",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Put all creatures on the bottom of their owners' libraries."
+      }
+     ],
+     "text": "Put all creatures on the bottom of their owners' libraries.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Put all creatures on the bottom of their owners' libraries.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Put",
+      "all",
+      "creatures",
+      "on",
+      "the",
+      "bottom",
+      "of",
+      "their",
+      "owners'",
+      "libraries",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

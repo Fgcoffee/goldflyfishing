@@ -1,0 +1,105 @@
+{
+ "ir_version": 1,
+ "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
+ "name": "Norn's Annex",
+ "card_hash": "a82d921c7ad91ed234e20d791cfab199",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
+   "name": "Norn's Annex",
+   "face": 0,
+   "face_name": "Norn's Annex",
+   "card_hash": "a82d921c7ad91ed234e20d791cfab199",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNLESS_PAYS",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.CONTROLLER_OF"
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": "CostKind.MANA",
+          "mana": {
+           "$": "ManaCost",
+           "symbols": [
+            {
+             "$": "ManaSymbol",
+             "kind": "ManaSymbolKind.PHYREXIAN",
+             "colors": "Color.WHITE",
+             "text": "{W/P}"
+            }
+           ]
+          },
+          "scale": {
+           "$": "Value",
+           "kind": "ValueKind.COUNT",
+           "filter": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE",
+            "remembered": true
+           }
+          }
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.RESTRICTION",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE"
+         },
+         "duration": "Duration.PERMANENT",
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.ATTACK_PLAYER",
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "can't attack you"
+          },
+          {
+           "$": "Restriction",
+           "act": "Act.ATTACK_PLANESWALKER",
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "counterpart": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.PLANESWALKER",
+            "controller": "ControllerRelation.YOU"
+           },
+           "text": "can't attack planeswalkers you control"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "unless its controller pays {W/P}"
+      }
+     ],
+     "text": "Creatures can't attack you or planeswalkers you control unless their controller pays {W/P} for each of those creatures."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

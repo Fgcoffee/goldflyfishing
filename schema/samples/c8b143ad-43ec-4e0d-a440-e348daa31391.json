@@ -1,0 +1,94 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+ "name": "Swiftfoot Boots",
+ "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+   "name": "Swiftfoot Boots",
+   "face": 0,
+   "face_name": "Swiftfoot Boots",
+   "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": "Duration.PERMANENT",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "hexproof",
+         "keyword": "hexproof"
+        },
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains hexproof, haste"
+      }
+     ],
+     "text": "Equipped creature has hexproof and haste."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ATTACH",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {1}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

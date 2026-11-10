@@ -1,0 +1,68 @@
+{
+ "ir_version": 1,
+ "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
+ "name": "Consecrated Sphinx",
+ "card_hash": "4cee806fbf241b9d9d99daa9163ea5c6",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
+   "name": "Consecrated Sphinx",
+   "face": 0,
+   "face_name": "Consecrated Sphinx",
+   "card_hash": "4cee806fbf241b9d9d99daa9163ea5c6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.DRAW",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "text": "draw"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Whenever an opponent draws a card, you may draw two cards.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DREW_CARD"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.OPPONENT"
+      },
+      "text": "whenever a player draws"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

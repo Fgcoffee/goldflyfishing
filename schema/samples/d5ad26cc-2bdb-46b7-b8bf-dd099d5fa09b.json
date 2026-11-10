@@ -1,0 +1,125 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
+ "name": "Adarkar Wastes",
+ "card_hash": "c316f6c85d79c0702699c7fab4c90ac6",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
+   "name": "Adarkar Wastes",
+   "face": 0,
+   "face_name": "Adarkar Wastes",
+   "card_hash": "c316f6c85d79c0702699c7fab4c90ac6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": "Color.WHITE",
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": "Color.BLUE",
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DAMAGE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}. This land deals 1 damage to you.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,129 @@
+{
+ "ir_version": 1,
+ "oracle_id": "73b3e242-075d-4c4d-9b09-6fef1633c348",
+ "name": "Sejiri Refuge",
+ "card_hash": "7ab2a6aa93f5cbc2226e9ae65a456937",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "73b3e242-075d-4c4d-9b09-6fef1633c348",
+   "name": "Sejiri Refuge",
+   "face": 0,
+   "face_name": "Sejiri Refuge",
+   "card_hash": "7ab2a6aa93f5cbc2226e9ae65a456937",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.TAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GAIN_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "When this land enters, you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": "Color.WHITE",
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": "Color.BLUE",
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

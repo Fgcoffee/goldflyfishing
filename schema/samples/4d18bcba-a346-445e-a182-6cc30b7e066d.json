@@ -1,0 +1,66 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
+ "name": "Ashnod's Altar",
+ "card_hash": "58b3f67d4e90c3d00e40dd7cca4fc281",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
+   "name": "Ashnod's Altar",
+   "face": 0,
+   "face_name": "Ashnod's Altar",
+   "card_hash": "58b3f67d4e90c3d00e40dd7cca4fc281",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}"
+      }
+     ],
+     "text": "Sacrifice a creature: Add {C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": "CardType.CREATURE",
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

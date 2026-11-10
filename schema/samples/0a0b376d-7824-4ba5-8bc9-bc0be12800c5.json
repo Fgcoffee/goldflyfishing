@@ -1,0 +1,94 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
+ "name": "Detention Sphere",
+ "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
+   "name": "Detention Sphere",
+   "face": 0,
+   "face_name": "Detention Sphere",
+   "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent."
+      }
+     ],
+     "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true,
+        "zones": {
+         "$set": [
+          "Zone.EXILE"
+         ]
+        }
+       },
+       "zone": "Zone.BATTLEFIELD",
+       "text": "return"
+      }
+     ],
+     "text": "When this enchantment leaves the battlefield, return the exiled cards to the battlefield under their owner's control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.LEAVES_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "uses_last_known_information": true,
+      "text": "when this leaves the battlefield"
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent.",
+     "reason": "not fully consumed",
+     "consumed": 11,
+     "remaining": [
+      "not",
+      "named",
+      "this",
+      "and",
+      "all",
+      "other",
+      "permanents",
+      "with",
+      "the",
+      "same",
+      "name",
+      "as",
+      "that",
+      "permanent",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,53 @@
+{
+ "ir_version": 1,
+ "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
+ "name": "Sanguine Bond",
+ "card_hash": "d7155414321cf552098ddd1f1b543f4e",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
+   "name": "Sanguine Bond",
+   "face": 0,
+   "face_name": "Sanguine Bond",
+   "card_hash": "d7155414321cf552098ddd1f1b543f4e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TARGET_OPPONENT"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.EVENT_AMOUNT"
+       },
+       "is_targeted": true,
+       "text": "lose life"
+      }
+     ],
+     "text": "Whenever you gain life, target opponent loses that much life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.LIFE_GAINED"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player gains life"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

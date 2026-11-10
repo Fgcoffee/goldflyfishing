@@ -1,0 +1,64 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0230de18-8d15-4cfa-9d42-7ccddd9f9570",
+ "name": "Supreme Verdict",
+ "card_hash": "00c9ba555c5e99d8f26db3d9c0112b53",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0230de18-8d15-4cfa-9d42-7ccddd9f9570",
+   "name": "Supreme Verdict",
+   "face": 0,
+   "face_name": "Supreme Verdict",
+   "card_hash": "00c9ba555c5e99d8f26db3d9c0112b53",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BE_COUNTERED",
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "can't be_countered"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "This spell can't be countered."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "text": "destroy"
+      }
+     ],
+     "text": "Destroy all creatures."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

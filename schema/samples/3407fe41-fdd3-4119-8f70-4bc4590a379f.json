@@ -1,0 +1,43 @@
+{
+ "ir_version": 1,
+ "oracle_id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
+ "name": "Negate",
+ "card_hash": "3fadc407da70efbce9422031cf5001de",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
+   "name": "Negate",
+   "face": 0,
+   "face_name": "Negate",
+   "card_hash": "3fadc407da70efbce9422031cf5001de",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.COUNTER_SPELL",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": "CardType.CREATURE",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "is_targeted": true,
+       "text": "counter"
+      }
+     ],
+     "text": "Counter target noncreature spell."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

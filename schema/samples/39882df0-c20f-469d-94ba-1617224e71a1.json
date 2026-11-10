@@ -1,0 +1,78 @@
+{
+ "ir_version": 1,
+ "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
+ "name": "Goblin Warchief",
+ "card_hash": "91d299ee14fa65e45050758484a49c1e",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
+   "name": "Goblin Warchief",
+   "face": 0,
+   "face_name": "Goblin Warchief",
+   "card_hash": "91d299ee14fa65e45050758484a49c1e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_COST",
+       "targets": {
+        "$": "ObjectFilter",
+        "subtypes_all": [
+         "Goblin"
+        ],
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "controller": "ControllerRelation.YOU",
+        "is_ability": false
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -1
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "costs less to cast"
+      }
+     ],
+     "text": "Goblin spells you cast cost {1} less to cast."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "subtypes_all": [
+         "Goblin"
+        ],
+        "controller": "ControllerRelation.YOU"
+       },
+       "duration": "Duration.PERMANENT",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains haste"
+      }
+     ],
+     "text": "Goblins you control have haste."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

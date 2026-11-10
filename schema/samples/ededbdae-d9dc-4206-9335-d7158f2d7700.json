@@ -1,0 +1,62 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
+ "name": "Vampiric Tutor",
+ "card_hash": "1deebce9869dee2505377aa060303388",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
+   "name": "Vampiric Tutor",
+   "face": 0,
+   "face_name": "Vampiric Tutor",
+   "card_hash": "1deebce9869dee2505377aa060303388",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.LIBRARY",
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

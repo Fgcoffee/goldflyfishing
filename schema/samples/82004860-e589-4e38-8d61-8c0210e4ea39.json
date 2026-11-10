@@ -1,0 +1,50 @@
+{
+ "ir_version": 1,
+ "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
+ "name": "Demonic Tutor",
+ "card_hash": "de744fc7543ea2b2de2f930765e433f9",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
+   "name": "Demonic Tutor",
+   "face": 0,
+   "face_name": "Demonic Tutor",
+   "card_hash": "de744fc7543ea2b2de2f930765e433f9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.HAND",
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for a card, put that card into your hand, then shuffle."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

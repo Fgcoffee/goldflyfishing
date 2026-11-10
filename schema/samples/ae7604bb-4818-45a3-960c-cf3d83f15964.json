@@ -1,0 +1,174 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
+ "name": "Teferi, Time Raveler",
+ "card_hash": "2d54287f0acc600ca55dbac1333e7f80",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
+   "name": "Teferi, Time Raveler",
+   "face": 0,
+   "face_name": "Teferi, Time Raveler",
+   "card_hash": "2d54287f0acc600ca55dbac1333e7f80",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Each opponent can cast spells only any time they could cast a sorcery."
+      }
+     ],
+     "text": "Each opponent can cast spells only any time they could cast a sorcery.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "duration": "Duration.YOUR_NEXT_TURN",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PERMISSION",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.SORCERY",
+          "zones": {
+           "$set": []
+          },
+          "is_ability": false
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": "Duration.YOUR_NEXT_TURN",
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.CAST_AS_THOUGH_FLASH",
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.SORCERY",
+            "zones": {
+             "$set": []
+            },
+            "is_ability": false
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "cast as though it had flash"
+          }
+         ],
+         "text": "may cast as though it had flash"
+        }
+       ],
+       "text": "for a duration"
+      }
+     ],
+     "text": "+1: Until your next turn, you may cast sorcery spells as though they had flash.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RETURN_TO_HAND",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT",
+        "count": {
+         "$": "Value",
+         "constant": 1
+        },
+        "up_to": true
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "-3: Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": -3
+        },
+        "text": "-3"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each opponent can cast spells only any time they could cast a sorcery.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Each",
+      "opponent",
+      "can",
+      "cast",
+      "spells",
+      "only",
+      "any",
+      "time",
+      "they",
+      "could",
+      "cast",
+      "a",
+      "sorcery",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

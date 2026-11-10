@@ -1,0 +1,106 @@
+{
+ "ir_version": 1,
+ "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
+ "name": "Goblin Cratermaker",
+ "card_hash": "582c55ea6e91095d37a67ccf3de96612",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
+   "name": "Goblin Cratermaker",
+   "face": 0,
+   "face_name": "Goblin Cratermaker",
+   "card_hash": "582c55ea6e91095d37a67ccf3de96612",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DAMAGE",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 2
+           },
+           "is_targeted": true,
+           "text": "deal damage"
+          }
+         ],
+         "text": "This creature deals 2 damage to target creature."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DESTROY",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_none": "CardType.LAND",
+            "must_be_colorless": true
+           },
+           "is_targeted": true,
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy target colorless nonland permanent."
+        }
+       ],
+       "text": "{1}, Sacrifice this creature: Choose one -"
+      }
+     ],
+     "text": "{1}, Sacrifice this creature: Choose one -",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

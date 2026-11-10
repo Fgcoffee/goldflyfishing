@@ -1,0 +1,66 @@
+{
+ "ir_version": 1,
+ "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
+ "name": "Maze of Ith",
+ "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
+   "name": "Maze of Ith",
+   "face": 0,
+   "face_name": "Maze of Ith",
+   "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNTAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "attacking": true
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PREVENT_DAMAGE",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -1
+       },
+       "duration": "Duration.END_OF_TURN",
+       "both_ways": true,
+       "keywords": [
+        "combat"
+       ],
+       "text": "prevent damage"
+      }
+     ],
+     "text": "{T}: Untap target attacking creature. Prevent all combat damage that would be dealt to and dealt by that creature this turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

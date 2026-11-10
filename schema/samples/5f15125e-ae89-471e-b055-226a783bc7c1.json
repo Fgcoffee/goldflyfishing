@@ -1,0 +1,106 @@
+{
+ "ir_version": 1,
+ "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
+ "name": "Aetherflux Reservoir",
+ "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
+   "name": "Aetherflux Reservoir",
+   "face": 0,
+   "face_name": "Aetherflux Reservoir",
+   "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GAIN_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.EVENT_COUNT_THIS_TURN",
+        "players": {
+         "$": "PlayerFilter"
+        },
+        "event_kinds": [
+         20
+        ]
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Whenever you cast a spell, you gain 1 life for each spell you've cast this turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.CAST_SPELL"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         "Zone.STACK"
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DAMAGE",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 50
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "Pay 50 life: This artifact deals 50 damage to any target.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.PAY_LIFE",
+        "amount": {
+         "$": "Value",
+         "constant": 50
+        },
+        "text": "pay life"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "ir_version": 1,
+ "oracle_id": "32452ccf-88c7-41d6-93e5-15d31f29726d",
+ "name": "Frozen Aether",
+ "card_hash": "4318bfdfcec089b9ea7a03e9c22e520d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "32452ccf-88c7-41d6-93e5-15d31f29726d",
+   "name": "Frozen Aether",
+   "face": 0,
+   "face_name": "Frozen Aether",
+   "card_hash": "4318bfdfcec089b9ea7a03e9c22e520d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REPLACEMENT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.ARTIFACT|CREATURE|LAND",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Artifacts, creatures, and lands your opponents control enter tapped."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

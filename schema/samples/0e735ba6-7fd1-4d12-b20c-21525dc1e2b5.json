@@ -1,0 +1,154 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0e735ba6-7fd1-4d12-b20c-21525dc1e2b5",
+ "name": "Hanweir Battlements",
+ "card_hash": "0f219ea0c9b6a79e624bd9a5437795d1",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0e735ba6-7fd1-4d12-b20c-21525dc1e2b5",
+   "name": "Hanweir Battlements",
+   "face": 0,
+   "face_name": "Hanweir Battlements",
+   "card_hash": "0f219ea0c9b6a79e624bd9a5437795d1",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "duration": "Duration.END_OF_TURN",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains haste"
+      }
+     ],
+     "text": "{R}, {T}: Target creature gains haste until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
+           "text": "{R}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "{3}{R}{R}, {T}: If you both own and control this land and a creature named Hanweir Garrison, exile them, then meld them into Hanweir, the Writhing Township."
+      }
+     ],
+     "text": "{3}{R}{R}, {T}: If you both own and control this land and a creature named Hanweir Garrison, exile them, then meld them into Hanweir, the Writhing Township.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "{3}{R}{R}, {T}: If you both own and control this land and a creature named Hanweir Garrison, exile them, then meld them into Hanweir, the Writhing Township.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "If",
+      "you",
+      "both",
+      "own",
+      "and",
+      "control",
+      "this",
+      "land",
+      "and",
+      "a",
+      "creature",
+      "named",
+      "Hanweir",
+      "Garrison",
+      ",",
+      "exile",
+      "them",
+      ",",
+      "then",
+      "meld",
+      "them",
+      "into",
+      "Hanweir",
+      ",",
+      "the",
+      "Writhing",
+      "Township",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ]
+}

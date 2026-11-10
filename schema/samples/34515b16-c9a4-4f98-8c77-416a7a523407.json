@@ -1,0 +1,57 @@
+{
+ "ir_version": 1,
+ "oracle_id": "34515b16-c9a4-4f98-8c77-416a7a523407",
+ "name": "Wrath of God",
+ "card_hash": "143cfe70f299c4cb432c908fd52d2c68",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "34515b16-c9a4-4f98-8c77-416a7a523407",
+   "name": "Wrath of God",
+   "face": 0,
+   "face_name": "Wrath of God",
+   "card_hash": "143cfe70f299c4cb432c908fd52d2c68",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BE_REGENERATED",
+         "subject": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Destroy all creatures. They can't be regenerated."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

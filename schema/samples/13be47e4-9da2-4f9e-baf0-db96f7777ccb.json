@@ -1,0 +1,44 @@
+{
+ "ir_version": 1,
+ "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
+ "name": "Thalia, Heretic Cathar",
+ "card_hash": "cda38213f93dc46fdbcb428e33f156c1",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
+   "name": "Thalia, Heretic Cathar",
+   "face": 0,
+   "face_name": "Thalia, Heretic Cathar",
+   "card_hash": "cda38213f93dc46fdbcb428e33f156c1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "First strike",
+     "keyword": "First strike"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REPLACEMENT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.CREATURE|LAND",
+        "supertypes_none": "Supertype.BASIC",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Creatures and nonbasic lands your opponents control enter tapped."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

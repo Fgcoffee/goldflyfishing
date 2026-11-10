@@ -1,0 +1,130 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
+ "name": "Narset, Parter of Veils",
+ "card_hash": "a1775e5a5e1cbebd48edf8ba303648f7",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
+   "name": "Narset, Parter of Veils",
+   "face": 0,
+   "face_name": "Narset, Parter of Veils",
+   "card_hash": "a1775e5a5e1cbebd48edf8ba303648f7",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Each opponent can't draw more than one card each turn."
+      }
+     ],
+     "text": "Each opponent can't draw more than one card each turn.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOOK_AT_TOP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "text": "look at the top"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MOVE_ZONE",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_none": "CardType.CREATURE|LAND",
+          "from_pile": true,
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "zone": "Zone.HAND",
+         "keywords": [
+          "reveal"
+         ],
+         "text": "reveal and put"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "from_pile": true
+       },
+       "keywords": [
+        "bottom",
+        "random"
+       ],
+       "text": "put on the bottom of library"
+      }
+     ],
+     "text": "-2: Look at the top four cards of your library. You may reveal a noncreature, nonland card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": -2
+        },
+        "text": "-2"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each opponent can't draw more than one card each turn.",
+     "reason": "not fully consumed",
+     "consumed": 4,
+     "remaining": [
+      "more",
+      "than",
+      "one",
+      "card",
+      "each",
+      "turn",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

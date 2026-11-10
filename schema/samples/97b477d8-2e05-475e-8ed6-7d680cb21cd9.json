@@ -1,0 +1,71 @@
+{
+ "ir_version": 1,
+ "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
+ "name": "Fire Diamond",
+ "card_hash": "de3cd641d6e83804ac9f1693d95b6065",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
+   "name": "Fire Diamond",
+   "face": 0,
+   "face_name": "Fire Diamond",
+   "card_hash": "de3cd641d6e83804ac9f1693d95b6065",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.TAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This artifact enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": "Color.RED",
+       "text": "add {R}"
+      }
+     ],
+     "text": "{T}: Add {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

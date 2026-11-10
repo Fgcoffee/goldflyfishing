@@ -1,0 +1,91 @@
+{
+ "ir_version": 1,
+ "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
+ "name": "Carrion Feeder",
+ "card_hash": "cd5c285396b879627444f1022cad25b5",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
+   "name": "Carrion Feeder",
+   "face": 0,
+   "face_name": "Carrion Feeder",
+   "card_hash": "cd5c285396b879627444f1022cad25b5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BLOCK",
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "can't block"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "This creature can't block."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_COUNTERS",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "Sacrifice a creature: Put a +1/+1 counter on this creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": "CardType.CREATURE",
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

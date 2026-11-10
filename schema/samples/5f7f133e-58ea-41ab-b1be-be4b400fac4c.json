@@ -1,0 +1,53 @@
+{
+ "ir_version": 1,
+ "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
+ "name": "Coat of Arms",
+ "card_hash": "34dd01bf619085916024d266751ae6fa",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
+   "name": "Coat of Arms",
+   "face": 0,
+   "face_name": "Coat of Arms",
+   "card_hash": "34dd01bf619085916024d266751ae6fa",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it."
+      }
+     ],
+     "text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it.",
+     "reason": "not fully consumed",
+     "consumed": 11,
+     "remaining": [
+      "that",
+      "shares",
+      "at",
+      "least",
+      "one",
+      "creature",
+      "type",
+      "with",
+      "it",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

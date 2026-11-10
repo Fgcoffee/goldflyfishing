@@ -1,0 +1,54 @@
+{
+ "ir_version": 1,
+ "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
+ "name": "Swords to Plowshares",
+ "card_hash": "fcdc4d35288d37ced64ba6f3affe9745",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
+   "name": "Swords to Plowshares",
+   "face": 0,
+   "face_name": "Swords to Plowshares",
+   "card_hash": "fcdc4d35288d37ced64ba6f3affe9745",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GAIN_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.POWER",
+        "filter": {
+         "$": "ObjectFilter",
+         "remembered": true
+        }
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Exile target creature. Its controller gains life equal to its power."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

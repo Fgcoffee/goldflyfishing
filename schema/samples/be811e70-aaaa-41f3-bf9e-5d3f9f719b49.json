@@ -1,0 +1,182 @@
+{
+ "ir_version": 1,
+ "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
+ "name": "Castle Locthwain",
+ "card_hash": "13e66d59deb093fd5e492deaffd74509",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
+   "name": "Castle Locthwain",
+   "face": 0,
+   "face_name": "Castle Locthwain",
+   "card_hash": "13e66d59deb093fd5e492deaffd74509",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.NOT",
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": "ConditionKind.CONTROLS_MATCHING",
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_all": [
+            "Swamp"
+           ],
+           "controller": "ControllerRelation.YOU"
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": "Comparison.GE",
+           "value": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.TAP",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": "Duration.PERMANENT",
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control a Swamp."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}"
+      }
+     ],
+     "text": "{T}: Add {B}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.COUNT",
+        "filter": {
+         "$": "ObjectFilter",
+         "zones": {
+          "$set": [
+           "Zone.HAND"
+          ]
+         },
+         "owner": "ControllerRelation.YOU"
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "{1}{B}{B}, {T}: Draw a card, then you lose life equal to the number of cards in your hand.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
+           "text": "{B}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
+           "text": "{B}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

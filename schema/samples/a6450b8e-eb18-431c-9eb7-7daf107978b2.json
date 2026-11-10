@@ -1,0 +1,55 @@
+{
+ "ir_version": 1,
+ "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
+ "name": "Hordeling Outburst",
+ "card_hash": "bafa88e88bbad5eb2a0b4ce79917f836",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
+   "name": "Hordeling Outburst",
+   "face": 0,
+   "face_name": "Hordeling Outburst",
+   "card_hash": "bafa88e88bbad5eb2a0b4ce79917f836",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": "Color.RED",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Create three 1/1 red Goblin creature tokens."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,120 @@
+{
+ "ir_version": 1,
+ "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
+ "name": "Sphere of Safety",
+ "card_hash": "63fc4ddec8cc072080c86f26d9ef5a76",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
+   "name": "Sphere of Safety",
+   "face": 0,
+   "face_name": "Sphere of Safety",
+   "card_hash": "63fc4ddec8cc072080c86f26d9ef5a76",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNLESS_PAYS",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.CONTROLLER_OF"
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": "CostKind.MANA",
+          "mana": {
+           "$": "ManaCost",
+           "symbols": [
+            {
+             "$": "ManaSymbol",
+             "kind": "ManaSymbolKind.GENERIC",
+             "generic": 1,
+             "text": "{1}"
+            }
+           ]
+          },
+          "scale": {
+           "$": "Value",
+           "kind": "ValueKind.PRODUCT",
+           "operands": [
+            {
+             "$": "Value",
+             "kind": "ValueKind.COUNT",
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.CREATURE",
+              "remembered": true
+             }
+            },
+            {
+             "$": "Value",
+             "kind": "ValueKind.COUNT",
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.ENCHANTMENT",
+              "controller": "ControllerRelation.YOU"
+             }
+            }
+           ]
+          }
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.RESTRICTION",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE"
+         },
+         "duration": "Duration.PERMANENT",
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.ATTACK_PLAYER",
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "can't attack you"
+          },
+          {
+           "$": "Restriction",
+           "act": "Act.ATTACK_PLANESWALKER",
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "counterpart": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.PLANESWALKER",
+            "controller": "ControllerRelation.YOU"
+           },
+           "text": "can't attack planeswalkers you control"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "unless its controller pays {X}"
+      }
+     ],
+     "text": "Creatures can't attack you or planeswalkers you control unless their controller pays {X} for each of those creatures, where X is the number of enchantments you control."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

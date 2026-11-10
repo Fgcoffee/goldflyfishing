@@ -1,0 +1,53 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
+ "name": "Vryn Wingmare",
+ "card_hash": "f8f4016a967cd187b33f6f69d770e2b4",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
+   "name": "Vryn Wingmare",
+   "face": 0,
+   "face_name": "Vryn Wingmare",
+   "card_hash": "f8f4016a967cd187b33f6f69d770e2b4",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_COST",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": "CardType.CREATURE",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "costs less to cast"
+      }
+     ],
+     "text": "Noncreature spells cost {1} more to cast."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,100 @@
+{
+ "ir_version": 1,
+ "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
+ "name": "Kataki, War's Wage",
+ "card_hash": "be42d7e50d2eddaa54e37a5730c15917",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
+   "name": "Kataki, War's Wage",
+   "face": 0,
+   "face_name": "Kataki, War's Wage",
+   "card_hash": "be42d7e50d2eddaa54e37a5730c15917",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.ARTIFACT"
+       },
+       "duration": "Duration.PERMANENT",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.TRIGGERED",
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.UNLESS_PAYS",
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "pay_cost": {
+            "$": "Cost",
+            "components": [
+             {
+              "$": "CostComponent",
+              "kind": "CostKind.MANA",
+              "mana": {
+               "$": "ManaCost",
+               "symbols": [
+                {
+                 "$": "ManaSymbol",
+                 "kind": "ManaSymbolKind.GENERIC",
+                 "generic": 1,
+                 "text": "{1}"
+                }
+               ]
+              }
+             }
+            ]
+           },
+           "children": [
+            {
+             "$": "Effect",
+             "kind": "EffectKind.SACRIFICE",
+             "targets": {
+              "$": "ObjectFilter",
+              "source_only": true
+             },
+             "players": {
+              "$": "PlayerFilter"
+             },
+             "text": "sacrifice"
+            }
+           ],
+           "text": "unless you pays {1}"
+          }
+         ],
+         "text": "At the beginning of your upkeep , sacrifice this artifact unless you pay {1} .",
+         "trigger": {
+          "$": "TriggerCondition",
+          "event_kinds": {
+           "$set": [
+            "EventKind.UPKEEP"
+           ]
+          },
+          "players": {
+           "$": "PlayerFilter"
+          },
+          "text": "at the beginning of upkeep"
+         }
+        }
+       ],
+       "text": "gains At the beginning of your upkeep , sacrifice this artifact unless you pay {1} ."
+      }
+     ],
+     "text": "All artifacts have \"At the beginning of your upkeep, sacrifice this artifact unless you pay {1}.\""
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

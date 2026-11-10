@@ -1,0 +1,36 @@
+{
+ "ir_version": 1,
+ "oracle_id": "fddc93a2-912e-402a-9d0e-34f778e659ea",
+ "name": "Sunder",
+ "card_hash": "3a60d0de71b103a8e69a0daf14f95d25",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "fddc93a2-912e-402a-9d0e-34f778e659ea",
+   "name": "Sunder",
+   "face": 0,
+   "face_name": "Sunder",
+   "card_hash": "3a60d0de71b103a8e69a0daf14f95d25",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RETURN_TO_HAND",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND"
+       },
+       "text": "return to hand"
+      }
+     ],
+     "text": "Return all lands to their owners' hands."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

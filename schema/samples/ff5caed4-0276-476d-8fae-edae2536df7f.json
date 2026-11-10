@@ -1,0 +1,231 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
+ "name": "Archangel of Tithes",
+ "card_hash": "5cf346af67c6d90ee9625e906287d39a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
+   "name": "Archangel of Tithes",
+   "face": 0,
+   "face_name": "Archangel of Tithes",
+   "card_hash": "5cf346af67c6d90ee9625e906287d39a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "duration": "Duration.WHILE_SOURCE_PERSISTS",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.CONTROLS_MATCHING",
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "tapped": false
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": "Comparison.GE",
+         "value": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "a state condition"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.UNLESS_PAYS",
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.CONTROLLER_OF"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": "CostKind.MANA",
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.GENERIC",
+               "generic": 1,
+               "text": "{1}"
+              }
+             ]
+            },
+            "scale": {
+             "$": "Value",
+             "kind": "ValueKind.COUNT",
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.CREATURE",
+              "remembered": true
+             }
+            }
+           }
+          ]
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.RESTRICTION",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "duration": "Duration.PERMANENT",
+           "restrictions": [
+            {
+             "$": "Restriction",
+             "act": "Act.ATTACK_PLAYER",
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.CREATURE"
+             },
+             "players": {
+              "$": "PlayerFilter"
+             },
+             "text": "can't attack you"
+            },
+            {
+             "$": "Restriction",
+             "act": "Act.ATTACK_PLANESWALKER",
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.CREATURE"
+             },
+             "counterpart": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.PLANESWALKER",
+              "controller": "ControllerRelation.YOU"
+             },
+             "text": "can't attack planeswalkers you control"
+            }
+           ],
+           "text": "can't"
+          }
+         ],
+         "text": "unless its controller pays {1}"
+        }
+       ],
+       "text": "as long as"
+      }
+     ],
+     "text": "As long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "duration": "Duration.WHILE_SOURCE_PERSISTS",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.CONTROLS_MATCHING",
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "attacking": true
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": "Comparison.GE",
+         "value": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "a state condition"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.UNLESS_PAYS",
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.CONTROLLER_OF"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": "CostKind.MANA",
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.GENERIC",
+               "generic": 1,
+               "text": "{1}"
+              }
+             ]
+            },
+            "scale": {
+             "$": "Value",
+             "kind": "ValueKind.COUNT",
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.CREATURE",
+              "remembered": true
+             }
+            }
+           }
+          ]
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.RESTRICTION",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "duration": "Duration.PERMANENT",
+           "restrictions": [
+            {
+             "$": "Restriction",
+             "act": "Act.BLOCK",
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": "CardType.CREATURE"
+             },
+             "text": "can't block"
+            }
+           ],
+           "text": "can't"
+          }
+         ],
+         "text": "unless its controller pays {1}"
+        }
+       ],
+       "text": "as long as"
+      }
+     ],
+     "text": "As long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

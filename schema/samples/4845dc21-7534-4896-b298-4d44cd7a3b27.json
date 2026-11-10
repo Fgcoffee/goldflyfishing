@@ -1,0 +1,79 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
+ "name": "Moggcatcher",
+ "card_hash": "60cee7a5d1e36bd0381fa3164dbe15c0",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
+   "name": "Moggcatcher",
+   "face": 0,
+   "face_name": "Moggcatcher",
+   "card_hash": "60cee7a5d1e36bd0381fa3164dbe15c0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+        "subtypes_all": [
+         "Goblin"
+        ],
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.BATTLEFIELD",
+       "text": "search library"
+      }
+     ],
+     "text": "{3}, {T}: Search your library for a Goblin permanent card, put it onto the battlefield, then shuffle.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 3,
+           "text": "{3}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

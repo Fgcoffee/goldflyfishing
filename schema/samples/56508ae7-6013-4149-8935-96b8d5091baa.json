@@ -1,0 +1,76 @@
+{
+ "ir_version": 1,
+ "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
+ "name": "Boggart Harbinger",
+ "card_hash": "bd325211ec4b8e3a71d5836a9d81dc5a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
+   "name": "Boggart Harbinger",
+   "face": 0,
+   "face_name": "Boggart Harbinger",
+   "card_hash": "bd325211ec4b8e3a71d5836a9d81dc5a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEARCH_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": "Zone.LIBRARY",
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this creature enters, you may search your library for a Goblin card, reveal it, then shuffle and put that card on top.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

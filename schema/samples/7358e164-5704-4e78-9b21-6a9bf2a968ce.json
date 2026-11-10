@@ -1,0 +1,80 @@
+{
+ "ir_version": 1,
+ "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
+ "name": "Cabal Coffers",
+ "card_hash": "6c307419a06a18350b57e5c6e0745496",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
+   "name": "Cabal Coffers",
+   "face": 0,
+   "face_name": "Cabal Coffers",
+   "card_hash": "6c307419a06a18350b57e5c6e0745496",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "kind": "ValueKind.COUNT",
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Swamp"
+         ],
+         "controller": "ControllerRelation.YOU"
+        }
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}"
+      }
+     ],
+     "text": "{2}, {T}: Add {B} for each Swamp you control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

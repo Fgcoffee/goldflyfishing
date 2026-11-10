@@ -1,0 +1,82 @@
+{
+ "ir_version": 1,
+ "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
+ "name": "Sun Titan",
+ "card_hash": "28c1e9681d20154c96cf45f30e6d892c",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
+   "name": "Sun Titan",
+   "face": 0,
+   "face_name": "Sun Titan",
+   "card_hash": "28c1e9681d20154c96cf45f30e6d892c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Vigilance",
+     "keyword": "Vigilance"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+          "zones": {
+           "$set": [
+            "Zone.GRAVEYARD"
+           ]
+          },
+          "owner": "ControllerRelation.YOU",
+          "mana_value": {
+           "$": "NumericConstraint",
+           "comparison": "Comparison.LE",
+           "value": {
+            "$": "Value",
+            "constant": 3
+           }
+          }
+         },
+         "is_targeted": true,
+         "zone": "Zone.BATTLEFIELD",
+         "text": "return"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Whenever this creature enters or attacks, you may return target permanent card with mana value 3 or less from your graveyard to the battlefield.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ATTACKS",
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this does one of two things"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

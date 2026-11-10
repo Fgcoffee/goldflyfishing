@@ -1,0 +1,37 @@
+{
+ "ir_version": 1,
+ "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
+ "name": "Kismet",
+ "card_hash": "ebeaa5622e6b3f77d144616584724e79",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
+   "name": "Kismet",
+   "face": 0,
+   "face_name": "Kismet",
+   "card_hash": "ebeaa5622e6b3f77d144616584724e79",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REPLACEMENT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.ARTIFACT|CREATURE|LAND",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Artifacts, creatures, and lands your opponents control enter tapped."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

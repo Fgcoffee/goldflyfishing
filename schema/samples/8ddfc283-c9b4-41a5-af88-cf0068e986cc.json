@@ -1,0 +1,75 @@
+{
+ "ir_version": 1,
+ "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
+ "name": "Swan Song",
+ "card_hash": "4e9c5f376f41a97907111123c0b6e47e",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
+   "name": "Swan Song",
+   "face": 0,
+   "face_name": "Swan Song",
+   "card_hash": "4e9c5f376f41a97907111123c0b6e47e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.COUNTER_SPELL",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.ENCHANTMENT|INSTANT|SORCERY",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "is_targeted": true,
+       "text": "counter"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Bird",
+        "subtypes": [
+         "Bird"
+        ],
+        "colors": "Color.BLUE",
+        "power": {
+         "$": "Value",
+         "constant": 2
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 2
+        },
+        "keywords": [
+         "flying"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Counter target enchantment, instant, or sorcery spell. Its controller creates a 2/2 blue Bird creature token with flying."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

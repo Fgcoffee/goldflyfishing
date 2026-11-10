@@ -1,0 +1,60 @@
+{
+ "ir_version": 1,
+ "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
+ "name": "Brainstorm",
+ "card_hash": "f84ee890bd15c9e674b4ede47711395d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
+   "name": "Brainstorm",
+   "face": 0,
+   "face_name": "Brainstorm",
+   "card_hash": "f84ee890bd15c9e674b4ede47711395d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.HAND"
+         ]
+        },
+        "owner": "ControllerRelation.YOU",
+        "count": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "text": "put on library"
+      }
+     ],
+     "text": "Draw three cards, then put two cards from your hand on top of your library in any order."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

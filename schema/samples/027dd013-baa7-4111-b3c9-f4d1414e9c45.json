@@ -1,0 +1,132 @@
+{
+ "ir_version": 1,
+ "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+ "name": "Glacial Fortress",
+ "card_hash": "7e931b1f972e38ba8e9cb7fbd3362006",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+   "name": "Glacial Fortress",
+   "face": 0,
+   "face_name": "Glacial Fortress",
+   "card_hash": "7e931b1f972e38ba8e9cb7fbd3362006",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.NOT",
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": "ConditionKind.CONTROLS_MATCHING",
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_any": [
+            "Plains",
+            "Island"
+           ],
+           "controller": "ControllerRelation.YOU"
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": "Comparison.GE",
+           "value": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.TAP",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": "Duration.PERMANENT",
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control a Plains or an Island."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": "Color.WHITE",
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": "Color.BLUE",
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

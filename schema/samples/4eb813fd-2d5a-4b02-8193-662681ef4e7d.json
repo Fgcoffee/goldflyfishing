@@ -1,0 +1,114 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
+ "name": "Farewell",
+ "card_hash": "9cbf3783faaba69e7ac1a33860906ef0",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
+   "name": "Farewell",
+   "face": 0,
+   "face_name": "Farewell",
+   "card_hash": "9cbf3783faaba69e7ac1a33860906ef0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.EXILE",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.ARTIFACT"
+           },
+           "text": "exile"
+          }
+         ],
+         "text": "Exile all artifacts."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.EXILE",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "text": "exile"
+          }
+         ],
+         "text": "Exile all creatures."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.EXILE",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.ENCHANTMENT"
+           },
+           "text": "exile"
+          }
+         ],
+         "text": "Exile all enchantments."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.EXILE",
+           "targets": {
+            "$": "ObjectFilter",
+            "zones": {
+             "$set": [
+              "Zone.GRAVEYARD"
+             ]
+            }
+           },
+           "zone": "Zone.EXILE",
+           "text": "exile every graveyard"
+          }
+         ],
+         "text": "Exile all graveyards."
+        }
+       ],
+       "modes_up_to": true,
+       "modes_at_least": 1,
+       "text": "Choose one or more -"
+      }
+     ],
+     "text": "Choose one or more -",
+     "functions_in": {
+      "$set": [
+       "Zone.STACK"
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

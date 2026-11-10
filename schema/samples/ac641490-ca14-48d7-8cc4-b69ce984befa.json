@@ -1,0 +1,51 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
+ "name": "Preordain",
+ "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
+   "name": "Preordain",
+   "face": 0,
+   "face_name": "Preordain",
+   "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SCRY",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "scry/surveil"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Scry 2, then draw a card."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

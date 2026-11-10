@@ -1,0 +1,163 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
+ "name": "Conspicuous Snoop",
+ "card_hash": "0f340222764a151fc25a7466c0e21e55",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
+   "name": "Conspicuous Snoop",
+   "face": 0,
+   "face_name": "Conspicuous Snoop",
+   "card_hash": "0f340222764a151fc25a7466c0e21e55",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PERMISSION",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.LIBRARY"
+         ]
+        },
+        "from_top": true,
+        "count": 1
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.LOOK_AT_TOP_CARD",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "may look at the top card of their library"
+        }
+       ],
+       "text": "the top card of your library is visible"
+      }
+     ],
+     "text": "Play with the top card of your library revealed."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PERMISSION",
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "zones": {
+           "$set": [
+            "Zone.LIBRARY"
+           ]
+          },
+          "from_top": 1,
+          "is_ability": false
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.CAST_SPELL",
+           "subject": {
+            "$": "ObjectFilter",
+            "subtypes_all": [
+             "Goblin"
+            ],
+            "zones": {
+             "$set": [
+              "Zone.LIBRARY"
+             ]
+            },
+            "from_top": 1,
+            "is_ability": false
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "play from the top of your library"
+          }
+         ],
+         "text": "may play from elsewhere"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may cast Goblin spells from the top of your library."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card."
+      }
+     ],
+     "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "As",
+      "long",
+      "as",
+      "the",
+      "top",
+      "card",
+      "of",
+      "your",
+      "library",
+      "is",
+      "a",
+      "Goblin",
+      "card",
+      ",",
+      "this",
+      "creature",
+      "has",
+      "all",
+      "activated",
+      "abilities",
+      "of",
+      "that",
+      "card",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

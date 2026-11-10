@@ -1,0 +1,71 @@
+{
+ "ir_version": 1,
+ "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
+ "name": "Charcoal Diamond",
+ "card_hash": "d7a5433259d12b9758443f4b8bfdff26",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
+   "name": "Charcoal Diamond",
+   "face": 0,
+   "face_name": "Charcoal Diamond",
+   "card_hash": "d7a5433259d12b9758443f4b8bfdff26",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.TAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This artifact enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}"
+      }
+     ],
+     "text": "{T}: Add {B}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

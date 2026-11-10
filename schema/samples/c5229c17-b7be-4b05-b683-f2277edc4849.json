@@ -1,0 +1,51 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
+ "name": "Enlightened Tutor",
+ "card_hash": "d985d7022f3ee33a868dd68a392f382a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
+   "name": "Enlightened Tutor",
+   "face": 0,
+   "face_name": "Enlightened Tutor",
+   "card_hash": "d985d7022f3ee33a868dd68a392f382a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.ARTIFACT|ENCHANTMENT",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.LIBRARY",
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for an artifact or enchantment card, reveal it, then shuffle and put that card on top."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

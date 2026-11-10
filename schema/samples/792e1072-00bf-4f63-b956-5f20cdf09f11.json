@@ -1,0 +1,52 @@
+{
+ "ir_version": 1,
+ "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
+ "name": "Goblin Recruiter",
+ "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
+   "name": "Goblin Recruiter",
+   "face": 0,
+   "face_name": "Goblin Recruiter",
+   "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order."
+      }
+     ],
+     "text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order.",
+     "reason": "not fully consumed",
+     "consumed": 21,
+     "remaining": [
+      "put",
+      "those",
+      "cards",
+      "on",
+      "top",
+      "in",
+      "any",
+      "order",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

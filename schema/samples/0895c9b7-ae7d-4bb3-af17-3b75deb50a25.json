@@ -1,0 +1,52 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
+ "name": "Command Tower",
+ "card_hash": "3a8065cee6eb1f994c607446a1ea2fc0",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
+   "name": "Command Tower",
+   "face": 0,
+   "face_name": "Command Tower",
+   "card_hash": "3a8065cee6eb1f994c607446a1ea2fc0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "colors_in_commander_identity": true,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color in your commander's color identity.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

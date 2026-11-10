@@ -1,0 +1,74 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
+ "name": "Aven Mindcensor",
+ "card_hash": "8093f2feb3936673a73788749583d1c0",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
+   "name": "Aven Mindcensor",
+   "face": 0,
+   "face_name": "Aven Mindcensor",
+   "card_hash": "8093f2feb3936673a73788749583d1c0",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flash",
+     "keyword": "Flash"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "If an opponent would search a library, that player searches the top four cards of that library instead."
+      }
+     ],
+     "text": "If an opponent would search a library, that player searches the top four cards of that library instead.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "If an opponent would search a library, that player searches the top four cards of that library instead.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "If",
+      "an",
+      "opponent",
+      "would",
+      "search",
+      "a",
+      "library",
+      ",",
+      "that",
+      "player",
+      "searches",
+      "the",
+      "top",
+      "four",
+      "cards",
+      "of",
+      "that",
+      "library",
+      "instead",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

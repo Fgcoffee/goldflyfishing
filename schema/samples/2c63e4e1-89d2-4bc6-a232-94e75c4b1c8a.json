@@ -1,0 +1,95 @@
+{
+ "ir_version": 1,
+ "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
+ "name": "Mana Crypt",
+ "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
+   "name": "Mana Crypt",
+   "face": 0,
+   "face_name": "Mana Crypt",
+   "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you."
+      }
+     ],
+     "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you.",
+     "reason": "not fully consumed",
+     "consumed": 7,
+     "remaining": [
+      "flip",
+      "a",
+      "coin",
+      ".",
+      "If",
+      "you",
+      "lose",
+      "the",
+      "flip",
+      ",",
+      "this",
+      "artifact",
+      "deals",
+      "3",
+      "damage",
+      "to",
+      "you",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

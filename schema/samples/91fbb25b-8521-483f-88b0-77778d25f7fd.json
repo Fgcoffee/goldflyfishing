@@ -1,0 +1,164 @@
+{
+ "ir_version": 1,
+ "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
+ "name": "Castle Embereth",
+ "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
+   "name": "Castle Embereth",
+   "face": 0,
+   "face_name": "Castle Embereth",
+   "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.NOT",
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": "ConditionKind.CONTROLS_MATCHING",
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_all": [
+            "Mountain"
+           ],
+           "controller": "ControllerRelation.YOU"
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": "Comparison.GE",
+           "value": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.TAP",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": "Duration.PERMANENT",
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control a Mountain."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": "Color.RED",
+       "text": "add {R}"
+      }
+     ],
+     "text": "{T}: Add {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_PT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": "Duration.END_OF_TURN",
+       "text": "gets +1/+0"
+      }
+     ],
+     "text": "{1}{R}{R}, {T}: Creatures you control get +1/+0 until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
+           "text": "{R}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
+           "text": "{R}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,124 @@
+{
+ "ir_version": 1,
+ "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
+ "name": "Skullclamp",
+ "card_hash": "1285cfaf80e0301967c8ff1d444ea02c",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
+   "name": "Skullclamp",
+   "face": 0,
+   "face_name": "Skullclamp",
+   "card_hash": "1285cfaf80e0301967c8ff1d444ea02c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_PT",
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": -1
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "gets +1/-1"
+      }
+     ],
+     "text": "Equipped creature gets +1/-1."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever equipped creature dies, draw two cards.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DIES"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "has_attached": {
+        "$": "ObjectFilter",
+        "source_only": true
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something dies"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ATTACH",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {1}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,100 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
+ "name": "Chrome Mox",
+ "card_hash": "b4f4cf302d86940b4da67a1ff1b3b0a8",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
+   "name": "Chrome Mox",
+   "face": 0,
+   "face_name": "Chrome Mox",
+   "card_hash": "b4f4cf302d86940b4da67a1ff1b3b0a8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.EXILE",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_none": "CardType.ARTIFACT|LAND",
+          "zones": {
+           "$set": [
+            "Zone.HAND"
+           ]
+          },
+          "owner": "ControllerRelation.YOU",
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "exile"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this artifact enters, you may exile a nonartifact, nonland card from your hand.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any of the exiled card's colors.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

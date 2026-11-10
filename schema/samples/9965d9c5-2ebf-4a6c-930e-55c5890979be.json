@@ -1,0 +1,78 @@
+{
+ "ir_version": 1,
+ "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
+ "name": "Thought Vessel",
+ "card_hash": "b87c0325bc45bada69953e042e2adb03",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
+   "name": "Thought Vessel",
+   "face": 0,
+   "face_name": "Thought Vessel",
+   "card_hash": "b87c0325bc45bada69953e042e2adb03",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PERMISSION",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.DISCARD_TO_HAND_SIZE",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "skip the cleanup discard"
+        }
+       ],
+       "text": "no maximum hand size"
+      }
+     ],
+     "text": "You have no maximum hand size."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

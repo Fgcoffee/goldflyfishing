@@ -1,0 +1,52 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+ "name": "Arcane Signet",
+ "card_hash": "23d459e07ff7ef38b32fb6656192f16d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+   "name": "Arcane Signet",
+   "face": 0,
+   "face_name": "Arcane Signet",
+   "card_hash": "23d459e07ff7ef38b32fb6656192f16d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "colors_in_commander_identity": true,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color in your commander's color identity.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

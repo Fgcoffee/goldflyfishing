@@ -1,0 +1,56 @@
+{
+ "ir_version": 1,
+ "oracle_id": "df67597f-42a8-4fa7-b426-d7db8b384445",
+ "name": "Goblin Motivator",
+ "card_hash": "87f5f68024b1ac9e89fe026ac89179a7",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "df67597f-42a8-4fa7-b426-d7db8b384445",
+   "name": "Goblin Motivator",
+   "face": 0,
+   "face_name": "Goblin Motivator",
+   "card_hash": "87f5f68024b1ac9e89fe026ac89179a7",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "duration": "Duration.END_OF_TURN",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains haste"
+      }
+     ],
+     "text": "{T}: Target creature gains haste until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "ir_version": 1,
+ "oracle_id": "cc187110-1148-4090-bbb8-e205694a39f5",
+ "name": "Counterspell",
+ "card_hash": "519917f01246d0617d107eedfd99d49d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "cc187110-1148-4090-bbb8-e205694a39f5",
+   "name": "Counterspell",
+   "face": 0,
+   "face_name": "Counterspell",
+   "card_hash": "519917f01246d0617d107eedfd99d49d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.COUNTER_SPELL",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "is_targeted": true,
+       "text": "counter"
+      }
+     ],
+     "text": "Counter target spell."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

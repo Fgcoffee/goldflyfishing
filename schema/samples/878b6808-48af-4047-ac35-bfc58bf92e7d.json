@@ -1,0 +1,124 @@
+{
+ "ir_version": 1,
+ "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
+ "name": "Goblin Bushwhacker",
+ "card_hash": "90f4a4b27ffef946226ee2193c61faad",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
+   "name": "Goblin Bushwhacker",
+   "face": 0,
+   "face_name": "Goblin Bushwhacker",
+   "card_hash": "90f4a4b27ffef946226ee2193c61faad",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Kicker {R}",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND",
+       "Zone.STACK"
+      ]
+     },
+     "keyword": "Kicker",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.MANA",
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.RED",
+            "text": "{R}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Kicker",
+      "text": "Kicker {R}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MODIFY_PT",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE",
+          "controller": "ControllerRelation.YOU"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "duration": "Duration.END_OF_TURN",
+         "text": "gets +1/+0"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GRANT_ABILITY",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE",
+          "controller": "ControllerRelation.YOU"
+         },
+         "duration": "Duration.END_OF_TURN",
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": "AbilityKind.STATIC",
+           "text": "haste",
+           "keyword": "haste"
+          }
+         ],
+         "text": "and has haste"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "When this creature enters, if it was kicked, creatures you control get +1/+0 and gain haste until end of turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": "ConditionKind.WAS_KICKED",
+       "text": "it was kicked"
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

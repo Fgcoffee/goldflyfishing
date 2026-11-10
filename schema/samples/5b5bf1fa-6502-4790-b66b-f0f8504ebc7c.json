@@ -1,0 +1,80 @@
+{
+ "ir_version": 1,
+ "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
+ "name": "Cabal Ritual",
+ "card_hash": "40fc339bbe64a826ef6227f4dab41384",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
+   "name": "Cabal Ritual",
+   "face": 0,
+   "face_name": "Cabal Ritual",
+   "card_hash": "40fc339bbe64a826ef6227f4dab41384",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_produced": [
+        "{B}",
+        "{B}",
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}{B}{B}"
+      }
+     ],
+     "text": "Add {B}{B}{B}."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard."
+      }
+     ],
+     "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard.",
+     "reason": "not fully consumed",
+     "consumed": 6,
+     "remaining": [
+      "instead",
+      "if",
+      "there",
+      "are",
+      "seven",
+      "or",
+      "more",
+      "cards",
+      "in",
+      "your",
+      "graveyard",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

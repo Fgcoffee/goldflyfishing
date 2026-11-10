@@ -1,0 +1,132 @@
+{
+ "ir_version": 1,
+ "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
+ "name": "Increasing Ambition",
+ "card_hash": "f4e654c1551c51797a2c078d9337fb17",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
+   "name": "Increasing Ambition",
+   "face": 0,
+   "face_name": "Increasing Ambition",
+   "card_hash": "f4e654c1551c51797a2c078d9337fb17",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.HAND",
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "duration": "Duration.PERMANENT",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEARCH_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 2
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "zone": "Zone.HAND",
+         "text": "search library"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SHUFFLE",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "shuffle"
+        }
+       ],
+       "text": "if ... would ..., ... instead"
+      }
+     ],
+     "text": "Search your library for a card and put that card into your hand. If this spell was cast from a graveyard, instead search your library for two cards and put those cards into your hand. Then shuffle."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flashback {7}{B}",
+     "functions_in": {
+      "$set": [
+       "Zone.GRAVEYARD"
+      ]
+     },
+     "keyword": "Flashback",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.MANA",
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.GENERIC",
+            "generic": 7,
+            "text": "{7}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.BLACK",
+            "text": "{B}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "from_zone": "Zone.GRAVEYARD",
+      "keyword": "Flashback",
+      "text": "Flashback {7}{B}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

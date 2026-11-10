@@ -1,0 +1,93 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
+ "name": "Strip Mine",
+ "card_hash": "9a07828161280ff79bb09c17c2876bc3",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
+   "name": "Strip Mine",
+   "face": 0,
+   "face_name": "Strip Mine",
+   "card_hash": "9a07828161280ff79bb09c17c2876bc3",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "{T}, Sacrifice this land: Destroy target land.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

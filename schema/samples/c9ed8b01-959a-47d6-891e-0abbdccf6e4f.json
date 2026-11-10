@@ -1,0 +1,36 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c9ed8b01-959a-47d6-891e-0abbdccf6e4f",
+ "name": "Armageddon",
+ "card_hash": "7abcb37643d0dffa76f50924069ff9ac",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c9ed8b01-959a-47d6-891e-0abbdccf6e4f",
+   "name": "Armageddon",
+   "face": 0,
+   "face_name": "Armageddon",
+   "card_hash": "7abcb37643d0dffa76f50924069ff9ac",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND"
+       },
+       "text": "destroy"
+      }
+     ],
+     "text": "Destroy all lands."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

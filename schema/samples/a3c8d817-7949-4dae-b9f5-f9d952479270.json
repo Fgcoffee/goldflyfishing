@@ -1,0 +1,114 @@
+{
+ "ir_version": 1,
+ "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
+ "name": "Crypt Ghast",
+ "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
+   "name": "Crypt Ghast",
+   "face": 0,
+   "face_name": "Crypt Ghast",
+   "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.LOSE_LIFE",
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.EACH_OPPONENT"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GAIN_LIFE",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        }
+       ]
+      }
+     ],
+     "text": "Extort",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.CAST_SPELL"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever you cast a spell"
+     },
+     "keyword": "Extort"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}"
+      }
+     ],
+     "text": "Whenever you tap a Swamp for mana, add an additional {B}.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.TAPPED_FOR_MANA"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "subtypes_all": [
+        "Swamp"
+       ],
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player taps something for mana"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

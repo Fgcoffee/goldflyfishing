@@ -1,0 +1,86 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f3c7af78-a77d-4134-82a2-a5ce84285a84",
+ "name": "Flooded Strand",
+ "card_hash": "cc08a0bab1b7fdf8a49ec1f4bf680338",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f3c7af78-a77d-4134-82a2-a5ce84285a84",
+   "name": "Flooded Strand",
+   "face": 0,
+   "face_name": "Flooded Strand",
+   "card_hash": "cc08a0bab1b7fdf8a49ec1f4bf680338",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "subtypes_any": [
+         "Plains",
+         "Island"
+        ],
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.BATTLEFIELD",
+       "text": "search library"
+      }
+     ],
+     "text": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Plains or Island card, put it onto the battlefield, then shuffle.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.PAY_LIFE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "pay life"
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

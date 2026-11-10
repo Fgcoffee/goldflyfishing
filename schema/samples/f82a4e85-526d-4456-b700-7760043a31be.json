@@ -1,0 +1,61 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f82a4e85-526d-4456-b700-7760043a31be",
+ "name": "Viscera Seer",
+ "card_hash": "c371e6c116a7ada50bac9dc955e1a9ef",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f82a4e85-526d-4456-b700-7760043a31be",
+   "name": "Viscera Seer",
+   "face": 0,
+   "face_name": "Viscera Seer",
+   "card_hash": "c371e6c116a7ada50bac9dc955e1a9ef",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SCRY",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "Sacrifice a creature: Scry 1.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": "CardType.CREATURE",
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "ir_version": 1,
+ "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
+ "name": "Imperial Seal",
+ "card_hash": "60f05adba37775ca58cb271dde9ad680",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
+   "name": "Imperial Seal",
+   "face": 0,
+   "face_name": "Imperial Seal",
+   "card_hash": "60f05adba37775ca58cb271dde9ad680",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.LIBRARY",
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

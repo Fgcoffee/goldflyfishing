@@ -1,0 +1,180 @@
+{
+ "ir_version": 1,
+ "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
+ "name": "Jace, the Mind Sculptor",
+ "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
+   "name": "Jace, the Mind Sculptor",
+   "face": 0,
+   "face_name": "Jace, the Mind Sculptor",
+   "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library."
+      }
+     ],
+     "text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.HAND"
+         ]
+        },
+        "owner": "ControllerRelation.YOU",
+        "count": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "text": "put on library"
+      }
+     ],
+     "text": "0: Draw three cards, then put two cards from your hand on top of your library in any order.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "text": "+0"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RETURN_TO_HAND",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "-1: Return target creature to its owner's hand.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": -1
+        },
+        "text": "-1"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "-12: Exile all cards from target player's library, then that player shuffles their hand into their library."
+      }
+     ],
+     "text": "-12: Exile all cards from target player's library, then that player shuffles their hand into their library.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library.",
+     "reason": "not fully consumed",
+     "consumed": 10,
+     "remaining": [
+      "You",
+      "may",
+      "put",
+      "that",
+      "card",
+      "on",
+      "the",
+      "bottom",
+      "of",
+      "that",
+      "player's",
+      "library",
+      "."
+     ],
+     "rule": "activated"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "-12: Exile all cards from target player's library, then that player shuffles their hand into their library.",
+     "reason": "not fully consumed",
+     "consumed": 3,
+     "remaining": [
+      "from",
+      "target",
+      "player's",
+      "library",
+      ",",
+      "then",
+      "that",
+      "player",
+      "shuffles",
+      "their",
+      "hand",
+      "into",
+      "their",
+      "library",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,143 @@
+{
+ "ir_version": 1,
+ "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
+ "name": "Pashalik Mons",
+ "card_hash": "e9f985d0503c61b0334818ece104a9cb",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
+   "name": "Pashalik Mons",
+   "face": 0,
+   "face_name": "Pashalik Mons",
+   "card_hash": "e9f985d0503c61b0334818ece104a9cb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DAMAGE",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "Whenever this or another Goblin you control dies, this deals 1 damage to any target.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DIES"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "subtypes_all": [
+        "Goblin"
+       ],
+       "controller": "ControllerRelation.YOU",
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something dies"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": "Color.RED",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "{3}{R}, Sacrifice a Goblin: Create two 1/1 red Goblin creature tokens.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 3,
+           "text": "{3}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
+           "text": "{R}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Goblin"
+         ],
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

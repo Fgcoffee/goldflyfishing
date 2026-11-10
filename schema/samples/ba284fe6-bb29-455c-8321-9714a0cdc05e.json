@@ -1,0 +1,69 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
+ "name": "Mishra's Workshop",
+ "card_hash": "c3902d62b3ad1b312a7270c6a755c16a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
+   "name": "Mishra's Workshop",
+   "face": 0,
+   "face_name": "Mishra's Workshop",
+   "card_hash": "c3902d62b3ad1b312a7270c6a755c16a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_restriction": {
+        "$": "SpendOnlyOn",
+        "key": "all artifact that is a spell in stack",
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": "CardType.ARTIFACT",
+         "zones": {
+          "$set": [
+           "Zone.STACK"
+          ]
+         },
+         "is_ability": false
+        }
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}{C}. Spend this mana only to cast artifact spells.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,147 @@
+{
+ "ir_version": 1,
+ "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
+ "name": "Mystic Gate",
+ "card_hash": "0243620937cb9b0097f9cb05060e40a8",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
+   "name": "Mystic Gate",
+   "face": 0,
+   "face_name": "Mystic Gate",
+   "card_hash": "0243620937cb9b0097f9cb05060e40a8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "mana_produced": [
+          "{W}",
+          "{W}"
+         ],
+         "colors": "Color.WHITE",
+         "text": "add {W}{W}"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "mana_produced": [
+          "{W}",
+          "{U}"
+         ],
+         "colors": "Color.WHITE|BLUE",
+         "text": "add {W}{U}"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "mana_produced": [
+          "{U}",
+          "{U}"
+         ],
+         "colors": "Color.BLUE",
+         "text": "add {U}{U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.HYBRID",
+           "colors": "Color.WHITE|BLUE",
+           "text": "{W/U}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

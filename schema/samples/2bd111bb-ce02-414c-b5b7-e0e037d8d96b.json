@@ -1,0 +1,158 @@
+{
+ "ir_version": 1,
+ "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
+ "name": "Bolas's Citadel",
+ "card_hash": "93a9c8eb46b2981d12e187729d363307",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
+   "name": "Bolas's Citadel",
+   "face": 0,
+   "face_name": "Bolas's Citadel",
+   "card_hash": "93a9c8eb46b2981d12e187729d363307",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PERMISSION",
+         "targets": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": [
+            "Zone.LIBRARY"
+           ]
+          },
+          "from_top": true,
+          "count": 1
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": "Duration.PERMANENT",
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.LOOK_AT_TOP_CARD",
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "may look at the top card of their library"
+          }
+         ],
+         "text": "the top card of your library is visible"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may look at the top card of your library any time."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "You may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost."
+      }
+     ],
+     "text": "You may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.EACH_OPPONENT"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 10
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "{T}, Sacrifice ten nonland permanents: Each opponent loses 10 life.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 10
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_none": "CardType.LAND",
+         "count": {
+          "$": "Value",
+          "constant": 10
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "You may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost.",
+     "reason": "not fully consumed",
+     "consumed": 14,
+     "remaining": [
+      "If",
+      "you",
+      "cast",
+      "a",
+      "spell",
+      "this",
+      "way",
+      ",",
+      "pay",
+      "life",
+      "equal",
+      "to",
+      "its",
+      "mana",
+      "value",
+      "rather",
+      "than",
+      "pay",
+      "its",
+      "mana",
+      "cost",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

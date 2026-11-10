@@ -1,0 +1,107 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
+ "name": "Bloodchief's Thirst",
+ "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
+   "name": "Bloodchief's Thirst",
+   "face": 0,
+   "face_name": "Bloodchief's Thirst",
+   "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Kicker {2}{B}",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND",
+       "Zone.STACK"
+      ]
+     },
+     "keyword": "Kicker",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.MANA",
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.GENERIC",
+            "generic": 2,
+            "text": "{2}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.BLACK",
+            "text": "{B}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Kicker",
+      "text": "Kicker {2}{B}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.CREATURE|PLANESWALKER",
+        "mana_value": {
+         "$": "NumericConstraint",
+         "comparison": "Comparison.LE",
+         "value": {
+          "$": "Value",
+          "constant": 2
+         }
+        }
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "duration": "Duration.PERMANENT",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.DESTROY",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_any": "CardType.CREATURE|PLANESWALKER"
+         },
+         "is_targeted": true,
+         "text": "destroy"
+        }
+       ],
+       "text": "if ... would ..., ... instead"
+      }
+     ],
+     "text": "Destroy target creature or planeswalker with mana value 2 or less. If this spell was kicked, instead destroy target creature or planeswalker."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

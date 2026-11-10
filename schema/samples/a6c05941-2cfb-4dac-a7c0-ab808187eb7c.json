@@ -1,0 +1,144 @@
+{
+ "ir_version": 1,
+ "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
+ "name": "Liliana Vess",
+ "card_hash": "5f700aaf1bf1a239f8a099d1a3d65134",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
+   "name": "Liliana Vess",
+   "face": 0,
+   "face_name": "Liliana Vess",
+   "card_hash": "5f700aaf1bf1a239f8a099d1a3d65134",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DISCARD",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TARGET_PLAYER"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "discard"
+      }
+     ],
+     "text": "+1: Target player discards a card.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.LIBRARY",
+       "text": "search library"
+      }
+     ],
+     "text": "-2: Search your library for a card, then shuffle and put that card on top.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": -2
+        },
+        "text": "-2"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "zones": {
+         "$set": [
+          "Zone.GRAVEYARD"
+         ]
+        }
+       },
+       "zone": "Zone.BATTLEFIELD",
+       "text": "put onto the battlefield"
+      }
+     ],
+     "text": "-8: Put all creature cards from all graveyards onto the battlefield under your control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": -8
+        },
+        "text": "-8"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

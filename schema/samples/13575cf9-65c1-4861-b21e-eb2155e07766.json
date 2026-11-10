@@ -1,0 +1,109 @@
+{
+ "ir_version": 1,
+ "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
+ "name": "Sensei's Divining Top",
+ "card_hash": "3b841b81be7abaacf9c476c182b957c1",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
+   "name": "Sensei's Divining Top",
+   "face": 0,
+   "face_name": "Sensei's Divining Top",
+   "card_hash": "3b841b81be7abaacf9c476c182b957c1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOOK_AT_TOP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "look at the top"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "text": "put them back"
+      }
+     ],
+     "text": "{1}: Look at the top three cards of your library, then put them back in any order.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "text": "put on library"
+      }
+     ],
+     "text": "{T}: Draw a card, then put this artifact on top of its owner's library.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

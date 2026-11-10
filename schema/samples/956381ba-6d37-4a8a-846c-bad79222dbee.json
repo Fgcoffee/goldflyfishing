@@ -1,0 +1,99 @@
+{
+ "ir_version": 1,
+ "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
+ "name": "Force of Will",
+ "card_hash": "9840d8f32ff3f4d156e9b133d4806445",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
+   "name": "Force of Will",
+   "face": 0,
+   "face_name": "Force of Will",
+   "card_hash": "9840d8f32ff3f4d156e9b133d4806445",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "You may pay 1 life and exile a blue card from your hand rather than pay this spell's mana cost.",
+     "functions_in": {
+      "$set": [
+       "Zone.BATTLEFIELD",
+       "Zone.COMMAND",
+       "Zone.EXILE",
+       "Zone.GRAVEYARD",
+       "Zone.HAND",
+       "Zone.LIBRARY",
+       "Zone.STACK"
+      ]
+     },
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.PAY_LIFE",
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "pay life"
+        },
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.EXILE_FROM_HAND",
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "colors_any": "Color.BLUE",
+          "zones": {
+           "$set": [
+            "Zone.HAND"
+           ]
+          },
+          "owner": "ControllerRelation.YOU",
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "exile a card"
+        }
+       ]
+      },
+      "text": "alternative cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.COUNTER_SPELL",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "is_targeted": true,
+       "text": "counter"
+      }
+     ],
+     "text": "Counter target spell."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

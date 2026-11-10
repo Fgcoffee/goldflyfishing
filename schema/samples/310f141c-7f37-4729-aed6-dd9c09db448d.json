@@ -1,0 +1,71 @@
+{
+ "ir_version": 1,
+ "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
+ "name": "Blood Artist",
+ "card_hash": "f7ff84c803c9a18b6c97279b3cfcba2f",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
+   "name": "Blood Artist",
+   "face": 0,
+   "face_name": "Blood Artist",
+   "card_hash": "f7ff84c803c9a18b6c97279b3cfcba2f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TARGET_PLAYER"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "lose life"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GAIN_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Whenever this creature or another creature dies, target player loses 1 life and you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DIES"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": "CardType.CREATURE",
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something dies"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

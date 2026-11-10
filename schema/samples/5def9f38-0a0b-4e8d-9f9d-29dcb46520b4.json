@@ -1,0 +1,56 @@
+{
+ "ir_version": 1,
+ "oracle_id": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
+ "name": "Esper Sentinel",
+ "card_hash": "a958a77276a81c92bd0595185d387ec6",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
+   "name": "Esper Sentinel",
+   "face": 0,
+   "face_name": "Esper Sentinel",
+   "card_hash": "a958a77276a81c92bd0595185d387ec6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "where X is (unbound X)"
+      }
+     ],
+     "text": "Whenever an opponent casts their first noncreature spell each turn, draw a card unless that player pays {X}, where X is this creature's power.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.CAST_SPELL"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": "CardType.CREATURE",
+       "zones": {
+        "$set": [
+         "Zone.STACK"
+        ]
+       },
+       "is_ability": false
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.OPPONENT"
+      },
+      "ordinal": 1,
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

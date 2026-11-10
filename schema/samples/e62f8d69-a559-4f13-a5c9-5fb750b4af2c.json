@@ -1,0 +1,62 @@
+{
+ "ir_version": 1,
+ "oracle_id": "e62f8d69-a559-4f13-a5c9-5fb750b4af2c",
+ "name": "Grim Tutor",
+ "card_hash": "acdb190f6d96c01cfe9a433d3469418a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "e62f8d69-a559-4f13-a5c9-5fb750b4af2c",
+   "name": "Grim Tutor",
+   "face": 0,
+   "face_name": "Grim Tutor",
+   "card_hash": "acdb190f6d96c01cfe9a433d3469418a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.HAND",
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Search your library for a card, put that card into your hand, then shuffle. You lose 3 life."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

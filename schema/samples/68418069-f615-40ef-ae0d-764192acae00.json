@@ -1,0 +1,72 @@
+{
+ "ir_version": 1,
+ "oracle_id": "68418069-f615-40ef-ae0d-764192acae00",
+ "name": "Krenko, Mob Boss",
+ "card_hash": "6774f35dde8104624ce3c95ff0a28dff",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "68418069-f615-40ef-ae0d-764192acae00",
+   "name": "Krenko, Mob Boss",
+   "face": 0,
+   "face_name": "Krenko, Mob Boss",
+   "card_hash": "6774f35dde8104624ce3c95ff0a28dff",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.COUNT",
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Goblin"
+         ],
+         "controller": "ControllerRelation.YOU"
+        }
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": "Color.RED",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "{T}: Create X 1/1 red Goblin creature tokens, where X is the number of Goblins you control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

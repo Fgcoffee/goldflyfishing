@@ -1,0 +1,151 @@
+{
+ "ir_version": 1,
+ "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
+ "name": "Elspeth, Sun's Champion",
+ "card_hash": "e300bdbb5bf30269cb54ff33744ed707",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
+   "name": "Elspeth, Sun's Champion",
+   "face": 0,
+   "face_name": "Elspeth, Sun's Champion",
+   "card_hash": "e300bdbb5bf30269cb54ff33744ed707",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Soldier",
+        "subtypes": [
+         "Soldier"
+        ],
+        "colors": "Color.WHITE",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "+1: Create three 1/1 white Soldier creature tokens.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "power": {
+         "$": "NumericConstraint",
+         "comparison": "Comparison.GE",
+         "value": {
+          "$": "Value",
+          "constant": 4
+         }
+        }
+       },
+       "text": "destroy"
+      }
+     ],
+     "text": "-3: Destroy all creatures with power 4 or greater.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.LOYALTY",
+        "amount": {
+         "$": "Value",
+         "constant": -3
+        },
+        "text": "-3"
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "-7: You get an emblem with \"Creatures you control get +2/+2 and have flying.\""
+      }
+     ],
+     "text": "-7: You get an emblem with \"Creatures you control get +2/+2 and have flying.\"",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "-7: You get an emblem with \"Creatures you control get +2/+2 and have flying.\"",
+     "reason": "not fully consumed",
+     "remaining": [
+      "You",
+      "get",
+      "an",
+      "emblem",
+      "with",
+      "\"",
+      "Creatures",
+      "you",
+      "control",
+      "get",
+      "+2/+2",
+      "and",
+      "have",
+      "flying",
+      ".",
+      "\""
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ]
+}

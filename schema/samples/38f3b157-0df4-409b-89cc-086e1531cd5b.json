@@ -1,0 +1,69 @@
+{
+ "ir_version": 1,
+ "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
+ "name": "Gray Merchant of Asphodel",
+ "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
+   "name": "Gray Merchant of Asphodel",
+   "face": 0,
+   "face_name": "Gray Merchant of Asphodel",
+   "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.EACH_OPPONENT"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.DEVOTION",
+        "colors": "Color.BLACK"
+       },
+       "text": "lose life"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GAIN_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.AMOUNT_THIS_WAY",
+        "event_kinds": [
+         63
+        ]
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "When this creature enters, each opponent loses X life, where X is your devotion to black. You gain life equal to the life lost this way.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

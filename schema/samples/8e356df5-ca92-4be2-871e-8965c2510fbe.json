@@ -1,0 +1,56 @@
+{
+ "ir_version": 1,
+ "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
+ "name": "Tempt with Vengeance",
+ "card_hash": "526e12022aebe26ecbf45503164eb9d8",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
+   "name": "Tempt with Vengeance",
+   "face": 0,
+   "face_name": "Tempt with Vengeance",
+   "card_hash": "526e12022aebe26ecbf45503164eb9d8",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste."
+      }
+     ],
+     "text": "Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste.",
+     "reason": "not fully consumed",
+     "consumed": 26,
+     "remaining": [
+      "who",
+      "does",
+      ",",
+      "create",
+      "X",
+      "1/1",
+      "red",
+      "Elemental",
+      "creature",
+      "tokens",
+      "with",
+      "haste",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

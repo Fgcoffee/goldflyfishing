@@ -1,0 +1,107 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
+ "name": "Rogue's Passage",
+ "card_hash": "02cba0866749f0261d0fbf23e55b8b22",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
+   "name": "Rogue's Passage",
+   "face": 0,
+   "face_name": "Rogue's Passage",
+   "card_hash": "02cba0866749f0261d0fbf23e55b8b22",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "duration": "Duration.END_OF_TURN",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BE_BLOCKED",
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE"
+         },
+         "text": "can't be_blocked"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "{4}, {T}: Target creature can't be blocked this turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 4,
+           "text": "{4}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

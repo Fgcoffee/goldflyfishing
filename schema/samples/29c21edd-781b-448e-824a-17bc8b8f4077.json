@@ -1,0 +1,46 @@
+{
+ "ir_version": 1,
+ "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
+ "name": "Goblin War Drums",
+ "card_hash": "08d7187eb4d55d698dfa2b7e226abd97",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
+   "name": "Goblin War Drums",
+   "face": 0,
+   "face_name": "Goblin War Drums",
+   "card_hash": "08d7187eb4d55d698dfa2b7e226abd97",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "duration": "Duration.PERMANENT",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "menace",
+         "keyword": "menace"
+        }
+       ],
+       "text": "gains menace"
+      }
+     ],
+     "text": "Creatures you control have menace."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

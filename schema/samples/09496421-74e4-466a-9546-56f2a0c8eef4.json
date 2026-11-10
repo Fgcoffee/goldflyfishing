@@ -1,0 +1,54 @@
+{
+ "ir_version": 1,
+ "oracle_id": "09496421-74e4-466a-9546-56f2a0c8eef4",
+ "name": "Vault of Whispers",
+ "card_hash": "4d8cdf6ec47ca159944dbea53a606224",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "09496421-74e4-466a-9546-56f2a0c8eef4",
+   "name": "Vault of Whispers",
+   "face": 0,
+   "face_name": "Vault of Whispers",
+   "card_hash": "4d8cdf6ec47ca159944dbea53a606224",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}"
+      }
+     ],
+     "text": "{T}: Add {B}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

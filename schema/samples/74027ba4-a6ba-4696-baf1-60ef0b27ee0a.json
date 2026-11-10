@@ -1,0 +1,93 @@
+{
+ "ir_version": 1,
+ "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
+ "name": "Chalice of the Void",
+ "card_hash": "7a8c800247135a58bc129fc86128756f",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
+   "name": "Chalice of the Void",
+   "face": 0,
+   "face_name": "Chalice of the Void",
+   "card_hash": "7a8c800247135a58bc129fc86128756f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_COUNTERS",
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.X"
+       },
+       "counter_type": "charge",
+       "text": "enters with counters"
+      }
+     ],
+     "text": "This artifact enters with X charge counters on it."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.COUNTER_SPELL",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true,
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        }
+       },
+       "text": "counter"
+      }
+     ],
+     "text": "Whenever a player casts a spell with mana value equal to the number of charge counters on this artifact, counter that spell.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.CAST_SPELL"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         "Zone.STACK"
+        ]
+       },
+       "is_ability": false,
+       "mana_value": {
+        "$": "NumericConstraint",
+        "comparison": "Comparison.EQ",
+        "value": {
+         "$": "Value",
+         "kind": "ValueKind.COUNTERS",
+         "counter_type": "charge"
+        }
+       },
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.EACH_PLAYER"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,200 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
+ "name": "Embercleave",
+ "card_hash": "4cec1cd25e0492e5e73eb9ede76002db",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
+   "name": "Embercleave",
+   "face": 0,
+   "face_name": "Embercleave",
+   "card_hash": "4cec1cd25e0492e5e73eb9ede76002db",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flash",
+     "keyword": "Flash"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_COST",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.PRODUCT",
+        "operands": [
+         {
+          "$": "Value",
+          "constant": -1
+         },
+         {
+          "$": "Value",
+          "kind": "ValueKind.COUNT",
+          "filter": {
+           "$": "ObjectFilter",
+           "types_all": "CardType.CREATURE",
+           "controller": "ControllerRelation.YOU",
+           "attacking": true
+          }
+         }
+        ]
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "this ability costs less"
+      }
+     ],
+     "text": "This spell costs {1} less to cast for each attacking creature you control."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ATTACH",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "is_targeted": true,
+       "attached_to": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "text": "attach it to something"
+      }
+     ],
+     "text": "When this enters, attach it to target creature you control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MODIFY_PT",
+         "targets": {
+          "$": "ObjectFilter",
+          "has_attached": {
+           "$": "ObjectFilter",
+           "source_only": true
+          }
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 1
+         },
+         "duration": "Duration.PERMANENT",
+         "text": "gets +1/+1"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GRANT_ABILITY",
+         "targets": {
+          "$": "ObjectFilter",
+          "has_attached": {
+           "$": "ObjectFilter",
+           "source_only": true
+          }
+         },
+         "duration": "Duration.PERMANENT",
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": "AbilityKind.STATIC",
+           "text": "double strike",
+           "keyword": "double strike"
+          },
+          {
+           "$": "Ability",
+           "kind": "AbilityKind.STATIC",
+           "text": "trample",
+           "keyword": "trample"
+          }
+         ],
+         "text": "and has double strike, trample"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Equipped creature gets +1/+1 and has double strike and trample."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ATTACH",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {3}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 3,
+           "text": "{3}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

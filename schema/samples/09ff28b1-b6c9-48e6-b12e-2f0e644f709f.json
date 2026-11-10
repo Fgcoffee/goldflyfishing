@@ -1,0 +1,96 @@
+{
+ "ir_version": 1,
+ "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
+ "name": "Gravecrawler",
+ "card_hash": "46a4ba95ca926e70a14d6c74fd8c52d0",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
+   "name": "Gravecrawler",
+   "face": 0,
+   "face_name": "Gravecrawler",
+   "card_hash": "46a4ba95ca926e70a14d6c74fd8c52d0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BLOCK",
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "can't block"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "This creature can't block."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "duration": "Duration.WHILE_SOURCE_PERSISTS",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.CONTROLS_MATCHING",
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Zombie"
+         ],
+         "controller": "ControllerRelation.YOU"
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": "Comparison.GE",
+         "value": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "you control ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PLAY_FROM_ZONE",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "from_zone": "Zone.GRAVEYARD",
+         "text": "you may play it"
+        }
+       ],
+       "text": "as long as"
+      }
+     ],
+     "text": "You may cast this card from your graveyard as long as you control a Zombie."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

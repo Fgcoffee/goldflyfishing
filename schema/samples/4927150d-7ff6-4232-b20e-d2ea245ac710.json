@@ -1,0 +1,134 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
+ "name": "Tectonic Edge",
+ "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
+   "name": "Tectonic Edge",
+   "face": 0,
+   "face_name": "Tectonic Edge",
+   "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND",
+        "supertypes_none": "Supertype.BASIC"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "text": "activate only ..."
+      }
+     ],
+     "text": "{1}, {T}, Sacrifice this land: Destroy target nonbasic land. Activate only if an opponent controls four or more lands.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     },
+     "activation_condition": {
+      "$": "Condition",
+      "kind": "ConditionKind.COMPARE_COUNTS",
+      "filter": {
+       "$": "ObjectFilter",
+       "types_all": "CardType.LAND"
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.OPPONENT"
+      },
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": "Comparison.GE",
+       "value": {
+        "$": "Value",
+        "constant": 4
+       }
+      },
+      "text": "a player controls ..."
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

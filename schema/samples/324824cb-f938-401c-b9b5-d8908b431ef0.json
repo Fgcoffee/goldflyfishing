@@ -1,0 +1,113 @@
+{
+ "ir_version": 1,
+ "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
+ "name": "Snuff Out",
+ "card_hash": "1d4566d54649e095800bcca7dda71e27",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
+   "name": "Snuff Out",
+   "face": 0,
+   "face_name": "Snuff Out",
+   "card_hash": "1d4566d54649e095800bcca7dda71e27",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "If you control a Swamp, you may pay 4 life rather than pay this spell's mana cost.",
+     "functions_in": {
+      "$set": [
+       "Zone.BATTLEFIELD",
+       "Zone.COMMAND",
+       "Zone.EXILE",
+       "Zone.GRAVEYARD",
+       "Zone.HAND",
+       "Zone.LIBRARY",
+       "Zone.STACK"
+      ]
+     },
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.PAY_LIFE",
+         "amount": {
+          "$": "Value",
+          "constant": 4
+         },
+         "text": "pay life"
+        }
+       ]
+      },
+      "condition": {
+       "$": "Condition",
+       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "filter": {
+        "$": "ObjectFilter",
+        "subtypes_all": [
+         "Swamp"
+        ],
+        "controller": "ControllerRelation.YOU"
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": "Comparison.GE",
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "you control ..."
+      },
+      "text": "alternative cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "colors_none": "Color.BLACK"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BE_REGENERATED",
+         "subject": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Destroy target nonblack creature. It can't be regenerated."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

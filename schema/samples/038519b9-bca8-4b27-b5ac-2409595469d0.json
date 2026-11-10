@@ -1,0 +1,87 @@
+{
+ "ir_version": 1,
+ "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
+ "name": "Diabolic Intent",
+ "card_hash": "881c339c0729c876582ac03fd7d1d44f",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
+   "name": "Diabolic Intent",
+   "face": 0,
+   "face_name": "Diabolic Intent",
+   "card_hash": "881c339c0729c876582ac03fd7d1d44f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "As an additional cost to cast this spell, sacrifice a creature.",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND",
+       "Zone.STACK"
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.SACRIFICE",
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE",
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "sacrifice"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEARCH_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": "Zone.HAND",
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for a card, put that card into your hand, then shuffle."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,96 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
+ "name": "Goblin Ringleader",
+ "card_hash": "863dad650c5e50132cc3f73c89ef9a13",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
+   "name": "Goblin Ringleader",
+   "face": 0,
+   "face_name": "Goblin Ringleader",
+   "card_hash": "863dad650c5e50132cc3f73c89ef9a13",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOOK_AT_TOP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "keywords": [
+        "reveal"
+       ],
+       "text": "reveal the top"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MOVE_ZONE",
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "from_pile": true,
+          "zones": {
+           "$set": []
+          }
+         },
+         "zone": "Zone.HAND",
+         "text": "put into hand"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PUT_ON_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "from_pile": true
+         },
+         "keywords": [
+          "bottom"
+         ],
+         "text": "put on the bottom of library"
+        }
+       ],
+       "text": "put them"
+      }
+     ],
+     "text": "When this creature enters, reveal the top four cards of your library. Put all Goblin cards revealed this way into your hand and the rest on the bottom of your library in any order.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

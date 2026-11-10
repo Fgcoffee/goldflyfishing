@@ -1,0 +1,94 @@
+{
+ "ir_version": 1,
+ "oracle_id": "406eabe2-df62-49e2-bb39-c0227509d875",
+ "name": "Irrigated Farmland",
+ "card_hash": "03929385f11485b45095e9988df7c8e6",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "406eabe2-df62-49e2-bb39-c0227509d875",
+   "name": "Irrigated Farmland",
+   "face": 0,
+   "face_name": "Irrigated Farmland",
+   "card_hash": "03929385f11485b45095e9988df7c8e6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.TAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       }
+      }
+     ],
+     "text": "Cycling {2}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.DISCARD",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "discard this card"
+       }
+      ]
+     },
+     "functions_in": {
+      "$set": [
+       "Zone.HAND"
+      ]
+     },
+     "keyword": "Cycling"
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

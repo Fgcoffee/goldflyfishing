@@ -1,0 +1,56 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0342b085-be20-475a-bc38-59b9cb6012e8",
+ "name": "Goblin Chainwhirler",
+ "card_hash": "cd7360d2d25d0f9efa241ad0cb4c97c8",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0342b085-be20-475a-bc38-59b9cb6012e8",
+   "name": "Goblin Chainwhirler",
+   "face": 0,
+   "face_name": "Goblin Chainwhirler",
+   "card_hash": "cd7360d2d25d0f9efa241ad0cb4c97c8",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "First strike",
+     "keyword": "First strike"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "When this creature enters, it deals 1 damage to each opponent and each creature and planeswalker they control."
+      }
+     ],
+     "text": "When this creature enters, it deals 1 damage to each opponent and each creature and planeswalker they control.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this creature enters, it deals 1 damage to each opponent and each creature and planeswalker they control.",
+     "reason": "not fully consumed",
+     "consumed": 13,
+     "remaining": [
+      "each",
+      "creature",
+      "and",
+      "planeswalker",
+      "they",
+      "control",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

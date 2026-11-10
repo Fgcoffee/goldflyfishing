@@ -1,0 +1,74 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
+ "name": "Archon of Emeria",
+ "card_hash": "ba0434c43b26af11616854337a2b680a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
+   "name": "Archon of Emeria",
+   "face": 0,
+   "face_name": "Archon of Emeria",
+   "card_hash": "ba0434c43b26af11616854337a2b680a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Each player can't cast more than one spell each turn."
+      }
+     ],
+     "text": "Each player can't cast more than one spell each turn.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REPLACEMENT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND",
+        "supertypes_none": "Supertype.BASIC",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Nonbasic lands your opponents control enter tapped."
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each player can't cast more than one spell each turn.",
+     "reason": "not fully consumed",
+     "consumed": 4,
+     "remaining": [
+      "more",
+      "than",
+      "one",
+      "spell",
+      "each",
+      "turn",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

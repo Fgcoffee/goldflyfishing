@@ -1,0 +1,68 @@
+{
+ "ir_version": 1,
+ "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
+ "name": "Goblin Instigator",
+ "card_hash": "aac1e0781c6dd47556af7e76d6d5286b",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
+   "name": "Goblin Instigator",
+   "face": 0,
+   "face_name": "Goblin Instigator",
+   "card_hash": "aac1e0781c6dd47556af7e76d6d5286b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": "Color.RED",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "When this creature enters, create a 1/1 red Goblin creature token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

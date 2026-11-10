@@ -1,0 +1,148 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
+ "name": "Solitary Confinement",
+ "card_hash": "429cddcb145be40506d4dc20c8498d8e",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
+   "name": "Solitary Confinement",
+   "face": 0,
+   "face_name": "Solitary Confinement",
+   "card_hash": "429cddcb145be40506d4dc20c8498d8e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNLESS_PAYS",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": "CostKind.DISCARD",
+          "amount": {
+           "$": "Value",
+           "constant": 1
+          },
+          "filter": {
+           "$": "ObjectFilter",
+           "zones": {
+            "$set": []
+           },
+           "count": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "discard 1 object"
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SACRIFICE",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "sacrifice"
+        }
+       ],
+       "text": "unless you pays discard 1 object"
+      }
+     ],
+     "text": "At the beginning of your upkeep, sacrifice this enchantment unless you discard a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SKIP_STEP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "skip the draw step"
+      }
+     ],
+     "text": "Skip your draw step."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": "Duration.PERMANENT",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "shroud",
+         "keyword": "shroud"
+        }
+       ],
+       "text": "a player gains shroud"
+      }
+     ],
+     "text": "You have shroud."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PREVENT_DAMAGE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -1
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "prevent damage"
+      }
+     ],
+     "text": "Prevent all damage that would be dealt to you."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

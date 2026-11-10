@@ -1,0 +1,114 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
+ "name": "Goblin Sharpshooter",
+ "card_hash": "4d86a29e87ec8b648bdbb361bf4053d9",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
+   "name": "Goblin Sharpshooter",
+   "face": 0,
+   "face_name": "Goblin Sharpshooter",
+   "card_hash": "4d86a29e87ec8b648bdbb361bf4053d9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.UNTAP_DURING_UNTAP_STEP",
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "doesn't untap during its controller's untap step"
+        }
+       ],
+       "text": "doesn't untap"
+      }
+     ],
+     "text": "This creature doesn't untap during your untap step."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNTAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "text": "tap/untap"
+      }
+     ],
+     "text": "Whenever a creature dies, untap this creature.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DIES"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": "CardType.CREATURE",
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something dies"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DAMAGE",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "{T}: This creature deals 1 damage to any target.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

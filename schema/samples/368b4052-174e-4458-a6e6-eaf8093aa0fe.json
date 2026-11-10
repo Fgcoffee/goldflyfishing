@@ -1,0 +1,86 @@
+{
+ "ir_version": 1,
+ "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
+ "name": "Goblin Chieftain",
+ "card_hash": "130055bfce47610a36f4cd922d9f26d0",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
+   "name": "Goblin Chieftain",
+   "face": 0,
+   "face_name": "Goblin Chieftain",
+   "card_hash": "130055bfce47610a36f4cd922d9f26d0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MODIFY_PT",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "other_than_source": true,
+          "controller": "ControllerRelation.YOU"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 1
+         },
+         "duration": "Duration.PERMANENT",
+         "text": "gets +1/+1"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GRANT_ABILITY",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "other_than_source": true,
+          "controller": "ControllerRelation.YOU"
+         },
+         "duration": "Duration.PERMANENT",
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": "AbilityKind.STATIC",
+           "text": "haste",
+           "keyword": "haste"
+          }
+         ],
+         "text": "and has haste"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Other Goblin creatures you control get +1/+1 and have haste."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

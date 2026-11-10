@@ -1,0 +1,107 @@
+{
+ "ir_version": 1,
+ "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
+ "name": "Frenzied Goblin",
+ "card_hash": "18f8203df2509495adb03417a4e13a5c",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
+   "name": "Frenzied Goblin",
+   "face": 0,
+   "face_name": "Frenzied Goblin",
+   "card_hash": "18f8203df2509495adb03417a4e13a5c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PAY_COST",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": "CostKind.MANA",
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.COLORED",
+               "colors": "Color.RED",
+               "text": "{R}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay {R}"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REFLEXIVE_TRIGGER",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.RESTRICTION",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE"
+         },
+         "is_targeted": true,
+         "duration": "Duration.END_OF_TURN",
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.BLOCK",
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "text": "can't block"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "if you do"
+      }
+     ],
+     "text": "Whenever this creature attacks, you may pay {R}. If you do, target creature can't block this turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ATTACKS"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

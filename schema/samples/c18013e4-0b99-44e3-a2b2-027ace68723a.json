@@ -1,0 +1,68 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
+ "name": "Skirk Prospector",
+ "card_hash": "1789c5a54e34a9986fa60abd8325a4fa",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
+   "name": "Skirk Prospector",
+   "face": 0,
+   "face_name": "Skirk Prospector",
+   "card_hash": "1789c5a54e34a9986fa60abd8325a4fa",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": "Color.RED",
+       "text": "add {R}"
+      }
+     ],
+     "text": "Sacrifice a Goblin: Add {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Goblin"
+         ],
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

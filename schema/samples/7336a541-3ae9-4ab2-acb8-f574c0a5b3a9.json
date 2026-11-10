@@ -1,0 +1,111 @@
+{
+ "ir_version": 1,
+ "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
+ "name": "Vito, Thorn of the Dusk Rose",
+ "card_hash": "e9763789a4fe378568c1b098ea47bd8d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
+   "name": "Vito, Thorn of the Dusk Rose",
+   "face": 0,
+   "face_name": "Vito, Thorn of the Dusk Rose",
+   "card_hash": "e9763789a4fe378568c1b098ea47bd8d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TARGET_OPPONENT"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.EVENT_AMOUNT"
+       },
+       "is_targeted": true,
+       "text": "lose life"
+      }
+     ],
+     "text": "Whenever you gain life, target opponent loses that much life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.LIFE_GAINED"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player gains life"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "duration": "Duration.END_OF_TURN",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "lifelink",
+         "keyword": "lifelink"
+        }
+       ],
+       "text": "gains lifelink"
+      }
+     ],
+     "text": "{3}{B}{B}: Creatures you control gain lifelink until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 3,
+           "text": "{3}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
+           "text": "{B}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
+           "text": "{B}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

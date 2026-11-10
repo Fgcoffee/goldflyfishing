@@ -1,0 +1,71 @@
+{
+ "ir_version": 1,
+ "oracle_id": "1b388371-f9ef-45b4-82a3-ca20a8cd7807",
+ "name": "Dovin's Veto",
+ "card_hash": "e0115b94489a3a32068775c1bac9d434",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "1b388371-f9ef-45b4-82a3-ca20a8cd7807",
+   "name": "Dovin's Veto",
+   "face": 0,
+   "face_name": "Dovin's Veto",
+   "card_hash": "e0115b94489a3a32068775c1bac9d434",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BE_COUNTERED",
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "can't be_countered"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "This spell can't be countered."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.COUNTER_SPELL",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": "CardType.CREATURE",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "is_targeted": true,
+       "text": "counter"
+      }
+     ],
+     "text": "Counter target noncreature spell."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+ "ir_version": 1,
+ "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
+ "name": "Ponder",
+ "card_hash": "948238ce80e94cffaed449b6114b9016",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
+   "name": "Ponder",
+   "face": 0,
+   "face_name": "Ponder",
+   "card_hash": "948238ce80e94cffaed449b6114b9016",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOOK_AT_TOP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "look at the top"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "text": "put them back"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SHUFFLE",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "shuffle"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Look at the top three cards of your library, then put them back in any order. You may shuffle."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw a card."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

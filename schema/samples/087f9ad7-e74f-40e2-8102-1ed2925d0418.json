@@ -1,0 +1,78 @@
+{
+ "ir_version": 1,
+ "oracle_id": "087f9ad7-e74f-40e2-8102-1ed2925d0418",
+ "name": "Rest in Peace",
+ "card_hash": "6cd85609896fb80e48094c69429dcc47",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "087f9ad7-e74f-40e2-8102-1ed2925d0418",
+   "name": "Rest in Peace",
+   "face": 0,
+   "face_name": "Rest in Peace",
+   "card_hash": "6cd85609896fb80e48094c69429dcc47",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.GRAVEYARD"
+         ]
+        }
+       },
+       "zone": "Zone.EXILE",
+       "text": "exile every graveyard"
+      }
+     ],
+     "text": "When this enchantment enters, exile all graveyards.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "duration": "Duration.PERMANENT",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.EXILE",
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "text": "exile"
+        }
+       ],
+       "text": "if ... would ..., ... instead"
+      }
+     ],
+     "text": "If a card or token would be put into a graveyard from anywhere, exile it instead."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

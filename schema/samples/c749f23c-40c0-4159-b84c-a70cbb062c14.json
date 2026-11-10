@@ -1,0 +1,110 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c749f23c-40c0-4159-b84c-a70cbb062c14",
+ "name": "Grand Abolisher",
+ "card_hash": "bdd8553a9e4dc5e737dba572fa354253",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c749f23c-40c0-4159-b84c-a70cbb062c14",
+   "name": "Grand Abolisher",
+   "face": 0,
+   "face_name": "Grand Abolisher",
+   "card_hash": "bdd8553a9e4dc5e737dba572fa354253",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.EACH_OPPONENT"
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.CAST_SPELL",
+         "subject": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": [
+            "Zone.STACK"
+           ]
+          },
+          "is_ability": false
+         },
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.EACH_OPPONENT"
+         },
+         "text": "can't cast_spell"
+        },
+        {
+         "$": "Restriction",
+         "act": "Act.ACTIVATE_ABILITY",
+         "subject": {
+          "$": "ObjectFilter",
+          "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT"
+         },
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.EACH_OPPONENT"
+         },
+         "text": "can't activate_ability"
+        },
+        {
+         "$": "Restriction",
+         "act": "Act.ACTIVATE_MANA_ABILITY",
+         "subject": {
+          "$": "ObjectFilter",
+          "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT"
+         },
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.EACH_OPPONENT"
+         },
+         "text": "can't activate_mana_ability"
+        },
+        {
+         "$": "Restriction",
+         "act": "Act.ACTIVATE_LOYALTY_ABILITY",
+         "subject": {
+          "$": "ObjectFilter",
+          "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT"
+         },
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.EACH_OPPONENT"
+         },
+         "text": "can't activate_loyalty_ability"
+        }
+       ],
+       "text": "a player can't ..."
+      }
+     ],
+     "text": "During your turn, your opponents can't cast spells or activate abilities of artifacts, creatures, or enchantments.",
+     "static_condition": {
+      "$": "Condition",
+      "kind": "ConditionKind.IS_YOUR_TURN",
+      "text": "during your turn"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

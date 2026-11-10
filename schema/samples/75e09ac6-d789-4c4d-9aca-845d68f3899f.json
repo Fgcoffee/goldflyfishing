@@ -1,0 +1,98 @@
+{
+ "ir_version": 1,
+ "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
+ "name": "Windborn Muse",
+ "card_hash": "e4a547d807aa3715ad561366e6d9d997",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
+   "name": "Windborn Muse",
+   "face": 0,
+   "face_name": "Windborn Muse",
+   "card_hash": "e4a547d807aa3715ad561366e6d9d997",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNLESS_PAYS",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.CONTROLLER_OF"
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": "CostKind.MANA",
+          "mana": {
+           "$": "ManaCost",
+           "symbols": [
+            {
+             "$": "ManaSymbol",
+             "kind": "ManaSymbolKind.GENERIC",
+             "generic": 2,
+             "text": "{2}"
+            }
+           ]
+          },
+          "scale": {
+           "$": "Value",
+           "kind": "ValueKind.COUNT",
+           "filter": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE",
+            "controller": "ControllerRelation.SPECIFIC",
+            "attacking": true
+           }
+          }
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.RESTRICTION",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE"
+         },
+         "duration": "Duration.PERMANENT",
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.ATTACK_PLAYER",
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "can't attack you"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "unless its controller pays {2}"
+      }
+     ],
+     "text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

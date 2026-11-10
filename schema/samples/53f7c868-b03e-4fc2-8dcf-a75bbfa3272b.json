@@ -1,0 +1,45 @@
+{
+ "ir_version": 1,
+ "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
+ "name": "Dark Ritual",
+ "card_hash": "683bb12fa14f202b5a74f1b5d95ea88e",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
+   "name": "Dark Ritual",
+   "face": 0,
+   "face_name": "Dark Ritual",
+   "card_hash": "683bb12fa14f202b5a74f1b5d95ea88e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_produced": [
+        "{B}",
+        "{B}",
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}{B}{B}"
+      }
+     ],
+     "text": "Add {B}{B}{B}."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

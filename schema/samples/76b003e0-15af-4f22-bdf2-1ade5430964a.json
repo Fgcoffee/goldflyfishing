@@ -1,0 +1,71 @@
+{
+ "ir_version": 1,
+ "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
+ "name": "Zulaport Cutthroat",
+ "card_hash": "6d3ff59e597364aebee6e0bb61fdab87",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
+   "name": "Zulaport Cutthroat",
+   "face": 0,
+   "face_name": "Zulaport Cutthroat",
+   "card_hash": "6d3ff59e597364aebee6e0bb61fdab87",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.EACH_OPPONENT"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "lose life"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GAIN_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Whenever this creature or another creature you control dies, each opponent loses 1 life and you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DIES"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": "CardType.CREATURE",
+       "controller": "ControllerRelation.YOU",
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something dies"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

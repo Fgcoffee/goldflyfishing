@@ -1,0 +1,80 @@
+{
+ "ir_version": 1,
+ "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
+ "name": "Dark Confidant",
+ "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
+   "name": "Dark Confidant",
+   "face": 0,
+   "face_name": "Dark Confidant",
+   "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOOK_AT_TOP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "keywords": [
+        "reveal"
+       ],
+       "text": "reveal the top"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MOVE_ZONE",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "zone": "Zone.HAND",
+       "text": "put into a zone"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.MANA_VALUE",
+        "filter": {
+         "$": "ObjectFilter",
+         "remembered": true
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "At the beginning of your upkeep, reveal the top card of your library and put that card into your hand. You lose life equal to its mana value.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

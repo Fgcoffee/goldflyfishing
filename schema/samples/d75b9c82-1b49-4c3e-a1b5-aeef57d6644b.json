@@ -1,0 +1,80 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
+ "name": "Cyclonic Rift",
+ "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
+   "name": "Cyclonic Rift",
+   "face": 0,
+   "face_name": "Cyclonic Rift",
+   "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RETURN_TO_HAND",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": "CardType.LAND",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "Return target nonland permanent you don't control to its owner's hand."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Overload {6}{U}",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND"
+      ]
+     },
+     "keyword": "Overload",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.MANA",
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.GENERIC",
+            "generic": 6,
+            "text": "{6}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.BLUE",
+            "text": "{U}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Overload",
+      "text": "Overload {6}{U}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

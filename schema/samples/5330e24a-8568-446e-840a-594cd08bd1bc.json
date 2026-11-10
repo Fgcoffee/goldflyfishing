@@ -1,0 +1,70 @@
+{
+ "ir_version": 1,
+ "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
+ "name": "Prairie Stream",
+ "card_hash": "19a9830cc206a3b9c02dfc5f1e162ee4",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
+   "name": "Prairie Stream",
+   "face": 0,
+   "face_name": "Prairie Stream",
+   "card_hash": "19a9830cc206a3b9c02dfc5f1e162ee4",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.NOT",
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": "ConditionKind.CONTROLS_MATCHING",
+          "filter": {
+           "$": "ObjectFilter",
+           "types_all": "CardType.LAND",
+           "supertypes_all": "Supertype.BASIC",
+           "controller": "ControllerRelation.YOU"
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": "Comparison.GE",
+           "value": {
+            "$": "Value",
+            "constant": 2
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.TAP",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": "Duration.PERMANENT",
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control two or more basic lands."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

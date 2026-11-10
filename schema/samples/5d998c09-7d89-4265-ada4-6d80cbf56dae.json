@@ -1,0 +1,86 @@
+{
+ "ir_version": 1,
+ "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
+ "name": "Blind Obedience",
+ "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
+   "name": "Blind Obedience",
+   "face": 0,
+   "face_name": "Blind Obedience",
+   "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.LOSE_LIFE",
+         "players": {
+          "$": "PlayerFilter",
+          "scope": "PlayerScope.EACH_OPPONENT"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GAIN_LIFE",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        }
+       ]
+      }
+     ],
+     "text": "Extort",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.CAST_SPELL"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever you cast a spell"
+     },
+     "keyword": "Extort"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REPLACEMENT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.ARTIFACT|CREATURE",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Artifacts and creatures your opponents control enter tapped."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

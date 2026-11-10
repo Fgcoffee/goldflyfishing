@@ -1,0 +1,85 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
+ "name": "Ogre Battledriver",
+ "card_hash": "a074fa6500112a1abf8e36b49dd7d503",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
+   "name": "Ogre Battledriver",
+   "face": 0,
+   "face_name": "Ogre Battledriver",
+   "card_hash": "a074fa6500112a1abf8e36b49dd7d503",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MODIFY_PT",
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "duration": "Duration.END_OF_TURN",
+         "text": "gets +2/+0"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GRANT_ABILITY",
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "duration": "Duration.END_OF_TURN",
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": "AbilityKind.STATIC",
+           "text": "haste",
+           "keyword": "haste"
+          }
+         ],
+         "text": "and has haste"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Whenever another creature you control enters, that creature gets +2/+0 and gains haste until end of turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": "CardType.CREATURE",
+       "other_than_source": true,
+       "controller": "ControllerRelation.YOU",
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

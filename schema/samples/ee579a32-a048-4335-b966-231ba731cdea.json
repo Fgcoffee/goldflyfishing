@@ -1,0 +1,63 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
+ "name": "Phyrexian Arena",
+ "card_hash": "1361cf181508b2753985e7b6f4ba0b63",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
+   "name": "Phyrexian Arena",
+   "face": 0,
+   "face_name": "Phyrexian Arena",
+   "card_hash": "1361cf181508b2753985e7b6f4ba0b63",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "At the beginning of your upkeep, you draw a card and you lose 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

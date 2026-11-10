@@ -1,0 +1,74 @@
+{
+ "ir_version": 1,
+ "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
+ "name": "Authority of the Consuls",
+ "card_hash": "40ca2eefaeb49aaf8c3810bc1da18f14",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
+   "name": "Authority of the Consuls",
+   "face": 0,
+   "face_name": "Authority of the Consuls",
+   "card_hash": "40ca2eefaeb49aaf8c3810bc1da18f14",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REPLACEMENT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Creatures your opponents control enter tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GAIN_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Whenever a creature an opponent controls enters, you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": "CardType.CREATURE",
+       "controller": "ControllerRelation.OPPONENT",
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

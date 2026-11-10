@@ -1,0 +1,144 @@
+{
+ "ir_version": 1,
+ "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
+ "name": "Celestial Colonnade",
+ "card_hash": "31b86e6c35ba43c047f9d60fb5d19811",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
+   "name": "Celestial Colonnade",
+   "face": 0,
+   "face_name": "Celestial Colonnade",
+   "card_hash": "31b86e6c35ba43c047f9d60fb5d19811",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.TAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": "Color.WHITE",
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": "Color.BLUE",
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "{3}{W}{U}: Until end of turn, this land becomes a 4/4 white and blue Elemental creature with flying and vigilance. It's still a land."
+      }
+     ],
+     "text": "{3}{W}{U}: Until end of turn, this land becomes a 4/4 white and blue Elemental creature with flying and vigilance. It's still a land.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "{3}{W}{U}: Until end of turn, this land becomes a 4/4 white and blue Elemental creature with flying and vigilance. It's still a land.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Until",
+      "end",
+      "of",
+      "turn",
+      ",",
+      "this",
+      "land",
+      "becomes",
+      "a",
+      "4/4",
+      "white",
+      "and",
+      "blue",
+      "Elemental",
+      "creature",
+      "with",
+      "flying",
+      "and",
+      "vigilance",
+      ".",
+      "It's",
+      "still",
+      "a",
+      "land",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ]
+}

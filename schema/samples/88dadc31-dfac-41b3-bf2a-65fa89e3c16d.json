@@ -1,0 +1,59 @@
+{
+ "ir_version": 1,
+ "oracle_id": "88dadc31-dfac-41b3-bf2a-65fa89e3c16d",
+ "name": "Linvala, Keeper of Silence",
+ "card_hash": "2a70f6e09e89f6e6b7150ce47682741d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "88dadc31-dfac-41b3-bf2a-65fa89e3c16d",
+   "name": "Linvala, Keeper of Silence",
+   "face": 0,
+   "face_name": "Linvala, Keeper of Silence",
+   "card_hash": "2a70f6e09e89f6e6b7150ce47682741d",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Activated abilities of creatures your opponents control can't be activated."
+      }
+     ],
+     "text": "Activated abilities of creatures your opponents control can't be activated.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Activated abilities of creatures your opponents control can't be activated.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Activated",
+      "abilities",
+      "of",
+      "creatures",
+      "your",
+      "opponents",
+      "control",
+      "can't",
+      "be",
+      "activated",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

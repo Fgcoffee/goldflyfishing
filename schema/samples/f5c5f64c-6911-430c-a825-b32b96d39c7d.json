@@ -1,0 +1,68 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
+ "name": "Beetleback Chief",
+ "card_hash": "00e9df100277678b24d252cc7df4479f",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
+   "name": "Beetleback Chief",
+   "face": 0,
+   "face_name": "Beetleback Chief",
+   "card_hash": "00e9df100277678b24d252cc7df4479f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": "Color.RED",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "When this creature enters, create two 1/1 red Goblin creature tokens.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

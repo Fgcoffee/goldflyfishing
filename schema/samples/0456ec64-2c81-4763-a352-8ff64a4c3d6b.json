@@ -1,0 +1,78 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0456ec64-2c81-4763-a352-8ff64a4c3d6b",
+ "name": "Deadly Rollick",
+ "card_hash": "6a48d5bdf6858937b68b58ec48c88360",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0456ec64-2c81-4763-a352-8ff64a4c3d6b",
+   "name": "Deadly Rollick",
+   "face": 0,
+   "face_name": "Deadly Rollick",
+   "card_hash": "6a48d5bdf6858937b68b58ec48c88360",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "If you control a commander, you may cast this spell without paying its mana cost.",
+     "functions_in": {
+      "$set": [
+       "Zone.BATTLEFIELD",
+       "Zone.COMMAND",
+       "Zone.EXILE",
+       "Zone.GRAVEYARD",
+       "Zone.HAND",
+       "Zone.LIBRARY",
+       "Zone.STACK"
+      ]
+     },
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost"
+      },
+      "condition": {
+       "$": "Condition",
+       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "filter": {
+        "$": "ObjectFilter",
+        "controller": "ControllerRelation.YOU",
+        "is_commander": true
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": "Comparison.GE",
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "you control ..."
+      },
+      "text": "cast without paying its mana cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "text": "exile"
+      }
+     ],
+     "text": "Exile target creature."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+ "ir_version": 1,
+ "oracle_id": "a699c663-8131-4045-9265-a83e86609374",
+ "name": "Thran Dynamo",
+ "card_hash": "3b0ddd561f2588a6658e2cda78496d7d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "a699c663-8131-4045-9265-a83e86609374",
+   "name": "Thran Dynamo",
+   "face": 0,
+   "face_name": "Thran Dynamo",
+   "card_hash": "3b0ddd561f2588a6658e2cda78496d7d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

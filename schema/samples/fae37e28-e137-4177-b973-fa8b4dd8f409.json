@@ -1,0 +1,65 @@
+{
+ "ir_version": 1,
+ "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
+ "name": "Generous Gift",
+ "card_hash": "2db8974625b5c6854965d46393f182b7",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
+   "name": "Generous Gift",
+   "face": 0,
+   "face_name": "Generous Gift",
+   "card_hash": "2db8974625b5c6854965d46393f182b7",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Elephant",
+        "subtypes": [
+         "Elephant"
+        ],
+        "colors": "Color.GREEN",
+        "power": {
+         "$": "Value",
+         "constant": 3
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 3
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Destroy target permanent. Its controller creates a 3/3 green Elephant creature token."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "ir_version": 1,
+ "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
+ "name": "Feed the Swarm",
+ "card_hash": "96a90980d1a324ea97af2853ee529b35",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
+   "name": "Feed the Swarm",
+   "face": 0,
+   "face_name": "Feed the Swarm",
+   "card_hash": "96a90980d1a324ea97af2853ee529b35",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.CREATURE|ENCHANTMENT",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.MANA_VALUE",
+        "filter": {
+         "$": "ObjectFilter",
+         "remembered": true
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Destroy target creature or enchantment an opponent controls. You lose life equal to that permanent's mana value."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,129 @@
+{
+ "ir_version": 1,
+ "oracle_id": "2ec4288e-34c6-4831-a2c0-ba1ca1d9d1dc",
+ "name": "Ghost Quarter",
+ "card_hash": "a45af76dbd33e5ad4a8657f25598dc7a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "2ec4288e-34c6-4831-a2c0-ba1ca1d9d1dc",
+   "name": "Ghost Quarter",
+   "face": 0,
+   "face_name": "Ghost Quarter",
+   "card_hash": "a45af76dbd33e5ad4a8657f25598dc7a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEARCH_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.LAND",
+          "supertypes_all": "Supertype.BASIC",
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": "Zone.BATTLEFIELD",
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "{T}, Sacrifice this land: Destroy target land. Its controller may search their library for a basic land card, put it onto the battlefield, then shuffle.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
+ "name": "Lightning Greaves",
+ "card_hash": "8c6f4c1ece112fc542ed34f4fd4b8749",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
+   "name": "Lightning Greaves",
+   "face": 0,
+   "face_name": "Lightning Greaves",
+   "card_hash": "8c6f4c1ece112fc542ed34f4fd4b8749",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": "Duration.PERMANENT",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "haste",
+         "keyword": "haste"
+        },
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.STATIC",
+         "text": "shroud",
+         "keyword": "shroud"
+        }
+       ],
+       "text": "gains haste, shroud"
+      }
+     ],
+     "text": "Equipped creature has haste and shroud."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ATTACH",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {0}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "text": "{0}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

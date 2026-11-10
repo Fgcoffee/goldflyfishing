@@ -1,0 +1,64 @@
+{
+ "ir_version": 1,
+ "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
+ "name": "Hushbringer",
+ "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
+   "name": "Hushbringer",
+   "face": 0,
+   "face_name": "Hushbringer",
+   "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "lifelink",
+     "keyword": "lifelink"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Creatures entering or dying don't cause abilities to trigger."
+      }
+     ],
+     "text": "Creatures entering or dying don't cause abilities to trigger.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Creatures entering or dying don't cause abilities to trigger.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Creatures",
+      "entering",
+      "or",
+      "dying",
+      "don't",
+      "cause",
+      "abilities",
+      "to",
+      "trigger",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

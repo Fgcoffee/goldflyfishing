@@ -1,0 +1,123 @@
+{
+ "ir_version": 1,
+ "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
+ "name": "Austere Command",
+ "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
+   "name": "Austere Command",
+   "face": 0,
+   "face_name": "Austere Command",
+   "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DESTROY",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.ARTIFACT"
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all artifacts."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DESTROY",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.ENCHANTMENT"
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all enchantments."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DESTROY",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE",
+            "mana_value": {
+             "$": "NumericConstraint",
+             "comparison": "Comparison.LE",
+             "value": {
+              "$": "Value",
+              "constant": 3
+             }
+            }
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all creatures with mana value 3 or less."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DESTROY",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE",
+            "mana_value": {
+             "$": "NumericConstraint",
+             "comparison": "Comparison.GE",
+             "value": {
+              "$": "Value",
+              "constant": 4
+             }
+            }
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all creatures with mana value 4 or greater."
+        }
+       ],
+       "text": "Choose two -"
+      }
+     ],
+     "text": "Choose two -",
+     "functions_in": {
+      "$set": [
+       "Zone.STACK"
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

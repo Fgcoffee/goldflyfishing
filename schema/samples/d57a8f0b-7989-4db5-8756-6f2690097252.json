@@ -1,0 +1,57 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
+ "name": "Damnation",
+ "card_hash": "3d35e27b14fcef5e54cdf8b42c10dbe8",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
+   "name": "Damnation",
+   "face": 0,
+   "face_name": "Damnation",
+   "card_hash": "3d35e27b14fcef5e54cdf8b42c10dbe8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BE_REGENERATED",
+         "subject": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Destroy all creatures. They can't be regenerated."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

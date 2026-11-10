@@ -1,0 +1,165 @@
+{
+ "ir_version": 1,
+ "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
+ "name": "Mogg War Marshal",
+ "card_hash": "6ea84b22e5af640ca7d24a7fb69c7489",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
+   "name": "Mogg War Marshal",
+   "face": 0,
+   "face_name": "Mogg War Marshal",
+   "card_hash": "6ea84b22e5af640ca7d24a7fb69c7489",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PAY_COST",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": "CostKind.MANA",
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.GENERIC",
+               "generic": 1,
+               "text": "{1}"
+              },
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.COLORED",
+               "colors": "Color.RED",
+               "text": "{R}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay the echo cost"
+        }
+       ],
+       "text": "you may pay the echo cost"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.IF_YOU_DONT",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SACRIFICE",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "sacrifice it"
+        }
+       ],
+       "text": "if you don't, sacrifice it"
+      }
+     ],
+     "text": "Echo {1}{R}",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "filter": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "arrived_since_last_turn": true
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": "Comparison.GE",
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "it came under your control since your last upkeep"
+      },
+      "text": "at the beginning of your upkeep"
+     },
+     "keyword": "Echo"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": "Color.RED",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "When this creature enters or dies, create a 1/1 red Goblin creature token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DIES",
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "uses_last_known_information": true,
+      "text": "when this does one of two things"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

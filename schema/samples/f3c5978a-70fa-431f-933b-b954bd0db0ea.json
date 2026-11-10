@@ -1,0 +1,100 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f3c5978a-70fa-431f-933b-b954bd0db0ea",
+ "name": "Mox Diamond",
+ "card_hash": "68a855a3fdc689dd3841b893581edcaf",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f3c5978a-70fa-431f-933b-b954bd0db0ea",
+   "name": "Mox Diamond",
+   "face": 0,
+   "face_name": "Mox Diamond",
+   "card_hash": "68a855a3fdc689dd3841b893581edcaf",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "duration": "Duration.PERMANENT",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.REFLEXIVE_TRIGGER",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "zone": "Zone.BATTLEFIELD",
+           "text": "put onto the battlefield"
+          },
+          {
+           "$": "Effect",
+           "kind": "EffectKind.IF_YOU_DONT",
+           "children": [
+            {
+             "$": "Effect",
+             "kind": "EffectKind.MOVE_ZONE",
+             "targets": {
+              "$": "ObjectFilter",
+              "remembered": true
+             },
+             "zone": "Zone.GRAVEYARD",
+             "text": "put into a zone"
+            }
+           ],
+           "text": "if you don't"
+          }
+         ],
+         "text": "if you do"
+        }
+       ],
+       "text": "if ... would ..., ... instead"
+      }
+     ],
+     "text": "If this artifact would enter, you may discard a land card instead. If you do, put this artifact onto the battlefield. If you don't, put it into its owner's graveyard."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

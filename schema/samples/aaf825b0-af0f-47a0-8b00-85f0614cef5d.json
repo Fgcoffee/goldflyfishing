@@ -1,0 +1,47 @@
+{
+ "ir_version": 1,
+ "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
+ "name": "Glowrider",
+ "card_hash": "66c450187662a5b41d2e13bb51645345",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
+   "name": "Glowrider",
+   "face": 0,
+   "face_name": "Glowrider",
+   "card_hash": "66c450187662a5b41d2e13bb51645345",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_COST",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": "CardType.CREATURE",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "is_ability": false
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "costs less to cast"
+      }
+     ],
+     "text": "Noncreature spells cost {1} more to cast."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

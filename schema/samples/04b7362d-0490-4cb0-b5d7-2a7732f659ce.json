@@ -1,0 +1,109 @@
+{
+ "ir_version": 1,
+ "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
+ "name": "Bojuka Bog",
+ "card_hash": "a2bd23ffa6857dbb313601fdce6280ee",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
+   "name": "Bojuka Bog",
+   "face": 0,
+   "face_name": "Bojuka Bog",
+   "card_hash": "a2bd23ffa6857dbb313601fdce6280ee",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.TAP",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.GRAVEYARD"
+         ]
+        }
+       },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TARGET_PLAYER"
+       },
+       "is_targeted": true,
+       "text": "exile a graveyard"
+      }
+     ],
+     "text": "When this land enters, exile target player's graveyard.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": "Color.BLACK",
+       "text": "add {B}"
+      }
+     ],
+     "text": "{T}: Add {B}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,113 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d3df7128-31dd-4d71-90be-87e2e9ff51b4",
+ "name": "Dust Bowl",
+ "card_hash": "f56ff3479a0767092b7e02631ce750c2",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d3df7128-31dd-4d71-90be-87e2e9ff51b4",
+   "name": "Dust Bowl",
+   "face": 0,
+   "face_name": "Dust Bowl",
+   "card_hash": "f56ff3479a0767092b7e02631ce750c2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND",
+        "supertypes_none": "Supertype.BASIC"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "{3}, {T}, Sacrifice a land: Destroy target nonbasic land.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 3,
+           "text": "{3}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.SACRIFICE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": "CardType.LAND",
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

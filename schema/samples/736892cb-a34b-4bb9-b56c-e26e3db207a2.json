@@ -1,0 +1,205 @@
+{
+ "ir_version": 1,
+ "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
+ "name": "Mana Vault",
+ "card_hash": "65a8a518acc87465a6dce684bc6b446e",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
+   "name": "Mana Vault",
+   "face": 0,
+   "face_name": "Mana Vault",
+   "card_hash": "65a8a518acc87465a6dce684bc6b446e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.UNTAP_DURING_UNTAP_STEP",
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "doesn't untap during its controller's untap step"
+        }
+       ],
+       "text": "doesn't untap"
+      }
+     ],
+     "text": "This artifact doesn't untap during your untap step."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PAY_COST",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": "CostKind.MANA",
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.GENERIC",
+               "generic": 4,
+               "text": "{4}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay {4}"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REFLEXIVE_TRIGGER",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.UNTAP",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "tap/untap"
+        }
+       ],
+       "text": "if you do"
+      }
+     ],
+     "text": "At the beginning of your upkeep, you may pay {4}. If you do, untap this artifact.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DAMAGE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "At the beginning of your draw step, if this artifact is tapped, it deals 1 damage to you.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DRAW_STEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "filter": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "tapped": true
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": "Comparison.GE",
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "a state condition"
+      },
+      "text": "at the beginning of draw step"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

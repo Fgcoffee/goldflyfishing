@@ -1,0 +1,83 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d236b3fc-0d3f-4d99-875d-e32a33fe5767",
+ "name": "Goblin King",
+ "card_hash": "40eaefa49c62d2efedd0085b3e3f2091",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d236b3fc-0d3f-4d99-875d-e32a33fe5767",
+   "name": "Goblin King",
+   "face": 0,
+   "face_name": "Goblin King",
+   "card_hash": "40eaefa49c62d2efedd0085b3e3f2091",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MODIFY_PT",
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "other_than_source": true
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 1
+         },
+         "duration": "Duration.PERMANENT",
+         "text": "gets +1/+1"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GRANT_ABILITY",
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "other_than_source": true
+         },
+         "duration": "Duration.PERMANENT",
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": "AbilityKind.STATIC",
+           "text": "mountainwalk",
+           "keyword": "mountainwalk",
+           "quality": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.LAND",
+            "subtypes_any": [
+             "Mountain"
+            ]
+           }
+          }
+         ],
+         "text": "and has mountainwalk"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Other Goblins get +1/+1 and have mountainwalk."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

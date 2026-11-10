@@ -1,0 +1,106 @@
+{
+ "ir_version": 1,
+ "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
+ "name": "Smothering Tithe",
+ "card_hash": "0c81c0c422ec9859a6119eafd817e7a5",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
+   "name": "Smothering Tithe",
+   "face": 0,
+   "face_name": "Smothering Tithe",
+   "card_hash": "0c81c0c422ec9859a6119eafd817e7a5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TRIGGER_PLAYER"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PAY_COST",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": "CostKind.MANA",
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.GENERIC",
+               "generic": 2,
+               "text": "{2}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay {2}"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.IF_YOU_DONT",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.CREATE_TOKEN",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "token": {
+          "$": "TokenSpec",
+          "name": "Treasure",
+          "types": "CardType.ARTIFACT",
+          "subtypes": [
+           "Treasure"
+          ]
+         },
+         "text": "create token"
+        }
+       ],
+       "text": "if you don't"
+      }
+     ],
+     "text": "Whenever an opponent draws a card, that player may pay {2}. If the player doesn't, you create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DREW_CARD"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.OPPONENT"
+      },
+      "text": "whenever a player draws"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

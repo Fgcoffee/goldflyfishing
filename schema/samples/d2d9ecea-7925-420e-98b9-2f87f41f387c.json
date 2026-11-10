@@ -1,0 +1,101 @@
+{
+ "ir_version": 1,
+ "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
+ "name": "Land Tax",
+ "card_hash": "845abdcc4a43ff7eb76fb14401245d13",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
+   "name": "Land Tax",
+   "face": 0,
+   "face_name": "Land Tax",
+   "card_hash": "845abdcc4a43ff7eb76fb14401245d13",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEARCH_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.LAND",
+          "supertypes_all": "Supertype.BASIC",
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 3
+          },
+          "up_to": true
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 3
+         },
+         "zone": "Zone.HAND",
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "At the beginning of your upkeep, if an opponent controls more lands than you, you may search your library for up to three basic land cards, reveal them, put them into your hand, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": "ConditionKind.COMPARE_COUNTS",
+       "filter": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND"
+       },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.OPPONENT"
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": "Comparison.GT",
+        "value": {
+         "$": "Value",
+         "kind": "ValueKind.COUNT",
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.LAND",
+          "controller": "ControllerRelation.YOU"
+         }
+        }
+       },
+       "text": "an opponent controls more all land than you"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

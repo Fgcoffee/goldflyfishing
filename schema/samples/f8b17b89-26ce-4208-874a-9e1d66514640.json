@@ -1,0 +1,84 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
+ "name": "Dig Through Time",
+ "card_hash": "d3044418c468e539fc33812c8d6560f9",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
+   "name": "Dig Through Time",
+   "face": 0,
+   "face_name": "Dig Through Time",
+   "card_hash": "d3044418c468e539fc33812c8d6560f9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Delve",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND",
+       "Zone.STACK"
+      ]
+     },
+     "keyword": "Delve"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOOK_AT_TOP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 7
+       },
+       "text": "look at the top"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MOVE_ZONE",
+         "targets": {
+          "$": "ObjectFilter",
+          "from_pile": true,
+          "count": {
+           "$": "Value",
+           "constant": 2
+          }
+         },
+         "zone": "Zone.HAND",
+         "text": "put into hand"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PUT_ON_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "from_pile": true
+         },
+         "keywords": [
+          "bottom"
+         ],
+         "text": "put on the bottom of library"
+        }
+       ],
+       "text": "put them"
+      }
+     ],
+     "text": "Look at the top seven cards of your library. Put two of them into your hand and the rest on the bottom of your library in any order."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

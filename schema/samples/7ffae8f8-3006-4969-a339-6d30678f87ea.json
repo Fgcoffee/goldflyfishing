@@ -1,0 +1,51 @@
+{
+ "ir_version": 1,
+ "oracle_id": "7ffae8f8-3006-4969-a339-6d30678f87ea",
+ "name": "Night's Whisper",
+ "card_hash": "707f705d81242037c40db39b8a76966f",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "7ffae8f8-3006-4969-a339-6d30678f87ea",
+   "name": "Night's Whisper",
+   "face": 0,
+   "face_name": "Night's Whisper",
+   "card_hash": "707f705d81242037c40db39b8a76966f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DRAW",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "You draw two cards and lose 2 life."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

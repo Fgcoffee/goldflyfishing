@@ -1,0 +1,142 @@
+{
+ "ir_version": 1,
+ "oracle_id": "c4ea0931-43e0-4214-9e0b-213eee3a7e69",
+ "name": "Tangle Wire",
+ "card_hash": "b9645f9f2582d923f2bb15ce6bae2964",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "c4ea0931-43e0-4214-9e0b-213eee3a7e69",
+   "name": "Tangle Wire",
+   "face": 0,
+   "face_name": "Tangle Wire",
+   "card_hash": "b9645f9f2582d923f2bb15ce6bae2964",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_COUNTERS",
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "counter_type": "fade",
+       "text": "enters with 4 fade counters"
+      }
+     ],
+     "text": "Fading 4",
+     "keyword": "Fading"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.OBJECT_COUNT",
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "has_counter": "fade"
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": "Comparison.EQ",
+         "value": {
+          "$": "Value"
+         }
+        },
+        "text": "if you can't remove a fade counter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SACRIFICE",
+         "text": "sacrifice this permanent"
+        }
+       ],
+       "otherwise": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.REMOVE_COUNTERS",
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "counter_type": "fade",
+         "text": "remove a fade counter from this permanent"
+        }
+       ]
+      }
+     ],
+     "text": "Fading upkeep",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of your upkeep"
+     },
+     "keyword": "Fading"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "At the beginning of each player's upkeep, that player taps an untapped artifact, creature, or land they control for each fade counter on this artifact."
+      }
+     ],
+     "text": "At the beginning of each player's upkeep, that player taps an untapped artifact, creature, or land they control for each fade counter on this artifact.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of each player's upkeep, that player taps an untapped artifact, creature, or land they control for each fade counter on this artifact.",
+     "reason": "not fully consumed",
+     "consumed": 8,
+     "remaining": [
+      "that",
+      "player",
+      "taps",
+      "an",
+      "untapped",
+      "artifact",
+      ",",
+      "creature",
+      ",",
+      "or",
+      "land",
+      "they",
+      "control",
+      "for",
+      "each",
+      "fade",
+      "counter",
+      "on",
+      "this",
+      "artifact",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

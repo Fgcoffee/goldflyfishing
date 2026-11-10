@@ -1,0 +1,187 @@
+{
+ "ir_version": 1,
+ "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
+ "name": "Nim Deathmantle",
+ "card_hash": "1769cf56730f95adbad08739596ce83b",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
+   "name": "Nim Deathmantle",
+   "face": 0,
+   "face_name": "Nim Deathmantle",
+   "card_hash": "1769cf56730f95adbad08739596ce83b",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Equipped creature gets +2/+2, has intimidate, and is a black Zombie."
+      }
+     ],
+     "text": "Equipped creature gets +2/+2, has intimidate, and is a black Zombie.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PAY_COST",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": "CostKind.MANA",
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": "ManaSymbolKind.GENERIC",
+               "generic": 4,
+               "text": "{4}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay {4}"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REFLEXIVE_TRIGGER",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "zone": "Zone.BATTLEFIELD",
+         "text": "return"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ATTACH",
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "attached_to": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "attach it to something"
+        }
+       ],
+       "text": "if you do"
+      }
+     ],
+     "text": "Whenever a nontoken creature is put into your graveyard from the battlefield, you may pay {4}. If you do, return that card to the battlefield and attach this Equipment to it.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DIES"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": "CardType.CREATURE",
+       "owner": "ControllerRelation.YOU",
+       "is_token": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something is put into a graveyard"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ATTACH",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {4}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 4,
+           "text": "{4}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": "Timing.SORCERY",
+     "keyword": "Equip"
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Equipped creature gets +2/+2, has intimidate, and is a black Zombie.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "has",
+      "intimidate",
+      ",",
+      "and",
+      "is",
+      "a",
+      "black",
+      "Zombie",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

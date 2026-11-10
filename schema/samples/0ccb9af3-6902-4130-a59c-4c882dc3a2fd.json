@@ -1,0 +1,87 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
+ "name": "Legion Warboss",
+ "card_hash": "d172539dcc8dd041aa2bda537d62e262",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
+   "name": "Legion Warboss",
+   "face": 0,
+   "face_name": "Legion Warboss",
+   "card_hash": "d172539dcc8dd041aa2bda537d62e262",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_COUNTERS",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "other_than_source": true,
+        "controller": "ControllerRelation.YOU",
+        "attacking": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "counter_type": "+1/+1"
+      }
+     ],
+     "text": "Mentor",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ATTACKS"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "whenever this attacks (Mentor)"
+     },
+     "keyword": "Mentor"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able."
+      }
+     ],
+     "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able.",
+     "reason": "not fully consumed",
+     "consumed": 26,
+     "remaining": [
+      "attacks",
+      "this",
+      "combat",
+      "if",
+      "able",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

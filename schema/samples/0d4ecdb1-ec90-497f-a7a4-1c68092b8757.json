@@ -1,0 +1,102 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
+ "name": "Teferi's Protection",
+ "card_hash": "ddf2d2ac2837f4c166c0f0a568847490",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
+   "name": "Teferi's Protection",
+   "face": 0,
+   "face_name": "Teferi's Protection",
+   "card_hash": "ddf2d2ac2837f4c166c0f0a568847490",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "duration": "Duration.YOUR_NEXT_TURN",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.RESTRICTION",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": "Duration.YOUR_NEXT_TURN",
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": "Act.LIFE_TOTAL_CHANGE",
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "life total can't change"
+          }
+         ],
+         "text": "life total can't change"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.GRANT_ABILITY",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": "Duration.YOUR_NEXT_TURN",
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": "AbilityKind.STATIC",
+           "text": "Protection",
+           "keyword": "Protection",
+           "quality": {
+            "$": "ObjectFilter",
+            "zones": {
+             "$set": []
+            }
+           }
+          }
+         ],
+         "text": "a player gains Protection"
+        }
+       ],
+       "text": "for a duration"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PHASE_OUT",
+       "targets": {
+        "$": "ObjectFilter",
+        "controller": "ControllerRelation.YOU"
+       },
+       "text": "phase out"
+      }
+     ],
+     "text": "Until your next turn, your life total can't change and you gain protection from everything. All permanents you control phase out."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "text": "exile"
+      }
+     ],
+     "text": "Exile this."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

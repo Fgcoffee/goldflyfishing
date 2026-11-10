@@ -1,0 +1,89 @@
+{
+ "ir_version": 1,
+ "oracle_id": "afaef788-34d1-460b-b884-9d7ae6ddeb18",
+ "name": "Toxic Deluge",
+ "card_hash": "916fc6605b7f0f12f20b23144879c31d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "afaef788-34d1-460b-b884-9d7ae6ddeb18",
+   "name": "Toxic Deluge",
+   "face": 0,
+   "face_name": "Toxic Deluge",
+   "card_hash": "916fc6605b7f0f12f20b23144879c31d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.LOSE_LIFE",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "kind": "ValueKind.X"
+         },
+         "text": "pay life"
+        }
+       ],
+       "text": "as an additional cost"
+      }
+     ],
+     "text": "As an additional cost to cast this spell, pay X life."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_PT",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.DIFFERENCE",
+        "operands": [
+         {
+          "$": "Value"
+         },
+         {
+          "$": "Value",
+          "kind": "ValueKind.X"
+         }
+        ]
+       },
+       "amount2": {
+        "$": "Value",
+        "kind": "ValueKind.DIFFERENCE",
+        "operands": [
+         {
+          "$": "Value"
+         },
+         {
+          "$": "Value",
+          "kind": "ValueKind.X"
+         }
+        ]
+       },
+       "duration": "Duration.END_OF_TURN",
+       "text": "gets -X/-X"
+      }
+     ],
+     "text": "All creatures get -X/-X until end of turn."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

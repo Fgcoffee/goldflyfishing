@@ -1,0 +1,51 @@
+{
+ "ir_version": 1,
+ "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
+ "name": "Shared Animosity",
+ "card_hash": "ad80641d12bda7a20bc2cb658943cfcd",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
+   "name": "Shared Animosity",
+   "face": 0,
+   "face_name": "Shared Animosity",
+   "card_hash": "ad80641d12bda7a20bc2cb658943cfcd",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it."
+      }
+     ],
+     "text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it.",
+     "reason": "not fully consumed",
+     "consumed": 19,
+     "remaining": [
+      "that",
+      "shares",
+      "a",
+      "creature",
+      "type",
+      "with",
+      "it",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

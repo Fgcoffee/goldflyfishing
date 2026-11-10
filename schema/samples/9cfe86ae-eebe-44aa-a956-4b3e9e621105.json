@@ -1,0 +1,55 @@
+{
+ "ir_version": 1,
+ "oracle_id": "9cfe86ae-eebe-44aa-a956-4b3e9e621105",
+ "name": "Krenko's Command",
+ "card_hash": "55e76d2f19612a166c67ab79dfb11dfb",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "9cfe86ae-eebe-44aa-a956-4b3e9e621105",
+   "name": "Krenko's Command",
+   "face": 0,
+   "face_name": "Krenko's Command",
+   "card_hash": "55e76d2f19612a166c67ab79dfb11dfb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CREATE_TOKEN",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": "Color.RED",
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Create two 1/1 red Goblin creature tokens."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

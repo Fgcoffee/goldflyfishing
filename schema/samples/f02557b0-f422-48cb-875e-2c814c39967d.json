@@ -1,0 +1,62 @@
+{
+ "ir_version": 1,
+ "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
+ "name": "Hellrider",
+ "card_hash": "0c8c68cebd8540ca2db9878b84bd753d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
+   "name": "Hellrider",
+   "face": 0,
+   "face_name": "Hellrider",
+   "card_hash": "0c8c68cebd8540ca2db9878b84bd753d",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Whenever a creature you control attacks, this creature deals 1 damage to the player or planeswalker it's attacking."
+      }
+     ],
+     "text": "Whenever a creature you control attacks, this creature deals 1 damage to the player or planeswalker it's attacking.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever a creature you control attacks, this creature deals 1 damage to the player or planeswalker it's attacking.",
+     "reason": "not fully consumed",
+     "consumed": 7,
+     "remaining": [
+      "this",
+      "creature",
+      "deals",
+      "1",
+      "damage",
+      "to",
+      "the",
+      "player",
+      "or",
+      "planeswalker",
+      "it's",
+      "attacking",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

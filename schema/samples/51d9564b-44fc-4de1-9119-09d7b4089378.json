@@ -1,0 +1,73 @@
+{
+ "ir_version": 1,
+ "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
+ "name": "Goblin Guide",
+ "card_hash": "d56052c9c115b91c6ccad825c51747e2",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
+   "name": "Goblin Guide",
+   "face": 0,
+   "face_name": "Goblin Guide",
+   "card_hash": "d56052c9c115b91c6ccad825c51747e2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Whenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand."
+      }
+     ],
+     "text": "Whenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "defending",
+      "player",
+      "reveals",
+      "the",
+      "top",
+      "card",
+      "of",
+      "their",
+      "library",
+      ".",
+      "If",
+      "it's",
+      "a",
+      "land",
+      "card",
+      ",",
+      "that",
+      "player",
+      "puts",
+      "it",
+      "into",
+      "their",
+      "hand",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

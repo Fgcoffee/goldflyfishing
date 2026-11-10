@@ -1,0 +1,113 @@
+{
+ "ir_version": 1,
+ "oracle_id": "81ba3a33-0e04-4f68-9a42-1dd717733b57",
+ "name": "Lavinia, Azorius Renegade",
+ "card_hash": "3a1a2c5d4746ff686caef637ec20c964",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "81ba3a33-0e04-4f68-9a42-1dd717733b57",
+   "name": "Lavinia, Azorius Renegade",
+   "face": 0,
+   "face_name": "Lavinia, Azorius Renegade",
+   "card_hash": "3a1a2c5d4746ff686caef637ec20c964",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Each opponent can't cast noncreature spells with mana value greater than the number of lands that player controls."
+      }
+     ],
+     "text": "Each opponent can't cast noncreature spells with mana value greater than the number of lands that player controls.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.COUNTER_SPELL",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true,
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        }
+       },
+       "text": "counter"
+      }
+     ],
+     "text": "Whenever an opponent casts a spell, if no mana was spent to cast it, counter that spell.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.CAST_SPELL"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         "Zone.STACK"
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.OPPONENT"
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": "ConditionKind.NO_MANA_SPENT",
+       "text": "if no mana was spent to cast it"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each opponent can't cast noncreature spells with mana value greater than the number of lands that player controls.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Each",
+      "opponent",
+      "can't",
+      "cast",
+      "noncreature",
+      "spells",
+      "with",
+      "mana",
+      "value",
+      "greater",
+      "than",
+      "the",
+      "number",
+      "of",
+      "lands",
+      "that",
+      "player",
+      "controls",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

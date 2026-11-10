@@ -1,0 +1,112 @@
+{
+ "ir_version": 1,
+ "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
+ "name": "Reckless Bushwhacker",
+ "card_hash": "e2258e8baa07efda2065c242c94ec9b0",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
+   "name": "Reckless Bushwhacker",
+   "face": 0,
+   "face_name": "Reckless Bushwhacker",
+   "card_hash": "e2258e8baa07efda2065c242c94ec9b0",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Surge {1}{R}",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND"
+      ]
+     },
+     "keyword": "Surge",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.MANA",
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.GENERIC",
+            "generic": 1,
+            "text": "{1}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.RED",
+            "text": "{R}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Surge",
+      "text": "Surge {1}{R}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "When this creature enters, if its surge cost was paid, other creatures you control get +1/+0 and gain haste until end of turn."
+      }
+     ],
+     "text": "When this creature enters, if its surge cost was paid, other creatures you control get +1/+0 and gain haste until end of turn.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this creature enters, if its surge cost was paid, other creatures you control get +1/+0 and gain haste until end of turn.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "if",
+      "its",
+      "surge",
+      "cost",
+      "was",
+      "paid",
+      ",",
+      "other",
+      "creatures",
+      "you",
+      "control",
+      "get",
+      "+1/+0",
+      "and",
+      "gain",
+      "haste",
+      "until",
+      "end",
+      "of",
+      "turn",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

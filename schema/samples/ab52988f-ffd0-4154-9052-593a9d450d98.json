@@ -1,0 +1,104 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
+ "name": "Goblin Heelcutter",
+ "card_hash": "0cd570588abe65e3ca1315f878b580f9",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
+   "name": "Goblin Heelcutter",
+   "face": 0,
+   "face_name": "Goblin Heelcutter",
+   "card_hash": "0cd570588abe65e3ca1315f878b580f9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "is_targeted": true,
+       "duration": "Duration.END_OF_TURN",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BLOCK",
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE"
+         },
+         "text": "can't block"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Whenever this creature attacks, target creature can't block this turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ATTACKS"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Dash {2}{R}",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND"
+      ]
+     },
+     "keyword": "Dash",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.MANA",
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.GENERIC",
+            "generic": 2,
+            "text": "{2}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.RED",
+            "text": "{R}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Dash",
+      "text": "Dash {2}{R}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

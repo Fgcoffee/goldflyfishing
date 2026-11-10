@@ -1,0 +1,36 @@
+{
+ "ir_version": 1,
+ "oracle_id": "265236d1-d96c-4424-835e-a0fe91c41170",
+ "name": "Ravages of War",
+ "card_hash": "5118de5c02358eb436b9ebe467c15701",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "265236d1-d96c-4424-835e-a0fe91c41170",
+   "name": "Ravages of War",
+   "face": 0,
+   "face_name": "Ravages of War",
+   "card_hash": "5118de5c02358eb436b9ebe467c15701",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND"
+       },
+       "text": "destroy"
+      }
+     ],
+     "text": "Destroy all lands."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

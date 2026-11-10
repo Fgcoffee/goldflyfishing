@@ -1,0 +1,133 @@
+{
+ "ir_version": 1,
+ "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
+ "name": "Mystic Confluence",
+ "card_hash": "19172c2260a2b670eb8237ffceb5f447",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
+   "name": "Mystic Confluence",
+   "face": 0,
+   "face_name": "Mystic Confluence",
+   "card_hash": "19172c2260a2b670eb8237ffceb5f447",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.UNLESS_PAYS",
+           "players": {
+            "$": "PlayerFilter",
+            "scope": "PlayerScope.AFFECTED_CONTROLLER"
+           },
+           "pay_cost": {
+            "$": "Cost",
+            "components": [
+             {
+              "$": "CostComponent",
+              "kind": "CostKind.MANA",
+              "mana": {
+               "$": "ManaCost",
+               "symbols": [
+                {
+                 "$": "ManaSymbol",
+                 "kind": "ManaSymbolKind.GENERIC",
+                 "generic": 3,
+                 "text": "{3}"
+                }
+               ]
+              }
+             }
+            ]
+           },
+           "children": [
+            {
+             "$": "Effect",
+             "kind": "EffectKind.COUNTER_SPELL",
+             "targets": {
+              "$": "ObjectFilter",
+              "zones": {
+               "$set": [
+                "Zone.STACK"
+               ]
+              },
+              "is_ability": false
+             },
+             "is_targeted": true,
+             "text": "counter"
+            }
+           ],
+           "text": "unless its controller pays {3}"
+          }
+         ],
+         "text": "Counter target spell unless its controller pays {3}."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.RETURN_TO_HAND",
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": "CardType.CREATURE"
+           },
+           "is_targeted": true,
+           "text": "return to hand"
+          }
+         ],
+         "text": "Return target creature to its owner's hand."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DRAW",
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "text": "draw"
+          }
+         ],
+         "text": "Draw a card."
+        }
+       ],
+       "modes_may_repeat": true,
+       "text": "Choose three. You may choose the same mode more than once."
+      }
+     ],
+     "text": "Choose three. You may choose the same mode more than once.",
+     "functions_in": {
+      "$set": [
+       "Zone.STACK"
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

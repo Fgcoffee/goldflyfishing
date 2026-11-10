@@ -1,0 +1,58 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
+ "name": "Throne of the God-Pharaoh",
+ "card_hash": "78e4c141a80d59ee242147b12bab2086",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
+   "name": "Throne of the God-Pharaoh",
+   "face": 0,
+   "face_name": "Throne of the God-Pharaoh",
+   "card_hash": "78e4c141a80d59ee242147b12bab2086",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.LOSE_LIFE",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.EACH_OPPONENT"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": "ValueKind.COUNT",
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": "CardType.CREATURE",
+         "controller": "ControllerRelation.YOU",
+         "tapped": true
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "At the beginning of your end step, each opponent loses life equal to the number of tapped creatures you control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.END_STEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of end step"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

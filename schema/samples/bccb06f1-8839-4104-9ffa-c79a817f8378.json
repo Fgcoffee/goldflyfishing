@@ -1,0 +1,48 @@
+{
+ "ir_version": 1,
+ "oracle_id": "bccb06f1-8839-4104-9ffa-c79a817f8378",
+ "name": "Jet Medallion",
+ "card_hash": "ade5f2548ac16270b4c65b3595b768e5",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "bccb06f1-8839-4104-9ffa-c79a817f8378",
+   "name": "Jet Medallion",
+   "face": 0,
+   "face_name": "Jet Medallion",
+   "card_hash": "ade5f2548ac16270b4c65b3595b768e5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MODIFY_COST",
+       "targets": {
+        "$": "ObjectFilter",
+        "colors_any": "Color.BLACK",
+        "zones": {
+         "$set": [
+          "Zone.STACK"
+         ]
+        },
+        "controller": "ControllerRelation.YOU",
+        "is_ability": false
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -1
+       },
+       "duration": "Duration.PERMANENT",
+       "text": "costs less to cast"
+      }
+     ],
+     "text": "Black spells you cast cost {1} less to cast."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

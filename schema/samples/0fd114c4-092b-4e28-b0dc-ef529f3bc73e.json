@@ -1,0 +1,136 @@
+{
+ "ir_version": 1,
+ "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
+ "name": "Jeska's Will",
+ "card_hash": "6255d462c685d292f8caedb8f0f6f2eb",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
+   "name": "Jeska's Will",
+   "face": 0,
+   "face_name": "Jeska's Will",
+   "card_hash": "6255d462c685d292f8caedb8f0f6f2eb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.ADD_MANA",
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "amount2": {
+            "$": "Value",
+            "kind": "ValueKind.COUNT",
+            "filter": {
+             "$": "ObjectFilter",
+             "zones": {
+              "$set": [
+               "Zone.HAND"
+              ]
+             },
+             "controller": "ControllerRelation.OPPONENT"
+            }
+           },
+           "mana_produced": [
+            "{R}"
+           ],
+           "colors": "Color.RED",
+           "text": "add {R}"
+          }
+         ],
+         "text": "Add {R} for each card in target opponent's hand."
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEQUENCE",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.EXILE",
+           "targets": {
+            "$": "ObjectFilter",
+            "zones": {
+             "$set": [
+              "Zone.LIBRARY"
+             ]
+            },
+            "from_top": 3,
+            "owner": "ControllerRelation.YOU",
+            "count": {
+             "$": "Value",
+             "constant": 3
+            }
+           },
+           "text": "exile"
+          },
+          {
+           "$": "Effect",
+           "kind": "EffectKind.PLAY_FROM_ZONE",
+           "targets": {
+            "$": "ObjectFilter",
+            "remembered": true
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "you may play it"
+          }
+         ],
+         "text": "Exile the top three cards of your library. You may play them this turn."
+        }
+       ],
+       "modes_instead": [
+        {
+         "$": "Condition",
+         "kind": "ConditionKind.CONTROLS_MATCHING",
+         "filter": {
+          "$": "ObjectFilter",
+          "controller": "ControllerRelation.YOU",
+          "is_commander": true
+         },
+         "constraint": {
+          "$": "NumericConstraint",
+          "comparison": "Comparison.GE",
+          "value": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "you control ..."
+        },
+        2,
+        true,
+        1
+       ],
+       "text": "Choose one. If you control a commander as you cast this spell, you may choose both instead."
+      }
+     ],
+     "text": "Choose one. If you control a commander as you cast this spell, you may choose both instead.",
+     "functions_in": {
+      "$set": [
+       "Zone.STACK"
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

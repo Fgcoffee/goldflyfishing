@@ -1,0 +1,59 @@
+{
+ "ir_version": 1,
+ "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
+ "name": "Catastrophe",
+ "card_hash": "6f066def213dc1aa14075b71657865da",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
+   "name": "Catastrophe",
+   "face": 0,
+   "face_name": "Catastrophe",
+   "card_hash": "6f066def213dc1aa14075b71657865da",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": "CardType.CREATURE|LAND"
+       },
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.RESTRICTION",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "remembered": true
+       },
+       "duration": "Duration.PERMANENT",
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": "Act.BE_REGENERATED",
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.CREATURE",
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Destroy all lands or all creatures. Creatures destroyed this way can't be regenerated."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

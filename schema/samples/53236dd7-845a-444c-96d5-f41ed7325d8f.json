@@ -1,0 +1,106 @@
+{
+ "ir_version": 1,
+ "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
+ "name": "Rhystic Study",
+ "card_hash": "2fc0894c429802838638bca715f0394b",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
+   "name": "Rhystic Study",
+   "face": 0,
+   "face_name": "Rhystic Study",
+   "card_hash": "2fc0894c429802838638bca715f0394b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNLESS_PAYS",
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.TRIGGER_PLAYER"
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": "CostKind.MANA",
+          "mana": {
+           "$": "ManaCost",
+           "symbols": [
+            {
+             "$": "ManaSymbol",
+             "kind": "ManaSymbolKind.GENERIC",
+             "generic": 1,
+             "text": "{1}"
+            }
+           ]
+          }
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.OPTIONAL",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.DRAW",
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "text": "draw"
+          }
+         ],
+         "text": "may"
+        }
+       ],
+       "text": "unless that player (unresolved) pays {1}"
+      }
+     ],
+     "text": "Whenever an opponent casts a spell, you may draw a card unless that player pays {1}.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.CAST_SPELL"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         "Zone.STACK"
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.OPPONENT"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

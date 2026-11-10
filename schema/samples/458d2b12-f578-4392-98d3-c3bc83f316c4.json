@@ -1,0 +1,143 @@
+{
+ "ir_version": 1,
+ "oracle_id": "458d2b12-f578-4392-98d3-c3bc83f316c4",
+ "name": "Port Town",
+ "card_hash": "02dbdcde9b3ac18d4f5a2e3d358f0c50",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "458d2b12-f578-4392-98d3-c3bc83f316c4",
+   "name": "Port Town",
+   "face": 0,
+   "face_name": "Port Town",
+   "card_hash": "02dbdcde9b3ac18d4f5a2e3d358f0c50",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SEQUENCE",
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.OPTIONAL",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.REVEAL",
+           "targets": {
+            "$": "ObjectFilter",
+            "subtypes_any": [
+             "Plains",
+             "Island"
+            ],
+            "zones": {
+             "$set": [
+              "Zone.HAND"
+             ]
+            },
+            "owner": "ControllerRelation.YOU"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "text": "reveal"
+          }
+         ],
+         "text": "may"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.IF_YOU_DONT",
+         "children": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.TAP",
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "duration": "Duration.PERMANENT",
+           "text": "enters tapped"
+          }
+         ],
+         "text": "if you don't"
+        }
+       ],
+       "text": "as this enters"
+      }
+     ],
+     "text": "As this land enters, you may reveal a Plains or Island card from your hand. If you don't, this land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CHOOSE_MODE",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": "Color.WHITE",
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_MANA",
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": "Color.BLUE",
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

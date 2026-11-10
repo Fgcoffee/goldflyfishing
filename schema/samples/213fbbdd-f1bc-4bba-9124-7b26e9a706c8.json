@@ -1,0 +1,79 @@
+{
+ "ir_version": 1,
+ "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
+ "name": "Goblin Lackey",
+ "card_hash": "b12e3d5b70123e837bbf0a9c4799578d",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
+   "name": "Goblin Lackey",
+   "face": 0,
+   "face_name": "Goblin Lackey",
+   "card_hash": "b12e3d5b70123e837bbf0a9c4799578d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "targets": {
+          "$": "ObjectFilter",
+          "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "zones": {
+           "$set": [
+            "Zone.HAND"
+           ]
+          },
+          "owner": "ControllerRelation.YOU",
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "zone": "Zone.BATTLEFIELD",
+         "text": "put onto the battlefield"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Whenever this creature deals damage to a player, you may put a Goblin permanent card from your hand onto the battlefield.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.COMBAT_DAMAGE_DEALT",
+        "EventKind.DAMAGE_DEALT"
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": "PlayerScope.EACH_PLAYER"
+      },
+      "to_player": true,
+      "text": "when this deals damage"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

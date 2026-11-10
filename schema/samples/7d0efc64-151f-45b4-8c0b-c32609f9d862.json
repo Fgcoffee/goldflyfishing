@@ -1,0 +1,108 @@
+{
+ "ir_version": 1,
+ "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
+ "name": "Knight of the White Orchid",
+ "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
+   "name": "Knight of the White Orchid",
+   "face": 0,
+   "face_name": "Knight of the White Orchid",
+   "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "First strike",
+     "keyword": "First strike"
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.SEARCH_LIBRARY",
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Plains"
+          ],
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": "Zone.BATTLEFIELD",
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this creature enters, if an opponent controls more lands than you, you may search your library for a Plains card, put it onto the battlefield, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.ENTERS_BATTLEFIELD"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": "ConditionKind.COMPARE_COUNTS",
+       "filter": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.LAND"
+       },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": "PlayerScope.OPPONENT"
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": "Comparison.GT",
+        "value": {
+         "$": "Value",
+         "kind": "ValueKind.COUNT",
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": "CardType.LAND",
+          "controller": "ControllerRelation.YOU"
+         }
+        }
+       },
+       "text": "an opponent controls more all land than you"
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

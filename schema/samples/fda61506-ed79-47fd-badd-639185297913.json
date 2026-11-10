@@ -1,0 +1,94 @@
+{
+ "ir_version": 1,
+ "oracle_id": "fda61506-ed79-47fd-badd-639185297913",
+ "name": "Smokestack",
+ "card_hash": "073952d34c925f336e89f9f507aa50be",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "fda61506-ed79-47fd-badd-639185297913",
+   "name": "Smokestack",
+   "face": 0,
+   "face_name": "Smokestack",
+   "card_hash": "073952d34c925f336e89f9f507aa50be",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.OPTIONAL",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.ADD_COUNTERS",
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "counter_type": "soot",
+         "text": "add counters"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "At the beginning of your upkeep, you may put a soot counter on this artifact.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.UPKEEP"
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "At the beginning of each player's upkeep, that player sacrifices a permanent of their choice for each soot counter on this artifact."
+      }
+     ],
+     "text": "At the beginning of each player's upkeep, that player sacrifices a permanent of their choice for each soot counter on this artifact.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of each player's upkeep, that player sacrifices a permanent of their choice for each soot counter on this artifact.",
+     "reason": "not fully consumed",
+     "consumed": 16,
+     "remaining": [
+      "for",
+      "each",
+      "soot",
+      "counter",
+      "on",
+      "this",
+      "artifact",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ]
+}

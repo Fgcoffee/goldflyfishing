@@ -1,0 +1,77 @@
+{
+ "ir_version": 1,
+ "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
+ "name": "Reassembling Skeleton",
+ "card_hash": "1e372052ebc7806ce1845c6b1bef6f33",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
+   "name": "Reassembling Skeleton",
+   "face": 0,
+   "face_name": "Reassembling Skeleton",
+   "card_hash": "1e372052ebc7806ce1845c6b1bef6f33",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "zones": {
+         "$set": [
+          "Zone.GRAVEYARD"
+         ]
+        }
+       },
+       "zone": "Zone.BATTLEFIELD",
+       "from_zone": "Zone.GRAVEYARD",
+       "keywords": [
+        "tapped"
+       ],
+       "text": "return from a zone"
+      }
+     ],
+     "text": "{1}{B}: Return this card from your graveyard to the battlefield tapped.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
+           "text": "{B}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "functions_in": {
+      "$set": [
+       "Zone.GRAVEYARD"
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

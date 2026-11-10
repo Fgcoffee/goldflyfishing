@@ -1,0 +1,70 @@
+{
+ "ir_version": 1,
+ "oracle_id": "76f335d0-7f71-4b1a-b60d-73de954cbe2c",
+ "name": "Skycloud Expanse",
+ "card_hash": "6511cab81af9fb5a7a259da91b7db72c",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "76f335d0-7f71-4b1a-b60d-73de954cbe2c",
+   "name": "Skycloud Expanse",
+   "face": 0,
+   "face_name": "Skycloud Expanse",
+   "card_hash": "6511cab81af9fb5a7a259da91b7db72c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.ADD_MANA",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{W}",
+        "{U}"
+       ],
+       "colors": "Color.WHITE|BLUE",
+       "text": "add {W}{U}"
+      }
+     ],
+     "text": "{1}, {T}: Add {W}{U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.MANA",
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": "ManaSymbolKind.GENERIC",
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.TAP_SELF",
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

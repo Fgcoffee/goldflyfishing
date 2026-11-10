@@ -1,0 +1,65 @@
+{
+ "ir_version": 1,
+ "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
+ "name": "Scheming Symmetry",
+ "card_hash": "6396b6247998170e0569076fb38f3c36",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
+   "name": "Scheming Symmetry",
+   "face": 0,
+   "face_name": "Scheming Symmetry",
+   "card_hash": "6396b6247998170e0569076fb38f3c36",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.UNPARSED",
+       "text": "Choose two target players. Each of them searches their library for a card, then shuffles and puts that card on top."
+      }
+     ],
+     "text": "Choose two target players. Each of them searches their library for a card, then shuffles and puts that card on top.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Choose two target players. Each of them searches their library for a card, then shuffles and puts that card on top.",
+     "reason": "not fully consumed",
+     "consumed": 2,
+     "remaining": [
+      "target",
+      "players",
+      ".",
+      "Each",
+      "of",
+      "them",
+      "searches",
+      "their",
+      "library",
+      "for",
+      "a",
+      "card",
+      ",",
+      "then",
+      "shuffles",
+      "and",
+      "puts",
+      "that",
+      "card",
+      "on",
+      "top",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ]
+}

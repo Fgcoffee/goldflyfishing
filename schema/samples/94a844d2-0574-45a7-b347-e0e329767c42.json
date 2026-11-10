@@ -1,0 +1,147 @@
+{
+ "ir_version": 1,
+ "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
+ "name": "Necropotence",
+ "card_hash": "dc4962cdbe1b7df64f7a4b601e594809",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
+   "name": "Necropotence",
+   "face": 0,
+   "face_name": "Necropotence",
+   "card_hash": "dc4962cdbe1b7df64f7a4b601e594809",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.SKIP_STEP",
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "skip the draw step"
+      }
+     ],
+     "text": "Skip your draw step."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.TRIGGERED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "from_zone": "Zone.GRAVEYARD",
+       "text": "exile"
+      }
+     ],
+     "text": "Whenever you discard a card, exile that card from your graveyard.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        "EventKind.DISCARDED"
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": []
+       },
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player discards"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.ACTIVATED",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.EXILE",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.LIBRARY"
+         ]
+        },
+        "from_top": 1,
+        "owner": "ControllerRelation.YOU",
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "keywords": [
+        "face down"
+       ],
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DELAYED_TRIGGER",
+       "trigger": {
+        "$": "TriggerCondition",
+        "event_kinds": {
+         "$set": [
+          "EventKind.END_STEP"
+         ]
+        },
+        "text": "at the next end step"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.MOVE_ZONE",
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "zone": "Zone.HAND",
+         "text": "put into a zone"
+        }
+       ],
+       "text": "later"
+      }
+     ],
+     "text": "Pay 1 life: Exile the top card of your library face down. Put that card into your hand at the beginning of your next end step.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": "CostKind.PAY_LIFE",
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "pay life"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

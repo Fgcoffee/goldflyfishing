@@ -1,0 +1,97 @@
+{
+ "ir_version": 1,
+ "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
+ "name": "The Tabernacle at Pendrell Vale",
+ "card_hash": "7d5992070cd7b0318400c164d758cca5",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
+   "name": "The Tabernacle at Pendrell Vale",
+   "face": 0,
+   "face_name": "The Tabernacle at Pendrell Vale",
+   "card_hash": "7d5992070cd7b0318400c164d758cca5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.GRANT_ABILITY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE"
+       },
+       "duration": "Duration.PERMANENT",
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": "AbilityKind.TRIGGERED",
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": "EffectKind.UNLESS_PAYS",
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "pay_cost": {
+            "$": "Cost",
+            "components": [
+             {
+              "$": "CostComponent",
+              "kind": "CostKind.MANA",
+              "mana": {
+               "$": "ManaCost",
+               "symbols": [
+                {
+                 "$": "ManaSymbol",
+                 "kind": "ManaSymbolKind.GENERIC",
+                 "generic": 1,
+                 "text": "{1}"
+                }
+               ]
+              }
+             }
+            ]
+           },
+           "children": [
+            {
+             "$": "Effect",
+             "kind": "EffectKind.DESTROY",
+             "targets": {
+              "$": "ObjectFilter",
+              "source_only": true
+             },
+             "text": "destroy"
+            }
+           ],
+           "text": "unless you pays {1}"
+          }
+         ],
+         "text": "At the beginning of your upkeep , destroy this creature unless you pay {1} .",
+         "trigger": {
+          "$": "TriggerCondition",
+          "event_kinds": {
+           "$set": [
+            "EventKind.UPKEEP"
+           ]
+          },
+          "players": {
+           "$": "PlayerFilter"
+          },
+          "text": "at the beginning of upkeep"
+         }
+        }
+       ],
+       "text": "gains At the beginning of your upkeep , destroy this creature unless you pay {1} ."
+      }
+     ],
+     "text": "All creatures have \"At the beginning of your upkeep, destroy this creature unless you pay {1}.\""
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

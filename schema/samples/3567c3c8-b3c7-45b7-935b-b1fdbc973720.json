@@ -1,0 +1,80 @@
+{
+ "ir_version": 1,
+ "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
+ "name": "Vandalblast",
+ "card_hash": "38a568b5521816af6f994a6e0619bfe4",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
+   "name": "Vandalblast",
+   "face": 0,
+   "face_name": "Vandalblast",
+   "card_hash": "38a568b5521816af6f994a6e0619bfe4",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.ARTIFACT",
+        "controller": "ControllerRelation.OPPONENT"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "Destroy target artifact you don't control."
+    },
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.STATIC",
+     "text": "Overload {4}{R}",
+     "functions_in": {
+      "$set": [
+       "Zone.HAND"
+      ]
+     },
+     "keyword": "Overload",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": "CostKind.MANA",
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.GENERIC",
+            "generic": 4,
+            "text": "{4}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.RED",
+            "text": "{R}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Overload",
+      "text": "Overload {4}{R}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "ir_version": 1,
+ "oracle_id": "2f092562-9e17-43cd-aeb8-d0567f99363e",
+ "name": "Go for the Throat",
+ "card_hash": "6c3d13fff7cb9e9c0df1ad0af0737aef",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "2f092562-9e17-43cd-aeb8-d0567f99363e",
+   "name": "Go for the Throat",
+   "face": 0,
+   "face_name": "Go for the Throat",
+   "card_hash": "6c3d13fff7cb9e9c0df1ad0af0737aef",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.DESTROY",
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": "CardType.CREATURE",
+        "types_none": "CardType.ARTIFACT"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "Destroy target nonartifact creature."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}

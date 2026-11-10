@@ -1,0 +1,90 @@
+{
+ "ir_version": 1,
+ "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
+ "name": "Chaos Warp",
+ "card_hash": "ff4801b6525f80926e798e52e1ef6ea1",
+ "faces": [
+  {
+   "ir_version": 1,
+   "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
+   "name": "Chaos Warp",
+   "face": 0,
+   "face_name": "Chaos Warp",
+   "card_hash": "ff4801b6525f80926e798e52e1ef6ea1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": "AbilityKind.SPELL",
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": "EffectKind.MOVE_ZONE",
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "zone": "Zone.LIBRARY",
+       "text": "shuffle it into its owner's library"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.REVEAL",
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          "Zone.LIBRARY"
+         ]
+        },
+        "from_top": 1,
+        "owner": "ControllerRelation.SPECIFIC",
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "reveals"
+      },
+      {
+       "$": "Effect",
+       "kind": "EffectKind.CONDITIONAL",
+       "condition": {
+        "$": "Condition",
+        "kind": "ConditionKind.REMEMBERED_MATCHES",
+        "filter": {
+         "$": "ObjectFilter",
+         "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+         "remembered": true,
+         "zones": {
+          "$set": []
+         }
+        },
+        "text": "it is ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "zone": "Zone.BATTLEFIELD",
+         "text": "put onto the battlefield"
+        }
+       ],
+       "text": "if"
+      }
+     ],
+     "text": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield."
+    }
+   ],
+   "failures": []
+  }
+ ]
+}
