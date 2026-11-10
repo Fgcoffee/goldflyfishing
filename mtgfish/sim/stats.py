@@ -183,6 +183,9 @@ class Report:
     #: apart from stall-outs because they are a different thing entirely.
     loop_draws: int = 0
     unparsed_cards: list[str] = field(default_factory=list)
+    #: Games the engine crashed in, left out of every number above:
+    #: ``{"index", "seed", "error"}`` each, so any of them can be replayed.
+    crashed: list[dict] = field(default_factory=list)
     digest_mismatches: list[int] = field(default_factory=list)
 
     @property
@@ -226,6 +229,7 @@ def summarize(result: RunResult, *, mismatches: list[int] | None = None) -> Repo
     report.seats = len(result.config.decklists) or 4
     report.unparsed_cards = list(result.unparsed_cards)
     report.digest_mismatches = list(mismatches or [])
+    report.crashed = [crash.as_dict() for crash in getattr(result, "crashed", ())]
 
     for record in result.records:
         if getattr(record, "runaway", ""):

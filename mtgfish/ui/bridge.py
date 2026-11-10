@@ -951,6 +951,9 @@ class Bridge(QObject):
             # mandatory one (CR 104.4b). Shown so an infinite that ended a
             # game is visible as one rather than folded into the win rate.
             "loops": dict(report.loops),
+            # Games the engine crashed in: left out of every number, listed so
+            # nobody mistakes a partial run for a whole one.
+            "crashed": list(getattr(report, "crashed", [])),
             "loop_draws": report.loop_draws,
             "unparsed_cards": report.unparsed_cards,
             "digest_mismatches": report.digest_mismatches,
