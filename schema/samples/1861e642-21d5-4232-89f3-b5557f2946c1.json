@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "1861e642-21d5-4232-89f3-b5557f2946c1",
  "name": "Phyrexian Tower",
  "card_hash": "956fe83a01a95bd78fafc2a2358735cc",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "1861e642-21d5-4232-89f3-b5557f2946c1",
    "name": "Phyrexian Tower",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -39,7 +39,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -48,11 +48,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -64,7 +64,7 @@
         "{B}",
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}{B}"
       }
      ],
@@ -74,19 +74,19 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
+         "types_all": 4,
          "count": {
           "$": "Value",
           "constant": 1

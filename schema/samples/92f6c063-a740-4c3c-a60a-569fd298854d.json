@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
  "name": "Sphere of Safety",
  "card_hash": "63fc4ddec8cc072080c86f26d9ef5a76",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
    "name": "Sphere of Safety",
    "face": 0,
@@ -15,27 +15,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNLESS_PAYS",
+       "kind": 6,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.CONTROLLER_OF"
+        "scope": 7
        },
        "pay_cost": {
         "$": "Cost",
         "components": [
          {
           "$": "CostComponent",
-          "kind": "CostKind.MANA",
+          "kind": 0,
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": "ManaSymbolKind.GENERIC",
+             "kind": 0,
              "generic": 1,
              "text": "{1}"
             }
@@ -43,24 +43,24 @@
           },
           "scale": {
            "$": "Value",
-           "kind": "ValueKind.PRODUCT",
+           "kind": 12,
            "operands": [
             {
              "$": "Value",
-             "kind": "ValueKind.COUNT",
+             "kind": 2,
              "filter": {
               "$": "ObjectFilter",
-              "types_all": "CardType.CREATURE",
+              "types_all": 4,
               "remembered": true
              }
             },
             {
              "$": "Value",
-             "kind": "ValueKind.COUNT",
+             "kind": 2,
              "filter": {
               "$": "ObjectFilter",
-              "types_all": "CardType.ENCHANTMENT",
-              "controller": "ControllerRelation.YOU"
+              "types_all": 8,
+              "controller": 1
              }
             }
            ]
@@ -71,19 +71,19 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.RESTRICTION",
+         "kind": 150,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE"
+          "types_all": 4
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.ATTACK_PLAYER",
+           "act": 21,
            "subject": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE"
+            "types_all": 4
            },
            "players": {
             "$": "PlayerFilter"
@@ -92,15 +92,15 @@
           },
           {
            "$": "Restriction",
-           "act": "Act.ATTACK_PLANESWALKER",
+           "act": 22,
            "subject": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE"
+            "types_all": 4
            },
            "counterpart": {
             "$": "ObjectFilter",
-            "types_all": "CardType.PLANESWALKER",
-            "controller": "ControllerRelation.YOU"
+            "types_all": 32,
+            "controller": 1
            },
            "text": "can't attack planeswalkers you control"
           }

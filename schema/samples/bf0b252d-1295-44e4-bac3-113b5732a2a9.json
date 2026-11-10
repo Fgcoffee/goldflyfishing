@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
  "name": "Opposition",
  "card_hash": "4f605c4a49a26a01e992e6532858c6b4",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
    "name": "Opposition",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.TAP",
+       "kind": 70,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|CREATURE|LAND"
+        "types_any": 21
        },
        "is_targeted": true,
        "text": "tap/untap"
@@ -34,15 +34,15 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_OTHER",
+        "kind": 3,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
-         "controller": "ControllerRelation.YOU",
+         "types_all": 4,
+         "controller": 1,
          "tapped": false,
          "count": {
           "$": "Value",

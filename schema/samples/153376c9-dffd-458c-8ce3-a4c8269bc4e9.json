@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
  "name": "Smothering Tithe",
  "card_hash": "0c81c0c422ec9859a6119eafd817e7a5",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
    "name": "Smothering Tithe",
    "face": 0,
@@ -15,19 +15,19 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TRIGGER_PLAYER"
+        "scope": 13002
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PAY_COST",
+         "kind": 200,
          "players": {
           "$": "PlayerFilter"
          },
@@ -36,13 +36,13 @@
           "components": [
            {
             "$": "CostComponent",
-            "kind": "CostKind.MANA",
+            "kind": 0,
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": "ManaSymbolKind.GENERIC",
+               "kind": 0,
                "generic": 2,
                "text": "{2}"
               }
@@ -58,11 +58,11 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.IF_YOU_DONT",
+       "kind": 201,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.CREATE_TOKEN",
+         "kind": 35,
          "players": {
           "$": "PlayerFilter"
          },
@@ -73,7 +73,7 @@
          "token": {
           "$": "TokenSpec",
           "name": "Treasure",
-          "types": "CardType.ARTIFACT",
+          "types": 1,
           "subtypes": [
            "Treasure"
           ]
@@ -89,12 +89,12 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DREW_CARD"
+        80
        ]
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "text": "whenever a player draws"
      }

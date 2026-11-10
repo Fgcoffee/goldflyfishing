@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
  "name": "Vandalblast",
  "card_hash": "38a568b5521816af6f994a6e0619bfe4",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
    "name": "Vandalblast",
    "face": 0,
@@ -15,15 +15,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.ARTIFACT",
-        "controller": "ControllerRelation.OPPONENT"
+        "types_all": 1,
+        "controller": 2
        },
        "is_targeted": true,
        "text": "destroy"
@@ -33,11 +33,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Overload {4}{R}",
      "functions_in": {
       "$set": [
-       "Zone.HAND"
+       1
       ]
      },
      "keyword": "Overload",
@@ -48,20 +48,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.MANA",
+         "kind": 0,
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.GENERIC",
+            "kind": 0,
             "generic": 4,
             "text": "{4}"
            },
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.COLORED",
-            "colors": "Color.RED",
+            "kind": 2,
+            "colors": 8,
             "text": "{R}"
            }
           ]

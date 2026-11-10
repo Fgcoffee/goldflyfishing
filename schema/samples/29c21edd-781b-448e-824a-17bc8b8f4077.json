@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
  "name": "Goblin War Drums",
  "card_hash": "08d7187eb4d55d698dfa2b7e226abd97",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
    "name": "Goblin War Drums",
    "face": 0,
@@ -15,21 +15,21 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": "AbilityKind.STATIC",
+         "kind": 3,
          "text": "menace",
          "keyword": "menace"
         }

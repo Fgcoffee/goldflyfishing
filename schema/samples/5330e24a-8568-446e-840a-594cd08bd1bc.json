@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
  "name": "Prairie Stream",
  "card_hash": "19a9830cc206a3b9c02dfc5f1e162ee4",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
    "name": "Prairie Stream",
    "face": 0,
@@ -15,27 +15,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CONDITIONAL",
+       "kind": 1,
        "condition": {
         "$": "Condition",
-        "kind": "ConditionKind.NOT",
+        "kind": 22,
         "operands": [
          {
           "$": "Condition",
-          "kind": "ConditionKind.CONTROLS_MATCHING",
+          "kind": 5,
           "filter": {
            "$": "ObjectFilter",
-           "types_all": "CardType.LAND",
-           "supertypes_all": "Supertype.BASIC",
-           "controller": "ControllerRelation.YOU"
+           "types_all": 16,
+           "supertypes_all": 1,
+           "controller": 1
           },
           "constraint": {
            "$": "NumericConstraint",
-           "comparison": "Comparison.GE",
+           "comparison": 5,
            "value": {
             "$": "Value",
             "constant": 2
@@ -49,12 +49,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.TAP",
+         "kind": 70,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "text": "enters tapped"
         }
        ],

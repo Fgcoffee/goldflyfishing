@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
  "name": "Boggart Harbinger",
  "card_hash": "bd325211ec4b8e3a71d5836a9d81dc5a",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
    "name": "Boggart Harbinger",
    "face": 0,
@@ -15,18 +15,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -47,7 +47,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": "Zone.LIBRARY",
+         "zone": 0,
          "text": "search library"
         }
        ],
@@ -59,7 +59,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {

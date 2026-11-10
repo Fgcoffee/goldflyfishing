@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
  "name": "Goblin Piledriver",
  "card_hash": "4138a21d675f9d742f0c4e3be0629f72",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
    "name": "Goblin Piledriver",
    "face": 0,
@@ -15,12 +15,12 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Protection from blue",
      "keyword": "Protection",
      "quality": {
       "$": "ObjectFilter",
-      "colors_any": "Color.BLUE",
+      "colors_any": 2,
       "zones": {
        "$set": []
       }
@@ -28,18 +28,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_PT",
+       "kind": 140,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.PRODUCT",
+        "kind": 12,
         "operands": [
          {
           "$": "Value",
@@ -47,7 +47,7 @@
          },
          {
           "$": "Value",
-          "kind": "ValueKind.COUNT",
+          "kind": 2,
           "filter": {
            "$": "ObjectFilter",
            "subtypes_all": [
@@ -59,7 +59,7 @@
          }
         ]
        },
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "text": "gets +2/+0"
       }
      ],
@@ -68,7 +68,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ATTACKS"
+        101
        ]
       },
       "subject": {

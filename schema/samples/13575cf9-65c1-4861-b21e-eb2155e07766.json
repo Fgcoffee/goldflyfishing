@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
  "name": "Sensei's Divining Top",
  "card_hash": "3b841b81be7abaacf9c476c182b957c1",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
    "name": "Sensei's Divining Top",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOOK_AT_TOP",
+       "kind": 10001,
        "players": {
         "$": "PlayerFilter"
        },
@@ -31,7 +31,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
@@ -45,13 +45,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           }
@@ -63,11 +63,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -79,7 +79,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -96,7 +96,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

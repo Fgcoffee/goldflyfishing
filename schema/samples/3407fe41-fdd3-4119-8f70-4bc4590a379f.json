@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
  "name": "Negate",
  "card_hash": "3fadc407da70efbce9422031cf5001de",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
    "name": "Negate",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.COUNTER_SPELL",
+       "kind": 100,
        "targets": {
         "$": "ObjectFilter",
-        "types_none": "CardType.CREATURE",
+        "types_none": 4,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
         "is_ability": false

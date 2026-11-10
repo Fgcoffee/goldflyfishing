@@ -1,4 +1,4 @@
-"""The IR to JSON and back, exactly.
+"""The IR to JSON and back, exactly (IR version 2).
 
 One rule per kind of value, so a reader in another language needs nothing
 but this list:
@@ -7,26 +7,30 @@ but this list:
   JSON object whose ``"$"`` key names its class. Only fields that differ
   from the class's default are written; a missing field takes the default
   given in the schema;
-* an enum member is a string ``"Enum.MEMBER"`` - ``"Zone.GRAVEYARD"``. A
-  flag enum (CardType, Color, Supertype) joins its set bits with ``|`` -
-  ``"CardType.ARTIFACT|CREATURE"`` - and is ``"CardType.NONE"`` when empty;
+* an enum member is its **number**, the same number the Python engine uses
+  (``Zone.GRAVEYARD`` is ``3``; ``CardType.ARTIFACT | CREATURE`` is ``5``).
+  Which enum a number belongs to is the field's declared type, given in the
+  schema; the names are in the schema and in the generated TS tables;
+* a plain integer in a field whose type is an enum - a few
+  ``Effect.duration`` values are bare ints - is ``{"$int": n}``, so that it
+  stays a plain integer;
 * a tuple is a JSON array;
 * a frozenset is ``{"$set": [...]}``, its items sorted so the output is
   stable;
 * a list is ``{"$list": [...]}`` (only the face's failures use one);
-* a string that looks like an enum member (``"Zone.X"``) is written
-  ``{"$str": "..."}`` so it cannot be read as one;
-* ``None``, booleans, integers and other strings are themselves. A boolean stays a
-  boolean and an integer an integer, even where a field holds either (an
-  ObjectFilter's ``from_top`` is both ``True`` and ``3`` in the pool), and an
-  enum stays distinct from a bare integer in the same field.
+* ``None``, booleans, integers and strings are themselves. A boolean stays a
+  boolean, even where a field holds a boolean or an integer (an
+  ObjectFilter's ``from_top`` is both ``True`` and ``3`` in the pool).
 
 ``decode(encode(x)) == x`` for every face in the pool, with every type
 preserved (``exact``); ``mtgfish.tools.ir_export verify`` checks that.
 
 The version is bumped whenever a reader of the old JSON would misread the
-new: a field renamed or removed, a default changed, an enum member renamed.
-New fields with defaults and new enum members do not bump it.
+new: a field renamed or removed, a default changed, an enum member
+renumbered. New fields with defaults and new enum members do not bump it.
+
+Version 1 wrote enums as ``"Zone.GRAVEYARD"`` strings; version 2 writes the
+numbers, because the engine compares and masks them in its hottest paths.
 """
 
 from __future__ import annotations
@@ -38,7 +42,7 @@ import json
 from typing import Any
 
 #: Bumped on any change a reader of the previous version would misread.
-IR_VERSION = 1
+IR_VERSION = 2
 
 #: Every class that can appear in the IR, by the name the JSON uses.
 _CLASS_PATHS = {
@@ -81,6 +85,8 @@ _ENUM_PATHS = {
     "ManaSymbolKind": "mtgfish.rules.cr100_game_concepts.cr106_mana",
     "EventKind": "mtgfish.rules.kernel.events",
     "Act": "mtgfish.rules.cr500_turn_structure.restrictions",
+    "Phase": "mtgfish.rules.kernel.enums",
+    "Step": "mtgfish.rules.kernel.enums",
 }
 
 _classes: dict[str, type] | None = None
@@ -127,48 +133,140 @@ def _same(value: Any, default: Any) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Enums
+# Field types
 # ---------------------------------------------------------------------------
 
+#: An untyped position: any IR value. An enum is refused there, because its
+#: number would not say which enum it is.
+ANY = "IRValue"
 
-def encode_enum(member: enum.Enum) -> str:
-    cls = type(member)
-    name = cls.__name__
-    if name not in _ENUM_PATHS:
-        raise IRError(f"enum {cls.__module__}.{name} is not in the IR")
-    if isinstance(member, enum.Flag):
-        value = int(member)
-        if value == 0:
-            zero = cls(0)
-            if zero.name is None:
-                raise IRError(f"{name} has no name for the empty set")
-            return f"{name}.{zero.name}"
-        bits = []
-        covered = 0
-        for single in cls:
-            bit = int(single)
-            if bit and bit & (bit - 1) == 0 and value & bit:
-                bits.append(single.name)
-                covered |= bit
-        if covered != value:
-            raise IRError(f"{name} value {value} has bits with no member")
-        return f"{name}." + "|".join(bits)
-    if member.name is None:
-        raise IRError(f"{name} value {int(member)} has no member")
-    return f"{name}.{member.name}"
+#: Fields whose hint does not say what the pool holds: (class, field) -> the
+#: type, in the same little language the hints are read into.
+OVERRIDES: dict[tuple[str, str], Any] = {
+    # Untyped tuples in the source.
+    ("Cost", "choices"): ("tuple", "Cost"),
+    ("Effect", "granted_abilities"): ("tuple", "Ability"),
+    ("Effect", "restrictions"): ("tuple", "Restriction"),
+    ("Effect", "mode_costs"): ("tuple", ANY),
+    ("Effect", "outcomes"): ("tuple", ANY),
+    ("Effect", "mode_weights"): ("tuple", ANY),
+    # One (condition, at_least, at_most) triple, or empty.
+    ("Effect", "modes_instead"): ("tuple", ("union", "Condition", "bool", "int")),
+    ("ObjectFilter", "any_of"): ("tuple", "ObjectFilter"),
+    ("TokenSpec", "abilities"): ("tuple", "Ability"),
+    # Hinted as ``object`` (a forward reference) in the source.
+    ("Ability", "alternative_cost"): ("union", "AlternativeCost", "null"),
+    ("Ability", "additional_cost"): ("union", "AdditionalCost", "null"),
+    ("Effect", "pay_cost"): ("union", "Cost", "null"),
+    ("Effect", "mana_restriction"): ("union", "SpendOnlyOn", "null"),
+    ("Effect", "trigger"): ("union", "TriggerCondition", "null"),
+    ("AlternativeCost", "from_zone"): ("union", ("enum", "Zone"), "null"),
+    ("AlternativeCost", "condition"): ("union", "Condition", "null"),
+    ("SpendOnlyOn", "filter"): ("union", "ObjectFilter", "null"),
+    ("TriggerCondition", "alternatives"): ("tuple", "TriggerCondition"),
+    # Hinted narrower than they are.
+    ("Effect", "duration"): ("union", ("enum", "Duration"), "int"),
+    ("ObjectFilter", "count"): ("union", "Value", "int", "null"),
+    ("ObjectFilter", "from_top"): ("union", "int", "bool"),
+    ("Ability", "quality"): ("union", "ObjectFilter", "PlayerFilter", "Value", "null"),
+    ("Condition", "event_kinds"): ("tuple", ("union", ("enum", "EventKind"), "int")),
+    ("TriggerCondition", "phases"): ("set", ("union", ("enum", "Phase"), "int")),
+    ("TriggerCondition", "steps"): ("set", ("union", ("enum", "Step"), "int")),
+}
 
 
-def decode_enum(text: str) -> enum.Enum:
-    name, _, members = text.partition(".")
-    cls = enums().get(name)
-    if cls is None:
-        raise IRError(f"unknown enum {name!r}")
-    if issubclass(cls, enum.Flag):
-        value = cls(0)
-        for member in members.split("|"):
-            value |= cls[member]
-        return value
-    return cls[members]
+def read_hint(hint: Any) -> Any:
+    """A type hint as one of: "int", "bool", "str", "null", ANY, a class
+    name, ("enum", name), ("tuple", t), ("set", t), ("list", t),
+    ("union", t, ...)."""
+    import types
+    import typing
+
+    if hint is type(None) or hint is None:
+        return "null"
+    if hint is bool:
+        return "bool"
+    if hint is int:
+        return "int"
+    if hint is str:
+        return "str"
+    if hint in (object, Any):
+        return ANY
+    if hint is tuple:
+        return ("tuple", ANY)
+    if hint is frozenset:
+        return ("set", ANY)
+    supertype = getattr(hint, "__supertype__", None)  # NewType
+    if supertype is not None:
+        return read_hint(supertype)
+    origin = typing.get_origin(hint)
+    args = typing.get_args(hint)
+    if origin in (typing.Union, types.UnionType):
+        return ("union", *(read_hint(a) for a in args))
+    if origin is tuple:
+        items = [a for a in args if a is not Ellipsis]
+        if not items:
+            return ("tuple", ANY)
+        if len(items) == 1:
+            return ("tuple", read_hint(items[0]))
+        return ("tuple", ("union", *(read_hint(a) for a in items)))
+    if origin in (frozenset, set):
+        return ("set", read_hint(args[0]) if args else ANY)
+    if origin is list:
+        return ("list", read_hint(args[0]) if args else ANY)
+    if isinstance(hint, type):
+        if issubclass(hint, enum.Enum):
+            return ("enum", hint.__name__)
+        if dataclasses.is_dataclass(hint):
+            return hint.__name__
+    raise TypeError(f"no IR rule for hint {hint!r}")
+
+
+_fields_cache: dict[str, list] = {}
+
+
+def fields_of(name: str) -> list[tuple[str, Any, Any]]:
+    """``(field, type, default)`` for each field of an IR class."""
+    cached = _fields_cache.get(name)
+    if cached is not None:
+        return cached
+    import typing
+
+    cls = classes()[name]
+    hints = typing.get_type_hints(cls)
+    out = []
+    for field in dataclasses.fields(cls):
+        kind = OVERRIDES.get((name, field.name))
+        if kind is None:
+            kind = read_hint(hints.get(field.name, Any))
+        out.append((field.name, kind, field_default(field)))
+    _fields_cache[name] = out
+    return out
+
+
+def _enum_of(kind: Any) -> str | None:
+    """The enum a field type names, directly or in a union."""
+    if isinstance(kind, tuple):
+        if kind[0] == "enum":
+            return kind[1]
+        if kind[0] == "union":
+            for part in kind[1:]:
+                found = _enum_of(part)
+                if found is not None:
+                    return found
+    return None
+
+
+def _item_kind(kind: Any, tag: str) -> Any:
+    """The item type of a tuple, set or list type, looking inside a union."""
+    if isinstance(kind, tuple):
+        if kind[0] == tag:
+            return kind[1]
+        if kind[0] == "union":
+            for part in kind[1:]:
+                if isinstance(part, tuple) and part[0] == tag:
+                    return part[1]
+    return ANY
 
 
 # ---------------------------------------------------------------------------
@@ -176,77 +274,93 @@ def decode_enum(text: str) -> enum.Enum:
 # ---------------------------------------------------------------------------
 
 
-def encode(value: Any) -> Any:
-    """Any IR value as JSON-ready Python data."""
-    if value is None or isinstance(value, bool):
+def encode(value: Any, kind: Any = ANY) -> Any:
+    """Any IR value as JSON-ready Python data. ``kind`` is the declared type
+    of the position it sits in, which says which enum a number is."""
+    if value is None or isinstance(value, (bool, str)):
         return value
-    if isinstance(value, str):
-        head, dot, _ = value.partition(".")
-        return {"$str": value} if dot and head in _ENUM_PATHS else value
     if isinstance(value, enum.Enum):
-        return encode_enum(value)
+        name = type(value).__name__
+        if name not in _ENUM_PATHS:
+            raise IRError(f"enum {type(value).__module__}.{name} is not in the IR")
+        if _enum_of(kind) != name:
+            raise IRError(f"{name}.{value.name} where the IR declares {kind!r}")
+        return int(value)
     if isinstance(value, int):
-        return value
+        return {"$int": value} if _enum_of(kind) is not None else value
     if isinstance(value, tuple):
-        return [encode(item) for item in value]
+        item = _item_kind(kind, "tuple")
+        return [encode(x, item) for x in value]
     if isinstance(value, frozenset):
-        items = [encode(item) for item in value]
+        item = _item_kind(kind, "set")
+        items = [encode(x, item) for x in value]
         return {"$set": sorted(items, key=lambda x: json.dumps(x, sort_keys=True))}
     if isinstance(value, list):
-        return {"$list": [encode(item) for item in value]}
+        item = _item_kind(kind, "list")
+        return {"$list": [encode(x, item) for x in value]}
     if dataclasses.is_dataclass(value) and not isinstance(value, type):
         name = type(value).__name__
         if classes().get(name) is not type(value):
             raise IRError(f"class {type(value).__module__}.{name} is not in the IR")
         out: dict[str, Any] = {"$": name}
-        for field in dataclasses.fields(value):
-            item = getattr(value, field.name)
-            if _same(item, field_default(field)):
+        for field_name, field_kind, default in fields_of(name):
+            item = getattr(value, field_name)
+            if _same(item, default):
                 continue
-            out[field.name] = encode(item)
+            out[field_name] = encode(item, field_kind)
         return out
     raise IRError(f"no JSON rule for {type(value).__name__}: {value!r}")
 
 
-def decode(data: Any) -> Any:
-    """JSON data back into IR values."""
-    if data is None or isinstance(data, (bool, int)):
+def decode(data: Any, kind: Any = ANY) -> Any:
+    """JSON data back into IR values, ``kind`` being the position's type."""
+    if data is None or isinstance(data, (bool, str)):
         return data
-    if isinstance(data, str):
-        head, dot, _ = data.partition(".")
-        if dot and head in _ENUM_PATHS:
-            return decode_enum(data)
-        return data
+    if isinstance(data, int):
+        name = _enum_of(kind)
+        if name is None:
+            return data
+        cls = enums().get(name)
+        if cls is None:
+            raise IRError(f"unknown enum {name!r}")
+        try:
+            return cls(data)
+        except ValueError as error:
+            raise IRError(f"{name} has no member {data}") from error
     if isinstance(data, list):
-        return tuple(decode(item) for item in data)
+        item = _item_kind(kind, "tuple")
+        return tuple(decode(x, item) for x in data)
     if isinstance(data, dict):
-        if "$str" in data:
-            return data["$str"]
+        if "$int" in data:
+            return int(data["$int"])
         if "$set" in data:
-            return frozenset(decode(item) for item in data["$set"])
+            item = _item_kind(kind, "set")
+            return frozenset(decode(x, item) for x in data["$set"])
         if "$list" in data:
-            return [decode(item) for item in data["$list"]]
+            item = _item_kind(kind, "list")
+            return [decode(x, item) for x in data["$list"]]
         name = data.get("$")
         cls = classes().get(name)
         if cls is None:
             raise IRError(f"unknown IR class {name!r}")
-        known = {f.name: f for f in dataclasses.fields(cls)}
+        known = {field: field_kind for field, field_kind, _ in fields_of(name)}
         kwargs = {}
         for key, item in data.items():
             if key == "$":
                 continue
             if key not in known:
                 raise IRError(f"{name} has no field {key!r}")
-            kwargs[key] = decode(item)
+            kwargs[key] = decode(item, known[key])
         return cls(**kwargs)
     raise IRError(f"not IR JSON: {data!r}")
 
 
-def exact(a: Any, b: Any) -> bool:
+def exact(a: Any, b: Any, kind: Any = ANY) -> bool:
     """Equal, and of the same types all the way down: ``==`` plus the
     canonical encoding, which tells an enum from an int, a bool from an int
-    and a list from a tuple, and sorts sets so their order cannot matter."""
-    return a == b and encode(a) == encode(b)
+    and a list from a tuple, and sorts sets so their order cannot matter.
+    ``kind`` is the declared type of the position, as for ``encode``."""
+    return a == b and encode(a, kind) == encode(b, kind)
 
 
 # ---------------------------------------------------------------------------
@@ -265,8 +379,8 @@ def encode_face(card, face_index: int, abilities, failures, card_hash: str) -> d
         "face_name": face.name if face is not None else card.name,
         "card_hash": card_hash,
         "fully_read": not failures,
-        "abilities": [encode(ability) for ability in abilities],
-        "failures": [encode(failure) for failure in failures],
+        "abilities": [encode(ability, "Ability") for ability in abilities],
+        "failures": [encode(failure, "ParseFailure") for failure in failures],
     }
 
 
@@ -276,6 +390,6 @@ def decode_face(document: dict) -> tuple[tuple, list]:
         raise IRError(
             f"IR version {document.get('ir_version')!r}; this reader is {IR_VERSION}"
         )
-    abilities = tuple(decode(item) for item in document["abilities"])
-    failures = [decode(item) for item in document["failures"]]
+    abilities = tuple(decode(item, "Ability") for item in document["abilities"])
+    failures = [decode(item, "ParseFailure") for item in document["failures"]]
     return abilities, failures

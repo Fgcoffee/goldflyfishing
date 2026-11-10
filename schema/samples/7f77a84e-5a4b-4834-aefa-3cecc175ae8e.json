@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
  "name": "Jace, the Mind Sculptor",
  "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
    "name": "Jace, the Mind Sculptor",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library."
       }
      ],
@@ -28,11 +28,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -44,15 +44,15 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.HAND"
+          1
          ]
         },
-        "owner": "ControllerRelation.YOU",
+        "owner": 1,
         "count": {
          "$": "Value",
          "constant": 2
@@ -70,25 +70,25 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "text": "+0"
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RETURN_TO_HAND",
+       "kind": 32,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "is_targeted": true,
        "text": "return to hand"
@@ -100,7 +100,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": -1
@@ -109,17 +109,17 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "-12: Exile all cards from target player's library, then that player shuffles their hand into their library."
       }
      ],

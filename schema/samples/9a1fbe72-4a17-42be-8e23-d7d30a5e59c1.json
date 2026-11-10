@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
  "name": "Norn's Annex",
  "card_hash": "a82d921c7ad91ed234e20d791cfab199",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
    "name": "Norn's Annex",
    "face": 0,
@@ -15,38 +15,38 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNLESS_PAYS",
+       "kind": 6,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.CONTROLLER_OF"
+        "scope": 7
        },
        "pay_cost": {
         "$": "Cost",
         "components": [
          {
           "$": "CostComponent",
-          "kind": "CostKind.MANA",
+          "kind": 0,
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": "ManaSymbolKind.PHYREXIAN",
-             "colors": "Color.WHITE",
+             "kind": 7,
+             "colors": 1,
              "text": "{W/P}"
             }
            ]
           },
           "scale": {
            "$": "Value",
-           "kind": "ValueKind.COUNT",
+           "kind": 2,
            "filter": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE",
+            "types_all": 4,
             "remembered": true
            }
           }
@@ -56,19 +56,19 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.RESTRICTION",
+         "kind": 150,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE"
+          "types_all": 4
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.ATTACK_PLAYER",
+           "act": 21,
            "subject": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE"
+            "types_all": 4
            },
            "players": {
             "$": "PlayerFilter"
@@ -77,15 +77,15 @@
           },
           {
            "$": "Restriction",
-           "act": "Act.ATTACK_PLANESWALKER",
+           "act": 22,
            "subject": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE"
+            "types_all": 4
            },
            "counterpart": {
             "$": "ObjectFilter",
-            "types_all": "CardType.PLANESWALKER",
-            "controller": "ControllerRelation.YOU"
+            "types_all": 32,
+            "controller": 1
            },
            "text": "can't attack planeswalkers you control"
           }

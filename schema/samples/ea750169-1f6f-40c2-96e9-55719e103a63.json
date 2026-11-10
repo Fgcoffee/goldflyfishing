@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
  "name": "Throne of the God-Pharaoh",
  "card_hash": "78e4c141a80d59ee242147b12bab2086",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
    "name": "Throne of the God-Pharaoh",
    "face": 0,
@@ -15,22 +15,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
-         "controller": "ControllerRelation.YOU",
+         "types_all": 4,
+         "controller": 1,
          "tapped": true
         }
        },
@@ -42,7 +42,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.END_STEP"
+        129
        ]
       },
       "players": {

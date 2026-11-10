@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
  "name": "Goblin Guide",
  "card_hash": "d56052c9c115b91c6ccad825c51747e2",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
    "name": "Goblin Guide",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Haste",
      "keyword": "Haste"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Whenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand."
       }
      ],

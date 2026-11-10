@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "00c0543c-2a1f-4425-8283-4062d74a1637",
  "name": "Solemn Simulacrum",
  "card_hash": "f8e42681b01756e481bfd61f8e1c1a6e",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "00c0543c-2a1f-4425-8283-4062d74a1637",
    "name": "Solemn Simulacrum",
    "face": 0,
@@ -15,22 +15,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.LAND",
-          "supertypes_all": "Supertype.BASIC",
+          "types_all": 16,
+          "supertypes_all": 1,
           "zones": {
            "$set": []
           },
@@ -46,7 +46,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "keywords": [
           "tapped"
          ],
@@ -61,7 +61,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
@@ -73,18 +73,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.DRAW",
+         "kind": 20,
          "players": {
           "$": "PlayerFilter"
          },
@@ -103,7 +103,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES"
+        3
        ]
       },
       "subject": {

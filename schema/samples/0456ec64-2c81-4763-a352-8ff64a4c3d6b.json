@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0456ec64-2c81-4763-a352-8ff64a4c3d6b",
  "name": "Deadly Rollick",
  "card_hash": "6a48d5bdf6858937b68b58ec48c88360",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0456ec64-2c81-4763-a352-8ff64a4c3d6b",
    "name": "Deadly Rollick",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "If you control a commander, you may cast this spell without paying its mana cost.",
      "functions_in": {
       "$set": [
-       "Zone.BATTLEFIELD",
-       "Zone.COMMAND",
-       "Zone.EXILE",
-       "Zone.GRAVEYARD",
-       "Zone.HAND",
-       "Zone.LIBRARY",
-       "Zone.STACK"
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
       ]
      },
      "alternative_cost": {
@@ -35,15 +35,15 @@
       },
       "condition": {
        "$": "Condition",
-       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "kind": 5,
        "filter": {
         "$": "ObjectFilter",
-        "controller": "ControllerRelation.YOU",
+        "controller": 1,
         "is_commander": true
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": "Comparison.GE",
+        "comparison": 5,
         "value": {
          "$": "Value",
          "constant": 1
@@ -56,14 +56,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "is_targeted": true,
        "text": "exile"

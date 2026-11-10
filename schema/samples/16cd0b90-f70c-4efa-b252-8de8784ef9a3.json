@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
  "name": "Imperial Seal",
  "card_hash": "60f05adba37775ca58cb271dde9ad680",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
    "name": "Imperial Seal",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -37,12 +37,12 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.LIBRARY",
+       "zone": 0,
        "text": "search library"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter"
        },

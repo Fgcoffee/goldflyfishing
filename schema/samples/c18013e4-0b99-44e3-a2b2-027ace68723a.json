@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
  "name": "Skirk Prospector",
  "card_hash": "1789c5a54e34a9986fa60abd8325a4fa",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
    "name": "Skirk Prospector",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -30,7 +30,7 @@
        "mana_produced": [
         "{R}"
        ],
-       "colors": "Color.RED",
+       "colors": 8,
        "text": "add {R}"
       }
      ],
@@ -40,7 +40,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1

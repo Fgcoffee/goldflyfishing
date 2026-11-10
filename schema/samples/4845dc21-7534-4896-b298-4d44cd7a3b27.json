@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
  "name": "Moggcatcher",
  "card_hash": "60cee7a5d1e36bd0381fa3164dbe15c0",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
    "name": "Moggcatcher",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+        "types_any": 63,
         "subtypes_all": [
          "Goblin"
         ],
@@ -41,7 +41,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.BATTLEFIELD",
+       "zone": 2,
        "text": "search library"
       }
      ],
@@ -51,13 +51,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 3,
            "text": "{3}"
           }
@@ -66,7 +66,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

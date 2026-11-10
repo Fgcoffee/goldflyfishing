@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
  "name": "Purphoros, God of the Forge",
  "card_hash": "ea8f74093b51132c48937904031099f3",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
    "name": "Purphoros, God of the Forge",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Indestructible",
      "keyword": "Indestructible"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "As long as your devotion to red is less than five, this isn't a creature."
       }
      ],
@@ -34,14 +34,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
@@ -55,14 +55,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
+       "types_all": 4,
        "other_than_source": true,
-       "controller": "ControllerRelation.YOU",
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1
@@ -73,21 +73,21 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_PT",
+       "kind": 140,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
        "amount": {
         "$": "Value",
         "constant": 1
        },
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "text": "gets +1/+0"
       }
      ],
@@ -97,20 +97,20 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 2,
            "text": "{2}"
           },
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.COLORED",
-           "colors": "Color.RED",
+           "kind": 2,
+           "colors": 8,
            "text": "{R}"
           }
          ]

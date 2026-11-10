@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
  "name": "Snuff Out",
  "card_hash": "1d4566d54649e095800bcca7dda71e27",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
    "name": "Snuff Out",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "If you control a Swamp, you may pay 4 life rather than pay this spell's mana cost.",
      "functions_in": {
       "$set": [
-       "Zone.BATTLEFIELD",
-       "Zone.COMMAND",
-       "Zone.EXILE",
-       "Zone.GRAVEYARD",
-       "Zone.HAND",
-       "Zone.LIBRARY",
-       "Zone.STACK"
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
       ]
      },
      "alternative_cost": {
@@ -35,7 +35,7 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.PAY_LIFE",
+         "kind": 30,
          "amount": {
           "$": "Value",
           "constant": 4
@@ -46,17 +46,17 @@
       },
       "condition": {
        "$": "Condition",
-       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "kind": 5,
        "filter": {
         "$": "ObjectFilter",
         "subtypes_all": [
          "Swamp"
         ],
-        "controller": "ControllerRelation.YOU"
+        "controller": 1
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": "Comparison.GE",
+        "comparison": 5,
         "value": {
          "$": "Value",
          "constant": 1
@@ -69,31 +69,31 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "colors_none": "Color.BLACK"
+        "types_all": 4,
+        "colors_none": 4
        },
        "is_targeted": true,
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_REGENERATED",
+         "act": 64,
          "subject": {
           "$": "ObjectFilter",
           "remembered": true

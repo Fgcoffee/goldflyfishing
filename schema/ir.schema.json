@@ -1,12 +1,12 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
- "$id": "https://goldflyfishing/ir/v1/face.schema.json",
- "title": "Parsed card face, IR version 1",
+ "$id": "https://goldflyfishing/ir/v2/face.schema.json",
+ "title": "Parsed card face, IR version 2",
  "description": "One card face's abilities and parse failures. See docs/ir-json.md.",
  "type": "object",
  "properties": {
   "ir_version": {
-   "const": 1
+   "const": 2
   },
   "oracle_id": {
    "type": "string"
@@ -70,7 +70,7 @@
      "default": []
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "cost": {
@@ -81,7 +81,7 @@
     },
     "timing": {
      "$ref": "#/$defs/enum.Timing",
-     "default": "Timing.INSTANT"
+     "default": 1
     },
     "is_mana_ability": {
      "type": "boolean",
@@ -142,12 +142,12 @@
      "additionalProperties": false,
      "default": {
       "$set": [
-       "Zone.BATTLEFIELD"
+       2
       ]
      }
     },
     "keyword": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "link_id": {
@@ -174,7 +174,7 @@
     "alternative_cost": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/AlternativeCost"
       },
       {
        "type": "null"
@@ -185,7 +185,7 @@
     "additional_cost": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/AdditionalCost"
       },
       {
        "type": "null"
@@ -293,7 +293,7 @@
     "alternatives": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRValue"
+      "$ref": "#/$defs/TriggerCondition"
      },
      "default": []
     },
@@ -313,7 +313,7 @@
      "additionalProperties": false,
      "default": {
       "$set": [
-       "Zone.BATTLEFIELD"
+       2
       ]
      }
     },
@@ -330,7 +330,7 @@
      "default": 0
     },
     "counter_kind": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "each_counter": {
@@ -356,7 +356,7 @@
           "$ref": "#/$defs/enum.Phase"
          },
          {
-          "type": "integer"
+          "$ref": "#/$defs/IRInt"
          }
         ]
        }
@@ -381,7 +381,7 @@
           "$ref": "#/$defs/enum.Step"
          },
          {
-          "type": "integer"
+          "$ref": "#/$defs/IRInt"
          }
         ]
        }
@@ -430,7 +430,7 @@
      "default": false
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     }
    },
@@ -447,7 +447,7 @@
     },
     "kind": {
      "$ref": "#/$defs/enum.EffectKind",
-     "default": "EffectKind.NOTHING"
+     "default": 5
     },
     "targets": {
      "anyOf": [
@@ -501,10 +501,12 @@
        "$ref": "#/$defs/enum.Duration"
       },
       {
-       "type": "integer"
+       "$ref": "#/$defs/IRInt"
       }
      ],
-     "default": 0
+     "default": {
+      "$int": 0
+     }
     },
     "zone": {
      "anyOf": [
@@ -529,13 +531,13 @@
      "default": null
     },
     "counter_type": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "pay_cost": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/Cost"
       },
       {
        "type": "null"
@@ -595,7 +597,7 @@
     "mana_restriction": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/SpendOnlyOn"
       },
       {
        "type": "null"
@@ -606,7 +608,7 @@
     "mana_produced": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
@@ -624,17 +626,17 @@
     "keywords": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "types": {
      "$ref": "#/$defs/enum.CardType",
-     "default": "CardType.NONE"
+     "default": 0
     },
     "colors": {
      "$ref": "#/$defs/enum.Color",
-     "default": "Color.NONE"
+     "default": 0
     },
     "condition": {
      "$ref": "#/$defs/Condition",
@@ -645,7 +647,7 @@
     "trigger": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/TriggerCondition"
       },
       {
        "type": "null"
@@ -757,10 +759,10 @@
     },
     "supertypes": {
      "$ref": "#/$defs/enum.Supertype",
-     "default": "Supertype.NONE"
+     "default": 0
     },
     "rule": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "copy_source": {
@@ -814,11 +816,11 @@
      "default": null
     },
     "dungeon_quality": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     }
    },
@@ -834,23 +836,23 @@
      "const": "TokenSpec"
     },
     "name": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "types": {
      "$ref": "#/$defs/enum.CardType",
-     "default": "CardType.CREATURE"
+     "default": 4
     },
     "subtypes": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "colors": {
      "$ref": "#/$defs/enum.Color",
-     "default": "Color.NONE"
+     "default": 0
     },
     "power": {
      "$ref": "#/$defs/Value",
@@ -867,14 +869,14 @@
     "keywords": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "abilities": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRValue"
+      "$ref": "#/$defs/Ability"
      },
      "default": []
     },
@@ -922,56 +924,56 @@
     },
     "types_any": {
      "$ref": "#/$defs/enum.CardType",
-     "default": "CardType.NONE"
+     "default": 0
     },
     "types_all": {
      "$ref": "#/$defs/enum.CardType",
-     "default": "CardType.NONE"
+     "default": 0
     },
     "types_none": {
      "$ref": "#/$defs/enum.CardType",
-     "default": "CardType.NONE"
+     "default": 0
     },
     "supertypes_all": {
      "$ref": "#/$defs/enum.Supertype",
-     "default": "Supertype.NONE"
+     "default": 0
     },
     "supertypes_none": {
      "$ref": "#/$defs/enum.Supertype",
-     "default": "Supertype.NONE"
+     "default": 0
     },
     "subtypes_any": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "subtypes_all": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "subtypes_none": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "colors_any": {
      "$ref": "#/$defs/enum.Color",
-     "default": "Color.NONE"
+     "default": 0
     },
     "colors_all": {
      "$ref": "#/$defs/enum.Color",
-     "default": "Color.NONE"
+     "default": 0
     },
     "colors_none": {
      "$ref": "#/$defs/enum.Color",
-     "default": "Color.NONE"
+     "default": 0
     },
     "must_be_colorless": {
      "type": "boolean",
@@ -996,14 +998,14 @@
     "named": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "not_named": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
@@ -1062,7 +1064,7 @@
      "additionalProperties": false,
      "default": {
       "$set": [
-       "Zone.BATTLEFIELD"
+       2
       ]
      }
     },
@@ -1079,7 +1081,7 @@
     },
     "controller": {
      "$ref": "#/$defs/enum.ControllerRelation",
-     "default": "ControllerRelation.ANY"
+     "default": 0
     },
     "controller_specific": {
      "anyOf": [
@@ -1094,7 +1096,7 @@
     },
     "owner": {
      "$ref": "#/$defs/enum.ControllerRelation",
-     "default": "ControllerRelation.ANY"
+     "default": 0
     },
     "tapped": {
      "anyOf": [
@@ -1207,7 +1209,7 @@
      "default": null
     },
     "has_inset": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "is_token": {
@@ -1370,7 +1372,7 @@
      "default": null
     },
     "has_counter": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "counter_constraint": {
@@ -1409,14 +1411,14 @@
     "has_keyword": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "lacks_keyword": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
@@ -1459,7 +1461,7 @@
     },
     "scope": {
      "$ref": "#/$defs/enum.PlayerScope",
-     "default": "PlayerScope.YOU"
+     "default": 0
     },
     "specific": {
      "anyOf": [
@@ -1512,7 +1514,7 @@
     },
     "kind": {
      "$ref": "#/$defs/enum.ValueKind",
-     "default": "ValueKind.CONSTANT"
+     "default": 0
     },
     "constant": {
      "type": "integer",
@@ -1541,12 +1543,12 @@
      "default": null
     },
     "counter_type": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "colors": {
      "$ref": "#/$defs/enum.Color",
-     "default": "Color.NONE"
+     "default": 0
     },
     "operands": {
      "type": "array",
@@ -1580,7 +1582,7 @@
     },
     "kind": {
      "$ref": "#/$defs/enum.ConditionKind",
-     "default": "ConditionKind.ALWAYS"
+     "default": 0
     },
     "filter": {
      "anyOf": [
@@ -1616,7 +1618,7 @@
      "default": null
     },
     "counter_type": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "event_kinds": {
@@ -1627,7 +1629,7 @@
         "$ref": "#/$defs/enum.EventKind"
        },
        {
-        "type": "integer"
+        "$ref": "#/$defs/IRInt"
        }
       ]
      },
@@ -1641,11 +1643,11 @@
      "default": []
     },
     "keyword": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "value": {
@@ -1755,7 +1757,7 @@
      "default": null
     },
     "counter_type": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "total_power": {
@@ -1763,7 +1765,7 @@
      "default": false
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     }
    },
@@ -1787,11 +1789,11 @@
      "default": false
     },
     "keyword": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     }
    },
@@ -1813,7 +1815,7 @@
     "from_zone": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/enum.Zone"
       },
       {
        "type": "null"
@@ -1824,7 +1826,7 @@
     "condition": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/Condition"
       },
       {
        "type": "null"
@@ -1845,11 +1847,11 @@
      "default": false
     },
     "keyword": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     }
    },
@@ -1889,14 +1891,14 @@
     },
     "colors": {
      "$ref": "#/$defs/enum.Color",
-     "default": "Color.NONE"
+     "default": 0
     },
     "generic": {
      "type": "integer",
      "default": 0
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     }
    },
@@ -1913,12 +1915,12 @@
      "const": "SpendOnlyOn"
     },
     "key": {
-     "$ref": "#/$defs/IRString"
+     "type": "string"
     },
     "filter": {
      "anyOf": [
       {
-       "$ref": "#/$defs/IRValue"
+       "$ref": "#/$defs/ObjectFilter"
       },
       {
        "type": "null"
@@ -1990,7 +1992,7 @@
      "default": null
     },
     "text": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     },
     "duration": {
@@ -2015,10 +2017,10 @@
      "const": "ParseFailure"
     },
     "text": {
-     "$ref": "#/$defs/IRString"
+     "type": "string"
     },
     "reason": {
-     "$ref": "#/$defs/IRString"
+     "type": "string"
     },
     "consumed": {
      "type": "integer",
@@ -2027,12 +2029,12 @@
     "remaining": {
      "type": "array",
      "items": {
-      "$ref": "#/$defs/IRString"
+      "type": "string"
      },
      "default": []
     },
     "rule": {
-     "$ref": "#/$defs/IRString",
+     "type": "string",
      "default": ""
     }
    },
@@ -2044,575 +2046,581 @@
    "additionalProperties": false
   },
   "enum.AbilityKind": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "AbilityKind.SPELL",
-    "AbilityKind.ACTIVATED",
-    "AbilityKind.TRIGGERED",
-    "AbilityKind.STATIC"
-   ]
+    0,
+    1,
+    2,
+    3
+   ],
+   "description": "enum AbilityKind: SPELL=0, ACTIVATED=1, TRIGGERED=2, STATIC=3"
   },
   "enum.Act": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "Act.CAST_SPELL",
-    "Act.PLAY_LAND",
-    "Act.CAST_AS_THOUGH_FLASH",
-    "Act.ACTIVATE_ABILITY",
-    "Act.ACTIVATE_MANA_ABILITY",
-    "Act.ACTIVATE_LOYALTY_ABILITY",
-    "Act.ATTACK",
-    "Act.ATTACK_PLAYER",
-    "Act.ATTACK_PLANESWALKER",
-    "Act.BLOCK",
-    "Act.BE_BLOCKED",
-    "Act.BE_COUNTERED",
-    "Act.BE_TARGETED",
-    "Act.COPY",
-    "Act.UNTAP",
-    "Act.TAP",
-    "Act.BE_DESTROYED",
-    "Act.BE_SACRIFICED",
-    "Act.BE_REGENERATED",
-    "Act.ENTER_BATTLEFIELD",
-    "Act.LEAVE_BATTLEFIELD",
-    "Act.HAVE_COUNTERS_PLACED",
-    "Act.BE_EXILED",
-    "Act.CHANGE_CONTROL",
-    "Act.PHASE_OUT",
-    "Act.DRAW_CARD",
-    "Act.GAIN_LIFE",
-    "Act.LOSE_LIFE",
-    "Act.SEARCH_LIBRARY",
-    "Act.WIN_GAME",
-    "Act.LOSE_GAME",
-    "Act.BE_DEALT_DAMAGE",
-    "Act.SHUFFLE",
-    "Act.CAST_MORE_THAN_ONE_SPELL",
-    "Act.UNTAP_DURING_UNTAP_STEP",
-    "Act.LIFE_TOTAL_CHANGE",
-    "Act.LOOK_AT_TOP_CARD",
-    "Act.DISCARD_TO_HAND_SIZE"
-   ]
+    0,
+    1,
+    5,
+    2,
+    3,
+    4,
+    20,
+    21,
+    22,
+    23,
+    24,
+    40,
+    41,
+    42,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    101,
+    102,
+    100
+   ],
+   "description": "enum Act: CAST_SPELL=0, PLAY_LAND=1, CAST_AS_THOUGH_FLASH=5, ACTIVATE_ABILITY=2, ACTIVATE_MANA_ABILITY=3, ACTIVATE_LOYALTY_ABILITY=4, ATTACK=20, ATTACK_PLAYER=21, ATTACK_PLANESWALKER=22, BLOCK=23, BE_BLOCKED=24, BE_COUNTERED=40, BE_TARGETED=41, COPY=42, UNTAP=60, TAP=61, BE_DESTROYED=62, BE_SACRIFICED=63, BE_REGENERATED=64, ENTER_BATTLEFIELD=65, LEAVE_BATTLEFIELD=66, HAVE_COUNTERS_PLACED=67, BE_EXILED=68, CHANGE_CONTROL=69, PHASE_OUT=70, DRAW_CARD=90, GAIN_LIFE=91, LOSE_LIFE=92, SEARCH_LIBRARY=93, WIN_GAME=94, LOSE_GAME=95, BE_DEALT_DAMAGE=96, SHUFFLE=97, CAST_MORE_THAN_ONE_SPELL=98, UNTAP_DURING_UNTAP_STEP=99, LIFE_TOTAL_CHANGE=101, LOOK_AT_TOP_CARD=102, DISCARD_TO_HAND_SIZE=100"
   },
   "enum.CardType": {
-   "type": "string",
-   "pattern": "^CardType\\.((ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER|INSTANT|SORCERY|KINDRED|CONSPIRACY|DUNGEON|PHENOMENON|PLANE|SCHEME|VANGUARD|EMBLEM|STICKERS|HERO|EVENT|BOSS|CARD)(\\|(ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER|INSTANT|SORCERY|KINDRED|CONSPIRACY|DUNGEON|PHENOMENON|PLANE|SCHEME|VANGUARD|EMBLEM|STICKERS|HERO|EVENT|BOSS|CARD))*|NONE)$",
-   "description": "flag enum CardType"
+   "type": "integer",
+   "minimum": 0,
+   "description": "flag enum CardType: the OR of its bits (ARTIFACT=1, BATTLE=2, CREATURE=4, ENCHANTMENT=8, LAND=16, PLANESWALKER=32, INSTANT=64, SORCERY=128, KINDRED=256, CONSPIRACY=512, DUNGEON=1024, PHENOMENON=2048, PLANE=4096, SCHEME=8192, VANGUARD=16384, EMBLEM=32768, STICKERS=65536, HERO=131072, EVENT=262144, BOSS=524288, CARD=1048576; NONE=0)"
   },
   "enum.Color": {
-   "type": "string",
-   "pattern": "^Color\\.((WHITE|BLUE|BLACK|RED|GREEN)(\\|(WHITE|BLUE|BLACK|RED|GREEN))*|NONE)$",
-   "description": "flag enum Color"
+   "type": "integer",
+   "minimum": 0,
+   "description": "flag enum Color: the OR of its bits (WHITE=1, BLUE=2, BLACK=4, RED=8, GREEN=16; NONE=0)"
   },
   "enum.Comparison": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "Comparison.EQ",
-    "Comparison.NE",
-    "Comparison.LT",
-    "Comparison.LE",
-    "Comparison.GT",
-    "Comparison.GE"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "description": "enum Comparison: EQ=0, NE=1, LT=2, LE=3, GT=4, GE=5"
   },
   "enum.ConditionKind": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "ConditionKind.ALWAYS",
-    "ConditionKind.NEVER",
-    "ConditionKind.OBJECT_COUNT",
-    "ConditionKind.LIFE",
-    "ConditionKind.CARDS_IN_HAND",
-    "ConditionKind.CONTROLS_MATCHING",
-    "ConditionKind.IS_YOUR_TURN",
-    "ConditionKind.IS_MAIN_PHASE",
-    "ConditionKind.EVENT_THIS_TURN",
-    "ConditionKind.CLASS_LEVEL",
-    "ConditionKind.IS_SOLVED",
-    "ConditionKind.AT_MAX_SPEED",
-    "ConditionKind.REMEMBERED_MATCHES",
-    "ConditionKind.PLAYER_COUNT",
-    "ConditionKind.IS_STEP",
-    "ConditionKind.WAS_CAST",
-    "ConditionKind.NO_MANA_SPENT",
-    "ConditionKind.WAS_KICKED",
-    "ConditionKind.RING_TEMPTED_TIMES",
-    "ConditionKind.HAS_ENDURING_STORY",
-    "ConditionKind.IS_HARNESSED",
-    "ConditionKind.ATTACKING_PLAYER_WITH_MOST_LIFE",
-    "ConditionKind.IS_SADDLED",
-    "ConditionKind.IS_PAIRED",
-    "ConditionKind.IS_RENOWNED",
-    "ConditionKind.SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS",
-    "ConditionKind.COMPLETED_DUNGEON",
-    "ConditionKind.HAS_INITIATIVE",
-    "ConditionKind.ALTERNATIVE_COST_PAID",
-    "ConditionKind.COMBAT_DAMAGE_DEALT_BY",
-    "ConditionKind.COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE",
-    "ConditionKind.FIRST_RESOLUTION_OF_NAME",
-    "ConditionKind.COUNTER_COUNT",
-    "ConditionKind.COMPARE_COUNTS",
-    "ConditionKind.AND",
-    "ConditionKind.OR",
-    "ConditionKind.NOT",
-    "ConditionKind.TRIGGER_OBJECT_MATCHES",
-    "ConditionKind.AFFECTED_MATCHES",
-    "ConditionKind.VALUE_COMPARE",
-    "ConditionKind.UNPARSED"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    16,
+    18,
+    17,
+    13,
+    23,
+    15,
+    14,
+    26,
+    27,
+    28,
+    85,
+    86,
+    87,
+    18001,
+    18002,
+    30,
+    31,
+    24,
+    75,
+    76,
+    25,
+    11,
+    19,
+    20,
+    21,
+    22,
+    2001,
+    2002,
+    2003,
+    99
+   ],
+   "description": "enum ConditionKind: ALWAYS=0, NEVER=1, OBJECT_COUNT=2, LIFE=3, CARDS_IN_HAND=4, CONTROLS_MATCHING=5, IS_YOUR_TURN=6, IS_MAIN_PHASE=7, EVENT_THIS_TURN=8, CLASS_LEVEL=9, IS_SOLVED=10, AT_MAX_SPEED=16, REMEMBERED_MATCHES=18, PLAYER_COUNT=17, IS_STEP=13, WAS_CAST=23, NO_MANA_SPENT=15, WAS_KICKED=14, RING_TEMPTED_TIMES=26, HAS_ENDURING_STORY=27, IS_HARNESSED=28, ATTACKING_PLAYER_WITH_MOST_LIFE=85, IS_SADDLED=86, IS_PAIRED=87, IS_RENOWNED=18001, SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS=18002, COMPLETED_DUNGEON=30, HAS_INITIATIVE=31, ALTERNATIVE_COST_PAID=24, COMBAT_DAMAGE_DEALT_BY=75, COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE=76, FIRST_RESOLUTION_OF_NAME=25, COUNTER_COUNT=11, COMPARE_COUNTS=19, AND=20, OR=21, NOT=22, TRIGGER_OBJECT_MATCHES=2001, AFFECTED_MATCHES=2002, VALUE_COMPARE=2003, UNPARSED=99"
   },
   "enum.ControllerRelation": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "ControllerRelation.ANY",
-    "ControllerRelation.YOU",
-    "ControllerRelation.OPPONENT",
-    "ControllerRelation.SAME_AS_SOURCE",
-    "ControllerRelation.SPECIFIC",
-    "ControllerRelation.DEFENDING_PLAYER"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "description": "enum ControllerRelation: ANY=0, YOU=1, OPPONENT=2, SAME_AS_SOURCE=3, SPECIFIC=4, DEFENDING_PLAYER=5"
   },
   "enum.CostKind": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "CostKind.MANA",
-    "CostKind.TAP_SELF",
-    "CostKind.UNTAP_SELF",
-    "CostKind.TAP_OTHER",
-    "CostKind.UNTAP_OTHER",
-    "CostKind.SACRIFICE",
-    "CostKind.DISCARD",
-    "CostKind.EXILE_FROM_GRAVEYARD",
-    "CostKind.EXILE_FROM_HAND",
-    "CostKind.EXILE_FROM_LIBRARY",
-    "CostKind.RETURN_TO_HAND",
-    "CostKind.PUT_ON_LIBRARY",
-    "CostKind.MILL",
-    "CostKind.REVEAL",
-    "CostKind.EXILE_FROM_BATTLEFIELD",
-    "CostKind.DISCARD_AT_RANDOM",
-    "CostKind.EXILE_MATERIALS",
-    "CostKind.PAY_LIFE",
-    "CostKind.PAY_ENERGY",
-    "CostKind.REMOVE_COUNTERS",
-    "CostKind.PUT_COUNTERS",
-    "CostKind.LOYALTY",
-    "CostKind.UNATTACH",
-    "CostKind.CHOOSE",
-    "CostKind.UNPARSED"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    4001,
+    4002,
+    30,
+    31,
+    32,
+    33,
+    34,
+    40,
+    41,
+    99
+   ],
+   "description": "enum CostKind: MANA=0, TAP_SELF=1, UNTAP_SELF=2, TAP_OTHER=3, UNTAP_OTHER=4, SACRIFICE=10, DISCARD=11, EXILE_FROM_GRAVEYARD=12, EXILE_FROM_HAND=13, EXILE_FROM_LIBRARY=14, RETURN_TO_HAND=15, PUT_ON_LIBRARY=16, MILL=17, REVEAL=18, EXILE_FROM_BATTLEFIELD=19, DISCARD_AT_RANDOM=4001, EXILE_MATERIALS=4002, PAY_LIFE=30, PAY_ENERGY=31, REMOVE_COUNTERS=32, PUT_COUNTERS=33, LOYALTY=34, UNATTACH=40, CHOOSE=41, UNPARSED=99"
   },
   "enum.Duration": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "Duration.PERMANENT",
-    "Duration.END_OF_TURN",
-    "Duration.END_OF_COMBAT",
-    "Duration.YOUR_NEXT_TURN",
-    "Duration.END_OF_YOUR_NEXT_TURN",
-    "Duration.WHILE_SOURCE_PERSISTS",
-    "Duration.CUSTOM"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "description": "enum Duration: PERMANENT=0, END_OF_TURN=1, END_OF_COMBAT=2, YOUR_NEXT_TURN=3, END_OF_YOUR_NEXT_TURN=4, WHILE_SOURCE_PERSISTS=5, CUSTOM=6"
   },
   "enum.EffectKind": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "EffectKind.SEQUENCE",
-    "EffectKind.CONDITIONAL",
-    "EffectKind.REPEAT",
-    "EffectKind.CHOOSE_MODE",
-    "EffectKind.OPTIONAL",
-    "EffectKind.NOTHING",
-    "EffectKind.UNLESS_PAYS",
-    "EffectKind.DRAW",
-    "EffectKind.DISCARD",
-    "EffectKind.MILL",
-    "EffectKind.SEARCH_LIBRARY",
-    "EffectKind.SHUFFLE",
-    "EffectKind.REVEAL",
-    "EffectKind.SCRY",
-    "EffectKind.SURVEIL",
-    "EffectKind.MOVE_ZONE",
-    "EffectKind.DESTROY",
-    "EffectKind.EXILE",
-    "EffectKind.SACRIFICE",
-    "EffectKind.RETURN_TO_HAND",
-    "EffectKind.PUT_ONTO_BATTLEFIELD",
-    "EffectKind.PUT_ON_LIBRARY",
-    "EffectKind.CREATE_TOKEN",
-    "EffectKind.EXPLORE",
-    "EffectKind.LOOK_AT_TOP",
-    "EffectKind.DAMAGE",
-    "EffectKind.GAIN_LIFE",
-    "EffectKind.LOSE_LIFE",
-    "EffectKind.SET_LIFE",
-    "EffectKind.EXCHANGE_LIFE",
-    "EffectKind.PREVENT_DAMAGE",
-    "EffectKind.REDIRECT_DAMAGE",
-    "EffectKind.ADD_POISON",
-    "EffectKind.FIGHT",
-    "EffectKind.DESIGNATE",
-    "EffectKind.TAP",
-    "EffectKind.UNTAP",
-    "EffectKind.ADD_COUNTERS",
-    "EffectKind.REMOVE_COUNTERS",
-    "EffectKind.PROLIFERATE",
-    "EffectKind.ATTACH",
-    "EffectKind.UNATTACH",
-    "EffectKind.GAIN_CONTROL",
-    "EffectKind.EXCHANGE_CONTROL",
-    "EffectKind.TRANSFORM",
-    "EffectKind.DOUBLE_COUNTERS",
-    "EffectKind.TURN_FACE_UP",
-    "EffectKind.TURN_FACE_DOWN",
-    "EffectKind.PHASE_OUT",
-    "EffectKind.REGENERATE",
-    "EffectKind.COPY_PERMANENT",
-    "EffectKind.GOAD",
-    "EffectKind.MONSTROSITY",
-    "EffectKind.ADAPT",
-    "EffectKind.COUNTER_SPELL",
-    "EffectKind.COPY_SPELL",
-    "EffectKind.CHANGE_TARGETS",
-    "EffectKind.CAST_WITHOUT_PAYING",
-    "EffectKind.PLAY_FROM_ZONE",
-    "EffectKind.ADD_MANA",
-    "EffectKind.MODIFY_PT",
-    "EffectKind.SET_PT",
-    "EffectKind.SWITCH_PT",
-    "EffectKind.GRANT_ABILITY",
-    "EffectKind.REMOVE_ABILITIES",
-    "EffectKind.SET_COLOR",
-    "EffectKind.ADD_TYPE",
-    "EffectKind.REMOVE_TYPE",
-    "EffectKind.SET_TYPE",
-    "EffectKind.TEXT_CHANGE",
-    "EffectKind.RESTRICTION",
-    "EffectKind.PERMISSION",
-    "EffectKind.SUSPEND_RULE",
-    "EffectKind.MODIFY_COST",
-    "EffectKind.REPLACEMENT",
-    "EffectKind.EXTRA_TURN",
-    "EffectKind.EXTRA_PHASE",
-    "EffectKind.EXTRA_STEP",
-    "EffectKind.SKIP_STEP",
-    "EffectKind.END_TURN",
-    "EffectKind.UNTAP_STEP_SKIP",
-    "EffectKind.EXTRA_LAND_DROP",
-    "EffectKind.PLAYER_WINS",
-    "EffectKind.PLAYER_LOSES",
-    "EffectKind.BECOME_MONARCH",
-    "EffectKind.TAKE_INITIATIVE",
-    "EffectKind.ADD_ENERGY",
-    "EffectKind.ADD_EXPERIENCE",
-    "EffectKind.VOTE",
-    "EffectKind.VENTURE",
-    "EffectKind.RING_TEMPTS",
-    "EffectKind.START_ENGINES",
-    "EffectKind.PAY_COST",
-    "EffectKind.IF_YOU_DONT",
-    "EffectKind.ROLL_DICE",
-    "EffectKind.SET_CLASS_LEVEL",
-    "EffectKind.EXTRA_TRIGGER",
-    "EffectKind.CHOOSE_QUALITY",
-    "EffectKind.BECOME_SOLVED",
-    "EffectKind.FLIP_PERMANENT",
-    "EffectKind.DELAYED_TRIGGER",
-    "EffectKind.REFLEXIVE_TRIGGER",
-    "EffectKind.CONTROL_PLAYER",
-    "EffectKind.RESTART_GAME",
-    "EffectKind.BECOME_PREPARED",
-    "EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT",
-    "EffectKind.CASCADE",
-    "EffectKind.DISCOVER",
-    "EffectKind.VILLAINOUS_CHOICE",
-    "EffectKind.HARNESS",
-    "EffectKind.BECOME_RENOWNED",
-    "EffectKind.BLOCKS_SOURCE_IF_ABLE",
-    "EffectKind.HAUNT",
-    "EffectKind.ENTERS_AS_CHOICE",
-    "EffectKind.BECOME_SADDLED",
-    "EffectKind.PAIR",
-    "EffectKind.SEPARATE_INTO_PILES",
-    "EffectKind.MANIFEST",
-    "EffectKind.OPEN_ATTRACTION",
-    "EffectKind.ROLL_TO_VISIT",
-    "EffectKind.REPEAT_PER_PAYMENT",
-    "EffectKind.GIVE_GIFT",
-    "EffectKind.PERPETUALLY",
-    "EffectKind.CONJURE",
-    "EffectKind.SEEK",
-    "EffectKind.UNPARSED"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    10001,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    88,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    100,
+    101,
+    102,
+    103,
+    104,
+    120,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    154,
+    152,
+    153,
+    170,
+    171,
+    172,
+    173,
+    174,
+    175,
+    176,
+    190,
+    191,
+    192,
+    193,
+    194,
+    195,
+    196,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    210,
+    211,
+    214,
+    218,
+    212,
+    213,
+    219,
+    215,
+    216,
+    217,
+    220,
+    221,
+    222,
+    223,
+    224,
+    18001,
+    18002,
+    18003,
+    280,
+    285,
+    286,
+    287,
+    240,
+    270,
+    271,
+    300,
+    301,
+    6000,
+    6001,
+    6002,
+    999
+   ],
+   "description": "enum EffectKind: SEQUENCE=0, CONDITIONAL=1, REPEAT=2, CHOOSE_MODE=3, OPTIONAL=4, NOTHING=5, UNLESS_PAYS=6, DRAW=20, DISCARD=21, MILL=22, SEARCH_LIBRARY=23, SHUFFLE=24, REVEAL=25, SCRY=26, SURVEIL=27, MOVE_ZONE=28, DESTROY=29, EXILE=30, SACRIFICE=31, RETURN_TO_HAND=32, PUT_ONTO_BATTLEFIELD=33, PUT_ON_LIBRARY=34, CREATE_TOKEN=35, EXPLORE=36, LOOK_AT_TOP=10001, DAMAGE=50, GAIN_LIFE=51, LOSE_LIFE=52, SET_LIFE=53, EXCHANGE_LIFE=54, PREVENT_DAMAGE=55, REDIRECT_DAMAGE=56, ADD_POISON=57, FIGHT=58, DESIGNATE=59, TAP=70, UNTAP=71, ADD_COUNTERS=72, REMOVE_COUNTERS=73, PROLIFERATE=74, ATTACH=75, UNATTACH=76, GAIN_CONTROL=77, EXCHANGE_CONTROL=78, TRANSFORM=79, DOUBLE_COUNTERS=88, TURN_FACE_UP=80, TURN_FACE_DOWN=81, PHASE_OUT=82, REGENERATE=83, COPY_PERMANENT=84, GOAD=85, MONSTROSITY=86, ADAPT=87, COUNTER_SPELL=100, COPY_SPELL=101, CHANGE_TARGETS=102, CAST_WITHOUT_PAYING=103, PLAY_FROM_ZONE=104, ADD_MANA=120, MODIFY_PT=140, SET_PT=141, SWITCH_PT=142, GRANT_ABILITY=143, REMOVE_ABILITIES=144, SET_COLOR=145, ADD_TYPE=146, REMOVE_TYPE=147, SET_TYPE=148, TEXT_CHANGE=149, RESTRICTION=150, PERMISSION=151, SUSPEND_RULE=154, MODIFY_COST=152, REPLACEMENT=153, EXTRA_TURN=170, EXTRA_PHASE=171, EXTRA_STEP=172, SKIP_STEP=173, END_TURN=174, UNTAP_STEP_SKIP=175, EXTRA_LAND_DROP=176, PLAYER_WINS=190, PLAYER_LOSES=191, BECOME_MONARCH=192, TAKE_INITIATIVE=193, ADD_ENERGY=194, ADD_EXPERIENCE=195, VOTE=196, VENTURE=197, RING_TEMPTS=198, START_ENGINES=199, PAY_COST=200, IF_YOU_DONT=201, ROLL_DICE=202, SET_CLASS_LEVEL=210, EXTRA_TRIGGER=211, CHOOSE_QUALITY=214, BECOME_SOLVED=218, FLIP_PERMANENT=212, DELAYED_TRIGGER=213, REFLEXIVE_TRIGGER=219, CONTROL_PLAYER=215, RESTART_GAME=216, BECOME_PREPARED=217, SACRIFICE_BLOCKERS_AT_END_OF_COMBAT=220, CASCADE=221, DISCOVER=222, VILLAINOUS_CHOICE=223, HARNESS=224, BECOME_RENOWNED=18001, BLOCKS_SOURCE_IF_ABLE=18002, HAUNT=18003, ENTERS_AS_CHOICE=280, BECOME_SADDLED=285, PAIR=286, SEPARATE_INTO_PILES=287, MANIFEST=240, OPEN_ATTRACTION=270, ROLL_TO_VISIT=271, REPEAT_PER_PAYMENT=300, GIVE_GIFT=301, PERPETUALLY=6000, CONJURE=6001, SEEK=6002, UNPARSED=999"
   },
   "enum.EventKind": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "EventKind.ZONE_CHANGE",
-    "EventKind.ENTERS_BATTLEFIELD",
-    "EventKind.LEAVES_BATTLEFIELD",
-    "EventKind.DIES",
-    "EventKind.PUT_INTO_GRAVEYARD",
-    "EventKind.EXILED",
-    "EventKind.RETURNED_TO_HAND",
-    "EventKind.SHUFFLED_INTO_LIBRARY",
-    "EventKind.TOKEN_CREATED",
-    "EventKind.CEASED_TO_EXIST",
-    "EventKind.CAST_SPELL",
-    "EventKind.SPELL_RESOLVED",
-    "EventKind.ABILITY_ACTIVATED",
-    "EventKind.ABILITY_TRIGGERED",
-    "EventKind.ABILITY_RESOLVED",
-    "EventKind.COUNTERED",
-    "EventKind.FIZZLED",
-    "EventKind.TARGETED",
-    "EventKind.COPIED",
-    "EventKind.PUT_ON_STACK",
-    "EventKind.TAPPED",
-    "EventKind.UNTAPPED",
-    "EventKind.COUNTER_ADDED",
-    "EventKind.COUNTER_REMOVED",
-    "EventKind.ATTACHED",
-    "EventKind.UNATTACHED",
-    "EventKind.TRANSFORMED",
-    "EventKind.TURNED_FACE_UP",
-    "EventKind.TURNED_FACE_DOWN",
-    "EventKind.PHASED_OUT",
-    "EventKind.PHASED_IN",
-    "EventKind.CONTROL_CHANGED",
-    "EventKind.SACRIFICED",
-    "EventKind.DESTROYED",
-    "EventKind.REGENERATED",
-    "EventKind.DAMAGE_DEALT",
-    "EventKind.COMBAT_DAMAGE_DEALT",
-    "EventKind.LIFE_GAINED",
-    "EventKind.LIFE_LOST",
-    "EventKind.LIFE_SET",
-    "EventKind.DAMAGE_PREVENTED",
-    "EventKind.POISON_ADDED",
-    "EventKind.SPEED_INCREASED",
-    "EventKind.DREW_CARD",
-    "EventKind.DISCARDED",
-    "EventKind.MILLED",
-    "EventKind.REVEALED",
-    "EventKind.SCRIED",
-    "EventKind.SURVEILLED",
-    "EventKind.SEARCHED_LIBRARY",
-    "EventKind.CLASS_LEVEL_GAINED",
-    "EventKind.SHUFFLED",
-    "EventKind.ATTACKERS_DECLARED",
-    "EventKind.ATTACKS",
-    "EventKind.BLOCKERS_DECLARED",
-    "EventKind.BLOCKS",
-    "EventKind.BECOMES_BLOCKED",
-    "EventKind.BECOMES_BLOCKED_BY",
-    "EventKind.ATTACKS_UNBLOCKED",
-    "EventKind.REMOVED_FROM_COMBAT",
-    "EventKind.TURN_BEGAN",
-    "EventKind.PHASE_BEGAN",
-    "EventKind.STEP_BEGAN",
-    "EventKind.STEP_ENDED",
-    "EventKind.PHASE_ENDED",
-    "EventKind.TURN_ENDED",
-    "EventKind.UNTAP_STEP",
-    "EventKind.UPKEEP",
-    "EventKind.DRAW_STEP",
-    "EventKind.END_STEP",
-    "EventKind.CLEANUP",
-    "EventKind.PLAYER_LOST",
-    "EventKind.PLAYER_WON",
-    "EventKind.PLAYER_LEFT_GAME",
-    "EventKind.MANA_ADDED",
-    "EventKind.MANA_SPENT",
-    "EventKind.MANA_EMPTIED",
-    "EventKind.PRIORITY_RECEIVED",
-    "EventKind.LAND_PLAYED",
-    "EventKind.TAPPED_FOR_MANA",
-    "EventKind.COMMANDER_CAST",
-    "EventKind.COMMANDER_MOVED_TO_COMMAND_ZONE",
-    "EventKind.COMMANDER_DAMAGE_DEALT",
-    "EventKind.BECAME_MONARCH",
-    "EventKind.TOOK_INITIATIVE",
-    "EventKind.ENERGY_GAINED",
-    "EventKind.EXPERIENCE_GAINED",
-    "EventKind.DAY_NIGHT_CHANGED",
-    "EventKind.RING_TEMPTED",
-    "EventKind.EXPLORED",
-    "EventKind.DUNGEON_VENTURED",
-    "EventKind.DESCENDED",
-    "EventKind.CRIME_COMMITTED",
-    "EventKind.EXPENDED",
-    "EventKind.BECAME_SADDLED",
-    "EventKind.GIFT_GIVEN",
-    "EventKind.VENTURE_MARKER_MOVED",
-    "EventKind.DUNGEON_COMPLETED",
-    "EventKind.MANIFESTED_DREAD",
-    "EventKind.ATTRACTION_OPENED",
-    "EventKind.ROLLED_TO_VISIT",
-    "EventKind.ATTRACTION_VISITED",
-    "EventKind.BECAME_MONSTROUS",
-    "EventKind.BECAME_RENOWNED"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    100,
+    101,
+    102,
+    103,
+    104,
+    18001,
+    18003,
+    105,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    160,
+    161,
+    162,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    187,
+    186,
+    330,
+    331,
+    332,
+    380,
+    370,
+    300,
+    301,
+    310,
+    350,
+    351,
+    352,
+    19001,
+    18002
+   ],
+   "description": "enum EventKind: ZONE_CHANGE=0, ENTERS_BATTLEFIELD=1, LEAVES_BATTLEFIELD=2, DIES=3, PUT_INTO_GRAVEYARD=4, EXILED=5, RETURNED_TO_HAND=6, SHUFFLED_INTO_LIBRARY=7, TOKEN_CREATED=8, CEASED_TO_EXIST=9, CAST_SPELL=20, SPELL_RESOLVED=21, ABILITY_ACTIVATED=22, ABILITY_TRIGGERED=23, ABILITY_RESOLVED=24, COUNTERED=25, FIZZLED=26, TARGETED=27, COPIED=28, PUT_ON_STACK=29, TAPPED=40, UNTAPPED=41, COUNTER_ADDED=42, COUNTER_REMOVED=43, ATTACHED=44, UNATTACHED=45, TRANSFORMED=46, TURNED_FACE_UP=47, TURNED_FACE_DOWN=48, PHASED_OUT=49, PHASED_IN=50, CONTROL_CHANGED=51, SACRIFICED=52, DESTROYED=53, REGENERATED=54, DAMAGE_DEALT=60, COMBAT_DAMAGE_DEALT=61, LIFE_GAINED=62, LIFE_LOST=63, LIFE_SET=64, DAMAGE_PREVENTED=65, POISON_ADDED=66, SPEED_INCREASED=67, DREW_CARD=80, DISCARDED=81, MILLED=82, REVEALED=83, SCRIED=84, SURVEILLED=85, SEARCHED_LIBRARY=86, CLASS_LEVEL_GAINED=87, SHUFFLED=88, ATTACKERS_DECLARED=100, ATTACKS=101, BLOCKERS_DECLARED=102, BLOCKS=103, BECOMES_BLOCKED=104, BECOMES_BLOCKED_BY=18001, ATTACKS_UNBLOCKED=18003, REMOVED_FROM_COMBAT=105, TURN_BEGAN=120, PHASE_BEGAN=121, STEP_BEGAN=122, STEP_ENDED=123, PHASE_ENDED=124, TURN_ENDED=125, UNTAP_STEP=126, UPKEEP=127, DRAW_STEP=128, END_STEP=129, CLEANUP=130, PLAYER_LOST=140, PLAYER_WON=141, PLAYER_LEFT_GAME=142, MANA_ADDED=143, MANA_SPENT=144, MANA_EMPTIED=145, PRIORITY_RECEIVED=146, LAND_PLAYED=147, TAPPED_FOR_MANA=148, COMMANDER_CAST=160, COMMANDER_MOVED_TO_COMMAND_ZONE=161, COMMANDER_DAMAGE_DEALT=162, BECAME_MONARCH=180, TOOK_INITIATIVE=181, ENERGY_GAINED=182, EXPERIENCE_GAINED=183, DAY_NIGHT_CHANGED=184, RING_TEMPTED=185, EXPLORED=187, DUNGEON_VENTURED=186, DESCENDED=330, CRIME_COMMITTED=331, EXPENDED=332, BECAME_SADDLED=380, GIFT_GIVEN=370, VENTURE_MARKER_MOVED=300, DUNGEON_COMPLETED=301, MANIFESTED_DREAD=310, ATTRACTION_OPENED=350, ROLLED_TO_VISIT=351, ATTRACTION_VISITED=352, BECAME_MONSTROUS=19001, BECAME_RENOWNED=18002"
   },
   "enum.ManaSymbolKind": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "ManaSymbolKind.GENERIC",
-    "ManaSymbolKind.VARIABLE",
-    "ManaSymbolKind.COLORED",
-    "ManaSymbolKind.COLORLESS",
-    "ManaSymbolKind.SNOW",
-    "ManaSymbolKind.HYBRID",
-    "ManaSymbolKind.MONOCOLOR_HYBRID",
-    "ManaSymbolKind.PHYREXIAN",
-    "ManaSymbolKind.HALF",
-    "ManaSymbolKind.INFINITY"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "description": "enum ManaSymbolKind: GENERIC=0, VARIABLE=1, COLORED=2, COLORLESS=3, SNOW=4, HYBRID=5, MONOCOLOR_HYBRID=6, PHYREXIAN=7, HALF=8, INFINITY=9"
   },
   "enum.Phase": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "Phase.BEGINNING",
-    "Phase.PRECOMBAT_MAIN",
-    "Phase.COMBAT",
-    "Phase.POSTCOMBAT_MAIN",
-    "Phase.ENDING"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "description": "enum Phase: BEGINNING=0, PRECOMBAT_MAIN=1, COMBAT=2, POSTCOMBAT_MAIN=3, ENDING=4"
   },
   "enum.PlayerScope": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "PlayerScope.YOU",
-    "PlayerScope.OPPONENT",
-    "PlayerScope.EACH_PLAYER",
-    "PlayerScope.EACH_OPPONENT",
-    "PlayerScope.TARGET_PLAYER",
-    "PlayerScope.TARGET_OPPONENT",
-    "PlayerScope.ACTIVE_PLAYER",
-    "PlayerScope.CONTROLLER_OF",
-    "PlayerScope.OWNER_OF",
-    "PlayerScope.SPECIFIC",
-    "PlayerScope.MONARCH",
-    "PlayerScope.DEFENDING_PLAYER",
-    "PlayerScope.THAT_PLAYER",
-    "PlayerScope.TRIGGER_SOURCE_CONTROLLER",
-    "PlayerScope.REFERRED_PLAYER",
-    "PlayerScope.TRIGGER_PLAYER",
-    "PlayerScope.REMEMBERED_CONTROLLER",
-    "PlayerScope.REMEMBERED_OWNER",
-    "PlayerScope.TRIGGER_OBJECT_CONTROLLER",
-    "PlayerScope.TRIGGER_OBJECT_OWNER",
-    "PlayerScope.AFFECTED_CONTROLLER",
-    "PlayerScope.CHOSEN_PLAYER",
-    "PlayerScope.ENCHANTED_PLAYER"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    4001,
+    13001,
+    13002,
+    13003,
+    13004,
+    13005,
+    13006,
+    13007,
+    13008,
+    14001
+   ],
+   "description": "enum PlayerScope: YOU=0, OPPONENT=1, EACH_PLAYER=2, EACH_OPPONENT=3, TARGET_PLAYER=4, TARGET_OPPONENT=5, ACTIVE_PLAYER=6, CONTROLLER_OF=7, OWNER_OF=8, SPECIFIC=9, MONARCH=10, DEFENDING_PLAYER=11, THAT_PLAYER=12, TRIGGER_SOURCE_CONTROLLER=4001, REFERRED_PLAYER=13001, TRIGGER_PLAYER=13002, REMEMBERED_CONTROLLER=13003, REMEMBERED_OWNER=13004, TRIGGER_OBJECT_CONTROLLER=13005, TRIGGER_OBJECT_OWNER=13006, AFFECTED_CONTROLLER=13007, CHOSEN_PLAYER=13008, ENCHANTED_PLAYER=14001"
   },
   "enum.Step": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "Step.UNTAP",
-    "Step.UPKEEP",
-    "Step.DRAW",
-    "Step.MAIN",
-    "Step.BEGINNING_OF_COMBAT",
-    "Step.DECLARE_ATTACKERS",
-    "Step.DECLARE_BLOCKERS",
-    "Step.FIRST_STRIKE_COMBAT_DAMAGE",
-    "Step.COMBAT_DAMAGE",
-    "Step.END_OF_COMBAT",
-    "Step.END_STEP",
-    "Step.CLEANUP"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "description": "enum Step: UNTAP=0, UPKEEP=1, DRAW=2, MAIN=3, BEGINNING_OF_COMBAT=4, DECLARE_ATTACKERS=5, DECLARE_BLOCKERS=6, FIRST_STRIKE_COMBAT_DAMAGE=7, COMBAT_DAMAGE=8, END_OF_COMBAT=9, END_STEP=10, CLEANUP=11"
   },
   "enum.Supertype": {
-   "type": "string",
-   "pattern": "^Supertype\\.((BASIC|LEGENDARY|ONGOING|SNOW|WORLD|TOKEN|HOST|ELITE)(\\|(BASIC|LEGENDARY|ONGOING|SNOW|WORLD|TOKEN|HOST|ELITE))*|NONE)$",
-   "description": "flag enum Supertype"
+   "type": "integer",
+   "minimum": 0,
+   "description": "flag enum Supertype: the OR of its bits (BASIC=1, LEGENDARY=2, ONGOING=4, SNOW=8, WORLD=16, TOKEN=32, HOST=64, ELITE=128; NONE=0)"
   },
   "enum.Timing": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "Timing.SORCERY",
-    "Timing.INSTANT"
-   ]
+    0,
+    1
+   ],
+   "description": "enum Timing: SORCERY=0, INSTANT=1"
   },
   "enum.ValueKind": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "ValueKind.CONSTANT",
-    "ValueKind.X",
-    "ValueKind.COUNT",
-    "ValueKind.POWER",
-    "ValueKind.TOUGHNESS",
-    "ValueKind.MANA_VALUE",
-    "ValueKind.LIFE_TOTAL",
-    "ValueKind.CARDS_IN_HAND",
-    "ValueKind.POISON_COUNTERS",
-    "ValueKind.ENERGY",
-    "ValueKind.COUNTERS",
-    "ValueKind.SUM",
-    "ValueKind.PRODUCT",
-    "ValueKind.DIFFERENCE",
-    "ValueKind.HALF_ROUNDED_UP",
-    "ValueKind.HALF_ROUNDED_DOWN",
-    "ValueKind.MAXIMUM",
-    "ValueKind.MINIMUM",
-    "ValueKind.GREATEST_AMONG",
-    "ValueKind.LEAST_AMONG",
-    "ValueKind.UNCHANGED",
-    "ValueKind.DEVOTION",
-    "ValueKind.COLOURS_AMONG",
-    "ValueKind.MANA_SPENT",
-    "ValueKind.COST_PAID_POWER",
-    "ValueKind.COST_PAID",
-    "ValueKind.EVENT_AMOUNT",
-    "ValueKind.EVENT_COUNT_THIS_TURN",
-    "ValueKind.PARTY_SIZE",
-    "ValueKind.COLORS_OF_MANA_SPENT",
-    "ValueKind.TOTAL_AMONG",
-    "ValueKind.COMMANDER_COLOUR_IDENTITY",
-    "ValueKind.DIE_ROLL_RESULT",
-    "ValueKind.AMOUNT_THIS_WAY",
-    "ValueKind.EVENT_AMOUNT_THIS_TURN",
-    "ValueKind.BLOCKERS_OF_SOURCE",
-    "ValueKind.PLAYER_COUNT"
-   ]
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    22,
+    23,
+    24,
+    21,
+    30,
+    25,
+    26,
+    60,
+    61,
+    27,
+    28,
+    29,
+    7001,
+    7002,
+    18001,
+    18002
+   ],
+   "description": "enum ValueKind: CONSTANT=0, X=1, COUNT=2, POWER=3, TOUGHNESS=4, MANA_VALUE=5, LIFE_TOTAL=6, CARDS_IN_HAND=7, POISON_COUNTERS=8, ENERGY=9, COUNTERS=10, SUM=11, PRODUCT=12, DIFFERENCE=13, HALF_ROUNDED_UP=14, HALF_ROUNDED_DOWN=15, MAXIMUM=16, MINIMUM=17, GREATEST_AMONG=18, LEAST_AMONG=19, UNCHANGED=20, DEVOTION=22, COLOURS_AMONG=23, MANA_SPENT=24, COST_PAID_POWER=21, COST_PAID=30, EVENT_AMOUNT=25, EVENT_COUNT_THIS_TURN=26, PARTY_SIZE=60, COLORS_OF_MANA_SPENT=61, TOTAL_AMONG=27, COMMANDER_COLOUR_IDENTITY=28, DIE_ROLL_RESULT=29, AMOUNT_THIS_WAY=7001, EVENT_AMOUNT_THIS_TURN=7002, BLOCKERS_OF_SOURCE=18001, PLAYER_COUNT=18002"
   },
   "enum.Zone": {
-   "type": "string",
+   "type": "integer",
    "enum": [
-    "Zone.LIBRARY",
-    "Zone.HAND",
-    "Zone.BATTLEFIELD",
-    "Zone.GRAVEYARD",
-    "Zone.STACK",
-    "Zone.EXILE",
-    "Zone.COMMAND"
-   ]
-  },
-  "IRString": {
-   "anyOf": [
-    {
-     "type": "string",
-     "not": {
-      "pattern": "^(AbilityKind|Act|CardType|Color|Comparison|ConditionKind|ControllerRelation|CostKind|Duration|EffectKind|EventKind|ManaSymbolKind|Phase|PlayerScope|Step|Supertype|Timing|ValueKind|Zone)\\."
-     }
-    },
-    {
-     "type": "object",
-     "properties": {
-      "$str": {
-       "type": "string"
-      }
-     },
-     "required": [
-      "$str"
-     ],
-     "additionalProperties": false
-    }
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
    ],
-   "description": "a string; one that looks like an enum member is wrapped in $str"
+   "description": "enum Zone: LIBRARY=0, HAND=1, BATTLEFIELD=2, GRAVEYARD=3, STACK=4, EXILE=5, COMMAND=6"
+  },
+  "IRInt": {
+   "type": "object",
+   "properties": {
+    "$int": {
+     "type": "integer"
+    }
+   },
+   "required": [
+    "$int"
+   ],
+   "additionalProperties": false,
+   "description": "a plain integer in a field whose type is an enum"
   },
   "IRValue": {
    "anyOf": [
@@ -2620,68 +2628,9 @@
      "type": [
       "null",
       "boolean",
-      "integer"
+      "integer",
+      "string"
      ]
-    },
-    {
-     "$ref": "#/$defs/IRString"
-    },
-    {
-     "$ref": "#/$defs/enum.AbilityKind"
-    },
-    {
-     "$ref": "#/$defs/enum.Act"
-    },
-    {
-     "$ref": "#/$defs/enum.CardType"
-    },
-    {
-     "$ref": "#/$defs/enum.Color"
-    },
-    {
-     "$ref": "#/$defs/enum.Comparison"
-    },
-    {
-     "$ref": "#/$defs/enum.ConditionKind"
-    },
-    {
-     "$ref": "#/$defs/enum.ControllerRelation"
-    },
-    {
-     "$ref": "#/$defs/enum.CostKind"
-    },
-    {
-     "$ref": "#/$defs/enum.Duration"
-    },
-    {
-     "$ref": "#/$defs/enum.EffectKind"
-    },
-    {
-     "$ref": "#/$defs/enum.EventKind"
-    },
-    {
-     "$ref": "#/$defs/enum.ManaSymbolKind"
-    },
-    {
-     "$ref": "#/$defs/enum.Phase"
-    },
-    {
-     "$ref": "#/$defs/enum.PlayerScope"
-    },
-    {
-     "$ref": "#/$defs/enum.Step"
-    },
-    {
-     "$ref": "#/$defs/enum.Supertype"
-    },
-    {
-     "$ref": "#/$defs/enum.Timing"
-    },
-    {
-     "$ref": "#/$defs/enum.ValueKind"
-    },
-    {
-     "$ref": "#/$defs/enum.Zone"
     },
     {
      "type": "array",
@@ -2744,7 +2693,7 @@
      "$ref": "#/$defs/ParseFailure"
     }
    ],
-   "description": "any IR value"
+   "description": "any IR value (never an enum: an enum is only where a field declares one)"
   }
  }
 }

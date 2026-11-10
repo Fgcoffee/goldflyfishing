@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "9242cd3e-1a71-4700-8182-9c1005616033",
  "name": "Impact Tremors",
  "card_hash": "88c916ed8568192d2de36996e1f473e3",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "9242cd3e-1a71-4700-8182-9c1005616033",
    "name": "Impact Tremors",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
@@ -36,13 +36,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
-       "controller": "ControllerRelation.YOU",
+       "types_all": 4,
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1

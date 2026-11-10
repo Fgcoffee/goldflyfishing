@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f3c7af78-a77d-4134-82a2-a5ce84285a84",
  "name": "Flooded Strand",
  "card_hash": "cc08a0bab1b7fdf8a49ec1f4bf680338",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f3c7af78-a77d-4134-82a2-a5ce84285a84",
    "name": "Flooded Strand",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
         "subtypes_any": [
@@ -41,7 +41,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.BATTLEFIELD",
+       "zone": 2,
        "text": "search library"
       }
      ],
@@ -51,12 +51,12 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.PAY_LIFE",
+        "kind": 30,
         "amount": {
          "$": "Value",
          "constant": 1
@@ -65,7 +65,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1

@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
  "name": "Rhystic Study",
  "card_hash": "2fc0894c429802838638bca715f0394b",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
    "name": "Rhystic Study",
    "face": 0,
@@ -15,27 +15,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNLESS_PAYS",
+       "kind": 6,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TRIGGER_PLAYER"
+        "scope": 13002
        },
        "pay_cost": {
         "$": "Cost",
         "components": [
          {
           "$": "CostComponent",
-          "kind": "CostKind.MANA",
+          "kind": 0,
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": "ManaSymbolKind.GENERIC",
+             "kind": 0,
              "generic": 1,
              "text": "{1}"
             }
@@ -47,14 +47,14 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.OPTIONAL",
+         "kind": 4,
          "players": {
           "$": "PlayerFilter"
          },
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DRAW",
+           "kind": 20,
            "players": {
             "$": "PlayerFilter"
            },
@@ -76,14 +76,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.CAST_SPELL"
+        20
        ]
       },
       "subject": {
        "$": "ObjectFilter",
        "zones": {
         "$set": [
-         "Zone.STACK"
+         4
         ]
        },
        "is_ability": false,
@@ -94,7 +94,7 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "text": "whenever a player casts a spell"
      }

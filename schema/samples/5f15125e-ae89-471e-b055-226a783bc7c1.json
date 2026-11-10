@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
  "name": "Aetherflux Reservoir",
  "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
    "name": "Aetherflux Reservoir",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GAIN_LIFE",
+       "kind": 51,
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.EVENT_COUNT_THIS_TURN",
+        "kind": 26,
         "players": {
          "$": "PlayerFilter"
         },
@@ -41,14 +41,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.CAST_SPELL"
+        20
        ]
       },
       "subject": {
        "$": "ObjectFilter",
        "zones": {
         "$set": [
-         "Zone.STACK"
+         4
         ]
        },
        "is_ability": false,
@@ -65,14 +65,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "types_any": 38,
         "includes_players": true
        },
        "amount": {
@@ -89,7 +89,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.PAY_LIFE",
+        "kind": 30,
         "amount": {
          "$": "Value",
          "constant": 50

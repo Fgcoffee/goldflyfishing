@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
  "name": "Warren Instigator",
  "card_hash": "2a6728c3ea964167289f5f15262fa007",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
    "name": "Warren Instigator",
    "face": 0,
@@ -15,42 +15,42 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Double strike",
      "keyword": "Double strike"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "kind": 33,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE",
+          "types_all": 4,
           "subtypes_all": [
            "Goblin"
           ],
           "zones": {
            "$set": [
-            "Zone.HAND"
+            1
            ]
           },
-          "owner": "ControllerRelation.YOU",
+          "owner": 1,
           "count": {
            "$": "Value",
            "constant": 1
           }
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "text": "put onto the battlefield"
         }
        ],
@@ -62,8 +62,8 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.COMBAT_DAMAGE_DEALT",
-        "EventKind.DAMAGE_DEALT"
+        60,
+        61
        ]
       },
       "source": {
@@ -72,7 +72,7 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "to_player": true,
       "text": "when this deals damage"

@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "a3e51a35-09df-4189-b131-08a21e6a557d",
  "name": "Cryptic Command",
  "card_hash": "18142e38c715ef158b01cbfca5f56d33",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "a3e51a35-09df-4189-b131-08a21e6a557d",
    "name": "Cryptic Command",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "amount": {
         "$": "Value",
         "constant": 2
@@ -27,16 +27,16 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.COUNTER_SPELL",
+           "kind": 100,
            "targets": {
             "$": "ObjectFilter",
             "zones": {
              "$set": [
-              "Zone.STACK"
+              4
              ]
             },
             "is_ability": false
@@ -49,11 +49,11 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.RETURN_TO_HAND",
+           "kind": 32,
            "targets": {
             "$": "ObjectFilter"
            },
@@ -65,15 +65,15 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.TAP",
+           "kind": 70,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE",
-            "controller": "ControllerRelation.OPPONENT"
+            "types_all": 4,
+            "controller": 2
            },
            "text": "tap/untap"
           }
@@ -82,11 +82,11 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DRAW",
+           "kind": 20,
            "players": {
             "$": "PlayerFilter"
            },
@@ -106,7 +106,7 @@
      "text": "Choose two -",
      "functions_in": {
       "$set": [
-       "Zone.STACK"
+       4
       ]
      }
     }

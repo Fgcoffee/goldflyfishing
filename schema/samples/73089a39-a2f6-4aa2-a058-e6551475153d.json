@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
  "name": "Sanguine Bond",
  "card_hash": "d7155414321cf552098ddd1f1b543f4e",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
    "name": "Sanguine Bond",
    "face": 0,
@@ -15,18 +15,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TARGET_OPPONENT"
+        "scope": 5
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.EVENT_AMOUNT"
+        "kind": 25
        },
        "is_targeted": true,
        "text": "lose life"
@@ -37,7 +37,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.LIFE_GAINED"
+        62
        ]
       },
       "players": {

@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
  "name": "Zulaport Cutthroat",
  "card_hash": "6d3ff59e597364aebee6e0bb61fdab87",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
    "name": "Zulaport Cutthroat",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
@@ -32,7 +32,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.GAIN_LIFE",
+       "kind": 51,
        "players": {
         "$": "PlayerFilter"
        },
@@ -48,13 +48,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES"
+        3
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
-       "controller": "ControllerRelation.YOU",
+       "types_all": 4,
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1

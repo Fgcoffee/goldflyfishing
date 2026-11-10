@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
  "name": "Consecrated Sphinx",
  "card_hash": "4cee806fbf241b9d9d99daa9163ea5c6",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
    "name": "Consecrated Sphinx",
    "face": 0,
@@ -15,24 +15,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.DRAW",
+         "kind": 20,
          "players": {
           "$": "PlayerFilter"
          },
@@ -51,12 +51,12 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DREW_CARD"
+        80
        ]
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "text": "whenever a player draws"
      }

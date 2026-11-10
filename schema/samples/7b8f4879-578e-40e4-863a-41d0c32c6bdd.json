@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
  "name": "Mogg War Marshal",
  "card_hash": "6ea84b22e5af640ca7d24a7fb69c7489",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
    "name": "Mogg War Marshal",
    "face": 0,
@@ -15,15 +15,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PAY_COST",
+         "kind": 200,
          "players": {
           "$": "PlayerFilter"
          },
@@ -32,20 +32,20 @@
           "components": [
            {
             "$": "CostComponent",
-            "kind": "CostKind.MANA",
+            "kind": 0,
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": "ManaSymbolKind.GENERIC",
+               "kind": 0,
                "generic": 1,
                "text": "{1}"
               },
               {
                "$": "ManaSymbol",
-               "kind": "ManaSymbolKind.COLORED",
-               "colors": "Color.RED",
+               "kind": 2,
+               "colors": 8,
                "text": "{R}"
               }
              ]
@@ -60,11 +60,11 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.IF_YOU_DONT",
+       "kind": 201,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SACRIFICE",
+         "kind": 31,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
@@ -80,7 +80,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.UPKEEP"
+        127
        ]
       },
       "players": {
@@ -88,7 +88,7 @@
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "kind": 5,
        "filter": {
         "$": "ObjectFilter",
         "source_only": true,
@@ -96,7 +96,7 @@
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": "Comparison.GE",
+        "comparison": 5,
         "value": {
          "$": "Value",
          "constant": 1
@@ -110,11 +110,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CREATE_TOKEN",
+       "kind": 35,
        "players": {
         "$": "PlayerFilter"
        },
@@ -128,7 +128,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": "Color.RED",
+        "colors": 8,
         "power": {
          "$": "Value",
          "constant": 1
@@ -146,8 +146,8 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES",
-        "EventKind.ENTERS_BATTLEFIELD"
+        1,
+        3
        ]
       },
       "subject": {

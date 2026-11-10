@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
  "name": "Bolas's Citadel",
  "card_hash": "93a9c8eb46b2981d12e187729d363307",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
    "name": "Bolas's Citadel",
    "face": 0,
@@ -15,23 +15,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PERMISSION",
+         "kind": 151,
          "targets": {
           "$": "ObjectFilter",
           "zones": {
            "$set": [
-            "Zone.LIBRARY"
+            0
            ]
           },
           "from_top": true,
@@ -40,11 +40,11 @@
          "players": {
           "$": "PlayerFilter"
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.LOOK_AT_TOP_CARD",
+           "act": 102,
            "players": {
             "$": "PlayerFilter"
            },
@@ -61,11 +61,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "You may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost."
       }
      ],
@@ -74,14 +74,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
@@ -96,19 +96,19 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 10
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_none": "CardType.LAND",
+         "types_none": 16,
          "count": {
           "$": "Value",
           "constant": 10

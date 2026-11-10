@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
  "name": "Sign in Blood",
  "card_hash": "403abcf9e81b9df32a14b3a1591d018c",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
    "name": "Sign in Blood",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TARGET_PLAYER"
+        "scope": 4
        },
        "amount": {
         "$": "Value",
@@ -33,10 +33,10 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.CHOSEN_PLAYER"
+        "scope": 13008
        },
        "amount": {
         "$": "Value",

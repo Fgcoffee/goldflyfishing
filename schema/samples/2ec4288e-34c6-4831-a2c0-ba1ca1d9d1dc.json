@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "2ec4288e-34c6-4831-a2c0-ba1ca1d9d1dc",
  "name": "Ghost Quarter",
  "card_hash": "a45af76dbd33e5ad4a8657f25598dc7a",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "2ec4288e-34c6-4831-a2c0-ba1ca1d9d1dc",
    "name": "Ghost Quarter",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -39,7 +39,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -48,33 +48,33 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.LAND"
+        "types_all": 16
        },
        "is_targeted": true,
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+        "scope": 13003
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.LAND",
-          "supertypes_all": "Supertype.BASIC",
+          "types_all": 16,
+          "supertypes_all": 1,
           "zones": {
            "$set": []
           },
@@ -90,7 +90,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "text": "search library"
         }
        ],
@@ -103,12 +103,12 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1

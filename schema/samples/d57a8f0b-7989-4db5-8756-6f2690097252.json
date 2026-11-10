@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
  "name": "Damnation",
  "card_hash": "3d35e27b14fcef5e54cdf8b42c10dbe8",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
    "name": "Damnation",
    "face": 0,
@@ -15,29 +15,29 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_REGENERATED",
+         "act": 64,
          "subject": {
           "$": "ObjectFilter",
           "remembered": true

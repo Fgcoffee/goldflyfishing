@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
  "name": "Tectonic Edge",
  "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
    "name": "Tectonic Edge",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -39,7 +39,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -48,15 +48,15 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.LAND",
-        "supertypes_none": "Supertype.BASIC"
+        "types_all": 16,
+        "supertypes_none": 1
        },
        "is_targeted": true,
        "text": "destroy"
@@ -72,13 +72,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           }
@@ -87,12 +87,12 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1
@@ -107,18 +107,18 @@
      },
      "activation_condition": {
       "$": "Condition",
-      "kind": "ConditionKind.COMPARE_COUNTS",
+      "kind": 19,
       "filter": {
        "$": "ObjectFilter",
-       "types_all": "CardType.LAND"
+       "types_all": 16
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "constraint": {
        "$": "NumericConstraint",
-       "comparison": "Comparison.GE",
+       "comparison": 5,
        "value": {
         "$": "Value",
         "constant": 4

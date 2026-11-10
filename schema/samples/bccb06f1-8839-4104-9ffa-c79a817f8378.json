@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "bccb06f1-8839-4104-9ffa-c79a817f8378",
  "name": "Jet Medallion",
  "card_hash": "ade5f2548ac16270b4c65b3595b768e5",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "bccb06f1-8839-4104-9ffa-c79a817f8378",
    "name": "Jet Medallion",
    "face": 0,
@@ -15,27 +15,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_COST",
+       "kind": 152,
        "targets": {
         "$": "ObjectFilter",
-        "colors_any": "Color.BLACK",
+        "colors_any": 4,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
-        "controller": "ControllerRelation.YOU",
+        "controller": 1,
         "is_ability": false
        },
        "amount": {
         "$": "Value",
         "constant": -1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "costs less to cast"
       }
      ],

@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
  "name": "Goblin Matron",
  "card_hash": "088ef786a114eae901f55ccc617dfe33",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
    "name": "Goblin Matron",
    "face": 0,
@@ -15,18 +15,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -47,7 +47,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "text": "search library"
         }
        ],
@@ -59,7 +59,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {

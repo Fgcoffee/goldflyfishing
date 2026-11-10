@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
  "name": "Blood Artist",
  "card_hash": "f7ff84c803c9a18b6c97279b3cfcba2f",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
    "name": "Blood Artist",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TARGET_PLAYER"
+        "scope": 4
        },
        "amount": {
         "$": "Value",
@@ -33,7 +33,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.GAIN_LIFE",
+       "kind": 51,
        "players": {
         "$": "PlayerFilter"
        },
@@ -49,12 +49,12 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES"
+        3
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
+       "types_all": 4,
        "count": {
         "$": "Value",
         "constant": 1

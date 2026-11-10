@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
  "name": "Teferi's Protection",
  "card_hash": "ddf2d2ac2837f4c166c0f0a568847490",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
    "name": "Teferi's Protection",
    "face": 0,
@@ -15,24 +15,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
-       "duration": "Duration.YOUR_NEXT_TURN",
+       "kind": 0,
+       "duration": 3,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.RESTRICTION",
+         "kind": 150,
          "players": {
           "$": "PlayerFilter"
          },
-         "duration": "Duration.YOUR_NEXT_TURN",
+         "duration": 3,
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.LIFE_TOTAL_CHANGE",
+           "act": 101,
            "players": {
             "$": "PlayerFilter"
            },
@@ -43,15 +43,15 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.GRANT_ABILITY",
+         "kind": 143,
          "players": {
           "$": "PlayerFilter"
          },
-         "duration": "Duration.YOUR_NEXT_TURN",
+         "duration": 3,
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": "AbilityKind.STATIC",
+           "kind": 3,
            "text": "Protection",
            "keyword": "Protection",
            "quality": {
@@ -69,10 +69,10 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PHASE_OUT",
+       "kind": 82,
        "targets": {
         "$": "ObjectFilter",
-        "controller": "ControllerRelation.YOU"
+        "controller": 1
        },
        "text": "phase out"
       }
@@ -81,11 +81,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true

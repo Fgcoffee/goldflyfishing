@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
  "name": "Mishra's Workshop",
  "card_hash": "c3902d62b3ad1b312a7270c6a755c16a",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
    "name": "Mishra's Workshop",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -32,10 +32,10 @@
         "key": "all artifact that is a spell in stack",
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.ARTIFACT",
+         "types_all": 1,
          "zones": {
           "$set": [
-           "Zone.STACK"
+           4
           ]
          },
          "is_ability": false
@@ -55,7 +55,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
  "name": "Chrome Mox",
  "card_hash": "b4f4cf302d86940b4da67a1ff1b3b0a8",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
    "name": "Chrome Mox",
    "face": 0,
@@ -15,27 +15,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.EXILE",
+         "kind": 30,
          "targets": {
           "$": "ObjectFilter",
-          "types_none": "CardType.ARTIFACT|LAND",
+          "types_none": 17,
           "zones": {
            "$set": [
-            "Zone.HAND"
+            1
            ]
           },
-          "owner": "ControllerRelation.YOU",
+          "owner": 1,
           "count": {
            "$": "Value",
            "constant": 1
@@ -52,7 +52,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
@@ -64,11 +64,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -76,7 +76,7 @@
         "$": "Value",
         "constant": 1
        },
-       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "colors": 31,
        "text": "add mana of any color"
       }
      ],
@@ -86,7 +86,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

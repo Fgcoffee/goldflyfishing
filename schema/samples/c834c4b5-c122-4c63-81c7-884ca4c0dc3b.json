@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
  "name": "Ogre Battledriver",
  "card_hash": "a074fa6500112a1abf8e36b49dd7d503",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
    "name": "Ogre Battledriver",
    "face": 0,
@@ -15,15 +15,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.MODIFY_PT",
+         "kind": 140,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
@@ -32,21 +32,21 @@
           "$": "Value",
           "constant": 2
          },
-         "duration": "Duration.END_OF_TURN",
+         "duration": 1,
          "text": "gets +2/+0"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.GRANT_ABILITY",
+         "kind": 143,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
          },
-         "duration": "Duration.END_OF_TURN",
+         "duration": 1,
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": "AbilityKind.STATIC",
+           "kind": 3,
            "text": "haste",
            "keyword": "haste"
           }
@@ -62,14 +62,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
+       "types_all": 4,
        "other_than_source": true,
-       "controller": "ControllerRelation.YOU",
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1

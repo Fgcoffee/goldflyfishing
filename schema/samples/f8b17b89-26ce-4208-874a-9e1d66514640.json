@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
  "name": "Dig Through Time",
  "card_hash": "d3044418c468e539fc33812c8d6560f9",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
    "name": "Dig Through Time",
    "face": 0,
@@ -15,23 +15,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Delve",
      "functions_in": {
       "$set": [
-       "Zone.HAND",
-       "Zone.STACK"
+       1,
+       4
       ]
      },
      "keyword": "Delve"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOOK_AT_TOP",
+       "kind": 10001,
        "players": {
         "$": "PlayerFilter"
        },
@@ -43,11 +43,11 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.MOVE_ZONE",
+         "kind": 28,
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true,
@@ -56,12 +56,12 @@
            "constant": 2
           }
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "text": "put into hand"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ON_LIBRARY",
+         "kind": 34,
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true

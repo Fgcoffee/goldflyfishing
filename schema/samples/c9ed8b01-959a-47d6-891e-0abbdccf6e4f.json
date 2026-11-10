@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c9ed8b01-959a-47d6-891e-0abbdccf6e4f",
  "name": "Armageddon",
  "card_hash": "7abcb37643d0dffa76f50924069ff9ac",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c9ed8b01-959a-47d6-891e-0abbdccf6e4f",
    "name": "Armageddon",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.LAND"
+        "types_all": 16
        },
        "text": "destroy"
       }

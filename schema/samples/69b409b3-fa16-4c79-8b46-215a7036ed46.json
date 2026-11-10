@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
  "name": "The Tabernacle at Pendrell Vale",
  "card_hash": "7d5992070cd7b0318400c164d758cca5",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
    "name": "The Tabernacle at Pendrell Vale",
    "face": 0,
@@ -15,24 +15,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": "AbilityKind.TRIGGERED",
+         "kind": 2,
          "effects": [
           {
            "$": "Effect",
-           "kind": "EffectKind.UNLESS_PAYS",
+           "kind": 6,
            "players": {
             "$": "PlayerFilter"
            },
@@ -41,13 +41,13 @@
             "components": [
              {
               "$": "CostComponent",
-              "kind": "CostKind.MANA",
+              "kind": 0,
               "mana": {
                "$": "ManaCost",
                "symbols": [
                 {
                  "$": "ManaSymbol",
-                 "kind": "ManaSymbolKind.GENERIC",
+                 "kind": 0,
                  "generic": 1,
                  "text": "{1}"
                 }
@@ -59,7 +59,7 @@
            "children": [
             {
              "$": "Effect",
-             "kind": "EffectKind.DESTROY",
+             "kind": 29,
              "targets": {
               "$": "ObjectFilter",
               "source_only": true
@@ -75,7 +75,7 @@
           "$": "TriggerCondition",
           "event_kinds": {
            "$set": [
-            "EventKind.UPKEEP"
+            127
            ]
           },
           "players": {

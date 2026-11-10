@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
  "name": "Archon of Emeria",
  "card_hash": "ba0434c43b26af11616854337a2b680a",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
    "name": "Archon of Emeria",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Each player can't cast more than one spell each turn."
       }
      ],
@@ -34,16 +34,16 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.REPLACEMENT",
+       "kind": 153,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.LAND",
-        "supertypes_none": "Supertype.BASIC",
-        "controller": "ControllerRelation.OPPONENT"
+        "types_all": 16,
+        "supertypes_none": 1,
+        "controller": 2
        },
        "text": "those permanents enter tapped"
       }

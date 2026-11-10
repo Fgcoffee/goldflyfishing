@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "6385fd0d-256d-4400-9319-afa8170024db",
  "name": "Culling the Weak",
  "card_hash": "34c4b9bae2cd0e959e8633b10f090379",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "6385fd0d-256d-4400-9319-afa8170024db",
    "name": "Culling the Weak",
    "face": 0,
@@ -15,12 +15,12 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "As an additional cost to cast this spell, sacrifice a creature.",
      "functions_in": {
       "$set": [
-       "Zone.HAND",
-       "Zone.STACK"
+       1,
+       4
       ]
      },
      "additional_cost": {
@@ -30,14 +30,14 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.SACRIFICE",
+         "kind": 10,
          "amount": {
           "$": "Value",
           "constant": 1
          },
          "filter": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE",
+          "types_all": 4,
           "count": {
            "$": "Value",
            "constant": 1
@@ -52,11 +52,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -70,7 +70,7 @@
         "{B}",
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}{B}{B}{B}"
       }
      ],

@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
  "name": "Magus of the Moat",
  "card_hash": "bf3fc3e91083ed30518610659a74dcc2",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
    "name": "Magus of the Moat",
    "face": 0,
@@ -15,26 +15,26 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
+        "types_all": 4,
         "lacks_keyword": [
          "flying"
         ]
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.ATTACK",
+         "act": 20,
          "subject": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE",
+          "types_all": 4,
           "lacks_keyword": [
            "flying"
           ]

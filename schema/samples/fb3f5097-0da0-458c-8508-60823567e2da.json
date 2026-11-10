@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
  "name": "Sunfall",
  "card_hash": "1121aa8b6faad9ea9e47ead9b40d1f4c",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
    "name": "Sunfall",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Exile all creatures. Incubate X, where X is the number of creatures exiled this way."
       }
      ],

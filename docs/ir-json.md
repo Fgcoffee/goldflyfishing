@@ -1,4 +1,4 @@
-# The parser's IR as JSON (IR version 1)
+# The parser's IR as JSON (IR version 2)
 
 The boundary between the Python parser and the TypeScript engine. The parser
 runs ahead of time, server-side; the engine in the browser reads what it
@@ -9,7 +9,7 @@ produced as JSON, one file per card, and never needs the card database.
 | Schema (the source of truth) | `schema/ir.schema.json` (JSON Schema 2020-12, one face document) |
 | TypeScript types | `engine/src/ir/types.ts` and `defaults.ts`: the one TS copy, generated from the same classes as the schema. Import them; don't retype them. |
 | Serving the JSON | `schema/README.md` (export, file layout, keys) |
-| TypeScript reader | `engine/src/ir/decode.ts`: `complete` (fill defaults), `enumValue`, `check`, `readCard` |
+| TypeScript reader | `engine/src/ir/decode.ts`: `complete` (fill defaults, unwrap `$int`), `memberName`, `check`, `readCard` |
 | Samples | `schema/samples/`: every card of the four bench decks, plus `decks.json` |
 | Codec | `mtgfish/ir/codec.py` |
 | Generator | `mtgfish/ir/schema.py` |
@@ -22,9 +22,10 @@ Regenerate with `python -m mtgfish.tools.ir_export schema`, and the samples
 with `python -m mtgfish.tools.ir_export samples`.
 
 In the engine, `complete(face.abilities)` gives every IR object with all its
-fields, defaults included, and `enumValue("CardType.ARTIFACT|CREATURE")`
-gives the number the Python engine uses (bit and member values are exported
-as `CardTypeBits`, `ZoneValues`, and so on).
+fields, defaults included, and `memberName("CardType", 5)` gives
+`"ARTIFACT|CREATURE"` for messages. The numbers are exported as
+`CardTypeBits`, `ZoneValues` and so on, and `engine/src/ir/kernel-enums.test.ts`
+checks that they match `engine/src/kernel/enums.ts`.
 
 ## What a face holds
 
@@ -44,7 +45,7 @@ Everything the engine receives today, as it receives it:
 
 ```json
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
  "name": "Lightning Bolt",
  "face": 0,
@@ -54,14 +55,14 @@ Everything the engine receives today, as it receives it:
  "abilities": [
   {
    "$": "Ability",
-   "kind": "AbilityKind.SPELL",
+   "kind": 0,
    "effects": [
     {
      "$": "Effect",
-     "kind": "EffectKind.DAMAGE",
+     "kind": 50,
      "targets": {
       "$": "ObjectFilter",
-      "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+      "types_any": 38,
       "includes_players": true
      },
      "amount": {"$": "Value", "constant": 3},
@@ -76,6 +77,11 @@ Everything the engine receives today, as it receives it:
 }
 ```
 
+`"kind": 0` is `AbilityKind.SPELL`, `50` is `EffectKind.DAMAGE`, and
+`"types_any": 38` is `CardType.BATTLE | CREATURE | PLANESWALKER` (2 + 4 +
+32). The names are in the schema and in `types.ts` (`AbilityKindValues`,
+`EffectKindValues`, `CardTypeBits`, ...).
+
 ## Encoding rules
 
 One rule per kind of value:
@@ -83,20 +89,19 @@ One rule per kind of value:
 | Python | JSON |
 |---|---|
 | IR object (frozen dataclass) | object; `"$"` names the class. **Only fields that differ from the default are written**; a missing field takes the default the schema gives (`"default"` in the JSON Schema, `DEFAULTS` in `defaults.ts`). |
-| enum member | `"Enum.MEMBER"`, e.g. `"Zone.GRAVEYARD"`. The numeric values are in `types.ts` (`ZoneValues`). |
-| flag enum (CardType, Color, Supertype) | set bits joined by `\|`: `"CardType.ARTIFACT\|CREATURE"`; empty is `"CardType.NONE"`. Bit values: `CardTypeBits`. |
+| enum member | **its number**, the same number as the Python enum and `engine/src/kernel/enums.ts`. Which enum it is comes from the field's declared type in the schema. |
+| flag enum (CardType, Color, Supertype) | the OR of its bits: `CardType.ARTIFACT \| CREATURE` is `5`; empty is `0`. |
+| a plain integer in an enum-typed field | `{"$int": n}`. A few `Effect.duration` values are bare ints; this keeps them distinct from enum members. `complete()` unwraps it. |
 | tuple | array |
 | frozenset | `{"$set": [...]}`, sorted |
 | list | `{"$list": [...]}` |
-| string that looks like an enum member | `{"$str": "..."}` |
-| `None`, bool, int, other strings | themselves |
+| `None`, bool, int, string | themselves |
 
-Types are never coerced. A boolean stays a boolean and an integer an
-integer, even in a field that holds either (an `ObjectFilter`'s `from_top`
-is `true` in some cards and `3` in others). An enum is never written as a
-bare number, and a bare number in an enum-typed field stays a number (some
-`Effect.duration` values are plain integers). The schema's unions say where
-this happens.
+Types are never coerced. A boolean stays a boolean even in a field that
+holds either (an `ObjectFilter`'s `from_top` is `true` in some cards and
+`3` in others), and the encoder refuses an enum in a field that doesn't
+declare one, so a number can never lose its enum. The schema's unions say
+where fields hold more than one type.
 
 ## Things the engine must know
 
@@ -110,14 +115,19 @@ this happens.
 
 ## Versioning
 
+**Version 2** (current) writes enums as numbers. **Version 1** wrote
+`"Zone.GRAVEYARD"` strings; it was changed before anything consumed it, at
+the rules session's request, because the engine compares and masks enums
+in its hottest paths.
+
 `ir_version` is in every document. It is bumped on any change a reader of
 the previous version would misread: a field renamed or removed, a default
-changed, an enum member renamed or renumbered. New fields with defaults and
+changed, an enum member renumbered. New fields with defaults and
 new enum members do not bump it, because an old reader just never sees them.
 
 ## Files
 
-`python -m mtgfish.tools.ir_export export` writes `cache/ir/v1/`:
+`python -m mtgfish.tools.ir_export export` writes `cache/ir/v2/`:
 
 * `<oracle_id>.json`: one **card document**,
   `{ir_version, oracle_id, name, card_hash, faces: [face, ...]}`. About

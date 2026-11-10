@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0c6c5336-9233-4ab1-9d55-79f20be7ea57",
  "name": "Thorn of Amethyst",
  "card_hash": "86a7da879f60b78b6b3a421a30c6c542",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0c6c5336-9233-4ab1-9d55-79f20be7ea57",
    "name": "Thorn of Amethyst",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_COST",
+       "kind": 152,
        "targets": {
         "$": "ObjectFilter",
-        "types_none": "CardType.CREATURE",
+        "types_none": 4,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
         "is_ability": false
@@ -34,7 +34,7 @@
         "$": "Value",
         "constant": 1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "costs less to cast"
       }
      ],

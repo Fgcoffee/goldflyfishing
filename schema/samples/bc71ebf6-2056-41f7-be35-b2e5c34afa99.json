@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
  "name": "Plains",
  "card_hash": "b0688a1fe08e7db6c7588be104159a7e",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
    "name": "Plains",
    "face": 0,

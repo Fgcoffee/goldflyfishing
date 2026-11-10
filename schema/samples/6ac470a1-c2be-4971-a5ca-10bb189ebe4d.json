@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
  "name": "Frenzied Goblin",
  "card_hash": "18f8203df2509495adb03417a4e13a5c",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
    "name": "Frenzied Goblin",
    "face": 0,
@@ -15,18 +15,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PAY_COST",
+         "kind": 200,
          "players": {
           "$": "PlayerFilter"
          },
@@ -35,14 +35,14 @@
           "components": [
            {
             "$": "CostComponent",
-            "kind": "CostKind.MANA",
+            "kind": 0,
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": "ManaSymbolKind.COLORED",
-               "colors": "Color.RED",
+               "kind": 2,
+               "colors": 8,
                "text": "{R}"
               }
              ]
@@ -57,24 +57,24 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.REFLEXIVE_TRIGGER",
+       "kind": 219,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.RESTRICTION",
+         "kind": 150,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE"
+          "types_all": 4
          },
          "is_targeted": true,
-         "duration": "Duration.END_OF_TURN",
+         "duration": 1,
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.BLOCK",
+           "act": 23,
            "subject": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE"
+            "types_all": 4
            },
            "text": "can't block"
           }
@@ -90,7 +90,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ATTACKS"
+        101
        ]
       },
       "subject": {

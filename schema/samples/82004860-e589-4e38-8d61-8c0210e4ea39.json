@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
  "name": "Demonic Tutor",
  "card_hash": "de744fc7543ea2b2de2f930765e433f9",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
    "name": "Demonic Tutor",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -37,7 +37,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.HAND",
+       "zone": 1,
        "text": "search library"
       }
      ],

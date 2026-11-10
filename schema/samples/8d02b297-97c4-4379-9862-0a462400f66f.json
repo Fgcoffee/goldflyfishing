@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "8d02b297-97c4-4379-9862-0a462400f66f",
  "name": "Phyrexian Altar",
  "card_hash": "f2fd85e23bcaaeeaf8a071aea8ca1623",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "8d02b297-97c4-4379-9862-0a462400f66f",
    "name": "Phyrexian Altar",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -27,7 +27,7 @@
         "$": "Value",
         "constant": 1
        },
-       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "colors": 31,
        "text": "add mana of any color"
       }
      ],
@@ -37,14 +37,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
+         "types_all": 4,
          "count": {
           "$": "Value",
           "constant": 1

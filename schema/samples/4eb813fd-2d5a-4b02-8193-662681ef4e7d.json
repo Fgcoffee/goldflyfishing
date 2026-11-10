@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
  "name": "Farewell",
  "card_hash": "9cbf3783faaba69e7ac1a33860906ef0",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
    "name": "Farewell",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "amount": {
         "$": "Value",
         "constant": 4
@@ -27,14 +27,14 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.EXILE",
+           "kind": 30,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.ARTIFACT"
+            "types_all": 1
            },
            "text": "exile"
           }
@@ -43,14 +43,14 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.EXILE",
+           "kind": 30,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE"
+            "types_all": 4
            },
            "text": "exile"
           }
@@ -59,14 +59,14 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.EXILE",
+           "kind": 30,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.ENCHANTMENT"
+            "types_all": 8
            },
            "text": "exile"
           }
@@ -75,20 +75,20 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.EXILE",
+           "kind": 30,
            "targets": {
             "$": "ObjectFilter",
             "zones": {
              "$set": [
-              "Zone.GRAVEYARD"
+              3
              ]
             }
            },
-           "zone": "Zone.EXILE",
+           "zone": 5,
            "text": "exile every graveyard"
           }
          ],
@@ -103,7 +103,7 @@
      "text": "Choose one or more -",
      "functions_in": {
       "$set": [
-       "Zone.STACK"
+       4
       ]
      }
     }

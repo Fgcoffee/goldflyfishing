@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
  "name": "Brainstorm",
  "card_hash": "f84ee890bd15c9e674b4ede47711395d",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
    "name": "Brainstorm",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -31,15 +31,15 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.HAND"
+          1
          ]
         },
-        "owner": "ControllerRelation.YOU",
+        "owner": 1,
         "count": {
          "$": "Value",
          "constant": 2

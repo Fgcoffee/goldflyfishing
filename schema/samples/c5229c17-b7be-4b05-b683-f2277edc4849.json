@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
  "name": "Enlightened Tutor",
  "card_hash": "d985d7022f3ee33a868dd68a392f382a",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
    "name": "Enlightened Tutor",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|ENCHANTMENT",
+        "types_any": 9,
         "zones": {
          "$set": []
         },
@@ -38,7 +38,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.LIBRARY",
+       "zone": 0,
        "text": "search library"
       }
      ],

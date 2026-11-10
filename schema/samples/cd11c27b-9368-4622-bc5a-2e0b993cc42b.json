@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
  "name": "Mystic Confluence",
  "card_hash": "19172c2260a2b670eb8237ffceb5f447",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
    "name": "Mystic Confluence",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "amount": {
         "$": "Value",
         "constant": 3
@@ -27,27 +27,27 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.UNLESS_PAYS",
+           "kind": 6,
            "players": {
             "$": "PlayerFilter",
-            "scope": "PlayerScope.AFFECTED_CONTROLLER"
+            "scope": 13007
            },
            "pay_cost": {
             "$": "Cost",
             "components": [
              {
               "$": "CostComponent",
-              "kind": "CostKind.MANA",
+              "kind": 0,
               "mana": {
                "$": "ManaCost",
                "symbols": [
                 {
                  "$": "ManaSymbol",
-                 "kind": "ManaSymbolKind.GENERIC",
+                 "kind": 0,
                  "generic": 3,
                  "text": "{3}"
                 }
@@ -59,12 +59,12 @@
            "children": [
             {
              "$": "Effect",
-             "kind": "EffectKind.COUNTER_SPELL",
+             "kind": 100,
              "targets": {
               "$": "ObjectFilter",
               "zones": {
                "$set": [
-                "Zone.STACK"
+                4
                ]
               },
               "is_ability": false
@@ -80,14 +80,14 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.RETURN_TO_HAND",
+           "kind": 32,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE"
+            "types_all": 4
            },
            "is_targeted": true,
            "text": "return to hand"
@@ -97,11 +97,11 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DRAW",
+           "kind": 20,
            "players": {
             "$": "PlayerFilter"
            },
@@ -122,7 +122,7 @@
      "text": "Choose three. You may choose the same mode more than once.",
      "functions_in": {
       "$set": [
-       "Zone.STACK"
+       4
       ]
      }
     }

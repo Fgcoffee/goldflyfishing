@@ -1,11 +1,11 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
  "name": "Mystical Tutor",
  "card_hash": "0889bd58f11391fcf1f3c6496a5cfaeb",
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
    "name": "Mystical Tutor",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.INSTANT|SORCERY",
+        "types_any": 192,
         "zones": {
          "$set": []
         },
@@ -38,7 +38,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.LIBRARY",
+       "zone": 0,
        "text": "search library"
       }
      ],
