@@ -10,6 +10,8 @@ Routes (the contract the page in ``ui/web`` is written against)::
     GET  /api/jobs            this browser's simulations, queued to finished
     POST /api/jobs/<id>/cancel
     GET  /healthz             liveness, session count, whether a run is going
+    GET  /api/ir, POST /api/ir/decks, GET /ir/v1/<id>.json
+                              card IR for the browser engine (see ``ir``)
 
 The bridge is synchronous and every call to a session's bridge happens on
 that session's own thread, so the async handlers here only ever *wait* for
@@ -163,6 +165,7 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
         # Runs stopped and their worker processes gone before exiting, rather
         # than the interpreter waiting at exit for games nobody will see.
         await asyncio.to_thread(state.sessions.close_all)
+        ir_routes.ir_store.close()
 
     app = FastAPI(
         title="MTG Goldfisher",
@@ -210,6 +213,12 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
     from .library import build_router as library_router
 
     app.include_router(library_router(state.accounts))
+    from .ir import build_router as ir_router
+
+    # Card IR for the browser engine (the TypeScript port). Before the static
+    # catch-all below, which would otherwise answer /ir/... with a 404.
+    ir_routes = ir_router()
+    app.include_router(ir_routes)
 
     allowed_origins = {state.accounts.settings.public_base_url.rstrip("/")}
     production = state.accounts.settings.production
