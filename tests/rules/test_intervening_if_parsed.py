@@ -64,9 +64,8 @@ def test_a_condition_on_the_source_still_decides_the_outcome(card_db):
 
 def test_if_you_cast_it_still_fires_its_enters_trigger(card_db):
     """Geological Appraiser: "When this creature enters, if you cast it,
-    discover 3." Moved onto the trigger, "if you cast it" did not hold as
-    the trigger fired (an engine gap) and the discover was lost; it stays on
-    the effect until the engine knows."""
+    discover 3." The cast mark is on the permanent as it enters, so the
+    condition is the trigger's."""
     from mtgfish.rules.cr100_game_concepts.cr106_mana import ManaKind
     from mtgfish.rules.cr100_game_concepts.cr117_priority import Action, ActionKind
     from mtgfish.rules.cr600_spells_and_abilities.cr601_casting import cast_spell
@@ -82,3 +81,27 @@ def test_if_you_cast_it_still_fires_its_enters_trigger(card_db):
     board.resolve_stack()
     board.settle()
     assert len(game.stack) == 1
+
+
+def test_if_you_cast_it_is_on_the_trigger(card_db):
+    (ability,) = [
+        a for a in parse_card(card_db.lookup("Geological Appraiser")).faces[0].abilities
+        if a.trigger is not None
+    ]
+    assert ability.trigger.intervening_if.kind.name == "WAS_CAST"
+    assert [e.kind.name for e in ability.effects] == ["DISCOVER"]
+
+
+def test_an_appraiser_put_onto_the_battlefield_does_not_trigger(card_db):
+    board = _board(card_db)
+    appraiser = board.play("Geological Appraiser")
+    board.game.emit(Event(EventKind.ENTERS_BATTLEFIELD, object_id=appraiser.id, player=P0))
+    board.settle()
+    assert len(board.game.stack) == 0
+
+
+def test_if_you_cast_it_about_another_creature_is_not_read(card_db):
+    """"Whenever another creature you control enters, if you cast it": "it"
+    is the entering creature, and the cast check asks about the source."""
+    for name in ("Prototype X-8", "The Sibsig Ceremony"):
+        assert not parse_card(card_db.lookup(name)).fully_parsed, name
