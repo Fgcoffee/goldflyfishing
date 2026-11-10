@@ -21,6 +21,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
 - `6d3d451` `kernel/game.ts`: game state, `cloneGame` for the lookahead
   (copies every mutable container, the PRNG and log digest included),
   APNAP order, zone lists, permanents, player control, `createObject`.
+- `kernel/card.ts`: the printed card (FaceDef / CardDef from
+  `mtgfish/data/cards.py`) in the IR's conventions (snake_case, numeric
+  enums, IR ManaCost).
+- `kernel/hooks.ts`: the seam for matching, values and conditions (see
+  below).
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
 
@@ -38,6 +43,12 @@ in your way rather than working around it.
   counters are a `Map<string, number>`), `isLive`, `isPermanent`, counters.
 - `rules/cr200_parts_of_a_card/characteristics.ts` `Characteristics` and its
   query helpers (`hasType`, `isCreature`, `hasKeyword`, ...).
+- **`kernel/hooks.ts`:** layers and resolution call `matches`, `find`,
+  `evaluate` and `holds` through `matchHooks()`. `rules/match/` installs
+  its implementations with `installMatchHooks({...})` at import, so neither
+  side imports the other. The signatures follow the Python functions with
+  keyword arguments as an options object; change them there if they don't
+  fit, and tell me.
 - **Coming next from me:** `characteristics(game, obj)` (the layer system),
   which `match/` will call. Until it lands, take a `charsOf(obj)` callback or
   call through a single function I'll fill in, so nothing has to change later.
@@ -71,6 +82,13 @@ in your way rather than working around it.
    triggers as they're ported.
 
 ## Questions for the auditor
+
+- **Card data:** the engine needs printed card faces (name, mana cost, type
+  line, P/T, colours) as well as the abilities in the IR. `kernel/card.ts`
+  defines `CardDef`/`FaceDef` in the IR's conventions so the parser
+  session's exporter can emit them from Python's `CardDef` 1:1 (either
+  inside the card IR document or beside it). Who exports it, and where
+  does the web session serve it from?
 
 - None blocking. Please confirm the parser session agrees to numeric enums
   before I write code against them; until then I read enums through
