@@ -12,6 +12,7 @@ thin enough to trust without driving a window to test it.
 from __future__ import annotations
 
 import json
+import logging
 import threading
 import traceback
 from dataclasses import asdict
@@ -26,6 +27,11 @@ from ..sim.stats import render
 # qtcompat supplies stand-ins there. The desktop app still gets the real ones.
 from .qtcompat import QObject, Signal, Slot
 from .sandbox import Sandbox
+
+#: Errors the page is shown are logged here too, traceback and all: on a
+#: server nobody is watching the page, and "IndexError: tuple index out of
+#: range" in a status bar is all a tester can report.
+log = logging.getLogger("mtgfish.bridge")
 
 
 def _json(payload) -> str:
@@ -119,6 +125,7 @@ def _guard(fn):
         try:
             return fn(*args, **kwargs)
         except Exception as exc:  # noqa: BLE001 - the page needs to hear about it
+            log.exception("slot %s failed", fn.__name__)
             return _json(
                 {
                     "error": f"{type(exc).__name__}: {exc}",
@@ -466,6 +473,7 @@ class Bridge(QObject):
         except RunCancelled as exc:
             self.run_finished.emit(_json({"cancelled": True, "message": str(exc)}))
         except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+            log.exception("run failed (seed %s, %s games)", config.run_seed, config.games)
             self.run_finished.emit(_json({"error": f"{type(exc).__name__}: {exc}"}))
 
     # -- the swap lab -------------------------------------------------------
@@ -617,6 +625,7 @@ class Bridge(QObject):
         except RunCancelled as exc:
             self.lab_finished.emit(_json({"cancelled": True, "message": str(exc)}))
         except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+            log.exception("swap lab failed (seed %s, %s games)", seed, games)
             self.lab_finished.emit(_json({"error": f"{type(exc).__name__}: {exc}"}))
 
     @Slot(int, result=str)

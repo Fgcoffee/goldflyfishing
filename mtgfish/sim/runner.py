@@ -252,7 +252,22 @@ def run(
     if workers <= 1 or config.games < 32:
         for index in range(config.games):
             check()
-            result.records.append(play_one(config, index, cancel=cancel))
+            try:
+                record = play_one(config, index, cancel=cancel)
+            except RunCancelled:
+                raise
+            except Exception as exc:  # noqa: BLE001 - re-raised with the game named
+                # The same report a worker process gives (``_play_chunk``): a
+                # bare "tuple index out of range" from game 37 of 200 says
+                # nothing about which game, or where.
+                import traceback
+
+                detail = "".join(traceback.format_exception(exc, limit=-6))
+                raise GameCrashed(
+                    f"game {index} (seed {config.seed_for(index)}) crashed: "
+                    f"{type(exc).__name__}: {exc}\n{detail}"
+                ) from exc
+            result.records.append(record)
             if progress:
                 progress(len(result.records), config.games)
         return result
