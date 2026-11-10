@@ -380,6 +380,7 @@ def comparison(result: LabResult) -> list[dict]:
                 "games": report.games,
                 "win_rate": report.win_rate,
                 "stall_rate": report.stall_rate,
+                "crashed": len(getattr(report, "crashed", [])),
                 "average_win_round": report.average_win_round,
                 "average_win_turn": report.average_win_turn,
                 "commander_turn": _commander_turn(report),

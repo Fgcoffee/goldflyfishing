@@ -284,6 +284,11 @@ function drawCharts() {
     runaways.classList.add("runaway-notice");
     headline.parentNode.insertBefore(runaways, headline.nextSibling);
   }
+  const crashed = crashNotice(report);
+  if (crashed) {
+    crashed.classList.add("runaway-notice");
+    headline.parentNode.insertBefore(crashed, headline.nextSibling);
+  }
   const loops = loopNotice(report);
   if (loops) {
     // Same class, so the theme-switch redraw removes it along with the other.
@@ -1277,6 +1282,28 @@ function loopNotice(payload) {
   return box;
 }
 
+/* Games the engine crashed in. They are left out of every number, so the run
+ * still reports - but it says so, because a run of 196 games presented as 200
+ * would be a quiet lie, and each one is an engine bug worth reporting. */
+function crashNotice(payload) {
+  const crashed = payload.crashed || [];
+  if (!crashed.length) return null;
+  const box = el("div", "panel bad");
+  const total = (payload.games || 0) + crashed.length;
+  box.appendChild(el("strong", null,
+    `${crashed.length} of ${total} game${total === 1 ? "" : "s"} crashed and `
+    + `${crashed.length === 1 ? "was" : "were"} left out`));
+  box.appendChild(el("div", "hint",
+    "The simulator hit a bug in these games and could not finish them. Every number below "
+    + "comes from the other games. The seed replays a game exactly - include it if you "
+    + "report the problem."));
+  crashed.slice(0, 10).forEach((crash) => {
+    box.appendChild(el("div", null, `game ${crash.index} (seed ${crash.seed}): ${crash.error}`));
+  });
+  if (crashed.length > 10) box.appendChild(el("div", "hint", `and ${crashed.length - 10} more`));
+  return box;
+}
+
 function runawayNotice(payload) {
   const runaways = payload.runaways || {};
   const names = Object.keys(runaways);
@@ -1319,6 +1346,10 @@ function drawLabResults(payload) {
 
     const name = el("td");
     name.appendChild(el("div", null, row.label));
+    if (row.crashed) {
+      name.appendChild(el("div", "hint bad",
+        `${row.crashed} game${row.crashed === 1 ? "" : "s"} crashed and left out`));
+    }
     if (row.swaps && row.swaps.length > 1) {
       name.appendChild(el("div", "hint", row.swaps.join(", ")));
     }
