@@ -29,6 +29,20 @@ Rerun `export` after the parser or the card data changes. It writes every
 card, about 75 seconds on four cores. To serve one deck, look up its cards
 in `index.json` and send their card files.
 
+## Serving a deck from Python
+
+```python
+from mtgfish.ir.store import IRStore
+
+store = IRStore.open(db)                                  # reads cache/ir/v1
+documents, missing = store.deck(["Lightning Bolt", "Sol Ring"])
+```
+
+`documents` holds one card document per distinct card, ready to send as JSON.
+A card whose file is missing, or whose `card_hash` no longer matches the
+card data, is parsed live instead, so the answer is never stale. `missing`
+lists names that match no card.
+
 ## Layout and keys
 
 ```

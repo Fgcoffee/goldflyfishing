@@ -138,3 +138,26 @@ def test_usage_counts_each_kind_once_per_face():
     assert ("class", "Effect") in seen
     # Only the enums the usage report is about; a Zone is not one.
     assert not any(group == "Zone" for group, _ in seen)
+
+
+def test_store_serves_exported_files_and_falls_back_to_live(card_db, tmp_path):
+    from mtgfish.ir.store import IRStore
+    from mtgfish.tools.ir_export import _card_document
+
+    bolt = card_db.lookup("Lightning Bolt")
+    ring = card_db.lookup("Sol Ring")
+    # An exported file for Bolt; a stale one (wrong card_hash) for Sol Ring.
+    (tmp_path / f"{bolt.oracle_id}.json").write_text(json.dumps(_card_document(bolt)))
+    stale = _card_document(ring)
+    stale["card_hash"] = "0" * 32
+    (tmp_path / f"{ring.oracle_id}.json").write_text(json.dumps(stale))
+
+    store = IRStore.open(card_db, tmp_path)
+    documents, missing = store.deck(["Lightning Bolt", "Sol Ring", "Lightning Bolt", "No Such Card"])
+    assert [d["name"] for d in documents] == ["Lightning Bolt", "Sol Ring"]
+    assert missing == ["No Such Card"]
+    assert store.live_parses == 1  # Sol Ring's file was stale; Bolt's was used
+    assert documents[1]["card_hash"] == card_hash(ring)
+    for document in documents:
+        for face in document["faces"]:
+            decode_face(face)
