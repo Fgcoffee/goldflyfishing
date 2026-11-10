@@ -1,13 +1,21 @@
 .git
+.env
+.env.*
 **/__pycache__
 *.pyc
 .pytest_cache
 .ruff_cache
+.claude
 build
 dist
-cache
 tests
 docs
 runs
+graphify-out
 *.sqlite
-*.jsonl.gz
+# The image builds its card database from the Scryfall dumps, so those (and
+# only those) come in from cache/.
+cache/*
+!cache/scryfall
+!cache/pool.json
+!cache/comprehensive_rules.txt

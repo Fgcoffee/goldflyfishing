@@ -41,6 +41,30 @@ class ServerFull(RuntimeError):
     pass
 
 
+#: Where each start slot takes its game counts (argument positions).
+GAME_ARGS = {
+    "start_run": (1,),
+    "start_lab": (3,),
+    "start_cutlab": (4, 5),
+    "start_queue_test": (2, 3),
+}
+
+
+def clamp_games(method: str, args: list, limit: int) -> list:
+    """Cap a start call's game counts at ``limit`` (0: no cap).
+
+    A small hosted instance plays a game in tens of seconds; one person asking
+    for ten thousand would hold the only run slot for days.
+    """
+    if limit <= 0:
+        return args
+    out = list(args)
+    for position in GAME_ARGS.get(method, ()):
+        if position < len(out) and isinstance(out[position], int) and out[position] > limit:
+            out[position] = limit
+    return out
+
+
 # ---------------------------------------------------------------------------
 # What the bridge offers
 # ---------------------------------------------------------------------------
@@ -165,6 +189,7 @@ class Session:
     def start_job(self, method: str, args: list, timeout: float) -> dict:
         """A ``start_*`` slot, through the queue. Returns the reply for the page."""
         jobs = self.manager.jobs
+        args = clamp_games(method, args, self.manager.settings.max_games)
 
         def start() -> tuple[bool, str]:
             # The bridge emits its finish signal from inside its worker

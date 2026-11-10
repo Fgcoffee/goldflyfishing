@@ -74,6 +74,7 @@ class AppState:
             accounts = Accounts(Database())
         self.accounts = accounts
         accounts.on_forget = self.forget_user
+        self._start_purging()
         self.api = Api(settings)
         self.sessions = SessionManager(self.api, settings)
         self.sessions.on_finished = self.job_finished
@@ -111,6 +112,29 @@ class AppState:
             return
         if record_run(self.accounts.db, session.user_id, config, payload):
             session.publish("history_changed", [])
+
+    def _start_purging(self) -> None:
+        """Delete expired sessions and tokens, and stale unverified accounts,
+        now and every six hours - what the Privacy Policy promises."""
+        import threading
+
+        from .auth.service import purge_expired
+
+        def purge() -> None:
+            try:
+                with self.accounts.db.session() as db:
+                    removed = purge_expired(db)
+                if any(removed.values()):
+                    log.info("purged %s", removed)
+            except Exception:  # noqa: BLE001 - never take the site down over cleanup
+                log.warning("purge failed", exc_info=True)
+
+        def loop(stop=threading.Event()) -> None:
+            purge()
+            while not stop.wait(6 * 3600):
+                purge()
+
+        threading.Thread(target=loop, daemon=True, name="purge").start()
 
     def forget_user(self, user_id: str) -> None:
         for session in self.sessions.all():
@@ -188,6 +212,8 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
     app.include_router(library_router(state.accounts))
 
     allowed_origins = {state.accounts.settings.public_base_url.rstrip("/")}
+    production = state.accounts.settings.production
+    allow_indexing = os.environ.get("MTGFISH_ALLOW_INDEXING", "") not in ("", "0")
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next):
@@ -201,6 +227,13 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
                 if origin.rstrip("/") not in allowed_origins | {own}:
                     return JSONResponse({"error": "cross-site request refused"}, status_code=403)
         response = await call_next(request)
+        if not allow_indexing:
+            # A private beta: search engines should neither index nor follow.
+            response.headers.setdefault("X-Robots-Tag", "noindex, nofollow, noarchive")
+        if production:
+            response.headers.setdefault(
+                "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
+            )
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "same-origin")
         return response
@@ -431,10 +464,51 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
 
     # -- files --------------------------------------------------------------
 
+    @app.get("/robots.txt")
+    async def robots():
+        if allow_indexing:
+            body = "User-agent: *\nAllow: /\n"
+        else:
+            body = "User-agent: *\nDisallow: /\n"
+        return Response(body, media_type="text/plain; charset=utf-8",
+                        headers={"Cache-Control": "public, max-age=3600"})
+
+    def legal_page(name: str) -> Response:
+        import html
+
+        from .auth.service import TERMS_VERSION
+
+        settings_ = state.accounts.settings
+        values = {
+            "OPERATOR_NAME": os.environ.get("OPERATOR_NAME") or "the operator of this site",
+            "CONTACT_EMAIL": os.environ.get("CONTACT_EMAIL") or "(contact address not set)",
+            "SITE_URL": settings_.public_base_url,
+            "TERMS_VERSION": TERMS_VERSION,
+        }
+        text = (WEB / "legal" / f"{name}.html").read_text(encoding="utf8")
+        for key, value in values.items():
+            text = text.replace("{{" + key + "}}", html.escape(value))
+        return Response(text, media_type="text/html; charset=utf-8", headers={
+            "Content-Security-Policy": _CSP,
+            "X-Frame-Options": "DENY",
+            "Cache-Control": "no-cache",
+        })
+
+    @app.get("/privacy")
+    async def privacy():
+        return legal_page("privacy")
+
+    @app.get("/terms")
+    async def terms():
+        return legal_page("terms")
+
     @app.api_route("/{path:path}", methods=["GET", "HEAD"])
     async def static(path: str, request: Request):
         if path.startswith("api/"):
             return json_reply(404, {"error": f"no such endpoint: /{path}"})
+        if path.startswith("legal/") and path.endswith(".html"):
+            # The templates are served filled in, at /privacy and /terms.
+            return json_reply(404, {"error": "not found"})
         relative = path.lstrip("/") or "index.html"
         target = (WEB / relative).resolve()
         if not target.is_relative_to(WEB) or not target.is_file():

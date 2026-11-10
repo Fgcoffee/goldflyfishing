@@ -68,6 +68,9 @@ class Settings:
     max_queued_per_user: int = field(
         default_factory=lambda: _env_int("MTGFISH_MAX_QUEUED_PER_USER", 2)
     )
+    #: Most games one start may ask for (each count, for the labs); 0 means
+    #: no cap. For small hosted instances.
+    max_games: int = field(default_factory=lambda: _env_int("MTGFISH_MAX_GAMES", 0))
     #: Seconds a page may be gone before its run is stopped. Long enough that
     #: reloading - including into a new version - keeps the run; short enough
     #: that closing the tab frees the machine. Negative never stops it.

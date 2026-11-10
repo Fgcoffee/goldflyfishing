@@ -46,6 +46,7 @@ async function authRefresh() {
   const data = await response.json().catch(() => ({}));
   Auth.csrf = data.csrf || Auth.csrf;
   Auth.user = data.user || null;
+  Auth.emailEnabled = !data.email || data.email.enabled !== false;
   authShowUser();
   document.dispatchEvent(new CustomEvent("authchange", { detail: Auth.user }));
 }
@@ -98,6 +99,16 @@ function authMode(mode) {
   const [title, action] = AUTH_TITLES[mode];
   document.getElementById("authtitle").textContent = title;
   document.getElementById("authsubmit").textContent = action;
+  const emailOff = Auth.emailEnabled === false && (mode === "login" || mode === "register");
+  if (emailOff) {
+    // Discord only (no email provider configured on this server yet).
+    document.querySelectorAll("#authform [data-auth-only]").forEach((node) => {
+      if (node.id !== "authdiscord" && !node.classList.contains("consent")) node.hidden = true;
+    });
+    document.getElementById("authtabs").hidden = true;
+    document.getElementById("authtitle").textContent = "Log in or create an account";
+  }
+  document.getElementById("authsubmit").hidden = emailOff;
   document.getElementById("authpassword").autocomplete =
     mode === "login" ? "current-password" : "new-password";
   authSay("");
@@ -120,7 +131,13 @@ async function authSubmit(event) {
     if (Auth.mode === "login") {
       result = await authPost("/auth/login", { email, password });
     } else if (Auth.mode === "register") {
-      result = await authPost("/auth/register", { email, password, display_name: name });
+      if (!document.getElementById("authterms").checked) {
+        authSay("Please confirm you're 16 or older and agree to the Terms and Privacy Policy.", true);
+        return;
+      }
+      result = await authPost("/auth/register", {
+        email, password, display_name: name, accept_terms: true,
+      });
     } else if (Auth.mode === "forgot") {
       result = await authPost("/auth/password/forgot", { email });
       if (result.ok) { authSay(result.data.message); return; }
@@ -248,5 +265,22 @@ document.getElementById("acct-delete").addEventListener("click", async () => {
   await authRefresh();
   toast("Your account was deleted");
 });
+
+/* ---------------------------------------------------------- cookie notice */
+
+/* Essential cookies only, so this informs rather than asks; it is dismissed
+ * once per browser (and again when the notice's wording version changes). */
+const COOKIE_NOTICE = "mtgfish.cookieNotice.v1";
+(function cookieNotice() {
+  const box = document.getElementById("cookienotice");
+  if (!box) return;
+  let seen = false;
+  try { seen = !!localStorage.getItem(COOKIE_NOTICE); } catch (err) { /* private mode */ }
+  box.hidden = seen;
+  document.getElementById("cookieok").addEventListener("click", () => {
+    box.hidden = true;
+    try { localStorage.setItem(COOKIE_NOTICE, new Date().toISOString()); } catch (err) { /* */ }
+  });
+})();
 
 authRefresh().then(authHandleHash);

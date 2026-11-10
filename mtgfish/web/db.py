@@ -33,7 +33,13 @@ def default_url() -> str:
 
 
 def database_url() -> str:
-    return os.environ.get("DATABASE_URL") or default_url()
+    url = os.environ.get("DATABASE_URL") or default_url()
+    # Hosts (Render, Heroku) hand out postgres:// or postgresql:// URLs;
+    # SQLAlchemy needs to be told which driver, and this app uses psycopg 3.
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg://" + url[len(prefix):]
+    return url
 
 
 def make_engine(url: str | None = None) -> Engine:

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Privacy Policy - Goldfisher</title>
+<link rel="stylesheet" href="/legal/legal.css">
+</head>
+<body>
+<main class="legal">
+<p class="back"><a href="/">&larr; Back to Goldfisher</a></p>
+<h1>Privacy Policy</h1>
+<p class="meta">Version {{TERMS_VERSION}} &middot; Goldfisher private beta</p>
+
+<p>This policy explains what personal data Goldfisher (&ldquo;we&rdquo;, the site at
+{{SITE_URL}}) collects, why, how long we keep it, and the rights you have under the
+UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+
+<h2>1. Who is responsible for your data</h2>
+<p>The data controller is <strong>{{OPERATOR_NAME}}</strong>. For anything about your
+data, including the requests in section 8, contact <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.</p>
+
+<h2>2. What we collect</h2>
+<table>
+<tr><th>Data</th><th>When</th></tr>
+<tr><td>Display name</td><td>When you create an account</td></tr>
+<tr><td>Email address, and whether you have verified it</td><td>If you register with email, or if Discord shares a verified email when you sign in with Discord</td></tr>
+<tr><td>A password hash (argon2id &mdash; never the password itself)</td><td>If you register with email</td></tr>
+<tr><td>Discord user ID, username, display name and avatar ID</td><td>If you sign in with Discord. We do not keep Discord&rsquo;s access tokens.</td></tr>
+<tr><td>When you accepted these terms, and which version</td><td>When you create an account</td></tr>
+<tr><td>Saved decks (names, decklists, versions)</td><td>When you save a deck</td></tr>
+<tr><td>Simulation history (the decklists, settings, seed and results of each run)</td><td>When you run a simulation while signed in with a verified account</td></tr>
+<tr><td>Sandbox card verdicts (&ldquo;this card reads wrong&rdquo;)</td><td>When you mark a card in the sandbox while signed in</td></tr>
+<tr><td>Sign-in sessions (a hashed session ID and its expiry)</td><td>While you are signed in</td></tr>
+<tr><td>Your IP address</td><td>Every request reaches our host, which keeps request logs. Our own application uses it only briefly, in memory, to rate-limit sign-in attempts.</td></tr>
+</table>
+<p>If you use the Archidekt import and sign in to Archidekt through it, your Archidekt
+username and password are passed straight to Archidekt to sign you in and are never stored.
+The sign-in token Archidekt returns is kept only in the server&rsquo;s memory for your
+session.</p>
+<p>Without an account, Goldfisher keeps the decks you paste and your settings in your own
+browser&rsquo;s local storage, and your simulation state in the server&rsquo;s memory
+until your session ends.</p>
+
+<h2>3. Why we use it, and our lawful basis</h2>
+<ul>
+<li><strong>To provide the service you ask for</strong> &mdash; your account, saved decks,
+history and sign-in (performance of a contract, UK GDPR Art. 6(1)(b)).</li>
+<li><strong>To keep the service secure and working</strong> &mdash; rate limits, preventing
+abuse, investigating faults (our legitimate interests, Art. 6(1)(f)).</li>
+<li><strong>To send you service emails</strong> &mdash; address verification and password
+resets, only when you ask for them (performance of a contract). We send no marketing.</li>
+<li><strong>To meet legal obligations</strong> where they apply (Art. 6(1)(c)).</li>
+</ul>
+<p>We do not sell your data, use it for advertising, or profile you.</p>
+
+<h2>4. Cookies and local storage</h2>
+<p>We use only cookies that are strictly necessary for the site to work, so they do not
+need your consent under the Privacy and Electronic Communications Regulations. There are no
+analytics, advertising or tracking cookies.</p>
+<table>
+<tr><th>Name</th><th>Purpose</th><th>Lasts</th></tr>
+<tr><td><code>mtgfish_sid</code></td><td>Connects your browser to its simulation session</td><td>30 days</td></tr>
+<tr><td><code>mtgfish_auth</code></td><td>Keeps you signed in (only set if you sign in)</td><td>30 days, or until you log out</td></tr>
+<tr><td><code>mtgfish_csrf</code></td><td>Protects forms against cross-site request forgery</td><td>30 days</td></tr>
+<tr><td><code>mtgfish_oauth</code></td><td>Checks a Discord sign-in started in your browser</td><td>10 minutes</td></tr>
+</table>
+<p>Local storage on your device holds your pasted decklists, lab settings, theme and
+whether you have dismissed the cookie notice. It never leaves your browser unless you save
+a deck to your account.</p>
+
+<h2>5. Who else is involved</h2>
+<ul>
+<li><strong>Render Services, Inc.</strong> hosts the site and its database, in its
+Frankfurt (EU) region. Render is a US company; transfers are covered by the UK
+International Data Transfer Addendum / standard contractual clauses in its data processing
+terms.</li>
+<li><strong>Discord</strong>, if you choose to sign in with Discord. Discord&rsquo;s own
+privacy policy applies to your Discord account.</li>
+<li><strong>Scryfall</strong> &mdash; card images and mana symbols load directly from
+Scryfall&rsquo;s servers, so Scryfall receives your IP address and browser details when
+your browser fetches them. Discord avatars load from Discord&rsquo;s servers in the same way.</li>
+<li><strong>EDHREC and Scryfall&rsquo;s API</strong> are queried by our server for card
+recommendations; no personal data is sent to them.</li>
+<li><strong>Archidekt</strong>, only if you use the Archidekt import.</li>
+<li>An <strong>email provider</strong>, once email sign-in is enabled, to deliver
+verification and reset emails.</li>
+</ul>
+
+<h2>6. How long we keep it</h2>
+<ul>
+<li>Your account and everything saved to it: until you delete your account.</li>
+<li>Unverified email accounts: deleted automatically after 30 days.</li>
+<li>Sign-in sessions: 30 days (or until you log out). Email links: 48 hours (verification)
+or 30 minutes (password reset), and they work once.</li>
+<li>Anonymous simulation sessions: in memory only, gone after a few hours of inactivity or a
+server restart.</li>
+<li>Our host&rsquo;s request logs: according to Render&rsquo;s log retention (days, not
+months).</li>
+</ul>
+
+<h2>7. How we protect it</h2>
+<p>Connections use HTTPS. Passwords are hashed with argon2id. Session IDs and email-link
+tokens are stored only as hashes, so a copy of the database cannot be used to sign in.
+Access to your saved data is limited to your own account.</p>
+
+<h2>8. Your rights</h2>
+<p>You can ask to access, correct, delete or restrict the use of your data, to receive it
+in a portable format, and to object to our use of it. Most of this you can do yourself
+under <strong>Log in &rarr; your account</strong>:</p>
+<ul>
+<li><strong>Download my data</strong> gives you everything we hold about your account, as JSON.</li>
+<li><strong>Delete account</strong> permanently removes your account, decks, history,
+verdicts and sessions.</li>
+<li>Your display name can be changed there; for anything else, email
+<a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>. We reply within one month.</li>
+</ul>
+<p>If you are unhappy with how we handle your data, you can complain to the Information
+Commissioner&rsquo;s Office: <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>,
+0303 123 1113. We would appreciate the chance to put things right first.</p>
+
+<h2>9. Children</h2>
+<p>Goldfisher is for people aged 16 and over. Do not create an account if you are younger.</p>
+
+<h2>10. Changes</h2>
+<p>If we change this policy in a way that matters, we will say so on the site and, where
+needed, ask you to agree again. The version above changes with every revision.</p>
+</main>
+</body>
+</html>

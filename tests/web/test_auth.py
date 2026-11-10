@@ -85,7 +85,9 @@ def post(client, path, payload=None, headers=None):
 
 
 def register(client, email="ana@example.com", password="correct horse battery", name="Ana"):
-    return post(client, "/auth/register", {"email": email, "password": password, "display_name": name})
+    return post(client, "/auth/register", {
+        "email": email, "password": password, "display_name": name, "accept_terms": True,
+    })
 
 
 def last_link(client, path):
