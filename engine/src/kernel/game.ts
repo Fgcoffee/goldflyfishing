@@ -14,6 +14,7 @@
  */
 
 import type { Ability } from "../ir";
+import type { Characteristics } from "../rules/cr200_parts_of_a_card/characteristics";
 import {
   clonePlayer,
   type Player,
@@ -84,6 +85,11 @@ export interface Game {
   delayedTriggers: unknown[];
   /** Bumped whenever characteristics may have changed; caches compare to it. */
   epoch: number;
+  /** The whole-board layer computation, valid while `boardEpoch === epoch`. */
+  boardCache: Map<ObjectId, Characteristics> | null;
+  boardEpoch: number;
+  /** The board being computed right now, for reads made during it. */
+  boardInProgress: Map<ObjectId, Characteristics> | null;
   gameOver: boolean;
   winners: PlayerId[];
   commanderOrigin: Map<ObjectId, ObjectId>;
@@ -149,6 +155,9 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     pendingTriggers: [],
     delayedTriggers: [],
     epoch: 0,
+    boardCache: null,
+    boardEpoch: -1,
+    boardInProgress: null,
     gameOver: false,
     winners: [],
     commanderOrigin: new Map(),
@@ -211,6 +220,9 @@ export function cloneGame(game: Game): Game {
     ids: cloneIdAllocator(game.ids),
     rng: cloneRng(game.rng),
     log: cloneGameLog(game.log),
+    boardCache: null,
+    boardEpoch: -1,
+    boardInProgress: null,
     turnOrder: game.turnOrder.slice(),
     continuousEffects: cloneRecords(game.continuousEffects),
     pendingTriggers: cloneRecords(game.pendingTriggers),

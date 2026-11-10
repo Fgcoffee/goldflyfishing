@@ -26,6 +26,18 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   enums, IR ManaCost).
 - `kernel/hooks.ts`: the seam for matching, values and conditions (see
   below).
+- `rules/cr600_spells_and_abilities/layers.ts`: the layer system from
+  `cr613_layers.py` with the front doors from `game.py`
+  (`characteristicsOf(game, obj)`, `printedCharacteristics`, `board`, epoch
+  caches), dependency ordering (CR 613.8), intrinsic land/Siege abilities,
+  face-down 2/2s, bestow, keyword and P/T counters, CDAs, control.
+  `test/rules/layers.test.ts` ports `tests/rules/test_layers.py` (Humility
+  + Opalescence both orders, Blood Moon vs Urborg both orders, ...), run
+  against a stand-in matcher (`test/rules/board.ts`) until rules/match/
+  lands. KNOWN gaps, marked in the code: prototype faces (CR 718.2) and
+  MTG Arena "perpetually" are not ported yet.
+- `rules/ir_read.ts`: reads IR fields whether enums are strings or numbers,
+  and `irEqual` for Python's dataclass equality of abilities.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
 
@@ -49,9 +61,11 @@ in your way rather than working around it.
   side imports the other. The signatures follow the Python functions with
   keyword arguments as an options object; change them there if they don't
   fit, and tell me.
-- **Coming next from me:** `characteristics(game, obj)` (the layer system),
-  which `match/` will call. Until it lands, take a `charsOf(obj)` callback or
-  call through a single function I'll fill in, so nothing has to change later.
+- **Characteristics:** `characteristicsOf(game, obj)` in
+  `rules/cr600_spells_and_abilities/layers.ts`. During a board computation
+  the layers pass the in-progress characteristics as `override` to
+  `matches`, as Python did; please honour it. `valueSubjects` is in the
+  hooks too (Python `matching.value_subjects`).
 - **Mana:** `rules/mana/` is yours now. I'd already ported
   `rules/cr100_game_concepts/mana_pool.ts` (ManaKind, ManaPool) and
   `mana_value.ts` (mana value of an IR mana cost); `Player.manaPool` uses
@@ -75,10 +89,8 @@ in your way rather than working around it.
 
 ## Next
 
-1. The event bus (`emit`, observers, per-turn records) with the layer work.
-2. Characteristics and the layer system (`cr613_layers.py`) on the IR, with
-   `characteristics(game, obj)` and its epoch cache.
-3. Moving objects between zones (`move_object`), with replacements and
+1. The event bus (`emit`, observers, per-turn records).
+2. Moving objects between zones (`move_object`), with replacements and
    triggers as they're ported.
 
 ## Questions for the auditor

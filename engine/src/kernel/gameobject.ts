@@ -106,6 +106,9 @@ export interface GameObject {
   /** Cache, valid while `characteristicsEpoch` equals the game's epoch. */
   cachedCharacteristics: Characteristics | null;
   characteristicsEpoch: number;
+  /** Cache of the printed characteristics, valid while `printedKey` matches. */
+  printed: Characteristics | null;
+  printedKey: string;
 }
 
 export function newGameObject(id: ObjectId, fields: Partial<GameObject> = {}): GameObject {
@@ -184,6 +187,8 @@ export function newGameObject(id: ObjectId, fields: Partial<GameObject> = {}): G
     lastKnownCharacteristics: null,
     cachedCharacteristics: null,
     characteristicsEpoch: -1,
+    printed: null,
+    printedKey: "",
     ...fields,
   };
 }
@@ -209,6 +214,8 @@ export function cloneGameObject(obj: GameObject): GameObject {
     entersAttackingLike: obj.entersAttackingLike.slice(),
     cachedCharacteristics: null,
     characteristicsEpoch: -1,
+    printed: null,
+    printedKey: "",
   };
 }
 

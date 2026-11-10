@@ -12,6 +12,7 @@
  */
 
 import type { Condition, ObjectFilter, Value } from "../ir";
+import type { Characteristics } from "../rules/cr200_parts_of_a_card/characteristics";
 import type { Game } from "./game";
 import type { GameObject } from "./gameobject";
 import type { ObjectId, PlayerId } from "./ids";
@@ -29,7 +30,11 @@ export interface MatchHooks {
     game: Game,
     obj: GameObject,
     spec: ObjectFilter,
-    context: MatchContext & { allowStale?: boolean },
+    context: MatchContext & {
+      allowStale?: boolean;
+      /** The layer system's in-progress characteristics for `obj`. */
+      override?: Characteristics;
+    },
   ): boolean;
   /** Python `matching.find(game, spec, source=, controller=)`. */
   find(game: Game, spec: ObjectFilter, context: MatchContext): GameObject[];
@@ -37,6 +42,11 @@ export interface MatchHooks {
   evaluate(game: Game, value: Value, context: MatchContext & { xValue?: number }): number;
   /** Python `conditions.holds(game, condition, source=, controller=, ...)`. */
   holds(game: Game, condition: Condition, context: MatchContext): boolean;
+  /**
+   * Python `matching.value_subjects(value)`: whether the value reads the
+   * affected object ("its power"), the source, and the third flag as there.
+   */
+  valueSubjects(value: Value): [boolean, boolean, boolean];
 }
 
 function missing(name: string): never {
@@ -48,6 +58,7 @@ let HOOKS: MatchHooks = {
   find: () => missing("find"),
   evaluate: () => missing("evaluate"),
   holds: () => missing("holds"),
+  valueSubjects: () => missing("valueSubjects"),
 };
 
 export function installMatchHooks(hooks: Partial<MatchHooks>): void {
