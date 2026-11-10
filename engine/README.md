@@ -24,9 +24,9 @@ coordinates and merges into `main`.
 
 | Area | Owner | Paths |
 |---|---|---|
-| Card IR: JSON schema, Python exporter, TS types | parser session | `schema/`, `engine/src/ir/`, the exporter under `mtgfish/parser/` or `mtgfish/tools/` |
+| Card IR: JSON schema, Python exporter, TS types | parser session | `schema/`, `engine/src/ir/`, `mtgfish/ir/`, `mtgfish/tools/ir_export.py` |
 | Kernel and rules: state, zones, objects, layers, casting, mana, stack, triggers, SBAs, combat, replacements, keywords | rules session | `engine/src/kernel/`, `engine/src/rules/` |
-| AI and game runner, Web Workers, app build (Vite), serving IR JSON | web session | `engine/src/ai/`, `engine/src/sim/`, `mtgfish/ui/web/`, `mtgfish/web/` |
+| AI and game runner, Web Workers, app build (Vite), serving IR JSON | web session | `engine/src/ai/`, `engine/src/sim/`, `webapp/`, `mtgfish/ui/web/`, `mtgfish/web/` |
 | Test fixtures, differential tests against the Python engine, review | auditor session | `engine/test/fixtures/`, `audit/` |
 
 Shared files (`engine/package.json`, `engine/tsconfig.json`,
