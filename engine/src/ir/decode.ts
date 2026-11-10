@@ -30,8 +30,13 @@ export function isEnumLiteral(value: string): boolean {
   return dot > 0 && value.slice(0, dot) in ENUMS;
 }
 
-/** The number behind an enum literal. Flags combine their bits. */
-export function enumValue(literal: string): number {
+/**
+ * The number behind an enum literal ("Zone.GRAVEYARD", "CardType.A|B").
+ * A number is returned as it is, so code written against this works with
+ * IR version 2, which writes enums as numbers.
+ */
+export function enumValue(literal: string | number): number {
+  if (typeof literal === "number") return literal;
   const dot = literal.indexOf(".");
   const name = literal.slice(0, dot);
   const entry = ENUMS[name];

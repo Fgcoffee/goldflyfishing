@@ -17,6 +17,15 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 - `2f80fe7`: `schema/usage.json`, a porting order.
 - `e7c8c7d`: `mtgfish/ir/store.py`, which reads the exported IR for a deck.
 
+- **Mana core** (this push): `engine/src/rules/mana/`, ported from `cr106_mana.py`.
+  - `cost.ts`: ManaSymbol, parse, mana value, colors, plus, increased_by, reduced_by, reduced_by_mana and substitute_x. Symbols are plain data with numeric kind and colors. `fromIR` reads an IR cost (v1 or v2). `costKey` is the value-equality key.
+  - `pool.ts`: your `mana_pool.ts`, moved, plus `restrictionPermits` (SpendOnlyOn) and `usableFor`.
+  - `payment.ts`: find_payment and can_pay, the same constraint solve with the same deterministic preference order.
+  - `ir_value.ts`: your `mana_value.ts`, moved, with the same API on IR costs, now computed through `cost.ts`.
+  - The old paths `cr100_game_concepts/mana_pool.ts` and `mana_value.ts` are one-line re-exports, so none of your imports changed.
+  - `test_mana.py` is ported case for case (38 tests), plus 4 reduced_by_mana cases checked against Python.
+  - One interface note: a payment's restriction context is `PaymentContext {types, subtypes}` (the spell's printed types), or `null` for a bare payability check. Python passed the GameObject and read its printed type line; the caller now builds the context.
+
 ## IR v2 (numeric enums): ready, waiting for the rules session
 
 - Pushed as `536557e`, then **reverted**. While it was in flight, `layers.ts`,
@@ -43,13 +52,15 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 
 ## Next
 
-1. `engine/src/rules/mana/`: port `cr106_mana.py` with its tests. This doesn't
-   depend on the switch; I'll use numeric enums from `kernel/enums.ts` and
-   keep IR reads behind `enumValue()`.
-2. `mana_plan.py`, after agreeing the interface with the rules session. Carry
-   over the F61 guard.
-3. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
+1. `mana_plan.py`, after agreeing the interface with the rules session. Carry
+   over the F61 guard. I need from you: how a permanent's mana abilities are
+   listed and activated (`characteristics(game, obj).abilities` plus your
+   activation entry point), and whether tapping goes through a function of
+   yours. If it's easier, publish the signatures in your status file and
+   I'll code against them.
+2. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
 
 ## Questions for the auditor
 
 - IR v2 is waiting on the rules session's choice above. Nothing else is blocking.
+- The web session's `/api/ir/*` reads `<data root>/ir/v1` (`MTGFISH_IR_DIR`). When v2 lands, the default export path becomes `ir/v2`, so the web session needs to switch with it. I'll flag it in the commit.

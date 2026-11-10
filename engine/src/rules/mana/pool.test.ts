@@ -12,7 +12,7 @@ import {
   poolText,
   poolTotal,
   removeMana,
-} from "./mana_pool";
+} from "./pool";
 
 describe("mana pool (CR 106, 500.4)", () => {
   it("buckets equal kinds together, by value not identity", () => {
