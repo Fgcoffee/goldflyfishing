@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
  "name": "Solitary Confinement",
  "card_hash": "429cddcb145be40506d4dc20c8498d8e",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
    "name": "Solitary Confinement",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 6,
+       "kind": "EffectKind.UNLESS_PAYS",
        "players": {
         "$": "PlayerFilter"
        },
@@ -28,7 +28,7 @@
         "components": [
          {
           "$": "CostComponent",
-          "kind": 11,
+          "kind": "CostKind.DISCARD",
           "amount": {
            "$": "Value",
            "constant": 1
@@ -50,7 +50,7 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 31,
+         "kind": "EffectKind.SACRIFICE",
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
@@ -69,7 +69,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        127
+        "EventKind.UPKEEP"
        ]
       },
       "players": {
@@ -80,11 +80,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 173,
+       "kind": "EffectKind.SKIP_STEP",
        "players": {
         "$": "PlayerFilter"
        },
@@ -99,19 +99,19 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 143,
+       "kind": "EffectKind.GRANT_ABILITY",
        "players": {
         "$": "PlayerFilter"
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": 3,
+         "kind": "AbilityKind.STATIC",
          "text": "shroud",
          "keyword": "shroud"
         }
@@ -123,11 +123,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 55,
+       "kind": "EffectKind.PREVENT_DAMAGE",
        "players": {
         "$": "PlayerFilter"
        },
@@ -135,7 +135,7 @@
         "$": "Value",
         "constant": -1
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "prevent damage"
       }
      ],

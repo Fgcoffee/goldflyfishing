@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
  "name": "Goblin Ringleader",
  "card_hash": "863dad650c5e50132cc3f73c89ef9a13",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
    "name": "Goblin Ringleader",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Haste",
      "keyword": "Haste"
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 10001,
+       "kind": "EffectKind.LOOK_AT_TOP",
        "players": {
         "$": "PlayerFilter"
        },
@@ -40,11 +40,11 @@
       },
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 28,
+         "kind": "EffectKind.MOVE_ZONE",
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -55,12 +55,12 @@
            "$set": []
           }
          },
-         "zone": 1,
+         "zone": "Zone.HAND",
          "text": "put into hand"
         },
         {
          "$": "Effect",
-         "kind": 34,
+         "kind": "EffectKind.PUT_ON_LIBRARY",
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true
@@ -79,7 +79,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {

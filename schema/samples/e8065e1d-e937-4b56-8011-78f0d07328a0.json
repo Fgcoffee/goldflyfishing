@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "e8065e1d-e937-4b56-8011-78f0d07328a0",
  "name": "Krenko, Tin Street Kingpin",
  "card_hash": "29040bb3d725c5a67693193584c3f73f",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "e8065e1d-e937-4b56-8011-78f0d07328a0",
    "name": "Krenko, Tin Street Kingpin",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Whenever this attacks, put a +1/+1 counter on it, then create a number of 1/1 red Goblin creature tokens equal to its power."
       }
      ],

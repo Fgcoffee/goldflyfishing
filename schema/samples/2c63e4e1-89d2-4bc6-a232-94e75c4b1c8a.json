@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
  "name": "Mana Crypt",
  "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
    "name": "Mana Crypt",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you."
       }
      ],
@@ -28,11 +28,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -53,7 +53,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

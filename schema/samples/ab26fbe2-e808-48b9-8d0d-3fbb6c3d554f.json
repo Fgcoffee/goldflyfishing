@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
  "name": "Narset, Parter of Veils",
  "card_hash": "a1775e5a5e1cbebd48edf8ba303648f7",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
    "name": "Narset, Parter of Veils",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Each opponent can't draw more than one card each turn."
       }
      ],
@@ -28,11 +28,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 10001,
+       "kind": "EffectKind.LOOK_AT_TOP",
        "players": {
         "$": "PlayerFilter"
        },
@@ -44,17 +44,17 @@
       },
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 28,
+         "kind": "EffectKind.MOVE_ZONE",
          "targets": {
           "$": "ObjectFilter",
-          "types_none": 20,
+          "types_none": "CardType.CREATURE|LAND",
           "from_pile": true,
           "zones": {
            "$set": []
@@ -64,7 +64,7 @@
            "constant": 1
           }
          },
-         "zone": 1,
+         "zone": "Zone.HAND",
          "keywords": [
           "reveal"
          ],
@@ -75,7 +75,7 @@
       },
       {
        "$": "Effect",
-       "kind": 34,
+       "kind": "EffectKind.PUT_ON_LIBRARY",
        "targets": {
         "$": "ObjectFilter",
         "from_pile": true
@@ -93,7 +93,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 34,
+        "kind": "CostKind.LOYALTY",
         "amount": {
          "$": "Value",
          "constant": -2
@@ -102,7 +102,7 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "is_loyalty_ability": true,
      "once_each_turn": true
     }

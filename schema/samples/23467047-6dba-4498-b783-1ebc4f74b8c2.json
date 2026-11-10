@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "23467047-6dba-4498-b783-1ebc4f74b8c2",
  "name": "Ancient Tomb",
  "card_hash": "2e661310c7981106ae59875f52743e49",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "23467047-6dba-4498-b783-1ebc4f74b8c2",
    "name": "Ancient Tomb",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -35,7 +35,7 @@
       },
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "players": {
         "$": "PlayerFilter"
        },
@@ -52,7 +52,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

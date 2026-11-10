@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
  "name": "Esper Sentinel",
  "card_hash": "a958a77276a81c92bd0595185d387ec6",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
    "name": "Esper Sentinel",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "where X is (unbound X)"
       }
      ],
@@ -28,22 +28,22 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        20
+        "EventKind.CAST_SPELL"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_none": 4,
+       "types_none": "CardType.CREATURE",
        "zones": {
         "$set": [
-         4
+         "Zone.STACK"
         ]
        },
        "is_ability": false
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": 1
+       "scope": "PlayerScope.OPPONENT"
       },
       "ordinal": 1,
       "text": "whenever a player casts a spell"

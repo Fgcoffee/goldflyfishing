@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
  "name": "Legion Warboss",
  "card_hash": "d172539dcc8dd041aa2bda537d62e262",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
    "name": "Legion Warboss",
    "face": 0,
@@ -15,16 +15,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 72,
+       "kind": "EffectKind.ADD_COUNTERS",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
+        "types_all": "CardType.CREATURE",
         "other_than_source": true,
-        "controller": 1,
+        "controller": "ControllerRelation.YOU",
         "attacking": true
        },
        "amount": {
@@ -40,7 +40,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        101
+        "EventKind.ATTACKS"
        ]
       },
       "subject": {
@@ -53,11 +53,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able."
       }
      ],

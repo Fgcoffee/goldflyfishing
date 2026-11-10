@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
  "name": "Aura of Silence",
  "card_hash": "6014f43ecc410ffa37d8728a5fc4e006",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
    "name": "Aura of Silence",
    "face": 0,
@@ -15,27 +15,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 152,
+       "kind": "EffectKind.MODIFY_COST",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 9,
+        "types_any": "CardType.ARTIFACT|ENCHANTMENT",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
-        "controller": 2,
+        "controller": "ControllerRelation.OPPONENT",
         "is_ability": false
        },
        "amount": {
         "$": "Value",
         "constant": 2
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "costs less to cast"
       }
      ],
@@ -43,14 +43,14 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 29,
+       "kind": "EffectKind.DESTROY",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 9
+        "types_any": "CardType.ARTIFACT|ENCHANTMENT"
        },
        "is_targeted": true,
        "text": "destroy"
@@ -62,7 +62,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 10,
+        "kind": "CostKind.SACRIFICE",
         "amount": {
          "$": "Value",
          "constant": 1

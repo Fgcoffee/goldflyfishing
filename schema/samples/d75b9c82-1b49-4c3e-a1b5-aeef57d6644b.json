@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
  "name": "Cyclonic Rift",
  "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
    "name": "Cyclonic Rift",
    "face": 0,
@@ -15,15 +15,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 32,
+       "kind": "EffectKind.RETURN_TO_HAND",
        "targets": {
         "$": "ObjectFilter",
-        "types_none": 16,
-        "controller": 2
+        "types_none": "CardType.LAND",
+        "controller": "ControllerRelation.OPPONENT"
        },
        "is_targeted": true,
        "text": "return to hand"
@@ -33,11 +33,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Overload {6}{U}",
      "functions_in": {
       "$set": [
-       1
+       "Zone.HAND"
       ]
      },
      "keyword": "Overload",
@@ -48,20 +48,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": 0,
+         "kind": "CostKind.MANA",
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": 0,
+            "kind": "ManaSymbolKind.GENERIC",
             "generic": 6,
             "text": "{6}"
            },
            {
             "$": "ManaSymbol",
-            "kind": 2,
-            "colors": 2,
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.BLUE",
             "text": "{U}"
            }
           ]

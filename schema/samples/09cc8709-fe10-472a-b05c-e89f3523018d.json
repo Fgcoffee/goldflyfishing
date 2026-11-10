@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
  "name": "Austere Command",
  "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
    "name": "Austere Command",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": "EffectKind.CHOOSE_MODE",
        "amount": {
         "$": "Value",
         "constant": 2
@@ -27,14 +27,14 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 29,
+           "kind": "EffectKind.DESTROY",
            "targets": {
             "$": "ObjectFilter",
-            "types_all": 1
+            "types_all": "CardType.ARTIFACT"
            },
            "text": "destroy"
           }
@@ -43,14 +43,14 @@
         },
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 29,
+           "kind": "EffectKind.DESTROY",
            "targets": {
             "$": "ObjectFilter",
-            "types_all": 8
+            "types_all": "CardType.ENCHANTMENT"
            },
            "text": "destroy"
           }
@@ -59,17 +59,17 @@
         },
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 29,
+           "kind": "EffectKind.DESTROY",
            "targets": {
             "$": "ObjectFilter",
-            "types_all": 4,
+            "types_all": "CardType.CREATURE",
             "mana_value": {
              "$": "NumericConstraint",
-             "comparison": 3,
+             "comparison": "Comparison.LE",
              "value": {
               "$": "Value",
               "constant": 3
@@ -83,17 +83,17 @@
         },
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 29,
+           "kind": "EffectKind.DESTROY",
            "targets": {
             "$": "ObjectFilter",
-            "types_all": 4,
+            "types_all": "CardType.CREATURE",
             "mana_value": {
              "$": "NumericConstraint",
-             "comparison": 5,
+             "comparison": "Comparison.GE",
              "value": {
               "$": "Value",
               "constant": 4
@@ -112,7 +112,7 @@
      "text": "Choose two -",
      "functions_in": {
       "$set": [
-       4
+       "Zone.STACK"
       ]
      }
     }

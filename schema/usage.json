@@ -145,12 +145,6 @@
   ],
   "ConditionKind": [
    {
-    "member": "ALWAYS",
-    "faces": 26964,
-    "fully_read_faces": 18479,
-    "bench_faces": 226
-   },
-   {
     "member": "CONTROLS_MATCHING",
     "faces": 774,
     "fully_read_faces": 662,
@@ -724,12 +718,6 @@
     "member": "DISCARD",
     "faces": 718,
     "fully_read_faces": 588,
-    "bench_faces": 1
-   },
-   {
-    "member": "NOTHING",
-    "faces": 641,
-    "fully_read_faces": 559,
     "bench_faces": 1
    },
    {
@@ -1319,12 +1307,6 @@
   ],
   "PlayerScope": [
    {
-    "member": "YOU",
-    "faces": 11678,
-    "fully_read_faces": 9102,
-    "bench_faces": 142
-   },
-   {
     "member": "OPPONENT",
     "faces": 285,
     "fully_read_faces": 224,
@@ -1416,12 +1398,6 @@
    }
   ],
   "ValueKind": [
-   {
-    "member": "CONSTANT",
-    "faces": 23584,
-    "fully_read_faces": 17539,
-    "bench_faces": 220
-   },
    {
     "member": "COUNT",
     "faces": 1182,
@@ -1599,24 +1575,6 @@
     "bench_faces": 226
    },
    {
-    "member": "Condition",
-    "faces": 26964,
-    "fully_read_faces": 18479,
-    "bench_faces": 226
-   },
-   {
-    "member": "Cost",
-    "faces": 26964,
-    "fully_read_faces": 18479,
-    "bench_faces": 226
-   },
-   {
-    "member": "Value",
-    "faces": 23751,
-    "fully_read_faces": 17656,
-    "bench_faces": 220
-   },
-   {
     "member": "Effect",
     "faces": 23117,
     "fully_read_faces": 17545,
@@ -1629,19 +1587,25 @@
     "bench_faces": 189
    },
    {
+    "member": "Value",
+    "faces": 19330,
+    "fully_read_faces": 15060,
+    "bench_faces": 181
+   },
+   {
     "member": "PlayerFilter",
     "faces": 13188,
     "fully_read_faces": 10239,
     "bench_faces": 152
    },
    {
-    "member": "CostComponent",
-    "faces": 10434,
-    "fully_read_faces": 7636,
-    "bench_faces": 106
+    "member": "Cost",
+    "faces": 10472,
+    "fully_read_faces": 7660,
+    "bench_faces": 108
    },
    {
-    "member": "ManaCost",
+    "member": "CostComponent",
     "faces": 10434,
     "fully_read_faces": 7636,
     "bench_faces": 106
@@ -1651,6 +1615,12 @@
     "faces": 9723,
     "fully_read_faces": 7587,
     "bench_faces": 69
+   },
+   {
+    "member": "ManaCost",
+    "faces": 7222,
+    "fully_read_faces": 5408,
+    "bench_faces": 51
    },
    {
     "member": "ManaSymbol",
@@ -1663,6 +1633,12 @@
     "faces": 1148,
     "fully_read_faces": 852,
     "bench_faces": 28
+   },
+   {
+    "member": "Condition",
+    "faces": 2395,
+    "fully_read_faces": 1947,
+    "bench_faces": 22
    },
    {
     "member": "NumericConstraint",

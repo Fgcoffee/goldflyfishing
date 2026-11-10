@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
  "name": "Chaos Warp",
  "card_hash": "ff4801b6525f80926e798e52e1ef6ea1",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
    "name": "Chaos Warp",
    "face": 0,
@@ -15,30 +15,30 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 28,
+       "kind": "EffectKind.MOVE_ZONE",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "zone": 0,
+       "zone": "Zone.LIBRARY",
        "text": "shuffle it into its owner's library"
       },
       {
        "$": "Effect",
-       "kind": 25,
+       "kind": "EffectKind.REVEAL",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          0
+          "Zone.LIBRARY"
          ]
         },
         "from_top": 1,
-        "owner": 4,
+        "owner": "ControllerRelation.SPECIFIC",
         "count": {
          "$": "Value",
          "constant": 1
@@ -52,13 +52,13 @@
       },
       {
        "$": "Effect",
-       "kind": 1,
+       "kind": "EffectKind.CONDITIONAL",
        "condition": {
         "$": "Condition",
-        "kind": 18,
+        "kind": "ConditionKind.REMEMBERED_MATCHES",
         "filter": {
          "$": "ObjectFilter",
-         "types_any": 63,
+         "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
          "remembered": true,
          "zones": {
           "$set": []
@@ -69,12 +69,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 33,
+         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
          },
-         "zone": 2,
+         "zone": "Zone.BATTLEFIELD",
          "text": "put onto the battlefield"
         }
        ],

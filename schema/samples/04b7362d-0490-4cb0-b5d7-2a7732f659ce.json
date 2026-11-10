@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
  "name": "Bojuka Bog",
  "card_hash": "a2bd23ffa6857dbb313601fdce6280ee",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
    "name": "Bojuka Bog",
    "face": 0,
@@ -15,16 +15,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 70,
+       "kind": "EffectKind.TAP",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "enters tapped"
       }
      ],
@@ -32,22 +32,22 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 30,
+       "kind": "EffectKind.EXILE",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          3
+          "Zone.GRAVEYARD"
          ]
         }
        },
        "players": {
         "$": "PlayerFilter",
-        "scope": 4
+        "scope": "PlayerScope.TARGET_PLAYER"
        },
        "is_targeted": true,
        "text": "exile a graveyard"
@@ -58,7 +58,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
@@ -70,11 +70,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -85,7 +85,7 @@
        "mana_produced": [
         "{B}"
        ],
-       "colors": 4,
+       "colors": "Color.BLACK",
        "text": "add {B}"
       }
      ],
@@ -95,7 +95,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

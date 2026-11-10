@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
  "name": "Goblin Bushwhacker",
  "card_hash": "90f4a4b27ffef946226ee2193c61faad",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
    "name": "Goblin Bushwhacker",
    "face": 0,
@@ -15,12 +15,12 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Kicker {R}",
      "functions_in": {
       "$set": [
-       1,
-       4
+       "Zone.HAND",
+       "Zone.STACK"
       ]
      },
      "keyword": "Kicker",
@@ -31,14 +31,14 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": 0,
+         "kind": "CostKind.MANA",
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": 2,
-            "colors": 8,
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.RED",
             "text": "{R}"
            }
           ]
@@ -53,40 +53,40 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 140,
+         "kind": "EffectKind.MODIFY_PT",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 4,
-          "controller": 1
+          "types_all": "CardType.CREATURE",
+          "controller": "ControllerRelation.YOU"
          },
          "amount": {
           "$": "Value",
           "constant": 1
          },
-         "duration": 1,
+         "duration": "Duration.END_OF_TURN",
          "text": "gets +1/+0"
         },
         {
          "$": "Effect",
-         "kind": 143,
+         "kind": "EffectKind.GRANT_ABILITY",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 4,
-          "controller": 1
+          "types_all": "CardType.CREATURE",
+          "controller": "ControllerRelation.YOU"
          },
-         "duration": 1,
+         "duration": "Duration.END_OF_TURN",
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": 3,
+           "kind": "AbilityKind.STATIC",
            "text": "haste",
            "keyword": "haste"
           }
@@ -102,7 +102,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
@@ -111,7 +111,7 @@
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": 14,
+       "kind": "ConditionKind.WAS_KICKED",
        "text": "it was kicked"
       },
       "text": "when this enters"

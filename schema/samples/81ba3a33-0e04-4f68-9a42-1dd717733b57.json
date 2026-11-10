@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "81ba3a33-0e04-4f68-9a42-1dd717733b57",
  "name": "Lavinia, Azorius Renegade",
  "card_hash": "3a1a2c5d4746ff686caef637ec20c964",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "81ba3a33-0e04-4f68-9a42-1dd717733b57",
    "name": "Lavinia, Azorius Renegade",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Each opponent can't cast noncreature spells with mana value greater than the number of lands that player controls."
       }
      ],
@@ -28,17 +28,17 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 100,
+       "kind": "EffectKind.COUNTER_SPELL",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         }
        },
@@ -50,14 +50,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        20
+        "EventKind.CAST_SPELL"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
        "zones": {
         "$set": [
-         4
+         "Zone.STACK"
         ]
        },
        "is_ability": false,
@@ -68,11 +68,11 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": 1
+       "scope": "PlayerScope.OPPONENT"
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": 15,
+       "kind": "ConditionKind.NO_MANA_SPENT",
        "text": "if no mana was spent to cast it"
       },
       "text": "whenever a player casts a spell"

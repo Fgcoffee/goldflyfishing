@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "e74c4001-d958-4d2b-b57d-c3601f01580c",
  "name": "Battle Cry Goblin",
  "card_hash": "530704686b65eae69f0c88e14640fd92",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "e74c4001-d958-4d2b-b57d-c3601f01580c",
    "name": "Battle Cry Goblin",
    "face": 0,
@@ -15,44 +15,44 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 140,
+         "kind": "EffectKind.MODIFY_PT",
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
            "Goblin"
           ],
-          "controller": 1
+          "controller": "ControllerRelation.YOU"
          },
          "amount": {
           "$": "Value",
           "constant": 1
          },
-         "duration": 1,
+         "duration": "Duration.END_OF_TURN",
          "text": "gets +1/+0"
         },
         {
          "$": "Effect",
-         "kind": 143,
+         "kind": "EffectKind.GRANT_ABILITY",
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
            "Goblin"
           ],
-          "controller": 1
+          "controller": "ControllerRelation.YOU"
          },
-         "duration": 1,
+         "duration": "Duration.END_OF_TURN",
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": 3,
+           "kind": "AbilityKind.STATIC",
            "text": "haste",
            "keyword": "haste"
           }
@@ -69,20 +69,20 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 1,
            "text": "{1}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 8,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
            "text": "{R}"
           }
          ]
@@ -93,11 +93,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Whenever this creature attacks, if you attacked with creatures with total power 6 or greater this combat, create a 1/1 red Goblin creature token that's tapped and attacking."
       }
      ],

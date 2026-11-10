@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
  "name": "Thalia, Heretic Cathar",
  "card_hash": "cda38213f93dc46fdbcb428e33f156c1",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
    "name": "Thalia, Heretic Cathar",
    "face": 0,
@@ -15,22 +15,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "First strike",
      "keyword": "First strike"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 153,
+       "kind": "EffectKind.REPLACEMENT",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 20,
-        "supertypes_none": 1,
-        "controller": 2
+        "types_any": "CardType.CREATURE|LAND",
+        "supertypes_none": "Supertype.BASIC",
+        "controller": "ControllerRelation.OPPONENT"
        },
        "text": "those permanents enter tapped"
       }

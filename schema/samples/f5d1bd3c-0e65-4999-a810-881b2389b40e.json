@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
  "name": "Conspicuous Snoop",
  "card_hash": "0f340222764a151fc25a7466c0e21e55",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
    "name": "Conspicuous Snoop",
    "face": 0,
@@ -15,16 +15,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 151,
+       "kind": "EffectKind.PERMISSION",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          0
+          "Zone.LIBRARY"
          ]
         },
         "from_top": true,
@@ -33,11 +33,11 @@
        "players": {
         "$": "PlayerFilter"
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 102,
+         "act": "Act.LOOK_AT_TOP_CARD",
          "players": {
           "$": "PlayerFilter"
          },
@@ -51,18 +51,18 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 151,
+         "kind": "EffectKind.PERMISSION",
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -70,7 +70,7 @@
           ],
           "zones": {
            "$set": [
-            0
+            "Zone.LIBRARY"
            ]
           },
           "from_top": 1,
@@ -82,7 +82,7 @@
          "restrictions": [
           {
            "$": "Restriction",
-           "act": 0,
+           "act": "Act.CAST_SPELL",
            "subject": {
             "$": "ObjectFilter",
             "subtypes_all": [
@@ -90,7 +90,7 @@
             ],
             "zones": {
              "$set": [
-              0
+              "Zone.LIBRARY"
              ]
             },
             "from_top": 1,
@@ -112,11 +112,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card."
       }
      ],

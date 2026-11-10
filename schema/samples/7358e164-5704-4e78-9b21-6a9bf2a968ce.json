@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
  "name": "Cabal Coffers",
  "card_hash": "6c307419a06a18350b57e5c6e0745496",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
    "name": "Cabal Coffers",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -29,19 +29,19 @@
        },
        "amount2": {
         "$": "Value",
-        "kind": 2,
+        "kind": "ValueKind.COUNT",
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
           "Swamp"
          ],
-         "controller": 1
+         "controller": "ControllerRelation.YOU"
         }
        },
        "mana_produced": [
         "{B}"
        ],
-       "colors": 4,
+       "colors": "Color.BLACK",
        "text": "add {B}"
       }
      ],
@@ -51,13 +51,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 2,
            "text": "{2}"
           }
@@ -66,7 +66,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

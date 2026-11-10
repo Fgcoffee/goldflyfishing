@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
  "name": "Legion Loyalty",
  "card_hash": "53ae213fb6a7bd8e07d235f9610fcced",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
    "name": "Legion Loyalty",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Creatures you control have myriad."
       }
      ],

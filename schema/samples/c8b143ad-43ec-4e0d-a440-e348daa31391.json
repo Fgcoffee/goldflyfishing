@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
  "name": "Swiftfoot Boots",
  "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
    "name": "Swiftfoot Boots",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 143,
+       "kind": "EffectKind.GRANT_ABILITY",
        "targets": {
         "$": "ObjectFilter",
         "has_attached": {
@@ -27,17 +27,17 @@
          "source_only": true
         }
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": 3,
+         "kind": "AbilityKind.STATIC",
          "text": "hexproof",
          "keyword": "hexproof"
         },
         {
          "$": "Ability",
-         "kind": 3,
+         "kind": "AbilityKind.STATIC",
          "text": "haste",
          "keyword": "haste"
         }
@@ -49,15 +49,15 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 75,
+       "kind": "EffectKind.ATTACH",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 1
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
        },
        "is_targeted": true,
        "text": "attach to target creature you control"
@@ -69,13 +69,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 1,
            "text": "{1}"
           }
@@ -84,7 +84,7 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "keyword": "Equip"
     }
    ],

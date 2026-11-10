@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
  "name": "Jeska's Will",
  "card_hash": "6255d462c685d292f8caedb8f0f6f2eb",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
    "name": "Jeska's Will",
    "face": 0,
@@ -15,19 +15,19 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": "EffectKind.CHOOSE_MODE",
        "children": [
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 120,
+           "kind": "EffectKind.ADD_MANA",
            "players": {
             "$": "PlayerFilter"
            },
@@ -37,21 +37,21 @@
            },
            "amount2": {
             "$": "Value",
-            "kind": 2,
+            "kind": "ValueKind.COUNT",
             "filter": {
              "$": "ObjectFilter",
              "zones": {
               "$set": [
-               1
+               "Zone.HAND"
               ]
              },
-             "controller": 2
+             "controller": "ControllerRelation.OPPONENT"
             }
            },
            "mana_produced": [
             "{R}"
            ],
-           "colors": 8,
+           "colors": "Color.RED",
            "text": "add {R}"
           }
          ],
@@ -59,20 +59,20 @@
         },
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 30,
+           "kind": "EffectKind.EXILE",
            "targets": {
             "$": "ObjectFilter",
             "zones": {
              "$set": [
-              0
+              "Zone.LIBRARY"
              ]
             },
             "from_top": 3,
-            "owner": 1,
+            "owner": "ControllerRelation.YOU",
             "count": {
              "$": "Value",
              "constant": 3
@@ -82,7 +82,7 @@
           },
           {
            "$": "Effect",
-           "kind": 104,
+           "kind": "EffectKind.PLAY_FROM_ZONE",
            "targets": {
             "$": "ObjectFilter",
             "remembered": true
@@ -99,15 +99,15 @@
        "modes_instead": [
         {
          "$": "Condition",
-         "kind": 5,
+         "kind": "ConditionKind.CONTROLS_MATCHING",
          "filter": {
           "$": "ObjectFilter",
-          "controller": 1,
+          "controller": "ControllerRelation.YOU",
           "is_commander": true
          },
          "constraint": {
           "$": "NumericConstraint",
-          "comparison": 5,
+          "comparison": "Comparison.GE",
           "value": {
            "$": "Value",
            "constant": 1
@@ -125,7 +125,7 @@
      "text": "Choose one. If you control a commander as you cast this spell, you may choose both instead.",
      "functions_in": {
       "$set": [
-       4
+       "Zone.STACK"
       ]
      }
     }

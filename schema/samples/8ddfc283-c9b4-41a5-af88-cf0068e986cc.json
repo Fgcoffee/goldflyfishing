@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
  "name": "Swan Song",
  "card_hash": "4e9c5f376f41a97907111123c0b6e47e",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
    "name": "Swan Song",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 100,
+       "kind": "EffectKind.COUNTER_SPELL",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 200,
+        "types_any": "CardType.ENCHANTMENT|INSTANT|SORCERY",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false
@@ -35,10 +35,10 @@
       },
       {
        "$": "Effect",
-       "kind": 35,
+       "kind": "EffectKind.CREATE_TOKEN",
        "players": {
         "$": "PlayerFilter",
-        "scope": 13003
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
        },
        "amount": {
         "$": "Value",
@@ -50,7 +50,7 @@
         "subtypes": [
          "Bird"
         ],
-        "colors": 2,
+        "colors": "Color.BLUE",
         "power": {
          "$": "Value",
          "constant": 2

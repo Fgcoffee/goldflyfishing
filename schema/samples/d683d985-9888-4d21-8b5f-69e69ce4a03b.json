@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
  "name": "Path to Exile",
  "card_hash": "7a596641ddb73283b0c03d0c992a80fd",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
    "name": "Path to Exile",
    "face": 0,
@@ -15,33 +15,33 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 30,
+       "kind": "EffectKind.EXILE",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4
+        "types_all": "CardType.CREATURE"
        },
        "is_targeted": true,
        "text": "exile"
       },
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter",
-        "scope": 13003
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 23,
+         "kind": "EffectKind.SEARCH_LIBRARY",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 16,
-          "supertypes_all": 1,
+          "types_all": "CardType.LAND",
+          "supertypes_all": "Supertype.BASIC",
           "zones": {
            "$set": []
           },
@@ -57,7 +57,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": 2,
+         "zone": "Zone.BATTLEFIELD",
          "keywords": [
           "tapped"
          ],

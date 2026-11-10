@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
  "name": "Knight of the White Orchid",
  "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
    "name": "Knight of the White Orchid",
    "face": 0,
@@ -15,24 +15,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "First strike",
      "keyword": "First strike"
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 23,
+         "kind": "EffectKind.SEARCH_LIBRARY",
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -53,7 +53,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": 2,
+         "zone": "Zone.BATTLEFIELD",
          "text": "search library"
         }
        ],
@@ -65,7 +65,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
@@ -74,25 +74,25 @@
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": 19,
+       "kind": "ConditionKind.COMPARE_COUNTS",
        "filter": {
         "$": "ObjectFilter",
-        "types_all": 16
+        "types_all": "CardType.LAND"
        },
        "players": {
         "$": "PlayerFilter",
-        "scope": 1
+        "scope": "PlayerScope.OPPONENT"
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": 4,
+        "comparison": "Comparison.GT",
         "value": {
          "$": "Value",
-         "kind": 2,
+         "kind": "ValueKind.COUNT",
          "filter": {
           "$": "ObjectFilter",
-          "types_all": 16,
-          "controller": 1
+          "types_all": "CardType.LAND",
+          "controller": "ControllerRelation.YOU"
          }
         }
        },

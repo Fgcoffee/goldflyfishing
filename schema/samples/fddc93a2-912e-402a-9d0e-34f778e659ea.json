@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "fddc93a2-912e-402a-9d0e-34f778e659ea",
  "name": "Sunder",
  "card_hash": "3a60d0de71b103a8e69a0daf14f95d25",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "fddc93a2-912e-402a-9d0e-34f778e659ea",
    "name": "Sunder",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 32,
+       "kind": "EffectKind.RETURN_TO_HAND",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 16
+        "types_all": "CardType.LAND"
        },
        "text": "return to hand"
       }

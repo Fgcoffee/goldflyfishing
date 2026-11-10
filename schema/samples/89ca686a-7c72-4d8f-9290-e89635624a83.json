@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "89ca686a-7c72-4d8f-9290-e89635624a83",
  "name": "Cavern of Souls",
  "card_hash": "577ac92ce85869e282af81ab8d665048",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "89ca686a-7c72-4d8f-9290-e89635624a83",
    "name": "Cavern of Souls",
    "face": 0,
@@ -15,15 +15,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 214,
+         "kind": "EffectKind.CHOOSE_QUALITY",
          "players": {
           "$": "PlayerFilter"
          },
@@ -40,11 +40,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -64,7 +64,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]
@@ -73,11 +73,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -90,10 +90,10 @@
         "key": "1 creature of the chosen type that is a spell in stack",
         "filter": {
          "$": "ObjectFilter",
-         "types_all": 4,
+         "types_all": "CardType.CREATURE",
          "zones": {
           "$set": [
-           4
+           "Zone.STACK"
           ]
          },
          "of_chosen_type": true,
@@ -104,32 +104,32 @@
          }
         }
        },
-       "colors": 31,
+       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
        "text": "add mana of any color"
       },
       {
        "$": "Effect",
-       "kind": 150,
+       "kind": "EffectKind.RESTRICTION",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         }
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 40,
+         "act": "Act.BE_COUNTERED",
          "subject": {
           "$": "ObjectFilter",
           "remembered": true,
           "zones": {
            "$set": [
-            4
+            "Zone.STACK"
            ]
           }
          },
@@ -145,7 +145,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

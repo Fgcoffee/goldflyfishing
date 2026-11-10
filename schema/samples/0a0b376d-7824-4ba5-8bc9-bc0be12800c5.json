@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
  "name": "Detention Sphere",
  "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
    "name": "Detention Sphere",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent."
       }
      ],
@@ -28,21 +28,21 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 33,
+       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          5
+          "Zone.EXILE"
          ]
         }
        },
-       "zone": 2,
+       "zone": "Zone.BATTLEFIELD",
        "text": "return"
       }
      ],
@@ -51,7 +51,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        2
+        "EventKind.LEAVES_BATTLEFIELD"
        ]
       },
       "subject": {

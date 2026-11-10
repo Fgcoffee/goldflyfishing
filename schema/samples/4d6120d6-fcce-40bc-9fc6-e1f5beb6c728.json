@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
  "name": "Embercleave",
  "card_hash": "4cec1cd25e0492e5e73eb9ede76002db",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
    "name": "Embercleave",
    "face": 0,
@@ -15,24 +15,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flash",
      "keyword": "Flash"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 152,
+       "kind": "EffectKind.MODIFY_COST",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
        "amount": {
         "$": "Value",
-        "kind": 12,
+        "kind": "ValueKind.PRODUCT",
         "operands": [
          {
           "$": "Value",
@@ -40,17 +40,17 @@
          },
          {
           "$": "Value",
-          "kind": 2,
+          "kind": "ValueKind.COUNT",
           "filter": {
            "$": "ObjectFilter",
-           "types_all": 4,
-           "controller": 1,
+           "types_all": "CardType.CREATURE",
+           "controller": "ControllerRelation.YOU",
            "attacking": true
           }
          }
         ]
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "this ability costs less"
       }
      ],
@@ -58,15 +58,15 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 75,
+       "kind": "EffectKind.ATTACH",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 1
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
        },
        "is_targeted": true,
        "attached_to": {
@@ -81,7 +81,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
@@ -93,15 +93,15 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 140,
+         "kind": "EffectKind.MODIFY_PT",
          "targets": {
           "$": "ObjectFilter",
           "has_attached": {
@@ -117,12 +117,12 @@
           "$": "Value",
           "constant": 1
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "text": "gets +1/+1"
         },
         {
          "$": "Effect",
-         "kind": 143,
+         "kind": "EffectKind.GRANT_ABILITY",
          "targets": {
           "$": "ObjectFilter",
           "has_attached": {
@@ -130,17 +130,17 @@
            "source_only": true
           }
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": 3,
+           "kind": "AbilityKind.STATIC",
            "text": "double strike",
            "keyword": "double strike"
           },
           {
            "$": "Ability",
-           "kind": 3,
+           "kind": "AbilityKind.STATIC",
            "text": "trample",
            "keyword": "trample"
           }
@@ -155,15 +155,15 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 75,
+       "kind": "EffectKind.ATTACH",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 1
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
        },
        "is_targeted": true,
        "text": "attach to target creature you control"
@@ -175,13 +175,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 3,
            "text": "{3}"
           }
@@ -190,7 +190,7 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "keyword": "Equip"
     }
    ],

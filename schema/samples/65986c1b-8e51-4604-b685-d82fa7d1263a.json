@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
  "name": "Skullclamp",
  "card_hash": "1285cfaf80e0301967c8ff1d444ea02c",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
    "name": "Skullclamp",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 140,
+       "kind": "EffectKind.MODIFY_PT",
        "targets": {
         "$": "ObjectFilter",
         "has_attached": {
@@ -35,7 +35,7 @@
         "$": "Value",
         "constant": -1
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "gets +1/-1"
       }
      ],
@@ -43,11 +43,11 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 20,
+       "kind": "EffectKind.DRAW",
        "players": {
         "$": "PlayerFilter"
        },
@@ -63,7 +63,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        3
+        "EventKind.DIES"
        ]
       },
       "subject": {
@@ -79,15 +79,15 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 75,
+       "kind": "EffectKind.ATTACH",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 1
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
        },
        "is_targeted": true,
        "text": "attach to target creature you control"
@@ -99,13 +99,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 1,
            "text": "{1}"
           }
@@ -114,7 +114,7 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "keyword": "Equip"
     }
    ],

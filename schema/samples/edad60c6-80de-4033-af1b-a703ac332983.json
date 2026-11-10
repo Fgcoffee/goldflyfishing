@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
  "name": "Goblin Bombardment",
  "card_hash": "d7c8190b463129cd02bfc4d60f737f8e",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
    "name": "Goblin Bombardment",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 38,
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
         "includes_players": true
        },
        "amount": {
@@ -39,14 +39,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 10,
+        "kind": "CostKind.SACRIFICE",
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": 4,
+         "types_all": "CardType.CREATURE",
          "count": {
           "$": "Value",
           "constant": 1

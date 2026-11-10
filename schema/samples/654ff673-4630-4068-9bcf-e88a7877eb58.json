@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "654ff673-4630-4068-9bcf-e88a7877eb58",
  "name": "Dragonlord Ojutai",
  "card_hash": "7af05be6a0cdda54049d947ef86e703f",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "654ff673-4630-4068-9bcf-e88a7877eb58",
    "name": "Dragonlord Ojutai",
    "face": 0,
@@ -15,26 +15,26 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 143,
+       "kind": "EffectKind.GRANT_ABILITY",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": 3,
+         "kind": "AbilityKind.STATIC",
          "text": "hexproof",
          "keyword": "hexproof"
         }
@@ -45,7 +45,7 @@
      "text": "this has hexproof as long as it's untapped.",
      "static_condition": {
       "$": "Condition",
-      "kind": 18,
+      "kind": "ConditionKind.REMEMBERED_MATCHES",
       "filter": {
        "$": "ObjectFilter",
        "remembered": true,
@@ -59,11 +59,11 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 10001,
+       "kind": "EffectKind.LOOK_AT_TOP",
        "players": {
         "$": "PlayerFilter"
        },
@@ -75,11 +75,11 @@
       },
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 28,
+         "kind": "EffectKind.MOVE_ZONE",
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true,
@@ -88,12 +88,12 @@
            "constant": 1
           }
          },
-         "zone": 1,
+         "zone": "Zone.HAND",
          "text": "put into hand"
         },
         {
          "$": "Effect",
-         "kind": 34,
+         "kind": "EffectKind.PUT_ON_LIBRARY",
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true
@@ -112,7 +112,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        61
+        "EventKind.COMBAT_DAMAGE_DEALT"
        ]
       },
       "source": {

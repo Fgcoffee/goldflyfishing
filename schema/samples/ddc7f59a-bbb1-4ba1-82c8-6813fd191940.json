@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
  "name": "Siege-Gang Commander",
  "card_hash": "641e8afc08f10050f1f361f7815581ce",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
    "name": "Siege-Gang Commander",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 35,
+       "kind": "EffectKind.CREATE_TOKEN",
        "players": {
         "$": "PlayerFilter"
        },
@@ -33,7 +33,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": 8,
+        "colors": "Color.RED",
         "power": {
          "$": "Value",
          "constant": 1
@@ -51,7 +51,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
@@ -63,14 +63,14 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 38,
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
         "includes_players": true
        },
        "amount": {
@@ -87,20 +87,20 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 1,
            "text": "{1}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 8,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
            "text": "{R}"
           }
          ]
@@ -108,7 +108,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 10,
+        "kind": "CostKind.SACRIFICE",
         "amount": {
          "$": "Value",
          "constant": 1

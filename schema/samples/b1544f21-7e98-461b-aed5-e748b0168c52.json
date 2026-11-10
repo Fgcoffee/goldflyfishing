@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
  "name": "Swords to Plowshares",
  "card_hash": "fcdc4d35288d37ced64ba6f3affe9745",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
    "name": "Swords to Plowshares",
    "face": 0,
@@ -15,28 +15,28 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 30,
+       "kind": "EffectKind.EXILE",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4
+        "types_all": "CardType.CREATURE"
        },
        "is_targeted": true,
        "text": "exile"
       },
       {
        "$": "Effect",
-       "kind": 51,
+       "kind": "EffectKind.GAIN_LIFE",
        "players": {
         "$": "PlayerFilter",
-        "scope": 13003
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
        },
        "amount": {
         "$": "Value",
-        "kind": 3,
+        "kind": "ValueKind.POWER",
         "filter": {
          "$": "ObjectFilter",
          "remembered": true

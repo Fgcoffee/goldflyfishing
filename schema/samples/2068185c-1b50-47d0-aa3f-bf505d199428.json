@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
  "name": "Dark Confidant",
  "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
    "name": "Dark Confidant",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 10001,
+       "kind": "EffectKind.LOOK_AT_TOP",
        "players": {
         "$": "PlayerFilter"
        },
@@ -34,23 +34,23 @@
       },
       {
        "$": "Effect",
-       "kind": 28,
+       "kind": "EffectKind.MOVE_ZONE",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "zone": 1,
+       "zone": "Zone.HAND",
        "text": "put into a zone"
       },
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": 5,
+        "kind": "ValueKind.MANA_VALUE",
         "filter": {
          "$": "ObjectFilter",
          "remembered": true
@@ -64,7 +64,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        127
+        "EventKind.UPKEEP"
        ]
       },
       "players": {

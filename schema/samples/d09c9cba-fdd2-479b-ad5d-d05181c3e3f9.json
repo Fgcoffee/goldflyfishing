@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "d09c9cba-fdd2-479b-ad5d-d05181c3e3f9",
  "name": "Fierce Guardianship",
  "card_hash": "4b46c2c84fd613e57cc8cf515702994f",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "d09c9cba-fdd2-479b-ad5d-d05181c3e3f9",
    "name": "Fierce Guardianship",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "If you control a commander, you may cast this spell without paying its mana cost.",
      "functions_in": {
       "$set": [
-       0,
-       1,
-       2,
-       3,
-       4,
-       5,
-       6
+       "Zone.BATTLEFIELD",
+       "Zone.COMMAND",
+       "Zone.EXILE",
+       "Zone.GRAVEYARD",
+       "Zone.HAND",
+       "Zone.LIBRARY",
+       "Zone.STACK"
       ]
      },
      "alternative_cost": {
@@ -35,15 +35,15 @@
       },
       "condition": {
        "$": "Condition",
-       "kind": 5,
+       "kind": "ConditionKind.CONTROLS_MATCHING",
        "filter": {
         "$": "ObjectFilter",
-        "controller": 1,
+        "controller": "ControllerRelation.YOU",
         "is_commander": true
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": 5,
+        "comparison": "Comparison.GE",
         "value": {
          "$": "Value",
          "constant": 1
@@ -56,17 +56,17 @@
     },
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 100,
+       "kind": "EffectKind.COUNTER_SPELL",
        "targets": {
         "$": "ObjectFilter",
-        "types_none": 4,
+        "types_none": "CardType.CREATURE",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false

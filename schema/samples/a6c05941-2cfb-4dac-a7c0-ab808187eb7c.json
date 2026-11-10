@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
  "name": "Liliana Vess",
  "card_hash": "5f700aaf1bf1a239f8a099d1a3d65134",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
    "name": "Liliana Vess",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 21,
+       "kind": "EffectKind.DISCARD",
        "players": {
         "$": "PlayerFilter",
-        "scope": 4
+        "scope": "PlayerScope.TARGET_PLAYER"
        },
        "amount": {
         "$": "Value",
@@ -38,7 +38,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 34,
+        "kind": "CostKind.LOYALTY",
         "amount": {
          "$": "Value",
          "constant": 1
@@ -47,17 +47,17 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 23,
+       "kind": "EffectKind.SEARCH_LIBRARY",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -75,7 +75,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": 0,
+       "zone": "Zone.LIBRARY",
        "text": "search library"
       }
      ],
@@ -85,7 +85,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 34,
+        "kind": "CostKind.LOYALTY",
         "amount": {
          "$": "Value",
          "constant": -2
@@ -94,27 +94,27 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 33,
+       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
+        "types_all": "CardType.CREATURE",
         "zones": {
          "$set": [
-          3
+          "Zone.GRAVEYARD"
          ]
         }
        },
-       "zone": 2,
+       "zone": "Zone.BATTLEFIELD",
        "text": "put onto the battlefield"
       }
      ],
@@ -124,7 +124,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 34,
+        "kind": "CostKind.LOYALTY",
         "amount": {
          "$": "Value",
          "constant": -8
@@ -133,7 +133,7 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "is_loyalty_ability": true,
      "once_each_turn": true
     }

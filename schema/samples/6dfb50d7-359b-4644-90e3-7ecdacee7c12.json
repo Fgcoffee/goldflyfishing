@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
  "name": "Scheming Symmetry",
  "card_hash": "6396b6247998170e0569076fb38f3c36",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
    "name": "Scheming Symmetry",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Choose two target players. Each of them searches their library for a card, then shuffles and puts that card on top."
       }
      ],

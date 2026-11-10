@@ -4,14 +4,17 @@
  * the rest of that module (pools, payment) comes with the core rules.
  */
 
-import { ManaSymbolKindValues, type ManaCost, type ManaSymbol } from "../../ir";
+import { ColorBits, enumValue, type ManaCost, type ManaSymbol } from "../../ir";
 import { Color } from "../../kernel/enums";
 
 const KIND = {
-  GENERIC: ManaSymbolKindValues.GENERIC,
-  VARIABLE: ManaSymbolKindValues.VARIABLE,
-  MONOCOLOR_HYBRID: ManaSymbolKindValues.MONOCOLOR_HYBRID,
-  INFINITY: ManaSymbolKindValues.INFINITY,
+  GENERIC: "ManaSymbolKind.GENERIC",
+  VARIABLE: "ManaSymbolKind.VARIABLE",
+  COLORED: "ManaSymbolKind.COLORED",
+  HYBRID: "ManaSymbolKind.HYBRID",
+  MONOCOLOR_HYBRID: "ManaSymbolKind.MONOCOLOR_HYBRID",
+  PHYREXIAN: "ManaSymbolKind.PHYREXIAN",
+  INFINITY: "ManaSymbolKind.INFINITY",
 } as const;
 
 /** One symbol's contribution to mana value. {X} is 0 off the stack. */
@@ -51,8 +54,9 @@ export function manaCostColors(cost: ManaCost): Color {
   return result;
 }
 
-function colorFlag(colors: number): Color {
-  return colors & (Color.WHITE | Color.BLUE | Color.BLACK | Color.RED | Color.GREEN);
+function colorFlag(literal: string): Color {
+  // "Color.WHITE|BLUE": decoded by the IR's own reader.
+  return enumValue(literal) & (ColorBits.WHITE! | ColorBits.BLUE! | ColorBits.BLACK! | ColorBits.RED! | ColorBits.GREEN!);
 }
 
 export const ZERO_COST: ManaCost = Object.freeze({ $: "ManaCost", symbols: [] });

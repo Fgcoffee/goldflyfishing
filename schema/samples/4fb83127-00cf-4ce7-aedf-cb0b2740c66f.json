@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
  "name": "Reckless Bushwhacker",
  "card_hash": "e2258e8baa07efda2065c242c94ec9b0",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
    "name": "Reckless Bushwhacker",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Surge {1}{R}",
      "functions_in": {
       "$set": [
-       1
+       "Zone.HAND"
       ]
      },
      "keyword": "Surge",
@@ -30,20 +30,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": 0,
+         "kind": "CostKind.MANA",
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": 0,
+            "kind": "ManaSymbolKind.GENERIC",
             "generic": 1,
             "text": "{1}"
            },
            {
             "$": "ManaSymbol",
-            "kind": 2,
-            "colors": 8,
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.RED",
             "text": "{R}"
            }
           ]
@@ -57,17 +57,17 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Haste",
      "keyword": "Haste"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "When this creature enters, if its surge cost was paid, other creatures you control get +1/+0 and gain haste until end of turn."
       }
      ],

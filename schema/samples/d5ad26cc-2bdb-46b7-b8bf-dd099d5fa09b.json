@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
  "name": "Adarkar Wastes",
  "card_hash": "c316f6c85d79c0702699c7fab4c90ac6",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
    "name": "Adarkar Wastes",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -39,7 +39,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]
@@ -48,18 +48,18 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": "EffectKind.CHOOSE_MODE",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -70,12 +70,12 @@
          "mana_produced": [
           "{W}"
          ],
-         "colors": 1,
+         "colors": "Color.WHITE",
          "text": "add {W}"
         },
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -86,7 +86,7 @@
          "mana_produced": [
           "{U}"
          ],
-         "colors": 2,
+         "colors": "Color.BLUE",
          "text": "add {U}"
         }
        ],
@@ -94,7 +94,7 @@
       },
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "players": {
         "$": "PlayerFilter"
        },
@@ -111,7 +111,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

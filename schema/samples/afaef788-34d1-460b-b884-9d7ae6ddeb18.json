@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "afaef788-34d1-460b-b884-9d7ae6ddeb18",
  "name": "Toxic Deluge",
  "card_hash": "916fc6605b7f0f12f20b23144879c31d",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "afaef788-34d1-460b-b884-9d7ae6ddeb18",
    "name": "Toxic Deluge",
    "face": 0,
@@ -15,21 +15,21 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 52,
+         "kind": "EffectKind.LOSE_LIFE",
          "players": {
           "$": "PlayerFilter"
          },
          "amount": {
           "$": "Value",
-          "kind": 1
+          "kind": "ValueKind.X"
          },
          "text": "pay life"
         }
@@ -41,42 +41,42 @@
     },
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 140,
+       "kind": "EffectKind.MODIFY_PT",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4
+        "types_all": "CardType.CREATURE"
        },
        "amount": {
         "$": "Value",
-        "kind": 13,
+        "kind": "ValueKind.DIFFERENCE",
         "operands": [
          {
           "$": "Value"
          },
          {
           "$": "Value",
-          "kind": 1
+          "kind": "ValueKind.X"
          }
         ]
        },
        "amount2": {
         "$": "Value",
-        "kind": 13,
+        "kind": "ValueKind.DIFFERENCE",
         "operands": [
          {
           "$": "Value"
          },
          {
           "$": "Value",
-          "kind": 1
+          "kind": "ValueKind.X"
          }
         ]
        },
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "text": "gets -X/-X"
       }
      ],

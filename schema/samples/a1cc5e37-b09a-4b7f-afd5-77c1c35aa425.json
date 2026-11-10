@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
  "name": "Carrion Feeder",
  "card_hash": "cd5c285396b879627444f1022cad25b5",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
    "name": "Carrion Feeder",
    "face": 0,
@@ -15,20 +15,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 150,
+       "kind": "EffectKind.RESTRICTION",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 23,
+         "act": "Act.BLOCK",
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -43,11 +43,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 72,
+       "kind": "EffectKind.ADD_COUNTERS",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -66,14 +66,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 10,
+        "kind": "CostKind.SACRIFICE",
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": 4,
+         "types_all": "CardType.CREATURE",
          "count": {
           "$": "Value",
           "constant": 1

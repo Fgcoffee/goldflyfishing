@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
  "name": "Force of Will",
  "card_hash": "9840d8f32ff3f4d156e9b133d4806445",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
    "name": "Force of Will",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "You may pay 1 life and exile a blue card from your hand rather than pay this spell's mana cost.",
      "functions_in": {
       "$set": [
-       0,
-       1,
-       2,
-       3,
-       4,
-       5,
-       6
+       "Zone.BATTLEFIELD",
+       "Zone.COMMAND",
+       "Zone.EXILE",
+       "Zone.GRAVEYARD",
+       "Zone.HAND",
+       "Zone.LIBRARY",
+       "Zone.STACK"
       ]
      },
      "alternative_cost": {
@@ -35,7 +35,7 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": 30,
+         "kind": "CostKind.PAY_LIFE",
          "amount": {
           "$": "Value",
           "constant": 1
@@ -44,20 +44,20 @@
         },
         {
          "$": "CostComponent",
-         "kind": 13,
+         "kind": "CostKind.EXILE_FROM_HAND",
          "amount": {
           "$": "Value",
           "constant": 1
          },
          "filter": {
           "$": "ObjectFilter",
-          "colors_any": 2,
+          "colors_any": "Color.BLUE",
           "zones": {
            "$set": [
-            1
+            "Zone.HAND"
            ]
           },
-          "owner": 1,
+          "owner": "ControllerRelation.YOU",
           "count": {
            "$": "Value",
            "constant": 1
@@ -72,16 +72,16 @@
     },
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 100,
+       "kind": "EffectKind.COUNTER_SPELL",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false

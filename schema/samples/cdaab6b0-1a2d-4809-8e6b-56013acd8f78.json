@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "cdaab6b0-1a2d-4809-8e6b-56013acd8f78",
  "name": "Cast Down",
  "card_hash": "0dc643383899fcc0aa5125d53f45ee95",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "cdaab6b0-1a2d-4809-8e6b-56013acd8f78",
    "name": "Cast Down",
    "face": 0,
@@ -15,15 +15,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 29,
+       "kind": "EffectKind.DESTROY",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "supertypes_none": 2
+        "types_all": "CardType.CREATURE",
+        "supertypes_none": "Supertype.LEGENDARY"
        },
        "is_targeted": true,
        "text": "destroy"

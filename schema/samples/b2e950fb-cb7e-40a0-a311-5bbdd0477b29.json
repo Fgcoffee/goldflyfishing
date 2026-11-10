@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
  "name": "Sun Titan",
  "card_hash": "28c1e9681d20154c96cf45f30e6d892c",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
    "name": "Sun Titan",
    "face": 0,
@@ -15,36 +15,36 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Vigilance",
      "keyword": "Vigilance"
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 33,
+         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
          "targets": {
           "$": "ObjectFilter",
-          "types_any": 63,
+          "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
           "zones": {
            "$set": [
-            3
+            "Zone.GRAVEYARD"
            ]
           },
-          "owner": 1,
+          "owner": "ControllerRelation.YOU",
           "mana_value": {
            "$": "NumericConstraint",
-           "comparison": 3,
+           "comparison": "Comparison.LE",
            "value": {
             "$": "Value",
             "constant": 3
@@ -52,7 +52,7 @@
           }
          },
          "is_targeted": true,
-         "zone": 2,
+         "zone": "Zone.BATTLEFIELD",
          "text": "return"
         }
        ],
@@ -64,8 +64,8 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1,
-        101
+        "EventKind.ATTACKS",
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
  "name": "Increasing Ambition",
  "card_hash": "f4e654c1551c51797a2c078d9337fb17",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
    "name": "Increasing Ambition",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 23,
+       "kind": "EffectKind.SEARCH_LIBRARY",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -37,17 +37,17 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": 1,
+       "zone": "Zone.HAND",
        "text": "search library"
       },
       {
        "$": "Effect",
-       "kind": 999,
-       "duration": 0,
+       "kind": "EffectKind.UNPARSED",
+       "duration": "Duration.PERMANENT",
        "children": [
         {
          "$": "Effect",
-         "kind": 23,
+         "kind": "EffectKind.SEARCH_LIBRARY",
          "targets": {
           "$": "ObjectFilter",
           "zones": {
@@ -65,12 +65,12 @@
           "$": "Value",
           "constant": 2
          },
-         "zone": 1,
+         "zone": "Zone.HAND",
          "text": "search library"
         },
         {
          "$": "Effect",
-         "kind": 24,
+         "kind": "EffectKind.SHUFFLE",
          "players": {
           "$": "PlayerFilter"
          },
@@ -84,11 +84,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flashback {7}{B}",
      "functions_in": {
       "$set": [
-       3
+       "Zone.GRAVEYARD"
       ]
      },
      "keyword": "Flashback",
@@ -99,20 +99,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": 0,
+         "kind": "CostKind.MANA",
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": 0,
+            "kind": "ManaSymbolKind.GENERIC",
             "generic": 7,
             "text": "{7}"
            },
            {
             "$": "ManaSymbol",
-            "kind": 2,
-            "colors": 4,
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.BLACK",
             "text": "{B}"
            }
           ]
@@ -120,7 +120,7 @@
         }
        ]
       },
-      "from_zone": 3,
+      "from_zone": "Zone.GRAVEYARD",
       "keyword": "Flashback",
       "text": "Flashback {7}{B}"
      }

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "e62f8d69-a559-4f13-a5c9-5fb750b4af2c",
  "name": "Grim Tutor",
  "card_hash": "acdb190f6d96c01cfe9a433d3469418a",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "e62f8d69-a559-4f13-a5c9-5fb750b4af2c",
    "name": "Grim Tutor",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 23,
+       "kind": "EffectKind.SEARCH_LIBRARY",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -37,12 +37,12 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": 1,
+       "zone": "Zone.HAND",
        "text": "search library"
       },
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter"
        },

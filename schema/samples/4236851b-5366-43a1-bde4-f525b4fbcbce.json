@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
  "name": "Bloodchief's Thirst",
  "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
    "name": "Bloodchief's Thirst",
    "face": 0,
@@ -15,12 +15,12 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Kicker {2}{B}",
      "functions_in": {
       "$set": [
-       1,
-       4
+       "Zone.HAND",
+       "Zone.STACK"
       ]
      },
      "keyword": "Kicker",
@@ -31,20 +31,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": 0,
+         "kind": "CostKind.MANA",
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": 0,
+            "kind": "ManaSymbolKind.GENERIC",
             "generic": 2,
             "text": "{2}"
            },
            {
             "$": "ManaSymbol",
-            "kind": 2,
-            "colors": 4,
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.BLACK",
             "text": "{B}"
            }
           ]
@@ -59,17 +59,17 @@
     },
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 29,
+       "kind": "EffectKind.DESTROY",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 36,
+        "types_any": "CardType.CREATURE|PLANESWALKER",
         "mana_value": {
          "$": "NumericConstraint",
-         "comparison": 3,
+         "comparison": "Comparison.LE",
          "value": {
           "$": "Value",
           "constant": 2
@@ -81,15 +81,15 @@
       },
       {
        "$": "Effect",
-       "kind": 999,
-       "duration": 0,
+       "kind": "EffectKind.UNPARSED",
+       "duration": "Duration.PERMANENT",
        "children": [
         {
          "$": "Effect",
-         "kind": 29,
+         "kind": "EffectKind.DESTROY",
          "targets": {
           "$": "ObjectFilter",
-          "types_any": 36
+          "types_any": "CardType.CREATURE|PLANESWALKER"
          },
          "is_targeted": true,
          "text": "destroy"

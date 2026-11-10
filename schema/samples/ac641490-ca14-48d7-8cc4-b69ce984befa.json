@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
  "name": "Preordain",
  "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
    "name": "Preordain",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 26,
+       "kind": "EffectKind.SCRY",
        "players": {
         "$": "PlayerFilter"
        },
@@ -31,7 +31,7 @@
       },
       {
        "$": "Effect",
-       "kind": 20,
+       "kind": "EffectKind.DRAW",
        "players": {
         "$": "PlayerFilter"
        },

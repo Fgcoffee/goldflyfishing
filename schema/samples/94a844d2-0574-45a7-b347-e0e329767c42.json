@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
  "name": "Necropotence",
  "card_hash": "dc4962cdbe1b7df64f7a4b601e594809",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
    "name": "Necropotence",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 173,
+       "kind": "EffectKind.SKIP_STEP",
        "players": {
         "$": "PlayerFilter"
        },
@@ -34,16 +34,16 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 30,
+       "kind": "EffectKind.EXILE",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "from_zone": 3,
+       "from_zone": "Zone.GRAVEYARD",
        "text": "exile"
       }
      ],
@@ -52,7 +52,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        81
+        "EventKind.DISCARDED"
        ]
       },
       "subject": {
@@ -73,20 +73,20 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 30,
+       "kind": "EffectKind.EXILE",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          0
+          "Zone.LIBRARY"
          ]
         },
         "from_top": 1,
-        "owner": 1,
+        "owner": "ControllerRelation.YOU",
         "count": {
          "$": "Value",
          "constant": 1
@@ -99,12 +99,12 @@
       },
       {
        "$": "Effect",
-       "kind": 213,
+       "kind": "EffectKind.DELAYED_TRIGGER",
        "trigger": {
         "$": "TriggerCondition",
         "event_kinds": {
          "$set": [
-          129
+          "EventKind.END_STEP"
          ]
         },
         "text": "at the next end step"
@@ -112,12 +112,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 28,
+         "kind": "EffectKind.MOVE_ZONE",
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
          },
-         "zone": 1,
+         "zone": "Zone.HAND",
          "text": "put into a zone"
         }
        ],
@@ -130,7 +130,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 30,
+        "kind": "CostKind.PAY_LIFE",
         "amount": {
          "$": "Value",
          "constant": 1

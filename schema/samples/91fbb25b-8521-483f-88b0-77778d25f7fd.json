@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
  "name": "Castle Embereth",
  "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
    "name": "Castle Embereth",
    "face": 0,
@@ -15,28 +15,28 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 1,
+       "kind": "EffectKind.CONDITIONAL",
        "condition": {
         "$": "Condition",
-        "kind": 22,
+        "kind": "ConditionKind.NOT",
         "operands": [
          {
           "$": "Condition",
-          "kind": 5,
+          "kind": "ConditionKind.CONTROLS_MATCHING",
           "filter": {
            "$": "ObjectFilter",
            "subtypes_all": [
             "Mountain"
            ],
-           "controller": 1
+           "controller": "ControllerRelation.YOU"
           },
           "constraint": {
            "$": "NumericConstraint",
-           "comparison": 5,
+           "comparison": "Comparison.GE",
            "value": {
             "$": "Value",
             "constant": 1
@@ -50,12 +50,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 70,
+         "kind": "EffectKind.TAP",
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "text": "enters tapped"
         }
        ],
@@ -66,11 +66,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -81,7 +81,7 @@
        "mana_produced": [
         "{R}"
        ],
-       "colors": 8,
+       "colors": "Color.RED",
        "text": "add {R}"
       }
      ],
@@ -91,7 +91,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]
@@ -100,21 +100,21 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 140,
+       "kind": "EffectKind.MODIFY_PT",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 1
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
        },
        "amount": {
         "$": "Value",
         "constant": 1
        },
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "text": "gets +1/+0"
       }
      ],
@@ -124,26 +124,26 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 1,
            "text": "{1}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 8,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
            "text": "{R}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 8,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
            "text": "{R}"
           }
          ]
@@ -151,7 +151,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
  "name": "Castle Locthwain",
  "card_hash": "13e66d59deb093fd5e492deaffd74509",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
    "name": "Castle Locthwain",
    "face": 0,
@@ -15,28 +15,28 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 1,
+       "kind": "EffectKind.CONDITIONAL",
        "condition": {
         "$": "Condition",
-        "kind": 22,
+        "kind": "ConditionKind.NOT",
         "operands": [
          {
           "$": "Condition",
-          "kind": 5,
+          "kind": "ConditionKind.CONTROLS_MATCHING",
           "filter": {
            "$": "ObjectFilter",
            "subtypes_all": [
             "Swamp"
            ],
-           "controller": 1
+           "controller": "ControllerRelation.YOU"
           },
           "constraint": {
            "$": "NumericConstraint",
-           "comparison": 5,
+           "comparison": "Comparison.GE",
            "value": {
             "$": "Value",
             "constant": 1
@@ -50,12 +50,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 70,
+         "kind": "EffectKind.TAP",
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "text": "enters tapped"
         }
        ],
@@ -66,11 +66,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -81,7 +81,7 @@
        "mana_produced": [
         "{B}"
        ],
-       "colors": 4,
+       "colors": "Color.BLACK",
        "text": "add {B}"
       }
      ],
@@ -91,7 +91,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]
@@ -100,11 +100,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 20,
+       "kind": "EffectKind.DRAW",
        "players": {
         "$": "PlayerFilter"
        },
@@ -116,21 +116,21 @@
       },
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": 2,
+        "kind": "ValueKind.COUNT",
         "filter": {
          "$": "ObjectFilter",
          "zones": {
           "$set": [
-           1
+           "Zone.HAND"
           ]
          },
-         "owner": 1
+         "owner": "ControllerRelation.YOU"
         }
        },
        "text": "lose life"
@@ -142,26 +142,26 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 1,
            "text": "{1}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 4,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
            "text": "{B}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 4,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
            "text": "{B}"
           }
          ]
@@ -169,7 +169,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

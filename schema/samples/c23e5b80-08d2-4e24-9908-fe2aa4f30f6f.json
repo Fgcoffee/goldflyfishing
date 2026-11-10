@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "c23e5b80-08d2-4e24-9908-fe2aa4f30f6f",
  "name": "Reliquary Tower",
  "card_hash": "d3818c5535589932f743d8ab3f44b066",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "c23e5b80-08d2-4e24-9908-fe2aa4f30f6f",
    "name": "Reliquary Tower",
    "face": 0,
@@ -15,18 +15,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 151,
+       "kind": "EffectKind.PERMISSION",
        "players": {
         "$": "PlayerFilter"
        },
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 100,
+         "act": "Act.DISCARD_TO_HAND_SIZE",
          "players": {
           "$": "PlayerFilter"
          },
@@ -40,11 +40,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -64,7 +64,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

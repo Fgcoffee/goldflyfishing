@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "7efd5d62-6da2-428a-98e3-5b842f668656",
  "name": "Mogg Fanatic",
  "card_hash": "198e69f1d198e40f0b4770c4ef12bdbf",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "7efd5d62-6da2-428a-98e3-5b842f668656",
    "name": "Mogg Fanatic",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 38,
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
         "includes_players": true
        },
        "amount": {
@@ -39,7 +39,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 10,
+        "kind": "CostKind.SACRIFICE",
         "amount": {
          "$": "Value",
          "constant": 1

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
  "name": "Goblin Lackey",
  "card_hash": "b12e3d5b70123e837bbf0a9c4799578d",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
    "name": "Goblin Lackey",
    "face": 0,
@@ -15,36 +15,36 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 33,
+         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
          "targets": {
           "$": "ObjectFilter",
-          "types_any": 63,
+          "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
           "subtypes_all": [
            "Goblin"
           ],
           "zones": {
            "$set": [
-            1
+            "Zone.HAND"
            ]
           },
-          "owner": 1,
+          "owner": "ControllerRelation.YOU",
           "count": {
            "$": "Value",
            "constant": 1
           }
          },
-         "zone": 2,
+         "zone": "Zone.BATTLEFIELD",
          "text": "put onto the battlefield"
         }
        ],
@@ -56,8 +56,8 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        60,
-        61
+        "EventKind.COMBAT_DAMAGE_DEALT",
+        "EventKind.DAMAGE_DEALT"
        ]
       },
       "source": {
@@ -66,7 +66,7 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": 2
+       "scope": "PlayerScope.EACH_PLAYER"
       },
       "to_player": true,
       "text": "when this deals damage"

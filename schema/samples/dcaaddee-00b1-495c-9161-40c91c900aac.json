@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
  "name": "Hallowed Burial",
  "card_hash": "76d55ef394430cf9f217ac0823280686",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
    "name": "Hallowed Burial",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Put all creatures on the bottom of their owners' libraries."
       }
      ],

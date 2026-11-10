@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
  "name": "Mystic Gate",
  "card_hash": "0243620937cb9b0097f9cb05060e40a8",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
    "name": "Mystic Gate",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -39,7 +39,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]
@@ -48,18 +48,18 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": "EffectKind.CHOOSE_MODE",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -71,12 +71,12 @@
           "{W}",
           "{W}"
          ],
-         "colors": 1,
+         "colors": "Color.WHITE",
          "text": "add {W}{W}"
         },
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -88,12 +88,12 @@
           "{W}",
           "{U}"
          ],
-         "colors": 3,
+         "colors": "Color.WHITE|BLUE",
          "text": "add {W}{U}"
         },
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -105,7 +105,7 @@
           "{U}",
           "{U}"
          ],
-         "colors": 2,
+         "colors": "Color.BLUE",
          "text": "add {U}{U}"
         }
        ],
@@ -118,14 +118,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 5,
-           "colors": 3,
+           "kind": "ManaSymbolKind.HYBRID",
+           "colors": "Color.WHITE|BLUE",
            "text": "{W/U}"
           }
          ]
@@ -133,7 +133,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "bd9b9772-f5f9-4c6b-913e-7193bea5d0a7",
  "name": "Oblivion Ring",
  "card_hash": "e837e521807ce2e6a04476878d5add42",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "bd9b9772-f5f9-4c6b-913e-7193bea5d0a7",
    "name": "Oblivion Ring",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 30,
+       "kind": "EffectKind.EXILE",
        "targets": {
         "$": "ObjectFilter",
-        "types_none": 16,
+        "types_none": "CardType.LAND",
         "other_than_source": true
        },
        "is_targeted": true,
@@ -34,7 +34,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
@@ -46,21 +46,21 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 33,
+       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          5
+          "Zone.EXILE"
          ]
         }
        },
-       "zone": 2,
+       "zone": "Zone.BATTLEFIELD",
        "text": "return"
       }
      ],
@@ -69,7 +69,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        2
+        "EventKind.LEAVES_BATTLEFIELD"
        ]
       },
       "subject": {

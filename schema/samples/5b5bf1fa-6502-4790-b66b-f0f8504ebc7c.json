@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
  "name": "Cabal Ritual",
  "card_hash": "40fc339bbe64a826ef6227f4dab41384",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
    "name": "Cabal Ritual",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -32,7 +32,7 @@
         "{B}",
         "{B}"
        ],
-       "colors": 4,
+       "colors": "Color.BLACK",
        "text": "add {B}{B}{B}"
       }
      ],
@@ -40,11 +40,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard."
       }
      ],

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
  "name": "Goblin Warchief",
  "card_hash": "91d299ee14fa65e45050758484a49c1e",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
    "name": "Goblin Warchief",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 152,
+       "kind": "EffectKind.MODIFY_COST",
        "targets": {
         "$": "ObjectFilter",
         "subtypes_all": [
@@ -27,17 +27,17 @@
         ],
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
-        "controller": 1,
+        "controller": "ControllerRelation.YOU",
         "is_ability": false
        },
        "amount": {
         "$": "Value",
         "constant": -1
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "costs less to cast"
       }
      ],
@@ -45,23 +45,23 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 143,
+       "kind": "EffectKind.GRANT_ABILITY",
        "targets": {
         "$": "ObjectFilter",
         "subtypes_all": [
          "Goblin"
         ],
-        "controller": 1
+        "controller": "ControllerRelation.YOU"
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": 3,
+         "kind": "AbilityKind.STATIC",
          "text": "haste",
          "keyword": "haste"
         }

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
  "name": "Dark Ritual",
  "card_hash": "683bb12fa14f202b5a74f1b5d95ea88e",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
    "name": "Dark Ritual",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -32,7 +32,7 @@
         "{B}",
         "{B}"
        ],
-       "colors": 4,
+       "colors": "Color.BLACK",
        "text": "add {B}{B}{B}"
       }
      ],

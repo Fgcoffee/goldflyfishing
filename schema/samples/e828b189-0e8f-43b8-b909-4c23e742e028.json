@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
  "name": "Ghostly Prison",
  "card_hash": "0afea804a89670ac82c9b2b1e4274712",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
    "name": "Ghostly Prison",
    "face": 0,
@@ -15,27 +15,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 6,
+       "kind": "EffectKind.UNLESS_PAYS",
        "players": {
         "$": "PlayerFilter",
-        "scope": 7
+        "scope": "PlayerScope.CONTROLLER_OF"
        },
        "pay_cost": {
         "$": "Cost",
         "components": [
          {
           "$": "CostComponent",
-          "kind": 0,
+          "kind": "CostKind.MANA",
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": 0,
+             "kind": "ManaSymbolKind.GENERIC",
              "generic": 2,
              "text": "{2}"
             }
@@ -43,11 +43,11 @@
           },
           "scale": {
            "$": "Value",
-           "kind": 2,
+           "kind": "ValueKind.COUNT",
            "filter": {
             "$": "ObjectFilter",
-            "types_all": 4,
-            "controller": 4,
+            "types_all": "CardType.CREATURE",
+            "controller": "ControllerRelation.SPECIFIC",
             "attacking": true
            }
           }
@@ -57,19 +57,19 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 150,
+         "kind": "EffectKind.RESTRICTION",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 4
+          "types_all": "CardType.CREATURE"
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "restrictions": [
           {
            "$": "Restriction",
-           "act": 21,
+           "act": "Act.ATTACK_PLAYER",
            "subject": {
             "$": "ObjectFilter",
-            "types_all": 4
+            "types_all": "CardType.CREATURE"
            },
            "players": {
             "$": "PlayerFilter"

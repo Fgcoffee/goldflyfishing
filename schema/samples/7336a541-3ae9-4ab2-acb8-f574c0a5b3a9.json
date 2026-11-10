@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
  "name": "Vito, Thorn of the Dusk Rose",
  "card_hash": "e9763789a4fe378568c1b098ea47bd8d",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
    "name": "Vito, Thorn of the Dusk Rose",
    "face": 0,
@@ -15,18 +15,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter",
-        "scope": 5
+        "scope": "PlayerScope.TARGET_OPPONENT"
        },
        "amount": {
         "$": "Value",
-        "kind": 25
+        "kind": "ValueKind.EVENT_AMOUNT"
        },
        "is_targeted": true,
        "text": "lose life"
@@ -37,7 +37,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        62
+        "EventKind.LIFE_GAINED"
        ]
       },
       "players": {
@@ -48,21 +48,21 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 143,
+       "kind": "EffectKind.GRANT_ABILITY",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 1
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
        },
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": 3,
+         "kind": "AbilityKind.STATIC",
          "text": "lifelink",
          "keyword": "lifelink"
         }
@@ -76,26 +76,26 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 3,
            "text": "{3}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 4,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
            "text": "{B}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 4,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.BLACK",
            "text": "{B}"
           }
          ]

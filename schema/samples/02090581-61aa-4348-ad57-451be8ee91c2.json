@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
  "name": "Ponder",
  "card_hash": "948238ce80e94cffaed449b6114b9016",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
    "name": "Ponder",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 10001,
+       "kind": "EffectKind.LOOK_AT_TOP",
        "players": {
         "$": "PlayerFilter"
        },
@@ -31,7 +31,7 @@
       },
       {
        "$": "Effect",
-       "kind": 34,
+       "kind": "EffectKind.PUT_ON_LIBRARY",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
@@ -40,14 +40,14 @@
       },
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 24,
+         "kind": "EffectKind.SHUFFLE",
          "players": {
           "$": "PlayerFilter"
          },
@@ -61,11 +61,11 @@
     },
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 20,
+       "kind": "EffectKind.DRAW",
        "players": {
         "$": "PlayerFilter"
        },

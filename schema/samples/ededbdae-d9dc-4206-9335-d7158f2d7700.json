@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
  "name": "Vampiric Tutor",
  "card_hash": "1deebce9869dee2505377aa060303388",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
    "name": "Vampiric Tutor",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 23,
+       "kind": "EffectKind.SEARCH_LIBRARY",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -37,12 +37,12 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": 0,
+       "zone": "Zone.LIBRARY",
        "text": "search library"
       },
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter"
        },

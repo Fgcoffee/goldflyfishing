@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
  "name": "Goblin Chieftain",
  "card_hash": "130055bfce47610a36f4cd922d9f26d0",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
    "name": "Goblin Chieftain",
    "face": 0,
@@ -15,29 +15,29 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Haste",
      "keyword": "Haste"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 140,
+         "kind": "EffectKind.MODIFY_PT",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 4,
+          "types_all": "CardType.CREATURE",
           "subtypes_all": [
            "Goblin"
           ],
           "other_than_source": true,
-          "controller": 1
+          "controller": "ControllerRelation.YOU"
          },
          "amount": {
           "$": "Value",
@@ -47,26 +47,26 @@
           "$": "Value",
           "constant": 1
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "text": "gets +1/+1"
         },
         {
          "$": "Effect",
-         "kind": 143,
+         "kind": "EffectKind.GRANT_ABILITY",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 4,
+          "types_all": "CardType.CREATURE",
           "subtypes_all": [
            "Goblin"
           ],
           "other_than_source": true,
-          "controller": 1
+          "controller": "ControllerRelation.YOU"
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": 3,
+           "kind": "AbilityKind.STATIC",
            "text": "haste",
            "keyword": "haste"
           }

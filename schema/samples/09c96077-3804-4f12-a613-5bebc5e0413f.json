@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "09c96077-3804-4f12-a613-5bebc5e0413f",
  "name": "Sphere of Resistance",
  "card_hash": "4ee430cc52abab9631ceceddf5dd3605",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "09c96077-3804-4f12-a613-5bebc5e0413f",
    "name": "Sphere of Resistance",
    "face": 0,
@@ -15,16 +15,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 152,
+       "kind": "EffectKind.MODIFY_COST",
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false
@@ -33,7 +33,7 @@
         "$": "Value",
         "constant": 1
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "costs less to cast"
       }
      ],

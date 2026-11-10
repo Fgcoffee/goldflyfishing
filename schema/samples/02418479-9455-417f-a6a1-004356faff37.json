@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "02418479-9455-417f-a6a1-004356faff37",
  "name": "Tundra",
  "card_hash": "6d79a1123f8a193ca44c3f56bd70f1f1",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "02418479-9455-417f-a6a1-004356faff37",
    "name": "Tundra",
    "face": 0,

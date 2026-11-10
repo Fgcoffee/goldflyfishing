@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
  "name": "Mountain",
  "card_hash": "e9d1e326575fe0f20400ce79ffcf0103",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
    "name": "Mountain",
    "face": 0,

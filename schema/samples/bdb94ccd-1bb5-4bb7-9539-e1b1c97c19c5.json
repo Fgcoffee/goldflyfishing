@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
  "name": "Pashalik Mons",
  "card_hash": "e9f985d0503c61b0334818ece104a9cb",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
    "name": "Pashalik Mons",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 38,
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
         "includes_players": true
        },
        "amount": {
@@ -38,7 +38,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        3
+        "EventKind.DIES"
        ]
       },
       "subject": {
@@ -46,7 +46,7 @@
        "subtypes_all": [
         "Goblin"
        ],
-       "controller": 1,
+       "controller": "ControllerRelation.YOU",
        "count": {
         "$": "Value",
         "constant": 1
@@ -58,11 +58,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 35,
+       "kind": "EffectKind.CREATE_TOKEN",
        "players": {
         "$": "PlayerFilter"
        },
@@ -76,7 +76,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": 8,
+        "colors": "Color.RED",
         "power": {
          "$": "Value",
          "constant": 1
@@ -95,20 +95,20 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 3,
            "text": "{3}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 8,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
            "text": "{R}"
           }
          ]
@@ -116,7 +116,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 10,
+        "kind": "CostKind.SACRIFICE",
         "amount": {
          "$": "Value",
          "constant": 1

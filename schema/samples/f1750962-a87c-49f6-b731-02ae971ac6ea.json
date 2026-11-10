@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
  "name": "Hallowed Fountain",
  "card_hash": "470d3ca968f6e8a99b2b050381e0cd6d",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
    "name": "Hallowed Fountain",
    "face": 0,
@@ -15,22 +15,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 0,
+       "kind": "EffectKind.SEQUENCE",
        "children": [
         {
          "$": "Effect",
-         "kind": 4,
+         "kind": "EffectKind.OPTIONAL",
          "players": {
           "$": "PlayerFilter"
          },
          "children": [
           {
            "$": "Effect",
-           "kind": 52,
+           "kind": "EffectKind.LOSE_LIFE",
            "players": {
             "$": "PlayerFilter"
            },
@@ -45,16 +45,16 @@
         },
         {
          "$": "Effect",
-         "kind": 201,
+         "kind": "EffectKind.IF_YOU_DONT",
          "children": [
           {
            "$": "Effect",
-           "kind": 70,
+           "kind": "EffectKind.TAP",
            "targets": {
             "$": "ObjectFilter",
             "source_only": true
            },
-           "duration": 0,
+           "duration": "Duration.PERMANENT",
            "text": "enters tapped"
           }
          ],

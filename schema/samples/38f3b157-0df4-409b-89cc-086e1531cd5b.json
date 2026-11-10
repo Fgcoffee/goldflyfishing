@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
  "name": "Gray Merchant of Asphodel",
  "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
    "name": "Gray Merchant of Asphodel",
    "face": 0,
@@ -15,31 +15,31 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter",
-        "scope": 3
+        "scope": "PlayerScope.EACH_OPPONENT"
        },
        "amount": {
         "$": "Value",
-        "kind": 22,
-        "colors": 4
+        "kind": "ValueKind.DEVOTION",
+        "colors": "Color.BLACK"
        },
        "text": "lose life"
       },
       {
        "$": "Effect",
-       "kind": 51,
+       "kind": "EffectKind.GAIN_LIFE",
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": 7001,
+        "kind": "ValueKind.AMOUNT_THIS_WAY",
         "event_kinds": [
          63
         ]
@@ -52,7 +52,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {

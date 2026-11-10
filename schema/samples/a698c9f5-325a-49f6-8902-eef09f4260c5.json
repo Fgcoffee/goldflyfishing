@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
  "name": "Lodestone Golem",
  "card_hash": "a9e004bb7b3067663af23b374a4c4755",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
    "name": "Lodestone Golem",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 152,
+       "kind": "EffectKind.MODIFY_COST",
        "targets": {
         "$": "ObjectFilter",
-        "types_none": 1,
+        "types_none": "CardType.ARTIFACT",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false
@@ -34,7 +34,7 @@
         "$": "Value",
         "constant": 1
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "costs less to cast"
       }
      ],

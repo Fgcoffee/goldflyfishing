@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
  "name": "Purphoros, God of the Forge",
  "card_hash": "ea8f74093b51132c48937904031099f3",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
    "name": "Purphoros, God of the Forge",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Indestructible",
      "keyword": "Indestructible"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "As long as your devotion to red is less than five, this isn't a creature."
       }
      ],
@@ -34,14 +34,14 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "players": {
         "$": "PlayerFilter",
-        "scope": 3
+        "scope": "PlayerScope.EACH_OPPONENT"
        },
        "amount": {
         "$": "Value",
@@ -55,14 +55,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": 4,
+       "types_all": "CardType.CREATURE",
        "other_than_source": true,
-       "controller": 1,
+       "controller": "ControllerRelation.YOU",
        "count": {
         "$": "Value",
         "constant": 1
@@ -73,21 +73,21 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 140,
+       "kind": "EffectKind.MODIFY_PT",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 1
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.YOU"
        },
        "amount": {
         "$": "Value",
         "constant": 1
        },
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "text": "gets +1/+0"
       }
      ],
@@ -97,20 +97,20 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 2,
            "text": "{2}"
           },
           {
            "$": "ManaSymbol",
-           "kind": 2,
-           "colors": 8,
+           "kind": "ManaSymbolKind.COLORED",
+           "colors": "Color.RED",
            "text": "{R}"
           }
          ]

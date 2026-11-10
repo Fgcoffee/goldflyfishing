@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "e4125377-34c0-4b54-bdf8-4e88f5d24565",
  "name": "Approach of the Second Sun",
  "card_hash": "873c19b0f19e0e0713bbdd32a8242d1f",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "e4125377-34c0-4b54-bdf8-4e88f5d24565",
    "name": "Approach of the Second Sun",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "If this spell was cast from your hand and you've cast another spell named this this game, you win the game. Otherwise, put this into its owner's library seventh from the top and you gain 7 life."
       }
      ],

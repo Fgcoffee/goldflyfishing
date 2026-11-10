@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
  "name": "Goblin Recruiter",
  "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
    "name": "Goblin Recruiter",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order."
       }
      ],

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
  "name": "Celestial Colonnade",
  "card_hash": "31b86e6c35ba43c047f9d60fb5d19811",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
    "name": "Celestial Colonnade",
    "face": 0,
@@ -15,16 +15,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 70,
+       "kind": "EffectKind.TAP",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "enters tapped"
       }
      ],
@@ -32,18 +32,18 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": "EffectKind.CHOOSE_MODE",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -54,12 +54,12 @@
          "mana_produced": [
           "{W}"
          ],
-         "colors": 1,
+         "colors": "Color.WHITE",
          "text": "add {W}"
         },
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -70,7 +70,7 @@
          "mana_produced": [
           "{U}"
          ],
-         "colors": 2,
+         "colors": "Color.BLUE",
          "text": "add {U}"
         }
        ],
@@ -83,7 +83,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]
@@ -92,11 +92,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "{3}{W}{U}: Until end of turn, this land becomes a 4/4 white and blue Elemental creature with flying and vigilance. It's still a land."
       }
      ],

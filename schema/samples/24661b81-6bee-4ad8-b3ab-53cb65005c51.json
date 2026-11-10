@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
  "name": "Goblin Rabblemaster",
  "card_hash": "9da14d96824a561bad4c26f03774eff6",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
    "name": "Goblin Rabblemaster",
    "face": 0,
@@ -15,21 +15,21 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 143,
+       "kind": "EffectKind.GRANT_ABILITY",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
+        "types_all": "CardType.CREATURE",
         "subtypes_all": [
          "Goblin"
         ],
         "other_than_source": true,
-        "controller": 1
+        "controller": "ControllerRelation.YOU"
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "keywords": [
         "Attacks each combat if able"
        ],
@@ -40,20 +40,20 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 1,
+       "kind": "EffectKind.CONDITIONAL",
        "condition": {
         "$": "Condition",
-        "kind": 6,
+        "kind": "ConditionKind.IS_YOUR_TURN",
         "text": "during your turn"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 35,
+         "kind": "EffectKind.CREATE_TOKEN",
          "players": {
           "$": "PlayerFilter"
          },
@@ -67,7 +67,7 @@
           "subtypes": [
            "Goblin"
           ],
-          "colors": 8,
+          "colors": "Color.RED",
           "power": {
            "$": "Value",
            "constant": 1
@@ -91,7 +91,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        121
+        "EventKind.PHASE_BEGAN"
        ]
       },
       "players": {
@@ -99,9 +99,7 @@
       },
       "phases": {
        "$set": [
-        {
-         "$int": 2
-        }
+        2
        ]
       },
       "text": "at the beginning of combat"
@@ -109,18 +107,18 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 140,
+       "kind": "EffectKind.MODIFY_PT",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
        "amount": {
         "$": "Value",
-        "kind": 2,
+        "kind": "ValueKind.COUNT",
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
@@ -130,7 +128,7 @@
          "attacking": true
         }
        },
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "text": "gets +1/+0"
       }
      ],
@@ -139,7 +137,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        101
+        "EventKind.ATTACKS"
        ]
       },
       "subject": {

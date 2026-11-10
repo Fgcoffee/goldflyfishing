@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
  "name": "Hordeling Outburst",
  "card_hash": "bafa88e88bbad5eb2a0b4ce79917f836",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
    "name": "Hordeling Outburst",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 35,
+       "kind": "EffectKind.CREATE_TOKEN",
        "players": {
         "$": "PlayerFilter"
        },
@@ -33,7 +33,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": 8,
+        "colors": "Color.RED",
         "power": {
          "$": "Value",
          "constant": 1

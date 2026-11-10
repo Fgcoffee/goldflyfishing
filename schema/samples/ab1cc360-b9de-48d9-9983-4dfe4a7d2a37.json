@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ab1cc360-b9de-48d9-9983-4dfe4a7d2a37",
  "name": "Arcane Denial",
  "card_hash": "6a712f98fd3937a638eb8682efd602f6",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ab1cc360-b9de-48d9-9983-4dfe4a7d2a37",
    "name": "Arcane Denial",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Counter target spell. Its controller may draw up to two cards at the beginning of the next turn's upkeep."
       }
      ],
@@ -28,16 +28,16 @@
     },
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 213,
+       "kind": "EffectKind.DELAYED_TRIGGER",
        "trigger": {
         "$": "TriggerCondition",
         "event_kinds": {
          "$set": [
-          127
+          "EventKind.UPKEEP"
          ]
         },
         "text": "at the next upkeep"
@@ -45,7 +45,7 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 20,
+         "kind": "EffectKind.DRAW",
          "players": {
           "$": "PlayerFilter"
          },

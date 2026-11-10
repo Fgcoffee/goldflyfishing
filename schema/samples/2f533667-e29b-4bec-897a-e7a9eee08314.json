@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "2f533667-e29b-4bec-897a-e7a9eee08314",
  "name": "Hullbreacher",
  "card_hash": "53edca53ed858347b31856d0c174fd31",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "2f533667-e29b-4bec-897a-e7a9eee08314",
    "name": "Hullbreacher",
    "face": 0,
@@ -15,22 +15,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flash",
      "keyword": "Flash"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
-       "duration": 0,
+       "kind": "EffectKind.UNPARSED",
+       "duration": "Duration.PERMANENT",
        "children": [
         {
          "$": "Effect",
-         "kind": 35,
+         "kind": "EffectKind.CREATE_TOKEN",
          "players": {
           "$": "PlayerFilter"
          },
@@ -41,7 +41,7 @@
          "token": {
           "$": "TokenSpec",
           "name": "Treasure",
-          "types": 1,
+          "types": "CardType.ARTIFACT",
           "subtypes": [
            "Treasure"
           ]

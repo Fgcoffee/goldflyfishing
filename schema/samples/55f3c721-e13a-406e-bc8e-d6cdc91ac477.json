@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
  "name": "Authority of the Consuls",
  "card_hash": "40ca2eefaeb49aaf8c3810bc1da18f14",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
    "name": "Authority of the Consuls",
    "face": 0,
@@ -15,15 +15,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 153,
+       "kind": "EffectKind.REPLACEMENT",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
-        "controller": 2
+        "types_all": "CardType.CREATURE",
+        "controller": "ControllerRelation.OPPONENT"
        },
        "text": "those permanents enter tapped"
       }
@@ -32,11 +32,11 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 51,
+       "kind": "EffectKind.GAIN_LIFE",
        "players": {
         "$": "PlayerFilter"
        },
@@ -52,13 +52,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": 4,
-       "controller": 2,
+       "types_all": "CardType.CREATURE",
+       "controller": "ControllerRelation.OPPONENT",
        "count": {
         "$": "Value",
         "constant": 1

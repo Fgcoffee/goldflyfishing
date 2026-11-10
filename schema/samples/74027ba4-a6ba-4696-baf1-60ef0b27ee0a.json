@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
  "name": "Chalice of the Void",
  "card_hash": "7a8c800247135a58bc129fc86128756f",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
    "name": "Chalice of the Void",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 72,
+       "kind": "EffectKind.ADD_COUNTERS",
        "amount": {
         "$": "Value",
-        "kind": 1
+        "kind": "ValueKind.X"
        },
        "counter_type": "charge",
        "text": "enters with counters"
@@ -32,17 +32,17 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 100,
+       "kind": "EffectKind.COUNTER_SPELL",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         }
        },
@@ -54,23 +54,23 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        20
+        "EventKind.CAST_SPELL"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
        "zones": {
         "$set": [
-         4
+         "Zone.STACK"
         ]
        },
        "is_ability": false,
        "mana_value": {
         "$": "NumericConstraint",
-        "comparison": 0,
+        "comparison": "Comparison.EQ",
         "value": {
          "$": "Value",
-         "kind": 10,
+         "kind": "ValueKind.COUNTERS",
          "counter_type": "charge"
         }
        },
@@ -81,7 +81,7 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": 2
+       "scope": "PlayerScope.EACH_PLAYER"
       },
       "text": "whenever a player casts a spell"
      }

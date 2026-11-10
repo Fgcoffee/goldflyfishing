@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
  "name": "Land Tax",
  "card_hash": "845abdcc4a43ff7eb76fb14401245d13",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
    "name": "Land Tax",
    "face": 0,
@@ -15,22 +15,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 23,
+         "kind": "EffectKind.SEARCH_LIBRARY",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 16,
-          "supertypes_all": 1,
+          "types_all": "CardType.LAND",
+          "supertypes_all": "Supertype.BASIC",
           "zones": {
            "$set": []
           },
@@ -47,7 +47,7 @@
           "$": "Value",
           "constant": 3
          },
-         "zone": 1,
+         "zone": "Zone.HAND",
          "text": "search library"
         }
        ],
@@ -59,7 +59,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        127
+        "EventKind.UPKEEP"
        ]
       },
       "players": {
@@ -67,25 +67,25 @@
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": 19,
+       "kind": "ConditionKind.COMPARE_COUNTS",
        "filter": {
         "$": "ObjectFilter",
-        "types_all": 16
+        "types_all": "CardType.LAND"
        },
        "players": {
         "$": "PlayerFilter",
-        "scope": 1
+        "scope": "PlayerScope.OPPONENT"
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": 4,
+        "comparison": "Comparison.GT",
         "value": {
          "$": "Value",
-         "kind": 2,
+         "kind": "ValueKind.COUNT",
          "filter": {
           "$": "ObjectFilter",
-          "types_all": 16,
-          "controller": 1
+          "types_all": "CardType.LAND",
+          "controller": "ControllerRelation.YOU"
          }
         }
        },

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "8a52f3c0-2552-4425-b2e3-5496eb2232a7",
  "name": "Mystic Remora",
  "card_hash": "965a73666504747ba2757128c444ead1",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "8a52f3c0-2552-4425-b2e3-5496eb2232a7",
    "name": "Mystic Remora",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 72,
+       "kind": "EffectKind.ADD_COUNTERS",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -33,17 +33,17 @@
       },
       {
        "$": "Effect",
-       "kind": 4,
+       "kind": "EffectKind.OPTIONAL",
        "children": [
         {
          "$": "Effect",
-         "kind": 200,
+         "kind": "EffectKind.PAY_COST",
          "players": {
           "$": "PlayerFilter"
          },
          "amount": {
           "$": "Value",
-          "kind": 10,
+          "kind": "ValueKind.COUNTERS",
           "counter_type": "age"
          },
          "pay_cost": {
@@ -51,13 +51,13 @@
           "components": [
            {
             "$": "CostComponent",
-            "kind": 0,
+            "kind": "CostKind.MANA",
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": 0,
+               "kind": "ManaSymbolKind.GENERIC",
                "generic": 1,
                "text": "{1}"
               }
@@ -73,11 +73,11 @@
       },
       {
        "$": "Effect",
-       "kind": 201,
+       "kind": "EffectKind.IF_YOU_DONT",
        "children": [
         {
          "$": "Effect",
-         "kind": 31,
+         "kind": "EffectKind.SACRIFICE",
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
@@ -93,7 +93,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        127
+        "EventKind.UPKEEP"
        ]
       },
       "players": {
@@ -105,27 +105,27 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 6,
+       "kind": "EffectKind.UNLESS_PAYS",
        "players": {
         "$": "PlayerFilter",
-        "scope": 13002
+        "scope": "PlayerScope.TRIGGER_PLAYER"
        },
        "pay_cost": {
         "$": "Cost",
         "components": [
          {
           "$": "CostComponent",
-          "kind": 0,
+          "kind": "CostKind.MANA",
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": 0,
+             "kind": "ManaSymbolKind.GENERIC",
              "generic": 4,
              "text": "{4}"
             }
@@ -137,14 +137,14 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 4,
+         "kind": "EffectKind.OPTIONAL",
          "players": {
           "$": "PlayerFilter"
          },
          "children": [
           {
            "$": "Effect",
-           "kind": 20,
+           "kind": "EffectKind.DRAW",
            "players": {
             "$": "PlayerFilter"
            },
@@ -166,15 +166,15 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        20
+        "EventKind.CAST_SPELL"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_none": 4,
+       "types_none": "CardType.CREATURE",
        "zones": {
         "$set": [
-         4
+         "Zone.STACK"
         ]
        },
        "is_ability": false,
@@ -185,7 +185,7 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": 1
+       "scope": "PlayerScope.OPPONENT"
       },
       "text": "whenever a player casts a spell"
      }

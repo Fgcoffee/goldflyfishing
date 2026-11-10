@@ -1,7 +1,7 @@
 """Read the exported IR JSON: what a server needs to hand a deck to the browser.
 
     from mtgfish.ir.store import IRStore
-    store = IRStore.open(db)                    # cache/ir/v2, written by `ir_export export`
+    store = IRStore.open(db)                    # cache/ir/v1, written by `ir_export export`
     documents, missing = store.deck(["Lightning Bolt", "Sol Ring", "Mountain"])
 
 Each document is the card's JSON (see docs/ir-json.md), ready to send as

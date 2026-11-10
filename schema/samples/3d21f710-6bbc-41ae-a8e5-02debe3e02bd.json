@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
  "name": "Hushbringer",
  "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
    "name": "Hushbringer",
    "face": 0,
@@ -15,23 +15,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "lifelink",
      "keyword": "lifelink"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "Creatures entering or dying don't cause abilities to trigger."
       }
      ],

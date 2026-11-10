@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "94f0a572-e91c-4b56-a5d1-6cbbeabd210d",
  "name": "Infernal Grasp",
  "card_hash": "280505d8ad67cdf133117e74dad37bb6",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "94f0a572-e91c-4b56-a5d1-6cbbeabd210d",
    "name": "Infernal Grasp",
    "face": 0,
@@ -15,21 +15,21 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 29,
+       "kind": "EffectKind.DESTROY",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4
+        "types_all": "CardType.CREATURE"
        },
        "is_targeted": true,
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter"
        },

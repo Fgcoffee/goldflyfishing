@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
  "name": "Thought Vessel",
  "card_hash": "b87c0325bc45bada69953e042e2adb03",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
    "name": "Thought Vessel",
    "face": 0,
@@ -15,18 +15,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 151,
+       "kind": "EffectKind.PERMISSION",
        "players": {
         "$": "PlayerFilter"
        },
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 100,
+         "act": "Act.DISCARD_TO_HAND_SIZE",
          "players": {
           "$": "PlayerFilter"
          },
@@ -40,11 +40,11 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -64,7 +64,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

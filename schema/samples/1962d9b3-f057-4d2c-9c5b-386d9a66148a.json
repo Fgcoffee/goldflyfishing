@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
  "name": "Goblin Cratermaker",
  "card_hash": "582c55ea6e91095d37a67ccf3de96612",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
    "name": "Goblin Cratermaker",
    "face": 0,
@@ -15,22 +15,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": "EffectKind.CHOOSE_MODE",
        "children": [
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 50,
+           "kind": "EffectKind.DAMAGE",
            "targets": {
             "$": "ObjectFilter",
-            "types_all": 4
+            "types_all": "CardType.CREATURE"
            },
            "amount": {
             "$": "Value",
@@ -44,14 +44,14 @@
         },
         {
          "$": "Effect",
-         "kind": 0,
+         "kind": "EffectKind.SEQUENCE",
          "children": [
           {
            "$": "Effect",
-           "kind": 29,
+           "kind": "EffectKind.DESTROY",
            "targets": {
             "$": "ObjectFilter",
-            "types_none": 16,
+            "types_none": "CardType.LAND",
             "must_be_colorless": true
            },
            "is_targeted": true,
@@ -70,13 +70,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 1,
            "text": "{1}"
           }
@@ -85,7 +85,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 10,
+        "kind": "CostKind.SACRIFICE",
         "amount": {
          "$": "Value",
          "constant": 1

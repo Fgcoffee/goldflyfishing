@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
  "name": "Archangel of Tithes",
  "card_hash": "5cf346af67c6d90ee9625e906287d39a",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
    "name": "Archangel of Tithes",
    "face": 0,
@@ -15,21 +15,21 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 1,
-       "duration": 5,
+       "kind": "EffectKind.CONDITIONAL",
+       "duration": "Duration.WHILE_SOURCE_PERSISTS",
        "condition": {
         "$": "Condition",
-        "kind": 5,
+        "kind": "ConditionKind.CONTROLS_MATCHING",
         "filter": {
          "$": "ObjectFilter",
          "source_only": true,
@@ -37,7 +37,7 @@
         },
         "constraint": {
          "$": "NumericConstraint",
-         "comparison": 5,
+         "comparison": "Comparison.GE",
          "value": {
           "$": "Value",
           "constant": 1
@@ -48,23 +48,23 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 6,
+         "kind": "EffectKind.UNLESS_PAYS",
          "players": {
           "$": "PlayerFilter",
-          "scope": 7
+          "scope": "PlayerScope.CONTROLLER_OF"
          },
          "pay_cost": {
           "$": "Cost",
           "components": [
            {
             "$": "CostComponent",
-            "kind": 0,
+            "kind": "CostKind.MANA",
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": 0,
+               "kind": "ManaSymbolKind.GENERIC",
                "generic": 1,
                "text": "{1}"
               }
@@ -72,10 +72,10 @@
             },
             "scale": {
              "$": "Value",
-             "kind": 2,
+             "kind": "ValueKind.COUNT",
              "filter": {
               "$": "ObjectFilter",
-              "types_all": 4,
+              "types_all": "CardType.CREATURE",
               "remembered": true
              }
             }
@@ -85,19 +85,19 @@
          "children": [
           {
            "$": "Effect",
-           "kind": 150,
+           "kind": "EffectKind.RESTRICTION",
            "targets": {
             "$": "ObjectFilter",
-            "types_all": 4
+            "types_all": "CardType.CREATURE"
            },
-           "duration": 0,
+           "duration": "Duration.PERMANENT",
            "restrictions": [
             {
              "$": "Restriction",
-             "act": 21,
+             "act": "Act.ATTACK_PLAYER",
              "subject": {
               "$": "ObjectFilter",
-              "types_all": 4
+              "types_all": "CardType.CREATURE"
              },
              "players": {
               "$": "PlayerFilter"
@@ -106,15 +106,15 @@
             },
             {
              "$": "Restriction",
-             "act": 22,
+             "act": "Act.ATTACK_PLANESWALKER",
              "subject": {
               "$": "ObjectFilter",
-              "types_all": 4
+              "types_all": "CardType.CREATURE"
              },
              "counterpart": {
               "$": "ObjectFilter",
-              "types_all": 32,
-              "controller": 1
+              "types_all": "CardType.PLANESWALKER",
+              "controller": "ControllerRelation.YOU"
              },
              "text": "can't attack planeswalkers you control"
             }
@@ -132,15 +132,15 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 1,
-       "duration": 5,
+       "kind": "EffectKind.CONDITIONAL",
+       "duration": "Duration.WHILE_SOURCE_PERSISTS",
        "condition": {
         "$": "Condition",
-        "kind": 5,
+        "kind": "ConditionKind.CONTROLS_MATCHING",
         "filter": {
          "$": "ObjectFilter",
          "source_only": true,
@@ -148,7 +148,7 @@
         },
         "constraint": {
          "$": "NumericConstraint",
-         "comparison": 5,
+         "comparison": "Comparison.GE",
          "value": {
           "$": "Value",
           "constant": 1
@@ -159,23 +159,23 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 6,
+         "kind": "EffectKind.UNLESS_PAYS",
          "players": {
           "$": "PlayerFilter",
-          "scope": 7
+          "scope": "PlayerScope.CONTROLLER_OF"
          },
          "pay_cost": {
           "$": "Cost",
           "components": [
            {
             "$": "CostComponent",
-            "kind": 0,
+            "kind": "CostKind.MANA",
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": 0,
+               "kind": "ManaSymbolKind.GENERIC",
                "generic": 1,
                "text": "{1}"
               }
@@ -183,10 +183,10 @@
             },
             "scale": {
              "$": "Value",
-             "kind": 2,
+             "kind": "ValueKind.COUNT",
              "filter": {
               "$": "ObjectFilter",
-              "types_all": 4,
+              "types_all": "CardType.CREATURE",
               "remembered": true
              }
             }
@@ -196,19 +196,19 @@
          "children": [
           {
            "$": "Effect",
-           "kind": 150,
+           "kind": "EffectKind.RESTRICTION",
            "targets": {
             "$": "ObjectFilter",
-            "types_all": 4
+            "types_all": "CardType.CREATURE"
            },
-           "duration": 0,
+           "duration": "Duration.PERMANENT",
            "restrictions": [
             {
              "$": "Restriction",
-             "act": 23,
+             "act": "Act.BLOCK",
              "subject": {
               "$": "ObjectFilter",
-              "types_all": 4
+              "types_all": "CardType.CREATURE"
              },
              "text": "can't block"
             }

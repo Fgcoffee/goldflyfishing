@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
  "name": "Vryn Wingmare",
  "card_hash": "f8f4016a967cd187b33f6f69d770e2b4",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
    "name": "Vryn Wingmare",
    "face": 0,
@@ -15,23 +15,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 152,
+       "kind": "EffectKind.MODIFY_COST",
        "targets": {
         "$": "ObjectFilter",
-        "types_none": 4,
+        "types_none": "CardType.CREATURE",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false
@@ -40,7 +40,7 @@
         "$": "Value",
         "constant": 1
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "costs less to cast"
       }
      ],

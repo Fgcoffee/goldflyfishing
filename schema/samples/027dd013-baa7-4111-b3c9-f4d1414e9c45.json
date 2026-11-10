@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
  "name": "Glacial Fortress",
  "card_hash": "7e931b1f972e38ba8e9cb7fbd3362006",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
    "name": "Glacial Fortress",
    "face": 0,
@@ -15,29 +15,29 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 1,
+       "kind": "EffectKind.CONDITIONAL",
        "condition": {
         "$": "Condition",
-        "kind": 22,
+        "kind": "ConditionKind.NOT",
         "operands": [
          {
           "$": "Condition",
-          "kind": 5,
+          "kind": "ConditionKind.CONTROLS_MATCHING",
           "filter": {
            "$": "ObjectFilter",
            "subtypes_any": [
             "Plains",
             "Island"
            ],
-           "controller": 1
+           "controller": "ControllerRelation.YOU"
           },
           "constraint": {
            "$": "NumericConstraint",
-           "comparison": 5,
+           "comparison": "Comparison.GE",
            "value": {
             "$": "Value",
             "constant": 1
@@ -51,12 +51,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 70,
+         "kind": "EffectKind.TAP",
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "text": "enters tapped"
         }
        ],
@@ -67,18 +67,18 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": "EffectKind.CHOOSE_MODE",
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -89,12 +89,12 @@
          "mana_produced": [
           "{W}"
          ],
-         "colors": 1,
+         "colors": "Color.WHITE",
          "text": "add {W}"
         },
         {
          "$": "Effect",
-         "kind": 120,
+         "kind": "EffectKind.ADD_MANA",
          "players": {
           "$": "PlayerFilter"
          },
@@ -105,7 +105,7 @@
          "mana_produced": [
           "{U}"
          ],
-         "colors": 2,
+         "colors": "Color.BLUE",
          "text": "add {U}"
         }
        ],
@@ -118,7 +118,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

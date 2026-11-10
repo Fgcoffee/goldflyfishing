@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
  "name": "Goblin Sharpshooter",
  "card_hash": "4d86a29e87ec8b648bdbb361bf4053d9",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
    "name": "Goblin Sharpshooter",
    "face": 0,
@@ -15,20 +15,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 150,
+       "kind": "EffectKind.RESTRICTION",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 99,
+         "act": "Act.UNTAP_DURING_UNTAP_STEP",
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -43,11 +43,11 @@
     },
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 71,
+       "kind": "EffectKind.UNTAP",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -60,12 +60,12 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        3
+        "EventKind.DIES"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": 4,
+       "types_all": "CardType.CREATURE",
        "count": {
         "$": "Value",
         "constant": 1
@@ -77,14 +77,14 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 50,
+       "kind": "EffectKind.DAMAGE",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 38,
+        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
         "includes_players": true
        },
        "amount": {
@@ -101,7 +101,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
  "name": "Glowrider",
  "card_hash": "66c450187662a5b41d2e13bb51645345",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
    "name": "Glowrider",
    "face": 0,
@@ -15,17 +15,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 152,
+       "kind": "EffectKind.MODIFY_COST",
        "targets": {
         "$": "ObjectFilter",
-        "types_none": 4,
+        "types_none": "CardType.CREATURE",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false
@@ -34,7 +34,7 @@
         "$": "Value",
         "constant": 1
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "text": "costs less to cast"
       }
      ],

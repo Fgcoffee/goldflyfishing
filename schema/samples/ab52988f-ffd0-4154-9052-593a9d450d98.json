@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
  "name": "Goblin Heelcutter",
  "card_hash": "0cd570588abe65e3ca1315f878b580f9",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
    "name": "Goblin Heelcutter",
    "face": 0,
@@ -15,24 +15,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 150,
+       "kind": "EffectKind.RESTRICTION",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4
+        "types_all": "CardType.CREATURE"
        },
        "is_targeted": true,
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 23,
+         "act": "Act.BLOCK",
          "subject": {
           "$": "ObjectFilter",
-          "types_all": 4
+          "types_all": "CardType.CREATURE"
          },
          "text": "can't block"
         }
@@ -45,7 +45,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        101
+        "EventKind.ATTACKS"
        ]
       },
       "subject": {
@@ -57,11 +57,11 @@
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Dash {2}{R}",
      "functions_in": {
       "$set": [
-       1
+       "Zone.HAND"
       ]
      },
      "keyword": "Dash",
@@ -72,20 +72,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": 0,
+         "kind": "CostKind.MANA",
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": 0,
+            "kind": "ManaSymbolKind.GENERIC",
             "generic": 2,
             "text": "{2}"
            },
            {
             "$": "ManaSymbol",
-            "kind": 2,
-            "colors": 8,
+            "kind": "ManaSymbolKind.COLORED",
+            "colors": "Color.RED",
             "text": "{R}"
            }
           ]

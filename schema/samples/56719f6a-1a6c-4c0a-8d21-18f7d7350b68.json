@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
  "name": "Swamp",
  "card_hash": "34fa903096774b1d5e2a12af24ad79f9",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
    "name": "Swamp",
    "face": 0,

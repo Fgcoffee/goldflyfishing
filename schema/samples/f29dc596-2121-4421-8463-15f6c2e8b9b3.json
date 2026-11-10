@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
  "name": "Rogue's Passage",
  "card_hash": "02cba0866749f0261d0fbf23e55b8b22",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
    "name": "Rogue's Passage",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
+       "kind": "EffectKind.ADD_MANA",
        "players": {
         "$": "PlayerFilter"
        },
@@ -39,7 +39,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]
@@ -48,24 +48,24 @@
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 150,
+       "kind": "EffectKind.RESTRICTION",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4
+        "types_all": "CardType.CREATURE"
        },
        "is_targeted": true,
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 24,
+         "act": "Act.BE_BLOCKED",
          "subject": {
           "$": "ObjectFilter",
-          "types_all": 4
+          "types_all": "CardType.CREATURE"
          },
          "text": "can't be_blocked"
         }
@@ -79,13 +79,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 0,
+        "kind": "CostKind.MANA",
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": 0,
+           "kind": "ManaSymbolKind.GENERIC",
            "generic": 4,
            "text": "{4}"
           }
@@ -94,7 +94,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
  "name": "Goblin Instigator",
  "card_hash": "aac1e0781c6dd47556af7e76d6d5286b",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
    "name": "Goblin Instigator",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 35,
+       "kind": "EffectKind.CREATE_TOKEN",
        "players": {
         "$": "PlayerFilter"
        },
@@ -33,7 +33,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": 8,
+        "colors": "Color.RED",
         "power": {
          "$": "Value",
          "constant": 1
@@ -51,7 +51,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        1
+        "EventKind.ENTERS_BATTLEFIELD"
        ]
       },
       "subject": {

@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
  "name": "Maze of Ith",
  "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
    "name": "Maze of Ith",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 71,
+       "kind": "EffectKind.UNTAP",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
+        "types_all": "CardType.CREATURE",
         "attacking": true
        },
        "is_targeted": true,
@@ -30,7 +30,7 @@
       },
       {
        "$": "Effect",
-       "kind": 55,
+       "kind": "EffectKind.PREVENT_DAMAGE",
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
@@ -39,7 +39,7 @@
         "$": "Value",
         "constant": -1
        },
-       "duration": 1,
+       "duration": "Duration.END_OF_TURN",
        "both_ways": true,
        "keywords": [
         "combat"
@@ -53,7 +53,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 1,
+        "kind": "CostKind.TAP_SELF",
         "text": "{T}"
        }
       ]

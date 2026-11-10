@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
  "name": "Generous Gift",
  "card_hash": "2db8974625b5c6854965d46393f182b7",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
    "name": "Generous Gift",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 29,
+       "kind": "EffectKind.DESTROY",
        "targets": {
         "$": "ObjectFilter"
        },
@@ -28,10 +28,10 @@
       },
       {
        "$": "Effect",
-       "kind": 35,
+       "kind": "EffectKind.CREATE_TOKEN",
        "players": {
         "$": "PlayerFilter",
-        "scope": 13003
+        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
        },
        "amount": {
         "$": "Value",
@@ -43,7 +43,7 @@
         "subtypes": [
          "Elephant"
         ],
-        "colors": 16,
+        "colors": "Color.GREEN",
         "power": {
          "$": "Value",
          "constant": 3

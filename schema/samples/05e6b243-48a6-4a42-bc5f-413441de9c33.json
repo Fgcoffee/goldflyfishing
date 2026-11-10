@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
  "name": "Elspeth, Sun's Champion",
  "card_hash": "e300bdbb5bf30269cb54ff33744ed707",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
    "name": "Elspeth, Sun's Champion",
    "face": 0,
@@ -15,11 +15,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 35,
+       "kind": "EffectKind.CREATE_TOKEN",
        "players": {
         "$": "PlayerFilter"
        },
@@ -33,7 +33,7 @@
         "subtypes": [
          "Soldier"
         ],
-        "colors": 1,
+        "colors": "Color.WHITE",
         "power": {
          "$": "Value",
          "constant": 1
@@ -52,7 +52,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 34,
+        "kind": "CostKind.LOYALTY",
         "amount": {
          "$": "Value",
          "constant": 1
@@ -61,23 +61,23 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": 1,
+     "kind": "AbilityKind.ACTIVATED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 29,
+       "kind": "EffectKind.DESTROY",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
+        "types_all": "CardType.CREATURE",
         "power": {
          "$": "NumericConstraint",
-         "comparison": 5,
+         "comparison": "Comparison.GE",
          "value": {
           "$": "Value",
           "constant": 4
@@ -93,7 +93,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": 34,
+        "kind": "CostKind.LOYALTY",
         "amount": {
          "$": "Value",
          "constant": -3
@@ -102,17 +102,17 @@
        }
       ]
      },
-     "timing": 0,
+     "timing": "Timing.SORCERY",
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": "EffectKind.UNPARSED",
        "text": "-7: You get an emblem with \"Creatures you control get +2/+2 and have flying.\""
       }
      ],

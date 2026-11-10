@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "3ee78cfc-0e9e-4737-a7e2-b42f94228040",
  "name": "Cruel Celebrant",
  "card_hash": "68d3e0fc4a0998e06ff584fcceb13bfb",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "3ee78cfc-0e9e-4737-a7e2-b42f94228040",
    "name": "Cruel Celebrant",
    "face": 0,
@@ -15,14 +15,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 2,
+     "kind": "AbilityKind.TRIGGERED",
      "effects": [
       {
        "$": "Effect",
-       "kind": 52,
+       "kind": "EffectKind.LOSE_LIFE",
        "players": {
         "$": "PlayerFilter",
-        "scope": 3
+        "scope": "PlayerScope.EACH_OPPONENT"
        },
        "amount": {
         "$": "Value",
@@ -32,7 +32,7 @@
       },
       {
        "$": "Effect",
-       "kind": 51,
+       "kind": "EffectKind.GAIN_LIFE",
        "players": {
         "$": "PlayerFilter"
        },
@@ -48,13 +48,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        3
+        "EventKind.DIES"
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_any": 36,
-       "controller": 1,
+       "types_any": "CardType.CREATURE|PLANESWALKER",
+       "controller": "ControllerRelation.YOU",
        "count": {
         "$": "Value",
         "constant": 1

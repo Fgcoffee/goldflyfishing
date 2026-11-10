@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
  "name": "Windborn Muse",
  "card_hash": "e4a547d807aa3715ad561366e6d9d997",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
    "name": "Windborn Muse",
    "face": 0,
@@ -15,33 +15,33 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 6,
+       "kind": "EffectKind.UNLESS_PAYS",
        "players": {
         "$": "PlayerFilter",
-        "scope": 7
+        "scope": "PlayerScope.CONTROLLER_OF"
        },
        "pay_cost": {
         "$": "Cost",
         "components": [
          {
           "$": "CostComponent",
-          "kind": 0,
+          "kind": "CostKind.MANA",
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": 0,
+             "kind": "ManaSymbolKind.GENERIC",
              "generic": 2,
              "text": "{2}"
             }
@@ -49,11 +49,11 @@
           },
           "scale": {
            "$": "Value",
-           "kind": 2,
+           "kind": "ValueKind.COUNT",
            "filter": {
             "$": "ObjectFilter",
-            "types_all": 4,
-            "controller": 4,
+            "types_all": "CardType.CREATURE",
+            "controller": "ControllerRelation.SPECIFIC",
             "attacking": true
            }
           }
@@ -63,19 +63,19 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 150,
+         "kind": "EffectKind.RESTRICTION",
          "targets": {
           "$": "ObjectFilter",
-          "types_all": 4
+          "types_all": "CardType.CREATURE"
          },
-         "duration": 0,
+         "duration": "Duration.PERMANENT",
          "restrictions": [
           {
            "$": "Restriction",
-           "act": 21,
+           "act": "Act.ATTACK_PLAYER",
            "subject": {
             "$": "ObjectFilter",
-            "types_all": 4
+            "types_all": "CardType.CREATURE"
            },
            "players": {
             "$": "PlayerFilter"

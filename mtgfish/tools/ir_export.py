@@ -121,9 +121,9 @@ def _verify_chunk(oracle_ids: list[str]) -> tuple[int, list[str]]:
                 problems.append(f"{card.name} face {index}: codec raised {error!r}")
                 continue
             checked += 1
-            if not exact(got_abilities, abilities, ("tuple", "Ability")):
+            if not exact(got_abilities, abilities):
                 problems.append(f"{card.name} face {index}: abilities differ after the round trip")
-            if not exact(got_failures, failures, ("list", "ParseFailure")):
+            if not exact(got_failures, failures):
                 problems.append(f"{card.name} face {index}: failures differ after the round trip")
     return checked, problems
 
@@ -164,32 +164,31 @@ _USAGE_ENUMS = ("EffectKind", "ConditionKind", "CostKind", "EventKind", "ValueKi
 
 
 def _usage_of(value, counts, seen) -> None:
-    """Note every enum member of the reported kinds, IR class and keyword
-    in one face's IR objects, once per face."""
-    import dataclasses
-    import enum
-
-    if isinstance(value, (list, tuple, frozenset)):
+    """Count every enum member and IR class in one face's JSON, once per face."""
+    if isinstance(value, list):
         for item in value:
             _usage_of(item, counts, seen)
-    elif isinstance(value, enum.Enum):
-        group = type(value).__name__
-        if group in _USAGE_ENUMS and value.name is not None:
-            seen.add((group, value.name))
-    elif dataclasses.is_dataclass(value) and not isinstance(value, type):
-        name = type(value).__name__
-        seen.add(("class", name))
-        if name == "Ability" and getattr(value, "keyword", ""):
+    elif isinstance(value, dict):
+        name = value.get("$")
+        if name is not None:
+            seen.add(("class", name))
+        if name == "Ability" and value.get("keyword"):
             # Expanded already, but the engine still asks for keywords by
             # name (flying when blocking, deathtouch when dealing damage).
-            seen.add(("keyword", value.keyword))
-        for field in dataclasses.fields(value):
-            _usage_of(getattr(value, field.name), counts, seen)
+            seen.add(("keyword", value["keyword"]))
+        for key, item in value.items():
+            if key != "$":
+                _usage_of(item, counts, seen)
+    elif isinstance(value, str):
+        head, dot, member = value.partition(".")
+        if dot and head in _USAGE_ENUMS:
+            seen.add((head, member))
 
 
 def _usage_chunk(oracle_ids: list[str]) -> tuple[dict, dict]:
     from collections import Counter
 
+    from ..ir import encode
     from ..parser.compile import parse_face
 
     all_faces: Counter = Counter()
@@ -201,7 +200,7 @@ def _usage_chunk(oracle_ids: list[str]) -> tuple[dict, dict]:
         for index in range(max(1, len(card.faces))):
             parsed = parse_face(card, index)
             seen: set = set()
-            _usage_of([a for a in parsed.abilities if not a.unparsed], None, seen)
+            _usage_of([encode(a) for a in parsed.abilities if not a.unparsed], None, seen)
             for key in seen:
                 all_faces[key] += 1
                 if not parsed.failures:
@@ -233,12 +232,9 @@ def cmd_usage(args) -> int:
     for path in samples.glob("*.json"):
         if path.name == "decks.json":
             continue
-        from ..ir import decode_face
-
         for face in json.loads(path.read_text())["faces"]:
-            abilities, _failures = decode_face(face)
             seen: set = set()
-            _usage_of([a for a in abilities if not a.unparsed], None, seen)
+            _usage_of([a for a in face["abilities"] if not a.get("unparsed")], None, seen)
             in_bench.update(seen)
     groups: dict[str, list] = {}
     for (group, member), count in all_faces.items():

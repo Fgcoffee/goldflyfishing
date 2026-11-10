@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
  "name": "Catastrophe",
  "card_hash": "6f066def213dc1aa14075b71657865da",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
    "name": "Catastrophe",
    "face": 0,
@@ -15,33 +15,33 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 29,
+       "kind": "EffectKind.DESTROY",
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 20
+        "types_any": "CardType.CREATURE|LAND"
        },
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": 150,
+       "kind": "EffectKind.RESTRICTION",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 4,
+        "types_all": "CardType.CREATURE",
         "remembered": true
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 64,
+         "act": "Act.BE_REGENERATED",
          "subject": {
           "$": "ObjectFilter",
-          "types_all": 4,
+          "types_all": "CardType.CREATURE",
           "remembered": true
          },
          "text": "can't be_regenerated"

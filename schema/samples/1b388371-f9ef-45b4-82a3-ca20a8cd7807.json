@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "1b388371-f9ef-45b4-82a3-ca20a8cd7807",
  "name": "Dovin's Veto",
  "card_hash": "e0115b94489a3a32068775c1bac9d434",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "1b388371-f9ef-45b4-82a3-ca20a8cd7807",
    "name": "Dovin's Veto",
    "face": 0,
@@ -15,20 +15,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 150,
+       "kind": "EffectKind.RESTRICTION",
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "restrictions": [
         {
          "$": "Restriction",
-         "act": 40,
+         "act": "Act.BE_COUNTERED",
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -43,17 +43,17 @@
     },
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": "AbilityKind.SPELL",
      "effects": [
       {
        "$": "Effect",
-       "kind": 100,
+       "kind": "EffectKind.COUNTER_SPELL",
        "targets": {
         "$": "ObjectFilter",
-        "types_none": 4,
+        "types_none": "CardType.CREATURE",
         "zones": {
          "$set": [
-          4
+          "Zone.STACK"
          ]
         },
         "is_ability": false

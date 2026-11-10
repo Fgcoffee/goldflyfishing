@@ -1,11 +1,11 @@
 {
- "ir_version": 2,
+ "ir_version": 1,
  "oracle_id": "db6174d7-211d-4817-b8e4-8384594c83f9",
  "name": "Urborg, Tomb of Yawgmoth",
  "card_hash": "865d9fc1e2e5ab7bf2778b27c3e45068",
  "faces": [
   {
-   "ir_version": 2,
+   "ir_version": 1,
    "oracle_id": "db6174d7-211d-4817-b8e4-8384594c83f9",
    "name": "Urborg, Tomb of Yawgmoth",
    "face": 0,
@@ -15,16 +15,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 3,
+     "kind": "AbilityKind.STATIC",
      "effects": [
       {
        "$": "Effect",
-       "kind": 146,
+       "kind": "EffectKind.ADD_TYPE",
        "targets": {
         "$": "ObjectFilter",
-        "types_all": 16
+        "types_all": "CardType.LAND"
        },
-       "duration": 0,
+       "duration": "Duration.PERMANENT",
        "keywords": [
         "Swamp"
        ],
