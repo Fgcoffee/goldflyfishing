@@ -229,6 +229,59 @@ migrates at start-up. By hand: `alembic upgrade head` from the repository, with
 `DATABASE_URL` set. Run one server process per database for now: sessions and
 rate limits live in memory.
 
+## Render (the private beta)
+
+The beta runs on Render as the Docker web service `decktune`
+(https://goldflyfishing.onrender.com), auto-deploying from `main`, with a
+Render Postgres for accounts.
+
+* The image builds the card database and the stored parse from the dumps in
+  `cache/scryfall`, so the free tier's missing disk does not matter: a restart
+  starts complete. Accounts, decks and history are in Postgres.
+* Measured footprint: about 110 MB idle, 150 MB with a session running games
+  in-process. The free and Starter instances have 512 MB.
+
+Environment on the service:
+
+| variable | value |
+|---|---|
+| `MTGFISH_ENV` | `production` |
+| `PUBLIC_BASE_URL` | `https://goldflyfishing.onrender.com` |
+| `SESSION_SECRET` | random, 48+ characters |
+| `DATABASE_URL` | the Postgres *internal* connection string |
+| `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` | the Discord application |
+| `MTGFISH_WORKERS` | `1` - games run in the web process; no pool on 512 MB |
+| `MTGFISH_MAX_GAMES` | `200` - per start; a game takes tens of seconds on a fractional CPU |
+| `MTGFISH_MAX_SESSIONS` | `8` |
+| `OPERATOR_NAME`, `CONTACT_EMAIL` | shown in the Privacy Policy and Terms (`/privacy`, `/terms`) |
+
+Without `SMTP_HOST` or `RESEND_API_KEY`, production offers Discord sign-in
+only; email sign-up appears once mail is configured.
+
+Discord redirect for the beta: `https://goldflyfishing.onrender.com/auth/discord/callback`.
+When the site moves to its own domain, add that domain's callback and change
+`PUBLIC_BASE_URL`.
+
+Render's free Postgres is deleted 30 days after creation unless upgraded -
+upgrade it (or download everyone's data) before then.
+
+## Privacy, cookies and search engines
+
+* `/privacy` and `/terms` are filled in at request time from `OPERATOR_NAME`,
+  `CONTACT_EMAIL` and `PUBLIC_BASE_URL`. Bump `TERMS_VERSION` in
+  `web/auth/service.py` when either changes materially.
+* Only strictly necessary cookies are used, so the banner informs rather than
+  asks for consent.
+* Registration requires confirming age 16+ and accepting the Terms; the
+  version and time are stored. Continuing with Discord says the same.
+* Account → **Download my data** (`GET /auth/account/export`) and **Delete
+  account** cover access, portability and erasure.
+* Expired sessions and tokens, and email accounts still unverified after 30
+  days, are purged at start-up and every six hours.
+* `robots.txt` disallows everything and every response carries
+  `X-Robots-Tag: noindex, nofollow`; set `MTGFISH_ALLOW_INDEXING=1` to open it
+  up at public launch.
+
 ## Before it is public
 
 * **Manage subscription is a placeholder.** The dialog sends nothing.

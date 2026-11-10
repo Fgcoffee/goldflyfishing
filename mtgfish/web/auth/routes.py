@@ -88,6 +88,12 @@ def build_router(auth) -> APIRouter:
     def sign_out(response: Response) -> None:
         response.delete_cookie(AUTH_COOKIE, path="/")
 
+    def email_only() -> None:
+        if not auth.email_enabled:
+            raise AuthError(
+                "email sign-in isn't available yet - use Continue with Discord", 503
+            )
+
     def check(request: Request, *names_keys: tuple[str, str]) -> None:
         """Rate limits, then CSRF, for a POST."""
         auth.limits.hit("auth", _ip(request))
@@ -134,6 +140,7 @@ def build_router(auth) -> APIRouter:
                 "user": user.public() if user else None,
                 "csrf": csrf,
                 "discord": {"enabled": settings.discord_enabled, "fake": settings.discord_fake},
+                "email": {"enabled": auth.email_enabled},
             }
         response = reply(payload, 200 if user else 401)
         if request.cookies.get(CSRF_COOKIE) != csrf:
@@ -151,11 +158,13 @@ def build_router(auth) -> APIRouter:
     async def register(request: Request):
         data = await body(request)
         try:
+            email_only()
             check(request, ("register", _ip(request)))
             with auth.db.session() as db:
                 user = service.register(
                     db, str(data.get("email", "")), str(data.get("password", "")),
                     str(data.get("display_name", "")),
+                    accept_terms=data.get("accept_terms") is True,
                 )
                 db.commit()
                 try:
@@ -174,6 +183,7 @@ def build_router(auth) -> APIRouter:
         data = await body(request)
         email = service.normalize_email(str(data.get("email", "")))
         try:
+            email_only()
             check(request, ("login", _ip(request)), ("login_email", email))
             with auth.db.session() as db:
                 user = service.login(db, email, str(data.get("password", "")))
@@ -216,6 +226,7 @@ def build_router(auth) -> APIRouter:
                 user = service.user_for_session(db, request.cookies.get(AUTH_COOKIE))
                 if user is None:
                     raise AuthError("log in first", 401)
+                email_only()
                 check(request, ("verify_resend", user.id))
                 if user.email_verified or not user.email:
                     return reply({"ok": True, "already": True})
@@ -230,6 +241,7 @@ def build_router(auth) -> APIRouter:
         email = service.normalize_email(str(data.get("email", "")))
         generic = {"ok": True, "message": "if that address has an account, we've sent a link"}
         try:
+            email_only()
             check(request, ("reset", _ip(request)), ("reset_email", email))
         except (AuthError, RateLimited) as exc:
             return refuse(exc)
@@ -255,6 +267,7 @@ def build_router(auth) -> APIRouter:
     async def reset(request: Request):
         data = await body(request)
         try:
+            email_only()
             check(request, ("reset", _ip(request)))
             with auth.db.session() as db:
                 user = service.finish_reset(
@@ -308,6 +321,25 @@ def build_router(auth) -> APIRouter:
             return response
         except (AuthError, RateLimited) as exc:
             return refuse(exc)
+
+    @router.get("/account/export")
+    def export_account(request: Request):
+        """Download everything stored about you, as JSON."""
+        with auth.db.session() as db:
+            user = service.user_for_session(db, request.cookies.get(AUTH_COOKIE))
+            if user is None:
+                return reply({"error": "log in first"}, 401)
+            data = service.export_data(db, user)
+        import json as _json
+
+        return Response(
+            _json.dumps(data, indent=2),
+            media_type="application/json",
+            headers={
+                "Content-Disposition": 'attachment; filename="goldfisher-my-data.json"',
+                "Cache-Control": "no-store",
+            },
+        )
 
     # -- email links --------------------------------------------------------
 

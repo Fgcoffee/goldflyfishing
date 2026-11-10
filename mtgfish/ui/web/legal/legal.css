@@ -1,0 +1,18 @@
+:root { --bg: #0a1426; --panel: #13223f; --line: #243b63; --text: #e7edf6; --dim: #8fa1bd; --accent: #e8b04a; }
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f5f6f8; --panel: #ffffff; --line: #dde2ea; --text: #17202c; --dim: #5a6576; --accent: #b45f06; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.legal { max-width: 760px; margin: 0 auto; padding: 32px 16px 80px; }
+.legal h1 { font-size: 28px; margin: 8px 0 4px; }
+.legal h2 { font-size: 18px; margin: 28px 0 8px; }
+.legal .meta, .legal .back { color: var(--dim); font-size: 13px; }
+.legal a { color: var(--accent); }
+.legal table { width: 100%; border-collapse: collapse; background: var(--panel); margin: 8px 0;
+  font-size: 14px; display: block; overflow-x: auto; }
+.legal th, .legal td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line);
+  vertical-align: top; }
+.legal th { color: var(--dim); font-weight: 600; }
+.legal code { font-size: 13px; }

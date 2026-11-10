@@ -33,9 +33,14 @@ class Accounts:
         #: Called with a user id when that account is deleted, so live
         #: browser sessions stop acting as it.
         self.on_forget = None
-        if self.settings.production:
-            # Fail at start-up, not at the first sign-up, when email is unset.
-            self.mailer()
+        #: Whether email + password accounts are offered. In production that
+        #: needs a way to send email (verification, resets); without one the
+        #: site runs Discord-only rather than refusing to start.
+        from .mail import mail_configured
+
+        self.email_enabled = (
+            mailer is not None or mail_configured() or not self.settings.production
+        )
 
     def mailer(self) -> Mailer:
         if self._mailer is None:

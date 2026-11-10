@@ -421,6 +421,13 @@ def verify(config: RunConfig, result: RunResult, *, sample: int = 8) -> list[int
 
 
 def _default_workers() -> int:
+    # MTGFISH_WORKERS caps it. In a container os.cpu_count() reports the
+    # host's cores, not the slice this process may use, and a small hosted
+    # instance (half a core, 512 MB) cannot hold a worker per host core.
+    # Which process plays a game never changes the game: seeds are per game.
+    configured = os.environ.get("MTGFISH_WORKERS", "").strip()
+    if configured.isdigit() and int(configured) > 0:
+        return int(configured)
     # One short of the core count: a run that saturates every core makes the
     # machine unusable, and this is a desktop tool.
     return max(1, (os.cpu_count() or 2) - 1)

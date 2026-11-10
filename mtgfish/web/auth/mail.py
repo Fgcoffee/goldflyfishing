@@ -92,6 +92,10 @@ class ResendMailer:
             raise RuntimeError(f"Resend answered {reply.status_code}")
 
 
+def mail_configured() -> bool:
+    return bool(os.environ.get("SMTP_HOST") or os.environ.get("RESEND_API_KEY"))
+
+
 def mailer_from_env(*, production: bool) -> Mailer:
     sender = os.environ.get("MAIL_FROM", "Goldfisher <no-reply@localhost>")
     if os.environ.get("SMTP_HOST"):

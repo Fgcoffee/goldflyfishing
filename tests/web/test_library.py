@@ -60,7 +60,10 @@ def signed_up(make_client, email, verified=True):
     import re
 
     client = make_client()
-    post(client, "/auth/register", {"email": email, "password": "correct horse battery", "display_name": email[:4]})
+    post(client, "/auth/register", {
+        "email": email, "password": "correct horse battery", "display_name": email[:4],
+        "accept_terms": True,
+    })
     if verified:
         text = client.accounts.mailer().sent[-1][2]
         token = re.search(r"verify\?token=([\w\-%]+)", text).group(1)

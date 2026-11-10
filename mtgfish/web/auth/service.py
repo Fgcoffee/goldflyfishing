@@ -34,6 +34,14 @@ from ..models import AuthSession, AuthToken, User, now
 from . import passwords
 from .discord import DiscordProfile
 
+#: Bump when the Terms or the Privacy Policy change in a way people must
+#: agree to again; the date of the change is the usual choice.
+TERMS_VERSION = "2026-11-10"
+
+#: Unverified email accounts older than this are deleted (Privacy Policy,
+#: "How long we keep data").
+UNVERIFIED_DAYS = 30
+
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$")
 GENERIC_LOGIN_ERROR = "wrong email or password"
 
@@ -140,13 +148,19 @@ def redeem_token(db: Session, token: str, purpose: str) -> AuthToken:
 # ---------------------------------------------------------------------------
 
 
-def register(db: Session, email: str, password: str, display_name: str) -> User:
+def register(
+    db: Session, email: str, password: str, display_name: str, *, accept_terms: bool = False
+) -> User:
     email = normalize_email(email)
     display_name = (display_name or "").strip()[:64]
     if not EMAIL_RE.match(email):
         raise AuthError("enter a valid email address")
     if not display_name:
         raise AuthError("enter a display name")
+    if not accept_terms:
+        raise AuthError(
+            "please confirm you're 16 or older and agree to the Terms and Privacy Policy"
+        )
     trouble = passwords.problem(password, email=email, name=display_name)
     if trouble:
         raise AuthError(trouble)
@@ -160,6 +174,8 @@ def register(db: Session, email: str, password: str, display_name: str) -> User:
         display_name=display_name,
         password_hash=passwords.hash_password(password),
         email_verified=False,
+        terms_version=TERMS_VERSION,
+        terms_accepted_at=now(),
     )
     db.add(user)
     db.flush()
@@ -276,6 +292,10 @@ def discord_login(
         display_name=(profile.global_name or profile.username or "Discord user")[:64],
         email=profile.email if email_free else None,
         email_verified=bool(email_free),
+        # The Discord button says that continuing accepts the Terms and the
+        # Privacy Policy and confirms the person is 16 or older.
+        terms_version=TERMS_VERSION,
+        terms_accepted_at=now(),
     )
     _apply_profile(user, profile)
     db.add(user)
@@ -300,3 +320,80 @@ def delete_account(db: Session, user: User) -> None:
     """The user and everything of theirs. Sessions, tokens, verdicts (and,
     once they exist, decks and runs) go with it by cascading foreign keys."""
     db.delete(user)
+
+
+def purge_expired(db: Session) -> dict:
+    """Delete what the Privacy Policy says is not kept: expired sessions,
+    expired or used tokens, and unverified email accounts past their grace."""
+    moment = now()
+    sessions = db.execute(delete(AuthSession).where(AuthSession.expires_at <= moment)).rowcount
+    tokens = db.execute(
+        delete(AuthToken).where(
+            (AuthToken.expires_at <= moment)
+            | (AuthToken.used_at.is_not(None) & (AuthToken.used_at <= moment - dt.timedelta(days=1)))
+        )
+    ).rowcount
+    stale = db.scalars(
+        select(User).where(
+            User.email_verified.is_(False),
+            User.discord_id.is_(None),
+            User.created_at <= moment - dt.timedelta(days=UNVERIFIED_DAYS),
+        )
+    ).all()
+    for user in stale:
+        db.delete(user)
+    db.commit()
+    return {"sessions": sessions or 0, "tokens": tokens or 0, "unverified_users": len(stale)}
+
+
+def export_data(db: Session, user: User) -> dict:
+    """Everything stored about one person (UK GDPR Art. 15 and 20)."""
+    import json as _json
+
+    from ..models import UserVerdicts
+
+    out: dict = {
+        "exported_at": now().isoformat(),
+        "account": user.public()
+        | {
+            "terms_version": user.terms_version,
+            "terms_accepted_at": user.terms_accepted_at.isoformat()
+            if user.terms_accepted_at else None,
+            "has_password": bool(user.password_hash),
+        },
+        "sessions": [
+            {"created_at": s.created_at.isoformat(), "expires_at": s.expires_at.isoformat()}
+            for s in db.scalars(select(AuthSession).where(AuthSession.user_id == user.id))
+        ],
+    }
+    verdicts = db.get(UserVerdicts, user.id)
+    out["sandbox_verdicts"] = _json.loads(verdicts.data) if verdicts and verdicts.data else {}
+    try:
+        from ..models import Deck, DeckVersion, Run
+    except ImportError:  # before saved decks existed
+        return out
+    decks = []
+    for deck in db.scalars(select(Deck).where(Deck.user_id == user.id)):
+        versions = db.scalars(
+            select(DeckVersion).where(DeckVersion.deck_id == deck.id).order_by(DeckVersion.number)
+        )
+        decks.append({
+            "name": deck.name,
+            "commander": deck.commander,
+            "created_at": deck.created_at.isoformat(),
+            "versions": [
+                {"number": v.number, "created_at": v.created_at.isoformat(), "decklist": v.decklist}
+                for v in versions
+            ],
+        })
+    out["decks"] = decks
+    out["runs"] = [
+        {
+            "label": r.label,
+            "created_at": r.created_at.isoformat(),
+            "config": _json.loads(r.config),
+            "report": _json.loads(r.report) if r.report else None,
+        }
+        for r in db.scalars(select(Run).where(Run.user_id == user.id))
+    ]
+    return out
