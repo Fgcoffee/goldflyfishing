@@ -397,6 +397,19 @@ def _keyword_instance(name: str, argument: str, text: str):
     spec = None
 
     argument = argument.strip().lstrip("-").strip()
+    if name.lower() == "craft":
+        return _craft_instance(name, argument, text)
+    if name.lower() == "enchant" and argument.lower().rstrip(".") in ("player", "opponent"):
+        # CR 303.4a: an Aura that enchants a player carries a player filter
+        # as its quality.
+        from ..rules.kernel.query import PlayerFilter, PlayerScope
+
+        scope = (
+            PlayerScope.EACH_PLAYER
+            if argument.lower().startswith("player")
+            else PlayerScope.EACH_OPPONENT
+        )
+        return KeywordInstance(name, players=PlayerFilter(scope), text=text)
     if argument:
         stream = Stream.of(argument)
         number = stream.accept_number()
@@ -463,6 +476,53 @@ def _keyword_instance(name: str, argument: str, text: str):
     return KeywordInstance(
         name, amount=amount, cost=cost, filter=spec, text=text
     )
+
+
+def _craft_instance(name: str, argument: str, text: str):
+    """"Craft with artifact {3}{W}", "Craft with two creatures {2}{B}",
+    "Craft with one or more {5}" (CR 702.167a).
+
+    The materials go in as the filter, without zones or controller - the
+    engine looks among your permanents and your graveyard itself - and
+    their number as the amount ("one or more" is one). Materials the filter
+    cannot say ("a Dinosaur, a Merfolk, a Pirate, and a Vampire", "two that
+    share a card type") leave the keyword unread.
+    """
+    from dataclasses import replace
+
+    from ..rules.cr700_additional_rules.cr702_keyword_impl import KeywordInstance
+    from ..rules.kernel.query import ControllerRelation, ObjectFilter
+    from .nouns import parse_object_filter
+
+    stream = Stream.of(argument)
+    if not stream.accept("with"):
+        return None
+    amount = 1
+    if not stream.accept_phrase("one or more"):
+        number = stream.accept_number()
+        if number is not None:
+            amount = number
+            stream.accept_phrase("or more")
+    if stream.peek().kind.name == "SYMBOL":
+        # "Craft with one or more {5}": any permanent or card at all.
+        spec = ObjectFilter(zones=frozenset())
+    else:
+        spec = parse_object_filter(stream)
+        if spec is None or spec.source_only or spec.remembered:
+            return None
+        if spec.controller is not ControllerRelation.ANY:
+            return None
+        spec = replace(spec, count=None, up_to=False, zones=frozenset())
+    symbols = []
+    while stream.peek().kind.name == "SYMBOL":
+        symbols.append(stream.next().text)
+    stream.accept(".")
+    if not symbols or not stream.done:
+        return None
+    cost = _keyword_cost("".join(symbols))
+    if cost is None:
+        return None
+    return KeywordInstance(name, amount=amount, cost=cost, filter=spec, text=text)
 
 
 def _equip_quality(spec):

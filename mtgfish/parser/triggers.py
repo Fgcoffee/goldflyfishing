@@ -103,6 +103,7 @@ def _deals_damage(stream: Stream, source, text: str) -> TriggerCondition:
 
 def parse_trigger(stream: Stream) -> TriggerCondition | None:
     """The condition half of a triggered ability, up to and including its comma."""
+    start = stream.mark()
     if not stream.accept("at", "when", "whenever"):
         return None
 
@@ -111,6 +112,16 @@ def parse_trigger(stream: Stream) -> TriggerCondition | None:
         return None
 
     intervening = _intervening_if(stream)
+    if (
+        intervening is not None
+        and _names_was_cast(intervening)
+        and not (condition.subject is not None and condition.subject.source_only)
+    ):
+        # "Whenever another creature you control enters, if you cast it":
+        # "it" is the entering creature, and WAS_CAST asks only about the
+        # source (Prototype X-8, The Sibsig Ceremony). Not read.
+        stream.reset(start)
+        return None
     if intervening is not None:
         # CR 603.4 adds a check to the trigger; it takes nothing away. The
         # condition used to be rebuilt field by field, and every field the
@@ -1550,15 +1561,12 @@ def _intervening_if(stream: Stream) -> Condition | None:
             condition is None
             or not stream.at(",")
             or _refers_back(condition)
-            or _names_kind(condition, ConditionKind.WAS_CAST)
         ):
             # "if its power is 6 or greater" names "the object just referred
             # to", which nothing has referred to yet as the event happens:
             # checked on the trigger it would never hold. Left on the effect,
-            # where it is checked on resolution. "If you cast it" stays there
-            # too for now: the engine does not yet know, as an enters trigger
-            # fires, that the permanent was cast (Geological Appraiser lost
-            # its discover) - an engine gap, reported to the rules session.
+            # where it is checked on resolution. ("If you cast it" goes on
+            # the trigger: the cast mark is on the permanent as it enters.)
             stream.reset(look)
             condition = None
     if condition is None:
@@ -1571,11 +1579,11 @@ def _intervening_if(stream: Stream) -> Condition | None:
     return condition
 
 
-def _names_kind(condition, kind) -> bool:
-    """Whether a condition is, or contains, one of this kind."""
-    if condition.kind is kind:
+def _names_was_cast(condition) -> bool:
+    """Whether a condition is, or contains, "if you cast it"."""
+    if condition.kind is ConditionKind.WAS_CAST:
         return True
-    return any(_names_kind(c, kind) for c in getattr(condition, "operands", ()) or ())
+    return any(_names_was_cast(c) for c in getattr(condition, "operands", ()) or ())
 
 
 def _refers_back(value) -> bool:

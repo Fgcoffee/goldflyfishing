@@ -467,6 +467,16 @@ def _player_or_object(stream: Stream) -> ObjectFilter | None:
     if not stream.accept("or"):
         stream.reset(mark)
         return None
+    if players.scope not in (
+        PlayerScope.TARGET_PLAYER,
+        PlayerScope.TARGET_OPPONENT,
+        PlayerScope.EACH_PLAYER,
+    ):
+        # "that player or a planeswalker that player controls": the flag
+        # below means *any* player, so a named one would be lost - Curse of
+        # the Pierced Heart could hit its own controller. Not read.
+        stream.reset(mark)
+        return None
 
     spec = parse_object_filter(stream)
     if spec is None:
@@ -1419,6 +1429,9 @@ _PLAYER_PHRASES: tuple[tuple[str, PlayerScope], ...] = (
     ("each player's", PlayerScope.EACH_PLAYER),
     ("each opponent's", PlayerScope.EACH_OPPONENT),
     ("that player's", PlayerScope.REFERRED_PLAYER),
+    # CR 303.4: the player an Aura with "enchant player" is attached to.
+    ("enchanted player's", PlayerScope.ENCHANTED_PLAYER),
+    ("enchanted player", PlayerScope.ENCHANTED_PLAYER),
     # "That creature's controller", "That land's controller" - the possessive
     # names an object the sentence already referred to, and the tokenizer
     # keeps it whole, so each form has to be listed.
