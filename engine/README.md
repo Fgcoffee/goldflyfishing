@@ -25,9 +25,12 @@ coordinates and merges into `main`.
 | Area | Owner | Paths |
 |---|---|---|
 | Card IR: JSON schema, Python exporter, TS types | parser session | `schema/`, `engine/src/ir/`, `mtgfish/ir/`, `mtgfish/tools/ir_export.py` |
-| Kernel and rules: state, zones, objects, layers, casting, mana, stack, triggers, SBAs, combat, replacements, keywords | rules session | `engine/src/kernel/`, `engine/src/rules/` |
+| Kernel and rules: state, zones, objects, layers, casting, stack, triggers, SBAs, combat, replacements, keywords | rules session | `engine/src/kernel/`, `engine/src/rules/` (except the two folders below) |
+| Mana core, then filter matching, values and conditions (ported from `cr106_mana.py`, `mana_plan.py`, `kernel/matching.py`, `values.py`, `conditions.py`) | parser session | `engine/src/rules/mana/`, `engine/src/rules/match/` |
 | AI and game runner, Web Workers, app build (Vite), serving IR JSON | web session | `engine/src/ai/`, `engine/src/sim/`, `webapp/`, `mtgfish/ui/web/`, `mtgfish/web/` |
 | Test fixtures, differential tests against the Python engine, review | auditor session | `engine/test/fixtures/`, `audit/` |
+
+**Reporting:** each agent keeps `engine/status/<agent>.md` up to date (done, next, questions for the auditor). Direct messages to the auditor are refused, so put questions there or in commit messages.
 
 Shared files (`engine/package.json`, `engine/tsconfig.json`,
 `engine/vitest.config.ts`, this README) are changed only after telling the
