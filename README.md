@@ -82,6 +82,19 @@ After `install-hooks`, git rebuilds it in the background after every commit,
 merge, checkout and rebase that leaves it stale, and `fetch_scryfall` does the
 same for new card data. `MTGFISH_PARSE_STORE=off` turns it off.
 
+### The parse as JSON (for the TypeScript engine)
+
+The same parse, as versioned JSON, one file per card: the boundary between
+the Python parser and the browser engine. Schema and TypeScript types are in
+`schema/`, generated from the IR classes; the format is in
+[docs/ir-json.md](docs/ir-json.md).
+
+```bash
+python -m mtgfish.tools.ir_export export            # cache/ir/v1/<oracle_id>.json
+python -m mtgfish.tools.ir_export verify --schema   # every face round-trips exactly
+python -m mtgfish.tools.ir_export schema            # regenerate schema/
+```
+
 ### Run it
 
 ```bash
