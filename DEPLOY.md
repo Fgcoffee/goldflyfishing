@@ -5,13 +5,55 @@ end and the same `Bridge`. The window talks to it over a QWebChannel; a browser
 talks to it through `mtgfish.web` over HTTP. `ui/web/transport.js` picks
 whichever is there.
 
+The web server is a FastAPI app served by uvicorn:
+
+| module | what it holds |
+|---|---|
+| `mtgfish/web/app.py` | the routes (`create_app()` builds the ASGI app) |
+| `mtgfish/web/sessions.py` | one `Bridge` per browser, each on its own thread |
+| `mtgfish/web/jobs.py` | simulations as jobs: queued, running, done, cancelled, failed |
+| `mtgfish/web/settings.py` | every setting, from the environment (and a local `.env`) |
+| `mtgfish/web/server.py` | puts the app on a socket for `python -m mtgfish.web` |
+
 ## Locally
 
 ```bash
+pip install -r requirements-web.txt
 python -m mtgfish.web --reload
 ```
 
 Open http://127.0.0.1:8000. The card database is read from `cache/` as usual.
+Secrets for local use go in a `.env` file in the folder you start the server
+from. It is ignored by version control; never commit it. A variable already
+set in the environment always wins over `.env`.
+
+To run the ASGI app under your own uvicorn (or gunicorn with uvicorn workers -
+**one worker process only**, since sessions and the job queue live in memory):
+
+```bash
+uvicorn "mtgfish.web.app:create_app" --factory --host 0.0.0.0 --port 8000 --proxy-headers
+```
+
+## Simulations are jobs
+
+No request waits for a game. `start_run`, `start_lab`, `start_cutlab` and
+`start_queue_test` create a job and return at once. If the machine has room the
+job starts immediately and the reply is the bridge's own; otherwise it waits in
+order and the page is told its place (`job_status` event). Results arrive as
+the usual `*_finished` events on `/api/events`, and the job ends with them.
+
+* `GET /api/jobs` lists this browser's jobs; `POST /api/jobs/<id>/cancel` stops
+  one (someone else's job id is reported as not found).
+* **Stop run** cancels everything the browser has waiting or running.
+* Limits: `MTGFISH_MAX_RUNS` at once across everyone, `MTGFISH_MAX_RUNS_PER_USER`
+  at once per browser, `MTGFISH_MAX_QUEUED_PER_USER` waiting per browser.
+
+The queue is behind an interface (`jobs.JobQueue`). `LocalJobQueue` plays jobs
+on this machine through the browser's bridge and its process pool. To move
+simulations to separate worker machines, implement the same interface over RQ,
+Celery or Dramatiq: enqueue the job's `RunConfig` (everything a run is), let a
+worker play it, and call `complete()` with the result so the finish event
+reaches the page.
 
 ## In a container
 
@@ -75,24 +117,176 @@ cleaning up (killed from Task Manager, a crash), so nothing is left spinning.
 | `MTGFISH_DATA_DIR` | `cache/` | holds `cards.sqlite` |
 | `MTGFISH_MAX_SESSIONS` | `16` | browser sessions, each with its own bridge (~30 MB each, more once a deck is loaded) |
 | `MTGFISH_SESSION_TTL` | `14400` | idle seconds before a session is closed |
-| `MTGFISH_MAX_RUNS` | `1` | simulations at once across everyone. A run already uses every core. |
+| `MTGFISH_MAX_RUNS` | `1` | simulations at once across everyone. A run already uses every core; more wait in the queue. |
+| `MTGFISH_MAX_RUNS_PER_USER` | `1` | simulations one browser may have running at once |
+| `MTGFISH_MAX_QUEUED_PER_USER` | `2` | simulations one browser may have waiting; past this a start is refused |
+| `PUBLIC_BASE_URL` | `http://127.0.0.1:8000` | the address people use to reach the site (OAuth redirects are built from it) |
+| `FORWARDED_ALLOW_IPS` | `127.0.0.1` | proxies trusted to set `X-Forwarded-*` headers |
+| `MTGFISH_LOG_LEVEL` | `warning` | uvicorn's log level (`--verbose` sets `info`) |
 | `MTGFISH_ABANDON_GRACE` | `30` | seconds a page may be gone before its run is stopped; long enough to survive a reload. Negative never stops it. |
 | `MTGFISH_RELOAD_MAX_WAIT` | `900` | seconds `--reload` waits for a busy run before restarting anyway |
 | `MTGFISH_CALL_TIMEOUT` | `180` | seconds one call may take |
 | `MTGFISH_WEB_DENY` | `read_file` | slots the browser may not call, comma separated |
 | `MTGFISH_SECURE_COOKIES` | off | mark the session cookie `Secure` (also automatic behind a proxy sending `X-Forwarded-Proto: https`) |
 
+## Accounts
+
+Built into the app (no auth vendor): email + password, and Discord. Anonymous
+use keeps working for simulations; signing in adds per-account sandbox
+verdicts and per-account run limits (and, next, saved decks and history).
+
+| route | |
+|---|---|
+| `GET /auth/me` | the signed-in user, or 401 |
+| `POST /auth/register`, `/auth/login`, `/auth/logout` | email + password |
+| `POST /auth/verify`, `/auth/verify/resend` | email verification |
+| `POST /auth/password/forgot`, `/auth/password/reset` | password reset |
+| `POST /auth/account`, `/auth/account/delete` | display name; delete everything |
+| `GET /auth/discord/login`, `/auth/discord/callback` | Discord sign-in (`?link=1` links it) |
+| `POST /auth/discord/unlink` | refused if it would leave no way to log in |
+
+How it behaves:
+
+* **Passwords**: argon2id, at least 10 characters, common ones refused. A wrong
+  email and a wrong password get the same answer; a reset request never says
+  whether the address has an account.
+* **Email links** (verify: 48 h, reset: 30 min) are random, single use, and only
+  their hash is stored. They land on the page (`/#verify=…`, `/#reset=…`), which
+  redeems them, so a mail scanner opening the link does not use it up.
+  Resetting a password signs that account out everywhere.
+* **Unverified accounts** can log in, but cannot save decks or runs until the
+  email is verified (or Discord is linked).
+* **Discord**: OAuth2 authorization code with PKCE (S256), scopes
+  `identify email`, a random `state` in a signed ten-minute cookie. Discord's
+  tokens are used for the token exchange and `/users/@me`, then dropped. A
+  Discord login joins an existing account only when Discord reports a
+  *verified* email equal to that account's *verified* email.
+* **Sessions**: a random id in an `HttpOnly`, `SameSite=Lax` cookie (`Secure` in
+  production); only its hash is stored, with a 30-day expiry. Logout deletes it.
+* **CSRF**: POSTs to `/auth/*` need the `X-CSRF-Token` header to match the
+  `mtgfish_csrf` cookie, and any state-changing request whose `Origin` is
+  another site is refused.
+* **Rate limits** on all of `/auth/*`, tighter on register, login, reset and the
+  Discord routes (in memory: one server process).
+* **Deleting an account** removes the user, sessions, tokens, verdicts and (once
+  they exist) decks and runs.
+* **Sandbox verdicts** belong to the account, in the database. Anonymous
+  browsers get a private set that lasts as long as the session. The desktop
+  app's `verdicts.json` is never used by the server.
+
+### Configuration
+
+All from the environment (or a local `.env`, which is never committed):
+
+| variable | meaning |
+|---|---|
+| `MTGFISH_ENV` | `production` turns on the strict checks: it requires `SESSION_SECRET`, an `https://` `PUBLIC_BASE_URL`, and email delivery; it forces `Secure` cookies; and it refuses the fake Discord login |
+| `SESSION_SECRET` | 32+ random characters; signs the OAuth state cookie. `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `DATABASE_URL` | `postgresql+psycopg://user:pass@host/db` in production; default `sqlite:///$MTGFISH_DATA_DIR/web.sqlite` |
+| `PUBLIC_BASE_URL` | e.g. `https://goldfisher.example` - redirect URIs and email links are built from it |
+| `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` | the Discord application. Without a secret, development gets a fake "Dev Discord User" login |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | email by SMTP (STARTTLS on 587, TLS on 465) |
+| `RESEND_API_KEY` | or email through Resend |
+| `MAIL_FROM` | sender, e.g. `Goldfisher <no-reply@goldfisher.example>`. With no mail settings, development writes emails (links included) to the log |
+
+### Discord redirect URIs
+
+Register each one exactly, under OAuth2 → Redirects in the Discord developer
+portal:
+
+* local: `http://127.0.0.1:8000/auth/discord/callback`
+* production: `https://<your domain>/auth/discord/callback` (add it once the
+  domain exists; `PUBLIC_BASE_URL` must match it)
+
+Keep "Public Client" off: the secret stays on the server.
+
+### Saved decks and history
+
+Signed-in accounts with a verified email (or Discord) get **My decks** and
+**History**:
+
+| route | |
+|---|---|
+| `GET/POST /api/decks`, `GET/POST /api/decks/{id}`, `POST /api/decks/{id}/delete` | save, load, rename, new version, delete |
+| `GET /api/decks/{id}/versions/{n}` | an older version's list |
+| `GET /api/runs`, `GET /api/runs/{id}`, `POST /api/runs/{id}/delete` | history |
+| `POST /api/runs/{id}/open` | show a past run on Results, replays included |
+
+* Saving a changed list adds a version; saving the same list does not. A run
+  points at the version whose list it played (matched by content).
+* A run is recorded when a signed-in, verified person's simulation finishes:
+  the full `RunConfig` (decklists, games, max_rounds, run_seed, hero,
+  card_db_hash) and the report. That is enough to replay any game from its
+  seed; `card_db_hash` says which card data it used.
+* Every deck and run query is filtered by the signed-in user in the API (there
+  is no row-level security in the database). Another person's id is answered
+  exactly like a missing one, with a 404.
+
+### The database
+
+The schema is owned by Alembic (`mtgfish/web/migrations`) and the server
+migrates at start-up. By hand: `alembic upgrade head` from the repository, with
+`DATABASE_URL` set. Run one server process per database for now: sessions and
+rate limits live in memory.
+
+## Render (the private beta)
+
+The beta runs on Render as the Docker web service `decktune`
+(https://goldflyfishing.onrender.com), auto-deploying from `main`, with a
+Render Postgres for accounts.
+
+* The image builds the card database and the stored parse from the dumps in
+  `cache/scryfall`, so the free tier's missing disk does not matter: a restart
+  starts complete. Accounts, decks and history are in Postgres.
+* Measured footprint: about 110 MB idle, 150 MB with a session running games
+  in-process. The free and Starter instances have 512 MB.
+
+Environment on the service:
+
+| variable | value |
+|---|---|
+| `MTGFISH_ENV` | `production` |
+| `PUBLIC_BASE_URL` | `https://goldflyfishing.onrender.com` |
+| `SESSION_SECRET` | random, 48+ characters |
+| `DATABASE_URL` | the Postgres *internal* connection string |
+| `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` | the Discord application |
+| `MTGFISH_WORKERS` | `1` - games run in the web process; no pool on 512 MB |
+| `MTGFISH_MAX_GAMES` | `200` - per start; a game takes tens of seconds on a fractional CPU |
+| `MTGFISH_MAX_SESSIONS` | `8` |
+| `OPERATOR_NAME`, `CONTACT_EMAIL` | shown in the Privacy Policy and Terms (`/privacy`, `/terms`) |
+
+Without `SMTP_HOST` or `RESEND_API_KEY`, production offers Discord sign-in
+only; email sign-up appears once mail is configured.
+
+Discord redirect for the beta: `https://goldflyfishing.onrender.com/auth/discord/callback`.
+When the site moves to its own domain, add that domain's callback and change
+`PUBLIC_BASE_URL`.
+
+Render's free Postgres is deleted 30 days after creation unless upgraded -
+upgrade it (or download everyone's data) before then.
+
+## Privacy, cookies and search engines
+
+* `/privacy` and `/terms` are filled in at request time from `OPERATOR_NAME`,
+  `CONTACT_EMAIL` and `PUBLIC_BASE_URL`. Bump `TERMS_VERSION` in
+  `web/auth/service.py` when either changes materially.
+* Only strictly necessary cookies are used, so the banner informs rather than
+  asks for consent.
+* Registration requires confirming age 16+ and accepting the Terms; the
+  version and time are stored. Continuing with Discord says the same.
+* Account → **Download my data** (`GET /auth/account/export`) and **Delete
+  account** cover access, portability and erasure.
+* Expired sessions and tokens, and email accounts still unverified after 30
+  days, are purged at start-up and every six hours.
+* `robots.txt` disallows everything and every response carries
+  `X-Robots-Tag: noindex, nofollow`; set `MTGFISH_ALLOW_INDEXING=1` to open it
+  up at public launch.
+
 ## Before it is public
 
-Three things are fine for a private deployment and not for an open one:
-
-* **Card verdicts are global.** "Wrong - switch it off" in the sandbox writes to
-  one `verdicts.json` and changes every user's simulations. Add
-  `sandbox_judge` to `MTGFISH_WEB_DENY` until verdicts belong to accounts.
-* **Log in / Register and Manage subscription are placeholders.** The dialogs
-  send nothing.
-* **Sessions are anonymous.** A session is a random cookie; there is no account
-  behind it, so no limit per person beyond `MTGFISH_MAX_RUNS`.
+* **Manage subscription is a placeholder.** The dialog sends nothing.
+* **One process.** Rate limits, the job queue and browser sessions are in
+  memory; scaling out needs Redis (or similar) behind them first.
 
 ## Archidekt import
 

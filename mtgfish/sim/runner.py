@@ -21,6 +21,7 @@ report says so rather than quietly showing the wrong game.
 
 from __future__ import annotations
 
+import logging
 import multiprocessing
 import os
 import threading
@@ -33,6 +34,8 @@ from ..rules.cr100_game_concepts.cr103_setup import new_game
 from ..rules.cr500_turn_structure.cr500_turn import TurnOptions, run_game
 from .observer import Observer, finish, new_record
 from .records import GameRecord
+
+_log = logging.getLogger("mtgfish.sim.runner")
 
 
 @dataclass(slots=True)
@@ -84,10 +87,45 @@ class RunCancelled(Exception):
     """
 
 
+@dataclass(frozen=True, slots=True)
+class CrashedGame:
+    """A game the engine could not finish: which one, and why.
+
+    Kept rather than raised, so one engine bug does not throw away every other
+    game of a run. The seed replays it exactly (``replay(config, index)``).
+    """
+
+    index: int
+    seed: int
+    error: str
+    detail: str = ""
+
+    def as_dict(self) -> dict:
+        return {"index": self.index, "seed": self.seed, "error": self.error}
+
+
+def _crashed(config: RunConfig, index: int, exc: BaseException) -> CrashedGame:
+    import traceback
+
+    # A bare "tuple index out of range" from somewhere in two hundred games
+    # says nothing about which game, or where. The seed makes the game
+    # replayable; the traceback says where to look. Plain strings, so it
+    # survives the trip back from a worker process.
+    return CrashedGame(
+        index=index,
+        seed=config.seed_for(index),
+        error=f"{type(exc).__name__}: {exc}",
+        detail="".join(traceback.format_exception(exc, limit=-6)),
+    )
+
+
 @dataclass(slots=True)
 class RunResult:
     config: RunConfig
     records: list[GameRecord] = field(default_factory=list)
+    #: Games that crashed, left out of every number in the report and listed
+    #: in it instead.
+    crashed: list[CrashedGame] = field(default_factory=list)
     #: Cards in the hero's deck that no ability could be read for, so the
     #: report can say which numbers are standing on inert cards.
     unparsed_cards: list[str] = field(default_factory=list)
@@ -210,25 +248,41 @@ class GameCrashed(RuntimeError):
     """One game raised. Carries which game, so it can be replayed and fixed."""
 
 
-def _play_chunk(args) -> list[GameRecord]:
+def _play_chunk(args) -> list[GameRecord | CrashedGame]:
+    """Play some games; a game that crashes comes back as a ``CrashedGame``."""
     config, indices = args
-    records = []
+    out: list[GameRecord | CrashedGame] = []
     for index in indices:
         try:
-            records.append(play_one(config, index))
-        except Exception as exc:  # noqa: BLE001 - re-raised with the game named
-            import traceback
+            out.append(play_one(config, index))
+        except Exception as exc:  # noqa: BLE001 - reported per game, not fatal
+            out.append(_crashed(config, index, exc))
+    return out
 
-            # A bare "'NoneType' object has no attribute 'zones'" from somewhere
-            # in fifty games says nothing about which game, or where. The seed
-            # makes the game replayable; the traceback says where to look. Kept
-            # as one string so it survives the trip back from a worker process.
-            detail = "".join(traceback.format_exception(exc, limit=-6))
-            raise GameCrashed(
-                f"game {index} (seed {config.seed_for(index)}) crashed: "
-                f"{type(exc).__name__}: {exc}\n{detail}"
-            ) from None
-    return records
+
+def _keep(result: RunResult, items) -> None:
+    for item in items:
+        if isinstance(item, CrashedGame):
+            _log.warning(
+                "game %s (seed %s) crashed and was left out: %s\n%s",
+                item.index, item.seed, item.error, item.detail,
+            )
+            result.crashed.append(item)
+        else:
+            result.records.append(item)
+
+
+def _finish(result: RunResult) -> RunResult:
+    """Every game crashed: there is nothing honest to report, so fail."""
+    if result.crashed and not result.records:
+        first = result.crashed[0]
+        raise GameCrashed(
+            f"every game crashed - game {first.index} (seed {first.seed}): "
+            f"{first.error}\n{first.detail}"
+        )
+    result.records.sort(key=lambda record: record.index)
+    result.crashed.sort(key=lambda crash: crash.index)
+    return result
 
 
 def run(
@@ -249,13 +303,22 @@ def run(
         if cancel is not None and cancel.is_set():
             raise RunCancelled(f"stopped after {len(result.records)} of {config.games} games")
 
+    def played() -> int:
+        return len(result.records) + len(result.crashed)
+
     if workers <= 1 or config.games < 32:
         for index in range(config.games):
             check()
-            result.records.append(play_one(config, index, cancel=cancel))
+            try:
+                item = play_one(config, index, cancel=cancel)
+            except RunCancelled:
+                raise
+            except Exception as exc:  # noqa: BLE001 - reported per game, not fatal
+                item = _crashed(config, index, exc)
+            _keep(result, [item])
             if progress:
-                progress(len(result.records), config.games)
-        return result
+                progress(played(), config.games)
+        return _finish(result)
 
     # Many small chunks rather than one per worker. With one chunk each, a
     # 10,000 game run reports progress twenty times - in twenty jumps of five
@@ -281,9 +344,9 @@ def run(
             # order would point at the wrong games.
             done, pending = wait(pending, timeout=0.25, return_when=FIRST_COMPLETED)
             for future in done:
-                result.records.extend(future.result())
+                _keep(result, future.result())
                 if progress:
-                    progress(len(result.records), config.games)
+                    progress(played(), config.games)
             check()
         completed = True
     finally:
@@ -292,8 +355,7 @@ def run(
         else:
             _stop_pool(pool)
 
-    result.records.sort(key=lambda record: record.index)
-    return result
+    return _finish(result)
 
 
 def _quiet_shutdown_noise(pool: ProcessPoolExecutor) -> None:
@@ -421,6 +483,13 @@ def verify(config: RunConfig, result: RunResult, *, sample: int = 8) -> list[int
 
 
 def _default_workers() -> int:
+    # MTGFISH_WORKERS caps it. In a container os.cpu_count() reports the
+    # host's cores, not the slice this process may use, and a small hosted
+    # instance (half a core, 512 MB) cannot hold a worker per host core.
+    # Which process plays a game never changes the game: seeds are per game.
+    configured = os.environ.get("MTGFISH_WORKERS", "").strip()
+    if configured.isdigit() and int(configured) > 0:
+        return int(configured)
     # One short of the core count: a run that saturates every core makes the
     # machine unusable, and this is a desktop tool.
     return max(1, (os.cpu_count() or 2) - 1)

@@ -113,19 +113,7 @@ document.getElementById("opendeck").addEventListener("click", () => showTab("dec
 
 /* ------------------------------------------------------ account placeholders */
 
-const authDialog = document.getElementById("dlg-auth");
-function setAuthMode(mode) {
-  document.querySelectorAll("[data-auth]").forEach((b) => b.classList.toggle("active", b.dataset.auth === mode));
-  document.querySelectorAll("[data-auth-only]").forEach((node) => { node.hidden = node.dataset.authOnly !== mode; });
-  document.getElementById("authtitle").textContent = mode === "login" ? "Welcome back" : "Create your account";
-}
-document.querySelectorAll("[data-auth]").forEach((button) => {
-  button.addEventListener("click", () => setAuthMode(button.dataset.auth));
-});
-document.getElementById("btn-login").addEventListener("click", () => {
-  setAuthMode("login");
-  authDialog.showModal();
-});
+// Log in / Register lives in auth.js.
 document.getElementById("btn-subscription").addEventListener("click", () => {
   document.getElementById("dlg-sub").showModal();
 });

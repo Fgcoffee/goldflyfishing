@@ -31,3 +31,8 @@ runs/
 # Benchmark results are kept, so a change can be compared against the numbers
 # it is meant to improve (bench/run_cost_bench.sh regenerates them).
 !bench/results/*.jsonl
+
+# Local secrets (Discord OAuth, session secret, database URL) - never commit
+.env
+.env.*
+!.env.example

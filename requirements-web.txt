@@ -4,3 +4,14 @@ requests>=2.32
 numpy>=2.0
 pyarrow>=17
 pandas>=2.2
+# The web server: an ASGI app (FastAPI) served by uvicorn.
+fastapi>=0.115
+uvicorn>=0.32
+# Accounts: the database (SQLite locally, Postgres in production), its
+# migrations, password hashing, signed cookies, and Discord's API.
+sqlalchemy>=2.0
+alembic>=1.14
+psycopg[binary]>=3.2
+argon2-cffi>=23.1
+itsdangerous>=2.2
+httpx>=0.27

@@ -46,6 +46,9 @@ def _parse(argv: list[str] | None) -> argparse.Namespace:
 
 def serve(args: argparse.Namespace) -> int:
     os.environ.setdefault("MTGFISH_NO_QT", "1")
+    from .settings import load_dotenv
+
+    load_dotenv()
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -72,6 +75,8 @@ def serve(args: argparse.Namespace) -> int:
 
     from .server import make_server
 
+    if args.verbose:
+        os.environ.setdefault("MTGFISH_LOG_LEVEL", "info")
     server = make_server(args.host, args.port)
     print(f"MTG Goldfisher serving on http://{args.host}:{args.port}", flush=True)
     try:
@@ -81,6 +86,7 @@ def serve(args: argparse.Namespace) -> int:
     finally:
         # Runs stopped and their worker processes gone before exiting, rather
         # than the interpreter waiting at exit for games nobody will see.
+        # (The app's own shutdown does this too; closing twice is harmless.)
         server.app.sessions.close_all()
         server.server_close()
     return 0

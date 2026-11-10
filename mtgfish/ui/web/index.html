@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>MTG Commander Goldfisher</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 29 16 16 30 3 16z' fill='%23e8b04a'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
@@ -20,6 +21,8 @@
     <button data-tab="deck">Deck</button>
     <button data-tab="results">Results</button>
     <button data-tab="lab">Swap lab</button>
+    <button data-tab="mydecks" hidden>My decks</button>
+    <button data-tab="history" hidden>History</button>
     <button data-tab="replay">Replay</button>
     <button data-tab="sandbox">Sandbox</button>
   </nav>
@@ -198,6 +201,40 @@
 </section>
 
 <!-- ------------------------------------------------------------------ -->
+<section id="mydecks" class="tab">
+  <div class="tabhead">
+    <div>
+      <h1>My decks</h1>
+      <p class="hint">
+        Saved decks keep every version you save, so a run in History always
+        points at the exact list it played.
+      </p>
+    </div>
+    <button id="lib-save" class="primary">Save the deck in slot 1</button>
+  </div>
+  <div id="lib-deckmsg" class="hint"></div>
+  <div id="lib-decks"></div>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
+<section id="history" class="tab">
+  <div class="tabhead">
+    <div>
+      <h1>History</h1>
+      <p class="hint">
+        Every simulation you run while logged in, with the decks, seed and
+        card data it used &mdash; enough to replay any of its games. Tick two
+        to compare them.
+      </p>
+    </div>
+    <button id="lib-compare" disabled>Compare the two ticked</button>
+  </div>
+  <div id="lib-runmsg" class="hint"></div>
+  <div id="lib-comparison"></div>
+  <div id="lib-runs"></div>
+</section>
+
+<!-- ------------------------------------------------------------------ -->
 <section id="replay" class="tab">
   <h1>Replay</h1>
   <p class="hint">
@@ -329,7 +366,17 @@
 <footer id="footer">
   Card images and symbols courtesy of <a href="https://scryfall.com" target="_blank" rel="noopener">Scryfall</a>.
   Magic: The Gathering is &trade; &amp; &copy; Wizards of the Coast. This app is not affiliated with Wizards of the Coast, Scryfall or Archidekt.
+  <span class="legal-links"><a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></span>
 </footer>
+
+<div id="cookienotice" class="cookie-notice" role="region" aria-label="Cookie notice" hidden>
+  <p>
+    Goldfisher uses only essential cookies &mdash; to keep you signed in and protect forms &mdash;
+    and keeps your decklists in your browser. No tracking or advertising. Card images load from
+    Scryfall. <a href="/privacy#4-cookies-and-local-storage">Privacy &amp; cookies</a>
+  </p>
+  <button type="button" class="primary small" id="cookieok">OK</button>
+</div>
 
 <!-- ------------------------------------------------------------ drawer -->
 <aside id="carddrawer" class="drawer" hidden aria-label="Card details">
@@ -352,21 +399,72 @@
 
 <!-- ------------------------------------------------------------ dialogs -->
 <dialog id="dlg-auth" class="modal">
-  <form method="dialog" class="modal-inner" id="authform">
-    <button class="modal-close" value="cancel" aria-label="Close">&times;</button>
-    <div class="seg modal-tabs" role="tablist">
+  <form class="modal-inner" id="authform" novalidate>
+    <button type="button" class="modal-close" data-close-dialog aria-label="Close">&times;</button>
+    <div class="seg modal-tabs" role="tablist" id="authtabs">
       <button type="button" data-auth="login" class="active">Log in</button>
       <button type="button" data-auth="register">Register</button>
     </div>
     <h2 id="authtitle">Welcome back</h2>
-    <div class="placeholder-note">Accounts are coming soon. This form is a preview and does not send anything yet.</div>
-    <label class="stack-label" data-auth-only="register">Display name <input type="text" autocomplete="nickname" disabled></label>
-    <label class="stack-label">Email <input type="email" autocomplete="email" disabled></label>
-    <label class="stack-label">Password <input type="password" autocomplete="current-password" disabled></label>
+    <a id="authdiscord" class="discord-button" href="/auth/discord/login" data-auth-only="login register">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+      Continue with Discord
+    </a>
+    <p class="hint small consent" data-auth-only="login register">
+      By continuing you confirm you&rsquo;re 16 or older and agree to the
+      <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.
+    </p>
+    <div class="or" data-auth-only="login register" data-needs-email><span>or</span></div>
+    <label class="stack-label" data-auth-only="register">Display name
+      <input id="authname" type="text" autocomplete="nickname" maxlength="64"></label>
+    <label class="stack-label" data-auth-only="login register forgot">Email
+      <input id="authemail" type="email" autocomplete="email"></label>
+    <label class="stack-label" data-auth-only="login register reset">Password
+      <input id="authpassword" type="password" autocomplete="current-password" minlength="10"></label>
+    <p class="hint small" data-auth-only="register reset">At least 10 characters. A few words make a good one.</p>
+    <label class="toggle consent-box" data-auth-only="register">
+      <input id="authterms" type="checkbox">
+      <span>I&rsquo;m 16 or older and agree to the <a href="/terms" target="_blank">Terms</a>
+      and <a href="/privacy" target="_blank">Privacy Policy</a>.</span>
+    </label>
+    <p class="hint small" data-auth-only="forgot">We&rsquo;ll email you a link to set a new password.</p>
+    <div id="authmessage" class="hint" role="status"></div>
     <div class="modal-actions">
-      <button class="primary" value="cancel" id="authsubmit">Coming soon</button>
+      <button type="button" class="linklike" id="authforgot" data-auth-only="login">Forgot your password?</button>
+      <button type="button" class="linklike" id="authback" data-auth-only="forgot">Back to log in</button>
+      <span class="spacer"></span>
+      <button class="primary" type="submit" id="authsubmit">Log in</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="dlg-account" class="modal">
+  <div class="modal-inner">
+    <button type="button" class="modal-close" data-close-dialog aria-label="Close">&times;</button>
+    <h2>Your account</h2>
+    <div id="acct-verify" class="placeholder-note" hidden>
+      Your email isn&rsquo;t verified yet, so you can&rsquo;t save decks or runs.
+      <button type="button" class="linklike" id="acct-resend">Send the link again</button>
+    </div>
+    <label class="stack-label">Display name
+      <span class="row compact"><input id="acct-name" type="text" maxlength="64">
+      <button type="button" id="acct-savename">Save</button></span></label>
+    <div class="stack-label">Email <span id="acct-email" class="dim"></span></div>
+    <div class="stack-label">Discord
+      <span class="row compact"><span id="acct-discord" class="dim"></span>
+      <a id="acct-link" class="button-like" href="/auth/discord/login?link=1">Link Discord</a>
+      <button type="button" id="acct-unlink" class="ghost">Unlink</button></span></div>
+    <div id="acct-message" class="hint" role="status"></div>
+    <div class="row compact">
+      <a class="button-like" href="/auth/account/export" download>Download my data</a>
+      <a class="button-like" href="/privacy" target="_blank">Privacy Policy</a>
+    </div>
+    <div class="modal-actions">
+      <button type="button" id="acct-delete" class="ghost danger">Delete account&hellip;</button>
+      <span class="spacer"></span>
+      <button type="button" id="acct-logout">Log out</button>
+    </div>
+  </div>
 </dialog>
 
 <dialog id="dlg-sub" class="modal">
@@ -450,5 +548,7 @@
 <script src="deck.js"></script>
 <script src="board.js"></script>
 <script src="shell.js"></script>
+<script src="auth.js"></script>
+<script src="library.js"></script>
 </body>
 </html>
