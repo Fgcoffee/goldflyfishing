@@ -56,6 +56,9 @@ class ManaOption:
     #: The ability's own mana cost - a Signet's {1} - paid from the pool.
     mana_cost: ManaCost | None
     drawback: int
+    #: The ability itself, so the activation can check it is still the one
+    #: planned - an index alone outlives a change to the source's abilities.
+    ability: object = None
 
 
 def mana_options(game: Game, player_id: PlayerId) -> list[list[ManaOption]]:
@@ -89,6 +92,7 @@ def mana_options(game: Game, player_id: PlayerId) -> list[list[ManaOption]]:
                         produces=produced,
                         mana_cost=mana_cost,
                         drawback=max(drawback, _effect_drawback(ability, modes)),
+                        ability=ability,
                     )
                 )
         if options:
@@ -193,10 +197,15 @@ def execute_plan(game: Game, player_id: PlayerId, plan: list[ManaOption]) -> Non
     from .resolve import Resolution, resolve_mana_ability
 
     for option in plan:
-        obj = game.objects.get(option.source)
-        if obj is None:
-            raise CastError("a planned mana source is gone")
-        ability = game.characteristics(obj).abilities[option.ability_index]
+        ability = _still_activatable(game, option)
+        if ability is None:
+            # CR 605.3b, 601.2h: an earlier activation in the plan resolved at
+            # once and changed the board - sacrificed this source to its cost,
+            # or ended the effect that gave it this ability. The plan no longer
+            # holds, so the cast is rewound rather than activating something
+            # that is not there.
+            raise CastError("a planned mana source can no longer be activated")
+        obj = game.objects[option.source]
         _pay_activation(game, obj, ability)
         resolve_mana_ability(
             Resolution(
@@ -214,6 +223,30 @@ def execute_plan(game: Game, player_id: PlayerId, plan: list[ManaOption]) -> Non
             tapped=ability.cost.requires_tapping,
         )
         resolve_mana_triggers(game)
+
+
+def _still_activatable(game: Game, option: ManaOption):
+    """The planned mana ability, if its source is still on the battlefield,
+    still has it, and can still pay for it; otherwise None."""
+    from ..kernel.enums import Zone
+    from .cr601_casting import _can_pay_activation
+
+    obj = game.objects.get(option.source)
+    if obj is None or not obj.is_live or obj.zone is not Zone.BATTLEFIELD:
+        return None
+    abilities = game.characteristics(obj).abilities
+    if not 0 <= option.ability_index < len(abilities):
+        return None
+    ability = abilities[option.ability_index]
+    if option.ability is not None and ability != option.ability:
+        # Found by identity, not position: another ability may have moved
+        # into that slot.
+        ability = next((a for a in abilities if a == option.ability), None)
+        if ability is None:
+            return None
+    if not _can_pay_activation(game, obj, ability):
+        return None
+    return ability
 
 
 # ---------------------------------------------------------------------------

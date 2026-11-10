@@ -134,7 +134,7 @@ def test_a_loop_kill_set_off_by_combat_is_not_a_combat_win(box):
 
     finish(game, record)
     assert record.winner == 0
-    assert record.win_reason is WinReason.NONCOMBAT_DAMAGE
+    assert record.win_reason is WinReason.LOOP_KILL
 
 
 def test_a_board_wipe_under_an_aristocrat_is_not_a_loop(box):

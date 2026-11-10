@@ -146,6 +146,11 @@ class GameObject:
     #: control since their previous turn, and so since their last upkeep.
     #: Read at the upkeep that follows; recomputed every untap step.
     arrived_since_last_turn: bool = False
+    #: CR 702.30a: came under its controller's control since their last turn
+    #: began - set as it arrives and when control changes, cleared at their
+    #: untap step. Kept apart from ``summoning_sick``, which the bench may
+    #: switch off and which says something else (CR 302.6).
+    newly_controlled: bool = True
     #: For "entered the battlefield this turn" queries, which is a different
     #: question from summoning sickness.
     entered_battlefield_turn: int = -1

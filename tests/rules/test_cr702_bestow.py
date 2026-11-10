@@ -90,3 +90,22 @@ def test_with_its_target_gone_it_resolves_as_a_creature(box):
     (rollicker,) = live(box, CARD)
     assert rollicker.zone is Zone.BATTLEFIELD
     assert box.game.characteristics(rollicker).is_creature
+
+
+def test_with_no_creature_to_enchant_bestow_is_not_offered(box):
+    """F57, CR 702.103b, 601.2c: cast bestowed it is an Aura spell needing a
+    creature to target. With none, only the ordinary creature cast is left."""
+    game = box.game
+    box.put(CARD, "hand", 0)
+    game.player(P0).mana_pool.add(ManaKind(Color.RED), 2)
+    casts = [
+        a for a in legal_actions(game, P0)
+        if a.kind.name.startswith("CAST") and game.objects[a.source].card.name == CARD
+    ]
+    assert casts, "it can still be cast as a creature"
+    assert all(a.alternative_cost < 0 for a in casts), "no bestow cast with nothing to enchant"
+    box.put("Grizzly Bears", "battlefield", 1)
+    assert any(
+        a.alternative_cost >= 0 for a in legal_actions(game, P0)
+        if a.kind.name.startswith("CAST") and game.objects[a.source].card.name == CARD
+    ), "an opponent's creature will do"

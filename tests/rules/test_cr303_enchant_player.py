@@ -220,3 +220,19 @@ def test_a_returned_curse_enchants_an_opponent(board):
     board.refresh()
     curse = board.game.move_object(board.graveyard(CURSE), Zone.BATTLEFIELD)
     assert curse.attached_player == P1
+
+
+def test_an_aura_attached_to_nothing_goes_to_the_graveyard(board):
+    """F60, CR 704.5m: a Curse whose enchant ability was not read resolves
+    attached to nothing, and the state-based actions put it in the
+    graveyard."""
+    board.scripts.add(CURSE, UPKEEP_PING)  # no enchant ability read
+    board.refresh()
+    game = board.game
+    game.player(P0).mana_pool.add(ManaKind(Color.RED), 2)
+    cast_spell(game, P0, Action(ActionKind.CAST_SPELL, source=board.hand(CURSE).id))
+    board.resolve_stack()
+    board.sba()
+    (curse,) = [o for o in game.objects.values()
+                if o.is_live and o.card is not None and o.card.name == CURSE]
+    assert curse.zone is Zone.GRAVEYARD
