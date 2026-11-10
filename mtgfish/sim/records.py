@@ -36,6 +36,9 @@ class WinReason(IntEnum):
     #: CR 104.4b: a mandatory infinite loop that nothing could stop. Not a
     #: stall-out - the deck did something, and it was decisive in its way.
     LOOP_DRAW = 9
+    #: CR 732: a repeating loop, taken as a shortcut, killed - a drain loop
+    #: loses life rather than dealing damage, so it is neither damage column.
+    LOOP_KILL = 10
 
 
 @dataclass(slots=True)

@@ -1133,6 +1133,8 @@ def _apply_control(
         # creature back counts - it has not been controlled continuously since
         # its new controller's turn began either.
         obj.summoning_sick = True
+        # CR 702.30a: and it came under their control - echo asks again.
+        obj.newly_controlled = True
 
 
 def _affects_control(

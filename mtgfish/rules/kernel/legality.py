@@ -261,13 +261,38 @@ def _castable(game: Game, player_id: PlayerId, sorcery_speed: bool) -> list[Acti
             # Guardianship with no spell to counter cannot be cast at all, and
             # offering it anyway paid the life and exiled the card for a cast
             # the engine then had to rewind.
-            if not _targets_available(game, obj, player_id):
+            if not _targets_available_cast_as(game, obj, player_id, alternative):
                 continue
             out.append(
                 Action(ActionKind.CAST_SPELL, source=object_id, alternative_cost=index)
             )
 
     return out
+
+
+def _targets_available_cast_as(
+    game: Game, obj: GameObject, player_id: PlayerId, alternative
+) -> bool:
+    """CR 601.2c, asked of the spell as this alternative cost makes it.
+
+    CR 702.103b: cast bestowed, it is an Aura spell with enchant creature as
+    it is put on the stack, so it needs a creature to target - without one
+    the bestow cast is not offered, rather than resolving as a creature for
+    the bestow cost.
+    """
+    if not _targets_available(game, obj, player_id):
+        return False
+    if alternative.keyword.lower() != "bestow":
+        return True
+    from ..cr600_spells_and_abilities.cr601_casting import _candidates_for
+    from ..cr600_spells_and_abilities.effects import Effect, EffectKind
+    from .enums import CardType
+    from .query import ObjectFilter
+
+    enchant_creature = Effect(
+        EffectKind.NOTHING, targets=ObjectFilter(types_all=CardType.CREATURE), is_targeted=True
+    )
+    return bool(_candidates_for(game, obj, enchant_creature, player_id))
 
 
 def _alternative_available_now(

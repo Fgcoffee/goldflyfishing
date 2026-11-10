@@ -1365,6 +1365,7 @@ class Game:
                 # straight back to someone who is no longer in the game.
                 obj.base_controller = obj.owner
                 obj.summoning_sick = True
+                obj.newly_controlled = True
 
         self.invalidate_characteristics()
         # CR 725.5: if the monarch leaves, the crown passes rather than vanishing.

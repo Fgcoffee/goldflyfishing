@@ -316,16 +316,17 @@ def _win_reason(game: Game, record: GameRecord) -> WinReason:
 
     win = _LOSS_TO_WIN.get(reason, WinReason.LAST_STANDING)
     if win is WinReason.COMBAT_DAMAGE and player.left_on_turn is not None:
+        # A drain loop is usually set off *by* combat damage - Exquisite Blood
+        # sees the hit - so the kill lands on a combat turn. The loop did the
+        # killing, by life loss rather than damage, so it is its own column:
+        # calling it combat hid every combo kill in the beatdown column, and
+        # calling it noncombat damage named the wrong thing.
+        if player.left_on_turn == getattr(game, "last_loop_turn", -1):
+            return WinReason.LOOP_KILL
         # Life loss with no combat damage that turn was burn, drain or a
         # sacrifice effect, and lumping those in with beatdown would make
         # every control deck look aggressive.
         if player.left_on_turn != _last_combat_turn(game):
-            return WinReason.NONCOMBAT_DAMAGE
-        # A drain loop is usually set off *by* combat damage - Exquisite Blood
-        # sees the hit - so the kill lands on a combat turn. The loop did the
-        # killing, and calling it a combat win hid every combo kill in the
-        # beatdown column.
-        if player.left_on_turn == getattr(game, "last_loop_turn", -1):
             return WinReason.NONCOMBAT_DAMAGE
     return win
 
