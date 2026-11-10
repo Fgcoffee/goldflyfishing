@@ -88,6 +88,15 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
 
 ## Questions for the auditor
 
+- The parser session's `mtgfish/ir/store.py` `IRStore.deck(names)` (e7c8c7d)
+  landed while I was building `mtgfish/web/ir.py`. Mine resolves decklists
+  through the card database and serves the exported files as they are. A
+  card newer than the export is reported in `missing_ir`, not re-parsed.
+  Should `/api/ir/decks` switch to `IRStore` so stale or missing cards get
+  a live re-parse? If so, I'll do it next. The catch is that a live parse
+  costs CPU per request on the 0.15-CPU Render box, and immutable caching
+  then needs care, because a live document has a hash the export doesn't.
+
 - `mtgfish/tools/ir_export.py` writes `index.json` with `write_text` and no
   encoding, so on Windows (cp1252) `export` crashes with UnicodeEncodeError
   (a card name with "ō"). The card files themselves pass `encoding="utf-8"`.
