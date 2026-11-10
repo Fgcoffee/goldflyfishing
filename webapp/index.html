@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Engine harness</title>
+    <style>
+      :root { --bg: #ffffff; --fg: #14213d; --muted: #5b6475; --bad: #b42318; }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0e1726; --fg: #e8ecf3; --muted: #9aa4b5; --bad: #f97066; }
+      }
+      body { margin: 0; padding: 24px 16px; background: var(--bg); color: var(--fg);
+             font: 15px/1.5 system-ui, sans-serif; }
+      main { max-width: 720px; margin: 0 auto; }
+      h1 { font-size: 20px; margin: 0 0 8px; }
+      p { color: var(--muted); margin: 0 0 16px; }
+      li { font-family: ui-monospace, monospace; font-size: 13px; overflow-wrap: anywhere; }
+      .bad { color: var(--bad); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Engine harness</h1>
+      <p id="status">Loading...</p>
+      <ol id="workers"></ol>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
