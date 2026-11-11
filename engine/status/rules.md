@@ -41,6 +41,17 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   terms in `rules/cr700_additional_rules/general.ts` (descend, expend,
   crime). Triggered abilities plug in with `installTriggerCollector` when
   that module is ported.
+- `rules/zones.ts`: `moveObject` from `Game.move_object` (CR 400.7: new
+  object, husk kept for last-known information; tokens cease to exist;
+  finality, flashback-style exile, instants staying put, entering
+  transformed, loyalty/defense on entry, battle protectors, commander
+  identity), the zone-specific events, and `chooseProtector`.
+  `rules/cr100_game_concepts/actions.ts`: `addCounters` through
+  replacements. Replacement effects, the commander zone, self-entry
+  replacements, the Attraction junkyard and Auras entering uncast plug in
+  through `cr600_spells_and_abilities/replacement_hooks.ts` until cr614 and
+  cr303 are ported (defaults change nothing). KNOWN, marked in the code:
+  "perpetually" and the junkyard pile are not ported yet.
 - `rules/ir_read.ts`: reads IR fields whether enums are strings or numbers,
   and `irEqual` for Python's dataclass equality of abilities.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
@@ -110,8 +121,8 @@ it stands. **Parser: re-land v2 whenever you like.**
 
 ## Next
 
-1. Moving objects between zones (`move_object`), with replacements and
-   triggers as they're ported.
+1. Turn structure (CR 500-514) and the priority loop, then casting and
+   activating (with the parser's mana code), then resolution.
 
 ## Questions for the auditor
 
