@@ -20,12 +20,11 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
     - `POST /api/ir/decks {"decklists": [...]}` (up to 4) resolves the decks
       through the card database (every spelling a decklist uses). It returns
       each deck's commanders and cards by oracle id, plus `unresolved` and
-      `missing_ir` (cards newer than the export). It also returns every
-      card's `card_hash` and URL.
-    - `GET /ir/v1/<oracle_id>.json?h=<card_hash>` serves one card document,
-      gzipped. When `h` matches the export, it's served immutable for a
-      year, so the browser's HTTP cache keeps it until the text changes.
-      Otherwise it's `no-cache` with an ETag (304 on a match).
+      `live_ir` (see the IRStore entry below). It also returns every card's
+      `card_hash` and URL, or the document inline when parsed live.
+    - `GET /ir/v1/<oracle_id>.json?h=<card_hash>&b=<build>` serves one card
+      document, gzipped. When both match the export, it's served immutable
+      for a year. Otherwise it's `no-cache` with an ETag (304 on a match).
     - Rate limits: 60 deck lookups and 3000 card files per address per
       minute.
     - The 7 MB name index is never sent, and isn't even kept in memory.
@@ -75,6 +74,39 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
     workers in 53 ms, 0 crashed, and a second run gives an identical digest
     for every game.
 
+- **`/api/ir/decks` now uses the parser's `IRStore`,** under the auditor's
+  three conditions:
+  1. `IRStore.card()` serves the exported file when its hash is current, and
+     parses live otherwise. Each request that parses live logs a warning with
+     the count, the running total (`IRStore.live_parses`) and the card names,
+     so a stale image shows up in the Render logs.
+  2. A live-parsed card comes inline in the manifest (`document`, with no
+     `url`), so it is never served as a file or cached. `IrClient` uses it
+     for that run only and never holds it. Only exported files are immutable.
+  3. Every exported card URL carries the export's build fingerprint
+     (`?h=<card_hash>&b=<build>`). It is immutable only when both match, and
+     `IrClient` keys its cache on hash + build.
+  - `build` is read from `index.json` `build`, falling back to `built_at`
+    until the parser writes a fingerprint. The fallback changes on every
+    export, so it over-invalidates and is never stale.
+  - The per-deck field `missing_ir` is renamed `live_ir`: the cards the
+    server parsed live.
+- **End-to-end harness page** (`webapp/index.html`, `src/main.ts`):
+  - You paste decklists (yours first, then up to three opponents), set the
+    games, seed and turn cap, then Run or Cancel.
+  - It shows progress, then a per-seat result table: wins, win rate, average
+    win turn, commander cast and average turn, mulligans. Notes list unknown
+    names, live-parsed cards and crashed games.
+  - A replay check re-runs the first 100 games and compares digests.
+  - `engine/src/sim/summary.ts` `summarize` is the first slice of Python's
+    stats: per-seat numbers and stalls.
+  - Swapping the stub for the real engine is the one `ENGINES` entry in
+    `webapp/src/worker/handle.ts`.
+  - Checked in the browser on the four tester decks:
+    - 5000 stub games on 23 workers in 0.23 s, and the replay check passed.
+    - Cancel stopped a 100,000-game run at 26,210 with `complete: false`.
+    - The second run downloaded 0 cards.
+
 ## Next
 
 - Swap the stub for the real engine once the kernel can set up and play a
@@ -83,24 +115,17 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
   oracle id plus the cards' IR documents.
 - The AI (`engine/src/ai`): SimpleAgent and lookahead, once there's game
   state to decide on.
-- The report: a TS port of `mtgfish/sim/stats.py` `summarize` over
-  `GameRecord`s, so the Results page can read browser runs.
+- The rest of the report: port the remaining parts of
+  `mtgfish/sim/stats.py` `summarize` (card impact, per-turn series,
+  removal) once real games produce that data, so the Results page can read
+  browser runs.
 
 ## Questions for the auditor
 
-- The parser session's `mtgfish/ir/store.py` `IRStore.deck(names)` (e7c8c7d)
-  landed while I was building `mtgfish/web/ir.py`. Mine resolves decklists
-  through the card database and serves the exported files as they are. A
-  card newer than the export is reported in `missing_ir`, not re-parsed.
-  Should `/api/ir/decks` switch to `IRStore` so stale or missing cards get
-  a live re-parse? If so, I'll do it next. The catch is that a live parse
-  costs CPU per request on the 0.15-CPU Render box, and immutable caching
-  then needs care, because a live document has a hash the export doesn't.
-
-- `mtgfish/tools/ir_export.py` writes `index.json` with `write_text` and no
-  encoding, so on Windows (cp1252) `export` crashes with UnicodeEncodeError
-  (a card name with "ō"). The card files themselves pass `encoding="utf-8"`.
-  Linux and Docker are unaffected. The workaround is `PYTHONUTF8=1`. This is
-  for the parser session.
+- For the parser session: I read the build fingerprint from `index.json` key
+  **`build`** (a string). Please use that name, or tell me the one you
+  choose.
 - The Docker image build with the IR export step hasn't been run locally.
   It's checked on the next Render deploy.
+- Resolved: switching to `IRStore` (done above). The Windows encoding bug is
+  with the parser session.

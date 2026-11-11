@@ -21,20 +21,24 @@ export interface ResolvedDeck {
   readonly cards: readonly DeckCard[];
   /** Names the card database didn't recognise. */
   readonly unresolved: readonly string[];
-  /** Cards it recognised that the IR export doesn't have (stale export). */
-  readonly missing_ir: readonly string[];
+  /** Cards the server parsed live (missing from, or older than, the export). */
+  readonly live_ir: readonly string[];
   readonly issues: readonly string[];
 }
 
-export interface CardRef {
-  readonly name: string;
-  readonly card_hash: string;
-  readonly url: string;
-}
+/** An exported card has a cacheable `url`; a live-parsed one comes inline. */
+export type CardRef =
+  | { readonly name: string; readonly card_hash: string; readonly url: string; readonly document?: undefined }
+  | { readonly name: string; readonly card_hash: string; readonly document: unknown; readonly url?: undefined };
 
 export interface DeckManifest {
   readonly ir_version: number;
   readonly snapshot: string;
+  /**
+   * The export's build fingerprint. A card's hash covers its text, not the
+   * parser, so a cached card is only reused under the same hash and build.
+   */
+  readonly build: string;
   readonly decks: readonly ResolvedDeck[];
   readonly cards: Readonly<Record<string, CardRef>>;
 }
@@ -45,6 +49,8 @@ export interface DeckIr {
   readonly cards: ReadonlyMap<string, CardDocument>;
   /** How many card files this call actually downloaded. */
   readonly fetched: number;
+  /** How many cards came inline because the server parsed them live. */
+  readonly live: number;
 }
 
 export type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
@@ -61,7 +67,7 @@ export class IrClient {
   private readonly base: string;
   private readonly fetch: Fetch;
   private readonly concurrency: number;
-  /** oracle id -> [card_hash, document] */
+  /** oracle id -> ["card_hash build", document]; exported cards only. */
   private readonly held = new Map<string, readonly [string, CardDocument]>();
 
   constructor(options: IrClientOptions = {}) {
@@ -73,9 +79,27 @@ export class IrClient {
   /** Resolve decklists on the server and return every card's IR. */
   async load(decklists: readonly string[]): Promise<DeckIr> {
     const manifest = await this.resolve(decklists);
-    const wanted = Object.entries(manifest.cards).filter(
-      ([oracleId, ref]) => this.held.get(oracleId)?.[0] !== ref.card_hash,
-    );
+    const key = (ref: CardRef): string => `${ref.card_hash} ${manifest.build}`;
+    const cards = new Map<string, CardDocument>();
+    const check = (oracleId: string, ref: CardRef, document: CardDocument): CardDocument => {
+      if (document.oracle_id !== oracleId || document.card_hash !== ref.card_hash) {
+        throw new Error(`card file for ${ref.name} does not match the deck manifest`);
+      }
+      return document;
+    };
+
+    // Live-parsed cards arrive inline. They are used for this run only and
+    // never held: the next run asks the server again.
+    let live = 0;
+    const wanted: [string, CardRef & { url: string }][] = [];
+    for (const [oracleId, ref] of Object.entries(manifest.cards)) {
+      if (ref.url === undefined) {
+        cards.set(oracleId, check(oracleId, ref, readCard(ref.document)));
+        live += 1;
+      } else if (this.held.get(oracleId)?.[0] !== key(ref)) {
+        wanted.push([oracleId, ref]);
+      }
+    }
 
     let next = 0;
     const worker = async (): Promise<void> => {
@@ -83,21 +107,16 @@ export class IrClient {
         const entry = wanted[next++];
         if (entry === undefined) return;
         const [oracleId, ref] = entry;
-        const document = await this.card(ref);
-        if (document.oracle_id !== oracleId || document.card_hash !== ref.card_hash) {
-          throw new Error(`card file for ${ref.name} does not match the deck manifest`);
-        }
-        this.held.set(oracleId, [ref.card_hash, document]);
+        this.held.set(oracleId, [key(ref), check(oracleId, ref, await this.card(ref))]);
       }
     };
     await Promise.all(Array.from({ length: Math.min(this.concurrency, wanted.length) }, worker));
 
-    const cards = new Map<string, CardDocument>();
-    for (const oracleId of Object.keys(manifest.cards)) {
+    for (const [oracleId, ref] of Object.entries(manifest.cards)) {
       const held = this.held.get(oracleId);
-      if (held !== undefined) cards.set(oracleId, held[1]);
+      if (ref.url !== undefined && held !== undefined) cards.set(oracleId, held[1]);
     }
-    return { manifest, cards, fetched: wanted.length };
+    return { manifest, cards, fetched: wanted.length, live };
   }
 
   private async resolve(decklists: readonly string[]): Promise<DeckManifest> {
@@ -114,7 +133,7 @@ export class IrClient {
     return body as DeckManifest;
   }
 
-  private async card(ref: CardRef): Promise<CardDocument> {
+  private async card(ref: { name: string; url: string }): Promise<CardDocument> {
     const response = await this.fetch(`${this.base}${ref.url}`);
     if (!response.ok) throw new Error(`could not fetch ${ref.name} (${response.status})`);
     // readCard refuses any other IR version, so an old cached file can never

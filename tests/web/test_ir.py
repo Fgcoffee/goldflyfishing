@@ -37,7 +37,7 @@ def ir_dir(tmp_path) -> Path:
             "name": document["name"], "card_hash": document["card_hash"],
         }
     index = {"ir_version": 1, "built_at": "2026-11-10T12:00:00", "snapshot": "snap",
-             "cards": cards, "names": {}}
+             "build": "b1", "cards": cards, "names": {}}
     (out / "index.json").write_text(json.dumps(index), encoding="utf-8")
     return out
 
@@ -78,13 +78,54 @@ def test_a_deck_resolves_to_oracle_ids_and_card_urls(client, ir_dir):
     lackey = body["cards"][GOBLIN_LACKEY]
     digest = json.loads((ir_dir / f"{GOBLIN_LACKEY}.json").read_text("utf-8"))["card_hash"]
     assert lackey["card_hash"] == digest
-    assert lackey["url"] == f"/ir/v1/{GOBLIN_LACKEY}.json?h={digest}"
+    assert lackey["url"] == f"/ir/v1/{GOBLIN_LACKEY}.json?h={digest}&b=b1"
+    assert body["build"] == "b1"
 
 
-def test_a_card_missing_from_the_export_is_reported_not_fatal(client):
-    body = client.post("/api/ir/decks", json={"decklists": [DECK]}).json()
-    assert body["decks"][0]["missing_ir"] == ["Goblin Guide"]
-    assert GOBLIN_GUIDE not in body["cards"]
+def test_a_card_missing_from_the_export_is_parsed_live_and_sent_inline(client, caplog):
+    with caplog.at_level("WARNING", logger="mtgfish.web.ir"):
+        body = client.post("/api/ir/decks", json={"decklists": [DECK]}).json()
+    assert body["decks"][0]["live_ir"] == ["Goblin Guide"]
+    guide = body["cards"][GOBLIN_GUIDE]
+    # Inline, with no URL: a live parse is never a cacheable file.
+    assert "url" not in guide
+    assert guide["document"]["oracle_id"] == GOBLIN_GUIDE
+    assert guide["document"]["ir_version"] == 1
+    assert guide["card_hash"] == guide["document"]["card_hash"]
+    assert "parsed 1 card(s) live" in caplog.text and "Goblin Guide" in caplog.text
+
+
+def test_exported_cards_are_not_parsed_live(client, caplog):
+    with caplog.at_level("WARNING", logger="mtgfish.web.ir"):
+        body = client.post("/api/ir/decks", json={"decklists": ["1 Goblin Lackey"]}).json()
+    assert body["decks"][0]["live_ir"] == []
+    assert "url" in body["cards"][GOBLIN_LACKEY]
+    assert "live" not in caplog.text
+
+
+def test_a_card_exported_from_older_text_is_parsed_live(ir_dir, card_db):
+    path = ir_dir / f"{GOBLIN_LACKEY}.json"
+    document = json.loads(path.read_text("utf-8"))
+    document["card_hash"] = "older-text"
+    path.write_text(json.dumps(document), encoding="utf-8")
+    body = make_client(ir_dir, card_db).post(
+        "/api/ir/decks", json={"decklists": ["1 Goblin Lackey"]}).json()
+    lackey = body["cards"][GOBLIN_LACKEY]
+    assert "url" not in lackey and lackey["card_hash"] != "older-text"
+
+
+def test_the_build_falls_back_to_the_export_time(ir_dir):
+    index = json.loads((ir_dir / "index.json").read_text("utf-8"))
+    del index["build"]
+    (ir_dir / "index.json").write_text(json.dumps(index), encoding="utf-8")
+    assert make_client(ir_dir).get("/api/ir").json()["build"] == "2026-11-10T12:00:00"
+
+
+def test_a_card_under_another_build_is_not_immutable(client, ir_dir):
+    digest = json.loads((ir_dir / f"{KRENKO}.json").read_text("utf-8"))["card_hash"]
+    reply = client.get(f"/ir/v1/{KRENKO}.json?h={digest}&b=old-build")
+    assert reply.status_code == 200
+    assert reply.headers["cache-control"] == "no-cache"
 
 
 def test_unknown_names_are_listed(client):

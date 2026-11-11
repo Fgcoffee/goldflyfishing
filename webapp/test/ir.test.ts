@@ -13,7 +13,7 @@ for (const [path, document] of Object.entries(files)) {
   else samples.set(String(document.oracle_id), document);
 }
 
-function manifestFor(deckName: string): DeckManifest {
+function manifestFor(deckName: string, build = "b1"): DeckManifest {
   const deck = decks[deckName];
   if (deck === undefined) throw new Error(`no sample deck ${deckName}`);
   const ids = [...deck.commanders, ...deck.cards.map((c) => c.oracle_id)];
@@ -22,12 +22,13 @@ function manifestFor(deckName: string): DeckManifest {
     const document = samples.get(id);
     if (document === undefined) throw new Error(`no sample card ${id}`);
     const hash = String(document.card_hash);
-    cards[id] = { name: String(document.name), card_hash: hash, url: `/ir/v1/${id}.json?h=${hash}` };
+    cards[id] = { name: String(document.name), card_hash: hash, url: `/ir/v1/${id}.json?h=${hash}&b=${build}` };
   }
   return {
     ir_version: 1,
     snapshot: "test",
-    decks: [{ ...deck, unresolved: [], missing_ir: [], issues: [] }],
+    build,
+    decks: [{ ...deck, unresolved: [], live_ir: [], issues: [] }],
     cards,
   };
 }
@@ -83,6 +84,43 @@ describe("IrClient", () => {
     expect(result.fetched).toBe(Object.keys(changed.cards).length);
   });
 
+  it("refetches every card after a new build, even with the same card hashes", async () => {
+    const server = fakeServer(manifestFor("aggro", "b1"));
+    const client = new IrClient({ fetch: server.fetch });
+    await client.load(["x"]);
+    const rebuilt = fakeServer(manifestFor("aggro", "b2"));
+    const again = await new IrClient({ fetch: rebuilt.fetch }).load(["x"]);
+    expect(again.fetched).toBe(again.cards.size);
+    // And within one client: same hashes, new build -> fetched again.
+    const shared = new IrClient({ fetch: server.fetch });
+    await shared.load(["x"]);
+    const swap: Fetch = (input, init) => rebuilt.fetch(input, init);
+    (shared as unknown as { fetch: Fetch }).fetch = swap;
+    expect((await shared.load(["x"])).fetched).toBe(again.cards.size);
+  });
+
+  it("uses a live-parsed card inline, fetches nothing for it, and never holds it", async () => {
+    const manifest = manifestFor("combo");
+    const [id, ref] = Object.entries(manifest.cards)[0] ?? [];
+    if (id === undefined || ref === undefined) throw new Error("empty deck");
+    const inline: DeckManifest = {
+      ...manifest,
+      cards: { ...manifest.cards, [id]: { name: ref.name, card_hash: ref.card_hash, document: samples.get(id) } },
+    };
+    const server = fakeServer(inline);
+    const client = new IrClient({ fetch: server.fetch });
+    const first = await client.load(["x"]);
+    expect(first.live).toBe(1);
+    expect(first.cards.get(id)?.oracle_id).toBe(id);
+    expect(server.calls.some((url) => url.includes(id))).toBe(false);
+    // Next time the same card is exported: it must be fetched, not reused.
+    const exported = fakeServer(manifest);
+    (client as unknown as { fetch: Fetch }).fetch = exported.fetch;
+    const second = await client.load(["x"]);
+    expect(second.fetched).toBe(1);
+    expect(second.live).toBe(0);
+  });
+
   it("refuses a card file that does not match the manifest", async () => {
     const server = fakeServer(manifestFor("control"), (doc) => ({ ...doc, card_hash: "stale" }));
     await expect(new IrClient({ fetch: server.fetch }).load(["x"])).rejects.toThrow("does not match");
@@ -102,7 +140,7 @@ describe("IrClient", () => {
     let sent: RequestInit | undefined;
     const fetch: Fetch = async (_input, init) => {
       sent = init;
-      return Response.json({ ir_version: 1, snapshot: "", decks: [], cards: {} });
+      return Response.json({ ir_version: 1, snapshot: "", build: "", decks: [], cards: {} });
     };
     await new IrClient({ fetch, base: "http://server" }).load(["1 Sol Ring"]);
     expect(sent?.method).toBe("POST");

@@ -10,14 +10,21 @@ cards' files.
 ``GET  /api/ir``                       is IR available; version, snapshot
 ``POST /api/ir/decks``                 {"decklists": [...]} -> each deck's
                                        cards by oracle id, and every card's
-                                       hash and file URL
-``GET  /ir/v1/<oracle_id>.json``       one card document
+                                       hash and file URL (or the document
+                                       itself, when parsed live)
+``GET  /ir/v1/<oracle_id>.json``       one exported card document
 =====================================  =====================================
 
-A card URL carries the card's hash (``?h=``). When it matches the current
-export the file is served as immutable, so the browser's own HTTP cache
-keeps it until the card's text changes; a stale or missing hash is served
-``no-cache`` with an ETag instead.
+Cards come through the parser's ``mtgfish.ir.store.IRStore``: the exported
+file when it is current, else a live parse. A live parse should be rare (the
+image exports from the same code and card data it serves); each one is
+logged as a warning, and its document is sent inline, never as a cacheable
+file.
+
+An exported card's URL carries its hash and the export's build fingerprint
+(``?h=&b=``). When both match the current export the file is served as
+immutable, so the browser's HTTP cache keeps it until either changes; any
+other request is served ``no-cache`` with an ETag.
 """
 
 from __future__ import annotations
@@ -30,6 +37,7 @@ import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from urllib.parse import quote
 
 from fastapi import APIRouter, Request
 from fastapi.responses import Response
@@ -58,6 +66,18 @@ def default_ir_dir() -> Path:
     return Path(override) if override else data_root() / "ir" / f"v{IR_VERSION}"
 
 
+def build_fingerprint(index: dict) -> str:
+    """What identifies the code that produced an export.
+
+    ``card_hash`` covers a card's text, not the parser: after a parser change
+    the same hash can map to different IR. So cached card URLs also carry
+    this. ``build`` is the parser's code fingerprint once the exporter writes
+    one; until then ``built_at`` stands in, which changes with every export,
+    so a new export always gets new URLs (over-invalidating, never stale).
+    """
+    return str(index.get("build") or index.get("built_at") or "")
+
+
 class IrStore:
     """The exported IR on disk, plus a card database to resolve decklists.
 
@@ -69,6 +89,7 @@ class IrStore:
         self.root = root or default_ir_dir()
         self._db_factory = db_factory
         self._db = None
+        self._reader = None
         self._pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ir-db")
         self._lock = threading.Lock()
         self._index: dict | None = None
@@ -99,6 +120,7 @@ class IrStore:
                 self._index = {
                     "snapshot": raw.get("snapshot", ""),
                     "built_at": raw.get("built_at", ""),
+                    "build": build_fingerprint(raw),
                     "cards": {oid: row["card_hash"] for oid, row in raw["cards"].items()},
                 }
                 self._index_mtime = mtime
@@ -126,29 +148,52 @@ class IrStore:
                 self._db.registry()
         return self._db
 
+    def _ir_store(self):
+        """The parser's reader (``mtgfish.ir.store``), on this thread's database."""
+        if self._reader is None:
+            from ..ir.store import IRStore
+
+            self._reader = IRStore(self._database(), self.root)
+        return self._reader
+
     def _resolve(self, decklists: list[str]) -> dict:
         from ..data.decks import parse_decklist
 
-        index = self.index() or {"cards": {}, "snapshot": ""}
-        hashes = index["cards"]
+        index = self.index() or {"cards": {}, "snapshot": "", "build": ""}
+        build = index["build"]
         db = self._database()
+        reader = self._ir_store()
         decks, cards = [], {}
+        live_now: list[str] = []
         for number, text in enumerate(decklists):
             deck = parse_decklist(text, db, name=f"deck {number + 1}")
-            missing: list[str] = []
+            live: list[str] = []
 
             def take(card) -> str:
-                digest = hashes.get(card.oracle_id)
-                if digest is None:
-                    # Resolved by the card database but not in the export: the
-                    # export is older than the card data. Reported, not fatal.
-                    missing.append(card.name)
-                else:
-                    cards[card.oracle_id] = {
-                        "name": card.name,
-                        "card_hash": digest,
-                        "url": f"/ir/v{IR_VERSION}/{card.oracle_id}.json?h={digest}",
-                    }
+                entry = cards.get(card.oracle_id)
+                if entry is None:
+                    before = reader.live_parses
+                    document = reader.card(card)
+                    if reader.live_parses == before:
+                        # Exported and current: the browser fetches the file,
+                        # and may cache it for good under this hash and build.
+                        digest = document["card_hash"]
+                        entry = {
+                            "name": card.name,
+                            "card_hash": digest,
+                            "url": f"/ir/v{IR_VERSION}/{card.oracle_id}.json"
+                                   f"?h={digest}&b={quote(build, safe='')}",
+                        }
+                    else:
+                        # Missing from the export or exported from older card
+                        # text, so parsed just now. Sent inline and never
+                        # cached: it is not a file the server can serve again.
+                        entry = {"name": card.name, "card_hash": document["card_hash"],
+                                 "document": document}
+                        live_now.append(card.name)
+                    cards[card.oracle_id] = entry
+                if "document" in entry and card.name not in live:
+                    live.append(card.name)
                 return card.oracle_id
 
             decks.append({
@@ -159,12 +204,21 @@ class IrStore:
                     for entry in deck.entries
                 ],
                 "unresolved": list(deck.unresolved),
-                "missing_ir": missing,
+                "live_ir": live,
                 "issues": [str(issue) for issue in deck.issues],
             })
+        if live_now:
+            # In production this should never happen: the image exports the IR
+            # from the same code and card data it serves. If it shows up in
+            # the logs, the export is stale and every one of these costs CPU.
+            log.warning(
+                "parsed %d card(s) live for a deck request (%d since start): %s",
+                len(live_now), reader.live_parses, ", ".join(live_now[:10]),
+            )
         return {
             "ir_version": IR_VERSION,
             "snapshot": index["snapshot"],
+            "build": build,
             "decks": decks,
             "cards": cards,
         }
@@ -201,6 +255,7 @@ def build_router(store: IrStore | None = None, limiter: RateLimiter | None = Non
             "ir_version": IR_VERSION,
             "snapshot": index["snapshot"],
             "built_at": index["built_at"],
+            "build": index["build"],
             "cards": len(index["cards"]),
         })
 
@@ -247,8 +302,13 @@ def build_router(store: IrStore | None = None, limiter: RateLimiter | None = Non
         if path is None or digest is None:
             return _json(404, {"error": "no such card"})
 
-        etag = f'"{digest}"'
-        fresh = request.query_params.get("h") == digest
+        etag = f'"{digest}-{index["build"]}"'
+        # Immutable only under the exact card hash and build the manifest
+        # handed out: either one changing gives the card a new URL.
+        fresh = (
+            request.query_params.get("h") == digest
+            and request.query_params.get("b") == index["build"]
+        )
         headers = {
             "ETag": etag,
             "Vary": "Accept-Encoding",

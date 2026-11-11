@@ -1,140 +1,163 @@
 /**
- * The harness page: starts one worker per spare core and pings each, to show
- * the engine loads and answers off the main thread. The real app replaces
- * this once games can run.
+ * The harness page, end to end: decklists in, card IR fetched from the
+ * server, games played in Web Workers, a result table out. The real app's
+ * Results page replaces the table once real games run; swapping the stub
+ * for the real engine happens in the worker (`worker/handle.ts`), not here.
  */
 
+import { summarize, type RunResult, type RunSetup } from "@goldfly/engine/sim";
 import { EngineClient } from "./client";
-import type { RunSetup } from "@goldfly/engine/sim";
-import { IrClient } from "./ir";
-import { WorkerPool } from "./pool";
+import { IrClient, type DeckManifest } from "./ir";
+import { WorkerPool, defaultWorkers } from "./pool";
 
-const out = document.querySelector<HTMLElement>("#status");
-const list = document.querySelector<HTMLOListElement>("#workers");
+const $ = <T extends HTMLElement>(selector: string): T => {
+  const element = document.querySelector<T>(selector);
+  if (element === null) throw new Error(`missing ${selector}`);
+  return element;
+};
 
-async function main(): Promise<void> {
-  if (out === null || list === null) return;
-  const cores = Math.max(1, (navigator.hardwareConcurrency || 2) - 1);
-  out.textContent = `Starting ${cores} worker(s)...`;
-
-  const started = performance.now();
-  const results = await Promise.allSettled(
-    Array.from({ length: cores }, async (_, index) => {
-      const client = new EngineClient();
-      try {
-        const reply = await client.ping({ worker: index, sentAt: Date.now() });
-        return { index, reply, ms: performance.now() - started };
-      } finally {
-        client.terminate();
-      }
-    }),
-  );
-
-  let ok = 0;
-  for (const result of results) {
-    const item = document.createElement("li");
-    if (result.status === "fulfilled") {
-      ok += 1;
-      const { index, reply, ms } = result.value;
-      item.textContent = `worker ${index}: engine ${reply.engineVersion}, echoed ${JSON.stringify(reply.payload)} in ${ms.toFixed(0)} ms`;
-    } else {
-      item.textContent = `failed: ${String(result.reason)}`;
-      item.className = "bad";
-    }
-    list.append(item);
-  }
-  out.textContent = `${ok} of ${cores} worker(s) answered.`;
-  document.body.dataset.ready = ok === cores ? "ok" : "failed";
-}
-
-void main();
-
-// -- card IR ------------------------------------------------------------------
+const status = $("#status");
+const decksBox = $<HTMLTextAreaElement>("#decks");
+const runButton = $<HTMLButtonElement>("#run");
+const cancelButton = $<HTMLButtonElement>("#cancel");
+const progress = $<HTMLProgressElement>("#progress");
+const runStatus = $("#run-status");
+const notes = $<HTMLUListElement>("#notes");
+const table = $<HTMLTableElement>("#results");
 
 const irClient = new IrClient();
-const irStatus = document.querySelector<HTMLElement>("#ir-status");
-const irCards = document.querySelector<HTMLUListElement>("#ir-cards");
-const decksBox = document.querySelector<HTMLTextAreaElement>("#decks");
+const pool = new WorkerPool(defaultWorkers());
 
-async function loadIr(): Promise<void> {
-  if (irStatus === null || irCards === null || decksBox === null) return;
-  const decklists = decksBox.value.split(/^---\s*$/m).map((d) => d.trim()).filter(Boolean);
-  irStatus.className = "";
-  irStatus.textContent = "Loading...";
-  irCards.replaceChildren();
-  const started = performance.now();
+/** Prove every worker loaded the engine before anything else. */
+async function checkWorkers(): Promise<void> {
+  const client = new EngineClient();
   try {
-    const { manifest, cards, fetched } = await irClient.load(decklists);
-    const ms = performance.now() - started;
-    const problems = manifest.decks.flatMap((d) => [
-      ...d.unresolved.map((n) => `not a card: ${n}`),
-      ...d.missing_ir.map((n) => `not in the IR export: ${n}`),
-    ]);
-    irStatus.textContent =
-      `${cards.size} card(s) in ${manifest.decks.length} deck(s), ${fetched} downloaded, ` +
-      `in ${ms.toFixed(0)} ms. IR v${manifest.ir_version}, snapshot ${manifest.snapshot.slice(0, 12)}.`;
-    for (const problem of problems) {
-      const item = document.createElement("li");
-      item.className = "bad";
-      item.textContent = problem;
-      irCards.append(item);
-    }
-    for (const card of cards.values()) {
-      const item = document.createElement("li");
-      const abilities = card.faces.reduce((n, f) => n + f.abilities.length, 0);
-      const partly = card.faces.some((f) => !f.fully_read);
-      item.textContent = `${card.name}: ${card.faces.length} face(s), ${abilities} ability(ies)${partly ? ", partly read" : ""}`;
-      irCards.append(item);
-    }
+    const reply = await client.ping();
+    status.textContent = `${pool.size} worker(s) ready, engine ${reply.engineVersion}.`;
   } catch (error) {
-    irStatus.className = "bad";
-    irStatus.textContent = String(error);
+    status.className = "bad";
+    status.textContent = `The worker failed to start: ${String(error)}`;
+  } finally {
+    client.terminate();
   }
 }
 
-document.querySelector("#load")?.addEventListener("click", () => void loadIr());
+function numberOf(selector: string, fallback: number): number {
+  const value = Number($<HTMLInputElement>(selector).value);
+  return Number.isFinite(value) ? Math.floor(value) : fallback;
+}
 
-// -- a stub run ---------------------------------------------------------------
+function note(text: string, bad = false): void {
+  const item = document.createElement("li");
+  item.textContent = text;
+  if (bad) item.className = "bad";
+  notes.append(item);
+}
 
-const runStatus = document.querySelector<HTMLElement>("#run-status");
+function seatName(manifest: DeckManifest, seat: number): string {
+  const deck = manifest.decks[seat] ?? manifest.decks[0];
+  const commander = deck?.commanders[0];
+  const name = commander === undefined ? undefined : manifest.cards[commander]?.name;
+  const label = seat === 0 ? "You" : `Opponent ${seat}`;
+  return name === undefined ? label : `${label}: ${name}`;
+}
 
-/** Load the decks' IR, play 1000 stub games across the workers, twice. */
-async function stubRun(): Promise<void> {
-  if (runStatus === null || decksBox === null) return;
+const percent = (x: number): string => `${(x * 100).toFixed(1)}%`;
+const turn = (x: number | null): string => (x === null ? "-" : x.toFixed(1));
+
+function showTable(manifest: DeckManifest, result: RunResult): void {
+  const summary = summarize(result.records, result.crashed);
+  const body = table.tBodies[0] as HTMLTableSectionElement;
+  body.replaceChildren(
+    ...summary.seats.map((seat) => {
+      const row = document.createElement("tr");
+      const cells = [
+        seatName(manifest, seat.seat),
+        String(seat.wins),
+        percent(seat.winRate),
+        turn(seat.averageWinRound),
+        `${seat.commanderLanded} of ${summary.games}`,
+        turn(seat.averageCommanderRound),
+        percent(seat.mulliganRate),
+      ];
+      row.replaceChildren(...cells.map((text) => Object.assign(document.createElement("td"), { textContent: text })));
+      return row;
+    }),
+  );
+  table.hidden = false;
+  if (summary.stalls > 0) note(`${summary.stalls} game(s) hit the turn cap with no winner (${percent(summary.stallRate)}).`);
+}
+
+let cancel: (() => void) | null = null;
+
+async function run(): Promise<void> {
+  runButton.disabled = true;
+  cancelButton.disabled = false;
+  notes.replaceChildren();
   runStatus.className = "";
-  const decklists = decksBox.value.split(/^---\s*$/m).map((d) => d.trim()).filter(Boolean);
-  const pool = new WorkerPool();
+  table.hidden = true;
+  progress.hidden = false;
+  progress.value = 0;
+  const games = Math.max(1, Math.min(100_000, numberOf("#games", 1000)));
+
   try {
-    runStatus.textContent = "Loading card IR...";
-    const { manifest, cards } = await irClient.load(decklists);
+    runStatus.textContent = "Looking up the cards...";
+    const decklists = decksBox.value.split(/^---\s*$/m).map((d) => d.trim()).filter(Boolean).slice(0, 4);
+    if (decklists.length === 0) throw new Error("paste a decklist first");
+    const { manifest, cards, fetched, live } = await irClient.load(decklists);
+    manifest.decks.forEach((deck, seat) => {
+      for (const name of deck.unresolved) note(`${seatName(manifest, seat)}: not a card I know: ${name}`, true);
+      for (const name of deck.live_ir) note(`${name} was parsed live by the server (not in the export).`);
+    });
+    const first = manifest.decks[0];
+    if (first === undefined) throw new Error("no decks came back");
+
     const setup: RunSetup = {
-      // Seat 0 is the hero; missing seats are copies of the hero's deck.
-      decks: Array.from({ length: 4 }, (_, seat) => manifest.decks[seat] ?? manifest.decks[0]!),
+      decks: Array.from({ length: 4 }, (_, seat) => manifest.decks[seat] ?? first),
       cards: Object.fromEntries(cards),
-      runSeed: 0,
-      maxRounds: 25,
+      runSeed: Math.max(0, numberOf("#seed", 0)) >>> 0,
+      maxRounds: Math.max(4, numberOf("#rounds", 25)),
     };
-    const games = 1000;
+
     const started = performance.now();
-    const first = await pool.run(setup, games, (done) => {
-      runStatus.textContent = `Playing... ${done}/${games} on ${pool.size} worker(s)`;
-    }).result;
-    const ms = performance.now() - started;
-    const second = await pool.run(setup, games).result;
-    const same = first.records.every((r, i) => r.digest === second.records[i]?.digest);
-    const wins = first.records.filter((r) => r.winner === 0).length;
+    const running = pool.run(setup, games, (done) => {
+      progress.value = done / games;
+      runStatus.textContent = `Playing... ${done} of ${games} on ${pool.size} worker(s)`;
+    });
+    cancel = running.cancel;
+    const result = await running.result;
+    const seconds = (performance.now() - started) / 1000;
+
     runStatus.textContent =
-      `${first.records.length} games (${first.crashed.length} crashed) in ${ms.toFixed(0)} ms ` +
-      `on ${pool.size} worker(s). Seat 0 won ${wins}. ` +
-      `Replay check: ${same ? "every game identical" : "MISMATCH"}.`;
-    if (!same) runStatus.className = "bad";
-    document.body.dataset.run = same ? "ok" : "mismatch";
+      `${result.complete ? "" : "Cancelled: "}${result.records.length} game(s) in ${seconds.toFixed(2)} s ` +
+      `on ${pool.size} worker(s). Cards: ${cards.size} (${fetched} downloaded` +
+      `${live > 0 ? `, ${live} parsed live` : ""}).`;
+    for (const crash of result.crashed.slice(0, 10)) {
+      note(`Game ${crash.index} (seed ${crash.seed}) crashed and was left out: ${crash.error}`, true);
+    }
+    showTable(manifest, result);
+
+    // Replay check: the first games again must give identical digests.
+    if (result.complete && result.records.length > 0) {
+      const sample = Math.min(100, result.records.length);
+      const again = await pool.run(setup, sample).result;
+      const same = again.records.every((r, i) => r.digest === result.records[i]?.digest);
+      note(same ? `Replay check: the first ${sample} games replayed identically.`
+                : `Replay check FAILED: a game did not replay identically from its seed.`, !same);
+      document.body.dataset.run = same ? "ok" : "mismatch";
+    }
   } catch (error) {
     runStatus.className = "bad";
-    runStatus.textContent = String(error);
+    runStatus.textContent = String(error instanceof Error ? error.message : error);
+    document.body.dataset.run = "error";
   } finally {
-    pool.terminate();
+    cancel = null;
+    runButton.disabled = false;
+    cancelButton.disabled = true;
+    progress.hidden = true;
   }
 }
 
-document.querySelector("#run")?.addEventListener("click", () => void stubRun());
+runButton.addEventListener("click", () => void run());
+cancelButton.addEventListener("click", () => cancel?.());
+void checkWorkers();
