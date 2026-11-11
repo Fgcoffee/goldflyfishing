@@ -26,6 +26,12 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
   - `test_mana.py` is ported case for case (38 tests), plus 4 reduced_by_mana cases checked against Python.
   - One interface note: a payment's restriction context is `PaymentContext {types, subtypes}` (the spell's printed types), or `null` for a bare payability check. Python passed the GameObject and read its printed type line; the caller now builds the context.
 
+- **UTF-8 and the code fingerprint** (this push):
+  - Every read and write in `ir_export.py` and `mtgfish/ir/` names `encoding="utf-8"`, and writes use `newline="\n"`. That fixes the Windows cp1252 crash on names like "ō", and the generated files are byte-identical on every OS. An AST test keeps it that way.
+  - `index.json` now records `code`, a fingerprint of the parser, rules, card definitions and the IR codec (`mtgfish.ir.store.code_fingerprint()`).
+  - `IRStore` treats an export written by other code as stale: it parses live and logs once.
+  - Web session: put `code` in your cache keys next to `card_hash`. It's documented in `schema/README.md`.
+
 ## IR v2 (numeric enums): ready, waiting for the rules session
 
 - Pushed as `536557e`, then **reverted**. While it was in flight, `layers.ts`,
@@ -52,13 +58,15 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 
 ## Next
 
-1. `mana_plan.py`, after agreeing the interface with the rules session. Carry
+1. Printed card data (CardDef/FaceDef) in each card's IR document, matching `kernel/card.ts` (the auditor's item 3).
+2. Re-land IR v2 once the rules session has switched.
+3. `mana_plan.py`, after agreeing the interface with the rules session. Carry
    over the F61 guard. I need from you: how a permanent's mana abilities are
    listed and activated (`characteristics(game, obj).abilities` plus your
    activation entry point), and whether tapping goes through a function of
    yours. If it's easier, publish the signatures in your status file and
    I'll code against them.
-2. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
+4. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
 
 ## Questions for the auditor
 

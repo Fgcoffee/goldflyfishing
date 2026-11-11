@@ -58,6 +58,12 @@ cache/ir/v1/
   printing. The file name is `<oracle_id>.json`.
 * **`face`** is the face's index within the card (0, or 0 and 1 for a
   double-faced, split, adventure or flip card), in `faces[]` order.
+* **`code`** (in `index.json`) fingerprints the code that wrote the export:
+  the parser, the rules and card definitions, and the IR codec
+  (`mtgfish.ir.store.code_fingerprint()`). A parser change can change a
+  card's IR without changing its text, so an export whose `code` differs
+  from the running code is stale. `IRStore` then parses every card live and
+  logs it once. Put `code` in cache keys alongside `card_hash`.
 * **`card_hash`** is a hash of the whole card definition, which changes when
   the card's text does. A client holding a file whose `card_hash` matches
   `index.json` needn't fetch it again.
@@ -69,6 +75,7 @@ cache/ir/v1/
  "ir_version": 1,
  "built_at": "2026-11-10T12:20:00",
  "snapshot": "<card data hash>",
+ "code": "<code fingerprint>",
  "cards": {"4457ed35-7c10-48c8-9776-456485fdf070": {"name": "Lightning Bolt", "card_hash": "cbd8799e266d1b8182a241ba7be078e6"}},
  "names": {"lightning bolt": "4457ed35-7c10-48c8-9776-456485fdf070"}
 }

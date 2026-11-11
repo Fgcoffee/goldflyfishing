@@ -101,10 +101,10 @@ def test_committed_schema_files_are_current():
     with `python -m mtgfish.tools.ir_export schema`."""
     from mtgfish.ir.schema import json_schema, typescript, typescript_defaults
 
-    committed = json.loads((SCHEMA_DIR / "ir.schema.json").read_text())
+    committed = json.loads((SCHEMA_DIR / "ir.schema.json").read_text(encoding="utf-8"))
     assert committed == json_schema()
-    assert (ENGINE_IR_DIR / "types.ts").read_text() == typescript()
-    assert (ENGINE_IR_DIR / "defaults.ts").read_text() == typescript_defaults()
+    assert (ENGINE_IR_DIR / "types.ts").read_text(encoding="utf-8") == typescript()
+    assert (ENGINE_IR_DIR / "defaults.ts").read_text(encoding="utf-8") == typescript_defaults()
 
 
 def test_faces_validate_against_the_schema(card_db):
@@ -147,10 +147,10 @@ def test_store_serves_exported_files_and_falls_back_to_live(card_db, tmp_path):
     bolt = card_db.lookup("Lightning Bolt")
     ring = card_db.lookup("Sol Ring")
     # An exported file for Bolt; a stale one (wrong card_hash) for Sol Ring.
-    (tmp_path / f"{bolt.oracle_id}.json").write_text(json.dumps(_card_document(bolt)))
+    (tmp_path / f"{bolt.oracle_id}.json").write_text(json.dumps(_card_document(bolt)), encoding="utf-8", newline="\n")
     stale = _card_document(ring)
     stale["card_hash"] = "0" * 32
-    (tmp_path / f"{ring.oracle_id}.json").write_text(json.dumps(stale))
+    (tmp_path / f"{ring.oracle_id}.json").write_text(json.dumps(stale), encoding="utf-8", newline="\n")
 
     store = IRStore.open(card_db, tmp_path)
     documents, missing = store.deck(["Lightning Bolt", "Sol Ring", "Lightning Bolt", "No Such Card"])
@@ -161,3 +161,55 @@ def test_store_serves_exported_files_and_falls_back_to_live(card_db, tmp_path):
     for document in documents:
         for face in document["faces"]:
             decode_face(face)
+
+
+def test_every_file_access_names_utf8():
+    """On Windows the default encoding is cp1252, and a card name such as
+    "Ōkami" made the exporter raise UnicodeEncodeError. Every read and write
+    in the IR tooling names its encoding."""
+    import ast
+
+    root = Path(__file__).resolve().parents[2]
+    sources = [root / "mtgfish" / "tools" / "ir_export.py", *(root / "mtgfish" / "ir").glob("*.py")]
+    missing = []
+    for path in sources:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            name = getattr(node.func, "attr", None) or getattr(node.func, "id", None)
+            if name not in ("write_text", "read_text", "open"):
+                continue
+            if name == "open" and isinstance(node.func, ast.Attribute):
+                continue  # IRStore.open, not a file
+            if not any(k.arg == "encoding" for k in node.keywords):
+                missing.append(f"{path.name}:{node.lineno} {name}")
+    assert not missing, missing
+
+
+def test_an_export_from_other_code_is_stale(card_db, tmp_path):
+    """index.json records the code that wrote it. After a parser change and no
+    re-export, the old files must not be served as current."""
+    from mtgfish.ir.store import IRStore, code_fingerprint
+    from mtgfish.tools.ir_export import _card_document
+
+    bolt = card_db.lookup("Lightning Bolt")
+    (tmp_path / f"{bolt.oracle_id}.json").write_text(
+        json.dumps(_card_document(bolt)), encoding="utf-8", newline="\n"
+    )
+
+    def index(code):
+        (tmp_path / "index.json").write_text(
+            json.dumps({"ir_version": IR_VERSION, "code": code}), encoding="utf-8", newline="\n"
+        )
+
+    index(code_fingerprint())
+    store = IRStore.open(card_db, tmp_path)
+    store.deck(["Lightning Bolt"])
+    assert store.current and store.live_parses == 0
+
+    index("written by some other parser")
+    store = IRStore.open(card_db, tmp_path)
+    documents, _ = store.deck(["Lightning Bolt"])
+    assert not store.current and store.live_parses == 1
+    assert documents[0]["name"] == "Lightning Bolt"

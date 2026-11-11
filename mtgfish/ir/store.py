@@ -9,6 +9,12 @@ is. A card whose file is missing, or was exported from different card text
 (its ``card_hash`` no longer matches), is parsed and encoded live, so the
 answer is never stale - only slower for those cards. Names that match no
 card come back in ``missing``.
+
+The whole export is stale when the code that wrote it differs from the code
+running now: ``index.json`` records ``code_fingerprint()`` (the parser,
+rules and card definitions, and this package's codec), and a store whose
+export carries a different one parses every card live - and says so once in
+the log - until ``ir_export export`` is run again.
 """
 
 from __future__ import annotations
@@ -17,6 +23,36 @@ import json
 from pathlib import Path
 
 from .codec import IR_VERSION
+
+
+import hashlib
+import logging
+
+_log = logging.getLogger(__name__)
+
+
+_code: str | None = None
+
+
+def code_fingerprint() -> str:
+    """What the IR depends on besides the card data: the parser's own code
+    fingerprint (parser, rules, card definitions) and the IR codec here.
+    A change to either can change the JSON without changing a card.
+    Computed once per process, like the parser's: a process runs the code it
+    imported."""
+    global _code
+    if _code is not None:
+        return _code
+    from ..parser.store import code_fingerprint as parser_code
+
+    digest = hashlib.sha256(parser_code().encode())
+    package = Path(__file__).resolve().parent
+    for path in sorted(package.glob("*.py")):
+        digest.update(path.name.encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+    _code = digest.hexdigest()
+    return _code
 
 
 def default_dir() -> Path:
@@ -30,6 +66,26 @@ class IRStore:
         self.db = db
         self.directory = directory
         self.live_parses = 0
+        #: False when the export was written by other code: every card is
+        #: then parsed live.
+        self.current = self._export_is_current()
+
+    def _export_is_current(self) -> bool:
+        index = self.directory / "index.json"
+        if not index.exists():
+            return True  # nothing exported; each card is live anyway
+        try:
+            recorded = json.loads(index.read_text(encoding="utf-8")).get("code")
+        except (OSError, ValueError):
+            recorded = None
+        if recorded == code_fingerprint():
+            return True
+        _log.warning(
+            "IR export in %s was written by other parser code; serving live parses"
+            " until `python -m mtgfish.tools.ir_export export` is run",
+            self.directory,
+        )
+        return False
 
     @classmethod
     def open(cls, db, directory: Path | None = None) -> IRStore:
@@ -41,7 +97,7 @@ class IRStore:
 
         digest = card_hash(card)
         path = self.directory / f"{card.oracle_id}.json"
-        if path.exists():
+        if self.current and path.exists():
             try:
                 document = json.loads(path.read_text(encoding="utf-8"))
             except (OSError, ValueError):
