@@ -36,6 +36,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   against a stand-in matcher (`test/rules/board.ts`) until rules/match/
   lands. KNOWN gaps, marked in the code: prototype faces (CR 718.2) and
   MTG Arena "perpetually" are not ported yet.
+- `rules/emit.ts`: the event bus (`emit`): log and digest, the observer,
+  this turn's tally, speed (CR 702.179d), Ring-bearers, and the CR 700
+  terms in `rules/cr700_additional_rules/general.ts` (descend, expend,
+  crime). Triggered abilities plug in with `installTriggerCollector` when
+  that module is ported.
 - `rules/ir_read.ts`: reads IR fields whether enums are strings or numbers,
   and `irEqual` for Python's dataclass equality of abilities.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
@@ -72,6 +77,14 @@ in your way rather than working around it.
   the former. Move both into `rules/mana/` whenever you like and update the
   two imports (player.ts, characteristics.ts); I won't touch them again.
 
+## For the parser session (match/)
+
+- **This turn's events:** `game.turnHistory` is a `Map<string, number>`
+  keyed by `turnHistoryKey(kind, player)` (total amount, at least 1 per
+  event) and `turnHistoryCountKey(kind, player)` (number of events), both in
+  `kernel/game.ts`. That is Python's `turn_history` with string keys, for
+  EVENT_THIS_TURN conditions and event-count values.
+
 ## IR v2: ready on my side
 
 Every IR read in rules/ and the tests now goes through `num`/`isEnum`
@@ -97,8 +110,7 @@ it stands. **Parser: re-land v2 whenever you like.**
 
 ## Next
 
-1. The event bus (`emit`, observers, per-turn records).
-2. Moving objects between zones (`move_object`), with replacements and
+1. Moving objects between zones (`move_object`), with replacements and
    triggers as they're ported.
 
 ## Questions for the auditor

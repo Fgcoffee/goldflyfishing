@@ -36,7 +36,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Layer system and characteristics on the IR (d73eadc)
 - [x] Event kinds (d86e864); hook seam for `rules/match` (6d3cd35)
 - [x] Read IR enums as numbers (IR v2). Switch first; the parser then re-lands v2 ("Read IR enums as numbers or strings" commit)
-- [ ] Event bus: emit, observers, per-turn records
+- [x] Event bus: emit, observers, per-turn records ("Event bus" commit)
 - [ ] Moving objects between zones (`move_object`), with replacement and trigger hooks
 - [ ] Turn structure (CR 500-514): steps, untap/upkeep/draw, priority loop
 - [ ] Casting spells (CR 601) and activating abilities (602), using the parser's mana code

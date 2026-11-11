@@ -32,6 +32,7 @@ import {
   type ObjectId,
   type PlayerId,
 } from "./ids";
+import type { GameEvent } from "./events";
 import { cloneGameLog, newGameLog, record, type GameLog } from "./log";
 import { cloneRng, newRng, type Rng } from "./random";
 
@@ -96,7 +97,15 @@ export interface Game {
   replacementEffects: unknown[];
   actionsTaken: number;
   runaway: string;
-  turnHistory: Map<number, unknown>;
+  /**
+   * This turn's tally of events, for "if X happened this turn" (Python
+   * `turn_history`). Keys: `turnHistoryKey(kind, player)` -> total amount
+   * (at least 1 per event), and `turnHistoryCountKey(kind, player)` -> how
+   * many events.
+   */
+  turnHistory: Map<string, number>;
+  /** The simulator's statistics callback, given every event. */
+  observer: ((game: Game, event: GameEvent) => void) | null;
   eventBatch: number;
   departedInBatch: ObjectId[];
   departedBatch: number;
@@ -165,6 +174,7 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     actionsTaken: 0,
     runaway: "",
     turnHistory: new Map(),
+    observer: null,
     eventBatch: 0,
     departedInBatch: [],
     departedBatch: -1,
@@ -247,6 +257,14 @@ export function cloneGame(game: Game): Game {
     classLevels: new Map(game.classLevels),
     solvedPermanents: new Set(game.solvedPermanents),
   };
+}
+
+export function turnHistoryKey(kind: number, player: PlayerId): string {
+  return `${kind}|${player}`;
+}
+
+export function turnHistoryCountKey(kind: number, player: PlayerId): string {
+  return `${kind}|${player}|count`;
 }
 
 /** Write a log entry stamped with the game's current time. */
