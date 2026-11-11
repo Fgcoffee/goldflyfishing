@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
  "name": "Path to Exile",
  "card_hash": "7a596641ddb73283b0c03d0c992a80fd",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
   "name": "Path to Exile",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Exile target creature. Its controller may search their library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 15,
   "scryfall_uri": "https://scryfall.com/card/msc/141/path-to-exile?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
    "name": "Path to Exile",
    "face": 0,
@@ -50,33 +50,33 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "is_targeted": true,
        "text": "exile"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+        "scope": 13003
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.LAND",
-          "supertypes_all": "Supertype.BASIC",
+          "types_all": 16,
+          "supertypes_all": 1,
           "zones": {
            "$set": []
           },
@@ -92,7 +92,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "keywords": [
           "tapped"
          ],

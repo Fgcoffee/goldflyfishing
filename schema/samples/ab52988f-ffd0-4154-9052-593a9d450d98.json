@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
  "name": "Goblin Heelcutter",
  "card_hash": "0cd570588abe65e3ca1315f878b580f9",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
   "name": "Goblin Heelcutter",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 3,
        "text": "{3}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Berserker"
@@ -41,21 +41,21 @@
     "oracle_text": "Whenever this creature attacks, target creature can't block this turn.\nDash {2}{R} (You may cast this spell for its dash cost. If you do, it gains haste, and it's returned from the battlefield to its owner's hand at the beginning of the next end step.)",
     "power": "3",
     "toughness": "2",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "Dash"
     ]
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 20586,
   "scryfall_uri": "https://scryfall.com/card/frf/102/goblin-heelcutter?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
    "name": "Goblin Heelcutter",
    "face": 0,
@@ -65,24 +65,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "is_targeted": true,
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BLOCK",
+         "act": 23,
          "subject": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE"
+          "types_all": 4
          },
          "text": "can't block"
         }
@@ -95,7 +95,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ATTACKS"
+        101
        ]
       },
       "subject": {
@@ -107,11 +107,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Dash {2}{R}",
      "functions_in": {
       "$set": [
-       "Zone.HAND"
+       1
       ]
      },
      "keyword": "Dash",
@@ -122,20 +122,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.MANA",
+         "kind": 0,
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.GENERIC",
+            "kind": 0,
             "generic": 2,
             "text": "{2}"
            },
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.COLORED",
-            "colors": "Color.RED",
+            "kind": 2,
+            "colors": 8,
             "text": "{R}"
            }
           ]

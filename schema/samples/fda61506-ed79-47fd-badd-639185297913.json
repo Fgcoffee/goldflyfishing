@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "fda61506-ed79-47fd-badd-639185297913",
  "name": "Smokestack",
  "card_hash": "073952d34c925f336e89f9f507aa50be",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "fda61506-ed79-47fd-badd-639185297913",
   "name": "Smokestack",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 4,
        "text": "{4}"
       }
@@ -26,20 +26,20 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "At the beginning of your upkeep, you may put a soot counter on this artifact.\nAt the beginning of each player's upkeep, that player sacrifices a permanent of their choice for each soot counter on this artifact."
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 8562,
   "scryfall_uri": "https://scryfall.com/card/vma/282/smokestack?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "fda61506-ed79-47fd-badd-639185297913",
    "name": "Smokestack",
    "face": 0,
@@ -49,18 +49,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_COUNTERS",
+         "kind": 72,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
@@ -81,7 +81,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.UPKEEP"
+        127
        ]
       },
       "players": {
@@ -92,11 +92,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "At the beginning of each player's upkeep, that player sacrifices a permanent of their choice for each soot counter on this artifact."
       }
      ],

@@ -43,8 +43,8 @@ def _round_trip(card_db, name):
         document = encode_face(card, index, abilities, failures, card_hash(card))
         back = json.loads(json.dumps(document))
         got_abilities, got_failures = decode_face(back)
-        assert exact(got_abilities, abilities), (name, index)
-        assert exact(got_failures, failures), (name, index)
+        assert exact(got_abilities, abilities, ("tuple", "Ability")), (name, index)
+        assert exact(got_failures, failures, ("list", "ParseFailure")), (name, index)
         assert back["fully_read"] == (not failures)
 
 
@@ -53,36 +53,45 @@ def test_round_trip_is_exact(card_db, name):
     _round_trip(card_db, name)
 
 
-def test_enum_and_flag_encoding():
-    assert encode(Zone.GRAVEYARD) == "Zone.GRAVEYARD"
-    assert encode(CardType.ARTIFACT | CardType.CREATURE) == "CardType.ARTIFACT|CREATURE"
-    assert encode(CardType.NONE) == "CardType.NONE"
-    assert decode("CardType.ARTIFACT|CREATURE") == CardType.ARTIFACT | CardType.CREATURE
-    assert decode(encode(Duration.END_OF_TURN)) is Duration.END_OF_TURN
+def test_enums_are_numbers_typed_by_their_field():
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
+
+    spec = ObjectFilter(types_all=CardType.ARTIFACT | CardType.CREATURE, zones=frozenset({Zone.HAND}))
+    data = encode(spec, "ObjectFilter")
+    assert data == {"$": "ObjectFilter", "types_all": 5, "zones": {"$set": [int(Zone.HAND)]}}
+    back = decode(data, "ObjectFilter")
+    assert back == spec and back.types_all is not None
+    assert type(back.types_all) is CardType and next(iter(back.zones)) is Zone.HAND
+    # An enum where the IR declares no enum would lose its type: refused.
+    with pytest.raises(IRError):
+        encode(Zone.HAND)
+    # A plain int in an enum-typed field stays a plain int.
+    raw = Effect(EffectKind.NOTHING, duration=7)
+    data = encode(raw, "Effect")
+    assert data["duration"] == {"$int": 7}
+    assert type(decode(data, "Effect").duration) is int
+    assert decode(encode(Effect(EffectKind.NOTHING, duration=Duration.END_OF_TURN), "Effect"),
+                  "Effect").duration is Duration.END_OF_TURN
 
 
 def test_types_are_kept_apart():
-    # 0, False and an enum whose value is 0 compare equal; the JSON keeps them apart.
     assert encode(0) == 0 and encode(False) is False
     assert decode(encode((1, True, "x"))) == (1, True, "x")
     assert type(decode(encode((True,)))[0]) is bool
     assert not exact([1], (1,))
-    assert encode(frozenset({Zone.HAND, Zone.EXILE})) == {"$set": ["Zone.EXILE", "Zone.HAND"]}
+    assert encode(frozenset({3, 1})) == {"$set": [1, 3]}
 
 
 def test_defaults_are_left_out_and_restored():
     spec = ObjectFilter(types_all=CardType.CREATURE)
-    data = encode(spec)
-    assert data == {"$": "ObjectFilter", "types_all": "CardType.CREATURE"}
-    assert decode(data) == spec
-    # A default zone set written explicitly differs from one left out only if
-    # its value differs.
-    assert "zones" in encode(ObjectFilter(zones=frozenset()))
+    data = encode(spec, "ObjectFilter")
+    assert data == {"$": "ObjectFilter", "types_all": int(CardType.CREATURE)}
+    assert decode(data, "ObjectFilter") == spec
+    assert "zones" in encode(ObjectFilter(zones=frozenset()), "ObjectFilter")
 
 
-def test_a_string_that_looks_like_an_enum_survives():
-    assert decode(encode("Zone.GRAVEYARD as text")) == "Zone.GRAVEYARD as text"
-    assert decode(encode("Act. Then something")) == "Act. Then something"
+def test_strings_are_plain():
+    assert encode("Zone.GRAVEYARD as text") == "Zone.GRAVEYARD as text"
 
 
 def test_unknown_values_are_refused():
@@ -94,6 +103,8 @@ def test_unknown_values_are_refused():
         decode({"$": "ObjectFilter", "no_such_field": 1})
     with pytest.raises(IRError):
         decode_face({"ir_version": IR_VERSION + 1, "abilities": [], "failures": []})
+    with pytest.raises(IRError):
+        decode(99, ("enum", "Zone"))
 
 
 def test_committed_schema_files_are_current():
@@ -128,22 +139,24 @@ def test_printed_card_round_trips(card_db):
         card = card_db.lookup(name)
         assert card is not None, name
         back = decode_card(json.loads(json.dumps(encode_card(card))))
-        assert exact(back, card), name
+        assert exact(back, card, "CardDef"), name
     goyf = json.loads(json.dumps(encode_card(card_db.lookup("Tarmogoyf"))))
     face = goyf["faces"][0]
     assert face["power"] == "*" and face["toughness"] == "1+*"
 
 
 def test_usage_counts_each_kind_once_per_face():
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import Ability, AbilityKind
+    from mtgfish.rules.cr600_spells_and_abilities.effects import Effect, EffectKind
     from mtgfish.tools.ir_export import _usage_of
 
     seen: set = set()
-    _usage_of([
-        {"$": "Ability", "keyword": "Flying", "effects": [
-            {"$": "Effect", "kind": "EffectKind.DRAW"},
-            {"$": "Effect", "kind": "EffectKind.DRAW", "text": "Zone.HAND"},
-        ]},
-    ], None, seen)
+    ability = Ability(
+        AbilityKind.STATIC,
+        keyword="Flying",
+        effects=(Effect(EffectKind.DRAW), Effect(EffectKind.DRAW, zone=Zone.HAND)),
+    )
+    _usage_of([ability], None, seen)
     assert ("EffectKind", "DRAW") in seen
     assert ("keyword", "Flying") in seen
     assert ("class", "Effect") in seen

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
  "name": "Enlightened Tutor",
  "card_hash": "d985d7022f3ee33a868dd68a392f382a",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
   "name": "Enlightened Tutor",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Search your library for an artifact or enchantment card, reveal it, then shuffle and put that card on top.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 123,
   "scryfall_uri": "https://scryfall.com/card/dmr/6/enlightened-tutor?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
    "name": "Enlightened Tutor",
    "face": 0,
@@ -50,14 +50,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|ENCHANTMENT",
+        "types_any": 9,
         "zones": {
          "$set": []
         },
@@ -73,7 +73,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.LIBRARY",
+       "zone": 0,
        "text": "search library"
       }
      ],

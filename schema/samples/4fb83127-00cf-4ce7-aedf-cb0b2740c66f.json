@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
  "name": "Reckless Bushwhacker",
  "card_hash": "e2258e8baa07efda2065c242c94ec9b0",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
   "name": "Reckless Bushwhacker",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior",
@@ -42,7 +42,7 @@
     "oracle_text": "Surge {1}{R} (You may cast this spell for its surge cost if you or a teammate has cast another spell this turn.)\nHaste\nWhen this creature enters, if its surge cost was paid, other creatures you control get +1/+0 and gain haste until end of turn.",
     "power": "2",
     "toughness": "1",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "Haste",
      "Surge"
@@ -50,14 +50,14 @@
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 15883,
   "scryfall_uri": "https://scryfall.com/card/ogw/116/reckless-bushwhacker?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
    "name": "Reckless Bushwhacker",
    "face": 0,
@@ -67,11 +67,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Surge {1}{R}",
      "functions_in": {
       "$set": [
-       "Zone.HAND"
+       1
       ]
      },
      "keyword": "Surge",
@@ -82,20 +82,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.MANA",
+         "kind": 0,
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.GENERIC",
+            "kind": 0,
             "generic": 1,
             "text": "{1}"
            },
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.COLORED",
-            "colors": "Color.RED",
+            "kind": 2,
+            "colors": 8,
             "text": "{R}"
            }
           ]
@@ -109,17 +109,17 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Haste",
      "keyword": "Haste"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "When this creature enters, if its surge cost was paid, other creatures you control get +1/+0 and gain haste until end of turn."
       }
      ],

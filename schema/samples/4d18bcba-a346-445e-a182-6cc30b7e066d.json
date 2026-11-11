@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
  "name": "Ashnod's Altar",
  "card_hash": "58b3f67d4e90c3d00e40dd7cca4fc281",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
   "name": "Ashnod's Altar",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 3,
        "text": "{3}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "Sacrifice a creature: Add {C}{C}.",
     "produced_mana": [
@@ -35,14 +35,14 @@
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 134,
   "scryfall_uri": "https://scryfall.com/card/cmm/368/ashnods-altar?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
    "name": "Ashnod's Altar",
    "face": 0,
@@ -52,11 +52,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -77,14 +77,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
+         "types_all": 4,
          "count": {
           "$": "Value",
           "constant": 1

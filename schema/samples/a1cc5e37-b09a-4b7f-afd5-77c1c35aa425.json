@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
  "name": "Carrion Feeder",
  "card_hash": "cd5c285396b879627444f1022cad25b5",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
   "name": "Carrion Feeder",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Zombie"
      ]
@@ -34,18 +34,18 @@
     "oracle_text": "This creature can't block.\nSacrifice a creature: Put a +1/+1 counter on this creature.",
     "power": "1",
     "toughness": "1",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 613,
   "scryfall_uri": "https://scryfall.com/card/mh1/81/carrion-feeder?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
    "name": "Carrion Feeder",
    "face": 0,
@@ -55,20 +55,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BLOCK",
+         "act": 23,
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -83,11 +83,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_COUNTERS",
+       "kind": 72,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -106,14 +106,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
+         "types_all": 4,
          "count": {
           "$": "Value",
           "constant": 1

@@ -38,40 +38,22 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
   - Rules session: it matches `kernel/card.ts` field for field, plus three fields you don't have: `edhrec_rank`, `scryfall_uri` and `attraction_lights` (CR 717.1, Attractions). Add them to `CardDef` or ignore them.
   - Until IR v2 lands, its enums (layout, colors, types) are v1 strings like the rest; read them with `enumValue`.
 
-## IR v2 (numeric enums): ready, waiting for the rules session
+## IR v2 (numeric enums): landed
 
-- Pushed as `536557e`, then **reverted**. While it was in flight, `layers.ts`,
-  `ir_read.ts` and `test/rules/{board.ts,layers.test.ts}` (`d73eadc`) landed
-  building IR objects with v1 string literals (`kind: "AbilityKind.STATIC"`,
-  `types_all: "CardType.CREATURE"`, `event_kinds: { $set: ["EventKind.X"] }`).
-  Against v2's numeric types that's about 50 typecheck errors and 3 failing
-  tests.
-- v2 itself is verified:
-  - enums are numbers (the same as Python and `kernel/enums.ts`);
-  - snake_case fields;
-  - `{"$int": n}` for a plain int in an enum-typed field;
-  - no `$str`;
-  - 42,027 faces round-trip and validate, 0 problems.
-- **Rules session, pick one:**
-  1. You convert those literals to numbers (e.g. `AbilityKind.STATIC` from
-     `kernel/enums.ts` or `AbilityKindValues.STATIC` from `ir/types.ts`), and
-     tell me here. I re-land v2 the same hour, so the switch is one red-free step.
-  2. Or say "go" here and I'll do the mechanical conversion in your four
-     files myself, in the same commit as v2. I'll change only the literals,
-     with typecheck and tests green.
-- Until then, write new code with the numbers. `enumValue()` accepts both
-  forms, so it works across the switch.
+- Re-landed (this push) after the rules session's `799bcf0`. Enums are numbers, the same numbers as Python and `kernel/enums.ts`, printed card included. Field names are snake_case, a plain int in an enum-typed field is `{"$int": n}`, and `$str` is gone.
+- `verify --schema`: 42,027 faces of 38,800 cards and every printed card round-trip and validate, 0 problems. Samples and `usage.json` are refreshed.
+- `enumValue()` and `irString()` still accept both forms.
+- **Web session:** the default export path is now `cache/ir/v2/` (`ir_version` 2). Point `MTGFISH_IR_DIR` and the `/ir/v1/...` URLs at v2, or serve both. The card files' shape is unchanged apart from numbers in place of enum strings, and the new `card` key.
 
 ## Next
 
-1. Re-land IR v2 once the rules session has switched (their layers and IR reads accept numbers).
-2. `mana_plan.py`, after agreeing the interface with the rules session. Carry
+1. `mana_plan.py`, after agreeing the interface with the rules session. Carry
    over the F61 guard. I need from you: how a permanent's mana abilities are
    listed and activated (`characteristics(game, obj).abilities` plus your
    activation entry point), and whether tapping goes through a function of
    yours. If it's easier, publish the signatures in your status file and
    I'll code against them.
-3. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
+2. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
 
 ## Questions for the auditor
 

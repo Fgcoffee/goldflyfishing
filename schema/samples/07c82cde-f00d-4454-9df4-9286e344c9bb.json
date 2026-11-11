@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "07c82cde-f00d-4454-9df4-9286e344c9bb",
  "name": "Muxus, Goblin Grandee",
  "card_hash": "b08e9d4bb28a2bae6169fc5043d79800",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "07c82cde-f00d-4454-9df4-9286e344c9bb",
   "name": "Muxus, Goblin Grandee",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 4,
        "text": "{4}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,8 +38,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Noble"
@@ -48,18 +48,18 @@
     "oracle_text": "When Muxus enters, reveal the top six cards of your library. Put all Goblin creature cards with mana value 5 or less from among them onto the battlefield and the rest on the bottom of your library in a random order.\nWhenever Muxus attacks, it gets +1/+1 until end of turn for each other Goblin you control.",
     "power": "4",
     "toughness": "4",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 6,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 3985,
   "scryfall_uri": "https://scryfall.com/card/jmp/24/muxus-goblin-grandee?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "07c82cde-f00d-4454-9df4-9286e344c9bb",
    "name": "Muxus, Goblin Grandee",
    "face": 0,
@@ -69,11 +69,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOOK_AT_TOP",
+       "kind": 10001,
        "players": {
         "$": "PlayerFilter"
        },
@@ -88,14 +88,14 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "kind": 33,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE",
+          "types_all": 4,
           "subtypes_all": [
            "Goblin"
           ],
@@ -105,19 +105,19 @@
           },
           "mana_value": {
            "$": "NumericConstraint",
-           "comparison": "Comparison.LE",
+           "comparison": 3,
            "value": {
             "$": "Value",
             "constant": 5
            }
           }
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "text": "put onto the battlefield"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ON_LIBRARY",
+         "kind": 34,
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true
@@ -137,7 +137,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
@@ -149,40 +149,40 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_PT",
+       "kind": 140,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
           "Goblin"
          ],
          "other_than_source": true,
-         "controller": "ControllerRelation.YOU"
+         "controller": 1
         }
        },
        "amount2": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
           "Goblin"
          ],
          "other_than_source": true,
-         "controller": "ControllerRelation.YOU"
+         "controller": 1
         }
        },
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "text": "gets +1/+1"
       }
      ],
@@ -191,7 +191,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ATTACKS"
+        101
        ]
       },
       "subject": {

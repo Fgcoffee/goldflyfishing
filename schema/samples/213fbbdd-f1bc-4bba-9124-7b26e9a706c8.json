@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
  "name": "Goblin Lackey",
  "card_hash": "b12e3d5b70123e837bbf0a9c4799578d",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
   "name": "Goblin Lackey",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin"
      ]
@@ -34,18 +34,18 @@
     "oracle_text": "Whenever this creature deals damage to a player, you may put a Goblin permanent card from your hand onto the battlefield.",
     "power": "1",
     "toughness": "1",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 4844,
   "scryfall_uri": "https://scryfall.com/card/vma/167/goblin-lackey?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
    "name": "Goblin Lackey",
    "face": 0,
@@ -55,36 +55,36 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "kind": 33,
          "targets": {
           "$": "ObjectFilter",
-          "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+          "types_any": 63,
           "subtypes_all": [
            "Goblin"
           ],
           "zones": {
            "$set": [
-            "Zone.HAND"
+            1
            ]
           },
-          "owner": "ControllerRelation.YOU",
+          "owner": 1,
           "count": {
            "$": "Value",
            "constant": 1
           }
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "text": "put onto the battlefield"
         }
        ],
@@ -96,8 +96,8 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.COMBAT_DAMAGE_DEALT",
-        "EventKind.DAMAGE_DEALT"
+        60,
+        61
        ]
       },
       "source": {
@@ -106,7 +106,7 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.EACH_PLAYER"
+       "scope": 2
       },
       "to_player": true,
       "text": "when this deals damage"

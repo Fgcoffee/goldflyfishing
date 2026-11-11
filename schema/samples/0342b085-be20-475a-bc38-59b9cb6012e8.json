@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0342b085-be20-475a-bc38-59b9cb6012e8",
  "name": "Goblin Chainwhirler",
  "card_hash": "cd7360d2d25d0f9efa241ad0cb4c97c8",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "0342b085-be20-475a-bc38-59b9cb6012e8",
   "name": "Goblin Chainwhirler",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,7 +38,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior"
@@ -47,21 +47,21 @@
     "oracle_text": "First strike\nWhen this creature enters, it deals 1 damage to each opponent and each creature and planeswalker they control.",
     "power": "3",
     "toughness": "3",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "First strike"
     ]
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 4917,
   "scryfall_uri": "https://scryfall.com/card/dom/129/goblin-chainwhirler?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0342b085-be20-475a-bc38-59b9cb6012e8",
    "name": "Goblin Chainwhirler",
    "face": 0,
@@ -71,17 +71,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "First strike",
      "keyword": "First strike"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "When this creature enters, it deals 1 damage to each opponent and each creature and planeswalker they control."
       }
      ],

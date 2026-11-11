@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
  "name": "Mishra's Workshop",
  "card_hash": "c3902d62b3ad1b312a7270c6a755c16a",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
   "name": "Mishra's Workshop",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{T}: Add {C}{C}{C}. Spend this mana only to cast artifact spells.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 3782,
   "scryfall_uri": "https://scryfall.com/card/vma/305/mishras-workshop?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
    "name": "Mishra's Workshop",
    "face": 0,
@@ -44,11 +44,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -61,10 +61,10 @@
         "key": "all artifact that is a spell in stack",
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.ARTIFACT",
+         "types_all": 1,
          "zones": {
           "$set": [
-           "Zone.STACK"
+           4
           ]
          },
          "is_ability": false
@@ -84,7 +84,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

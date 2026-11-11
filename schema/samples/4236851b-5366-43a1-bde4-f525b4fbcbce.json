@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
  "name": "Bloodchief's Thirst",
  "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
   "name": "Bloodchief's Thirst",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -26,24 +26,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Kicker {2}{B} (You may pay an additional {2}{B} as you cast this spell.)\nDestroy target creature or planeswalker with mana value 2 or less. If this spell was kicked, instead destroy target creature or planeswalker.",
-    "colors": "Color.BLACK",
+    "colors": 4,
     "keywords": [
      "Kicker"
     ]
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 14302,
   "scryfall_uri": "https://scryfall.com/card/znr/94/bloodchiefs-thirst?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
    "name": "Bloodchief's Thirst",
    "face": 0,
@@ -53,12 +53,12 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Kicker {2}{B}",
      "functions_in": {
       "$set": [
-       "Zone.HAND",
-       "Zone.STACK"
+       1,
+       4
       ]
      },
      "keyword": "Kicker",
@@ -69,20 +69,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.MANA",
+         "kind": 0,
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.GENERIC",
+            "kind": 0,
             "generic": 2,
             "text": "{2}"
            },
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.COLORED",
-            "colors": "Color.BLACK",
+            "kind": 2,
+            "colors": 4,
             "text": "{B}"
            }
           ]
@@ -97,17 +97,17 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.CREATURE|PLANESWALKER",
+        "types_any": 36,
         "mana_value": {
          "$": "NumericConstraint",
-         "comparison": "Comparison.LE",
+         "comparison": 3,
          "value": {
           "$": "Value",
           "constant": 2
@@ -119,15 +119,15 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
-       "duration": "Duration.PERMANENT",
+       "kind": 999,
+       "duration": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.DESTROY",
+         "kind": 29,
          "targets": {
           "$": "ObjectFilter",
-          "types_any": "CardType.CREATURE|PLANESWALKER"
+          "types_any": 36
          },
          "is_targeted": true,
          "text": "destroy"

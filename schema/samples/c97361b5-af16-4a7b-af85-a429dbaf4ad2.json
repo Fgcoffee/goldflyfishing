@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c97361b5-af16-4a7b-af85-a429dbaf4ad2",
  "name": "Mind Stone",
  "card_hash": "530d32d89a86fbd7979b94edd4189d81",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "c97361b5-af16-4a7b-af85-a429dbaf4ad2",
   "name": "Mind Stone",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card.",
     "produced_mana": [
@@ -35,14 +35,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 32,
   "scryfall_uri": "https://scryfall.com/card/mbc/76/mind-stone?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c97361b5-af16-4a7b-af85-a429dbaf4ad2",
    "name": "Mind Stone",
    "face": 0,
@@ -52,11 +52,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -76,7 +76,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -85,11 +85,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -106,13 +106,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           }
@@ -121,12 +121,12 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1

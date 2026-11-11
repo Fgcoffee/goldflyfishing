@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
  "name": "Celestial Colonnade",
  "card_hash": "31b86e6c35ba43c047f9d60fb5d19811",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
   "name": "Celestial Colonnade",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "This land enters tapped.\n{T}: Add {W} or {U}.\n{3}{W}{U}: Until end of turn, this land becomes a 4/4 white and blue Elemental creature with flying and vigilance. It's still a land.",
     "produced_mana": [
@@ -28,14 +28,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 5547,
   "scryfall_uri": "https://scryfall.com/card/uma/238/celestial-colonnade?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
    "name": "Celestial Colonnade",
    "face": 0,
@@ -45,16 +45,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.TAP",
+       "kind": 70,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "enters tapped"
       }
      ],
@@ -62,18 +62,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -84,12 +84,12 @@
          "mana_produced": [
           "{W}"
          ],
-         "colors": "Color.WHITE",
+         "colors": 1,
          "text": "add {W}"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -100,7 +100,7 @@
          "mana_produced": [
           "{U}"
          ],
-         "colors": "Color.BLUE",
+         "colors": 2,
          "text": "add {U}"
         }
        ],
@@ -113,7 +113,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -122,11 +122,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "{3}{W}{U}: Until end of turn, this land becomes a 4/4 white and blue Elemental creature with flying and vigilance. It's still a land."
       }
      ],

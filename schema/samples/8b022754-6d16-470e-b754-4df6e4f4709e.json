@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
  "name": "Goblin Instigator",
  "card_hash": "aac1e0781c6dd47556af7e76d6d5286b",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
   "name": "Goblin Instigator",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Rogue"
@@ -41,18 +41,18 @@
     "oracle_text": "When this creature enters, create a 1/1 red Goblin creature token.",
     "power": "1",
     "toughness": "1",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 3250,
   "scryfall_uri": "https://scryfall.com/card/moc/282/goblin-instigator?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
    "name": "Goblin Instigator",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CREATE_TOKEN",
+       "kind": 35,
        "players": {
         "$": "PlayerFilter"
        },
@@ -80,7 +80,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": "Color.RED",
+        "colors": 8,
         "power": {
          "$": "Value",
          "constant": 1
@@ -98,7 +98,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
  "name": "Necropotence",
  "card_hash": "dc4962cdbe1b7df64f7a4b601e594809",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
   "name": "Necropotence",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Skip your draw step.\nWhenever you discard a card, exile that card from your graveyard.\nPay 1 life: Exile the top card of your library face down. Put that card into your hand at the beginning of your next end step.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 511,
   "scryfall_uri": "https://scryfall.com/card/ima/98/necropotence?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
    "name": "Necropotence",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SKIP_STEP",
+       "kind": 173,
        "players": {
         "$": "PlayerFilter"
        },
@@ -81,16 +81,16 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "from_zone": "Zone.GRAVEYARD",
+       "from_zone": 3,
        "text": "exile"
       }
      ],
@@ -99,7 +99,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DISCARDED"
+        81
        ]
       },
       "subject": {
@@ -120,20 +120,20 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.LIBRARY"
+          0
          ]
         },
         "from_top": 1,
-        "owner": "ControllerRelation.YOU",
+        "owner": 1,
         "count": {
          "$": "Value",
          "constant": 1
@@ -146,12 +146,12 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.DELAYED_TRIGGER",
+       "kind": 213,
        "trigger": {
         "$": "TriggerCondition",
         "event_kinds": {
          "$set": [
-          "EventKind.END_STEP"
+          129
          ]
         },
         "text": "at the next end step"
@@ -159,12 +159,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.MOVE_ZONE",
+         "kind": 28,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "text": "put into a zone"
         }
        ],
@@ -177,7 +177,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.PAY_LIFE",
+        "kind": 30,
         "amount": {
          "$": "Value",
          "constant": 1

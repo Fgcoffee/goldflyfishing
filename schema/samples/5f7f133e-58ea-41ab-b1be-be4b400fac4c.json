@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
  "name": "Coat of Arms",
  "card_hash": "34dd01bf619085916024d266751ae6fa",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
   "name": "Coat of Arms",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 5,
        "text": "{5}"
       }
@@ -26,20 +26,20 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it. (For example, if two Goblin Warriors and a Goblin Shaman are on the battlefield, each gets +2/+2.)"
    }
   ],
   "mana_value": 5,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 942,
   "scryfall_uri": "https://scryfall.com/card/dds/58/coat-of-arms?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
    "name": "Coat of Arms",
    "face": 0,
@@ -49,11 +49,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it."
       }
      ],

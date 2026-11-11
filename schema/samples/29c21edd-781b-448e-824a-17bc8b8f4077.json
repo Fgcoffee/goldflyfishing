@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
  "name": "Goblin War Drums",
  "card_hash": "08d7187eb4d55d698dfa2b7e226abd97",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
   "name": "Goblin War Drums",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Creatures you control have menace. (They can't be blocked except by two or more creatures.)",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 4901,
   "scryfall_uri": "https://scryfall.com/card/a25/133/goblin-war-drums?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
    "name": "Goblin War Drums",
    "face": 0,
@@ -56,21 +56,21 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": "AbilityKind.STATIC",
+         "kind": 3,
          "text": "menace",
          "keyword": "menace"
         }

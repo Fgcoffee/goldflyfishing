@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
  "name": "Zulaport Cutthroat",
  "card_hash": "6d3ff59e597364aebee6e0bb61fdab87",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
   "name": "Zulaport Cutthroat",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Human",
       "Rogue",
@@ -42,18 +42,18 @@
     "oracle_text": "Whenever this creature or another creature you control dies, each opponent loses 1 life and you gain 1 life.",
     "power": "1",
     "toughness": "1",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 236,
   "scryfall_uri": "https://scryfall.com/card/soc/233/zulaport-cutthroat?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
    "name": "Zulaport Cutthroat",
    "face": 0,
@@ -63,14 +63,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
@@ -80,7 +80,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.GAIN_LIFE",
+       "kind": 51,
        "players": {
         "$": "PlayerFilter"
        },
@@ -96,13 +96,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES"
+        3
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
-       "controller": "ControllerRelation.YOU",
+       "types_all": 4,
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
  "name": "Ogre Battledriver",
  "card_hash": "a074fa6500112a1abf8e36b49dd7d503",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
   "name": "Ogre Battledriver",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,7 +38,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Ogre",
       "Warrior"
@@ -47,18 +47,18 @@
     "oracle_text": "Whenever another creature you control enters, that creature gets +2/+0 and gains haste until end of turn. (It can attack and {T} this turn.)",
     "power": "3",
     "toughness": "3",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 3304,
   "scryfall_uri": "https://scryfall.com/card/tdc/227/ogre-battledriver?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
    "name": "Ogre Battledriver",
    "face": 0,
@@ -68,15 +68,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.MODIFY_PT",
+         "kind": 140,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
@@ -85,21 +85,21 @@
           "$": "Value",
           "constant": 2
          },
-         "duration": "Duration.END_OF_TURN",
+         "duration": 1,
          "text": "gets +2/+0"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.GRANT_ABILITY",
+         "kind": 143,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
          },
-         "duration": "Duration.END_OF_TURN",
+         "duration": 1,
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": "AbilityKind.STATIC",
+           "kind": 3,
            "text": "haste",
            "keyword": "haste"
           }
@@ -115,14 +115,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
+       "types_all": 4,
        "other_than_source": true,
-       "controller": "ControllerRelation.YOU",
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1

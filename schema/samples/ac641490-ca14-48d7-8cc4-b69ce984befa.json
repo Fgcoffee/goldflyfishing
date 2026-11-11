@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
  "name": "Preordain",
  "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
   "name": "Preordain",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -26,24 +26,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Scry 2, then draw a card. (To scry 2, look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)",
-    "colors": "Color.BLUE",
+    "colors": 2,
     "keywords": [
      "Scry"
     ]
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 218,
   "scryfall_uri": "https://scryfall.com/card/tdc/161/preordain?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
    "name": "Preordain",
    "face": 0,
@@ -53,11 +53,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SCRY",
+       "kind": 26,
        "players": {
         "$": "PlayerFilter"
        },
@@ -69,7 +69,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },

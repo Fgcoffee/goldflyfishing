@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
  "name": "Gravecrawler",
  "card_hash": "46a4ba95ca926e70a14d6c74fd8c52d0",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
   "name": "Gravecrawler",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Zombie"
      ]
@@ -34,18 +34,18 @@
     "oracle_text": "This creature can't block.\nYou may cast this card from your graveyard as long as you control a Zombie.",
     "power": "2",
     "toughness": "1",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 677,
   "scryfall_uri": "https://scryfall.com/card/tdc/93/gravecrawler?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
    "name": "Gravecrawler",
    "face": 0,
@@ -55,20 +55,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BLOCK",
+         "act": 23,
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -83,25 +83,25 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CONDITIONAL",
-       "duration": "Duration.WHILE_SOURCE_PERSISTS",
+       "kind": 1,
+       "duration": 5,
        "condition": {
         "$": "Condition",
-        "kind": "ConditionKind.CONTROLS_MATCHING",
+        "kind": 5,
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
           "Zombie"
          ],
-         "controller": "ControllerRelation.YOU"
+         "controller": 1
         },
         "constraint": {
          "$": "NumericConstraint",
-         "comparison": "Comparison.GE",
+         "comparison": 5,
          "value": {
           "$": "Value",
           "constant": 1
@@ -112,7 +112,7 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PLAY_FROM_ZONE",
+         "kind": 104,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
@@ -120,7 +120,7 @@
          "players": {
           "$": "PlayerFilter"
          },
-         "from_zone": "Zone.GRAVEYARD",
+         "from_zone": 3,
          "text": "you may play it"
         }
        ],

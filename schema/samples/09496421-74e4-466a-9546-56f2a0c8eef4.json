@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "09496421-74e4-466a-9546-56f2a0c8eef4",
  "name": "Vault of Whispers",
  "card_hash": "4d8cdf6ec47ca159944dbea53a606224",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "09496421-74e4-466a-9546-56f2a0c8eef4",
   "name": "Vault of Whispers",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT|LAND"
+     "types": 17
     },
     "oracle_text": "{T}: Add {B}.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 612,
   "scryfall_uri": "https://scryfall.com/card/dsc/322/vault-of-whispers?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "09496421-74e4-466a-9546-56f2a0c8eef4",
    "name": "Vault of Whispers",
    "face": 0,
@@ -44,11 +44,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -59,7 +59,7 @@
        "mana_produced": [
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}"
       }
      ],
@@ -69,7 +69,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

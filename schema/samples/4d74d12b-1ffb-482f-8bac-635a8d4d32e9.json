@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
  "name": "Goblin Piledriver",
  "card_hash": "4138a21d675f9d742f0c4e3be0629f72",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
   "name": "Goblin Piledriver",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior"
@@ -41,21 +41,21 @@
     "oracle_text": "Protection from blue (This creature can't be blocked, targeted, dealt damage, or enchanted by anything blue.)\nWhenever this creature attacks, it gets +2/+0 until end of turn for each other attacking Goblin.",
     "power": "1",
     "toughness": "2",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "Protection"
     ]
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 6654,
   "scryfall_uri": "https://scryfall.com/card/ori/151/goblin-piledriver?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
    "name": "Goblin Piledriver",
    "face": 0,
@@ -65,12 +65,12 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Protection from blue",
      "keyword": "Protection",
      "quality": {
       "$": "ObjectFilter",
-      "colors_any": "Color.BLUE",
+      "colors_any": 2,
       "zones": {
        "$set": []
       }
@@ -78,18 +78,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_PT",
+       "kind": 140,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.PRODUCT",
+        "kind": 12,
         "operands": [
          {
           "$": "Value",
@@ -97,7 +97,7 @@
          },
          {
           "$": "Value",
-          "kind": "ValueKind.COUNT",
+          "kind": 2,
           "filter": {
            "$": "ObjectFilter",
            "subtypes_all": [
@@ -109,7 +109,7 @@
          }
         ]
        },
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "text": "gets +2/+0"
       }
      ],
@@ -118,7 +118,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ATTACKS"
+        101
        ]
       },
       "subject": {

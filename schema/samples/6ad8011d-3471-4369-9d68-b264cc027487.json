@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
  "name": "Sol Ring",
  "card_hash": "68eca73e2a59ca77c758e7628ac52eba",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
   "name": "Sol Ring",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "{T}: Add {C}{C}.",
     "produced_mana": [
@@ -35,14 +35,14 @@
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 1,
   "scryfall_uri": "https://scryfall.com/card/msc/211/sol-ring?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
    "name": "Sol Ring",
    "face": 0,
@@ -52,11 +52,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -77,7 +77,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

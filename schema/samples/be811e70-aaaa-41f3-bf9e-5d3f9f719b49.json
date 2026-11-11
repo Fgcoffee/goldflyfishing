@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
  "name": "Castle Locthwain",
  "card_hash": "13e66d59deb093fd5e492deaffd74509",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
   "name": "Castle Locthwain",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "This land enters tapped unless you control a Swamp.\n{T}: Add {B}.\n{1}{B}{B}, {T}: Draw a card, then you lose life equal to the number of cards in your hand.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 793,
   "scryfall_uri": "https://scryfall.com/card/clb/884/castle-locthwain?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
    "name": "Castle Locthwain",
    "face": 0,
@@ -44,28 +44,28 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CONDITIONAL",
+       "kind": 1,
        "condition": {
         "$": "Condition",
-        "kind": "ConditionKind.NOT",
+        "kind": 22,
         "operands": [
          {
           "$": "Condition",
-          "kind": "ConditionKind.CONTROLS_MATCHING",
+          "kind": 5,
           "filter": {
            "$": "ObjectFilter",
            "subtypes_all": [
             "Swamp"
            ],
-           "controller": "ControllerRelation.YOU"
+           "controller": 1
           },
           "constraint": {
            "$": "NumericConstraint",
-           "comparison": "Comparison.GE",
+           "comparison": 5,
            "value": {
             "$": "Value",
             "constant": 1
@@ -79,12 +79,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.TAP",
+         "kind": 70,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "text": "enters tapped"
         }
        ],
@@ -95,11 +95,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -110,7 +110,7 @@
        "mana_produced": [
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}"
       }
      ],
@@ -120,7 +120,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -129,11 +129,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -145,21 +145,21 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
          "zones": {
           "$set": [
-           "Zone.HAND"
+           1
           ]
          },
-         "owner": "ControllerRelation.YOU"
+         "owner": 1
         }
        },
        "text": "lose life"
@@ -171,26 +171,26 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           },
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.COLORED",
-           "colors": "Color.BLACK",
+           "kind": 2,
+           "colors": 4,
            "text": "{B}"
           },
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.COLORED",
-           "colors": "Color.BLACK",
+           "kind": 2,
+           "colors": 4,
            "text": "{B}"
           }
          ]
@@ -198,7 +198,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

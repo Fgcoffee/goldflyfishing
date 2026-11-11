@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "81ba3a33-0e04-4f68-9a42-1dd717733b57",
  "name": "Lavinia, Azorius Renegade",
  "card_hash": "3a1a2c5d4746ff686caef637ec20c964",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "81ba3a33-0e04-4f68-9a42-1dd717733b57",
   "name": "Lavinia, Azorius Renegade",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -32,8 +32,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Human",
       "Soldier"
@@ -42,18 +42,18 @@
     "oracle_text": "Each opponent can't cast noncreature spells with mana value greater than the number of lands that player controls.\nWhenever an opponent casts a spell, if no mana was spent to cast it, counter that spell.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.WHITE|BLUE"
+    "colors": 3
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 3179,
   "scryfall_uri": "https://scryfall.com/card/rvr/195/lavinia-azorius-renegade?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "81ba3a33-0e04-4f68-9a42-1dd717733b57",
    "name": "Lavinia, Azorius Renegade",
    "face": 0,
@@ -63,11 +63,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Each opponent can't cast noncreature spells with mana value greater than the number of lands that player controls."
       }
      ],
@@ -76,17 +76,17 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.COUNTER_SPELL",
+       "kind": 100,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         }
        },
@@ -98,14 +98,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.CAST_SPELL"
+        20
        ]
       },
       "subject": {
        "$": "ObjectFilter",
        "zones": {
         "$set": [
-         "Zone.STACK"
+         4
         ]
        },
        "is_ability": false,
@@ -116,11 +116,11 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": "ConditionKind.NO_MANA_SPENT",
+       "kind": 15,
        "text": "if no mana was spent to cast it"
       },
       "text": "whenever a player casts a spell"

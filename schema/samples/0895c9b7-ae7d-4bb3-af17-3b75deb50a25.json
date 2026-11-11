@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
  "name": "Command Tower",
  "card_hash": "3a8065cee6eb1f994c607446a1ea2fc0",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
   "name": "Command Tower",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{T}: Add one mana of any color in your commander's color identity.",
     "produced_mana": [
@@ -31,14 +31,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 2,
   "scryfall_uri": "https://scryfall.com/card/msc/233/command-tower?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
    "name": "Command Tower",
    "face": 0,
@@ -48,11 +48,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -60,7 +60,7 @@
         "$": "Value",
         "constant": 1
        },
-       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "colors": 31,
        "colors_in_commander_identity": true,
        "text": "add mana of any color"
       }
@@ -71,7 +71,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

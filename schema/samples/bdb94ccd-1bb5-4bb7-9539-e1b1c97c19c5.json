@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
  "name": "Pashalik Mons",
  "card_hash": "e9f985d0503c61b0334818ece104a9cb",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
   "name": "Pashalik Mons",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,8 +32,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior"
@@ -42,18 +42,18 @@
     "oracle_text": "Whenever Pashalik Mons or another Goblin you control dies, Pashalik Mons deals 1 damage to any target.\n{3}{R}, Sacrifice a Goblin: Create two 1/1 red Goblin creature tokens.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 2683,
   "scryfall_uri": "https://scryfall.com/card/dmr/133/pashalik-mons?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
    "name": "Pashalik Mons",
    "face": 0,
@@ -63,14 +63,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "types_any": 38,
         "includes_players": true
        },
        "amount": {
@@ -86,7 +86,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES"
+        3
        ]
       },
       "subject": {
@@ -94,7 +94,7 @@
        "subtypes_all": [
         "Goblin"
        ],
-       "controller": "ControllerRelation.YOU",
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1
@@ -106,11 +106,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CREATE_TOKEN",
+       "kind": 35,
        "players": {
         "$": "PlayerFilter"
        },
@@ -124,7 +124,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": "Color.RED",
+        "colors": 8,
         "power": {
          "$": "Value",
          "constant": 1
@@ -143,20 +143,20 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 3,
            "text": "{3}"
           },
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.COLORED",
-           "colors": "Color.RED",
+           "kind": 2,
+           "colors": 8,
            "text": "{R}"
           }
          ]
@@ -164,7 +164,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1

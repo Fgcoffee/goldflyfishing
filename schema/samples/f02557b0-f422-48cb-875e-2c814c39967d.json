@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
  "name": "Hellrider",
  "card_hash": "0c8c68cebd8540ca2db9878b84bd753d",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
   "name": "Hellrider",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,7 +38,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Devil"
      ]
@@ -46,21 +46,21 @@
     "oracle_text": "Haste\nWhenever a creature you control attacks, this creature deals 1 damage to the player or planeswalker it's attacking.",
     "power": "3",
     "toughness": "3",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "Haste"
     ]
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 5842,
   "scryfall_uri": "https://scryfall.com/card/jmp/334/hellrider?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
    "name": "Hellrider",
    "face": 0,
@@ -70,17 +70,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Haste",
      "keyword": "Haste"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Whenever a creature you control attacks, this creature deals 1 damage to the player or planeswalker it's attacking."
       }
      ],

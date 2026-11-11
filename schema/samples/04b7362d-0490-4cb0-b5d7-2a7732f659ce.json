@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
  "name": "Bojuka Bog",
  "card_hash": "a2bd23ffa6857dbb313601fdce6280ee",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
   "name": "Bojuka Bog",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "This land enters tapped.\nWhen this land enters, exile target player's graveyard.\n{T}: Add {B}.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 24,
   "scryfall_uri": "https://scryfall.com/card/soc/363/bojuka-bog?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
    "name": "Bojuka Bog",
    "face": 0,
@@ -44,16 +44,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.TAP",
+       "kind": 70,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "enters tapped"
       }
      ],
@@ -61,22 +61,22 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.GRAVEYARD"
+          3
          ]
         }
        },
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TARGET_PLAYER"
+        "scope": 4
        },
        "is_targeted": true,
        "text": "exile a graveyard"
@@ -87,7 +87,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
@@ -99,11 +99,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -114,7 +114,7 @@
        "mana_produced": [
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}"
       }
      ],
@@ -124,7 +124,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

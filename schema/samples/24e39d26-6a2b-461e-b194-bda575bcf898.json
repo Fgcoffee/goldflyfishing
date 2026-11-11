@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
  "name": "Legion Loyalty",
  "card_hash": "53ae213fb6a7bd8e07d235f9610fcced",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
   "name": "Legion Loyalty",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 6,
        "text": "{6}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Creatures you control have myriad. (Whenever a creature with myriad attacks, for each opponent other than defending player, you may create a token copy that's tapped and attacking that player or a planeswalker they control. Exile the tokens at end of combat.)",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 8,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 2911,
   "scryfall_uri": "https://scryfall.com/card/tdc/122/legion-loyalty?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
    "name": "Legion Loyalty",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Creatures you control have myriad."
       }
      ],

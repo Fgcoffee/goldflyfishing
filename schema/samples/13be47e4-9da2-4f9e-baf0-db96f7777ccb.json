@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
  "name": "Thalia, Heretic Cathar",
  "card_hash": "cda38213f93dc46fdbcb428e33f156c1",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
   "name": "Thalia, Heretic Cathar",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,8 +32,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Human",
       "Soldier"
@@ -42,21 +42,21 @@
     "oracle_text": "First strike\nCreatures and nonbasic lands your opponents control enter tapped.",
     "power": "3",
     "toughness": "2",
-    "colors": "Color.WHITE",
+    "colors": 1,
     "keywords": [
      "First strike"
     ]
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 1476,
   "scryfall_uri": "https://scryfall.com/card/inr/44/thalia-heretic-cathar?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
    "name": "Thalia, Heretic Cathar",
    "face": 0,
@@ -66,22 +66,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "First strike",
      "keyword": "First strike"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.REPLACEMENT",
+       "kind": 153,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.CREATURE|LAND",
-        "supertypes_none": "Supertype.BASIC",
-        "controller": "ControllerRelation.OPPONENT"
+        "types_any": 20,
+        "supertypes_none": 1,
+        "controller": 2
        },
        "text": "those permanents enter tapped"
       }

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
  "name": "Diabolic Tutor",
  "card_hash": "6938a7bb9b1683d7c708cff7661abcfd",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
   "name": "Diabolic Tutor",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Search your library for a card, put that card into your hand, then shuffle.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 485,
   "scryfall_uri": "https://scryfall.com/card/cma/54/diabolic-tutor?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
    "name": "Diabolic Tutor",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -84,7 +84,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.HAND",
+       "zone": 1,
        "text": "search library"
       }
      ],

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
  "name": "Dig Through Time",
  "card_hash": "d3044418c468e539fc33812c8d6560f9",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
   "name": "Dig Through Time",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 6,
        "text": "{6}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -38,24 +38,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Delve (Each card you exile from your graveyard while casting this spell pays for {1}.)\nLook at the top seven cards of your library. Put two of them into your hand and the rest on the bottom of your library in any order.",
-    "colors": "Color.BLUE",
+    "colors": 2,
     "keywords": [
      "Delve"
     ]
    }
   ],
   "mana_value": 8,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 623,
   "scryfall_uri": "https://scryfall.com/card/soc/195/dig-through-time?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
    "name": "Dig Through Time",
    "face": 0,
@@ -65,23 +65,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Delve",
      "functions_in": {
       "$set": [
-       "Zone.HAND",
-       "Zone.STACK"
+       1,
+       4
       ]
      },
      "keyword": "Delve"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOOK_AT_TOP",
+       "kind": 10001,
        "players": {
         "$": "PlayerFilter"
        },
@@ -93,11 +93,11 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.MOVE_ZONE",
+         "kind": 28,
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true,
@@ -106,12 +106,12 @@
            "constant": 2
           }
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "text": "put into hand"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ON_LIBRARY",
+         "kind": 34,
          "targets": {
           "$": "ObjectFilter",
           "from_pile": true

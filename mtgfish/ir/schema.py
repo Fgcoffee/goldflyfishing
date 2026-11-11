@@ -22,99 +22,13 @@ import types
 import typing
 from typing import Any
 
-from .codec import IR_VERSION, classes, enums, field_default
+from .codec import ANY, IR_VERSION, classes, enums, field_default, fields_of
 
-_ANY = "IRValue"
-
-#: Fields whose hint does not say what the pool holds: (class, field) -> the
-#: type, in the same little language the hints are read into.
-_OVERRIDES: dict[tuple[str, str], Any] = {
-    # Untyped tuples in the source.
-    ("Cost", "choices"): ("tuple", "Cost"),
-    ("Effect", "granted_abilities"): ("tuple", "Ability"),
-    ("Effect", "restrictions"): ("tuple", "Restriction"),
-    ("Effect", "mode_costs"): ("tuple", _ANY),
-    ("Effect", "outcomes"): ("tuple", _ANY),
-    ("Effect", "mode_weights"): ("tuple", _ANY),
-    # One (condition, at_least, at_most) triple, or empty.
-    ("Effect", "modes_instead"): ("tuple", ("union", "Condition", "bool", "int")),
-    ("ObjectFilter", "any_of"): ("tuple", "ObjectFilter"),
-    # Hinted narrower than they are.
-    ("Effect", "duration"): ("union", ("enum", "Duration"), "int"),
-    ("ObjectFilter", "count"): ("union", "Value", "int", "null"),
-    ("ObjectFilter", "from_top"): ("union", "int", "bool"),
-    ("Ability", "quality"): ("union", "ObjectFilter", "PlayerFilter", "Value", "null"),
-    ("Condition", "event_kinds"): ("tuple", ("union", ("enum", "EventKind"), "int")),
-    ("TriggerCondition", "phases"): ("set", ("union", ("enum", "Phase"), "int")),
-    ("TriggerCondition", "steps"): ("set", ("union", ("enum", "Step"), "int")),
-}
-
-
-# ---------------------------------------------------------------------------
-# Reading the hints into a small type language
-# ---------------------------------------------------------------------------
-
-
-def _read_hint(hint: Any) -> Any:
-    """A type hint as one of: "int", "bool", "str", "null", _ANY, a class
-    name, ("enum", name), ("tuple", t), ("set", t), ("union", t, ...)."""
-    if hint is type(None) or hint is None:
-        return "null"
-    if hint is bool:
-        return "bool"
-    if hint is int:
-        return "int"
-    if hint is str:
-        return "str"
-    if hint in (object, Any, tuple, frozenset):
-        return ("tuple", _ANY) if hint is tuple else ("set", _ANY) if hint is frozenset else _ANY
-    supertype = getattr(hint, "__supertype__", None)  # NewType
-    if supertype is not None:
-        return _read_hint(supertype)
-    origin = typing.get_origin(hint)
-    args = typing.get_args(hint)
-    if origin in (typing.Union, types.UnionType):
-        return ("union", *(_read_hint(a) for a in args))
-    if origin is tuple:
-        items = [a for a in args if a is not Ellipsis]
-        if not items:
-            return ("tuple", _ANY)
-        if len(items) == 1:
-            return ("tuple", _read_hint(items[0]))
-        return ("tuple", ("union", *(_read_hint(a) for a in items)))
-    if origin in (frozenset, set):
-        return ("set", _read_hint(args[0]) if args else _ANY)
-    if origin is list:
-        return ("list", _read_hint(args[0]) if args else _ANY)
-    if isinstance(hint, type):
-        if issubclass(hint, enum.Enum):
-            return ("enum", hint.__name__)
-        if dataclasses.is_dataclass(hint):
-            return hint.__name__
-    raise TypeError(f"no schema rule for hint {hint!r}")
-
-
-def fields_of(name: str) -> list[tuple[str, Any, Any]]:
-    """``(field, type, default)`` for each field of an IR class."""
-    cls = classes()[name]
-    hints = typing.get_type_hints(cls)
-    out = []
-    for field in dataclasses.fields(cls):
-        kind = _OVERRIDES.get((name, field.name))
-        if kind is None:
-            kind = _read_hint(hints.get(field.name, Any))
-        out.append((field.name, kind, field_default(field)))
-    return out
+_ANY = ANY
 
 
 def _all_enums() -> dict[str, type]:
-    """The registered enums plus any a hint names (Phase, Step)."""
-    found = dict(enums())
-    from ..rules.kernel import enums as kernel_enums
-
-    for extra in ("Phase", "Step"):
-        found.setdefault(extra, getattr(kernel_enums, extra))
-    return found
+    return dict(enums())
 
 
 # ---------------------------------------------------------------------------
@@ -124,14 +38,18 @@ def _all_enums() -> dict[str, type]:
 
 def _enum_schema(name: str) -> dict:
     cls = _all_enums()[name]
-    members = [m.name for m in cls]
     if issubclass(cls, enum.Flag):
-        singles = [m.name for m in cls if int(m) and int(m) & (int(m) - 1) == 0]
-        zero = cls(0).name
-        alternatives = "|".join(singles)
-        pattern = f"^{name}\\.(({alternatives})(\\|({alternatives}))*|{zero})$"
-        return {"type": "string", "pattern": pattern, "description": f"flag enum {name}"}
-    return {"type": "string", "enum": [f"{name}.{m}" for m in members]}
+        bits = ", ".join(f"{m.name}={int(m)}" for m in cls if m.name)
+        return {
+            "type": "integer",
+            "minimum": 0,
+            "description": f"flag enum {name}: the OR of its bits ({bits}; {cls(0).name}=0)",
+        }
+    return {
+        "type": "integer",
+        "enum": [int(m) for m in cls],
+        "description": f"enum {name}: " + ", ".join(f"{m.name}={int(m)}" for m in cls),
+    }
 
 
 def _json_type(kind: Any) -> dict:
@@ -140,7 +58,7 @@ def _json_type(kind: Any) -> dict:
     if kind == "bool":
         return {"type": "boolean"}
     if kind == "str":
-        return {"$ref": "#/$defs/IRString"}
+        return {"type": "string"}
     if kind == "null":
         return {"type": "null"}
     if kind == _ANY:
@@ -167,7 +85,11 @@ def _json_type(kind: Any) -> dict:
             "additionalProperties": False,
         }
     if tag == "union":
-        return {"anyOf": [_json_type(k) for k in kind[1:]]}
+        parts = [_json_type(k) for k in kind[1:]]
+        if any(isinstance(k, tuple) and k[0] == "enum" for k in kind[1:]) and "int" in kind[1:]:
+            # A bare integer in an enum-typed field is {"$int": n}.
+            parts = [p for p in parts if p != {"type": "integer"}] + [{"$ref": "#/$defs/IRInt"}]
+        return {"anyOf": parts}
     raise TypeError(kind)
 
 
@@ -196,7 +118,7 @@ def json_schema() -> dict:
             if default is not dataclasses.MISSING:
                 from .codec import encode
 
-                schema = {**schema, "default": encode(default)}
+                schema = {**schema, "default": encode(default, kind)}
             properties[field] = schema
         required = ["$"] + [f for f, _k, d in fields_of(name) if d is dataclasses.MISSING]
         defs[name] = {
@@ -207,28 +129,20 @@ def json_schema() -> dict:
         }
     for name in sorted(_enums_used()):
         defs[f"enum.{name}"] = _enum_schema(name)
-    enum_names = "|".join(sorted(_enums_used()))
-    defs["IRString"] = {
-        "anyOf": [
-            {"type": "string", "not": {"pattern": f"^({enum_names})\\."}},
-            {
-                "type": "object",
-                "properties": {"$str": {"type": "string"}},
-                "required": ["$str"],
-                "additionalProperties": False,
-            },
-        ],
-        "description": "a string; one that looks like an enum member is wrapped in $str",
+    defs["IRInt"] = {
+        "type": "object",
+        "properties": {"$int": {"type": "integer"}},
+        "required": ["$int"],
+        "additionalProperties": False,
+        "description": "a plain integer in a field whose type is an enum",
     }
     defs[_ANY] = {
         "anyOf": [
-            {"type": ["null", "boolean", "integer"]},
-            {"$ref": "#/$defs/IRString"},
-            *({"$ref": f"#/$defs/enum.{n}"} for n in sorted(_enums_used())),
+            {"type": ["null", "boolean", "integer", "string"]},
             {"type": "array", "items": {"$ref": f"#/$defs/{_ANY}"}},
             *({"$ref": f"#/$defs/{n}"} for n in classes()),
         ],
-        "description": "any IR value",
+        "description": "any IR value (never an enum: an enum is only where a field declares one)",
     }
     defs["FaceDocument"] = {
         "type": "object",
@@ -285,7 +199,7 @@ def _ts_type(kind: Any) -> str:
     if kind == "bool":
         return "boolean"
     if kind == "str":
-        return "IRString"
+        return "string"
     if kind == "null":
         return "null"
     if kind == _ANY:
@@ -302,7 +216,10 @@ def _ts_type(kind: Any) -> str:
     if tag == "list":
         return f"{{ $list: Array<{_ts_type(kind[1])}> }}"
     if tag == "union":
-        return " | ".join(_ts_type(k) for k in kind[1:])
+        parts = [_ts_type(k) for k in kind[1:]]
+        if any(isinstance(k, tuple) and k[0] == "enum" for k in kind[1:]) and "int" in kind[1:]:
+            parts = [p for p in parts if p != "number"] + ["IRInt"]
+        return " | ".join(parts)
     raise TypeError(kind)
 
 
@@ -320,8 +237,8 @@ def typescript_defaults() -> str:
     ]
     for name in classes():
         fields = {
-            field: encode(default)
-            for field, _kind, default in fields_of(name)
+            field: encode(default, kind)
+            for field, kind, default in fields_of(name)
             if default is not dataclasses.MISSING
         }
         lines.append(f"  {name}: {json.dumps(fields)},")
@@ -348,29 +265,24 @@ def typescript() -> str:
         "",
         f"export const IR_VERSION = {IR_VERSION};",
         "",
-        "/** A string; one that looks like an enum member is wrapped in $str. */",
-        "export type IRString = string | { $str: string };",
+        "/** A plain integer in a field whose type is an enum (complete() unwraps it). */",
+        "export type IRInt = { $int: number };",
         "",
     ]
     for name in sorted(_enums_used()):
         cls = _all_enums()[name]
         if issubclass(cls, enum.Flag):
-            singles = [m.name for m in cls if int(m) and int(m) & (int(m) - 1) == 0]
-            lines.append(
-                f"/** Flag enum: \"{name}.\" then members joined by \"|\" "
-                f"(e.g. \"{name}.{'|'.join(singles[:2])}\"), or \"{name}.{cls(0).name}\". "
-                f"Members: {', '.join(singles)}. */"
-            )
-            lines.append(f"export type Enum{name} = `{name}.${{string}}`;")
             bits = {cls(0).name: 0, **{m.name: int(m) for m in cls if m.name}}
+            lines.append(f"/** Flag enum {name}: the OR of the bits in {name}Bits. */")
+            lines.append(f"export type Enum{name} = number;")
             lines.append(
                 f"export const {name}Bits: Record<string, number> = {{ "
                 + ", ".join(f"{k}: {v}" for k, v in bits.items())
                 + " };"
             )
         else:
-            members = " | ".join(f'"{name}.{m.name}"' for m in cls)
-            lines.append(f"export type Enum{name} = {members};")
+            lines.append(f"/** Enum {name}: one of the numbers in {name}Values. */")
+            lines.append(f"export type Enum{name} = number;")
             lines.append(
                 f"export const {name}Values: Record<string, number> = {{ "
                 + ", ".join(f"{m.name}: {int(m)}" for m in cls)
@@ -386,14 +298,12 @@ def typescript() -> str:
             if default is not dataclasses.MISSING:
                 import json
 
-                note = f"  // default {json.dumps(encode(default))}"
+                note = f"  // default {json.dumps(encode(default, kind))}"
             lines.append(f"  {field}{optional}: {_ts_type(kind)};{note}")
         lines.append("}")
         lines.append("")
     lines.append(
-        f"export type {_ANY} = null | boolean | number | IRString | Array<{_ANY}> | "
-        + " | ".join(f"Enum{n}" for n in sorted(_enums_used()))
-        + " | "
+        f"export type {_ANY} = null | boolean | number | string | Array<{_ANY}> | "
         + " | ".join(classes())
         + ";"
     )

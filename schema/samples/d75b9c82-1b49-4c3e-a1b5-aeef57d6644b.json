@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
  "name": "Cyclonic Rift",
  "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
   "name": "Cyclonic Rift",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -32,24 +32,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Return target nonland permanent you don't control to its owner's hand.\nOverload {6}{U} (You may cast this spell for its overload cost. If you do, change \"target\" in its text to \"each.\")",
-    "colors": "Color.BLUE",
+    "colors": 2,
     "keywords": [
      "Overload"
     ]
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 55,
   "scryfall_uri": "https://scryfall.com/card/rvr/40/cyclonic-rift?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
    "name": "Cyclonic Rift",
    "face": 0,
@@ -59,15 +59,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RETURN_TO_HAND",
+       "kind": 32,
        "targets": {
         "$": "ObjectFilter",
-        "types_none": "CardType.LAND",
-        "controller": "ControllerRelation.OPPONENT"
+        "types_none": 16,
+        "controller": 2
        },
        "is_targeted": true,
        "text": "return to hand"
@@ -77,11 +77,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Overload {6}{U}",
      "functions_in": {
       "$set": [
-       "Zone.HAND"
+       1
       ]
      },
      "keyword": "Overload",
@@ -92,20 +92,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.MANA",
+         "kind": 0,
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.GENERIC",
+            "kind": 0,
             "generic": 6,
             "text": "{6}"
            },
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.COLORED",
-            "colors": "Color.BLUE",
+            "kind": 2,
+            "colors": 2,
             "text": "{U}"
            }
           ]

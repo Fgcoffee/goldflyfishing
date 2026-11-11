@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
  "name": "Magus of the Moat",
  "card_hash": "bf3fc3e91083ed30518610659a74dcc2",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
   "name": "Magus of the Moat",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -38,7 +38,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Human",
       "Wizard"
@@ -47,18 +47,18 @@
     "oracle_text": "Creatures without flying can't attack.",
     "power": "0",
     "toughness": "3",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 7569,
   "scryfall_uri": "https://scryfall.com/card/fut/12/magus-of-the-moat?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
    "name": "Magus of the Moat",
    "face": 0,
@@ -68,26 +68,26 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
+        "types_all": 4,
         "lacks_keyword": [
          "flying"
         ]
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.ATTACK",
+         "act": 20,
          "subject": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE",
+          "types_all": 4,
           "lacks_keyword": [
            "flying"
           ]

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
  "name": "Mana Vault",
  "card_hash": "65a8a518acc87465a6dce684bc6b446e",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
   "name": "Mana Vault",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "This artifact doesn't untap during your untap step.\nAt the beginning of your upkeep, you may pay {4}. If you do, untap this artifact.\nAt the beginning of your draw step, if this artifact is tapped, it deals 1 damage to you.\n{T}: Add {C}{C}{C}.",
     "produced_mana": [
@@ -35,14 +35,14 @@
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 148,
   "scryfall_uri": "https://scryfall.com/card/2x2/308/mana-vault?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
    "name": "Mana Vault",
    "face": 0,
@@ -52,20 +52,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.UNTAP_DURING_UNTAP_STEP",
+         "act": 99,
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -80,18 +80,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PAY_COST",
+         "kind": 200,
          "players": {
           "$": "PlayerFilter"
          },
@@ -100,13 +100,13 @@
           "components": [
            {
             "$": "CostComponent",
-            "kind": "CostKind.MANA",
+            "kind": 0,
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": "ManaSymbolKind.GENERIC",
+               "kind": 0,
                "generic": 4,
                "text": "{4}"
               }
@@ -122,11 +122,11 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.REFLEXIVE_TRIGGER",
+       "kind": 219,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.UNTAP",
+         "kind": 71,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
@@ -142,7 +142,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.UPKEEP"
+        127
        ]
       },
       "players": {
@@ -153,11 +153,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "players": {
         "$": "PlayerFilter"
        },
@@ -173,7 +173,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DRAW_STEP"
+        128
        ]
       },
       "players": {
@@ -181,7 +181,7 @@
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "kind": 5,
        "filter": {
         "$": "ObjectFilter",
         "source_only": true,
@@ -189,7 +189,7 @@
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": "Comparison.GE",
+        "comparison": 5,
         "value": {
          "$": "Value",
          "constant": 1
@@ -202,11 +202,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -228,7 +228,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

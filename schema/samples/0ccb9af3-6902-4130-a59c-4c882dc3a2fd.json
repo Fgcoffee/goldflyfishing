@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
  "name": "Legion Warboss",
  "card_hash": "d172539dcc8dd041aa2bda537d62e262",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
   "name": "Legion Warboss",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Soldier"
@@ -41,21 +41,21 @@
     "oracle_text": "Mentor (Whenever this creature attacks, put a +1/+1 counter on target attacking creature with lesser power.)\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "Mentor"
     ]
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 1797,
   "scryfall_uri": "https://scryfall.com/card/tdc/220/legion-warboss?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
    "name": "Legion Warboss",
    "face": 0,
@@ -65,16 +65,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_COUNTERS",
+       "kind": 72,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
+        "types_all": 4,
         "other_than_source": true,
-        "controller": "ControllerRelation.YOU",
+        "controller": 1,
         "attacking": true
        },
        "amount": {
@@ -90,7 +90,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ATTACKS"
+        101
        ]
       },
       "subject": {
@@ -103,11 +103,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able."
       }
      ],

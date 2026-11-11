@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
  "name": "Embercleave",
  "card_hash": "4cec1cd25e0492e5e73eb9ede76002db",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
   "name": "Embercleave",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 4,
        "text": "{4}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,14 +38,14 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.ARTIFACT",
+     "supertypes": 2,
+     "types": 1,
      "subtypes": [
       "Equipment"
      ]
     },
     "oracle_text": "Flash\nThis spell costs {1} less to cast for each attacking creature you control.\nWhen Embercleave enters, attach it to target creature you control.\nEquipped creature gets +1/+1 and has double strike and trample.\nEquip {3}",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "Equip",
      "Flash"
@@ -53,14 +53,14 @@
    }
   ],
   "mana_value": 6,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 1353,
   "scryfall_uri": "https://scryfall.com/card/eld/120/embercleave?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
    "name": "Embercleave",
    "face": 0,
@@ -70,24 +70,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flash",
      "keyword": "Flash"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_COST",
+       "kind": 152,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.PRODUCT",
+        "kind": 12,
         "operands": [
          {
           "$": "Value",
@@ -95,17 +95,17 @@
          },
          {
           "$": "Value",
-          "kind": "ValueKind.COUNT",
+          "kind": 2,
           "filter": {
            "$": "ObjectFilter",
-           "types_all": "CardType.CREATURE",
-           "controller": "ControllerRelation.YOU",
+           "types_all": 4,
+           "controller": 1,
            "attacking": true
           }
          }
         ]
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "this ability costs less"
       }
      ],
@@ -113,15 +113,15 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ATTACH",
+       "kind": 75,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
        "is_targeted": true,
        "attached_to": {
@@ -136,7 +136,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
@@ -148,15 +148,15 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.MODIFY_PT",
+         "kind": 140,
          "targets": {
           "$": "ObjectFilter",
           "has_attached": {
@@ -172,12 +172,12 @@
           "$": "Value",
           "constant": 1
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "text": "gets +1/+1"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.GRANT_ABILITY",
+         "kind": 143,
          "targets": {
           "$": "ObjectFilter",
           "has_attached": {
@@ -185,17 +185,17 @@
            "source_only": true
           }
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": "AbilityKind.STATIC",
+           "kind": 3,
            "text": "double strike",
            "keyword": "double strike"
           },
           {
            "$": "Ability",
-           "kind": "AbilityKind.STATIC",
+           "kind": 3,
            "text": "trample",
            "keyword": "trample"
           }
@@ -210,15 +210,15 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ATTACH",
+       "kind": 75,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
        "is_targeted": true,
        "text": "attach to target creature you control"
@@ -230,13 +230,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 3,
            "text": "{3}"
           }
@@ -245,7 +245,7 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "keyword": "Equip"
     }
    ],

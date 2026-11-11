@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
  "name": "Teferi, Time Raveler",
  "card_hash": "2d54287f0acc600ca55dbac1333e7f80",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
   "name": "Teferi, Time Raveler",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -38,26 +38,26 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.PLANESWALKER",
+     "supertypes": 2,
+     "types": 32,
      "subtypes": [
       "Teferi"
      ]
     },
     "oracle_text": "Each opponent can cast spells only any time they could cast a sorcery.\n+1: Until your next turn, you may cast sorcery spells as though they had flash.\n−3: Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card.",
     "loyalty": "4",
-    "colors": "Color.WHITE|BLUE"
+    "colors": 3
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 1141,
   "scryfall_uri": "https://scryfall.com/card/rvr/232/teferi-time-raveler?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
    "name": "Teferi, Time Raveler",
    "face": 0,
@@ -67,11 +67,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Each opponent can cast spells only any time they could cast a sorcery."
       }
      ],
@@ -80,19 +80,19 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
-       "duration": "Duration.YOUR_NEXT_TURN",
+       "kind": 0,
+       "duration": 3,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PERMISSION",
+         "kind": 151,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.SORCERY",
+          "types_all": 128,
           "zones": {
            "$set": []
           },
@@ -101,14 +101,14 @@
          "players": {
           "$": "PlayerFilter"
          },
-         "duration": "Duration.YOUR_NEXT_TURN",
+         "duration": 3,
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.CAST_AS_THOUGH_FLASH",
+           "act": 5,
            "subject": {
             "$": "ObjectFilter",
-            "types_all": "CardType.SORCERY",
+            "types_all": 128,
             "zones": {
              "$set": []
             },
@@ -132,7 +132,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": 1
@@ -141,20 +141,20 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RETURN_TO_HAND",
+       "kind": 32,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT",
+        "types_any": 13,
         "count": {
          "$": "Value",
          "constant": 1
@@ -166,7 +166,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -183,7 +183,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": -3
@@ -192,7 +192,7 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     }

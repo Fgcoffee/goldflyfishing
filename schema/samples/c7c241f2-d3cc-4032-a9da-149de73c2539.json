@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
  "name": "Vryn Wingmare",
  "card_hash": "f8f4016a967cd187b33f6f69d770e2b4",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
   "name": "Vryn Wingmare",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Pegasus"
      ]
@@ -40,21 +40,21 @@
     "oracle_text": "Flying\nNoncreature spells cost {1} more to cast.",
     "power": "2",
     "toughness": "1",
-    "colors": "Color.WHITE",
+    "colors": 1,
     "keywords": [
      "Flying"
     ]
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 8288,
   "scryfall_uri": "https://scryfall.com/card/m21/43/vryn-wingmare?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
    "name": "Vryn Wingmare",
    "face": 0,
@@ -64,23 +64,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_COST",
+       "kind": 152,
        "targets": {
         "$": "ObjectFilter",
-        "types_none": "CardType.CREATURE",
+        "types_none": 4,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
         "is_ability": false
@@ -89,7 +89,7 @@
         "$": "Value",
         "constant": 1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "costs less to cast"
       }
      ],

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
  "name": "Goblin Bombardment",
  "card_hash": "d7c8190b463129cd02bfc4d60f737f8e",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
   "name": "Goblin Bombardment",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Sacrifice a creature: This enchantment deals 1 damage to any target.",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 461,
   "scryfall_uri": "https://scryfall.com/card/mh2/279/goblin-bombardment?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
    "name": "Goblin Bombardment",
    "face": 0,
@@ -56,14 +56,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "types_any": 38,
         "includes_players": true
        },
        "amount": {
@@ -80,14 +80,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
+         "types_all": 4,
          "count": {
           "$": "Value",
           "constant": 1

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
  "name": "Goblin Matron",
  "card_hash": "088ef786a114eae901f55ccc617dfe33",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
   "name": "Goblin Matron",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin"
      ]
@@ -40,18 +40,18 @@
     "oracle_text": "When this creature enters, you may search your library for a Goblin card, reveal that card, put it into your hand, then shuffle.",
     "power": "1",
     "toughness": "1",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 1787,
   "scryfall_uri": "https://scryfall.com/card/plst/DMR-123/goblin-matron?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
    "name": "Goblin Matron",
    "face": 0,
@@ -61,18 +61,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -93,7 +93,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "text": "search library"
         }
        ],
@@ -105,7 +105,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {

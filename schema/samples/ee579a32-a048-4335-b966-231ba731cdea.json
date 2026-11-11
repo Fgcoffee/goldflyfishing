@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
  "name": "Phyrexian Arena",
  "card_hash": "1361cf181508b2753985e7b6f4ba0b63",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
   "name": "Phyrexian Arena",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "At the beginning of your upkeep, you draw a card and you lose 1 life.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 103,
   "scryfall_uri": "https://scryfall.com/card/fdn/180/phyrexian-arena?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
    "name": "Phyrexian Arena",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -78,7 +78,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter"
        },
@@ -94,7 +94,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.UPKEEP"
+        127
        ]
       },
       "players": {

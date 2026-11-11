@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
  "name": "Damnation",
  "card_hash": "3d35e27b14fcef5e54cdf8b42c10dbe8",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
   "name": "Damnation",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Destroy all creatures. They can't be regenerated.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 386,
   "scryfall_uri": "https://scryfall.com/card/2x2/73/damnation?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
    "name": "Damnation",
    "face": 0,
@@ -62,29 +62,29 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_REGENERATED",
+         "act": 64,
          "subject": {
           "$": "ObjectFilter",
           "remembered": true

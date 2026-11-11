@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
  "name": "Cabal Ritual",
  "card_hash": "40fc339bbe64a826ef6227f4dab41384",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
   "name": "Cabal Ritual",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,10 +32,10 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Add {B}{B}{B}.\nThreshold — Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard.",
-    "colors": "Color.BLACK",
+    "colors": 4,
     "keywords": [
      "Threshold"
     ],
@@ -45,14 +45,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 447,
   "scryfall_uri": "https://scryfall.com/card/vma/106/cabal-ritual?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
    "name": "Cabal Ritual",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -79,7 +79,7 @@
         "{B}",
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}{B}{B}"
       }
      ],
@@ -87,11 +87,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard."
       }
      ],

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
  "name": "Cabal Coffers",
  "card_hash": "6c307419a06a18350b57e5c6e0745496",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
   "name": "Cabal Coffers",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{2}, {T}: Add {B} for each Swamp you control.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 196,
   "scryfall_uri": "https://scryfall.com/card/mh2/301/cabal-coffers?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
    "name": "Cabal Coffers",
    "face": 0,
@@ -44,11 +44,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -58,19 +58,19 @@
        },
        "amount2": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
           "Swamp"
          ],
-         "controller": "ControllerRelation.YOU"
+         "controller": 1
         }
        },
        "mana_produced": [
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}"
       }
      ],
@@ -80,13 +80,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 2,
            "text": "{2}"
           }
@@ -95,7 +95,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

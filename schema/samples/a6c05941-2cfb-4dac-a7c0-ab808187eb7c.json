@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
  "name": "Liliana Vess",
  "card_hash": "5f700aaf1bf1a239f8a099d1a3d65134",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
   "name": "Liliana Vess",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 3,
        "text": "{3}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -38,26 +38,26 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.PLANESWALKER",
+     "supertypes": 2,
+     "types": 32,
      "subtypes": [
       "Liliana"
      ]
     },
     "oracle_text": "+1: Target player discards a card.\n−2: Search your library for a card, then shuffle and put that card on top.\n−8: Put all creature cards from all graveyards onto the battlefield under your control.",
     "loyalty": "5",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 5,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 4818,
   "scryfall_uri": "https://scryfall.com/card/m15/103/liliana-vess?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
    "name": "Liliana Vess",
    "face": 0,
@@ -67,14 +67,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DISCARD",
+       "kind": 21,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TARGET_PLAYER"
+        "scope": 4
        },
        "amount": {
         "$": "Value",
@@ -90,7 +90,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": 1
@@ -99,17 +99,17 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -127,7 +127,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.LIBRARY",
+       "zone": 0,
        "text": "search library"
       }
      ],
@@ -137,7 +137,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": -2
@@ -146,27 +146,27 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+       "kind": 33,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
+        "types_all": 4,
         "zones": {
          "$set": [
-          "Zone.GRAVEYARD"
+          3
          ]
         }
        },
-       "zone": "Zone.BATTLEFIELD",
+       "zone": 2,
        "text": "put onto the battlefield"
       }
      ],
@@ -176,7 +176,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": -8
@@ -185,7 +185,7 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     }

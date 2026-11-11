@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
  "name": "Sensei's Divining Top",
  "card_hash": "3b841b81be7abaacf9c476c182b957c1",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
   "name": "Sensei's Divining Top",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       }
@@ -26,20 +26,20 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "{1}: Look at the top three cards of your library, then put them back in any order.\n{T}: Draw a card, then put this artifact on top of its owner's library."
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 229,
   "scryfall_uri": "https://scryfall.com/card/2x2/314/senseis-divining-top?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
    "name": "Sensei's Divining Top",
    "face": 0,
@@ -49,11 +49,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOOK_AT_TOP",
+       "kind": 10001,
        "players": {
         "$": "PlayerFilter"
        },
@@ -65,7 +65,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
@@ -79,13 +79,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           }
@@ -97,11 +97,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -113,7 +113,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -130,7 +130,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

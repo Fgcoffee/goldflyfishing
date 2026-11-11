@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
  "name": "Hushbringer",
  "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
   "name": "Hushbringer",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Faerie"
      ]
@@ -40,7 +40,7 @@
     "oracle_text": "Flying, lifelink\nCreatures entering or dying don't cause abilities to trigger.",
     "power": "1",
     "toughness": "2",
-    "colors": "Color.WHITE",
+    "colors": 1,
     "keywords": [
      "Flying",
      "Lifelink"
@@ -48,14 +48,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 3961,
   "scryfall_uri": "https://scryfall.com/card/eld/18/hushbringer?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
    "name": "Hushbringer",
    "face": 0,
@@ -65,23 +65,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "lifelink",
      "keyword": "lifelink"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Creatures entering or dying don't cause abilities to trigger."
       }
      ],

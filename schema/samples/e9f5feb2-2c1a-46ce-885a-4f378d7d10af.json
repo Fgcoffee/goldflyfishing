@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
  "name": "Mystic Gate",
  "card_hash": "0243620937cb9b0097f9cb05060e40a8",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
   "name": "Mystic Gate",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{T}: Add {C}.\n{W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.",
     "produced_mana": [
@@ -29,14 +29,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 870,
   "scryfall_uri": "https://scryfall.com/card/cmm/1013/mystic-gate?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
    "name": "Mystic Gate",
    "face": 0,
@@ -46,11 +46,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -70,7 +70,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -79,18 +79,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -102,12 +102,12 @@
           "{W}",
           "{W}"
          ],
-         "colors": "Color.WHITE",
+         "colors": 1,
          "text": "add {W}{W}"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -119,12 +119,12 @@
           "{W}",
           "{U}"
          ],
-         "colors": "Color.WHITE|BLUE",
+         "colors": 3,
          "text": "add {W}{U}"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -136,7 +136,7 @@
           "{U}",
           "{U}"
          ],
-         "colors": "Color.BLUE",
+         "colors": 2,
          "text": "add {U}{U}"
         }
        ],
@@ -149,14 +149,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.HYBRID",
-           "colors": "Color.WHITE|BLUE",
+           "kind": 5,
+           "colors": 3,
            "text": "{W/U}"
           }
          ]
@@ -164,7 +164,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

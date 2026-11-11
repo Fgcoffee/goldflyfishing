@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
  "name": "Hallowed Fountain",
  "card_hash": "470d3ca968f6e8a99b2b050381e0cd6d",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
   "name": "Hallowed Fountain",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND",
+     "types": 16,
      "subtypes": [
       "Plains",
       "Island"
@@ -32,14 +32,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 63,
   "scryfall_uri": "https://scryfall.com/card/trk/286/hallowed-fountain?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
    "name": "Hallowed Fountain",
    "face": 0,
@@ -49,22 +49,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.OPTIONAL",
+         "kind": 4,
          "players": {
           "$": "PlayerFilter"
          },
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.LOSE_LIFE",
+           "kind": 52,
            "players": {
             "$": "PlayerFilter"
            },
@@ -79,16 +79,16 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.IF_YOU_DONT",
+         "kind": 201,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.TAP",
+           "kind": 70,
            "targets": {
             "$": "ObjectFilter",
             "source_only": true
            },
-           "duration": "Duration.PERMANENT",
+           "duration": 0,
            "text": "enters tapped"
           }
          ],

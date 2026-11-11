@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "458d2b12-f578-4392-98d3-c3bc83f316c4",
  "name": "Port Town",
  "card_hash": "02dbdcde9b3ac18d4f5a2e3d358f0c50",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "458d2b12-f578-4392-98d3-c3bc83f316c4",
   "name": "Port Town",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "As this land enters, you may reveal a Plains or Island card from your hand. If you don't, this land enters tapped.\n{T}: Add {W} or {U}.",
     "produced_mana": [
@@ -28,14 +28,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 338,
   "scryfall_uri": "https://scryfall.com/card/msc/256/port-town?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "458d2b12-f578-4392-98d3-c3bc83f316c4",
    "name": "Port Town",
    "face": 0,
@@ -45,22 +45,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.OPTIONAL",
+         "kind": 4,
          "players": {
           "$": "PlayerFilter"
          },
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.REVEAL",
+           "kind": 25,
            "targets": {
             "$": "ObjectFilter",
             "subtypes_any": [
@@ -69,10 +69,10 @@
             ],
             "zones": {
              "$set": [
-              "Zone.HAND"
+              1
              ]
             },
-            "owner": "ControllerRelation.YOU"
+            "owner": 1
            },
            "amount": {
             "$": "Value",
@@ -85,16 +85,16 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.IF_YOU_DONT",
+         "kind": 201,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.TAP",
+           "kind": 70,
            "targets": {
             "$": "ObjectFilter",
             "source_only": true
            },
-           "duration": "Duration.PERMANENT",
+           "duration": 0,
            "text": "enters tapped"
           }
          ],
@@ -108,18 +108,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -130,12 +130,12 @@
          "mana_produced": [
           "{W}"
          ],
-         "colors": "Color.WHITE",
+         "colors": 1,
          "text": "add {W}"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -146,7 +146,7 @@
          "mana_produced": [
           "{U}"
          ],
-         "colors": "Color.BLUE",
+         "colors": 2,
          "text": "add {U}"
         }
        ],
@@ -159,7 +159,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

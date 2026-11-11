@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
  "name": "Goblin Guide",
  "card_hash": "d56052c9c115b91c6ccad825c51747e2",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
   "name": "Goblin Guide",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Scout"
@@ -35,21 +35,21 @@
     "oracle_text": "Haste\nWhenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED",
+    "colors": 8,
     "keywords": [
      "Haste"
     ]
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 14925,
   "scryfall_uri": "https://scryfall.com/card/2xm/127/goblin-guide?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
    "name": "Goblin Guide",
    "face": 0,
@@ -59,17 +59,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Haste",
      "keyword": "Haste"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Whenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand."
       }
      ],

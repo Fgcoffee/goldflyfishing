@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "8f933fae-6c0c-42d7-a817-14760d8285cd",
  "name": "Exquisite Blood",
  "card_hash": "d71179f49f6036f3d9eb722bf19af5b5",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "8f933fae-6c0c-42d7-a817-14760d8285cd",
   "name": "Exquisite Blood",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 4,
        "text": "{4}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Whenever an opponent loses life, you gain that much life.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 5,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 516,
   "scryfall_uri": "https://scryfall.com/card/lcc/195/exquisite-blood?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "8f933fae-6c0c-42d7-a817-14760d8285cd",
    "name": "Exquisite Blood",
    "face": 0,
@@ -56,17 +56,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GAIN_LIFE",
+       "kind": 51,
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.EVENT_AMOUNT"
+        "kind": 25
        },
        "text": "gain life"
       }
@@ -76,12 +76,12 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.LIFE_LOST"
+        63
        ]
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "text": "whenever a player loses life"
      }

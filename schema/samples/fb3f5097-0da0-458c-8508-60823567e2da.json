@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
  "name": "Sunfall",
  "card_hash": "1121aa8b6faad9ea9e47ead9b40d1f4c",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
   "name": "Sunfall",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 3,
        "text": "{3}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -38,10 +38,10 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Exile all creatures. Incubate X, where X is the number of creatures exiled this way. (Create an Incubator token with X +1/+1 counters on it and \"{2}: Transform this token.\" It transforms into a 0/0 Phyrexian artifact creature.)",
-    "colors": "Color.WHITE",
+    "colors": 1,
     "keywords": [
      "Incubate",
      "Transform"
@@ -49,14 +49,14 @@
    }
   ],
   "mana_value": 5,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 3973,
   "scryfall_uri": "https://scryfall.com/card/mom/40/sunfall?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
    "name": "Sunfall",
    "face": 0,
@@ -66,11 +66,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Exile all creatures. Incubate X, where X is the number of creatures exiled this way."
       }
      ],

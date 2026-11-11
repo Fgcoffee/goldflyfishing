@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
  "name": "Charcoal Diamond",
  "card_hash": "d7a5433259d12b9758443f4b8bfdff26",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
   "name": "Charcoal Diamond",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "This artifact enters tapped.\n{T}: Add {B}.",
     "produced_mana": [
@@ -35,14 +35,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 696,
   "scryfall_uri": "https://scryfall.com/card/clb/305/charcoal-diamond?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
    "name": "Charcoal Diamond",
    "face": 0,
@@ -52,16 +52,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.TAP",
+       "kind": 70,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "enters tapped"
       }
      ],
@@ -69,11 +69,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -84,7 +84,7 @@
        "mana_produced": [
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}"
       }
      ],
@@ -94,7 +94,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

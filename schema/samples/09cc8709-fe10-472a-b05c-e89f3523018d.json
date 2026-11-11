@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
  "name": "Austere Command",
  "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
   "name": "Austere Command",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 4,
        "text": "{4}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Choose two —\n• Destroy all artifacts.\n• Destroy all enchantments.\n• Destroy all creatures with mana value 3 or less.\n• Destroy all creatures with mana value 4 or greater.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 6,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 169,
   "scryfall_uri": "https://scryfall.com/card/msc/121/austere-command?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
    "name": "Austere Command",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "amount": {
         "$": "Value",
         "constant": 2
@@ -74,14 +74,14 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DESTROY",
+           "kind": 29,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.ARTIFACT"
+            "types_all": 1
            },
            "text": "destroy"
           }
@@ -90,14 +90,14 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DESTROY",
+           "kind": 29,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.ENCHANTMENT"
+            "types_all": 8
            },
            "text": "destroy"
           }
@@ -106,17 +106,17 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DESTROY",
+           "kind": 29,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE",
+            "types_all": 4,
             "mana_value": {
              "$": "NumericConstraint",
-             "comparison": "Comparison.LE",
+             "comparison": 3,
              "value": {
               "$": "Value",
               "constant": 3
@@ -130,17 +130,17 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DESTROY",
+           "kind": 29,
            "targets": {
             "$": "ObjectFilter",
-            "types_all": "CardType.CREATURE",
+            "types_all": 4,
             "mana_value": {
              "$": "NumericConstraint",
-             "comparison": "Comparison.GE",
+             "comparison": 5,
              "value": {
               "$": "Value",
               "constant": 4
@@ -159,7 +159,7 @@
      "text": "Choose two -",
      "functions_in": {
       "$set": [
-       "Zone.STACK"
+       4
       ]
      }
     }

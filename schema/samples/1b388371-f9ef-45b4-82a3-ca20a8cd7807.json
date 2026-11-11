@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "1b388371-f9ef-45b4-82a3-ca20a8cd7807",
  "name": "Dovin's Veto",
  "card_hash": "e0115b94489a3a32068775c1bac9d434",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "1b388371-f9ef-45b4-82a3-ca20a8cd7807",
   "name": "Dovin's Veto",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "This spell can't be countered.\nCounter target noncreature spell.",
-    "colors": "Color.WHITE|BLUE"
+    "colors": 3
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 238,
   "scryfall_uri": "https://scryfall.com/card/war/193/dovins-veto?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "1b388371-f9ef-45b4-82a3-ca20a8cd7807",
    "name": "Dovin's Veto",
    "face": 0,
@@ -56,20 +56,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_COUNTERED",
+         "act": 40,
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -84,17 +84,17 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.COUNTER_SPELL",
+       "kind": 100,
        "targets": {
         "$": "ObjectFilter",
-        "types_none": "CardType.CREATURE",
+        "types_none": 4,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
         "is_ability": false

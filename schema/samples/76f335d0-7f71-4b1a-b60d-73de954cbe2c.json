@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "76f335d0-7f71-4b1a-b60d-73de954cbe2c",
  "name": "Skycloud Expanse",
  "card_hash": "6511cab81af9fb5a7a259da91b7db72c",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "76f335d0-7f71-4b1a-b60d-73de954cbe2c",
   "name": "Skycloud Expanse",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{1}, {T}: Add {W}{U}.",
     "produced_mana": [
@@ -28,14 +28,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 345,
   "scryfall_uri": "https://scryfall.com/card/eoc/181/skycloud-expanse?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "76f335d0-7f71-4b1a-b60d-73de954cbe2c",
    "name": "Skycloud Expanse",
    "face": 0,
@@ -45,11 +45,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -61,7 +61,7 @@
         "{W}",
         "{U}"
        ],
-       "colors": "Color.WHITE|BLUE",
+       "colors": 3,
        "text": "add {W}{U}"
       }
      ],
@@ -71,13 +71,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           }
@@ -86,7 +86,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

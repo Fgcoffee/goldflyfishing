@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f2f165b6-ef0a-42ad-9352-ba68be8248b0",
  "name": "Teferi, Hero of Dominaria",
  "card_hash": "f9112e5422e41230c03d083fec000d80",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f2f165b6-ef0a-42ad-9352-ba68be8248b0",
   "name": "Teferi, Hero of Dominaria",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 3,
        "text": "{3}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -38,26 +38,26 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.PLANESWALKER",
+     "supertypes": 2,
+     "types": 32,
      "subtypes": [
       "Teferi"
      ]
     },
     "oracle_text": "+1: Draw a card. At the beginning of the next end step, untap up to two lands.\n−3: Put target nonland permanent into its owner's library third from the top.\n−8: You get an emblem with \"Whenever you draw a card, exile target permanent an opponent controls.\"",
     "loyalty": "4",
-    "colors": "Color.WHITE|BLUE"
+    "colors": 3
    }
   ],
   "mana_value": 5,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 4191,
   "scryfall_uri": "https://scryfall.com/card/dom/207/teferi-hero-of-dominaria?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f2f165b6-ef0a-42ad-9352-ba68be8248b0",
    "name": "Teferi, Hero of Dominaria",
    "face": 0,
@@ -67,11 +67,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -83,12 +83,12 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.DELAYED_TRIGGER",
+       "kind": 213,
        "trigger": {
         "$": "TriggerCondition",
         "event_kinds": {
          "$set": [
-          "EventKind.END_STEP"
+          129
          ]
         },
         "text": "at the next end step"
@@ -96,10 +96,10 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.UNTAP",
+         "kind": 71,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.LAND",
+          "types_all": 16,
           "count": {
            "$": "Value",
            "constant": 2
@@ -118,7 +118,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": 1
@@ -127,17 +127,17 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "-3: Put target nonland permanent into its owner's library third from the top."
       }
      ],
@@ -146,11 +146,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "-8: You get an emblem with \"Whenever you draw a card, exile target permanent an opponent controls.\""
       }
      ],

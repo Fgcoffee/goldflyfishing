@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
  "name": "Diabolic Intent",
  "card_hash": "881c339c0729c876582ac03fd7d1d44f",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
   "name": "Diabolic Intent",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nSearch your library for a card, put that card into your hand, then shuffle.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 271,
   "scryfall_uri": "https://scryfall.com/card/bro/89/diabolic-intent?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
    "name": "Diabolic Intent",
    "face": 0,
@@ -56,12 +56,12 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "As an additional cost to cast this spell, sacrifice a creature.",
      "functions_in": {
       "$set": [
-       "Zone.HAND",
-       "Zone.STACK"
+       1,
+       4
       ]
      },
      "additional_cost": {
@@ -71,14 +71,14 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.SACRIFICE",
+         "kind": 10,
          "amount": {
           "$": "Value",
           "constant": 1
          },
          "filter": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE",
+          "types_all": 4,
           "count": {
            "$": "Value",
            "constant": 1
@@ -93,11 +93,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -115,7 +115,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.HAND",
+       "zone": 1,
        "text": "search library"
       }
      ],

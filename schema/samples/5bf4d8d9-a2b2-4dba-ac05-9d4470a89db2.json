@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "5bf4d8d9-a2b2-4dba-ac05-9d4470a89db2",
  "name": "Read the Bones",
  "card_hash": "1c2d4ce7a8d23aad929997724edd7ec1",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "5bf4d8d9-a2b2-4dba-ac05-9d4470a89db2",
   "name": "Read the Bones",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,24 +32,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Scry 2, then draw two cards. You lose 2 life. (To scry 2, look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)",
-    "colors": "Color.BLACK",
+    "colors": 4,
     "keywords": [
      "Scry"
     ]
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 483,
   "scryfall_uri": "https://scryfall.com/card/dsc/154/read-the-bones?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "5bf4d8d9-a2b2-4dba-ac05-9d4470a89db2",
    "name": "Read the Bones",
    "face": 0,
@@ -59,11 +59,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SCRY",
+       "kind": 26,
        "players": {
         "$": "PlayerFilter"
        },
@@ -75,7 +75,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },
@@ -87,7 +87,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter"
        },

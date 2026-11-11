@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
  "name": "Vito, Thorn of the Dusk Rose",
  "card_hash": "e9763789a4fe378568c1b098ea47bd8d",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
   "name": "Vito, Thorn of the Dusk Rose",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,8 +32,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Vampire",
       "Cleric"
@@ -42,18 +42,18 @@
     "oracle_text": "Whenever you gain life, target opponent loses that much life.\n{3}{B}{B}: Creatures you control gain lifelink until end of turn.",
     "power": "1",
     "toughness": "3",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 494,
   "scryfall_uri": "https://scryfall.com/card/m21/127/vito-thorn-of-the-dusk-rose?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
    "name": "Vito, Thorn of the Dusk Rose",
    "face": 0,
@@ -63,18 +63,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TARGET_OPPONENT"
+        "scope": 5
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.EVENT_AMOUNT"
+        "kind": 25
        },
        "is_targeted": true,
        "text": "lose life"
@@ -85,7 +85,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.LIFE_GAINED"
+        62
        ]
       },
       "players": {
@@ -96,21 +96,21 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": "AbilityKind.STATIC",
+         "kind": 3,
          "text": "lifelink",
          "keyword": "lifelink"
         }
@@ -124,26 +124,26 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 3,
            "text": "{3}"
           },
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.COLORED",
-           "colors": "Color.BLACK",
+           "kind": 2,
+           "colors": 4,
            "text": "{B}"
           },
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.COLORED",
-           "colors": "Color.BLACK",
+           "kind": 2,
+           "colors": 4,
            "text": "{B}"
           }
          ]

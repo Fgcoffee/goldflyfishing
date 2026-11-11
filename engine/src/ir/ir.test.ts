@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import { describe, expect, it } from "vitest";
-import { check, complete, enumValue, IR_VERSION, readCard } from "./index";
+import { CardTypeBits, check, complete, EffectKindValues, IR_VERSION, memberName, readCard } from "./index";
 import type { Ability, CardDocument, Effect, ObjectFilter, Value } from "./index";
 
 // The bench decks' cards, exported by `python -m mtgfish.tools.ir_export samples`.
@@ -46,10 +46,15 @@ describe("card IR", () => {
     }
   });
 
-  it("turns enum literals into the Python engine's numbers", () => {
-    expect(enumValue("CardType.ARTIFACT|CREATURE")).toBe(enumValue("CardType.ARTIFACT") | enumValue("CardType.CREATURE"));
-    expect(enumValue("CardType.NONE")).toBe(0);
-    expect(() => enumValue("Zone.NOWHERE")).toThrow();
+  it("names enum numbers for messages", () => {
+    const artifactCreature = (CardTypeBits.ARTIFACT ?? 0) | (CardTypeBits.CREATURE ?? 0);
+    expect(memberName("CardType", artifactCreature)).toBe("ARTIFACT|CREATURE");
+    expect(memberName("CardType", 0)).toBe("NONE");
+    expect(memberName("EffectKind", EffectKindValues.DAMAGE ?? -1)).toBe("DAMAGE");
+  });
+
+  it("unwraps a plain integer in an enum-typed field", () => {
+    expect(complete({ $: "Effect", kind: 0, duration: { $int: 7 } } as unknown)).toMatchObject({ duration: 7 });
   });
 
   it("fills in the defaults the JSON leaves out", () => {
@@ -61,7 +66,7 @@ describe("card IR", () => {
     expect(ability.unparsed).toBe(false);
     expect(ability.is_mana_ability).toBe(true);
     const [effect] = ability.effects as Effect[];
-    expect(effect?.kind).toBe("EffectKind.ADD_MANA");
+    expect(effect?.kind).toBe(EffectKindValues.ADD_MANA);
     const targets = (effect?.targets ?? null) as ObjectFilter | null;
     expect(targets === null || targets.zones !== undefined).toBe(true);
   });
@@ -70,7 +75,7 @@ describe("card IR", () => {
     const [face] = byName("Lightning Bolt").faces;
     const [ability] = complete(face?.abilities ?? []) as Ability[];
     const [damage] = (ability?.effects ?? []) as Effect[];
-    expect(damage?.kind).toBe("EffectKind.DAMAGE");
+    expect(damage?.kind).toBe(EffectKindValues.DAMAGE);
     expect((damage?.amount as Value).constant).toBe(3);
     expect(damage?.is_targeted).toBe(true);
   });

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
  "name": "Blasphemous Act",
  "card_hash": "6ca07b967f1b6acb5198b9a49173d5a1",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
   "name": "Blasphemous Act",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 8,
        "text": "{8}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "This spell costs {1} less to cast for each creature on the battlefield.\nBlasphemous Act deals 13 damage to each creature.",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 9,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 22,
   "scryfall_uri": "https://scryfall.com/card/msc/163/blasphemous-act?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
    "name": "Blasphemous Act",
    "face": 0,
@@ -56,18 +56,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_COST",
+       "kind": 152,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.PRODUCT",
+        "kind": 12,
         "operands": [
          {
           "$": "Value",
@@ -75,15 +75,15 @@
          },
          {
           "$": "Value",
-          "kind": "ValueKind.COUNT",
+          "kind": 2,
           "filter": {
            "$": "ObjectFilter",
-           "types_all": "CardType.CREATURE"
+           "types_all": 4
           }
          }
         ]
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "this ability costs less"
       }
      ],
@@ -91,14 +91,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "amount": {
         "$": "Value",

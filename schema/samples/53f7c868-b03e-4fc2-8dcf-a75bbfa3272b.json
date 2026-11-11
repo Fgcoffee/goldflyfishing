@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
  "name": "Dark Ritual",
  "card_hash": "683bb12fa14f202b5a74f1b5d95ea88e",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
   "name": "Dark Ritual",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -26,24 +26,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Add {B}{B}{B}.",
-    "colors": "Color.BLACK",
+    "colors": 4,
     "produced_mana": [
      "B"
     ]
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 33,
   "scryfall_uri": "https://scryfall.com/card/msc/793/dark-ritual?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
    "name": "Dark Ritual",
    "face": 0,
@@ -53,11 +53,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -70,7 +70,7 @@
         "{B}",
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}{B}{B}"
       }
      ],

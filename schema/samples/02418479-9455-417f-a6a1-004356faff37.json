@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "02418479-9455-417f-a6a1-004356faff37",
  "name": "Tundra",
  "card_hash": "6d79a1123f8a193ca44c3f56bd70f1f1",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "02418479-9455-417f-a6a1-004356faff37",
   "name": "Tundra",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND",
+     "types": 16,
      "subtypes": [
       "Plains",
       "Island"
@@ -32,14 +32,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 353,
   "scryfall_uri": "https://scryfall.com/card/vma/322/tundra?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "02418479-9455-417f-a6a1-004356faff37",
    "name": "Tundra",
    "face": 0,

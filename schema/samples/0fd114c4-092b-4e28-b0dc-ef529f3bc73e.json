@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
  "name": "Jeska's Will",
  "card_hash": "6255d462c685d292f8caedb8f0f6f2eb",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
   "name": "Jeska's Will",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,24 +32,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Choose one. If you control a commander as you cast this spell, you may choose both instead.\n• Add {R} for each card in target opponent's hand.\n• Exile the top three cards of your library. You may play them this turn.",
-    "colors": "Color.RED",
+    "colors": 8,
     "produced_mana": [
      "R"
     ]
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 104,
   "scryfall_uri": "https://scryfall.com/card/mkc/156/jeskas-will?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
    "name": "Jeska's Will",
    "face": 0,
@@ -59,19 +59,19 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.ADD_MANA",
+           "kind": 120,
            "players": {
             "$": "PlayerFilter"
            },
@@ -81,21 +81,21 @@
            },
            "amount2": {
             "$": "Value",
-            "kind": "ValueKind.COUNT",
+            "kind": 2,
             "filter": {
              "$": "ObjectFilter",
              "zones": {
               "$set": [
-               "Zone.HAND"
+               1
               ]
              },
-             "controller": "ControllerRelation.OPPONENT"
+             "controller": 2
             }
            },
            "mana_produced": [
             "{R}"
            ],
-           "colors": "Color.RED",
+           "colors": 8,
            "text": "add {R}"
           }
          ],
@@ -103,20 +103,20 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SEQUENCE",
+         "kind": 0,
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.EXILE",
+           "kind": 30,
            "targets": {
             "$": "ObjectFilter",
             "zones": {
              "$set": [
-              "Zone.LIBRARY"
+              0
              ]
             },
             "from_top": 3,
-            "owner": "ControllerRelation.YOU",
+            "owner": 1,
             "count": {
              "$": "Value",
              "constant": 3
@@ -126,7 +126,7 @@
           },
           {
            "$": "Effect",
-           "kind": "EffectKind.PLAY_FROM_ZONE",
+           "kind": 104,
            "targets": {
             "$": "ObjectFilter",
             "remembered": true
@@ -143,15 +143,15 @@
        "modes_instead": [
         {
          "$": "Condition",
-         "kind": "ConditionKind.CONTROLS_MATCHING",
+         "kind": 5,
          "filter": {
           "$": "ObjectFilter",
-          "controller": "ControllerRelation.YOU",
+          "controller": 1,
           "is_commander": true
          },
          "constraint": {
           "$": "NumericConstraint",
-          "comparison": "Comparison.GE",
+          "comparison": 5,
           "value": {
            "$": "Value",
            "constant": 1
@@ -169,7 +169,7 @@
      "text": "Choose one. If you control a commander as you cast this spell, you may choose both instead.",
      "functions_in": {
       "$set": [
-       "Zone.STACK"
+       4
       ]
      }
     }

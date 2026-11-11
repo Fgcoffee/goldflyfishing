@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
  "name": "Aven Mindcensor",
  "card_hash": "8093f2feb3936673a73788749583d1c0",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
   "name": "Aven Mindcensor",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Bird",
       "Wizard"
@@ -41,7 +41,7 @@
     "oracle_text": "Flash\nFlying\nIf an opponent would search a library, that player searches the top four cards of that library instead.",
     "power": "2",
     "toughness": "1",
-    "colors": "Color.WHITE",
+    "colors": 1,
     "keywords": [
      "Flying",
      "Flash"
@@ -49,14 +49,14 @@
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 1235,
   "scryfall_uri": "https://scryfall.com/card/clb/688/aven-mindcensor?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
    "name": "Aven Mindcensor",
    "face": 0,
@@ -66,23 +66,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flash",
      "keyword": "Flash"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flying",
      "keyword": "Flying"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "If an opponent would search a library, that player searches the top four cards of that library instead."
       }
      ],

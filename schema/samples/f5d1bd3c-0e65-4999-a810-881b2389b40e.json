@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
  "name": "Conspicuous Snoop",
  "card_hash": "0f340222764a151fc25a7466c0e21e55",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
   "name": "Conspicuous Snoop",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Rogue"
@@ -41,18 +41,18 @@
     "oracle_text": "Play with the top card of your library revealed.\nYou may cast Goblin spells from the top of your library.\nAs long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 3262,
   "scryfall_uri": "https://scryfall.com/card/m21/139/conspicuous-snoop?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
    "name": "Conspicuous Snoop",
    "face": 0,
@@ -62,16 +62,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.PERMISSION",
+       "kind": 151,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.LIBRARY"
+          0
          ]
         },
         "from_top": true,
@@ -80,11 +80,11 @@
        "players": {
         "$": "PlayerFilter"
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.LOOK_AT_TOP_CARD",
+         "act": 102,
          "players": {
           "$": "PlayerFilter"
          },
@@ -98,18 +98,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PERMISSION",
+         "kind": 151,
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -117,7 +117,7 @@
           ],
           "zones": {
            "$set": [
-            "Zone.LIBRARY"
+            0
            ]
           },
           "from_top": 1,
@@ -129,7 +129,7 @@
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.CAST_SPELL",
+           "act": 0,
            "subject": {
             "$": "ObjectFilter",
             "subtypes_all": [
@@ -137,7 +137,7 @@
             ],
             "zones": {
              "$set": [
-              "Zone.LIBRARY"
+              0
              ]
             },
             "from_top": 1,
@@ -159,11 +159,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card."
       }
      ],

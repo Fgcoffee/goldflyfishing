@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
  "name": "Goblin Warchief",
  "card_hash": "91d299ee14fa65e45050758484a49c1e",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
   "name": "Goblin Warchief",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,7 +38,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior"
@@ -47,18 +47,18 @@
     "oracle_text": "Goblin spells you cast cost {1} less to cast.\nGoblins you control have haste.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 2072,
   "scryfall_uri": "https://scryfall.com/card/dom/130/goblin-warchief?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
    "name": "Goblin Warchief",
    "face": 0,
@@ -68,11 +68,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_COST",
+       "kind": 152,
        "targets": {
         "$": "ObjectFilter",
         "subtypes_all": [
@@ -80,17 +80,17 @@
         ],
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
-        "controller": "ControllerRelation.YOU",
+        "controller": 1,
         "is_ability": false
        },
        "amount": {
         "$": "Value",
         "constant": -1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "costs less to cast"
       }
      ],
@@ -98,23 +98,23 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
         "subtypes_all": [
          "Goblin"
         ],
-        "controller": "ControllerRelation.YOU"
+        "controller": 1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": "AbilityKind.STATIC",
+         "kind": 3,
          "text": "haste",
          "keyword": "haste"
         }

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
  "name": "Detention Sphere",
  "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
   "name": "Detention Sphere",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "When this enchantment enters, you may exile target nonland permanent not named Detention Sphere and all other permanents with the same name as that permanent.\nWhen this enchantment leaves the battlefield, return the exiled cards to the battlefield under their owner's control.",
-    "colors": "Color.WHITE|BLUE"
+    "colors": 3
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 8400,
   "scryfall_uri": "https://scryfall.com/card/rtr/155/detention-sphere?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
    "name": "Detention Sphere",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent."
       }
      ],
@@ -75,21 +75,21 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+       "kind": 33,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          "Zone.EXILE"
+          5
          ]
         }
        },
-       "zone": "Zone.BATTLEFIELD",
+       "zone": 2,
        "text": "return"
       }
      ],
@@ -98,7 +98,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.LEAVES_BATTLEFIELD"
+        2
        ]
       },
       "subject": {

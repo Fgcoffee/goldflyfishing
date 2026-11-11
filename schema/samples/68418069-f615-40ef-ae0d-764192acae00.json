@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "68418069-f615-40ef-ae0d-764192acae00",
  "name": "Krenko, Mob Boss",
  "card_hash": "6774f35dde8104624ce3c95ff0a28dff",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "68418069-f615-40ef-ae0d-764192acae00",
   "name": "Krenko, Mob Boss",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,8 +38,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior"
@@ -48,18 +48,18 @@
     "oracle_text": "{T}: Create X 1/1 red Goblin creature tokens, where X is the number of Goblins you control.",
     "power": "3",
     "toughness": "3",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 1085,
   "scryfall_uri": "https://scryfall.com/card/fdn/204/krenko-mob-boss?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "68418069-f615-40ef-ae0d-764192acae00",
    "name": "Krenko, Mob Boss",
    "face": 0,
@@ -69,23 +69,23 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CREATE_TOKEN",
+       "kind": 35,
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
           "Goblin"
          ],
-         "controller": "ControllerRelation.YOU"
+         "controller": 1
         }
        },
        "token": {
@@ -94,7 +94,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": "Color.RED",
+        "colors": 8,
         "power": {
          "$": "Value",
          "constant": 1
@@ -113,7 +113,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

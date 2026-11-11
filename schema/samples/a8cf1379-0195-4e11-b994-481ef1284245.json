@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "a8cf1379-0195-4e11-b994-481ef1284245",
  "name": "Stasis",
  "card_hash": "84672d2b4ea744d4bcf204064f94d295",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "a8cf1379-0195-4e11-b994-481ef1284245",
   "name": "Stasis",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Players skip their untap steps.\nAt the beginning of your upkeep, sacrifice this enchantment unless you pay {U}.",
-    "colors": "Color.BLUE"
+    "colors": 2
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 7799,
   "scryfall_uri": "https://scryfall.com/card/me4/64/stasis?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "a8cf1379-0195-4e11-b994-481ef1284245",
    "name": "Stasis",
    "face": 0,
@@ -56,11 +56,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Players skip their untap steps."
       }
      ],
@@ -69,11 +69,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNLESS_PAYS",
+       "kind": 6,
        "players": {
         "$": "PlayerFilter"
        },
@@ -82,14 +82,14 @@
         "components": [
          {
           "$": "CostComponent",
-          "kind": "CostKind.MANA",
+          "kind": 0,
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": "ManaSymbolKind.COLORED",
-             "colors": "Color.BLUE",
+             "kind": 2,
+             "colors": 2,
              "text": "{U}"
             }
            ]
@@ -100,7 +100,7 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SACRIFICE",
+         "kind": 31,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
@@ -119,7 +119,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.UPKEEP"
+        127
        ]
       },
       "players": {

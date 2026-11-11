@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
  "name": "Blind Obedience",
  "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
   "name": "Blind Obedience",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,24 +32,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Extort (Whenever you cast a spell, you may pay {W/B}. If you do, each opponent loses 1 life and you gain that much life.)\nArtifacts and creatures your opponents control enter tapped.",
-    "colors": "Color.WHITE",
+    "colors": 1,
     "keywords": [
      "Extort"
     ]
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 503,
   "scryfall_uri": "https://scryfall.com/card/rvr/9/blind-obedience?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
    "name": "Blind Obedience",
    "face": 0,
@@ -59,18 +59,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.LOSE_LIFE",
+         "kind": 52,
          "players": {
           "$": "PlayerFilter",
-          "scope": "PlayerScope.EACH_OPPONENT"
+          "scope": 3
          },
          "amount": {
           "$": "Value",
@@ -79,7 +79,7 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.GAIN_LIFE",
+         "kind": 51,
          "players": {
           "$": "PlayerFilter"
          },
@@ -96,7 +96,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.CAST_SPELL"
+        20
        ]
       },
       "players": {
@@ -108,15 +108,15 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.REPLACEMENT",
+       "kind": 153,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|CREATURE",
-        "controller": "ControllerRelation.OPPONENT"
+        "types_any": 5,
+        "controller": 2
        },
        "text": "those permanents enter tapped"
       }

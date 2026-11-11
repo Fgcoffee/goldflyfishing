@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
  "name": "Chaos Warp",
  "card_hash": "ff4801b6525f80926e798e52e1ef6ea1",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
   "name": "Chaos Warp",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield.",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 29,
   "scryfall_uri": "https://scryfall.com/card/mbc/72/chaos-warp?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
    "name": "Chaos Warp",
    "face": 0,
@@ -56,30 +56,30 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MOVE_ZONE",
+       "kind": 28,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "zone": "Zone.LIBRARY",
+       "zone": 0,
        "text": "shuffle it into its owner's library"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.REVEAL",
+       "kind": 25,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.LIBRARY"
+          0
          ]
         },
         "from_top": 1,
-        "owner": "ControllerRelation.SPECIFIC",
+        "owner": 4,
         "count": {
          "$": "Value",
          "constant": 1
@@ -93,13 +93,13 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.CONDITIONAL",
+       "kind": 1,
        "condition": {
         "$": "Condition",
-        "kind": "ConditionKind.REMEMBERED_MATCHES",
+        "kind": 18,
         "filter": {
          "$": "ObjectFilter",
-         "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+         "types_any": 63,
          "remembered": true,
          "zones": {
           "$set": []
@@ -110,12 +110,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "kind": 33,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "text": "put onto the battlefield"
         }
        ],

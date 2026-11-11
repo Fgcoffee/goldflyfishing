@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
  "name": "Narset, Parter of Veils",
  "card_hash": "a1775e5a5e1cbebd48edf8ba303648f7",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
   "name": "Narset, Parter of Veils",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -38,26 +38,26 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.PLANESWALKER",
+     "supertypes": 2,
+     "types": 32,
      "subtypes": [
       "Narset"
      ]
     },
     "oracle_text": "Each opponent can't draw more than one card each turn.\n−2: Look at the top four cards of your library. You may reveal a noncreature, nonland card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
     "loyalty": "5",
-    "colors": "Color.BLUE"
+    "colors": 2
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 974,
   "scryfall_uri": "https://scryfall.com/card/cmm/853/narset-parter-of-veils?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
    "name": "Narset, Parter of Veils",
    "face": 0,
@@ -67,11 +67,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Each opponent can't draw more than one card each turn."
       }
      ],
@@ -80,11 +80,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOOK_AT_TOP",
+       "kind": 10001,
        "players": {
         "$": "PlayerFilter"
        },
@@ -96,17 +96,17 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.MOVE_ZONE",
+         "kind": 28,
          "targets": {
           "$": "ObjectFilter",
-          "types_none": "CardType.CREATURE|LAND",
+          "types_none": 20,
           "from_pile": true,
           "zones": {
            "$set": []
@@ -116,7 +116,7 @@
            "constant": 1
           }
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "keywords": [
           "reveal"
          ],
@@ -127,7 +127,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "from_pile": true
@@ -145,7 +145,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.LOYALTY",
+        "kind": 34,
         "amount": {
          "$": "Value",
          "constant": -2
@@ -154,7 +154,7 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "is_loyalty_ability": true,
      "once_each_turn": true
     }

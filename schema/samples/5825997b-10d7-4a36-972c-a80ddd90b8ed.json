@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
  "name": "Feed the Swarm",
  "card_hash": "96a90980d1a324ea97af2853ee529b35",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
   "name": "Feed the Swarm",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Destroy target creature or enchantment an opponent controls. You lose life equal to that permanent's mana value.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 89,
   "scryfall_uri": "https://scryfall.com/card/tle/257/feed-the-swarm?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
    "name": "Feed the Swarm",
    "face": 0,
@@ -56,28 +56,28 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.CREATURE|ENCHANTMENT",
-        "controller": "ControllerRelation.OPPONENT"
+        "types_any": 12,
+        "controller": 2
        },
        "is_targeted": true,
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter"
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.MANA_VALUE",
+        "kind": 5,
         "filter": {
          "$": "ObjectFilter",
          "remembered": true

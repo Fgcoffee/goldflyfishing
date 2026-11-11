@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
  "name": "Glacial Fortress",
  "card_hash": "7e931b1f972e38ba8e9cb7fbd3362006",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
   "name": "Glacial Fortress",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "This land enters tapped unless you control a Plains or an Island.\n{T}: Add {W} or {U}.",
     "produced_mana": [
@@ -28,14 +28,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 95,
   "scryfall_uri": "https://scryfall.com/card/msc/248/glacial-fortress?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
    "name": "Glacial Fortress",
    "face": 0,
@@ -45,29 +45,29 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CONDITIONAL",
+       "kind": 1,
        "condition": {
         "$": "Condition",
-        "kind": "ConditionKind.NOT",
+        "kind": 22,
         "operands": [
          {
           "$": "Condition",
-          "kind": "ConditionKind.CONTROLS_MATCHING",
+          "kind": 5,
           "filter": {
            "$": "ObjectFilter",
            "subtypes_any": [
             "Plains",
             "Island"
            ],
-           "controller": "ControllerRelation.YOU"
+           "controller": 1
           },
           "constraint": {
            "$": "NumericConstraint",
-           "comparison": "Comparison.GE",
+           "comparison": 5,
            "value": {
             "$": "Value",
             "constant": 1
@@ -81,12 +81,12 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.TAP",
+         "kind": 70,
          "targets": {
           "$": "ObjectFilter",
           "source_only": true
          },
-         "duration": "Duration.PERMANENT",
+         "duration": 0,
          "text": "enters tapped"
         }
        ],
@@ -97,18 +97,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -119,12 +119,12 @@
          "mana_produced": [
           "{W}"
          ],
-         "colors": "Color.WHITE",
+         "colors": 1,
          "text": "add {W}"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -135,7 +135,7 @@
          "mana_produced": [
           "{U}"
          ],
-         "colors": "Color.BLUE",
+         "colors": 2,
          "text": "add {U}"
         }
        ],
@@ -148,7 +148,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
  "name": "Island",
  "card_hash": "212b7af6dfe1abe06d10e058ab5e285f",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
   "name": "Island",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,8 +18,8 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.BASIC",
-     "types": "CardType.LAND",
+     "supertypes": 1,
+     "types": 16,
      "subtypes": [
       "Island"
      ]
@@ -31,13 +31,13 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "scryfall_uri": "https://scryfall.com/card/trk/319/island?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
    "name": "Island",
    "face": 0,

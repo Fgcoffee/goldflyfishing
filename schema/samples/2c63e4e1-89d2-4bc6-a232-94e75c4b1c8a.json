@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
  "name": "Mana Crypt",
  "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
   "name": "Mana Crypt",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "text": "{0}"
       }
      ]
@@ -25,7 +25,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you.\n{T}: Add {C}{C}.",
     "produced_mana": [
@@ -34,14 +34,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": false,
   "edhrec_rank": 14443,
   "scryfall_uri": "https://scryfall.com/card/2xm/270/mana-crypt?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
    "name": "Mana Crypt",
    "face": 0,
@@ -51,11 +51,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you."
       }
      ],
@@ -64,11 +64,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -89,7 +89,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

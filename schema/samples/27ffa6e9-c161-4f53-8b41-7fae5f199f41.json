@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
  "name": "Kataki, War's Wage",
  "card_hash": "be42d7e50d2eddaa54e37a5730c15917",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
   "name": "Kataki, War's Wage",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,8 +32,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Spirit"
      ]
@@ -41,18 +41,18 @@
     "oracle_text": "All artifacts have \"At the beginning of your upkeep, sacrifice this artifact unless you pay {1}.\"",
     "power": "2",
     "toughness": "1",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 9663,
   "scryfall_uri": "https://scryfall.com/card/mma/20/kataki-wars-wage?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
    "name": "Kataki, War's Wage",
    "face": 0,
@@ -62,24 +62,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.ARTIFACT"
+        "types_all": 1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": "AbilityKind.TRIGGERED",
+         "kind": 2,
          "effects": [
           {
            "$": "Effect",
-           "kind": "EffectKind.UNLESS_PAYS",
+           "kind": 6,
            "players": {
             "$": "PlayerFilter"
            },
@@ -88,13 +88,13 @@
             "components": [
              {
               "$": "CostComponent",
-              "kind": "CostKind.MANA",
+              "kind": 0,
               "mana": {
                "$": "ManaCost",
                "symbols": [
                 {
                  "$": "ManaSymbol",
-                 "kind": "ManaSymbolKind.GENERIC",
+                 "kind": 0,
                  "generic": 1,
                  "text": "{1}"
                 }
@@ -106,7 +106,7 @@
            "children": [
             {
              "$": "Effect",
-             "kind": "EffectKind.SACRIFICE",
+             "kind": 31,
              "targets": {
               "$": "ObjectFilter",
               "source_only": true
@@ -125,7 +125,7 @@
           "$": "TriggerCondition",
           "event_kinds": {
            "$set": [
-            "EventKind.UPKEEP"
+            127
            ]
           },
           "players": {

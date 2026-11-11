@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "89ca686a-7c72-4d8f-9290-e89635624a83",
  "name": "Cavern of Souls",
  "card_hash": "577ac92ce85869e282af81ab8d665048",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "89ca686a-7c72-4d8f-9290-e89635624a83",
   "name": "Cavern of Souls",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "As this land enters, choose a creature type.\n{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type, and that spell can't be countered.",
     "produced_mana": [
@@ -32,14 +32,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 111,
   "scryfall_uri": "https://scryfall.com/card/lci/269/cavern-of-souls?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "89ca686a-7c72-4d8f-9290-e89635624a83",
    "name": "Cavern of Souls",
    "face": 0,
@@ -49,15 +49,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
+       "kind": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.CHOOSE_QUALITY",
+         "kind": 214,
          "players": {
           "$": "PlayerFilter"
          },
@@ -74,11 +74,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -98,7 +98,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -107,11 +107,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -124,10 +124,10 @@
         "key": "1 creature of the chosen type that is a spell in stack",
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
+         "types_all": 4,
          "zones": {
           "$set": [
-           "Zone.STACK"
+           4
           ]
          },
          "of_chosen_type": true,
@@ -138,32 +138,32 @@
          }
         }
        },
-       "colors": "Color.WHITE|BLUE|BLACK|RED|GREEN",
+       "colors": 31,
        "text": "add mana of any color"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         }
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_COUNTERED",
+         "act": 40,
          "subject": {
           "$": "ObjectFilter",
           "remembered": true,
           "zones": {
            "$set": [
-            "Zone.STACK"
+            4
            ]
           }
          },
@@ -179,7 +179,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

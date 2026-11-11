@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
  "name": "Maze of Ith",
  "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
   "name": "Maze of Ith",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,20 +18,20 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{T}: Untap target attacking creature. Prevent all combat damage that would be dealt to and dealt by that creature this turn."
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 548,
   "scryfall_uri": "https://scryfall.com/card/dmr/250/maze-of-ith?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
    "name": "Maze of Ith",
    "face": 0,
@@ -41,14 +41,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNTAP",
+       "kind": 71,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
+        "types_all": 4,
         "attacking": true
        },
        "is_targeted": true,
@@ -56,7 +56,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PREVENT_DAMAGE",
+       "kind": 55,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
@@ -65,7 +65,7 @@
         "$": "Value",
         "constant": -1
        },
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "both_ways": true,
        "keywords": [
         "combat"
@@ -79,7 +79,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

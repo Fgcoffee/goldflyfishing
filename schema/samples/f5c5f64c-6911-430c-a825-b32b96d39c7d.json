@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
  "name": "Beetleback Chief",
  "card_hash": "00e9df100277678b24d252cc7df4479f",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
   "name": "Beetleback Chief",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,7 +38,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior"
@@ -47,18 +47,18 @@
     "oracle_text": "When this creature enters, create two 1/1 red Goblin creature tokens.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 3582,
   "scryfall_uri": "https://scryfall.com/card/tdc/205/beetleback-chief?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
    "name": "Beetleback Chief",
    "face": 0,
@@ -68,11 +68,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CREATE_TOKEN",
+       "kind": 35,
        "players": {
         "$": "PlayerFilter"
        },
@@ -86,7 +86,7 @@
         "subtypes": [
          "Goblin"
         ],
-        "colors": "Color.RED",
+        "colors": 8,
         "power": {
          "$": "Value",
          "constant": 1
@@ -104,7 +104,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {

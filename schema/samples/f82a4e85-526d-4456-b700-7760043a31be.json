@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f82a4e85-526d-4456-b700-7760043a31be",
  "name": "Viscera Seer",
  "card_hash": "c371e6c116a7ada50bac9dc955e1a9ef",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f82a4e85-526d-4456-b700-7760043a31be",
   "name": "Viscera Seer",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Vampire",
       "Wizard"
@@ -35,21 +35,21 @@
     "oracle_text": "Sacrifice a creature: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)",
     "power": "1",
     "toughness": "1",
-    "colors": "Color.BLACK",
+    "colors": 4,
     "keywords": [
      "Scry"
     ]
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 256,
   "scryfall_uri": "https://scryfall.com/card/soc/229/viscera-seer?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f82a4e85-526d-4456-b700-7760043a31be",
    "name": "Viscera Seer",
    "face": 0,
@@ -59,11 +59,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SCRY",
+       "kind": 26,
        "players": {
         "$": "PlayerFilter"
        },
@@ -80,14 +80,14 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
+         "types_all": 4,
          "count": {
           "$": "Value",
           "constant": 1

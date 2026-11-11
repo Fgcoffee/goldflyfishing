@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "9242cd3e-1a71-4700-8182-9c1005616033",
  "name": "Impact Tremors",
  "card_hash": "88c916ed8568192d2de36996e1f473e3",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "9242cd3e-1a71-4700-8182-9c1005616033",
   "name": "Impact Tremors",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Whenever a creature you control enters, this enchantment deals 1 damage to each opponent.",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 198,
   "scryfall_uri": "https://scryfall.com/card/fdn/717/impact-tremors?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "9242cd3e-1a71-4700-8182-9c1005616033",
    "name": "Impact Tremors",
    "face": 0,
@@ -56,14 +56,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
@@ -77,13 +77,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
-       "controller": "ControllerRelation.YOU",
+       "types_all": 4,
+       "controller": 1,
        "count": {
         "$": "Value",
         "constant": 1

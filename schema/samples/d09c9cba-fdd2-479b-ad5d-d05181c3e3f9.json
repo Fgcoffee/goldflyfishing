@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d09c9cba-fdd2-479b-ad5d-d05181c3e3f9",
  "name": "Fierce Guardianship",
  "card_hash": "4b46c2c84fd613e57cc8cf515702994f",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d09c9cba-fdd2-479b-ad5d-d05181c3e3f9",
   "name": "Fierce Guardianship",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "If you control a commander, you may cast this spell without paying its mana cost.\nCounter target noncreature spell.",
-    "colors": "Color.BLUE"
+    "colors": 2
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 83,
   "scryfall_uri": "https://scryfall.com/card/cmm/94/fierce-guardianship?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d09c9cba-fdd2-479b-ad5d-d05181c3e3f9",
    "name": "Fierce Guardianship",
    "face": 0,
@@ -56,17 +56,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "If you control a commander, you may cast this spell without paying its mana cost.",
      "functions_in": {
       "$set": [
-       "Zone.BATTLEFIELD",
-       "Zone.COMMAND",
-       "Zone.EXILE",
-       "Zone.GRAVEYARD",
-       "Zone.HAND",
-       "Zone.LIBRARY",
-       "Zone.STACK"
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
       ]
      },
      "alternative_cost": {
@@ -76,15 +76,15 @@
       },
       "condition": {
        "$": "Condition",
-       "kind": "ConditionKind.CONTROLS_MATCHING",
+       "kind": 5,
        "filter": {
         "$": "ObjectFilter",
-        "controller": "ControllerRelation.YOU",
+        "controller": 1,
         "is_commander": true
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": "Comparison.GE",
+        "comparison": 5,
         "value": {
          "$": "Value",
          "constant": 1
@@ -97,17 +97,17 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.COUNTER_SPELL",
+       "kind": 100,
        "targets": {
         "$": "ObjectFilter",
-        "types_none": "CardType.CREATURE",
+        "types_none": 4,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
         "is_ability": false

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
  "name": "Goblin Rabblemaster",
  "card_hash": "9da14d96824a561bad4c26f03774eff6",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
   "name": "Goblin Rabblemaster",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin",
       "Warrior"
@@ -41,18 +41,18 @@
     "oracle_text": "Other Goblin creatures you control attack each combat if able.\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token with haste.\nWhenever this creature attacks, it gets +1/+0 until end of turn for each other attacking Goblin.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 4545,
   "scryfall_uri": "https://scryfall.com/card/ddt/46/goblin-rabblemaster?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
    "name": "Goblin Rabblemaster",
    "face": 0,
@@ -62,21 +62,21 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
+        "types_all": 4,
         "subtypes_all": [
          "Goblin"
         ],
         "other_than_source": true,
-        "controller": "ControllerRelation.YOU"
+        "controller": 1
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "keywords": [
         "Attacks each combat if able"
        ],
@@ -87,20 +87,20 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CONDITIONAL",
+       "kind": 1,
        "condition": {
         "$": "Condition",
-        "kind": "ConditionKind.IS_YOUR_TURN",
+        "kind": 6,
         "text": "during your turn"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.CREATE_TOKEN",
+         "kind": 35,
          "players": {
           "$": "PlayerFilter"
          },
@@ -114,7 +114,7 @@
           "subtypes": [
            "Goblin"
           ],
-          "colors": "Color.RED",
+          "colors": 8,
           "power": {
            "$": "Value",
            "constant": 1
@@ -138,7 +138,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.PHASE_BEGAN"
+        121
        ]
       },
       "players": {
@@ -146,7 +146,9 @@
       },
       "phases": {
        "$set": [
-        2
+        {
+         "$int": 2
+        }
        ]
       },
       "text": "at the beginning of combat"
@@ -154,18 +156,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.MODIFY_PT",
+       "kind": 140,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
          "subtypes_all": [
@@ -175,7 +177,7 @@
          "attacking": true
         }
        },
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "text": "gets +1/+0"
       }
      ],
@@ -184,7 +186,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ATTACKS"
+        101
        ]
       },
       "subject": {

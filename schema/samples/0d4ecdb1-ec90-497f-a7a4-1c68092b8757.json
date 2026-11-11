@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
  "name": "Teferi's Protection",
  "card_hash": "ddf2d2ac2837f4c166c0f0a568847490",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
   "name": "Teferi's Protection",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Until your next turn, your life total can't change and you gain protection from everything. All permanents you control phase out. (While they're phased out, they're treated as though they don't exist. They phase in before you untap during your untap step.)\nExile Teferi's Protection.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 109,
   "scryfall_uri": "https://scryfall.com/card/2x2/32/teferis-protection?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
    "name": "Teferi's Protection",
    "face": 0,
@@ -56,24 +56,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEQUENCE",
-       "duration": "Duration.YOUR_NEXT_TURN",
+       "kind": 0,
+       "duration": 3,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.RESTRICTION",
+         "kind": 150,
          "players": {
           "$": "PlayerFilter"
          },
-         "duration": "Duration.YOUR_NEXT_TURN",
+         "duration": 3,
          "restrictions": [
           {
            "$": "Restriction",
-           "act": "Act.LIFE_TOTAL_CHANGE",
+           "act": 101,
            "players": {
             "$": "PlayerFilter"
            },
@@ -84,15 +84,15 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.GRANT_ABILITY",
+         "kind": 143,
          "players": {
           "$": "PlayerFilter"
          },
-         "duration": "Duration.YOUR_NEXT_TURN",
+         "duration": 3,
          "granted_abilities": [
           {
            "$": "Ability",
-           "kind": "AbilityKind.STATIC",
+           "kind": 3,
            "text": "Protection",
            "keyword": "Protection",
            "quality": {
@@ -110,10 +110,10 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PHASE_OUT",
+       "kind": 82,
        "targets": {
         "$": "ObjectFilter",
-        "controller": "ControllerRelation.YOU"
+        "controller": 1
        },
        "text": "phase out"
       }
@@ -122,11 +122,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true

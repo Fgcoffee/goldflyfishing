@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
  "name": "Throne of the God-Pharaoh",
  "card_hash": "78e4c141a80d59ee242147b12bab2086",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
   "name": "Throne of the God-Pharaoh",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.ARTIFACT"
+     "supertypes": 2,
+     "types": 1
     },
     "oracle_text": "At the beginning of your end step, each opponent loses life equal to the number of tapped creatures you control."
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 2635,
   "scryfall_uri": "https://scryfall.com/card/akh/237/throne-of-the-god-pharaoh?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
    "name": "Throne of the God-Pharaoh",
    "face": 0,
@@ -50,22 +50,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.COUNT",
+        "kind": 2,
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
-         "controller": "ControllerRelation.YOU",
+         "types_all": 4,
+         "controller": 1,
          "tapped": true
         }
        },
@@ -77,7 +77,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.END_STEP"
+        129
        ]
       },
       "players": {

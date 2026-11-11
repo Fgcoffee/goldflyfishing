@@ -17,7 +17,7 @@ and are the only TS copy.
 ## Exporting
 
 ```bash
-python -m mtgfish.tools.ir_export export                 # every card -> cache/ir/v1/
+python -m mtgfish.tools.ir_export export                 # every card -> cache/ir/v2/
 python -m mtgfish.tools.ir_export export --out DIR       # ... or into DIR
 python -m mtgfish.tools.ir_export samples                # the bench decks -> schema/samples/
 python -m mtgfish.tools.ir_export usage                  # what the pool uses -> schema/usage.json
@@ -34,7 +34,7 @@ in `index.json` and send their card files.
 ```python
 from mtgfish.ir.store import IRStore
 
-store = IRStore.open(db)                                  # reads cache/ir/v1
+store = IRStore.open(db)                                  # reads cache/ir/v2
 documents, missing = store.deck(["Lightning Bolt", "Sol Ring"])
 ```
 
@@ -46,12 +46,13 @@ lists names that match no card.
 ## Layout and keys
 
 ```
-cache/ir/v1/
+cache/ir/v2/
   index.json              names -> oracle ids, and each card's hash
   <oracle_id>.json        one card document, all its faces
 ```
 
-* **`ir_version`** is in every document and in the path (`v1/`). A reader
+* **`ir_version`** is in every document and in the path (`v2/`). Version 2
+  writes enums as numbers; see `docs/ir-json.md`. A reader
   must refuse a version it doesn't know. It changes only when a reader of
   the old JSON would misread the new.
 * **`oracle_id`** names the card: Scryfall's oracle id, shared by every
@@ -72,7 +73,7 @@ cache/ir/v1/
 
 ```json
 {
- "ir_version": 1,
+ "ir_version": 2,
  "built_at": "2026-11-10T12:20:00",
  "snapshot": "<card data hash>",
  "code": "<code fingerprint>",
@@ -90,21 +91,21 @@ A card document (`<oracle_id>.json`):
 
 ```json
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
  "name": "Lightning Bolt",
  "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
  "card": {"$": "CardDef", "oracle_id": "4457ed35-...", "name": "Lightning Bolt", "layout": "...", "faces": ["..."], "mana_value": 1, "color_identity": "...", "commander_legal": true},
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
    "name": "Lightning Bolt",
    "face": 0,
    "face_name": "Lightning Bolt",
    "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
    "fully_read": true,
-   "abilities": [{"$": "Ability", "kind": "AbilityKind.SPELL", "effects": ["..."]}],
+   "abilities": [{"$": "Ability", "kind": 0, "effects": ["..."]}],
    "failures": []
   }
  ]

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
  "name": "Authority of the Consuls",
  "card_hash": "40ca2eefaeb49aaf8c3810bc1da18f14",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
   "name": "Authority of the Consuls",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Creatures your opponents control enter tapped.\nWhenever a creature an opponent controls enters, you gain 1 life.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 334,
   "scryfall_uri": "https://scryfall.com/card/fdn/137/authority-of-the-consuls?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
    "name": "Authority of the Consuls",
    "face": 0,
@@ -50,15 +50,15 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.REPLACEMENT",
+       "kind": 153,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.OPPONENT"
+        "types_all": 4,
+        "controller": 2
        },
        "text": "those permanents enter tapped"
       }
@@ -67,11 +67,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GAIN_LIFE",
+       "kind": 51,
        "players": {
         "$": "PlayerFilter"
        },
@@ -87,13 +87,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
-       "controller": "ControllerRelation.OPPONENT",
+       "types_all": 4,
+       "controller": 2,
        "count": {
         "$": "Value",
         "constant": 1

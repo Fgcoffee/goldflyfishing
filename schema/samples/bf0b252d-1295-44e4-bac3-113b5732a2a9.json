@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
  "name": "Opposition",
  "card_hash": "4f605c4a49a26a01e992e6532858c6b4",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
   "name": "Opposition",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Tap an untapped creature you control: Tap target artifact, creature, or land.",
-    "colors": "Color.BLUE"
+    "colors": 2
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 6178,
   "scryfall_uri": "https://scryfall.com/card/dmr/62/opposition?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
    "name": "Opposition",
    "face": 0,
@@ -62,14 +62,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.TAP",
+       "kind": 70,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|CREATURE|LAND"
+        "types_any": 21
        },
        "is_targeted": true,
        "text": "tap/untap"
@@ -81,15 +81,15 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_OTHER",
+        "kind": 3,
         "amount": {
          "$": "Value",
          "constant": 1
         },
         "filter": {
          "$": "ObjectFilter",
-         "types_all": "CardType.CREATURE",
-         "controller": "ControllerRelation.YOU",
+         "types_all": 4,
+         "controller": 1,
          "tapped": false,
          "count": {
           "$": "Value",

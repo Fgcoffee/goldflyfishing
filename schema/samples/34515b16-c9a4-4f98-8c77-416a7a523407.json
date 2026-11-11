@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "34515b16-c9a4-4f98-8c77-416a7a523407",
  "name": "Wrath of God",
  "card_hash": "143cfe70f299c4cb432c908fd52d2c68",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "34515b16-c9a4-4f98-8c77-416a7a523407",
   "name": "Wrath of God",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Destroy all creatures. They can't be regenerated.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 670,
   "scryfall_uri": "https://scryfall.com/card/cmm/70/wrath-of-god?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "34515b16-c9a4-4f98-8c77-416a7a523407",
    "name": "Wrath of God",
    "face": 0,
@@ -62,29 +62,29 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_REGENERATED",
+         "act": 64,
          "subject": {
           "$": "ObjectFilter",
           "remembered": true

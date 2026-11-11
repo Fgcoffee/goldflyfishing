@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4b515bb0-f275-4400-8032-3173b799ab40",
  "name": "Walking Ballista",
  "card_hash": "d96fe8c2aa72a72b543983fe55cfd0a9",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "4b515bb0-f275-4400-8032-3173b799ab40",
   "name": "Walking Ballista",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,12 +17,12 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.VARIABLE",
+       "kind": 1,
        "text": "{X}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.VARIABLE",
+       "kind": 1,
        "text": "{X}"
       }
      ]
@@ -30,7 +30,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT|CREATURE",
+     "types": 5,
      "subtypes": [
       "Construct"
      ]
@@ -41,14 +41,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 427,
   "scryfall_uri": "https://scryfall.com/card/2xm/306/walking-ballista?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4b515bb0-f275-4400-8032-3173b799ab40",
    "name": "Walking Ballista",
    "face": 0,
@@ -58,14 +58,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_COUNTERS",
+       "kind": 72,
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.X"
+        "kind": 1
        },
        "counter_type": "+1/+1",
        "text": "enters with counters"
@@ -75,11 +75,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_COUNTERS",
+       "kind": 72,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -98,13 +98,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 4,
            "text": "{4}"
           }
@@ -116,14 +116,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "types_any": 38,
         "includes_players": true
        },
        "amount": {
@@ -140,7 +140,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.REMOVE_COUNTERS",
+        "kind": 32,
         "amount": {
          "$": "Value",
          "constant": 1

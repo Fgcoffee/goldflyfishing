@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
  "name": "Nim Deathmantle",
  "card_hash": "1769cf56730f95adbad08739596ce83b",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
   "name": "Nim Deathmantle",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT",
+     "types": 1,
      "subtypes": [
       "Equipment"
      ]
@@ -38,14 +38,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 3513,
   "scryfall_uri": "https://scryfall.com/card/2x2/309/nim-deathmantle?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
    "name": "Nim Deathmantle",
    "face": 0,
@@ -55,11 +55,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Equipped creature gets +2/+2, has intimidate, and is a black Zombie."
       }
      ],
@@ -68,18 +68,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PAY_COST",
+         "kind": 200,
          "players": {
           "$": "PlayerFilter"
          },
@@ -88,13 +88,13 @@
           "components": [
            {
             "$": "CostComponent",
-            "kind": "CostKind.MANA",
+            "kind": 0,
             "mana": {
              "$": "ManaCost",
              "symbols": [
               {
                "$": "ManaSymbol",
-               "kind": "ManaSymbolKind.GENERIC",
+               "kind": 0,
                "generic": 4,
                "text": "{4}"
               }
@@ -110,21 +110,21 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.REFLEXIVE_TRIGGER",
+       "kind": 219,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.PUT_ONTO_BATTLEFIELD",
+         "kind": 33,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "text": "return"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.ATTACH",
+         "kind": 75,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true
@@ -144,13 +144,13 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES"
+        3
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
-       "owner": "ControllerRelation.YOU",
+       "types_all": 4,
+       "owner": 1,
        "is_token": false,
        "count": {
         "$": "Value",
@@ -163,15 +163,15 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ATTACH",
+       "kind": 75,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
        "is_targeted": true,
        "text": "attach to target creature you control"
@@ -183,13 +183,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 4,
            "text": "{4}"
           }
@@ -198,7 +198,7 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "keyword": "Equip"
     }
    ],

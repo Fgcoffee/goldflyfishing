@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
  "name": "Fire Diamond",
  "card_hash": "de3cd641d6e83804ac9f1693d95b6065",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
   "name": "Fire Diamond",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "This artifact enters tapped.\n{T}: Add {R}.",
     "produced_mana": [
@@ -35,14 +35,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 715,
   "scryfall_uri": "https://scryfall.com/card/clb/313/fire-diamond?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
    "name": "Fire Diamond",
    "face": 0,
@@ -52,16 +52,16 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.TAP",
+       "kind": 70,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "text": "enters tapped"
       }
      ],
@@ -69,11 +69,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -84,7 +84,7 @@
        "mana_produced": [
         "{R}"
        ],
-       "colors": "Color.RED",
+       "colors": 8,
        "text": "add {R}"
       }
      ],
@@ -94,7 +94,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
  "name": "Strip Mine",
  "card_hash": "9a07828161280ff79bb09c17c2876bc3",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
   "name": "Strip Mine",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{T}: Add {C}.\n{T}, Sacrifice this land: Destroy target land.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 526,
   "scryfall_uri": "https://scryfall.com/card/vma/316/strip-mine?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
    "name": "Strip Mine",
    "face": 0,
@@ -44,11 +44,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -68,7 +68,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -77,14 +77,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.LAND"
+        "types_all": 16
        },
        "is_targeted": true,
        "text": "destroy"
@@ -96,12 +96,12 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.SACRIFICE",
+        "kind": 10,
         "amount": {
          "$": "Value",
          "constant": 1

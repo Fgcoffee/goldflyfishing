@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
  "name": "Thought Vessel",
  "card_hash": "b87c0325bc45bada69953e042e2adb03",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
   "name": "Thought Vessel",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "You have no maximum hand size.\n{T}: Add {C}.",
     "produced_mana": [
@@ -35,14 +35,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 21,
   "scryfall_uri": "https://scryfall.com/card/mbc/78/thought-vessel?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
    "name": "Thought Vessel",
    "face": 0,
@@ -52,18 +52,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.PERMISSION",
+       "kind": 151,
        "players": {
         "$": "PlayerFilter"
        },
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.DISCARD_TO_HAND_SIZE",
+         "act": 100,
          "players": {
           "$": "PlayerFilter"
          },
@@ -77,11 +77,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -101,7 +101,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

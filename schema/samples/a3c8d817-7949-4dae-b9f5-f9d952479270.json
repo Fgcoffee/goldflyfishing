@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
  "name": "Crypt Ghast",
  "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
   "name": "Crypt Ghast",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 3,
        "text": "{3}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Spirit"
      ]
@@ -40,7 +40,7 @@
     "oracle_text": "Extort (Whenever you cast a spell, you may pay {W/B}. If you do, each opponent loses 1 life and you gain that much life.)\nWhenever you tap a Swamp for mana, add an additional {B}.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.BLACK",
+    "colors": 4,
     "keywords": [
      "Extort"
     ],
@@ -50,14 +50,14 @@
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 531,
   "scryfall_uri": "https://scryfall.com/card/rvr/70/crypt-ghast?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
    "name": "Crypt Ghast",
    "face": 0,
@@ -67,18 +67,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.LOSE_LIFE",
+         "kind": 52,
          "players": {
           "$": "PlayerFilter",
-          "scope": "PlayerScope.EACH_OPPONENT"
+          "scope": 3
          },
          "amount": {
           "$": "Value",
@@ -87,7 +87,7 @@
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.GAIN_LIFE",
+         "kind": 51,
          "players": {
           "$": "PlayerFilter"
          },
@@ -104,7 +104,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.CAST_SPELL"
+        20
        ]
       },
       "players": {
@@ -116,11 +116,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -131,7 +131,7 @@
        "mana_produced": [
         "{B}"
        ],
-       "colors": "Color.BLACK",
+       "colors": 4,
        "text": "add {B}"
       }
      ],
@@ -140,7 +140,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.TAPPED_FOR_MANA"
+        148
        ]
       },
       "subject": {

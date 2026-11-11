@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
  "name": "Sanguine Bond",
  "card_hash": "d7155414321cf552098ddd1f1b543f4e",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
   "name": "Sanguine Bond",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 3,
        "text": "{3}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Whenever you gain life, target opponent loses that much life.",
-    "colors": "Color.BLACK"
+    "colors": 4
    }
   ],
   "mana_value": 5,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 506,
   "scryfall_uri": "https://scryfall.com/card/c21/153/sanguine-bond?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
    "name": "Sanguine Bond",
    "face": 0,
@@ -62,18 +62,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOSE_LIFE",
+       "kind": 52,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TARGET_OPPONENT"
+        "scope": 5
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.EVENT_AMOUNT"
+        "kind": 25
        },
        "is_targeted": true,
        "text": "lose life"
@@ -84,7 +84,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.LIFE_GAINED"
+        62
        ]
       },
       "players": {

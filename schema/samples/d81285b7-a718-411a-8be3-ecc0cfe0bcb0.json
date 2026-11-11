@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
  "name": "Goblin Sharpshooter",
  "card_hash": "4d86a29e87ec8b648bdbb361bf4053d9",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
   "name": "Goblin Sharpshooter",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Goblin"
      ]
@@ -40,18 +40,18 @@
     "oracle_text": "This creature doesn't untap during your untap step.\nWhenever a creature dies, untap this creature.\n{T}: This creature deals 1 damage to any target.",
     "power": "1",
     "toughness": "1",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 3820,
   "scryfall_uri": "https://scryfall.com/card/c13/111/goblin-sharpshooter?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
    "name": "Goblin Sharpshooter",
    "face": 0,
@@ -61,20 +61,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.UNTAP_DURING_UNTAP_STEP",
+         "act": 99,
          "subject": {
           "$": "ObjectFilter",
           "source_only": true
@@ -89,11 +89,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNTAP",
+       "kind": 71,
        "targets": {
         "$": "ObjectFilter",
         "source_only": true
@@ -106,12 +106,12 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.DIES"
+        3
        ]
       },
       "subject": {
        "$": "ObjectFilter",
-       "types_all": "CardType.CREATURE",
+       "types_all": 4,
        "count": {
         "$": "Value",
         "constant": 1
@@ -123,14 +123,14 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.BATTLE|CREATURE|PLANESWALKER",
+        "types_any": 38,
         "includes_players": true
        },
        "amount": {
@@ -147,7 +147,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

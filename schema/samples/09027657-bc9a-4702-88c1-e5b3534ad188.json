@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
  "name": "Increasing Ambition",
  "card_hash": "f4e654c1551c51797a2c078d9337fb17",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
   "name": "Increasing Ambition",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 4,
        "text": "{4}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLACK",
+       "kind": 2,
+       "colors": 4,
        "text": "{B}"
       }
      ]
@@ -32,24 +32,24 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Search your library for a card and put that card into your hand. If this spell was cast from a graveyard, instead search your library for two cards and put those cards into your hand. Then shuffle.\nFlashback {7}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
-    "colors": "Color.BLACK",
+    "colors": 4,
     "keywords": [
      "Flashback"
     ]
    }
   ],
   "mana_value": 5,
-  "color_identity": "Color.BLACK",
+  "color_identity": 4,
   "commander_legal": true,
   "edhrec_rank": 9453,
   "scryfall_uri": "https://scryfall.com/card/dka/69/increasing-ambition?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
    "name": "Increasing Ambition",
    "face": 0,
@@ -59,11 +59,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
@@ -81,17 +81,17 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.HAND",
+       "zone": 1,
        "text": "search library"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
-       "duration": "Duration.PERMANENT",
+       "kind": 999,
+       "duration": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
           "zones": {
@@ -109,12 +109,12 @@
           "$": "Value",
           "constant": 2
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "text": "search library"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.SHUFFLE",
+         "kind": 24,
          "players": {
           "$": "PlayerFilter"
          },
@@ -128,11 +128,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "Flashback {7}{B}",
      "functions_in": {
       "$set": [
-       "Zone.GRAVEYARD"
+       3
       ]
      },
      "keyword": "Flashback",
@@ -143,20 +143,20 @@
        "components": [
         {
          "$": "CostComponent",
-         "kind": "CostKind.MANA",
+         "kind": 0,
          "mana": {
           "$": "ManaCost",
           "symbols": [
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.GENERIC",
+            "kind": 0,
             "generic": 7,
             "text": "{7}"
            },
            {
             "$": "ManaSymbol",
-            "kind": "ManaSymbolKind.COLORED",
-            "colors": "Color.BLACK",
+            "kind": 2,
+            "colors": 4,
             "text": "{B}"
            }
           ]
@@ -164,7 +164,7 @@
         }
        ]
       },
-      "from_zone": "Zone.GRAVEYARD",
+      "from_zone": 3,
       "keyword": "Flashback",
       "text": "Flashback {7}{B}"
      }

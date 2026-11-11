@@ -56,7 +56,7 @@ and games that don't replay from their seed are fixed now.
 - [x] IR v1: JSON schema, codec, exporter; every face round-trips (70c670b)
 - [x] TS types, defaults and reader in `engine/src/ir` (faff6f4)
 - [x] Bench-deck samples (5c0016d); `IRStore` for serving decks (e7c8c7d)
-- [ ] IR v2, enums as numbers: re-land once rules has switched; verify every face; refresh samples
+- [x] IR v2, enums as numbers: re-land once rules has switched; verify every face; refresh samples (HASH)
 - [x] Exporter writes every file as UTF-8 (it crashes on Windows today) (fe93356)
 - [x] Parser-code fingerprint in `index.json`; `IRStore` treats a stale export as stale (fe93356)
 - [x] Printed card data (name, mana cost, type line, P/T, colours: `CardDef`/`FaceDef`) exported with each card's IR, matching `kernel/card.ts` (ff6dec3)

@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "087f9ad7-e74f-40e2-8102-1ed2925d0418",
  "name": "Rest in Peace",
  "card_hash": "6cd85609896fb80e48094c69429dcc47",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "087f9ad7-e74f-40e2-8102-1ed2925d0418",
   "name": "Rest in Peace",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 1,
        "text": "{1}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "When this enchantment enters, exile all graveyards.\nIf a card or token would be put into a graveyard from anywhere, exile it instead.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 2298,
   "scryfall_uri": "https://scryfall.com/card/big/4/rest-in-peace?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "087f9ad7-e74f-40e2-8102-1ed2925d0418",
    "name": "Rest in Peace",
    "face": 0,
@@ -56,20 +56,20 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.GRAVEYARD"
+          3
          ]
         }
        },
-       "zone": "Zone.EXILE",
+       "zone": 5,
        "text": "exile every graveyard"
       }
      ],
@@ -78,7 +78,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
@@ -90,16 +90,16 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
-       "duration": "Duration.PERMANENT",
+       "kind": 999,
+       "duration": 0,
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.EXILE",
+         "kind": 30,
          "targets": {
           "$": "ObjectFilter",
           "remembered": true

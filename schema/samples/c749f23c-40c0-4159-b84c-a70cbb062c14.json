@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c749f23c-40c0-4159-b84c-a70cbb062c14",
  "name": "Grand Abolisher",
  "card_hash": "bdd8553a9e4dc5e737dba572fa354253",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "c749f23c-40c0-4159-b84c-a70cbb062c14",
   "name": "Grand Abolisher",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Human",
       "Cleric"
@@ -41,18 +41,18 @@
     "oracle_text": "During your turn, your opponents can't cast spells or activate abilities of artifacts, creatures, or enchantments.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 251,
   "scryfall_uri": "https://scryfall.com/card/big/2/grand-abolisher?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c749f23c-40c0-4159-b84c-a70cbb062c14",
    "name": "Grand Abolisher",
    "face": 0,
@@ -62,80 +62,80 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
         "is_ability": false
        },
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.EACH_OPPONENT"
+        "scope": 3
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.CAST_SPELL",
+         "act": 0,
          "subject": {
           "$": "ObjectFilter",
           "zones": {
            "$set": [
-            "Zone.STACK"
+            4
            ]
           },
           "is_ability": false
          },
          "players": {
           "$": "PlayerFilter",
-          "scope": "PlayerScope.EACH_OPPONENT"
+          "scope": 3
          },
          "text": "can't cast_spell"
         },
         {
          "$": "Restriction",
-         "act": "Act.ACTIVATE_ABILITY",
+         "act": 2,
          "subject": {
           "$": "ObjectFilter",
-          "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT"
+          "types_any": 13
          },
          "players": {
           "$": "PlayerFilter",
-          "scope": "PlayerScope.EACH_OPPONENT"
+          "scope": 3
          },
          "text": "can't activate_ability"
         },
         {
          "$": "Restriction",
-         "act": "Act.ACTIVATE_MANA_ABILITY",
+         "act": 3,
          "subject": {
           "$": "ObjectFilter",
-          "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT"
+          "types_any": 13
          },
          "players": {
           "$": "PlayerFilter",
-          "scope": "PlayerScope.EACH_OPPONENT"
+          "scope": 3
          },
          "text": "can't activate_mana_ability"
         },
         {
          "$": "Restriction",
-         "act": "Act.ACTIVATE_LOYALTY_ABILITY",
+         "act": 4,
          "subject": {
           "$": "ObjectFilter",
-          "types_any": "CardType.ARTIFACT|CREATURE|ENCHANTMENT"
+          "types_any": 13
          },
          "players": {
           "$": "PlayerFilter",
-          "scope": "PlayerScope.EACH_OPPONENT"
+          "scope": 3
          },
          "text": "can't activate_loyalty_ability"
         }
@@ -146,7 +146,7 @@
      "text": "During your turn, your opponents can't cast spells or activate abilities of artifacts, creatures, or enchantments.",
      "static_condition": {
       "$": "Condition",
-      "kind": "ConditionKind.IS_YOUR_TURN",
+      "kind": 6,
       "text": "during your turn"
      }
     }

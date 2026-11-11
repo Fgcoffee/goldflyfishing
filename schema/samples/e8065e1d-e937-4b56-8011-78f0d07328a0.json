@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "e8065e1d-e937-4b56-8011-78f0d07328a0",
  "name": "Krenko, Tin Street Kingpin",
  "card_hash": "29040bb3d725c5a67693193584c3f73f",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "e8065e1d-e937-4b56-8011-78f0d07328a0",
   "name": "Krenko, Tin Street Kingpin",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -32,8 +32,8 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "supertypes": "Supertype.LEGENDARY",
-     "types": "CardType.CREATURE",
+     "supertypes": 2,
+     "types": 4,
      "subtypes": [
       "Goblin"
      ]
@@ -41,18 +41,18 @@
     "oracle_text": "Whenever Krenko attacks, put a +1/+1 counter on it, then create a number of 1/1 red Goblin creature tokens equal to Krenko's power.",
     "power": "1",
     "toughness": "2",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 899,
   "scryfall_uri": "https://scryfall.com/card/moc/287/krenko-tin-street-kingpin?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "e8065e1d-e937-4b56-8011-78f0d07328a0",
    "name": "Krenko, Tin Street Kingpin",
    "face": 0,
@@ -62,11 +62,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNPARSED",
+       "kind": 999,
        "text": "Whenever this attacks, put a +1/+1 counter on it, then create a number of 1/1 red Goblin creature tokens equal to its power."
       }
      ],

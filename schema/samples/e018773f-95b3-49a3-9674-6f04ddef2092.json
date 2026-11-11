@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "e018773f-95b3-49a3-9674-6f04ddef2092",
  "name": "Azorius Signet",
  "card_hash": "6e313765f000ac46c9fe9c2ca67c4990",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "e018773f-95b3-49a3-9674-6f04ddef2092",
   "name": "Azorius Signet",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "{1}, {T}: Add {W}{U}.",
     "produced_mana": [
@@ -36,14 +36,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 219,
   "scryfall_uri": "https://scryfall.com/card/tdc/312/azorius-signet?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "e018773f-95b3-49a3-9674-6f04ddef2092",
    "name": "Azorius Signet",
    "face": 0,
@@ -53,11 +53,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -69,7 +69,7 @@
         "{W}",
         "{U}"
        ],
-       "colors": "Color.WHITE|BLUE",
+       "colors": 3,
        "text": "add {W}{U}"
       }
      ],
@@ -79,13 +79,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           }
@@ -94,7 +94,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

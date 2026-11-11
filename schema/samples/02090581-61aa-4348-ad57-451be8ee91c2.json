@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
  "name": "Ponder",
  "card_hash": "948238ce80e94cffaed449b6114b9016",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
   "name": "Ponder",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Look at the top three cards of your library, then put them back in any order. You may shuffle.\nDraw a card.",
-    "colors": "Color.BLUE"
+    "colors": 2
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 145,
   "scryfall_uri": "https://scryfall.com/card/tdc/159/ponder?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
    "name": "Ponder",
    "face": 0,
@@ -50,11 +50,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.LOOK_AT_TOP",
+       "kind": 10001,
        "players": {
         "$": "PlayerFilter"
        },
@@ -66,7 +66,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.PUT_ON_LIBRARY",
+       "kind": 34,
        "targets": {
         "$": "ObjectFilter",
         "remembered": true
@@ -75,14 +75,14 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SHUFFLE",
+         "kind": 24,
          "players": {
           "$": "PlayerFilter"
          },
@@ -96,11 +96,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DRAW",
+       "kind": 20,
        "players": {
         "$": "PlayerFilter"
        },

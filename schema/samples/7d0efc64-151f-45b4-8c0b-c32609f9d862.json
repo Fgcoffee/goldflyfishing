@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
  "name": "Knight of the White Orchid",
  "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
   "name": "Knight of the White Orchid",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,7 +32,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Human",
       "Knight"
@@ -41,21 +41,21 @@
     "oracle_text": "First strike\nWhen this creature enters, if an opponent controls more lands than you, you may search your library for a Plains card, put it onto the battlefield, then shuffle.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.WHITE",
+    "colors": 1,
     "keywords": [
      "First strike"
     ]
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 648,
   "scryfall_uri": "https://scryfall.com/card/moc/193/knight-of-the-white-orchid?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
    "name": "Knight of the White Orchid",
    "face": 0,
@@ -65,24 +65,24 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "text": "First strike",
      "keyword": "First strike"
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
           "subtypes_all": [
@@ -103,7 +103,7 @@
           "$": "Value",
           "constant": 1
          },
-         "zone": "Zone.BATTLEFIELD",
+         "zone": 2,
          "text": "search library"
         }
        ],
@@ -115,7 +115,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.ENTERS_BATTLEFIELD"
+        1
        ]
       },
       "subject": {
@@ -124,25 +124,25 @@
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": "ConditionKind.COMPARE_COUNTS",
+       "kind": 19,
        "filter": {
         "$": "ObjectFilter",
-        "types_all": "CardType.LAND"
+        "types_all": 16
        },
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.OPPONENT"
+        "scope": 1
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": "Comparison.GT",
+        "comparison": 4,
         "value": {
          "$": "Value",
-         "kind": "ValueKind.COUNT",
+         "kind": 2,
          "filter": {
           "$": "ObjectFilter",
-          "types_all": "CardType.LAND",
-          "controller": "ControllerRelation.YOU"
+          "types_all": 16,
+          "controller": 1
          }
         }
        },

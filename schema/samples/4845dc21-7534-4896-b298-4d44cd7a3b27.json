@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
  "name": "Moggcatcher",
  "card_hash": "60cee7a5d1e36bd0381fa3164dbe15c0",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
   "name": "Moggcatcher",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.RED",
+       "kind": 2,
+       "colors": 8,
        "text": "{R}"
       }
      ]
@@ -38,7 +38,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.CREATURE",
+     "types": 4,
      "subtypes": [
       "Human",
       "Mercenary"
@@ -47,18 +47,18 @@
     "oracle_text": "{3}, {T}: Search your library for a Goblin permanent card, put it onto the battlefield, then shuffle.",
     "power": "2",
     "toughness": "2",
-    "colors": "Color.RED"
+    "colors": 8
    }
   ],
   "mana_value": 4,
-  "color_identity": "Color.RED",
+  "color_identity": 8,
   "commander_legal": true,
   "edhrec_rank": 8807,
   "scryfall_uri": "https://scryfall.com/card/nem/96/moggcatcher?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
    "name": "Moggcatcher",
    "face": 0,
@@ -68,14 +68,14 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.SEARCH_LIBRARY",
+       "kind": 23,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ARTIFACT|BATTLE|CREATURE|ENCHANTMENT|LAND|PLANESWALKER",
+        "types_any": 63,
         "subtypes_all": [
          "Goblin"
         ],
@@ -94,7 +94,7 @@
         "$": "Value",
         "constant": 1
        },
-       "zone": "Zone.BATTLEFIELD",
+       "zone": 2,
        "text": "search library"
       }
      ],
@@ -104,13 +104,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 3,
            "text": "{3}"
           }
@@ -119,7 +119,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

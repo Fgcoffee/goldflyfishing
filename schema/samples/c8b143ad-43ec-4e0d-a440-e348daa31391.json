@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
  "name": "Swiftfoot Boots",
  "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
   "name": "Swiftfoot Boots",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT",
+     "types": 1,
      "subtypes": [
       "Equipment"
      ]
@@ -38,14 +38,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 12,
   "scryfall_uri": "https://scryfall.com/card/mbc/77/swiftfoot-boots?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
    "name": "Swiftfoot Boots",
    "face": 0,
@@ -55,11 +55,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.GRANT_ABILITY",
+       "kind": 143,
        "targets": {
         "$": "ObjectFilter",
         "has_attached": {
@@ -67,17 +67,17 @@
          "source_only": true
         }
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "granted_abilities": [
         {
          "$": "Ability",
-         "kind": "AbilityKind.STATIC",
+         "kind": 3,
          "text": "hexproof",
          "keyword": "hexproof"
         },
         {
          "$": "Ability",
-         "kind": "AbilityKind.STATIC",
+         "kind": 3,
          "text": "haste",
          "keyword": "haste"
         }
@@ -89,15 +89,15 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ATTACH",
+       "kind": 75,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
-        "controller": "ControllerRelation.YOU"
+        "types_all": 4,
+        "controller": 1
        },
        "is_targeted": true,
        "text": "attach to target creature you control"
@@ -109,13 +109,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 1,
            "text": "{1}"
           }
@@ -124,7 +124,7 @@
        }
       ]
      },
-     "timing": "Timing.SORCERY",
+     "timing": 0,
      "keyword": "Equip"
     }
    ],

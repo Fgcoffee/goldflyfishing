@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
  "name": "Land Tax",
  "card_hash": "845abdcc4a43ff7eb76fb14401245d13",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
   "name": "Land Tax",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "At the beginning of your upkeep, if an opponent controls more lands than you, you may search your library for up to three basic land cards, reveal them, put them into your hand, then shuffle.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 367,
   "scryfall_uri": "https://scryfall.com/card/soc/153/land-tax?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
    "name": "Land Tax",
    "face": 0,
@@ -50,22 +50,22 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.OPTIONAL",
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.SEARCH_LIBRARY",
+         "kind": 23,
          "targets": {
           "$": "ObjectFilter",
-          "types_all": "CardType.LAND",
-          "supertypes_all": "Supertype.BASIC",
+          "types_all": 16,
+          "supertypes_all": 1,
           "zones": {
            "$set": []
           },
@@ -82,7 +82,7 @@
           "$": "Value",
           "constant": 3
          },
-         "zone": "Zone.HAND",
+         "zone": 1,
          "text": "search library"
         }
        ],
@@ -94,7 +94,7 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.UPKEEP"
+        127
        ]
       },
       "players": {
@@ -102,25 +102,25 @@
       },
       "intervening_if": {
        "$": "Condition",
-       "kind": "ConditionKind.COMPARE_COUNTS",
+       "kind": 19,
        "filter": {
         "$": "ObjectFilter",
-        "types_all": "CardType.LAND"
+        "types_all": 16
        },
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.OPPONENT"
+        "scope": 1
        },
        "constraint": {
         "$": "NumericConstraint",
-        "comparison": "Comparison.GT",
+        "comparison": 4,
         "value": {
          "$": "Value",
-         "kind": "ValueKind.COUNT",
+         "kind": 2,
          "filter": {
           "$": "ObjectFilter",
-          "types_all": "CardType.LAND",
-          "controller": "ControllerRelation.YOU"
+          "types_all": 16,
+          "controller": 1
          }
         }
        },

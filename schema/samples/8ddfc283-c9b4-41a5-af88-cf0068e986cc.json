@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
  "name": "Swan Song",
  "card_hash": "4e9c5f376f41a97907111123c0b6e47e",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
   "name": "Swan Song",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Counter target enchantment, instant, or sorcery spell. Its controller creates a 2/2 blue Bird creature token with flying.",
-    "colors": "Color.BLUE"
+    "colors": 2
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 68,
   "scryfall_uri": "https://scryfall.com/card/eoc/46/swan-song?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
    "name": "Swan Song",
    "face": 0,
@@ -50,17 +50,17 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.COUNTER_SPELL",
+       "kind": 100,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.ENCHANTMENT|INSTANT|SORCERY",
+        "types_any": 200,
         "zones": {
          "$set": [
-          "Zone.STACK"
+          4
          ]
         },
         "is_ability": false
@@ -70,10 +70,10 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.CREATE_TOKEN",
+       "kind": 35,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+        "scope": 13003
        },
        "amount": {
         "$": "Value",
@@ -85,7 +85,7 @@
         "subtypes": [
          "Bird"
         ],
-        "colors": "Color.BLUE",
+        "colors": 2,
         "power": {
          "$": "Value",
          "constant": 2

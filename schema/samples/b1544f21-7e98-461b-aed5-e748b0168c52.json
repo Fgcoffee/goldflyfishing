@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
  "name": "Swords to Plowshares",
  "card_hash": "fcdc4d35288d37ced64ba6f3affe9745",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
   "name": "Swords to Plowshares",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,8 +17,8 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -26,21 +26,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Exile target creature. Its controller gains life equal to its power.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 1,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 11,
   "scryfall_uri": "https://scryfall.com/card/msc/143/swords-to-plowshares?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
    "name": "Swords to Plowshares",
    "face": 0,
@@ -50,28 +50,28 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.EXILE",
+       "kind": 30,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "is_targeted": true,
        "text": "exile"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.GAIN_LIFE",
+       "kind": 51,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+        "scope": 13003
        },
        "amount": {
         "$": "Value",
-        "kind": "ValueKind.POWER",
+        "kind": 3,
         "filter": {
          "$": "ObjectFilter",
          "remembered": true

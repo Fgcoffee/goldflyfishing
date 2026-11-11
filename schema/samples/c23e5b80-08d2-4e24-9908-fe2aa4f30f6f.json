@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "c23e5b80-08d2-4e24-9908-fe2aa4f30f6f",
  "name": "Reliquary Tower",
  "card_hash": "d3818c5535589932f743d8ab3f44b066",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "c23e5b80-08d2-4e24-9908-fe2aa4f30f6f",
   "name": "Reliquary Tower",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "You have no maximum hand size.\n{T}: Add {C}.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 10,
   "scryfall_uri": "https://scryfall.com/card/soc/398/reliquary-tower?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "c23e5b80-08d2-4e24-9908-fe2aa4f30f6f",
    "name": "Reliquary Tower",
    "face": 0,
@@ -44,18 +44,18 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.STATIC",
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.PERMISSION",
+       "kind": 151,
        "players": {
         "$": "PlayerFilter"
        },
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.DISCARD_TO_HAND_SIZE",
+         "act": 100,
          "players": {
           "$": "PlayerFilter"
          },
@@ -69,11 +69,11 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -93,7 +93,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

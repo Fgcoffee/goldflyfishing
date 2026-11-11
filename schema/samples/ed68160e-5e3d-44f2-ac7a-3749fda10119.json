@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
  "name": "Catastrophe",
  "card_hash": "6f066def213dc1aa14075b71657865da",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
   "name": "Catastrophe",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,20 +17,20 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 4,
        "text": "{4}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -38,21 +38,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.SORCERY"
+     "types": 128
     },
     "oracle_text": "Destroy all lands or all creatures. Creatures destroyed this way can't be regenerated.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 6,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 12458,
   "scryfall_uri": "https://scryfall.com/card/usg/6/catastrophe?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
    "name": "Catastrophe",
    "face": 0,
@@ -62,33 +62,33 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": "CardType.CREATURE|LAND"
+        "types_any": 20
        },
        "text": "destroy"
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE",
+        "types_all": 4,
         "remembered": true
        },
-       "duration": "Duration.PERMANENT",
+       "duration": 0,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_REGENERATED",
+         "act": 64,
          "subject": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE",
+          "types_all": 4,
           "remembered": true
          },
          "text": "can't be_regenerated"

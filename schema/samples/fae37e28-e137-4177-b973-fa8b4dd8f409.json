@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
  "name": "Generous Gift",
  "card_hash": "2db8974625b5c6854965d46393f182b7",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
   "name": "Generous Gift",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.WHITE",
+       "kind": 2,
+       "colors": 1,
        "text": "{W}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.INSTANT"
+     "types": 64
     },
     "oracle_text": "Destroy target permanent. Its controller creates a 3/3 green Elephant creature token.",
-    "colors": "Color.WHITE"
+    "colors": 1
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.WHITE",
+  "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 61,
   "scryfall_uri": "https://scryfall.com/card/msc/133/generous-gift?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
    "name": "Generous Gift",
    "face": 0,
@@ -56,11 +56,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.SPELL",
+     "kind": 0,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.DESTROY",
+       "kind": 29,
        "targets": {
         "$": "ObjectFilter"
        },
@@ -69,10 +69,10 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.CREATE_TOKEN",
+       "kind": 35,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.REMEMBERED_CONTROLLER"
+        "scope": 13003
        },
        "amount": {
         "$": "Value",
@@ -84,7 +84,7 @@
         "subtypes": [
          "Elephant"
         ],
-        "colors": "Color.GREEN",
+        "colors": 16,
         "power": {
          "$": "Value",
          "constant": 3

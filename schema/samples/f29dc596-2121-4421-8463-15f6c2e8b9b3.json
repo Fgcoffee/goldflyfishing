@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
  "name": "Rogue's Passage",
  "card_hash": "02cba0866749f0261d0fbf23e55b8b22",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
   "name": "Rogue's Passage",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -18,7 +18,7 @@
     "has_mana_cost": false,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.LAND"
+     "types": 16
     },
     "oracle_text": "{T}: Add {C}.\n{4}, {T}: Target creature can't be blocked this turn.",
     "produced_mana": [
@@ -27,14 +27,14 @@
    }
   ],
   "mana_value": 0,
-  "color_identity": "Color.NONE",
+  "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 18,
   "scryfall_uri": "https://scryfall.com/card/hoc/212/rogues-passage?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
    "name": "Rogue's Passage",
    "face": 0,
@@ -44,11 +44,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -68,7 +68,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -77,24 +77,24 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.RESTRICTION",
+       "kind": 150,
        "targets": {
         "$": "ObjectFilter",
-        "types_all": "CardType.CREATURE"
+        "types_all": 4
        },
        "is_targeted": true,
-       "duration": "Duration.END_OF_TURN",
+       "duration": 1,
        "restrictions": [
         {
          "$": "Restriction",
-         "act": "Act.BE_BLOCKED",
+         "act": 24,
          "subject": {
           "$": "ObjectFilter",
-          "types_all": "CardType.CREATURE"
+          "types_all": 4
          },
          "text": "can't be_blocked"
         }
@@ -108,13 +108,13 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.MANA",
+        "kind": 0,
         "mana": {
          "$": "ManaCost",
          "symbols": [
           {
            "$": "ManaSymbol",
-           "kind": "ManaSymbolKind.GENERIC",
+           "kind": 0,
            "generic": 4,
            "text": "{4}"
           }
@@ -123,7 +123,7 @@
        },
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]

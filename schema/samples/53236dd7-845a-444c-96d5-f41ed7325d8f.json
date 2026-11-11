@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
  "name": "Rhystic Study",
  "card_hash": "2fc0894c429802838638bca715f0394b",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
   "name": "Rhystic Study",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,14 +17,14 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       },
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.COLORED",
-       "colors": "Color.BLUE",
+       "kind": 2,
+       "colors": 2,
        "text": "{U}"
       }
      ]
@@ -32,21 +32,21 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ENCHANTMENT"
+     "types": 8
     },
     "oracle_text": "Whenever an opponent casts a spell, you may draw a card unless that player pays {1}.",
-    "colors": "Color.BLUE"
+    "colors": 2
    }
   ],
   "mana_value": 3,
-  "color_identity": "Color.BLUE",
+  "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 44,
   "scryfall_uri": "https://scryfall.com/card/j22/114/rhystic-study?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
    "name": "Rhystic Study",
    "face": 0,
@@ -56,27 +56,27 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.TRIGGERED",
+     "kind": 2,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.UNLESS_PAYS",
+       "kind": 6,
        "players": {
         "$": "PlayerFilter",
-        "scope": "PlayerScope.TRIGGER_PLAYER"
+        "scope": 13002
        },
        "pay_cost": {
         "$": "Cost",
         "components": [
          {
           "$": "CostComponent",
-          "kind": "CostKind.MANA",
+          "kind": 0,
           "mana": {
            "$": "ManaCost",
            "symbols": [
             {
              "$": "ManaSymbol",
-             "kind": "ManaSymbolKind.GENERIC",
+             "kind": 0,
              "generic": 1,
              "text": "{1}"
             }
@@ -88,14 +88,14 @@
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.OPTIONAL",
+         "kind": 4,
          "players": {
           "$": "PlayerFilter"
          },
          "children": [
           {
            "$": "Effect",
-           "kind": "EffectKind.DRAW",
+           "kind": 20,
            "players": {
             "$": "PlayerFilter"
            },
@@ -117,14 +117,14 @@
       "$": "TriggerCondition",
       "event_kinds": {
        "$set": [
-        "EventKind.CAST_SPELL"
+        20
        ]
       },
       "subject": {
        "$": "ObjectFilter",
        "zones": {
         "$set": [
-         "Zone.STACK"
+         4
         ]
        },
        "is_ability": false,
@@ -135,7 +135,7 @@
       },
       "players": {
        "$": "PlayerFilter",
-       "scope": "PlayerScope.OPPONENT"
+       "scope": 1
       },
       "text": "whenever a player casts a spell"
      }

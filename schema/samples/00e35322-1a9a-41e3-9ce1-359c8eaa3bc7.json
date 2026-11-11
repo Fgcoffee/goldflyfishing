@@ -1,5 +1,5 @@
 {
- "ir_version": 1,
+ "ir_version": 2,
  "oracle_id": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
  "name": "Talisman of Progress",
  "card_hash": "86a112fd437d6454294ddb81e886ff4c",
@@ -7,7 +7,7 @@
   "$": "CardDef",
   "oracle_id": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
   "name": "Talisman of Progress",
-  "layout": "Layout.NORMAL",
+  "layout": 0,
   "faces": [
    {
     "$": "FaceDef",
@@ -17,7 +17,7 @@
      "symbols": [
       {
        "$": "ManaSymbol",
-       "kind": "ManaSymbolKind.GENERIC",
+       "kind": 0,
        "generic": 2,
        "text": "{2}"
       }
@@ -26,7 +26,7 @@
     "has_mana_cost": true,
     "type_line": {
      "$": "TypeLine",
-     "types": "CardType.ARTIFACT"
+     "types": 1
     },
     "oracle_text": "{T}: Add {C}.\n{T}: Add {W} or {U}. This artifact deals 1 damage to you.",
     "produced_mana": [
@@ -37,14 +37,14 @@
    }
   ],
   "mana_value": 2,
-  "color_identity": "Color.WHITE|BLUE",
+  "color_identity": 3,
   "commander_legal": true,
   "edhrec_rank": 139,
   "scryfall_uri": "https://scryfall.com/card/msc/221/talisman-of-progress?utm_source=api"
  },
  "faces": [
   {
-   "ir_version": 1,
+   "ir_version": 2,
    "oracle_id": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
    "name": "Talisman of Progress",
    "face": 0,
@@ -54,11 +54,11 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.ADD_MANA",
+       "kind": 120,
        "players": {
         "$": "PlayerFilter"
        },
@@ -78,7 +78,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
@@ -87,18 +87,18 @@
     },
     {
      "$": "Ability",
-     "kind": "AbilityKind.ACTIVATED",
+     "kind": 1,
      "effects": [
       {
        "$": "Effect",
-       "kind": "EffectKind.CHOOSE_MODE",
+       "kind": 3,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -109,12 +109,12 @@
          "mana_produced": [
           "{W}"
          ],
-         "colors": "Color.WHITE",
+         "colors": 1,
          "text": "add {W}"
         },
         {
          "$": "Effect",
-         "kind": "EffectKind.ADD_MANA",
+         "kind": 120,
          "players": {
           "$": "PlayerFilter"
          },
@@ -125,7 +125,7 @@
          "mana_produced": [
           "{U}"
          ],
-         "colors": "Color.BLUE",
+         "colors": 2,
          "text": "add {U}"
         }
        ],
@@ -133,7 +133,7 @@
       },
       {
        "$": "Effect",
-       "kind": "EffectKind.DAMAGE",
+       "kind": 50,
        "players": {
         "$": "PlayerFilter"
        },
@@ -150,7 +150,7 @@
       "components": [
        {
         "$": "CostComponent",
-        "kind": "CostKind.TAP_SELF",
+        "kind": 1,
         "text": "{T}"
        }
       ]
