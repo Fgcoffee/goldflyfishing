@@ -3,6 +3,57 @@
  "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
  "name": "Aven Mindcensor",
  "card_hash": "8093f2feb3936673a73788749583d1c0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
+  "name": "Aven Mindcensor",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Aven Mindcensor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Bird",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Flash\nFlying\nIf an opponent would search a library, that player searches the top four cards of that library instead.",
+    "power": "2",
+    "toughness": "1",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Flying",
+     "Flash"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 1235,
+  "scryfall_uri": "https://scryfall.com/card/clb/688/aven-mindcensor?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

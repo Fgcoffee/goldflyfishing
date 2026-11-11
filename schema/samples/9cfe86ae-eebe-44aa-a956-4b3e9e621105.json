@@ -3,6 +3,47 @@
  "oracle_id": "9cfe86ae-eebe-44aa-a956-4b3e9e621105",
  "name": "Krenko's Command",
  "card_hash": "55e76d2f19612a166c67ab79dfb11dfb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9cfe86ae-eebe-44aa-a956-4b3e9e621105",
+  "name": "Krenko's Command",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Krenko's Command",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Create two 1/1 red Goblin creature tokens.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 2035,
+  "scryfall_uri": "https://scryfall.com/card/clu/139/krenkos-command?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

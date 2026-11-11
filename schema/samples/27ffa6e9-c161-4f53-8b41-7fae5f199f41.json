@@ -3,6 +3,53 @@
  "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
  "name": "Kataki, War's Wage",
  "card_hash": "be42d7e50d2eddaa54e37a5730c15917",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
+  "name": "Kataki, War's Wage",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Kataki, War's Wage",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Spirit"
+     ]
+    },
+    "oracle_text": "All artifacts have \"At the beginning of your upkeep, sacrifice this artifact unless you pay {1}.\"",
+    "power": "2",
+    "toughness": "1",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 9663,
+  "scryfall_uri": "https://scryfall.com/card/mma/20/kataki-wars-wage?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,35 @@
  "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
  "name": "Strip Mine",
  "card_hash": "9a07828161280ff79bb09c17c2876bc3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
+  "name": "Strip Mine",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Strip Mine",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}, Sacrifice this land: Destroy target land.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 526,
+  "scryfall_uri": "https://scryfall.com/card/vma/316/strip-mine?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

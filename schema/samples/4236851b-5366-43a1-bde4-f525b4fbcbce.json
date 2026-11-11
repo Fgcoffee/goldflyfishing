@@ -3,6 +3,44 @@
  "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
  "name": "Bloodchief's Thirst",
  "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
+  "name": "Bloodchief's Thirst",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Bloodchief's Thirst",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Kicker {2}{B} (You may pay an additional {2}{B} as you cast this spell.)\nDestroy target creature or planeswalker with mana value 2 or less. If this spell was kicked, instead destroy target creature or planeswalker.",
+    "colors": "Color.BLACK",
+    "keywords": [
+     "Kicker"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 14302,
+  "scryfall_uri": "https://scryfall.com/card/znr/94/bloodchiefs-thirst?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

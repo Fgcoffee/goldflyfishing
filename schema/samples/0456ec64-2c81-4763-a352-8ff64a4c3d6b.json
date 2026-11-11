@@ -3,6 +3,47 @@
  "oracle_id": "0456ec64-2c81-4763-a352-8ff64a4c3d6b",
  "name": "Deadly Rollick",
  "card_hash": "6a48d5bdf6858937b68b58ec48c88360",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0456ec64-2c81-4763-a352-8ff64a4c3d6b",
+  "name": "Deadly Rollick",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Deadly Rollick",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "If you control a commander, you may cast this spell without paying its mana cost.\nExile target creature.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 107,
+  "scryfall_uri": "https://scryfall.com/card/cmm/147/deadly-rollick?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

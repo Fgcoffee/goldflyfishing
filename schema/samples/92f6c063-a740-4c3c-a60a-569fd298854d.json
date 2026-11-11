@@ -3,6 +3,47 @@
  "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
  "name": "Sphere of Safety",
  "card_hash": "63fc4ddec8cc072080c86f26d9ef5a76",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
+  "name": "Sphere of Safety",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sphere of Safety",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Creatures can't attack you or planeswalkers you control unless their controller pays {X} for each of those creatures, where X is the number of enchantments you control.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 671,
+  "scryfall_uri": "https://scryfall.com/card/dsc/104/sphere-of-safety?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

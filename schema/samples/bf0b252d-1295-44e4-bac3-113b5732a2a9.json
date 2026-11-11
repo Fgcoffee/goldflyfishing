@@ -3,6 +3,53 @@
  "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
  "name": "Opposition",
  "card_hash": "4f605c4a49a26a01e992e6532858c6b4",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
+  "name": "Opposition",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Opposition",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Tap an untapped creature you control: Tap target artifact, creature, or land.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 6178,
+  "scryfall_uri": "https://scryfall.com/card/dmr/62/opposition?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

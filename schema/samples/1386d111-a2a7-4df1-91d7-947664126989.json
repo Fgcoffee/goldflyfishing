@@ -3,6 +3,43 @@
  "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
  "name": "Charcoal Diamond",
  "card_hash": "d7a5433259d12b9758443f4b8bfdff26",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
+  "name": "Charcoal Diamond",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Charcoal Diamond",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "This artifact enters tapped.\n{T}: Add {B}.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 696,
+  "scryfall_uri": "https://scryfall.com/card/clb/305/charcoal-diamond?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

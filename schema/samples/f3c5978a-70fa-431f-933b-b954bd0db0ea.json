@@ -3,6 +3,46 @@
  "oracle_id": "f3c5978a-70fa-431f-933b-b954bd0db0ea",
  "name": "Mox Diamond",
  "card_hash": "68a855a3fdc689dd3841b893581edcaf",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f3c5978a-70fa-431f-933b-b954bd0db0ea",
+  "name": "Mox Diamond",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mox Diamond",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "If this artifact would enter, you may discard a land card instead. If you do, put this artifact onto the battlefield. If you don't, put it into its owner's graveyard.\n{T}: Add one mana of any color.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 246,
+  "scryfall_uri": "https://scryfall.com/card/tpr/228/mox-diamond?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

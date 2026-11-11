@@ -3,6 +3,61 @@
  "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
  "name": "Hellrider",
  "card_hash": "0c8c68cebd8540ca2db9878b84bd753d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
+  "name": "Hellrider",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hellrider",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Devil"
+     ]
+    },
+    "oracle_text": "Haste\nWhenever a creature you control attacks, this creature deals 1 damage to the player or planeswalker it's attacking.",
+    "power": "3",
+    "toughness": "3",
+    "colors": "Color.RED",
+    "keywords": [
+     "Haste"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 5842,
+  "scryfall_uri": "https://scryfall.com/card/jmp/334/hellrider?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

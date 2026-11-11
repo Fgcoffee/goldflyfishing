@@ -3,6 +3,47 @@
  "oracle_id": "c9ed8b01-959a-47d6-891e-0abbdccf6e4f",
  "name": "Armageddon",
  "card_hash": "7abcb37643d0dffa76f50924069ff9ac",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c9ed8b01-959a-47d6-891e-0abbdccf6e4f",
+  "name": "Armageddon",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Armageddon",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Destroy all lands.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 4050,
+  "scryfall_uri": "https://scryfall.com/card/a25/5/armageddon?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

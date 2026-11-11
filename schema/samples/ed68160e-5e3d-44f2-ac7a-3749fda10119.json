@@ -3,6 +3,53 @@
  "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
  "name": "Catastrophe",
  "card_hash": "6f066def213dc1aa14075b71657865da",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
+  "name": "Catastrophe",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Catastrophe",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Destroy all lands or all creatures. Creatures destroyed this way can't be regenerated.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 12458,
+  "scryfall_uri": "https://scryfall.com/card/usg/6/catastrophe?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

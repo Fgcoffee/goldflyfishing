@@ -3,6 +3,47 @@
  "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
  "name": "Rhystic Study",
  "card_hash": "2fc0894c429802838638bca715f0394b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
+  "name": "Rhystic Study",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rhystic Study",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Whenever an opponent casts a spell, you may draw a card unless that player pays {1}.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 44,
+  "scryfall_uri": "https://scryfall.com/card/j22/114/rhystic-study?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

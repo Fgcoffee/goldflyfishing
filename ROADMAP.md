@@ -57,9 +57,9 @@ and games that don't replay from their seed are fixed now.
 - [x] TS types, defaults and reader in `engine/src/ir` (faff6f4)
 - [x] Bench-deck samples (5c0016d); `IRStore` for serving decks (e7c8c7d)
 - [ ] IR v2, enums as numbers: re-land once rules has switched; verify every face; refresh samples
-- [x] Exporter writes every file as UTF-8 (it crashes on Windows today) (6444073)
-- [x] Parser-code fingerprint in `index.json`; `IRStore` treats a stale export as stale (6444073)
-- [ ] Printed card data (name, mana cost, type line, P/T, colours: `CardDef`/`FaceDef`) exported with each card's IR, matching `kernel/card.ts`
+- [x] Exporter writes every file as UTF-8 (it crashes on Windows today) (fe93356)
+- [x] Parser-code fingerprint in `index.json`; `IRStore` treats a stale export as stale (fe93356)
+- [x] Printed card data (name, mana cost, type line, P/T, colours: `CardDef`/`FaceDef`) exported with each card's IR, matching `kernel/card.ts` (HASH)
 - [x] Mana core: port `cr106_mana.py` to `engine/src/rules/mana/`, with its tests (0719d8e)
 - [ ] Mana planning: port `mana_plan.py`, keeping the F61 guard
 - [ ] Matching, values and conditions: port `matching.py`, `values.py` and `conditions.py` to `engine/src/rules/match/`

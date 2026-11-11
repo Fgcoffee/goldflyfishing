@@ -3,6 +3,41 @@
  "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
  "name": "Lightning Bolt",
  "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
+  "name": "Lightning Bolt",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lightning Bolt",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Lightning Bolt deals 3 damage to any target.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 158,
+  "scryfall_uri": "https://scryfall.com/card/msc/806/lightning-bolt?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

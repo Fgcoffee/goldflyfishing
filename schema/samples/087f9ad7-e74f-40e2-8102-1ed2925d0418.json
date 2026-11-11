@@ -3,6 +3,47 @@
  "oracle_id": "087f9ad7-e74f-40e2-8102-1ed2925d0418",
  "name": "Rest in Peace",
  "card_hash": "6cd85609896fb80e48094c69429dcc47",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "087f9ad7-e74f-40e2-8102-1ed2925d0418",
+  "name": "Rest in Peace",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rest in Peace",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "When this enchantment enters, exile all graveyards.\nIf a card or token would be put into a graveyard from anywhere, exile it instead.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 2298,
+  "scryfall_uri": "https://scryfall.com/card/big/4/rest-in-peace?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

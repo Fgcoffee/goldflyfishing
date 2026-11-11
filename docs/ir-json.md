@@ -26,6 +26,21 @@ fields, defaults included, and `enumValue("CardType.ARTIFACT|CREATURE")`
 gives the number the Python engine uses (bit and member values are exported
 as `CardTypeBits`, `ZoneValues`, and so on).
 
+## What a card file holds
+
+One file per card, `<oracle_id>.json`: a **card document**,
+`{ir_version, oracle_id, name, card_hash, card, faces}`.
+
+* **card**: the printed card, Python's `CardDef` with its `FaceDef`s and
+  their `TypeLine`. That's the name, layout, mana value, color identity and
+  Commander legality, and for each face its mana cost (and whether it has
+  one at all, CR 202.1b), type line, oracle text, power, toughness, loyalty
+  and defense as printed (`"*"` and `"1+*"` stay strings), colors, color
+  indicator, keywords and produced mana. The engine builds characteristics
+  from it. The shape matches `engine/src/kernel/card.ts`, which also adds
+  `edhrec_rank`, `scryfall_uri` and `attraction_lights` (CR 717.1).
+* **faces**: one face document per face, below.
+
 ## What a face holds
 
 Everything the engine receives today, as it receives it:

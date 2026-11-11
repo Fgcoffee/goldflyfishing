@@ -3,6 +3,33 @@
  "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
  "name": "The Tabernacle at Pendrell Vale",
  "card_hash": "7d5992070cd7b0318400c164d758cca5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
+  "name": "The Tabernacle at Pendrell Vale",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "The Tabernacle at Pendrell Vale",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "All creatures have \"At the beginning of your upkeep, destroy this creature unless you pay {1}.\""
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 8877,
+  "scryfall_uri": "https://scryfall.com/card/me3/212/the-tabernacle-at-pendrell-vale?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,41 @@
  "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
  "name": "Authority of the Consuls",
  "card_hash": "40ca2eefaeb49aaf8c3810bc1da18f14",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
+  "name": "Authority of the Consuls",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Authority of the Consuls",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Creatures your opponents control enter tapped.\nWhenever a creature an opponent controls enters, you gain 1 life.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 334,
+  "scryfall_uri": "https://scryfall.com/card/fdn/137/authority-of-the-consuls?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

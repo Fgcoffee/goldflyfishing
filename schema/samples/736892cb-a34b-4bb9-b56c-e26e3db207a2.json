@@ -3,6 +3,43 @@
  "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
  "name": "Mana Vault",
  "card_hash": "65a8a518acc87465a6dce684bc6b446e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
+  "name": "Mana Vault",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mana Vault",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "This artifact doesn't untap during your untap step.\nAt the beginning of your upkeep, you may pay {4}. If you do, untap this artifact.\nAt the beginning of your draw step, if this artifact is tapped, it deals 1 damage to you.\n{T}: Add {C}{C}{C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 148,
+  "scryfall_uri": "https://scryfall.com/card/2x2/308/mana-vault?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -107,20 +107,31 @@ def test_committed_schema_files_are_current():
     assert (ENGINE_IR_DIR / "defaults.ts").read_text(encoding="utf-8") == typescript_defaults()
 
 
-def test_faces_validate_against_the_schema(card_db):
+def test_card_documents_validate_against_the_schema(card_db):
     jsonschema = pytest.importorskip("jsonschema")
     from mtgfish.ir.schema import json_schema
+    from mtgfish.tools.ir_export import _card_document
 
     validator = jsonschema.Draft202012Validator(json_schema())
     for name in CARDS:
+        document = json.loads(json.dumps(_card_document(card_db.lookup(name))))
+        errors = list(validator.iter_errors(document))
+        assert not errors, (name, errors[0].message[:300])
+
+
+def test_printed_card_round_trips(card_db):
+    """The printed card - layout, faces with mana cost, type line, P/T,
+    loyalty, defense, colors; mana value, color identity - comes back equal."""
+    from mtgfish.ir import decode_card, encode_card
+
+    for name in (*CARDS, "Fire // Ice", "Jace, Vryn's Prodigy", "Invasion of Ikoria", "Tarmogoyf"):
         card = card_db.lookup(name)
-        for index in range(max(1, len(card.faces))):
-            parsed = parse_face(card, index)
-            document = json.loads(json.dumps(
-                encode_face(card, index, parsed.abilities, parsed.failures, card_hash(card))
-            ))
-            errors = list(validator.iter_errors(document))
-            assert not errors, (name, errors[0].message[:300])
+        assert card is not None, name
+        back = decode_card(json.loads(json.dumps(encode_card(card))))
+        assert exact(back, card), name
+    goyf = json.loads(json.dumps(encode_card(card_db.lookup("Tarmogoyf"))))
+    face = goyf["faces"][0]
+    assert face["power"] == "*" and face["toughness"] == "1+*"
 
 
 def test_usage_counts_each_kind_once_per_face():

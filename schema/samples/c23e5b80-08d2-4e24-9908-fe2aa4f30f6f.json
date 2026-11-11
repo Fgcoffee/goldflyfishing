@@ -3,6 +3,35 @@
  "oracle_id": "c23e5b80-08d2-4e24-9908-fe2aa4f30f6f",
  "name": "Reliquary Tower",
  "card_hash": "d3818c5535589932f743d8ab3f44b066",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c23e5b80-08d2-4e24-9908-fe2aa4f30f6f",
+  "name": "Reliquary Tower",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Reliquary Tower",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "You have no maximum hand size.\n{T}: Add {C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 10,
+  "scryfall_uri": "https://scryfall.com/card/soc/398/reliquary-tower?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

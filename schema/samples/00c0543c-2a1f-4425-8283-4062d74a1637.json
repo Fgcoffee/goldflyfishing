@@ -3,6 +3,45 @@
  "oracle_id": "00c0543c-2a1f-4425-8283-4062d74a1637",
  "name": "Solemn Simulacrum",
  "card_hash": "f8e42681b01756e481bfd61f8e1c1a6e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "00c0543c-2a1f-4425-8283-4062d74a1637",
+  "name": "Solemn Simulacrum",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Solemn Simulacrum",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT|CREATURE",
+     "subtypes": [
+      "Golem"
+     ]
+    },
+    "oracle_text": "When this creature enters, you may search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.\nWhen this creature dies, you may draw a card.",
+    "power": "2",
+    "toughness": "2"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 38,
+  "scryfall_uri": "https://scryfall.com/card/msc/215/solemn-simulacrum?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

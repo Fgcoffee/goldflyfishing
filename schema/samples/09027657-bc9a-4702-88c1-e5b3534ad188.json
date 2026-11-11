@@ -3,6 +3,50 @@
  "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
  "name": "Increasing Ambition",
  "card_hash": "f4e654c1551c51797a2c078d9337fb17",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
+  "name": "Increasing Ambition",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Increasing Ambition",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Search your library for a card and put that card into your hand. If this spell was cast from a graveyard, instead search your library for two cards and put those cards into your hand. Then shuffle.\nFlashback {7}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "colors": "Color.BLACK",
+    "keywords": [
+     "Flashback"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 9453,
+  "scryfall_uri": "https://scryfall.com/card/dka/69/increasing-ambition?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

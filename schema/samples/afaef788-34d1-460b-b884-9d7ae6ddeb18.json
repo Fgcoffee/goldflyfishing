@@ -3,6 +3,47 @@
  "oracle_id": "afaef788-34d1-460b-b884-9d7ae6ddeb18",
  "name": "Toxic Deluge",
  "card_hash": "916fc6605b7f0f12f20b23144879c31d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "afaef788-34d1-460b-b884-9d7ae6ddeb18",
+  "name": "Toxic Deluge",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Toxic Deluge",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "As an additional cost to cast this spell, pay X life.\nAll creatures get -X/-X until end of turn.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 66,
+  "scryfall_uri": "https://scryfall.com/card/msc/161/toxic-deluge?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

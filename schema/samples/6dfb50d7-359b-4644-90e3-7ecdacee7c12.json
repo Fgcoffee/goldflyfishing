@@ -3,6 +3,41 @@
  "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
  "name": "Scheming Symmetry",
  "card_hash": "6396b6247998170e0569076fb38f3c36",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
+  "name": "Scheming Symmetry",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Scheming Symmetry",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Choose two target players. Each of them searches their library for a card, then shuffles and puts that card on top.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 1838,
+  "scryfall_uri": "https://scryfall.com/card/m20/113/scheming-symmetry?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

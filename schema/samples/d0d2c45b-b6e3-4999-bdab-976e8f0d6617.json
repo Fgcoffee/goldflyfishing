@@ -3,6 +3,47 @@
  "oracle_id": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
  "name": "Dragon Fodder",
  "card_hash": "18de91607642ec32ce26b2d60ed76336",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
+  "name": "Dragon Fodder",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dragon Fodder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Create two 1/1 red Goblin creature tokens.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 1944,
+  "scryfall_uri": "https://scryfall.com/card/fdn/535/dragon-fodder?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

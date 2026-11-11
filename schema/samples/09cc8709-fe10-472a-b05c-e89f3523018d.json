@@ -3,6 +3,53 @@
  "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
  "name": "Austere Command",
  "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
+  "name": "Austere Command",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Austere Command",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Choose two —\n• Destroy all artifacts.\n• Destroy all enchantments.\n• Destroy all creatures with mana value 3 or less.\n• Destroy all creatures with mana value 4 or greater.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 169,
+  "scryfall_uri": "https://scryfall.com/card/msc/121/austere-command?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

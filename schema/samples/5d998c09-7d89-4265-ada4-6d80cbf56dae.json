@@ -3,6 +3,50 @@
  "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
  "name": "Blind Obedience",
  "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
+  "name": "Blind Obedience",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Blind Obedience",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Extort (Whenever you cast a spell, you may pay {W/B}. If you do, each opponent loses 1 life and you gain that much life.)\nArtifacts and creatures your opponents control enter tapped.",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Extort"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 503,
+  "scryfall_uri": "https://scryfall.com/card/rvr/9/blind-obedience?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

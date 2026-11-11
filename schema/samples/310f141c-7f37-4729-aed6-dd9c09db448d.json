@@ -3,6 +3,52 @@
  "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
  "name": "Blood Artist",
  "card_hash": "f7ff84c803c9a18b6c97279b3cfcba2f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
+  "name": "Blood Artist",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Blood Artist",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Vampire"
+     ]
+    },
+    "oracle_text": "Whenever this creature or another creature dies, target player loses 1 life and you gain 1 life.",
+    "power": "0",
+    "toughness": "1",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 140,
+  "scryfall_uri": "https://scryfall.com/card/soc/209/blood-artist?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

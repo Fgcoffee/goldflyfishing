@@ -3,6 +3,53 @@
  "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
  "name": "Reassembling Skeleton",
  "card_hash": "1e372052ebc7806ce1845c6b1bef6f33",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
+  "name": "Reassembling Skeleton",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Reassembling Skeleton",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Skeleton",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "{1}{B}: Return this card from your graveyard to the battlefield tapped.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 773,
+  "scryfall_uri": "https://scryfall.com/card/tdc/195/reassembling-skeleton?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

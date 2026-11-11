@@ -3,6 +3,53 @@
  "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
  "name": "Norn's Annex",
  "card_hash": "a82d921c7ad91ed234e20d791cfab199",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
+  "name": "Norn's Annex",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Norn's Annex",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.PHYREXIAN",
+       "colors": "Color.WHITE",
+       "text": "{W/P}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.PHYREXIAN",
+       "colors": "Color.WHITE",
+       "text": "{W/P}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "({W/P} can be paid with either {W} or 2 life.)\nCreatures can't attack you or planeswalkers you control unless their controller pays {W/P} for each of those creatures.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 1957,
+  "scryfall_uri": "https://scryfall.com/card/cmm/829/norns-annex?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,35 @@
  "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
  "name": "Tectonic Edge",
  "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
+  "name": "Tectonic Edge",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tectonic Edge",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{1}, {T}, Sacrifice this land: Destroy target nonbasic land. Activate only if an opponent controls four or more lands.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 4105,
+  "scryfall_uri": "https://scryfall.com/card/c14/313/tectonic-edge?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

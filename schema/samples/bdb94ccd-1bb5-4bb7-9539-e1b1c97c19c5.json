@@ -3,6 +3,54 @@
  "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
  "name": "Pashalik Mons",
  "card_hash": "e9f985d0503c61b0334818ece104a9cb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
+  "name": "Pashalik Mons",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Pashalik Mons",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Whenever Pashalik Mons or another Goblin you control dies, Pashalik Mons deals 1 damage to any target.\n{3}{R}, Sacrifice a Goblin: Create two 1/1 red Goblin creature tokens.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 2683,
+  "scryfall_uri": "https://scryfall.com/card/dmr/133/pashalik-mons?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

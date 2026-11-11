@@ -3,6 +3,47 @@
  "oracle_id": "8d02b297-97c4-4379-9862-0a462400f66f",
  "name": "Phyrexian Altar",
  "card_hash": "f2fd85e23bcaaeeaf8a071aea8ca1623",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8d02b297-97c4-4379-9862-0a462400f66f",
+  "name": "Phyrexian Altar",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Phyrexian Altar",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "Sacrifice a creature: Add one mana of any color.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 310,
+  "scryfall_uri": "https://scryfall.com/card/2x2/311/phyrexian-altar?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,47 @@
  "oracle_id": "437b2dab-15e0-4b9a-a204-58622d37a3b3",
  "name": "Fact or Fiction",
  "card_hash": "73b661a28e1a75c319fe7f1723593fce",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "437b2dab-15e0-4b9a-a204-58622d37a3b3",
+  "name": "Fact or Fiction",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Fact or Fiction",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Reveal the top five cards of your library. An opponent separates those cards into two piles. Put one pile into your hand and the other into your graveyard.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 709,
+  "scryfall_uri": "https://scryfall.com/card/cmm/91/fact-or-fiction?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

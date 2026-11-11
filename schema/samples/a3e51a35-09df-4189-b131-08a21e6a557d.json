@@ -3,6 +3,59 @@
  "oracle_id": "a3e51a35-09df-4189-b131-08a21e6a557d",
  "name": "Cryptic Command",
  "card_hash": "18142e38c715ef158b01cbfca5f56d33",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a3e51a35-09df-4189-b131-08a21e6a557d",
+  "name": "Cryptic Command",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cryptic Command",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Choose two —\n• Counter target spell.\n• Return target permanent to its owner's hand.\n• Tap all creatures your opponents control.\n• Draw a card.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 1614,
+  "scryfall_uri": "https://scryfall.com/card/ima/48/cryptic-command?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

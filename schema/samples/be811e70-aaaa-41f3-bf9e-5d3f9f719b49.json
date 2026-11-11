@@ -3,6 +3,35 @@
  "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
  "name": "Castle Locthwain",
  "card_hash": "13e66d59deb093fd5e492deaffd74509",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
+  "name": "Castle Locthwain",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Castle Locthwain",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "This land enters tapped unless you control a Swamp.\n{T}: Add {B}.\n{1}{B}{B}, {T}: Draw a card, then you lose life equal to the number of cards in your hand.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 793,
+  "scryfall_uri": "https://scryfall.com/card/clb/884/castle-locthwain?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

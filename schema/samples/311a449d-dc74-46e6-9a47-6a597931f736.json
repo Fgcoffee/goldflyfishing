@@ -3,6 +3,61 @@
  "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
  "name": "Consecrated Sphinx",
  "card_hash": "4cee806fbf241b9d9d99daa9163ea5c6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
+  "name": "Consecrated Sphinx",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Consecrated Sphinx",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Sphinx"
+     ]
+    },
+    "oracle_text": "Flying\nWhenever an opponent draws a card, you may draw two cards.",
+    "power": "4",
+    "toughness": "6",
+    "colors": "Color.BLUE",
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 667,
+  "scryfall_uri": "https://scryfall.com/card/2x2/43/consecrated-sphinx?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

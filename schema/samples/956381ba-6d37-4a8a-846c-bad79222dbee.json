@@ -3,6 +3,53 @@
  "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
  "name": "Force of Will",
  "card_hash": "9840d8f32ff3f4d156e9b133d4806445",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
+  "name": "Force of Will",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Force of Will",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "You may pay 1 life and exile a blue card from your hand rather than pay this spell's mana cost.\nCounter target spell.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 194,
+  "scryfall_uri": "https://scryfall.com/card/dmr/50/force-of-will?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

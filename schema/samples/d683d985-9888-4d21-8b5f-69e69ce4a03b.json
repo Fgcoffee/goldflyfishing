@@ -3,6 +3,41 @@
  "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
  "name": "Path to Exile",
  "card_hash": "7a596641ddb73283b0c03d0c992a80fd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
+  "name": "Path to Exile",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Path to Exile",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Exile target creature. Its controller may search their library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 15,
+  "scryfall_uri": "https://scryfall.com/card/msc/141/path-to-exile?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

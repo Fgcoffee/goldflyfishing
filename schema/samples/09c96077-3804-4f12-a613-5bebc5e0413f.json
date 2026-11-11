@@ -3,6 +3,40 @@
  "oracle_id": "09c96077-3804-4f12-a613-5bebc5e0413f",
  "name": "Sphere of Resistance",
  "card_hash": "4ee430cc52abab9631ceceddf5dd3605",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09c96077-3804-4f12-a613-5bebc5e0413f",
+  "name": "Sphere of Resistance",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sphere of Resistance",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "Spells cost {1} more to cast."
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 8393,
+  "scryfall_uri": "https://scryfall.com/card/vma/284/sphere-of-resistance?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

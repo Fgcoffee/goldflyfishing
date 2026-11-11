@@ -3,6 +3,47 @@
  "oracle_id": "2f092562-9e17-43cd-aeb8-d0567f99363e",
  "name": "Go for the Throat",
  "card_hash": "6c3d13fff7cb9e9c0df1ad0af0737aef",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2f092562-9e17-43cd-aeb8-d0567f99363e",
+  "name": "Go for the Throat",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Go for the Throat",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Destroy target nonartifact creature.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 376,
+  "scryfall_uri": "https://scryfall.com/card/moc/250/go-for-the-throat?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

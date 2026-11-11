@@ -3,6 +3,59 @@
  "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
  "name": "Magus of the Moat",
  "card_hash": "bf3fc3e91083ed30518610659a74dcc2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
+  "name": "Magus of the Moat",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Magus of the Moat",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Creatures without flying can't attack.",
+    "power": "0",
+    "toughness": "3",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 7569,
+  "scryfall_uri": "https://scryfall.com/card/fut/12/magus-of-the-moat?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

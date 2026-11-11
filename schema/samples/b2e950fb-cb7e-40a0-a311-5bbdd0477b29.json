@@ -3,6 +3,61 @@
  "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
  "name": "Sun Titan",
  "card_hash": "28c1e9681d20154c96cf45f30e6d892c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
+  "name": "Sun Titan",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sun Titan",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Giant"
+     ]
+    },
+    "oracle_text": "Vigilance\nWhenever this creature enters or attacks, you may return target permanent card with mana value 3 or less from your graveyard to the battlefield.",
+    "power": "6",
+    "toughness": "6",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Vigilance"
+    ]
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 309,
+  "scryfall_uri": "https://scryfall.com/card/soc/178/sun-titan?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

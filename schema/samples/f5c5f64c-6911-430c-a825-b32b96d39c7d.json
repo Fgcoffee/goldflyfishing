@@ -3,6 +3,59 @@
  "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
  "name": "Beetleback Chief",
  "card_hash": "00e9df100277678b24d252cc7df4479f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
+  "name": "Beetleback Chief",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Beetleback Chief",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "When this creature enters, create two 1/1 red Goblin creature tokens.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3582,
+  "scryfall_uri": "https://scryfall.com/card/tdc/205/beetleback-chief?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

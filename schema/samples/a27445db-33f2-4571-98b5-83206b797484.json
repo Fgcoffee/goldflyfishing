@@ -3,6 +3,47 @@
  "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
  "name": "Shared Animosity",
  "card_hash": "ad80641d12bda7a20bc2cb658943cfcd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
+  "name": "Shared Animosity",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Shared Animosity",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 681,
+  "scryfall_uri": "https://scryfall.com/card/lcc/231/shared-animosity?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

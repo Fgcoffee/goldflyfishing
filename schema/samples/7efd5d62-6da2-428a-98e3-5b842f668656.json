@@ -3,6 +3,46 @@
  "oracle_id": "7efd5d62-6da2-428a-98e3-5b842f668656",
  "name": "Mogg Fanatic",
  "card_hash": "198e69f1d198e40f0b4770c4ef12bdbf",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7efd5d62-6da2-428a-98e3-5b842f668656",
+  "name": "Mogg Fanatic",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mogg Fanatic",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "Sacrifice this creature: It deals 1 damage to any target.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 12101,
+  "scryfall_uri": "https://scryfall.com/card/ema/138/mogg-fanatic?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

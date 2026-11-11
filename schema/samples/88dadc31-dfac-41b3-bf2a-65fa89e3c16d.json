@@ -3,6 +3,62 @@
  "oracle_id": "88dadc31-dfac-41b3-bf2a-65fa89e3c16d",
  "name": "Linvala, Keeper of Silence",
  "card_hash": "2a70f6e09e89f6e6b7150ce47682741d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "88dadc31-dfac-41b3-bf2a-65fa89e3c16d",
+  "name": "Linvala, Keeper of Silence",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Linvala, Keeper of Silence",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Angel"
+     ]
+    },
+    "oracle_text": "Flying\nActivated abilities of creatures your opponents control can't be activated.",
+    "power": "3",
+    "toughness": "4",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 2596,
+  "scryfall_uri": "https://scryfall.com/card/jmp/119/linvala-keeper-of-silence?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,53 @@
  "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
  "name": "Mystic Confluence",
  "card_hash": "19172c2260a2b670eb8237ffceb5f447",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
+  "name": "Mystic Confluence",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mystic Confluence",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Choose three. You may choose the same mode more than once.\n• Counter target spell unless its controller pays {3}.\n• Return target creature to its owner's hand.\n• Draw a card.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 1460,
+  "scryfall_uri": "https://scryfall.com/card/cmm/108/mystic-confluence?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,58 @@
  "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
  "name": "Teferi, Time Raveler",
  "card_hash": "2d54287f0acc600ca55dbac1333e7f80",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
+  "name": "Teferi, Time Raveler",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Teferi, Time Raveler",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.PLANESWALKER",
+     "subtypes": [
+      "Teferi"
+     ]
+    },
+    "oracle_text": "Each opponent can cast spells only any time they could cast a sorcery.\n+1: Until your next turn, you may cast sorcery spells as though they had flash.\n−3: Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card.",
+    "loyalty": "4",
+    "colors": "Color.WHITE|BLUE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 1141,
+  "scryfall_uri": "https://scryfall.com/card/rvr/232/teferi-time-raveler?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

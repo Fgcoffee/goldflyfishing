@@ -3,6 +3,49 @@
  "oracle_id": "4b515bb0-f275-4400-8032-3173b799ab40",
  "name": "Walking Ballista",
  "card_hash": "d96fe8c2aa72a72b543983fe55cfd0a9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4b515bb0-f275-4400-8032-3173b799ab40",
+  "name": "Walking Ballista",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Walking Ballista",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.VARIABLE",
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.VARIABLE",
+       "text": "{X}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT|CREATURE",
+     "subtypes": [
+      "Construct"
+     ]
+    },
+    "oracle_text": "This creature enters with X +1/+1 counters on it.\n{4}: Put a +1/+1 counter on this creature.\nRemove a +1/+1 counter from this creature: It deals 1 damage to any target.",
+    "power": "0",
+    "toughness": "0"
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 427,
+  "scryfall_uri": "https://scryfall.com/card/2xm/306/walking-ballista?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

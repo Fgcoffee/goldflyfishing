@@ -3,6 +3,59 @@
  "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
  "name": "Moggcatcher",
  "card_hash": "60cee7a5d1e36bd0381fa3164dbe15c0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
+  "name": "Moggcatcher",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Moggcatcher",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Mercenary"
+     ]
+    },
+    "oracle_text": "{3}, {T}: Search your library for a Goblin permanent card, put it onto the battlefield, then shuffle.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 8807,
+  "scryfall_uri": "https://scryfall.com/card/nem/96/moggcatcher?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

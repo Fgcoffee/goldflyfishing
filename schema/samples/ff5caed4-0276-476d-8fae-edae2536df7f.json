@@ -3,6 +3,67 @@
  "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
  "name": "Archangel of Tithes",
  "card_hash": "5cf346af67c6d90ee9625e906287d39a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
+  "name": "Archangel of Tithes",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Archangel of Tithes",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Angel"
+     ]
+    },
+    "oracle_text": "Flying\nAs long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures.\nAs long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures.",
+    "power": "3",
+    "toughness": "5",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 2195,
+  "scryfall_uri": "https://scryfall.com/card/otj/2/archangel-of-tithes?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

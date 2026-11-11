@@ -3,6 +3,41 @@
  "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
  "name": "Imperial Seal",
  "card_hash": "60f05adba37775ca58cb271dde9ad680",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
+  "name": "Imperial Seal",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Imperial Seal",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 523,
+  "scryfall_uri": "https://scryfall.com/card/2x2/79/imperial-seal?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

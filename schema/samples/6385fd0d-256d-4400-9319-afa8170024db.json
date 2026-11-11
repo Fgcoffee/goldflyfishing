@@ -3,6 +3,44 @@
  "oracle_id": "6385fd0d-256d-4400-9319-afa8170024db",
  "name": "Culling the Weak",
  "card_hash": "34c4b9bae2cd0e959e8633b10f090379",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6385fd0d-256d-4400-9319-afa8170024db",
+  "name": "Culling the Weak",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Culling the Weak",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nAdd {B}{B}{B}{B}.",
+    "colors": "Color.BLACK",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 525,
+  "scryfall_uri": "https://scryfall.com/card/exo/55/culling-the-weak?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

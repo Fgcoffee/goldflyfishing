@@ -3,6 +3,46 @@
  "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
  "name": "Skullclamp",
  "card_hash": "1285cfaf80e0301967c8ff1d444ea02c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
+  "name": "Skullclamp",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Skullclamp",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT",
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature gets +1/-1.\nWhenever equipped creature dies, draw two cards.\nEquip {1}",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 40,
+  "scryfall_uri": "https://scryfall.com/card/msc/210/skullclamp?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

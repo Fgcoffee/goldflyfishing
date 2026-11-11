@@ -3,6 +3,44 @@
  "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
  "name": "Dark Ritual",
  "card_hash": "683bb12fa14f202b5a74f1b5d95ea88e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
+  "name": "Dark Ritual",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dark Ritual",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Add {B}{B}{B}.",
+    "colors": "Color.BLACK",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 33,
+  "scryfall_uri": "https://scryfall.com/card/msc/793/dark-ritual?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

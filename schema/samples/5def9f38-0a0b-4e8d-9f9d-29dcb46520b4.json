@@ -3,6 +3,47 @@
  "oracle_id": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
  "name": "Esper Sentinel",
  "card_hash": "a958a77276a81c92bd0595185d387ec6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5def9f38-0a0b-4e8d-9f9d-29dcb46520b4",
+  "name": "Esper Sentinel",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Esper Sentinel",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT|CREATURE",
+     "subtypes": [
+      "Human",
+      "Soldier"
+     ]
+    },
+    "oracle_text": "Whenever an opponent casts their first noncreature spell each turn, draw a card unless that player pays {X}, where X is this creature's power.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 78,
+  "scryfall_uri": "https://scryfall.com/card/mh2/12/esper-sentinel?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

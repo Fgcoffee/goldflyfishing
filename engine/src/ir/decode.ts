@@ -134,7 +134,7 @@ export function readCard(document: unknown): CardDocument {
   if (!isObject(document) || document.ir_version !== Types.IR_VERSION) {
     throw new Error(`not an IR version ${Types.IR_VERSION} card document`);
   }
-  const problems = check(document.faces);
+  const problems = [...check(document.card, "/card"), ...check(document.faces, "/faces")];
   if (problems.length > 0) throw new Error(`bad IR: ${problems.slice(0, 5).join("; ")}`);
   return document as unknown as CardDocument;
 }

@@ -3,6 +3,50 @@
  "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
  "name": "Goblin Bushwhacker",
  "card_hash": "90f4a4b27ffef946226ee2193c61faad",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
+  "name": "Goblin Bushwhacker",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Bushwhacker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Kicker {R} (You may pay an additional {R} as you cast this spell.)\nWhen this creature enters, if it was kicked, creatures you control get +1/+0 and gain haste until end of turn.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED",
+    "keywords": [
+     "Kicker"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 8183,
+  "scryfall_uri": "https://scryfall.com/card/zen/125/goblin-bushwhacker?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

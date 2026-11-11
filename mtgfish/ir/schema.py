@@ -230,12 +230,9 @@ def json_schema() -> dict:
         ],
         "description": "any IR value",
     }
-    return {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": f"https://goldflyfishing/ir/v{IR_VERSION}/face.schema.json",
-        "title": f"Parsed card face, IR version {IR_VERSION}",
-        "description": "One card face's abilities and parse failures. See docs/ir-json.md.",
+    defs["FaceDocument"] = {
         "type": "object",
+        "description": "One card face: its abilities and the parse failures.",
         "properties": {
             "ir_version": {"const": IR_VERSION},
             "oracle_id": {"type": "string"},
@@ -251,6 +248,27 @@ def json_schema() -> dict:
             "ir_version", "oracle_id", "name", "face", "face_name", "card_hash",
             "fully_read", "abilities", "failures",
         ],
+        "additionalProperties": False,
+    }
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": f"https://goldflyfishing/ir/v{IR_VERSION}/card.schema.json",
+        "title": f"Card IR document, IR version {IR_VERSION}",
+        "description": (
+            "One card: the printed card (CardDef) and each face's abilities and parse"
+            " failures (FaceDocument). One file per card, <oracle_id>.json. See"
+            " docs/ir-json.md."
+        ),
+        "type": "object",
+        "properties": {
+            "ir_version": {"const": IR_VERSION},
+            "oracle_id": {"type": "string"},
+            "name": {"type": "string"},
+            "card_hash": {"type": "string"},
+            "card": {"$ref": "#/$defs/CardDef"},
+            "faces": {"type": "array", "items": {"$ref": "#/$defs/FaceDocument"}},
+        },
+        "required": ["ir_version", "oracle_id", "name", "card_hash", "card", "faces"],
         "additionalProperties": False,
         "$defs": defs,
     }
@@ -398,6 +416,8 @@ def typescript() -> str:
         "  oracle_id: string;",
         "  name: string;",
         "  card_hash: string;",
+        "  /** The printed card: faces with mana cost, type line, P/T, colors. */",
+        "  card: CardDef;",
         "  faces: Array<FaceDocument>;",
         "}",
         "",

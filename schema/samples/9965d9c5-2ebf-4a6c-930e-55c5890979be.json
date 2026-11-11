@@ -3,6 +3,43 @@
  "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
  "name": "Thought Vessel",
  "card_hash": "b87c0325bc45bada69953e042e2adb03",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
+  "name": "Thought Vessel",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Thought Vessel",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "You have no maximum hand size.\n{T}: Add {C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 21,
+  "scryfall_uri": "https://scryfall.com/card/mbc/78/thought-vessel?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

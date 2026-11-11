@@ -3,6 +3,57 @@
  "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
  "name": "Thalia, Heretic Cathar",
  "card_hash": "cda38213f93dc46fdbcb428e33f156c1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "13be47e4-9da2-4f9e-baf0-db96f7777ccb",
+  "name": "Thalia, Heretic Cathar",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Thalia, Heretic Cathar",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Soldier"
+     ]
+    },
+    "oracle_text": "First strike\nCreatures and nonbasic lands your opponents control enter tapped.",
+    "power": "3",
+    "toughness": "2",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "First strike"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 1476,
+  "scryfall_uri": "https://scryfall.com/card/inr/44/thalia-heretic-cathar?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

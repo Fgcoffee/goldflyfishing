@@ -3,6 +3,47 @@
  "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
  "name": "Snuff Out",
  "card_hash": "1d4566d54649e095800bcca7dda71e27",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
+  "name": "Snuff Out",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Snuff Out",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "If you control a Swamp, you may pay 4 life rather than pay this spell's mana cost.\nDestroy target nonblack creature. It can't be regenerated.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 700,
+  "scryfall_uri": "https://scryfall.com/card/gvl/53/snuff-out?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

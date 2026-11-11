@@ -3,6 +3,46 @@
  "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
  "name": "Nim Deathmantle",
  "card_hash": "1769cf56730f95adbad08739596ce83b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
+  "name": "Nim Deathmantle",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Nim Deathmantle",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT",
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature gets +2/+2, has intimidate, and is a black Zombie. (A creature with intimidate can't be blocked except by artifact creatures and/or creatures that share a color with it.)\nWhenever a nontoken creature is put into your graveyard from the battlefield, you may pay {4}. If you do, return that card to the battlefield and attach this Equipment to it.\nEquip {4}",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 3513,
+  "scryfall_uri": "https://scryfall.com/card/2x2/309/nim-deathmantle?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

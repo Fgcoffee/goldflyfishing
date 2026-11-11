@@ -3,6 +3,41 @@
  "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
  "name": "Swords to Plowshares",
  "card_hash": "fcdc4d35288d37ced64ba6f3affe9745",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
+  "name": "Swords to Plowshares",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Swords to Plowshares",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Exile target creature. Its controller gains life equal to its power.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 11,
+  "scryfall_uri": "https://scryfall.com/card/msc/143/swords-to-plowshares?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

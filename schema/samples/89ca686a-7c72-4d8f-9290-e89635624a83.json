@@ -3,6 +3,40 @@
  "oracle_id": "89ca686a-7c72-4d8f-9290-e89635624a83",
  "name": "Cavern of Souls",
  "card_hash": "577ac92ce85869e282af81ab8d665048",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "89ca686a-7c72-4d8f-9290-e89635624a83",
+  "name": "Cavern of Souls",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cavern of Souls",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "As this land enters, choose a creature type.\n{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type, and that spell can't be countered.",
+    "produced_mana": [
+     "B",
+     "C",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 111,
+  "scryfall_uri": "https://scryfall.com/card/lci/269/cavern-of-souls?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

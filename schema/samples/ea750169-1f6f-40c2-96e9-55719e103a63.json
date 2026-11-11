@@ -3,6 +3,41 @@
  "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
  "name": "Throne of the God-Pharaoh",
  "card_hash": "78e4c141a80d59ee242147b12bab2086",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
+  "name": "Throne of the God-Pharaoh",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Throne of the God-Pharaoh",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "At the beginning of your end step, each opponent loses life equal to the number of tapped creatures you control."
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 2635,
+  "scryfall_uri": "https://scryfall.com/card/akh/237/throne-of-the-god-pharaoh?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

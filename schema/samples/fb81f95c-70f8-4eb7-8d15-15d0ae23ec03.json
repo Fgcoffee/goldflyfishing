@@ -3,6 +3,41 @@
  "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
  "name": "Mystical Tutor",
  "card_hash": "0889bd58f11391fcf1f3c6496a5cfaeb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
+  "name": "Mystical Tutor",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mystical Tutor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Search your library for an instant or sorcery card, reveal it, then shuffle and put that card on top.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 160,
+  "scryfall_uri": "https://scryfall.com/card/dmr/60/mystical-tutor?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

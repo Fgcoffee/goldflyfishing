@@ -3,6 +3,53 @@
  "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
  "name": "Aura of Silence",
  "card_hash": "6014f43ecc410ffa37d8728a5fc4e006",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
+  "name": "Aura of Silence",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Aura of Silence",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Artifact and enchantment spells your opponents cast cost {2} more to cast.\nSacrifice this enchantment: Destroy target artifact or enchantment.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 2184,
+  "scryfall_uri": "https://scryfall.com/card/c15/60/aura-of-silence?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

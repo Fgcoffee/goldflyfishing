@@ -3,6 +3,58 @@
  "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
  "name": "Reckless Bushwhacker",
  "card_hash": "e2258e8baa07efda2065c242c94ec9b0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
+  "name": "Reckless Bushwhacker",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Reckless Bushwhacker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior",
+      "Ally"
+     ]
+    },
+    "oracle_text": "Surge {1}{R} (You may cast this spell for its surge cost if you or a teammate has cast another spell this turn.)\nHaste\nWhen this creature enters, if its surge cost was paid, other creatures you control get +1/+0 and gain haste until end of turn.",
+    "power": "2",
+    "toughness": "1",
+    "colors": "Color.RED",
+    "keywords": [
+     "Haste",
+     "Surge"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 15883,
+  "scryfall_uri": "https://scryfall.com/card/ogw/116/reckless-bushwhacker?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

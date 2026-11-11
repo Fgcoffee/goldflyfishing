@@ -3,6 +3,47 @@
  "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
  "name": "Blasphemous Act",
  "card_hash": "6ca07b967f1b6acb5198b9a49173d5a1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
+  "name": "Blasphemous Act",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Blasphemous Act",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 8,
+       "text": "{8}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "This spell costs {1} less to cast for each creature on the battlefield.\nBlasphemous Act deals 13 damage to each creature.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 9,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 22,
+  "scryfall_uri": "https://scryfall.com/card/msc/163/blasphemous-act?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

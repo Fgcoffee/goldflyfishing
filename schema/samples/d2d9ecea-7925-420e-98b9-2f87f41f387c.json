@@ -3,6 +3,41 @@
  "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
  "name": "Land Tax",
  "card_hash": "845abdcc4a43ff7eb76fb14401245d13",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
+  "name": "Land Tax",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Land Tax",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "At the beginning of your upkeep, if an opponent controls more lands than you, you may search your library for up to three basic land cards, reveal them, put them into your hand, then shuffle.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 367,
+  "scryfall_uri": "https://scryfall.com/card/soc/153/land-tax?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

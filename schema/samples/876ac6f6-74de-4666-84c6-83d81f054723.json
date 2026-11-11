@@ -3,6 +3,36 @@
  "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
  "name": "Celestial Colonnade",
  "card_hash": "31b86e6c35ba43c047f9d60fb5d19811",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
+  "name": "Celestial Colonnade",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Celestial Colonnade",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "This land enters tapped.\n{T}: Add {W} or {U}.\n{3}{W}{U}: Until end of turn, this land becomes a 4/4 white and blue Elemental creature with flying and vigilance. It's still a land.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 5547,
+  "scryfall_uri": "https://scryfall.com/card/uma/238/celestial-colonnade?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,44 @@
  "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
  "name": "Chalice of the Void",
  "card_hash": "7a8c800247135a58bc129fc86128756f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
+  "name": "Chalice of the Void",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Chalice of the Void",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.VARIABLE",
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.VARIABLE",
+       "text": "{X}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "This artifact enters with X charge counters on it.\nWhenever a player casts a spell with mana value equal to the number of charge counters on this artifact, counter that spell."
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 9320,
+  "scryfall_uri": "https://scryfall.com/card/a25/222/chalice-of-the-void?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

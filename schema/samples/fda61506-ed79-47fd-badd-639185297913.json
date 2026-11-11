@@ -3,6 +3,40 @@
  "oracle_id": "fda61506-ed79-47fd-badd-639185297913",
  "name": "Smokestack",
  "card_hash": "073952d34c925f336e89f9f507aa50be",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fda61506-ed79-47fd-badd-639185297913",
+  "name": "Smokestack",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Smokestack",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "At the beginning of your upkeep, you may put a soot counter on this artifact.\nAt the beginning of each player's upkeep, that player sacrifices a permanent of their choice for each soot counter on this artifact."
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 8562,
+  "scryfall_uri": "https://scryfall.com/card/vma/282/smokestack?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

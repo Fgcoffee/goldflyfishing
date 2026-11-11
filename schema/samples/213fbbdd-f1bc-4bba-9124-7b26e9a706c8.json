@@ -3,6 +3,46 @@
  "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
  "name": "Goblin Lackey",
  "card_hash": "b12e3d5b70123e837bbf0a9c4799578d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
+  "name": "Goblin Lackey",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Lackey",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "Whenever this creature deals damage to a player, you may put a Goblin permanent card from your hand onto the battlefield.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 4844,
+  "scryfall_uri": "https://scryfall.com/card/vma/167/goblin-lackey?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,56 @@
  "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
  "name": "Hushbringer",
  "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
+  "name": "Hushbringer",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hushbringer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Faerie"
+     ]
+    },
+    "oracle_text": "Flying, lifelink\nCreatures entering or dying don't cause abilities to trigger.",
+    "power": "1",
+    "toughness": "2",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Flying",
+     "Lifelink"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 3961,
+  "scryfall_uri": "https://scryfall.com/card/eld/18/hushbringer?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,35 @@
  "oracle_id": "09496421-74e4-466a-9546-56f2a0c8eef4",
  "name": "Vault of Whispers",
  "card_hash": "4d8cdf6ec47ca159944dbea53a606224",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09496421-74e4-466a-9546-56f2a0c8eef4",
+  "name": "Vault of Whispers",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vault of Whispers",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT|LAND"
+    },
+    "oracle_text": "{T}: Add {B}.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 612,
+  "scryfall_uri": "https://scryfall.com/card/dsc/322/vault-of-whispers?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

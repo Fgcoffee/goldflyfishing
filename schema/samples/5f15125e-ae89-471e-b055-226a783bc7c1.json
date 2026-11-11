@@ -3,6 +3,40 @@
  "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
  "name": "Aetherflux Reservoir",
  "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
+  "name": "Aetherflux Reservoir",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Aetherflux Reservoir",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "Whenever you cast a spell, you gain 1 life for each spell you've cast this turn.\nPay 50 life: This artifact deals 50 damage to any target."
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 373,
+  "scryfall_uri": "https://scryfall.com/card/kld/192/aetherflux-reservoir?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

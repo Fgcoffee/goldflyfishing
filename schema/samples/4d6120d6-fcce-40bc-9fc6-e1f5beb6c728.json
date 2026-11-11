@@ -3,6 +3,61 @@
  "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
  "name": "Embercleave",
  "card_hash": "4cec1cd25e0492e5e73eb9ede76002db",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
+  "name": "Embercleave",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Embercleave",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.ARTIFACT",
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Flash\nThis spell costs {1} less to cast for each attacking creature you control.\nWhen Embercleave enters, attach it to target creature you control.\nEquipped creature gets +1/+1 and has double strike and trample.\nEquip {3}",
+    "colors": "Color.RED",
+    "keywords": [
+     "Equip",
+     "Flash"
+    ]
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 1353,
+  "scryfall_uri": "https://scryfall.com/card/eld/120/embercleave?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

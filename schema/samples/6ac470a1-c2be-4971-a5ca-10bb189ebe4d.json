@@ -3,6 +3,47 @@
  "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
  "name": "Frenzied Goblin",
  "card_hash": "18f8203df2509495adb03417a4e13a5c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
+  "name": "Frenzied Goblin",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Frenzied Goblin",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Berserker"
+     ]
+    },
+    "oracle_text": "Whenever this creature attacks, you may pay {R}. If you do, target creature can't block this turn.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 9572,
+  "scryfall_uri": "https://scryfall.com/card/fdn/199/frenzied-goblin?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,58 @@
  "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
  "name": "Siege-Gang Commander",
  "card_hash": "641e8afc08f10050f1f361f7815581ce",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
+  "name": "Siege-Gang Commander",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Siege-Gang Commander",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "When this creature enters, create three 1/1 red Goblin creature tokens.\n{1}{R}, Sacrifice a Goblin: This creature deals 2 damage to any target.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 1590,
+  "scryfall_uri": "https://scryfall.com/card/plst/DMR-136/siege-gang-commander?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

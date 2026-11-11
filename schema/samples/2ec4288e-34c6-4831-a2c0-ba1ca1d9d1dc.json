@@ -3,6 +3,35 @@
  "oracle_id": "2ec4288e-34c6-4831-a2c0-ba1ca1d9d1dc",
  "name": "Ghost Quarter",
  "card_hash": "a45af76dbd33e5ad4a8657f25598dc7a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2ec4288e-34c6-4831-a2c0-ba1ca1d9d1dc",
+  "name": "Ghost Quarter",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ghost Quarter",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}, Sacrifice this land: Destroy target land. Its controller may search their library for a basic land card, put it onto the battlefield, then shuffle.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 826,
+  "scryfall_uri": "https://scryfall.com/card/cm2/253/ghost-quarter?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

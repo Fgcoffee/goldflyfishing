@@ -3,6 +3,40 @@
  "oracle_id": "0c6c5336-9233-4ab1-9d55-79f20be7ea57",
  "name": "Thorn of Amethyst",
  "card_hash": "86a7da879f60b78b6b3a421a30c6c542",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0c6c5336-9233-4ab1-9d55-79f20be7ea57",
+  "name": "Thorn of Amethyst",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Thorn of Amethyst",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "Noncreature spells cost {1} more to cast."
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 6601,
+  "scryfall_uri": "https://scryfall.com/card/lrw/262/thorn-of-amethyst?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

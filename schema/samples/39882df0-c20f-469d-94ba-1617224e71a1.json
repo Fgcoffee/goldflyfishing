@@ -3,6 +3,59 @@
  "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
  "name": "Goblin Warchief",
  "card_hash": "91d299ee14fa65e45050758484a49c1e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
+  "name": "Goblin Warchief",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Warchief",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Goblin spells you cast cost {1} less to cast.\nGoblins you control have haste.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 2072,
+  "scryfall_uri": "https://scryfall.com/card/dom/130/goblin-warchief?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

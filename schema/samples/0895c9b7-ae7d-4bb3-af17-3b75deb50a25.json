@@ -3,6 +3,39 @@
  "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
  "name": "Command Tower",
  "card_hash": "3a8065cee6eb1f994c607446a1ea2fc0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
+  "name": "Command Tower",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Command Tower",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add one mana of any color in your commander's color identity.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 2,
+  "scryfall_uri": "https://scryfall.com/card/msc/233/command-tower?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

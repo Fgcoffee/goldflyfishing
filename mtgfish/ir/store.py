@@ -113,7 +113,7 @@ class IRStore:
 
     def _live(self, card, digest: str) -> dict:
         from ..parser.compile import parse_face
-        from .codec import encode_face
+        from .codec import encode_card, encode_face
 
         faces = []
         for index in range(max(1, len(card.faces))):
@@ -124,6 +124,7 @@ class IRStore:
             "oracle_id": card.oracle_id,
             "name": card.name,
             "card_hash": digest,
+            "card": encode_card(card),
             "faces": faces,
         }
 

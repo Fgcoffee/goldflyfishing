@@ -3,6 +3,56 @@
  "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
  "name": "Goblin Heelcutter",
  "card_hash": "0cd570588abe65e3ca1315f878b580f9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
+  "name": "Goblin Heelcutter",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Heelcutter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Berserker"
+     ]
+    },
+    "oracle_text": "Whenever this creature attacks, target creature can't block this turn.\nDash {2}{R} (You may cast this spell for its dash cost. If you do, it gains haste, and it's returned from the battlefield to its owner's hand at the beginning of the next end step.)",
+    "power": "3",
+    "toughness": "2",
+    "colors": "Color.RED",
+    "keywords": [
+     "Dash"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 20586,
+  "scryfall_uri": "https://scryfall.com/card/frf/102/goblin-heelcutter?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

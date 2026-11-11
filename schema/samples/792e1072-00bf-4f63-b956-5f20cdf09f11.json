@@ -3,6 +3,52 @@
  "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
  "name": "Goblin Recruiter",
  "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
+  "name": "Goblin Recruiter",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Recruiter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3338,
+  "scryfall_uri": "https://scryfall.com/card/6ed/186/goblin-recruiter?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

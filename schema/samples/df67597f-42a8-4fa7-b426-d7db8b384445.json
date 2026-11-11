@@ -3,6 +3,47 @@
  "oracle_id": "df67597f-42a8-4fa7-b426-d7db8b384445",
  "name": "Goblin Motivator",
  "card_hash": "87f5f68024b1ac9e89fe026ac89179a7",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "df67597f-42a8-4fa7-b426-d7db8b384445",
+  "name": "Goblin Motivator",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Motivator",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "{T}: Target creature gains haste until end of turn. (It can attack and {T} this turn.)",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 7358,
+  "scryfall_uri": "https://scryfall.com/card/m19/143/goblin-motivator?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

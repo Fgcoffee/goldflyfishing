@@ -3,6 +3,40 @@
  "oracle_id": "bccb06f1-8839-4104-9ffa-c79a817f8378",
  "name": "Jet Medallion",
  "card_hash": "ade5f2548ac16270b4c65b3595b768e5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bccb06f1-8839-4104-9ffa-c79a817f8378",
+  "name": "Jet Medallion",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jet Medallion",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "Black spells you cast cost {1} less to cast."
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 278,
+  "scryfall_uri": "https://scryfall.com/card/mh3/292/jet-medallion?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

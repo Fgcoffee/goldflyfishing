@@ -3,6 +3,47 @@
  "oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
  "name": "Propaganda",
  "card_hash": "d234af37ef382bd77f4fb50aa0c6f383",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+  "name": "Propaganda",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Propaganda",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 114,
+  "scryfall_uri": "https://scryfall.com/card/msc/151/propaganda?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

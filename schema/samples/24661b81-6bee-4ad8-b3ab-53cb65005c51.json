@@ -3,6 +3,53 @@
  "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
  "name": "Goblin Rabblemaster",
  "card_hash": "9da14d96824a561bad4c26f03774eff6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
+  "name": "Goblin Rabblemaster",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Rabblemaster",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Other Goblin creatures you control attack each combat if able.\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token with haste.\nWhenever this creature attacks, it gets +1/+0 until end of turn for each other attacking Goblin.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 4545,
+  "scryfall_uri": "https://scryfall.com/card/ddt/46/goblin-rabblemaster?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

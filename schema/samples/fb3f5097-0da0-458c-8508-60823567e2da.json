@@ -3,6 +3,57 @@
  "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
  "name": "Sunfall",
  "card_hash": "1121aa8b6faad9ea9e47ead9b40d1f4c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
+  "name": "Sunfall",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sunfall",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Exile all creatures. Incubate X, where X is the number of creatures exiled this way. (Create an Incubator token with X +1/+1 counters on it and \"{2}: Transform this token.\" It transforms into a 0/0 Phyrexian artifact creature.)",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Incubate",
+     "Transform"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 3973,
+  "scryfall_uri": "https://scryfall.com/card/mom/40/sunfall?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

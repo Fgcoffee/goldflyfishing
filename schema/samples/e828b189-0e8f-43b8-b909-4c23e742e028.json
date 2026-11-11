@@ -3,6 +3,47 @@
  "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
  "name": "Ghostly Prison",
  "card_hash": "0afea804a89670ac82c9b2b1e4274712",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
+  "name": "Ghostly Prison",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ghostly Prison",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 162,
+  "scryfall_uri": "https://scryfall.com/card/soc/146/ghostly-prison?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

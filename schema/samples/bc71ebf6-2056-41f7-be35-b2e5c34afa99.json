@@ -3,6 +3,38 @@
  "oracle_id": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
  "name": "Plains",
  "card_hash": "b0688a1fe08e7db6c7588be104159a7e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+  "name": "Plains",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Plains",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.BASIC",
+     "types": "CardType.LAND",
+     "subtypes": [
+      "Plains"
+     ]
+    },
+    "oracle_text": "({T}: Add {W}.)",
+    "produced_mana": [
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "scryfall_uri": "https://scryfall.com/card/trk/317/plains?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

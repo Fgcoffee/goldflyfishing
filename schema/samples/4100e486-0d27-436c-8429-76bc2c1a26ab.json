@@ -3,6 +3,55 @@
  "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
  "name": "Goblin Ringleader",
  "card_hash": "863dad650c5e50132cc3f73c89ef9a13",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
+  "name": "Goblin Ringleader",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Ringleader",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "Haste (This creature can attack and {T} as soon as it comes under your control.)\nWhen this creature enters, reveal the top four cards of your library. Put all Goblin cards revealed this way into your hand and the rest on the bottom of your library in any order.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED",
+    "keywords": [
+     "Haste"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 4360,
+  "scryfall_uri": "https://scryfall.com/card/m20/143/goblin-ringleader?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

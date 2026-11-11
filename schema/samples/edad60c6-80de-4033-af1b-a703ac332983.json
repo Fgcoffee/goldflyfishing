@@ -3,6 +3,47 @@
  "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
  "name": "Goblin Bombardment",
  "card_hash": "d7c8190b463129cd02bfc4d60f737f8e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
+  "name": "Goblin Bombardment",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Bombardment",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Sacrifice a creature: This enchantment deals 1 damage to any target.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 461,
+  "scryfall_uri": "https://scryfall.com/card/mh2/279/goblin-bombardment?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

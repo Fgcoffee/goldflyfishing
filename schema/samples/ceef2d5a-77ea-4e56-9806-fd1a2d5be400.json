@@ -3,6 +3,55 @@
  "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
  "name": "Archon of Emeria",
  "card_hash": "ba0434c43b26af11616854337a2b680a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
+  "name": "Archon of Emeria",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Archon of Emeria",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Archon"
+     ]
+    },
+    "oracle_text": "Flying\nEach player can't cast more than one spell each turn.\nNonbasic lands your opponents control enter tapped.",
+    "power": "2",
+    "toughness": "3",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 2108,
+  "scryfall_uri": "https://scryfall.com/card/znr/4/archon-of-emeria?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

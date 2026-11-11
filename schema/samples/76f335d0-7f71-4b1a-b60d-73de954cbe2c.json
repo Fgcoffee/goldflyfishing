@@ -3,6 +3,36 @@
  "oracle_id": "76f335d0-7f71-4b1a-b60d-73de954cbe2c",
  "name": "Skycloud Expanse",
  "card_hash": "6511cab81af9fb5a7a259da91b7db72c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "76f335d0-7f71-4b1a-b60d-73de954cbe2c",
+  "name": "Skycloud Expanse",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Skycloud Expanse",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{1}, {T}: Add {W}{U}.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 345,
+  "scryfall_uri": "https://scryfall.com/card/eoc/181/skycloud-expanse?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

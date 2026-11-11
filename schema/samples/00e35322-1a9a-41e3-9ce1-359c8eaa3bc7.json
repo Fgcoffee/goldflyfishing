@@ -3,6 +3,45 @@
  "oracle_id": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
  "name": "Talisman of Progress",
  "card_hash": "86a112fd437d6454294ddb81e886ff4c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
+  "name": "Talisman of Progress",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Talisman of Progress",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}: Add {W} or {U}. This artifact deals 1 damage to you.",
+    "produced_mana": [
+     "C",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 139,
+  "scryfall_uri": "https://scryfall.com/card/msc/221/talisman-of-progress?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

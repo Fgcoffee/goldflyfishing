@@ -3,6 +3,53 @@
  "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
  "name": "Diabolic Tutor",
  "card_hash": "6938a7bb9b1683d7c708cff7661abcfd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
+  "name": "Diabolic Tutor",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Diabolic Tutor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Search your library for a card, put that card into your hand, then shuffle.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 485,
+  "scryfall_uri": "https://scryfall.com/card/cma/54/diabolic-tutor?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

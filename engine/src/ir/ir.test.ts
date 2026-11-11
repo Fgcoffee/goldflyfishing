@@ -81,3 +81,18 @@ describe("card IR", () => {
     expect(() => readCard({ ir_version: IR_VERSION + 1, faces: [] })).toThrow();
   });
 });
+
+describe("printed card data", () => {
+  it("comes with every sample: faces, mana value, colour identity", () => {
+    for (const card of samples()) {
+      expect(card.card.$).toBe("CardDef");
+      expect(card.card.oracle_id).toBe(card.oracle_id);
+      expect(card.card.faces.length).toBeGreaterThan(0);
+    }
+    const bolt = byName("Lightning Bolt").card;
+    const [face] = complete(bolt.faces);
+    expect(face?.name).toBe("Lightning Bolt");
+    expect(face?.has_mana_cost).toBe(true);
+    expect(complete(bolt).mana_value).toBe(1);
+  });
+});

@@ -3,6 +3,47 @@
  "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
  "name": "Sign in Blood",
  "card_hash": "403abcf9e81b9df32a14b3a1591d018c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
+  "name": "Sign in Blood",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sign in Blood",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Target player draws two cards and loses 2 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 231,
+  "scryfall_uri": "https://scryfall.com/card/dsc/156/sign-in-blood?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

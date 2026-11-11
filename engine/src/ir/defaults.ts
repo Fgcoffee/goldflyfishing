@@ -20,6 +20,9 @@ export const DEFAULTS: Record<string, Record<string, unknown>> = {
   SpendOnlyOn: {"filter": null},
   Restriction: {"subject": null, "players": null, "source": 0, "controller": -1, "condition": {"$": "Condition"}, "counterpart": null, "text": "", "duration": 0, "created_turn": 0},
   ParseFailure: {"consumed": 0, "remaining": [], "rule": ""},
+  CardDef: {"edhrec_rank": null, "scryfall_uri": "", "attraction_lights": []},
+  FaceDef: {"power": null, "toughness": null, "loyalty": null, "defense": null, "colors": "Color.NONE", "color_indicator": null, "keywords": [], "produced_mana": []},
+  TypeLine: {"supertypes": "Supertype.NONE", "types": "CardType.NONE", "subtypes": []},
 };
 
 /** Fields with no default: they are always present. */
@@ -42,4 +45,7 @@ export const REQUIRED: Record<string, readonly string[]> = {
   SpendOnlyOn: ["key"],
   Restriction: ["act"],
   ParseFailure: ["text", "reason"],
+  CardDef: ["oracle_id", "name", "layout", "faces", "mana_value", "color_identity", "commander_legal"],
+  FaceDef: ["name", "mana_cost", "has_mana_cost", "type_line", "oracle_text"],
+  TypeLine: [],
 };

@@ -51,7 +51,7 @@ def _init(db_path: str, with_schema: bool) -> None:
 
 
 def _card_document(card) -> dict:
-    from ..ir import IR_VERSION, encode_face
+    from ..ir import IR_VERSION, encode_card, encode_face
     from ..parser.compile import parse_face
     from ..parser.store import card_hash
 
@@ -65,6 +65,7 @@ def _card_document(card) -> dict:
         "oracle_id": card.oracle_id,
         "name": card.name,
         "card_hash": digest,
+        "card": encode_card(card),
         "faces": faces,
     }
 
@@ -85,7 +86,7 @@ def _export_chunk(args) -> list[tuple[str, str, list[str], str]]:
 
 
 def _verify_chunk(oracle_ids: list[str]) -> tuple[int, list[str]]:
-    from ..ir import decode_face, encode_face
+    from ..ir import IR_VERSION, decode_card, decode_face, encode_card, encode_face
     from ..ir.codec import exact
     from ..parser.compile import parse_face
     from ..parser.store import card_hash
@@ -97,6 +98,7 @@ def _verify_chunk(oracle_ids: list[str]) -> tuple[int, list[str]]:
         if card is None:
             continue
         digest = card_hash(card)
+        faces: list[tuple[int, tuple, list, dict]] = []
         for index in range(max(1, len(card.faces))):
             try:
                 parsed = parse_face(card, index)
@@ -106,19 +108,41 @@ def _verify_chunk(oracle_ids: list[str]) -> tuple[int, list[str]]:
             abilities, failures = tuple(parsed.abilities), list(parsed.failures)
             try:
                 document = encode_face(card, index, abilities, failures, digest)
-                text = json.dumps(document, separators=(",", ":"), ensure_ascii=False)
-                back = json.loads(text)
-                if _WORKER_SCHEMA is not None:
-                    errors = list(_WORKER_SCHEMA.iter_errors(back))
-                    if errors:
-                        first = errors[0]
-                        problems.append(
-                            f"{card.name} face {index}: schema: {first.message[:200]}"
-                            f" at {'/'.join(str(p) for p in first.absolute_path)}"
-                        )
-                got_abilities, got_failures = decode_face(back)
             except Exception as error:  # noqa: BLE001 - a codec failure, reported
                 problems.append(f"{card.name} face {index}: codec raised {error!r}")
+                continue
+            faces.append((index, abilities, failures, document))
+        try:
+            card_document = {
+                "ir_version": IR_VERSION,
+                "oracle_id": card.oracle_id,
+                "name": card.name,
+                "card_hash": digest,
+                "card": encode_card(card),
+                "faces": [document for *_, document in faces],
+            }
+            back = json.loads(json.dumps(card_document, separators=(",", ":"), ensure_ascii=False))
+        except Exception as error:  # noqa: BLE001 - a codec failure, reported
+            problems.append(f"{card.name}: codec raised {error!r}")
+            continue
+        if _WORKER_SCHEMA is not None:
+            errors = list(_WORKER_SCHEMA.iter_errors(back))
+            if errors:
+                first = errors[0]
+                problems.append(
+                    f"{card.name}: schema: {first.message[:200]}"
+                    f" at {'/'.join(str(p) for p in first.absolute_path)}"
+                )
+        try:
+            if not exact(decode_card(back["card"]), card):
+                problems.append(f"{card.name}: the printed card differs after the round trip")
+        except Exception as error:  # noqa: BLE001
+            problems.append(f"{card.name}: decoding the printed card raised {error!r}")
+        for (index, abilities, failures, _), face in zip(faces, back["faces"]):
+            try:
+                got_abilities, got_failures = decode_face(face)
+            except Exception as error:  # noqa: BLE001
+                problems.append(f"{card.name} face {index}: decoding raised {error!r}")
                 continue
             checked += 1
             if not exact(got_abilities, abilities):

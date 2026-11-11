@@ -3,6 +3,53 @@
  "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
  "name": "Hordeling Outburst",
  "card_hash": "bafa88e88bbad5eb2a0b4ce79917f836",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
+  "name": "Hordeling Outburst",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hordeling Outburst",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Create three 1/1 red Goblin creature tokens.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 2485,
+  "scryfall_uri": "https://scryfall.com/card/a25/134/hordeling-outburst?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

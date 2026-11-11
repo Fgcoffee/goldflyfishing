@@ -6,7 +6,7 @@ are in [`docs/ir-json.md`](../docs/ir-json.md).
 
 | File | What it is |
 |---|---|
-| `ir.schema.json` | JSON Schema for one face document. **The source of truth.** |
+| `ir.schema.json` | JSON Schema for one card file: the printed card (`CardDef`) and each face's abilities. **The source of truth.** |
 | `samples/` | Every card of the four bench decks (`bench/decks/*.txt`), plus `samples/decks.json`. For the engine's tests. |
 | `usage.json` | For each effect, condition, cost, event, value and player kind, IR class and keyword: how many faces use it, how many of those are fully read, and how many bench-deck faces use it. Ordered by bench use, then pool use: the order the engine port pays off in. |
 
@@ -94,6 +94,7 @@ A card document (`<oracle_id>.json`):
  "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
  "name": "Lightning Bolt",
  "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
+ "card": {"$": "CardDef", "oracle_id": "4457ed35-...", "name": "Lightning Bolt", "layout": "...", "faces": ["..."], "mana_value": 1, "color_identity": "...", "commander_legal": true},
  "faces": [
   {
    "ir_version": 1,

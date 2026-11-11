@@ -3,6 +3,44 @@
  "oracle_id": "8a52f3c0-2552-4425-b2e3-5496eb2232a7",
  "name": "Mystic Remora",
  "card_hash": "965a73666504747ba2757128c444ead1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8a52f3c0-2552-4425-b2e3-5496eb2232a7",
+  "name": "Mystic Remora",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mystic Remora",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Cumulative upkeep {1} (At the beginning of your upkeep, put an age counter on this permanent, then sacrifice it unless you pay its upkeep cost for each age counter on it.)\nWhenever an opponent casts a noncreature spell, you may draw a card unless that player pays {4}.",
+    "colors": "Color.BLUE",
+    "keywords": [
+     "Cumulative upkeep"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 99,
+  "scryfall_uri": "https://scryfall.com/card/dmr/59/mystic-remora?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

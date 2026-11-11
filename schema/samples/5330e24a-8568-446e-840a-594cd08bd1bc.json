@@ -3,6 +3,40 @@
  "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
  "name": "Prairie Stream",
  "card_hash": "19a9830cc206a3b9c02dfc5f1e162ee4",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
+  "name": "Prairie Stream",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Prairie Stream",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND",
+     "subtypes": [
+      "Plains",
+      "Island"
+     ]
+    },
+    "oracle_text": "({T}: Add {W} or {U}.)\nThis land enters tapped unless you control two or more basic lands.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 105,
+  "scryfall_uri": "https://scryfall.com/card/msc/257/prairie-stream?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

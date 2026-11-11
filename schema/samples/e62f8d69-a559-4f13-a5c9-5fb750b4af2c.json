@@ -3,6 +3,53 @@
  "oracle_id": "e62f8d69-a559-4f13-a5c9-5fb750b4af2c",
  "name": "Grim Tutor",
  "card_hash": "acdb190f6d96c01cfe9a433d3469418a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e62f8d69-a559-4f13-a5c9-5fb750b4af2c",
+  "name": "Grim Tutor",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Grim Tutor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Search your library for a card, put that card into your hand, then shuffle. You lose 3 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 701,
+  "scryfall_uri": "https://scryfall.com/card/m21/103/grim-tutor?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

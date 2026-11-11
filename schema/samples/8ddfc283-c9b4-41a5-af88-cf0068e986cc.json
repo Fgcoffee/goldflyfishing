@@ -3,6 +3,41 @@
  "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
  "name": "Swan Song",
  "card_hash": "4e9c5f376f41a97907111123c0b6e47e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8ddfc283-c9b4-41a5-af88-cf0068e986cc",
+  "name": "Swan Song",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Swan Song",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Counter target enchantment, instant, or sorcery spell. Its controller creates a 2/2 blue Bird creature token with flying.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 68,
+  "scryfall_uri": "https://scryfall.com/card/eoc/46/swan-song?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

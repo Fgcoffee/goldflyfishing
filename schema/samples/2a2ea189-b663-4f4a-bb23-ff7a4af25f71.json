@@ -3,6 +3,53 @@
  "oracle_id": "2a2ea189-b663-4f4a-bb23-ff7a4af25f71",
  "name": "Settle the Wreckage",
  "card_hash": "ed582a0243ccc8a5a8248b5743bfff3b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2a2ea189-b663-4f4a-bb23-ff7a4af25f71",
+  "name": "Settle the Wreckage",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Settle the Wreckage",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Exile all attacking creatures target player controls. That player may search their library for that many basic land cards, put those cards onto the battlefield tapped, then shuffle.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 2994,
+  "scryfall_uri": "https://scryfall.com/card/hob/26/settle-the-wreckage?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

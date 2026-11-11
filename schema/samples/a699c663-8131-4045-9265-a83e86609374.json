@@ -3,6 +3,43 @@
  "oracle_id": "a699c663-8131-4045-9265-a83e86609374",
  "name": "Thran Dynamo",
  "card_hash": "3b0ddd561f2588a6658e2cda78496d7d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a699c663-8131-4045-9265-a83e86609374",
+  "name": "Thran Dynamo",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Thran Dynamo",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "{T}: Add {C}{C}{C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 200,
+  "scryfall_uri": "https://scryfall.com/card/cmm/415/thran-dynamo?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

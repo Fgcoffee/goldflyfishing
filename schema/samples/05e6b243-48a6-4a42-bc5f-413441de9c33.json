@@ -3,6 +3,58 @@
  "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
  "name": "Elspeth, Sun's Champion",
  "card_hash": "e300bdbb5bf30269cb54ff33744ed707",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
+  "name": "Elspeth, Sun's Champion",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Elspeth, Sun's Champion",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.PLANESWALKER",
+     "subtypes": [
+      "Elspeth"
+     ]
+    },
+    "oracle_text": "+1: Create three 1/1 white Soldier creature tokens.\n−3: Destroy all creatures with power 4 or greater.\n−7: You get an emblem with \"Creatures you control get +2/+2 and have flying.\"",
+    "loyalty": "4",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 829,
+  "scryfall_uri": "https://scryfall.com/card/mkc/62/elspeth-suns-champion?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

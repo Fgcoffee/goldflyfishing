@@ -3,6 +3,56 @@
  "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
  "name": "Knight of the White Orchid",
  "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
+  "name": "Knight of the White Orchid",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Knight of the White Orchid",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Knight"
+     ]
+    },
+    "oracle_text": "First strike\nWhen this creature enters, if an opponent controls more lands than you, you may search your library for a Plains card, put it onto the battlefield, then shuffle.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "First strike"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 648,
+  "scryfall_uri": "https://scryfall.com/card/moc/193/knight-of-the-white-orchid?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

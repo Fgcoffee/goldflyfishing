@@ -3,6 +3,53 @@
  "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
  "name": "Boggart Harbinger",
  "card_hash": "bd325211ec4b8e3a71d5836a9d81dc5a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
+  "name": "Boggart Harbinger",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Boggart Harbinger",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Shaman"
+     ]
+    },
+    "oracle_text": "When this creature enters, you may search your library for a Goblin card, reveal it, then shuffle and put that card on top.",
+    "power": "2",
+    "toughness": "1",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 10610,
+  "scryfall_uri": "https://scryfall.com/card/lrw/102/boggart-harbinger?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

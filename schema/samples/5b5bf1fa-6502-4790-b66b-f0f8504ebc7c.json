@@ -3,6 +3,53 @@
  "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
  "name": "Cabal Ritual",
  "card_hash": "40fc339bbe64a826ef6227f4dab41384",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
+  "name": "Cabal Ritual",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cabal Ritual",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Add {B}{B}{B}.\nThreshold — Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard.",
+    "colors": "Color.BLACK",
+    "keywords": [
+     "Threshold"
+    ],
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 447,
+  "scryfall_uri": "https://scryfall.com/card/vma/106/cabal-ritual?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

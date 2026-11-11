@@ -3,6 +3,47 @@
  "oracle_id": "cdaab6b0-1a2d-4809-8e6b-56013acd8f78",
  "name": "Cast Down",
  "card_hash": "0dc643383899fcc0aa5125d53f45ee95",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cdaab6b0-1a2d-4809-8e6b-56013acd8f78",
+  "name": "Cast Down",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cast Down",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Destroy target nonlegendary creature.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 7303,
+  "scryfall_uri": "https://scryfall.com/card/clb/119/cast-down?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,47 @@
  "oracle_id": "8f933fae-6c0c-42d7-a817-14760d8285cd",
  "name": "Exquisite Blood",
  "card_hash": "d71179f49f6036f3d9eb722bf19af5b5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8f933fae-6c0c-42d7-a817-14760d8285cd",
+  "name": "Exquisite Blood",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Exquisite Blood",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Whenever an opponent loses life, you gain that much life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 516,
+  "scryfall_uri": "https://scryfall.com/card/lcc/195/exquisite-blood?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

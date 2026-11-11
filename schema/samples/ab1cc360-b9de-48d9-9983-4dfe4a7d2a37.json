@@ -3,6 +3,47 @@
  "oracle_id": "ab1cc360-b9de-48d9-9983-4dfe4a7d2a37",
  "name": "Arcane Denial",
  "card_hash": "6a712f98fd3937a638eb8682efd602f6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ab1cc360-b9de-48d9-9983-4dfe4a7d2a37",
+  "name": "Arcane Denial",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Arcane Denial",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Counter target spell. Its controller may draw up to two cards at the beginning of the next turn's upkeep.\nYou draw a card at the beginning of the next turn's upkeep.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 53,
+  "scryfall_uri": "https://scryfall.com/card/msc/147/arcane-denial?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -6,6 +6,16 @@ and as TypeScript types; ``mtgfish.tools.ir_export`` writes it per card face.
 See docs/ir-json.md.
 """
 
-from .codec import IR_VERSION, decode, decode_face, encode, encode_face
+from .codec import (
+    IR_VERSION,
+    decode,
+    decode_card,
+    decode_face,
+    encode,
+    encode_card,
+    encode_face,
+)
 
-__all__ = ["IR_VERSION", "decode", "decode_face", "encode", "encode_face"]
+__all__ = [
+    "IR_VERSION", "decode", "decode_card", "decode_face", "encode", "encode_card", "encode_face",
+]

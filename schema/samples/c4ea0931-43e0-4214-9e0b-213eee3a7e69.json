@@ -3,6 +3,43 @@
  "oracle_id": "c4ea0931-43e0-4214-9e0b-213eee3a7e69",
  "name": "Tangle Wire",
  "card_hash": "b9645f9f2582d923f2bb15ce6bae2964",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c4ea0931-43e0-4214-9e0b-213eee3a7e69",
+  "name": "Tangle Wire",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tangle Wire",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "Fading 4 (This artifact enters with four fade counters on it. At the beginning of your upkeep, remove a fade counter from it. If you can't, sacrifice it.)\nAt the beginning of each player's upkeep, that player taps an untapped artifact, creature, or land they control for each fade counter on this artifact.",
+    "keywords": [
+     "Fading"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 8327,
+  "scryfall_uri": "https://scryfall.com/card/nem/139/tangle-wire?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

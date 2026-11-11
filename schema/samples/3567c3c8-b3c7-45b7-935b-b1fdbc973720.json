@@ -3,6 +3,44 @@
  "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
  "name": "Vandalblast",
  "card_hash": "38a568b5521816af6f994a6e0619bfe4",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
+  "name": "Vandalblast",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vandalblast",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Destroy target artifact you don't control.\nOverload {4}{R} (You may cast this spell for its overload cost. If you do, change \"target\" in its text to \"each.\")",
+    "colors": "Color.RED",
+    "keywords": [
+     "Overload"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 101,
+  "scryfall_uri": "https://scryfall.com/card/msc/168/vandalblast?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

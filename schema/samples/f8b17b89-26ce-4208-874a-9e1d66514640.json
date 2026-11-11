@@ -3,6 +3,56 @@
  "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
  "name": "Dig Through Time",
  "card_hash": "d3044418c468e539fc33812c8d6560f9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
+  "name": "Dig Through Time",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dig Through Time",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 6,
+       "text": "{6}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Delve (Each card you exile from your graveyard while casting this spell pays for {1}.)\nLook at the top seven cards of your library. Put two of them into your hand and the rest on the bottom of your library in any order.",
+    "colors": "Color.BLUE",
+    "keywords": [
+     "Delve"
+    ]
+   }
+  ],
+  "mana_value": 8,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 623,
+  "scryfall_uri": "https://scryfall.com/card/soc/195/dig-through-time?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

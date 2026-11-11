@@ -3,6 +3,32 @@
  "oracle_id": "f3c7af78-a77d-4134-82a2-a5ce84285a84",
  "name": "Flooded Strand",
  "card_hash": "cc08a0bab1b7fdf8a49ec1f4bf680338",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f3c7af78-a77d-4134-82a2-a5ce84285a84",
+  "name": "Flooded Strand",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Flooded Strand",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Plains or Island card, put it onto the battlefield, then shuffle."
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 39,
+  "scryfall_uri": "https://scryfall.com/card/mh3/220/flooded-strand?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

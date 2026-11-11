@@ -1,8 +1,8 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
- "$id": "https://goldflyfishing/ir/v1/face.schema.json",
- "title": "Parsed card face, IR version 1",
- "description": "One card face's abilities and parse failures. See docs/ir-json.md.",
+ "$id": "https://goldflyfishing/ir/v1/card.schema.json",
+ "title": "Card IR document, IR version 1",
+ "description": "One card: the printed card (CardDef) and each face's abilities and parse failures (FaceDocument). One file per card, <oracle_id>.json. See docs/ir-json.md.",
  "type": "object",
  "properties": {
   "ir_version": {
@@ -14,29 +14,16 @@
   "name": {
    "type": "string"
   },
-  "face": {
-   "type": "integer",
-   "minimum": 0
-  },
-  "face_name": {
-   "type": "string"
-  },
   "card_hash": {
    "type": "string"
   },
-  "fully_read": {
-   "type": "boolean"
+  "card": {
+   "$ref": "#/$defs/CardDef"
   },
-  "abilities": {
+  "faces": {
    "type": "array",
    "items": {
-    "$ref": "#/$defs/Ability"
-   }
-  },
-  "failures": {
-   "type": "array",
-   "items": {
-    "$ref": "#/$defs/ParseFailure"
+    "$ref": "#/$defs/FaceDocument"
    }
   }
  },
@@ -44,12 +31,9 @@
   "ir_version",
   "oracle_id",
   "name",
-  "face",
-  "face_name",
   "card_hash",
-  "fully_read",
-  "abilities",
-  "failures"
+  "card",
+  "faces"
  ],
  "additionalProperties": false,
  "$defs": {
@@ -2043,6 +2027,203 @@
    ],
    "additionalProperties": false
   },
+  "CardDef": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "CardDef"
+    },
+    "oracle_id": {
+     "$ref": "#/$defs/IRString"
+    },
+    "name": {
+     "$ref": "#/$defs/IRString"
+    },
+    "layout": {
+     "$ref": "#/$defs/enum.Layout"
+    },
+    "faces": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/FaceDef"
+     }
+    },
+    "mana_value": {
+     "type": "integer"
+    },
+    "color_identity": {
+     "$ref": "#/$defs/enum.Color"
+    },
+    "commander_legal": {
+     "type": "boolean"
+    },
+    "edhrec_rank": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "scryfall_uri": {
+     "$ref": "#/$defs/IRString",
+     "default": ""
+    },
+    "attraction_lights": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$",
+    "oracle_id",
+    "name",
+    "layout",
+    "faces",
+    "mana_value",
+    "color_identity",
+    "commander_legal"
+   ],
+   "additionalProperties": false
+  },
+  "FaceDef": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "FaceDef"
+    },
+    "name": {
+     "$ref": "#/$defs/IRString"
+    },
+    "mana_cost": {
+     "$ref": "#/$defs/ManaCost"
+    },
+    "has_mana_cost": {
+     "type": "boolean"
+    },
+    "type_line": {
+     "$ref": "#/$defs/TypeLine"
+    },
+    "oracle_text": {
+     "$ref": "#/$defs/IRString"
+    },
+    "power": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/IRString"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "toughness": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/IRString"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "loyalty": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/IRString"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "defense": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/IRString"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "colors": {
+     "$ref": "#/$defs/enum.Color",
+     "default": "Color.NONE"
+    },
+    "color_indicator": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/enum.Color"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "keywords": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/IRString"
+     },
+     "default": []
+    },
+    "produced_mana": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/IRString"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$",
+    "name",
+    "mana_cost",
+    "has_mana_cost",
+    "type_line",
+    "oracle_text"
+   ],
+   "additionalProperties": false
+  },
+  "TypeLine": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "TypeLine"
+    },
+    "supertypes": {
+     "$ref": "#/$defs/enum.Supertype",
+     "default": "Supertype.NONE"
+    },
+    "types": {
+     "$ref": "#/$defs/enum.CardType",
+     "default": "CardType.NONE"
+    },
+    "subtypes": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/IRString"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
   "enum.AbilityKind": {
    "type": "string",
    "enum": [
@@ -2455,6 +2636,37 @@
     "EventKind.BECAME_RENOWNED"
    ]
   },
+  "enum.Layout": {
+   "type": "string",
+   "enum": [
+    "Layout.NORMAL",
+    "Layout.SPLIT",
+    "Layout.FLIP",
+    "Layout.TRANSFORM",
+    "Layout.MODAL_DFC",
+    "Layout.MELD",
+    "Layout.LEVELER",
+    "Layout.CLASS",
+    "Layout.SAGA",
+    "Layout.ADVENTURE",
+    "Layout.MUTATE",
+    "Layout.PROTOTYPE",
+    "Layout.CASE",
+    "Layout.ROOM",
+    "Layout.BATTLE",
+    "Layout.TOKEN",
+    "Layout.EMBLEM",
+    "Layout.REVERSIBLE",
+    "Layout.AUGMENT",
+    "Layout.HOST",
+    "Layout.ART_SERIES",
+    "Layout.DOUBLE_FACED_TOKEN",
+    "Layout.PLANAR",
+    "Layout.SCHEME",
+    "Layout.VANGUARD",
+    "Layout.PREPARE"
+   ]
+  },
   "enum.ManaSymbolKind": {
    "type": "string",
    "enum": [
@@ -2596,7 +2808,7 @@
     {
      "type": "string",
      "not": {
-      "pattern": "^(AbilityKind|Act|CardType|Color|Comparison|ConditionKind|ControllerRelation|CostKind|Duration|EffectKind|EventKind|ManaSymbolKind|Phase|PlayerScope|Step|Supertype|Timing|ValueKind|Zone)\\."
+      "pattern": "^(AbilityKind|Act|CardType|Color|Comparison|ConditionKind|ControllerRelation|CostKind|Duration|EffectKind|EventKind|Layout|ManaSymbolKind|Phase|PlayerScope|Step|Supertype|Timing|ValueKind|Zone)\\."
      }
     },
     {
@@ -2658,6 +2870,9 @@
     },
     {
      "$ref": "#/$defs/enum.EventKind"
+    },
+    {
+     "$ref": "#/$defs/enum.Layout"
     },
     {
      "$ref": "#/$defs/enum.ManaSymbolKind"
@@ -2742,9 +2957,70 @@
     },
     {
      "$ref": "#/$defs/ParseFailure"
+    },
+    {
+     "$ref": "#/$defs/CardDef"
+    },
+    {
+     "$ref": "#/$defs/FaceDef"
+    },
+    {
+     "$ref": "#/$defs/TypeLine"
     }
    ],
    "description": "any IR value"
+  },
+  "FaceDocument": {
+   "type": "object",
+   "description": "One card face: its abilities and the parse failures.",
+   "properties": {
+    "ir_version": {
+     "const": 1
+    },
+    "oracle_id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "face": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "face_name": {
+     "type": "string"
+    },
+    "card_hash": {
+     "type": "string"
+    },
+    "fully_read": {
+     "type": "boolean"
+    },
+    "abilities": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Ability"
+     }
+    },
+    "failures": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/ParseFailure"
+     }
+    }
+   },
+   "required": [
+    "ir_version",
+    "oracle_id",
+    "name",
+    "face",
+    "face_name",
+    "card_hash",
+    "fully_read",
+    "abilities",
+    "failures"
+   ],
+   "additionalProperties": false
   }
  }
 }

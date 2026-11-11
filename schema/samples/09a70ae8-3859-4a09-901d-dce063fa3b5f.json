@@ -3,6 +3,35 @@
  "oracle_id": "09a70ae8-3859-4a09-901d-dce063fa3b5f",
  "name": "Wasteland",
  "card_hash": "8f7cc00a0a4755cd21767f7ba0c6e828",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09a70ae8-3859-4a09-901d-dce063fa3b5f",
+  "name": "Wasteland",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Wasteland",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}, Sacrifice this land: Destroy target nonbasic land.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 1206,
+  "scryfall_uri": "https://scryfall.com/card/ema/248/wasteland?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

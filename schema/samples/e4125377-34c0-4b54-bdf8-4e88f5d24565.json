@@ -3,6 +3,47 @@
  "oracle_id": "e4125377-34c0-4b54-bdf8-4e88f5d24565",
  "name": "Approach of the Second Sun",
  "card_hash": "873c19b0f19e0e0713bbdd32a8242d1f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e4125377-34c0-4b54-bdf8-4e88f5d24565",
+  "name": "Approach of the Second Sun",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Approach of the Second Sun",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 6,
+       "text": "{6}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "If this spell was cast from your hand and you've cast another spell named Approach of the Second Sun this game, you win the game. Otherwise, put Approach of the Second Sun into its owner's library seventh from the top and you gain 7 life.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 7,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 997,
+  "scryfall_uri": "https://scryfall.com/card/akh/4/approach-of-the-second-sun?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,57 @@
  "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
  "name": "Smothering Tithe",
  "card_hash": "0c81c0c422ec9859a6119eafd817e7a5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
+  "name": "Smothering Tithe",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Smothering Tithe",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Whenever an opponent draws a card, that player may pay {2}. If the player doesn't, you create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Treasure"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 65,
+  "scryfall_uri": "https://scryfall.com/card/cmm/57/smothering-tithe?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

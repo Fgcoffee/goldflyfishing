@@ -3,6 +3,53 @@
  "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
  "name": "Phyrexian Arena",
  "card_hash": "1361cf181508b2753985e7b6f4ba0b63",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
+  "name": "Phyrexian Arena",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Phyrexian Arena",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "At the beginning of your upkeep, you draw a card and you lose 1 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 103,
+  "scryfall_uri": "https://scryfall.com/card/fdn/180/phyrexian-arena?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

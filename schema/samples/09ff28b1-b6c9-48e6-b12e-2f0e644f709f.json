@@ -3,6 +3,46 @@
  "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
  "name": "Gravecrawler",
  "card_hash": "46a4ba95ca926e70a14d6c74fd8c52d0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
+  "name": "Gravecrawler",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Gravecrawler",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Zombie"
+     ]
+    },
+    "oracle_text": "This creature can't block.\nYou may cast this card from your graveyard as long as you control a Zombie.",
+    "power": "2",
+    "toughness": "1",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 677,
+  "scryfall_uri": "https://scryfall.com/card/tdc/93/gravecrawler?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

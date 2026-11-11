@@ -3,6 +3,42 @@
  "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
  "name": "Mana Crypt",
  "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
+  "name": "Mana Crypt",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mana Crypt",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you.\n{T}: Add {C}{C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": false,
+  "edhrec_rank": 14443,
+  "scryfall_uri": "https://scryfall.com/card/2xm/270/mana-crypt?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

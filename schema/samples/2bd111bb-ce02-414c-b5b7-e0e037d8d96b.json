@@ -3,6 +3,60 @@
  "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
  "name": "Bolas's Citadel",
  "card_hash": "93a9c8eb46b2981d12e187729d363307",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
+  "name": "Bolas's Citadel",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Bolas's Citadel",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "You may look at the top card of your library any time.\nYou may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost.\n{T}, Sacrifice ten nonland permanents: Each opponent loses 10 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 269,
+  "scryfall_uri": "https://scryfall.com/card/war/79/bolass-citadel?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

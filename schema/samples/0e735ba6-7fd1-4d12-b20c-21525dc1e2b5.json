@@ -3,6 +3,38 @@
  "oracle_id": "0e735ba6-7fd1-4d12-b20c-21525dc1e2b5",
  "name": "Hanweir Battlements",
  "card_hash": "0f219ea0c9b6a79e624bd9a5437795d1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0e735ba6-7fd1-4d12-b20c-21525dc1e2b5",
+  "name": "Hanweir Battlements",
+  "layout": "Layout.MELD",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hanweir Battlements",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{R}, {T}: Target creature gains haste until end of turn.\n{3}{R}{R}, {T}: If you both own and control this land and a creature named Hanweir Garrison, exile them, then meld them into Hanweir, the Writhing Township.",
+    "keywords": [
+     "Meld"
+    ],
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3227,
+  "scryfall_uri": "https://scryfall.com/card/inr/279/hanweir-battlements?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

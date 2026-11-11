@@ -3,6 +3,47 @@
  "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
  "name": "Goblin War Drums",
  "card_hash": "08d7187eb4d55d698dfa2b7e226abd97",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "29c21edd-781b-448e-824a-17bc8b8f4077",
+  "name": "Goblin War Drums",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin War Drums",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Creatures you control have menace. (They can't be blocked except by two or more creatures.)",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 4901,
+  "scryfall_uri": "https://scryfall.com/card/a25/133/goblin-war-drums?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

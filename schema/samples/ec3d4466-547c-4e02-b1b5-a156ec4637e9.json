@@ -3,6 +3,49 @@
  "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
  "name": "Chrome Mox",
  "card_hash": "b4f4cf302d86940b4da67a1ff1b3b0a8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
+  "name": "Chrome Mox",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Chrome Mox",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "Imprint — When this artifact enters, you may exile a nonartifact, nonland card from your hand.\n{T}: Add one mana of any of the exiled card's colors.",
+    "keywords": [
+     "Imprint"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 151,
+  "scryfall_uri": "https://scryfall.com/card/2xm/240/chrome-mox?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

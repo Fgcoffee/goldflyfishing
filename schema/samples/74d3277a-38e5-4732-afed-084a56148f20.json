@@ -3,6 +3,50 @@
  "oracle_id": "74d3277a-38e5-4732-afed-084a56148f20",
  "name": "Mana Drain",
  "card_hash": "9acf5c9e48787d22b091c0ac6c2c9318",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "74d3277a-38e5-4732-afed-084a56148f20",
+  "name": "Mana Drain",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mana Drain",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Counter target spell. At the beginning of your next main phase, add an amount of {C} equal to that spell's mana value.",
+    "colors": "Color.BLUE",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 119,
+  "scryfall_uri": "https://scryfall.com/card/2x2/57/mana-drain?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

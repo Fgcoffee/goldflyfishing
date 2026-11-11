@@ -3,6 +3,59 @@
  "oracle_id": "0230de18-8d15-4cfa-9d42-7ccddd9f9570",
  "name": "Supreme Verdict",
  "card_hash": "00c9ba555c5e99d8f26db3d9c0112b53",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0230de18-8d15-4cfa-9d42-7ccddd9f9570",
+  "name": "Supreme Verdict",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Supreme Verdict",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "This spell can't be countered.\nDestroy all creatures.",
+    "colors": "Color.WHITE|BLUE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 473,
+  "scryfall_uri": "https://scryfall.com/card/clu/211/supreme-verdict?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

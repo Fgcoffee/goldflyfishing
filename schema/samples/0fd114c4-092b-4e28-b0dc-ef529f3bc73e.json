@@ -3,6 +3,50 @@
  "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
  "name": "Jeska's Will",
  "card_hash": "6255d462c685d292f8caedb8f0f6f2eb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
+  "name": "Jeska's Will",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jeska's Will",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Choose one. If you control a commander as you cast this spell, you may choose both instead.\n• Add {R} for each card in target opponent's hand.\n• Exile the top three cards of your library. You may play them this turn.",
+    "colors": "Color.RED",
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 104,
+  "scryfall_uri": "https://scryfall.com/card/mkc/156/jeskas-will?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

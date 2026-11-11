@@ -3,6 +3,43 @@
  "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
  "name": "Sol Ring",
  "card_hash": "68eca73e2a59ca77c758e7628ac52eba",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
+  "name": "Sol Ring",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sol Ring",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "{T}: Add {C}{C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 1,
+  "scryfall_uri": "https://scryfall.com/card/msc/211/sol-ring?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

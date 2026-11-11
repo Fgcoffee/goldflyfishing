@@ -3,6 +3,60 @@
  "oracle_id": "1f8d4d5f-e82f-45f3-823e-1bb6b536eb18",
  "name": "Grand Arbiter Augustin IV",
  "card_hash": "fbf0bdf272219f521491abd469353b66",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "1f8d4d5f-e82f-45f3-823e-1bb6b536eb18",
+  "name": "Grand Arbiter Augustin IV",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Grand Arbiter Augustin IV",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Advisor"
+     ]
+    },
+    "oracle_text": "White spells you cast cost {1} less to cast.\nBlue spells you cast cost {1} less to cast.\nSpells your opponents cast cost {1} more to cast.",
+    "power": "2",
+    "toughness": "3",
+    "colors": "Color.WHITE|BLUE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 1795,
+  "scryfall_uri": "https://scryfall.com/card/2x2/221/grand-arbiter-augustin-iv?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,53 @@
  "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
  "name": "Necropotence",
  "card_hash": "dc4962cdbe1b7df64f7a4b601e594809",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "94a844d2-0574-45a7-b347-e0e329767c42",
+  "name": "Necropotence",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Necropotence",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Skip your draw step.\nWhenever you discard a card, exile that card from your graveyard.\nPay 1 life: Exile the top card of your library face down. Put that card into your hand at the beginning of your next end step.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 511,
+  "scryfall_uri": "https://scryfall.com/card/ima/98/necropotence?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,36 @@
  "oracle_id": "458d2b12-f578-4392-98d3-c3bc83f316c4",
  "name": "Port Town",
  "card_hash": "02dbdcde9b3ac18d4f5a2e3d358f0c50",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "458d2b12-f578-4392-98d3-c3bc83f316c4",
+  "name": "Port Town",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Port Town",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "As this land enters, you may reveal a Plains or Island card from your hand. If you don't, this land enters tapped.\n{T}: Add {W} or {U}.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 338,
+  "scryfall_uri": "https://scryfall.com/card/msc/256/port-town?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

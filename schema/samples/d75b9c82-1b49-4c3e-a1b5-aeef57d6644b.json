@@ -3,6 +3,50 @@
  "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
  "name": "Cyclonic Rift",
  "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
+  "name": "Cyclonic Rift",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cyclonic Rift",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Return target nonland permanent you don't control to its owner's hand.\nOverload {6}{U} (You may cast this spell for its overload cost. If you do, change \"target\" in its text to \"each.\")",
+    "colors": "Color.BLUE",
+    "keywords": [
+     "Overload"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 55,
+  "scryfall_uri": "https://scryfall.com/card/rvr/40/cyclonic-rift?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

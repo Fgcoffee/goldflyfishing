@@ -3,6 +3,47 @@
  "oracle_id": "a8cf1379-0195-4e11-b994-481ef1284245",
  "name": "Stasis",
  "card_hash": "84672d2b4ea744d4bcf204064f94d295",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a8cf1379-0195-4e11-b994-481ef1284245",
+  "name": "Stasis",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Stasis",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Players skip their untap steps.\nAt the beginning of your upkeep, sacrifice this enchantment unless you pay {U}.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 7799,
+  "scryfall_uri": "https://scryfall.com/card/me4/64/stasis?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

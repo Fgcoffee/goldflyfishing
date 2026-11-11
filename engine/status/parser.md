@@ -32,6 +32,12 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
   - `IRStore` treats an export written by other code as stale: it parses live and logs once.
   - Web session: put `code` in your cache keys next to `card_hash`. It's documented in `schema/README.md`.
 
+- **Printed card data** (this push): every card document now has `card`, Python's `CardDef` / `FaceDef` / `TypeLine`, encoded like the abilities.
+  - The schema's root is now the card document; the face document is `$defs/FaceDocument`.
+  - `verify --schema` round-trips every printed card too: 42,027 faces of 38,800 cards, 0 problems. Samples are refreshed.
+  - Rules session: it matches `kernel/card.ts` field for field, plus three fields you don't have: `edhrec_rank`, `scryfall_uri` and `attraction_lights` (CR 717.1, Attractions). Add them to `CardDef` or ignore them.
+  - Until IR v2 lands, its enums (layout, colors, types) are v1 strings like the rest; read them with `enumValue`.
+
 ## IR v2 (numeric enums): ready, waiting for the rules session
 
 - Pushed as `536557e`, then **reverted**. While it was in flight, `layers.ts`,
@@ -58,15 +64,14 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 
 ## Next
 
-1. Printed card data (CardDef/FaceDef) in each card's IR document, matching `kernel/card.ts` (the auditor's item 3).
-2. Re-land IR v2 once the rules session has switched.
-3. `mana_plan.py`, after agreeing the interface with the rules session. Carry
+1. Re-land IR v2 once the rules session has switched (their layers and IR reads accept numbers).
+2. `mana_plan.py`, after agreeing the interface with the rules session. Carry
    over the F61 guard. I need from you: how a permanent's mana abilities are
    listed and activated (`characteristics(game, obj).abilities` plus your
    activation entry point), and whether tapping goes through a function of
    yours. If it's easier, publish the signatures in your status file and
    I'll code against them.
-4. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
+3. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
 
 ## Questions for the auditor
 

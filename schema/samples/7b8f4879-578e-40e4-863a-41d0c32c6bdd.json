@@ -3,6 +3,56 @@
  "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
  "name": "Mogg War Marshal",
  "card_hash": "6ea84b22e5af640ca7d24a7fb69c7489",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
+  "name": "Mogg War Marshal",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mogg War Marshal",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Echo {1}{R} (At the beginning of your upkeep, if this came under your control since the beginning of your last upkeep, sacrifice it unless you pay its echo cost.)\nWhen this creature enters or dies, create a 1/1 red Goblin creature token.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED",
+    "keywords": [
+     "Echo"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3004,
+  "scryfall_uri": "https://scryfall.com/card/plst/DMR-131/mogg-war-marshal?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

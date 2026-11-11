@@ -3,6 +3,49 @@
  "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
  "name": "Tempt with Vengeance",
  "card_hash": "526e12022aebe26ecbf45503164eb9d8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
+  "name": "Tempt with Vengeance",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tempt with Vengeance",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.VARIABLE",
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Tempting offer — Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste.",
+    "colors": "Color.RED",
+    "keywords": [
+     "Tempting offer"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 2664,
+  "scryfall_uri": "https://scryfall.com/card/tdc/239/tempt-with-vengeance?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

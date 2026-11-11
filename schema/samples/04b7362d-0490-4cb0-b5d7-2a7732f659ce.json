@@ -3,6 +3,35 @@
  "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
  "name": "Bojuka Bog",
  "card_hash": "a2bd23ffa6857dbb313601fdce6280ee",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
+  "name": "Bojuka Bog",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Bojuka Bog",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "This land enters tapped.\nWhen this land enters, exile target player's graveyard.\n{T}: Add {B}.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 24,
+  "scryfall_uri": "https://scryfall.com/card/soc/363/bojuka-bog?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

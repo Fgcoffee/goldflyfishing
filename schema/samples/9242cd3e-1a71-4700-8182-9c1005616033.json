@@ -3,6 +3,47 @@
  "oracle_id": "9242cd3e-1a71-4700-8182-9c1005616033",
  "name": "Impact Tremors",
  "card_hash": "88c916ed8568192d2de36996e1f473e3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9242cd3e-1a71-4700-8182-9c1005616033",
+  "name": "Impact Tremors",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Impact Tremors",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Whenever a creature you control enters, this enchantment deals 1 damage to each opponent.",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 198,
+  "scryfall_uri": "https://scryfall.com/card/fdn/717/impact-tremors?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

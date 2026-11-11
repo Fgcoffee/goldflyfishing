@@ -3,6 +3,37 @@
  "oracle_id": "1861e642-21d5-4232-89f3-b5557f2946c1",
  "name": "Phyrexian Tower",
  "card_hash": "956fe83a01a95bd78fafc2a2358735cc",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "1861e642-21d5-4232-89f3-b5557f2946c1",
+  "name": "Phyrexian Tower",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Phyrexian Tower",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}, Sacrifice a creature: Add {B}{B}.",
+    "produced_mana": [
+     "B",
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 197,
+  "scryfall_uri": "https://scryfall.com/card/mh3/303/phyrexian-tower?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,41 @@
  "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
  "name": "Brainstorm",
  "card_hash": "f84ee890bd15c9e674b4ede47711395d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
+  "name": "Brainstorm",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Brainstorm",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Draw three cards, then put two cards from your hand on top of your library in any order.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 72,
+  "scryfall_uri": "https://scryfall.com/card/tle/155/brainstorm?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

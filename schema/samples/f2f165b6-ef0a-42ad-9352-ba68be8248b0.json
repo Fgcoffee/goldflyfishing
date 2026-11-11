@@ -3,6 +3,58 @@
  "oracle_id": "f2f165b6-ef0a-42ad-9352-ba68be8248b0",
  "name": "Teferi, Hero of Dominaria",
  "card_hash": "f9112e5422e41230c03d083fec000d80",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f2f165b6-ef0a-42ad-9352-ba68be8248b0",
+  "name": "Teferi, Hero of Dominaria",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Teferi, Hero of Dominaria",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.PLANESWALKER",
+     "subtypes": [
+      "Teferi"
+     ]
+    },
+    "oracle_text": "+1: Draw a card. At the beginning of the next end step, untap up to two lands.\n−3: Put target nonland permanent into its owner's library third from the top.\n−8: You get an emblem with \"Whenever you draw a card, exile target permanent an opponent controls.\"",
+    "loyalty": "4",
+    "colors": "Color.WHITE|BLUE"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 4191,
+  "scryfall_uri": "https://scryfall.com/card/dom/207/teferi-hero-of-dominaria?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

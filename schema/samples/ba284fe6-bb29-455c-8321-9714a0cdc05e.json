@@ -3,6 +3,35 @@
  "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
  "name": "Mishra's Workshop",
  "card_hash": "c3902d62b3ad1b312a7270c6a755c16a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ba284fe6-bb29-455c-8321-9714a0cdc05e",
+  "name": "Mishra's Workshop",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mishra's Workshop",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}{C}{C}. Spend this mana only to cast artifact spells.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 3782,
+  "scryfall_uri": "https://scryfall.com/card/vma/305/mishras-workshop?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

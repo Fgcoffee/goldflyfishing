@@ -3,6 +3,56 @@
  "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
  "name": "Warren Instigator",
  "card_hash": "2a6728c3ea964167289f5f15262fa007",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
+  "name": "Warren Instigator",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Warren Instigator",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Berserker"
+     ]
+    },
+    "oracle_text": "Double strike\nWhenever this creature deals damage to an opponent, you may put a Goblin creature card from your hand onto the battlefield.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED",
+    "keywords": [
+     "Double strike"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 5662,
+  "scryfall_uri": "https://scryfall.com/card/ddt/32/warren-instigator?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

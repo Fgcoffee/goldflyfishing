@@ -3,6 +3,49 @@
  "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
  "name": "Skirk Prospector",
  "card_hash": "1789c5a54e34a9986fa60abd8325a4fa",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
+  "name": "Skirk Prospector",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Skirk Prospector",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "Sacrifice a Goblin: Add {R}.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED",
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 1336,
+  "scryfall_uri": "https://scryfall.com/card/dmr/137/skirk-prospector?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

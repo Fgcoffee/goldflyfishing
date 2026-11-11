@@ -3,6 +3,47 @@
  "oracle_id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
  "name": "Negate",
  "card_hash": "3fadc407da70efbce9422031cf5001de",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
+  "name": "Negate",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Negate",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Counter target noncreature spell.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 56,
+  "scryfall_uri": "https://scryfall.com/card/tmt/47/negate?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

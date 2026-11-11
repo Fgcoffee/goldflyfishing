@@ -3,6 +3,53 @@
  "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
  "name": "Goblin Instigator",
  "card_hash": "aac1e0781c6dd47556af7e76d6d5286b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8b022754-6d16-470e-b754-4df6e4f4709e",
+  "name": "Goblin Instigator",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Instigator",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Rogue"
+     ]
+    },
+    "oracle_text": "When this creature enters, create a 1/1 red Goblin creature token.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3250,
+  "scryfall_uri": "https://scryfall.com/card/moc/282/goblin-instigator?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

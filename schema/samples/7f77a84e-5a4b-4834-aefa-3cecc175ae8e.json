@@ -3,6 +3,58 @@
  "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
  "name": "Jace, the Mind Sculptor",
  "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
+  "name": "Jace, the Mind Sculptor",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jace, the Mind Sculptor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.PLANESWALKER",
+     "subtypes": [
+      "Jace"
+     ]
+    },
+    "oracle_text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library.\n0: Draw three cards, then put two cards from your hand on top of your library in any order.\n−1: Return target creature to its owner's hand.\n−12: Exile all cards from target player's library, then that player shuffles their hand into their library.",
+    "loyalty": "3",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 3566,
+  "scryfall_uri": "https://scryfall.com/card/2xm/56/jace-the-mind-sculptor?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

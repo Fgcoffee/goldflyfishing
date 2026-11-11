@@ -3,6 +3,52 @@
  "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
  "name": "Goblin Sharpshooter",
  "card_hash": "4d86a29e87ec8b648bdbb361bf4053d9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d81285b7-a718-411a-8be3-ecc0cfe0bcb0",
+  "name": "Goblin Sharpshooter",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Sharpshooter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "This creature doesn't untap during your untap step.\nWhenever a creature dies, untap this creature.\n{T}: This creature deals 1 damage to any target.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3820,
+  "scryfall_uri": "https://scryfall.com/card/c13/111/goblin-sharpshooter?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

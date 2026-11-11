@@ -3,6 +3,53 @@
  "oracle_id": "8ab4d31e-7187-4ba1-97cb-1a0a11ab28bf",
  "name": "Magus of the Tabernacle",
  "card_hash": "cb1d4472e2ede657f01a751377b26224",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8ab4d31e-7187-4ba1-97cb-1a0a11ab28bf",
+  "name": "Magus of the Tabernacle",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Magus of the Tabernacle",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "All creatures have \"At the beginning of your upkeep, sacrifice this creature unless you pay {1}.\"",
+    "power": "2",
+    "toughness": "6",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 17276,
+  "scryfall_uri": "https://scryfall.com/card/plc/8/magus-of-the-tabernacle?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

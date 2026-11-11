@@ -3,6 +3,58 @@
  "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
  "name": "Liliana Vess",
  "card_hash": "5f700aaf1bf1a239f8a099d1a3d65134",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
+  "name": "Liliana Vess",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Liliana Vess",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.PLANESWALKER",
+     "subtypes": [
+      "Liliana"
+     ]
+    },
+    "oracle_text": "+1: Target player discards a card.\n−2: Search your library for a card, then shuffle and put that card on top.\n−8: Put all creature cards from all graveyards onto the battlefield under your control.",
+    "loyalty": "5",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 4818,
+  "scryfall_uri": "https://scryfall.com/card/m15/103/liliana-vess?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

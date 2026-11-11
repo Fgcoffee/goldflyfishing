@@ -3,6 +3,50 @@
  "oracle_id": "5bf4d8d9-a2b2-4dba-ac05-9d4470a89db2",
  "name": "Read the Bones",
  "card_hash": "1c2d4ce7a8d23aad929997724edd7ec1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5bf4d8d9-a2b2-4dba-ac05-9d4470a89db2",
+  "name": "Read the Bones",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Read the Bones",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Scry 2, then draw two cards. You lose 2 life. (To scry 2, look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)",
+    "colors": "Color.BLACK",
+    "keywords": [
+     "Scry"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 483,
+  "scryfall_uri": "https://scryfall.com/card/dsc/154/read-the-bones?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,63 @@
  "oracle_id": "654ff673-4630-4068-9bcf-e88a7877eb58",
  "name": "Dragonlord Ojutai",
  "card_hash": "7af05be6a0cdda54049d947ef86e703f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "654ff673-4630-4068-9bcf-e88a7877eb58",
+  "name": "Dragonlord Ojutai",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dragonlord Ojutai",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Elder",
+      "Dragon"
+     ]
+    },
+    "oracle_text": "Flying\nDragonlord Ojutai has hexproof as long as it's untapped.\nWhenever Dragonlord Ojutai deals combat damage to a player, look at the top three cards of your library. Put one of them into your hand and the rest on the bottom of your library in any order.",
+    "power": "5",
+    "toughness": "4",
+    "colors": "Color.WHITE|BLUE",
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 7106,
+  "scryfall_uri": "https://scryfall.com/card/ncc/337/dragonlord-ojutai?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

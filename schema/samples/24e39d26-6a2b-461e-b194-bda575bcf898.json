@@ -3,6 +3,53 @@
  "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
  "name": "Legion Loyalty",
  "card_hash": "53ae213fb6a7bd8e07d235f9610fcced",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
+  "name": "Legion Loyalty",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Legion Loyalty",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 6,
+       "text": "{6}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Creatures you control have myriad. (Whenever a creature with myriad attacks, for each opponent other than defending player, you may create a token copy that's tapped and attacking that player or a planeswalker they control. Exile the tokens at end of combat.)",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 8,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 2911,
+  "scryfall_uri": "https://scryfall.com/card/tdc/122/legion-loyalty?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

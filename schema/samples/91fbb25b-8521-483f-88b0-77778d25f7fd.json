@@ -3,6 +3,35 @@
  "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
  "name": "Castle Embereth",
  "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
+  "name": "Castle Embereth",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Castle Embereth",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "This land enters tapped unless you control a Mountain.\n{T}: Add {R}.\n{1}{R}{R}, {T}: Creatures you control get +1/+0 until end of turn.",
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 1082,
+  "scryfall_uri": "https://scryfall.com/card/tdc/347/castle-embereth?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

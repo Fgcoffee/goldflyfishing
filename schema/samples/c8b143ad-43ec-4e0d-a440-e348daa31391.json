@@ -3,6 +3,46 @@
  "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
  "name": "Swiftfoot Boots",
  "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+  "name": "Swiftfoot Boots",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Swiftfoot Boots",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT",
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature has hexproof and haste. (It can't be the target of spells or abilities your opponents control. It can attack and {T} no matter when it came under your control.)\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 12,
+  "scryfall_uri": "https://scryfall.com/card/mbc/77/swiftfoot-boots?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

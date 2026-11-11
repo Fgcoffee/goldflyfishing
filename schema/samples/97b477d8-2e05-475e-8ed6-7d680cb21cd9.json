@@ -3,6 +3,43 @@
  "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
  "name": "Fire Diamond",
  "card_hash": "de3cd641d6e83804ac9f1693d95b6065",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
+  "name": "Fire Diamond",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Fire Diamond",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "This artifact enters tapped.\n{T}: Add {R}.",
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 715,
+  "scryfall_uri": "https://scryfall.com/card/clb/313/fire-diamond?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

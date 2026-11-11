@@ -3,6 +3,37 @@
  "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
  "name": "Mystic Gate",
  "card_hash": "0243620937cb9b0097f9cb05060e40a8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
+  "name": "Mystic Gate",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mystic Gate",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.",
+    "produced_mana": [
+     "C",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 870,
+  "scryfall_uri": "https://scryfall.com/card/cmm/1013/mystic-gate?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

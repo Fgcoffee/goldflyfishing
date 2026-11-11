@@ -3,6 +3,53 @@
  "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
  "name": "Hallowed Burial",
  "card_hash": "76d55ef394430cf9f217ac0823280686",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
+  "name": "Hallowed Burial",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hallowed Burial",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Put all creatures on the bottom of their owners' libraries.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 16330,
+  "scryfall_uri": "https://scryfall.com/card/cn2/91/hallowed-burial?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

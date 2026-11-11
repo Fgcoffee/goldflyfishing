@@ -3,6 +3,52 @@
  "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
  "name": "Goblin Matron",
  "card_hash": "088ef786a114eae901f55ccc617dfe33",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
+  "name": "Goblin Matron",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Matron",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "When this creature enters, you may search your library for a Goblin card, reveal that card, put it into your hand, then shuffle.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 1787,
+  "scryfall_uri": "https://scryfall.com/card/plst/DMR-123/goblin-matron?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

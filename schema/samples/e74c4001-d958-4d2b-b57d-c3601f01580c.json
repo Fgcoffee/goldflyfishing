@@ -3,6 +3,55 @@
  "oracle_id": "e74c4001-d958-4d2b-b57d-c3601f01580c",
  "name": "Battle Cry Goblin",
  "card_hash": "530704686b65eae69f0c88e14640fd92",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e74c4001-d958-4d2b-b57d-c3601f01580c",
+  "name": "Battle Cry Goblin",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Battle Cry Goblin",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "{1}{R}: Goblins you control get +1/+0 and gain haste until end of turn.\nPack tactics — Whenever this creature attacks, if you attacked with creatures with total power 6 or greater this combat, create a 1/1 red Goblin creature token that's tapped and attacking.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED",
+    "keywords": [
+     "Pack tactics"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 5096,
+  "scryfall_uri": "https://scryfall.com/card/afr/132/battle-cry-goblin?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

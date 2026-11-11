@@ -3,6 +3,55 @@
  "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
  "name": "Windborn Muse",
  "card_hash": "e4a547d807aa3715ad561366e6d9d997",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
+  "name": "Windborn Muse",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Windborn Muse",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Spirit"
+     ]
+    },
+    "oracle_text": "Flying\nCreatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+    "power": "2",
+    "toughness": "3",
+    "colors": "Color.WHITE",
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 1000,
+  "scryfall_uri": "https://scryfall.com/card/mkc/92/windborn-muse?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

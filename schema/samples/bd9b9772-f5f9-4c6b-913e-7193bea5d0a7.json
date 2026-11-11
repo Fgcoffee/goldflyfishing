@@ -3,6 +3,47 @@
  "oracle_id": "bd9b9772-f5f9-4c6b-913e-7193bea5d0a7",
  "name": "Oblivion Ring",
  "card_hash": "e837e521807ce2e6a04476878d5add42",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bd9b9772-f5f9-4c6b-913e-7193bea5d0a7",
+  "name": "Oblivion Ring",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Oblivion Ring",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "When this enchantment enters, exile another target nonland permanent.\nWhen this enchantment leaves the battlefield, return the exiled card to the battlefield under its owner's control.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 5030,
+  "scryfall_uri": "https://scryfall.com/card/mm2/29/oblivion-ring?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

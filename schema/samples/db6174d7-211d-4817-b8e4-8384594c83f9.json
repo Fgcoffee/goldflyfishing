@@ -3,6 +3,36 @@
  "oracle_id": "db6174d7-211d-4817-b8e4-8384594c83f9",
  "name": "Urborg, Tomb of Yawgmoth",
  "card_hash": "865d9fc1e2e5ab7bf2778b27c3e45068",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "db6174d7-211d-4817-b8e4-8384594c83f9",
+  "name": "Urborg, Tomb of Yawgmoth",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Urborg, Tomb of Yawgmoth",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "Each land is a Swamp in addition to its other land types.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 73,
+  "scryfall_uri": "https://scryfall.com/card/tsr/287/urborg-tomb-of-yawgmoth?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

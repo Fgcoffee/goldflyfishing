@@ -3,6 +3,40 @@
  "oracle_id": "96a4e515-2b4e-4c2d-aa1a-963597484723",
  "name": "Tsabo's Web",
  "card_hash": "09e161ebb51e1a2ae36dd367202534a6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "96a4e515-2b4e-4c2d-aa1a-963597484723",
+  "name": "Tsabo's Web",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tsabo's Web",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "When this artifact enters, draw a card.\nEach land with an activated ability that isn't a mana ability doesn't untap during its controller's untap step."
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 19657,
+  "scryfall_uri": "https://scryfall.com/card/inv/317/tsabos-web?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,47 @@
  "oracle_id": "7ffae8f8-3006-4969-a339-6d30678f87ea",
  "name": "Night's Whisper",
  "card_hash": "707f705d81242037c40db39b8a76966f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7ffae8f8-3006-4969-a339-6d30678f87ea",
+  "name": "Night's Whisper",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Night's Whisper",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "You draw two cards and lose 2 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 182,
+  "scryfall_uri": "https://scryfall.com/card/hoc/189/nights-whisper?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

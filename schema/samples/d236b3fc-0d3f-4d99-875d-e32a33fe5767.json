@@ -3,6 +3,58 @@
  "oracle_id": "d236b3fc-0d3f-4d99-875d-e32a33fe5767",
  "name": "Goblin King",
  "card_hash": "40eaefa49c62d2efedd0085b3e3f2091",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d236b3fc-0d3f-4d99-875d-e32a33fe5767",
+  "name": "Goblin King",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin King",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "Other Goblins get +1/+1 and have mountainwalk.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3345,
+  "scryfall_uri": "https://scryfall.com/card/10e/207/goblin-king?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

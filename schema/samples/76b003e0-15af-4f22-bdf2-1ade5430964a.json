@@ -3,6 +3,54 @@
  "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
  "name": "Zulaport Cutthroat",
  "card_hash": "6d3ff59e597364aebee6e0bb61fdab87",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
+  "name": "Zulaport Cutthroat",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Zulaport Cutthroat",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Rogue",
+      "Ally"
+     ]
+    },
+    "oracle_text": "Whenever this creature or another creature you control dies, each opponent loses 1 life and you gain 1 life.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 236,
+  "scryfall_uri": "https://scryfall.com/card/soc/233/zulaport-cutthroat?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

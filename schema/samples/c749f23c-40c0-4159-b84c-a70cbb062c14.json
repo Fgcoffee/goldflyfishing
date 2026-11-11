@@ -3,6 +3,53 @@
  "oracle_id": "c749f23c-40c0-4159-b84c-a70cbb062c14",
  "name": "Grand Abolisher",
  "card_hash": "bdd8553a9e4dc5e737dba572fa354253",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c749f23c-40c0-4159-b84c-a70cbb062c14",
+  "name": "Grand Abolisher",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Grand Abolisher",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Cleric"
+     ]
+    },
+    "oracle_text": "During your turn, your opponents can't cast spells or activate abilities of artifacts, creatures, or enchantments.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 251,
+  "scryfall_uri": "https://scryfall.com/card/big/2/grand-abolisher?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

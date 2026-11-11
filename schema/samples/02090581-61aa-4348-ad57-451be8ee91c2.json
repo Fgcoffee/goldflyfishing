@@ -3,6 +3,41 @@
  "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
  "name": "Ponder",
  "card_hash": "948238ce80e94cffaed449b6114b9016",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
+  "name": "Ponder",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ponder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Look at the top three cards of your library, then put them back in any order. You may shuffle.\nDraw a card.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 145,
+  "scryfall_uri": "https://scryfall.com/card/tdc/159/ponder?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

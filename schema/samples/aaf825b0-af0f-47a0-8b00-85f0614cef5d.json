@@ -3,6 +3,53 @@
  "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
  "name": "Glowrider",
  "card_hash": "66c450187662a5b41d2e13bb51645345",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
+  "name": "Glowrider",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Glowrider",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Cleric"
+     ]
+    },
+    "oracle_text": "Noncreature spells cost {1} more to cast.",
+    "power": "2",
+    "toughness": "1",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 15159,
+  "scryfall_uri": "https://scryfall.com/card/lgn/15/glowrider?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

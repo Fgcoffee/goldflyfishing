@@ -3,6 +3,62 @@
  "oracle_id": "cbbe535b-12d6-4e6c-8b26-9220f06a1604",
  "name": "Beseech the Mirror",
  "card_hash": "64bd4a46c241bcf5a8c5a58c2c57cfe9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cbbe535b-12d6-4e6c-8b26-9220f06a1604",
+  "name": "Beseech the Mirror",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Beseech the Mirror",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Bargain (You may sacrifice an artifact, enchantment, or token as you cast this spell.)\nSearch your library for a card, exile it face down, then shuffle. If this spell was bargained, you may cast the exiled card without paying its mana cost if that spell's mana value is 4 or less. Put the exiled card into your hand if it wasn't cast this way.",
+    "colors": "Color.BLACK",
+    "keywords": [
+     "Bargain"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 873,
+  "scryfall_uri": "https://scryfall.com/card/woe/82/beseech-the-mirror?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

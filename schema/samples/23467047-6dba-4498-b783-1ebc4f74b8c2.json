@@ -3,6 +3,35 @@
  "oracle_id": "23467047-6dba-4498-b783-1ebc4f74b8c2",
  "name": "Ancient Tomb",
  "card_hash": "2e661310c7981106ae59875f52743e49",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "23467047-6dba-4498-b783-1ebc4f74b8c2",
+  "name": "Ancient Tomb",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ancient Tomb",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}{C}. This land deals 2 damage to you.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 67,
+  "scryfall_uri": "https://scryfall.com/card/uma/236/ancient-tomb?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

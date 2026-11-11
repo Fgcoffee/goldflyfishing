@@ -3,6 +3,47 @@
  "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
  "name": "Teferi's Protection",
  "card_hash": "ddf2d2ac2837f4c166c0f0a568847490",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0d4ecdb1-ec90-497f-a7a4-1c68092b8757",
+  "name": "Teferi's Protection",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Teferi's Protection",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Until your next turn, your life total can't change and you gain protection from everything. All permanents you control phase out. (While they're phased out, they're treated as though they don't exist. They phase in before you untap during your untap step.)\nExile Teferi's Protection.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 109,
+  "scryfall_uri": "https://scryfall.com/card/2x2/32/teferis-protection?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

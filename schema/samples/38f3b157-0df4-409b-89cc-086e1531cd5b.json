@@ -3,6 +3,58 @@
  "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
  "name": "Gray Merchant of Asphodel",
  "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
+  "name": "Gray Merchant of Asphodel",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Gray Merchant of Asphodel",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Zombie"
+     ]
+    },
+    "oracle_text": "When this creature enters, each opponent loses X life, where X is your devotion to black. You gain life equal to the life lost this way. (Each {B} in the mana costs of permanents you control counts toward your devotion to black.)",
+    "power": "2",
+    "toughness": "4",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 245,
+  "scryfall_uri": "https://scryfall.com/card/dsc/142/gray-merchant-of-asphodel?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

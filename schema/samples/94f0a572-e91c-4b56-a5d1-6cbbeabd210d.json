@@ -3,6 +3,47 @@
  "oracle_id": "94f0a572-e91c-4b56-a5d1-6cbbeabd210d",
  "name": "Infernal Grasp",
  "card_hash": "280505d8ad67cdf133117e74dad37bb6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "94f0a572-e91c-4b56-a5d1-6cbbeabd210d",
+  "name": "Infernal Grasp",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Infernal Grasp",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Destroy target creature. You lose 2 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 261,
+  "scryfall_uri": "https://scryfall.com/card/soc/216/infernal-grasp?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

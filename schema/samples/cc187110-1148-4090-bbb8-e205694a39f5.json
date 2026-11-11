@@ -3,6 +3,47 @@
  "oracle_id": "cc187110-1148-4090-bbb8-e205694a39f5",
  "name": "Counterspell",
  "card_hash": "519917f01246d0617d107eedfd99d49d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cc187110-1148-4090-bbb8-e205694a39f5",
+  "name": "Counterspell",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Counterspell",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Counter target spell.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 16,
+  "scryfall_uri": "https://scryfall.com/card/dsc/114/counterspell?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

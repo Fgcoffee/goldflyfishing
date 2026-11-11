@@ -3,6 +3,47 @@
  "oracle_id": "265236d1-d96c-4424-835e-a0fe91c41170",
  "name": "Ravages of War",
  "card_hash": "5118de5c02358eb436b9ebe467c15701",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "265236d1-d96c-4424-835e-a0fe91c41170",
+  "name": "Ravages of War",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ravages of War",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Destroy all lands.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 11587,
+  "scryfall_uri": "https://scryfall.com/card/me2/27/ravages-of-war?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -60,6 +60,10 @@ _CLASS_PATHS = {
     "SpendOnlyOn": "mtgfish.rules.cr100_game_concepts.cr106_mana",
     "Restriction": "mtgfish.rules.cr500_turn_structure.restrictions",
     "ParseFailure": "mtgfish.parser.errors",
+    # The printed card: what the engine builds characteristics from.
+    "CardDef": "mtgfish.data.cards",
+    "FaceDef": "mtgfish.data.cards",
+    "TypeLine": "mtgfish.rules.cr200_parts_of_a_card.cr205_typeline",
 }
 
 #: Every enum that can appear in the IR.
@@ -81,6 +85,7 @@ _ENUM_PATHS = {
     "ManaSymbolKind": "mtgfish.rules.cr100_game_concepts.cr106_mana",
     "EventKind": "mtgfish.rules.kernel.events",
     "Act": "mtgfish.rules.cr500_turn_structure.restrictions",
+    "Layout": "mtgfish.rules.kernel.enums",
 }
 
 _classes: dict[str, type] | None = None
@@ -268,6 +273,18 @@ def encode_face(card, face_index: int, abilities, failures, card_hash: str) -> d
         "abilities": [encode(ability) for ability in abilities],
         "failures": [encode(failure) for failure in failures],
     }
+
+
+def encode_card(card) -> dict:
+    """The printed card (CardDef: name, layout, faces with mana cost, type
+    line, P/T, loyalty, defense, colors; mana value, color identity) as
+    JSON, by the same rules as the abilities."""
+    return encode(card)
+
+
+def decode_card(data: dict):
+    """A CardDef from ``encode_card``'s JSON."""
+    return decode(data)
 
 
 def decode_face(document: dict) -> tuple[tuple, list]:

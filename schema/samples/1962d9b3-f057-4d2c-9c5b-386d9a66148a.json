@@ -3,6 +3,53 @@
  "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
  "name": "Goblin Cratermaker",
  "card_hash": "582c55ea6e91095d37a67ccf3de96612",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
+  "name": "Goblin Cratermaker",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Cratermaker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "{1}, Sacrifice this creature: Choose one —\n• This creature deals 2 damage to target creature.\n• Destroy target colorless nonland permanent.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 6845,
+  "scryfall_uri": "https://scryfall.com/card/hoc/194/goblin-cratermaker?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

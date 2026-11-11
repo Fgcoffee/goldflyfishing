@@ -3,6 +3,53 @@
  "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
  "name": "Dark Confidant",
  "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
+  "name": "Dark Confidant",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dark Confidant",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "At the beginning of your upkeep, reveal the top card of your library and put that card into your hand. You lose life equal to its mana value.",
+    "power": "2",
+    "toughness": "1",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 1241,
+  "scryfall_uri": "https://scryfall.com/card/fin/94/dark-confidant?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

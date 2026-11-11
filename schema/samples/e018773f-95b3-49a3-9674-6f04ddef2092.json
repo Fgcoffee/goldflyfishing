@@ -3,6 +3,44 @@
  "oracle_id": "e018773f-95b3-49a3-9674-6f04ddef2092",
  "name": "Azorius Signet",
  "card_hash": "6e313765f000ac46c9fe9c2ca67c4990",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e018773f-95b3-49a3-9674-6f04ddef2092",
+  "name": "Azorius Signet",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Azorius Signet",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "{1}, {T}: Add {W}{U}.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 219,
+  "scryfall_uri": "https://scryfall.com/card/tdc/312/azorius-signet?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

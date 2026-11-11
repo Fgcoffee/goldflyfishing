@@ -3,6 +3,35 @@
  "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
  "name": "Cabal Coffers",
  "card_hash": "6c307419a06a18350b57e5c6e0745496",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
+  "name": "Cabal Coffers",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cabal Coffers",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{2}, {T}: Add {B} for each Swamp you control.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 196,
+  "scryfall_uri": "https://scryfall.com/card/mh2/301/cabal-coffers?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

@@ -3,6 +3,35 @@
  "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
  "name": "Rogue's Passage",
  "card_hash": "02cba0866749f0261d0fbf23e55b8b22",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
+  "name": "Rogue's Passage",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rogue's Passage",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "{T}: Add {C}.\n{4}, {T}: Target creature can't be blocked this turn.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 18,
+  "scryfall_uri": "https://scryfall.com/card/hoc/212/rogues-passage?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

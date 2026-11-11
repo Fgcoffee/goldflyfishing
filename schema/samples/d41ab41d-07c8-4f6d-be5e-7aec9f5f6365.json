@@ -3,6 +3,47 @@
  "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
  "name": "Solitary Confinement",
  "card_hash": "429cddcb145be40506d4dc20c8498d8e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
+  "name": "Solitary Confinement",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Solitary Confinement",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "At the beginning of your upkeep, sacrifice this enchantment unless you discard a card.\nSkip your draw step.\nYou have shroud. (You can't be the target of spells or abilities.)\nPrevent all damage that would be dealt to you.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 4024,
+  "scryfall_uri": "https://scryfall.com/card/mh2/265/solitary-confinement?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

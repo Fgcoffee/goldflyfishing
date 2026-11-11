@@ -42,6 +42,9 @@ export const EffectKindValues: Record<string, number> = { SEQUENCE: 0, CONDITION
 export type EnumEventKind = "EventKind.ZONE_CHANGE" | "EventKind.ENTERS_BATTLEFIELD" | "EventKind.LEAVES_BATTLEFIELD" | "EventKind.DIES" | "EventKind.PUT_INTO_GRAVEYARD" | "EventKind.EXILED" | "EventKind.RETURNED_TO_HAND" | "EventKind.SHUFFLED_INTO_LIBRARY" | "EventKind.TOKEN_CREATED" | "EventKind.CEASED_TO_EXIST" | "EventKind.CAST_SPELL" | "EventKind.SPELL_RESOLVED" | "EventKind.ABILITY_ACTIVATED" | "EventKind.ABILITY_TRIGGERED" | "EventKind.ABILITY_RESOLVED" | "EventKind.COUNTERED" | "EventKind.FIZZLED" | "EventKind.TARGETED" | "EventKind.COPIED" | "EventKind.PUT_ON_STACK" | "EventKind.TAPPED" | "EventKind.UNTAPPED" | "EventKind.COUNTER_ADDED" | "EventKind.COUNTER_REMOVED" | "EventKind.ATTACHED" | "EventKind.UNATTACHED" | "EventKind.TRANSFORMED" | "EventKind.TURNED_FACE_UP" | "EventKind.TURNED_FACE_DOWN" | "EventKind.PHASED_OUT" | "EventKind.PHASED_IN" | "EventKind.CONTROL_CHANGED" | "EventKind.SACRIFICED" | "EventKind.DESTROYED" | "EventKind.REGENERATED" | "EventKind.DAMAGE_DEALT" | "EventKind.COMBAT_DAMAGE_DEALT" | "EventKind.LIFE_GAINED" | "EventKind.LIFE_LOST" | "EventKind.LIFE_SET" | "EventKind.DAMAGE_PREVENTED" | "EventKind.POISON_ADDED" | "EventKind.SPEED_INCREASED" | "EventKind.DREW_CARD" | "EventKind.DISCARDED" | "EventKind.MILLED" | "EventKind.REVEALED" | "EventKind.SCRIED" | "EventKind.SURVEILLED" | "EventKind.SEARCHED_LIBRARY" | "EventKind.CLASS_LEVEL_GAINED" | "EventKind.SHUFFLED" | "EventKind.ATTACKERS_DECLARED" | "EventKind.ATTACKS" | "EventKind.BLOCKERS_DECLARED" | "EventKind.BLOCKS" | "EventKind.BECOMES_BLOCKED" | "EventKind.BECOMES_BLOCKED_BY" | "EventKind.ATTACKS_UNBLOCKED" | "EventKind.REMOVED_FROM_COMBAT" | "EventKind.TURN_BEGAN" | "EventKind.PHASE_BEGAN" | "EventKind.STEP_BEGAN" | "EventKind.STEP_ENDED" | "EventKind.PHASE_ENDED" | "EventKind.TURN_ENDED" | "EventKind.UNTAP_STEP" | "EventKind.UPKEEP" | "EventKind.DRAW_STEP" | "EventKind.END_STEP" | "EventKind.CLEANUP" | "EventKind.PLAYER_LOST" | "EventKind.PLAYER_WON" | "EventKind.PLAYER_LEFT_GAME" | "EventKind.MANA_ADDED" | "EventKind.MANA_SPENT" | "EventKind.MANA_EMPTIED" | "EventKind.PRIORITY_RECEIVED" | "EventKind.LAND_PLAYED" | "EventKind.TAPPED_FOR_MANA" | "EventKind.COMMANDER_CAST" | "EventKind.COMMANDER_MOVED_TO_COMMAND_ZONE" | "EventKind.COMMANDER_DAMAGE_DEALT" | "EventKind.BECAME_MONARCH" | "EventKind.TOOK_INITIATIVE" | "EventKind.ENERGY_GAINED" | "EventKind.EXPERIENCE_GAINED" | "EventKind.DAY_NIGHT_CHANGED" | "EventKind.RING_TEMPTED" | "EventKind.EXPLORED" | "EventKind.DUNGEON_VENTURED" | "EventKind.DESCENDED" | "EventKind.CRIME_COMMITTED" | "EventKind.EXPENDED" | "EventKind.BECAME_SADDLED" | "EventKind.GIFT_GIVEN" | "EventKind.VENTURE_MARKER_MOVED" | "EventKind.DUNGEON_COMPLETED" | "EventKind.MANIFESTED_DREAD" | "EventKind.ATTRACTION_OPENED" | "EventKind.ROLLED_TO_VISIT" | "EventKind.ATTRACTION_VISITED" | "EventKind.BECAME_MONSTROUS" | "EventKind.BECAME_RENOWNED";
 export const EventKindValues: Record<string, number> = { ZONE_CHANGE: 0, ENTERS_BATTLEFIELD: 1, LEAVES_BATTLEFIELD: 2, DIES: 3, PUT_INTO_GRAVEYARD: 4, EXILED: 5, RETURNED_TO_HAND: 6, SHUFFLED_INTO_LIBRARY: 7, TOKEN_CREATED: 8, CEASED_TO_EXIST: 9, CAST_SPELL: 20, SPELL_RESOLVED: 21, ABILITY_ACTIVATED: 22, ABILITY_TRIGGERED: 23, ABILITY_RESOLVED: 24, COUNTERED: 25, FIZZLED: 26, TARGETED: 27, COPIED: 28, PUT_ON_STACK: 29, TAPPED: 40, UNTAPPED: 41, COUNTER_ADDED: 42, COUNTER_REMOVED: 43, ATTACHED: 44, UNATTACHED: 45, TRANSFORMED: 46, TURNED_FACE_UP: 47, TURNED_FACE_DOWN: 48, PHASED_OUT: 49, PHASED_IN: 50, CONTROL_CHANGED: 51, SACRIFICED: 52, DESTROYED: 53, REGENERATED: 54, DAMAGE_DEALT: 60, COMBAT_DAMAGE_DEALT: 61, LIFE_GAINED: 62, LIFE_LOST: 63, LIFE_SET: 64, DAMAGE_PREVENTED: 65, POISON_ADDED: 66, SPEED_INCREASED: 67, DREW_CARD: 80, DISCARDED: 81, MILLED: 82, REVEALED: 83, SCRIED: 84, SURVEILLED: 85, SEARCHED_LIBRARY: 86, CLASS_LEVEL_GAINED: 87, SHUFFLED: 88, ATTACKERS_DECLARED: 100, ATTACKS: 101, BLOCKERS_DECLARED: 102, BLOCKS: 103, BECOMES_BLOCKED: 104, BECOMES_BLOCKED_BY: 18001, ATTACKS_UNBLOCKED: 18003, REMOVED_FROM_COMBAT: 105, TURN_BEGAN: 120, PHASE_BEGAN: 121, STEP_BEGAN: 122, STEP_ENDED: 123, PHASE_ENDED: 124, TURN_ENDED: 125, UNTAP_STEP: 126, UPKEEP: 127, DRAW_STEP: 128, END_STEP: 129, CLEANUP: 130, PLAYER_LOST: 140, PLAYER_WON: 141, PLAYER_LEFT_GAME: 142, MANA_ADDED: 143, MANA_SPENT: 144, MANA_EMPTIED: 145, PRIORITY_RECEIVED: 146, LAND_PLAYED: 147, TAPPED_FOR_MANA: 148, COMMANDER_CAST: 160, COMMANDER_MOVED_TO_COMMAND_ZONE: 161, COMMANDER_DAMAGE_DEALT: 162, BECAME_MONARCH: 180, TOOK_INITIATIVE: 181, ENERGY_GAINED: 182, EXPERIENCE_GAINED: 183, DAY_NIGHT_CHANGED: 184, RING_TEMPTED: 185, EXPLORED: 187, DUNGEON_VENTURED: 186, DESCENDED: 330, CRIME_COMMITTED: 331, EXPENDED: 332, BECAME_SADDLED: 380, GIFT_GIVEN: 370, VENTURE_MARKER_MOVED: 300, DUNGEON_COMPLETED: 301, MANIFESTED_DREAD: 310, ATTRACTION_OPENED: 350, ROLLED_TO_VISIT: 351, ATTRACTION_VISITED: 352, BECAME_MONSTROUS: 19001, BECAME_RENOWNED: 18002 };
 
+export type EnumLayout = "Layout.NORMAL" | "Layout.SPLIT" | "Layout.FLIP" | "Layout.TRANSFORM" | "Layout.MODAL_DFC" | "Layout.MELD" | "Layout.LEVELER" | "Layout.CLASS" | "Layout.SAGA" | "Layout.ADVENTURE" | "Layout.MUTATE" | "Layout.PROTOTYPE" | "Layout.CASE" | "Layout.ROOM" | "Layout.BATTLE" | "Layout.TOKEN" | "Layout.EMBLEM" | "Layout.REVERSIBLE" | "Layout.AUGMENT" | "Layout.HOST" | "Layout.ART_SERIES" | "Layout.DOUBLE_FACED_TOKEN" | "Layout.PLANAR" | "Layout.SCHEME" | "Layout.VANGUARD" | "Layout.PREPARE";
+export const LayoutValues: Record<string, number> = { NORMAL: 0, SPLIT: 1, FLIP: 2, TRANSFORM: 3, MODAL_DFC: 4, MELD: 5, LEVELER: 6, CLASS: 7, SAGA: 8, ADVENTURE: 9, MUTATE: 10, PROTOTYPE: 11, CASE: 12, ROOM: 13, BATTLE: 14, TOKEN: 15, EMBLEM: 16, REVERSIBLE: 17, AUGMENT: 18, HOST: 19, ART_SERIES: 20, DOUBLE_FACED_TOKEN: 21, PLANAR: 22, SCHEME: 23, VANGUARD: 24, PREPARE: 25 };
+
 export type EnumManaSymbolKind = "ManaSymbolKind.GENERIC" | "ManaSymbolKind.VARIABLE" | "ManaSymbolKind.COLORED" | "ManaSymbolKind.COLORLESS" | "ManaSymbolKind.SNOW" | "ManaSymbolKind.HYBRID" | "ManaSymbolKind.MONOCOLOR_HYBRID" | "ManaSymbolKind.PHYREXIAN" | "ManaSymbolKind.HALF" | "ManaSymbolKind.INFINITY";
 export const ManaSymbolKindValues: Record<string, number> = { GENERIC: 0, VARIABLE: 1, COLORED: 2, COLORLESS: 3, SNOW: 4, HYBRID: 5, MONOCOLOR_HYBRID: 6, PHYREXIAN: 7, HALF: 8, INFINITY: 9 };
 
@@ -395,7 +398,45 @@ export interface ParseFailure {
   rule?: IRString;  // default ""
 }
 
-export type IRValue = null | boolean | number | IRString | Array<IRValue> | EnumAbilityKind | EnumAct | EnumCardType | EnumColor | EnumComparison | EnumConditionKind | EnumControllerRelation | EnumCostKind | EnumDuration | EnumEffectKind | EnumEventKind | EnumManaSymbolKind | EnumPhase | EnumPlayerScope | EnumStep | EnumSupertype | EnumTiming | EnumValueKind | EnumZone | Ability | TriggerCondition | Effect | TokenSpec | ObjectFilter | PlayerFilter | Value | Condition | NumericConstraint | Cost | CostComponent | AdditionalCost | AlternativeCost | ManaCost | ManaSymbol | SpendOnlyOn | Restriction | ParseFailure;
+export interface CardDef {
+  $: "CardDef";
+  oracle_id: IRString;
+  name: IRString;
+  layout: EnumLayout;
+  faces: Array<FaceDef>;
+  mana_value: number;
+  color_identity: EnumColor;
+  commander_legal: boolean;
+  edhrec_rank?: number | null;  // default null
+  scryfall_uri?: IRString;  // default ""
+  attraction_lights?: Array<number>;  // default []
+}
+
+export interface FaceDef {
+  $: "FaceDef";
+  name: IRString;
+  mana_cost: ManaCost;
+  has_mana_cost: boolean;
+  type_line: TypeLine;
+  oracle_text: IRString;
+  power?: IRString | null;  // default null
+  toughness?: IRString | null;  // default null
+  loyalty?: IRString | null;  // default null
+  defense?: IRString | null;  // default null
+  colors?: EnumColor;  // default "Color.NONE"
+  color_indicator?: EnumColor | null;  // default null
+  keywords?: Array<IRString>;  // default []
+  produced_mana?: Array<IRString>;  // default []
+}
+
+export interface TypeLine {
+  $: "TypeLine";
+  supertypes?: EnumSupertype;  // default "Supertype.NONE"
+  types?: EnumCardType;  // default "CardType.NONE"
+  subtypes?: Array<IRString>;  // default []
+}
+
+export type IRValue = null | boolean | number | IRString | Array<IRValue> | EnumAbilityKind | EnumAct | EnumCardType | EnumColor | EnumComparison | EnumConditionKind | EnumControllerRelation | EnumCostKind | EnumDuration | EnumEffectKind | EnumEventKind | EnumLayout | EnumManaSymbolKind | EnumPhase | EnumPlayerScope | EnumStep | EnumSupertype | EnumTiming | EnumValueKind | EnumZone | Ability | TriggerCondition | Effect | TokenSpec | ObjectFilter | PlayerFilter | Value | Condition | NumericConstraint | Cost | CostComponent | AdditionalCost | AlternativeCost | ManaCost | ManaSymbol | SpendOnlyOn | Restriction | ParseFailure | CardDef | FaceDef | TypeLine;
 
 export interface FaceDocument {
   ir_version: 1;
@@ -414,5 +455,7 @@ export interface CardDocument {
   oracle_id: string;
   name: string;
   card_hash: string;
+  /** The printed card: faces with mana cost, type line, P/T, colors. */
+  card: CardDef;
   faces: Array<FaceDocument>;
 }

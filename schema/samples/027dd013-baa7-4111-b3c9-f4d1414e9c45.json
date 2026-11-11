@@ -3,6 +3,36 @@
  "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
  "name": "Glacial Fortress",
  "card_hash": "7e931b1f972e38ba8e9cb7fbd3362006",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+  "name": "Glacial Fortress",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Glacial Fortress",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.LAND"
+    },
+    "oracle_text": "This land enters tapped unless you control a Plains or an Island.\n{T}: Add {W} or {U}.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 95,
+  "scryfall_uri": "https://scryfall.com/card/msc/248/glacial-fortress?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

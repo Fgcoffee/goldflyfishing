@@ -3,6 +3,47 @@
  "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
  "name": "Kismet",
  "card_hash": "ebeaa5622e6b3f77d144616584724e79",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
+  "name": "Kismet",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Kismet",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "Artifacts, creatures, and lands your opponents control enter tapped.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 11948,
+  "scryfall_uri": "https://scryfall.com/card/me4/17/kismet?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

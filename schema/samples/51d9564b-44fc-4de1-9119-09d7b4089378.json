@@ -3,6 +3,50 @@
  "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
  "name": "Goblin Guide",
  "card_hash": "d56052c9c115b91c6ccad825c51747e2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "51d9564b-44fc-4de1-9119-09d7b4089378",
+  "name": "Goblin Guide",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Guide",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Scout"
+     ]
+    },
+    "oracle_text": "Haste\nWhenever this creature attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED",
+    "keywords": [
+     "Haste"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 14925,
+  "scryfall_uri": "https://scryfall.com/card/2xm/127/goblin-guide?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

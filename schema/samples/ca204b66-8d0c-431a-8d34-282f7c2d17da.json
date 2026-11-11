@@ -3,6 +3,46 @@
  "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
  "name": "Lightning Greaves",
  "card_hash": "8c6f4c1ece112fc542ed34f4fd4b8749",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
+  "name": "Lightning Greaves",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lightning Greaves",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT",
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature has haste and shroud. (It can't be the target of spells or abilities.)\nEquip {0}",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 13,
+  "scryfall_uri": "https://scryfall.com/card/msc/202/lightning-greaves?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

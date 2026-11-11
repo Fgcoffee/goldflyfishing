@@ -3,6 +3,53 @@
  "oracle_id": "fddc93a2-912e-402a-9d0e-34f778e659ea",
  "name": "Sunder",
  "card_hash": "3a60d0de71b103a8e69a0daf14f95d25",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fddc93a2-912e-402a-9d0e-34f778e659ea",
+  "name": "Sunder",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sunder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Return all lands to their owners' hands.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 13123,
+  "scryfall_uri": "https://scryfall.com/card/usg/101/sunder?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

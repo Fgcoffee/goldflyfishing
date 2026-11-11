@@ -3,6 +3,54 @@
  "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
  "name": "Vito, Thorn of the Dusk Rose",
  "card_hash": "e9763789a4fe378568c1b098ea47bd8d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
+  "name": "Vito, Thorn of the Dusk Rose",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vito, Thorn of the Dusk Rose",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Vampire",
+      "Cleric"
+     ]
+    },
+    "oracle_text": "Whenever you gain life, target opponent loses that much life.\n{3}{B}{B}: Creatures you control gain lifelink until end of turn.",
+    "power": "1",
+    "toughness": "3",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 494,
+  "scryfall_uri": "https://scryfall.com/card/m21/127/vito-thorn-of-the-dusk-rose?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

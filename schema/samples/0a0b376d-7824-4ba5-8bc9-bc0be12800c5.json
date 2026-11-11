@@ -3,6 +3,53 @@
  "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
  "name": "Detention Sphere",
  "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
+  "name": "Detention Sphere",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Detention Sphere",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ENCHANTMENT"
+    },
+    "oracle_text": "When this enchantment enters, you may exile target nonland permanent not named Detention Sphere and all other permanents with the same name as that permanent.\nWhen this enchantment leaves the battlefield, return the exiled cards to the battlefield under their owner's control.",
+    "colors": "Color.WHITE|BLUE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE|BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 8400,
+  "scryfall_uri": "https://scryfall.com/card/rtr/155/detention-sphere?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

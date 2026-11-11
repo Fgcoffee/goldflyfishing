@@ -3,6 +3,45 @@
  "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
  "name": "Lodestone Golem",
  "card_hash": "a9e004bb7b3067663af23b374a4c4755",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
+  "name": "Lodestone Golem",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lodestone Golem",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT|CREATURE",
+     "subtypes": [
+      "Golem"
+     ]
+    },
+    "oracle_text": "Nonartifact spells cost {1} more to cast.",
+    "power": "5",
+    "toughness": "3"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 7158,
+  "scryfall_uri": "https://scryfall.com/card/mm2/219/lodestone-golem?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

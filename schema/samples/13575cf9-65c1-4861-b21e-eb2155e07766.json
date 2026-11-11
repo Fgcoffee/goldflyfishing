@@ -3,6 +3,40 @@
  "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
  "name": "Sensei's Divining Top",
  "card_hash": "3b841b81be7abaacf9c476c182b957c1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "13575cf9-65c1-4861-b21e-eb2155e07766",
+  "name": "Sensei's Divining Top",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sensei's Divining Top",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.ARTIFACT"
+    },
+    "oracle_text": "{1}: Look at the top three cards of your library, then put them back in any order.\n{T}: Draw a card, then put this artifact on top of its owner's library."
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.NONE",
+  "commander_legal": true,
+  "edhrec_rank": 229,
+  "scryfall_uri": "https://scryfall.com/card/2x2/314/senseis-divining-top?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

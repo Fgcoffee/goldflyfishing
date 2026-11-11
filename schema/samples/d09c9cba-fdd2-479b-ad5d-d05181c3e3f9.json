@@ -3,6 +3,47 @@
  "oracle_id": "d09c9cba-fdd2-479b-ad5d-d05181c3e3f9",
  "name": "Fierce Guardianship",
  "card_hash": "4b46c2c84fd613e57cc8cf515702994f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d09c9cba-fdd2-479b-ad5d-d05181c3e3f9",
+  "name": "Fierce Guardianship",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Fierce Guardianship",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "If you control a commander, you may cast this spell without paying its mana cost.\nCounter target noncreature spell.",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 83,
+  "scryfall_uri": "https://scryfall.com/card/cmm/94/fierce-guardianship?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

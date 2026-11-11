@@ -3,6 +3,56 @@
  "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
  "name": "Goblin Piledriver",
  "card_hash": "4138a21d675f9d742f0c4e3be0629f72",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
+  "name": "Goblin Piledriver",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Piledriver",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Protection from blue (This creature can't be blocked, targeted, dealt damage, or enchanted by anything blue.)\nWhenever this creature attacks, it gets +2/+0 until end of turn for each other attacking Goblin.",
+    "power": "1",
+    "toughness": "2",
+    "colors": "Color.RED",
+    "keywords": [
+     "Protection"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 6654,
+  "scryfall_uri": "https://scryfall.com/card/ori/151/goblin-piledriver?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

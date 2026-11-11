@@ -3,6 +3,58 @@
  "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
  "name": "Narset, Parter of Veils",
  "card_hash": "a1775e5a5e1cbebd48edf8ba303648f7",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
+  "name": "Narset, Parter of Veils",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Narset, Parter of Veils",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLUE",
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.LEGENDARY",
+     "types": "CardType.PLANESWALKER",
+     "subtypes": [
+      "Narset"
+     ]
+    },
+    "oracle_text": "Each opponent can't draw more than one card each turn.\n−2: Look at the top four cards of your library. You may reveal a noncreature, nonland card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+    "loyalty": "5",
+    "colors": "Color.BLUE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.BLUE",
+  "commander_legal": true,
+  "edhrec_rank": 974,
+  "scryfall_uri": "https://scryfall.com/card/cmm/853/narset-parter-of-veils?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

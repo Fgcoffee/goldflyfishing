@@ -3,6 +3,38 @@
  "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
  "name": "Swamp",
  "card_hash": "34fa903096774b1d5e2a12af24ad79f9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+  "name": "Swamp",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Swamp",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": "Supertype.BASIC",
+     "types": "CardType.LAND",
+     "subtypes": [
+      "Swamp"
+     ]
+    },
+    "oracle_text": "({T}: Add {B}.)",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "scryfall_uri": "https://scryfall.com/card/trk/321/swamp?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

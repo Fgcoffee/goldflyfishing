@@ -3,6 +3,58 @@
  "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
  "name": "Crypt Ghast",
  "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
+  "name": "Crypt Ghast",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Crypt Ghast",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Spirit"
+     ]
+    },
+    "oracle_text": "Extort (Whenever you cast a spell, you may pay {W/B}. If you do, each opponent loses 1 life and you gain that much life.)\nWhenever you tap a Swamp for mana, add an additional {B}.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.BLACK",
+    "keywords": [
+     "Extort"
+    ],
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 531,
+  "scryfall_uri": "https://scryfall.com/card/rvr/70/crypt-ghast?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

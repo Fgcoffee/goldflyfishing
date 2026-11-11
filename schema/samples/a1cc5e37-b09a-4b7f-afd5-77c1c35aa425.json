@@ -3,6 +3,46 @@
  "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
  "name": "Carrion Feeder",
  "card_hash": "cd5c285396b879627444f1022cad25b5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
+  "name": "Carrion Feeder",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Carrion Feeder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Zombie"
+     ]
+    },
+    "oracle_text": "This creature can't block.\nSacrifice a creature: Put a +1/+1 counter on this creature.",
+    "power": "1",
+    "toughness": "1",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 613,
+  "scryfall_uri": "https://scryfall.com/card/mh1/81/carrion-feeder?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

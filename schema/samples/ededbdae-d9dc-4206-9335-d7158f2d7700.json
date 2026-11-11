@@ -3,6 +3,41 @@
  "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
  "name": "Vampiric Tutor",
  "card_hash": "1deebce9869dee2505377aa060303388",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
+  "name": "Vampiric Tutor",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vampiric Tutor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.BLACK",
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life.",
+    "colors": "Color.BLACK"
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": "Color.BLACK",
+  "commander_legal": true,
+  "edhrec_rank": 113,
+  "scryfall_uri": "https://scryfall.com/card/dmr/108/vampiric-tutor?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

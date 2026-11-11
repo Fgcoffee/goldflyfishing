@@ -3,6 +3,53 @@
  "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
  "name": "Farewell",
  "card_hash": "9cbf3783faaba69e7ac1a33860906ef0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
+  "name": "Farewell",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Farewell",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.SORCERY"
+    },
+    "oracle_text": "Choose one or more —\n• Exile all artifacts.\n• Exile all creatures.\n• Exile all enchantments.\n• Exile all graveyards.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 173,
+  "scryfall_uri": "https://scryfall.com/card/mkc/64/farewell?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

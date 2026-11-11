@@ -3,6 +3,47 @@
  "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
  "name": "Generous Gift",
  "card_hash": "2db8974625b5c6854965d46393f182b7",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
+  "name": "Generous Gift",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Generous Gift",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.GENERIC",
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.WHITE",
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.INSTANT"
+    },
+    "oracle_text": "Destroy target permanent. Its controller creates a 3/3 green Elephant creature token.",
+    "colors": "Color.WHITE"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": "Color.WHITE",
+  "commander_legal": true,
+  "edhrec_rank": 61,
+  "scryfall_uri": "https://scryfall.com/card/msc/133/generous-gift?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,

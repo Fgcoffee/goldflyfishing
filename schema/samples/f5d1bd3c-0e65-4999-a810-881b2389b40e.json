@@ -3,6 +3,53 @@
  "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
  "name": "Conspicuous Snoop",
  "card_hash": "0f340222764a151fc25a7466c0e21e55",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
+  "name": "Conspicuous Snoop",
+  "layout": "Layout.NORMAL",
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Conspicuous Snoop",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": "ManaSymbolKind.COLORED",
+       "colors": "Color.RED",
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": "CardType.CREATURE",
+     "subtypes": [
+      "Goblin",
+      "Rogue"
+     ]
+    },
+    "oracle_text": "Play with the top card of your library revealed.\nYou may cast Goblin spells from the top of your library.\nAs long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
+    "power": "2",
+    "toughness": "2",
+    "colors": "Color.RED"
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": "Color.RED",
+  "commander_legal": true,
+  "edhrec_rank": 3262,
+  "scryfall_uri": "https://scryfall.com/card/m21/139/conspicuous-snoop?utm_source=api"
+ },
  "faces": [
   {
    "ir_version": 1,
