@@ -7,7 +7,8 @@
  * defining ability (CR 208.2a), never zero.
  */
 
-import { enumValue, irString, type Ability, type ManaCost } from "../../ir";
+import type { Ability, ManaCost } from "../../ir";
+import { num, str } from "../ir_read";
 import { CardType, Color, Supertype } from "../../kernel/enums";
 import { manaValue, ZERO_COST } from "../cr100_game_concepts/mana_value";
 import { EMPTY_TYPE_LINE, typeLineText, type TypeLine } from "./typeline";
@@ -103,7 +104,7 @@ export function charsManaValue(c: Characteristics): number {
 }
 
 export function abilityKeyword(ability: Ability): string {
-  return ability.keyword === undefined ? "" : irString(ability.keyword);
+  return str(ability.keyword);
 }
 
 /** Whether it has a keyword ability, case-insensitively. */
@@ -124,7 +125,7 @@ export function keywords(c: Characteristics): string[] {
 
 /** Abilities of one kind; `kind` is the AbilityKind number. */
 export function abilitiesOf(c: Characteristics, kind: number): Ability[] {
-  return c.abilities.filter((a) => enumValue(a.kind) === kind);
+  return c.abilities.filter((a) => num(a.kind) === kind);
 }
 
 export function alternativeCosts(c: Characteristics): unknown[] {

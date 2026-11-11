@@ -6,7 +6,28 @@
  * unaffected if enums become plain numbers (engine/status/rules.md).
  */
 
-import { enumValue, irString, type IRString } from "../ir";
+import { enumValue } from "../ir";
+
+/** A string field: v1 escapes enum-looking strings as {$str}; v2 doesn't. */
+type IRStr = string | { $str: string };
+
+function unwrap(value: IRStr): string {
+  return typeof value === "string" ? value : value.$str;
+}
+
+/**
+ * An enum value for an IR object the engine builds itself ("CardType.LAND"),
+ * as its number. Numbers are what v2 writes and what `num` reads in either
+ * version; typed `never` so it fits whichever literal type a field has.
+ */
+export function ir(literal: string): never {
+  return enumValue(literal) as never;
+}
+
+/** Whether an enum field holds this member ("ValueKind.CONSTANT"). */
+export function isEnum(value: unknown, literal: string, fallback = 0): boolean {
+  return num(value, fallback) === enumValue(literal);
+}
 
 const DECODED = new Map<string, number>();
 
@@ -31,14 +52,14 @@ export function numOrNull(value: unknown): number | null {
 }
 
 /** A string field, unwrapping {$str}. */
-export function str(value: IRString | undefined | null, fallback = ""): string {
+export function str(value: IRStr | undefined | null, fallback = ""): string {
   if (value === undefined || value === null) return fallback;
-  return irString(value);
+  return unwrap(value);
 }
 
 /** A list of strings (keywords, subtypes). */
-export function strs(value: readonly IRString[] | undefined | null): string[] {
-  return (value ?? []).map((v) => irString(v));
+export function strs(value: readonly IRStr[] | undefined | null): string[] {
+  return (value ?? []).map(unwrap);
 }
 
 /** A {$set: [...]} field as a Set of numbers; `fallback` when absent. */

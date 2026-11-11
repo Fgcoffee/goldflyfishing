@@ -35,7 +35,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Game state with `cloneGame`, players, mana pool, game objects, card shape (fdf9421, 6d3d451)
 - [x] Layer system and characteristics on the IR (d73eadc)
 - [x] Event kinds (d86e864); hook seam for `rules/match` (6d3cd35)
-- [ ] Read IR enums as numbers (IR v2). Switch first; the parser then re-lands v2
+- [x] Read IR enums as numbers (IR v2). Switch first; the parser then re-lands v2 ("Read IR enums as numbers or strings" commit)
 - [ ] Event bus: emit, observers, per-turn records
 - [ ] Moving objects between zones (`move_object`), with replacement and trigger hooks
 - [ ] Turn structure (CR 500-514): steps, untap/upkeep/draw, priority loop

@@ -1,38 +1,39 @@
 // Ported from tests/rules/test_layers.py: the layer system (CR 613).
 import { beforeEach, describe, expect, it } from "vitest";
-import type { Ability } from "../../src/ir";
+import type { Ability, Value } from "../../src/ir";
+import { ir } from "../../src/rules/ir_read";
 import { CardType, Color } from "../../src/kernel/enums";
 import { addCounters } from "../../src/kernel/gameobject";
 import { hasType } from "../../src/rules/cr200_parts_of_a_card/characteristics";
 import { ALL_CREATURES, Board, constant, CREATURES_YOU_CONTROL, effect, filter, staticAbility } from "./board";
 
 const gloriousAnthem = (): Ability =>
-  staticAbility("Creatures you control get +1/+1.", effect({ kind: "EffectKind.MODIFY_PT", targets: CREATURES_YOU_CONTROL, amount: constant(1), amount2: constant(1) }));
+  staticAbility("Creatures you control get +1/+1.", effect({ kind: ir("EffectKind.MODIFY_PT"), targets: CREATURES_YOU_CONTROL, amount: constant(1), amount2: constant(1) }));
 const humility = (): Ability =>
   staticAbility(
     "All creatures lose all abilities and have base power and toughness 1/1.",
-    effect({ kind: "EffectKind.REMOVE_ABILITIES", targets: ALL_CREATURES }),
-    effect({ kind: "EffectKind.SET_PT", targets: ALL_CREATURES, amount: constant(1), amount2: constant(1) }),
+    effect({ kind: ir("EffectKind.REMOVE_ABILITIES"), targets: ALL_CREATURES }),
+    effect({ kind: ir("EffectKind.SET_PT"), targets: ALL_CREATURES, amount: constant(1), amount2: constant(1) }),
   );
-const otherEnchantments = filter({ types_all: "CardType.ENCHANTMENT", subtypes_none: ["Aura"], other_than_source: true });
-const manaValueOfIt = { $: "Value", kind: "ValueKind.MANA_VALUE", of_affected: true } as const;
+const otherEnchantments = filter({ types_all: ir("CardType.ENCHANTMENT"), subtypes_none: ["Aura"], other_than_source: true });
+const manaValueOfIt: Value = { $: "Value", kind: ir("ValueKind.MANA_VALUE"), of_affected: true };
 const opalescence = (): Ability =>
   staticAbility(
     "Each other non-Aura enchantment is a creature ... equal to its mana value.",
-    effect({ kind: "EffectKind.ADD_TYPE", targets: otherEnchantments, types: "CardType.CREATURE" }),
-    effect({ kind: "EffectKind.SET_PT", targets: otherEnchantments, amount: manaValueOfIt, amount2: manaValueOfIt }),
+    effect({ kind: ir("EffectKind.ADD_TYPE"), targets: otherEnchantments, types: ir("CardType.CREATURE") }),
+    effect({ kind: ir("EffectKind.SET_PT"), targets: otherEnchantments, amount: manaValueOfIt, amount2: manaValueOfIt }),
   );
 const bloodMoon = (): Ability =>
   staticAbility(
     "Nonbasic lands are Mountains.",
-    effect({ kind: "EffectKind.SET_TYPE", targets: filter({ types_all: "CardType.LAND", supertypes_none: "Supertype.BASIC" }), types: "CardType.LAND", keywords: ["Mountain"] }),
+    effect({ kind: ir("EffectKind.SET_TYPE"), targets: filter({ types_all: ir("CardType.LAND"), supertypes_none: ir("Supertype.BASIC") }), types: ir("CardType.LAND"), keywords: ["Mountain"] }),
   );
 const urborg = (): Ability =>
-  staticAbility("Each land is a Swamp in addition to its other land types.", effect({ kind: "EffectKind.ADD_TYPE", targets: filter({ types_all: "CardType.LAND" }), keywords: ["Swamp"] }));
+  staticAbility("Each land is a Swamp in addition to its other land types.", effect({ kind: ir("EffectKind.ADD_TYPE"), targets: filter({ types_all: ir("CardType.LAND") }), keywords: ["Swamp"] }));
 const levitation = (): Ability =>
-  staticAbility("Creatures you control have flying.", effect({ kind: "EffectKind.GRANT_ABILITY", targets: CREATURES_YOU_CONTROL, keywords: ["Flying"] }));
+  staticAbility("Creatures you control have flying.", effect({ kind: ir("EffectKind.GRANT_ABILITY"), targets: CREATURES_YOU_CONTROL, keywords: ["Flying"] }));
 const tarmogoyfCda = (): Ability => ({
-  ...staticAbility("Base power and toughness 4/5 (CDA).", effect({ kind: "EffectKind.SET_PT", amount: constant(4), amount2: constant(5) })),
+  ...staticAbility("Base power and toughness 4/5 (CDA).", effect({ kind: ir("EffectKind.SET_PT"), amount: constant(4), amount2: constant(5) })),
   is_characteristic_defining: true,
 });
 
@@ -119,7 +120,7 @@ describe("power and toughness layers (CR 613.4)", () => {
 describe("abilities (layer 6)", () => {
   it("Humility removes keywords", () => {
     const flier = board.play("Serra Angel");
-    board.script("Serra Angel", { $: "Ability", kind: "AbilityKind.STATIC", keyword: "Flying", text: "Flying" });
+    board.script("Serra Angel", { $: "Ability", kind: ir("AbilityKind.STATIC"), keyword: "Flying", text: "Flying" });
     expect(board.keywords(flier).has("Flying")).toBe(true);
     board.play("Humility");
     expect(board.keywords(flier).size).toBe(0);
@@ -219,7 +220,7 @@ describe("colour and caching", () => {
     const bears = board.play("Grizzly Bears");
     expect(board.chars(bears).colors).toBe(Color.GREEN);
     board.scripts.set("Painter's Servant", [
-      staticAbility("All cards are blue.", effect({ kind: "EffectKind.SET_COLOR", targets: filter({ zones: { $set: ["Zone.BATTLEFIELD"] } }), colors: "Color.BLUE" })),
+      staticAbility("All cards are blue.", effect({ kind: ir("EffectKind.SET_COLOR"), targets: filter({ zones: { $set: [ir("Zone.BATTLEFIELD")] } }), colors: ir("Color.BLUE") })),
     ]);
     board.play("Painter's Servant");
     expect(board.chars(bears).colors).toBe(Color.BLUE);

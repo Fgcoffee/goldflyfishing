@@ -72,6 +72,14 @@ in your way rather than working around it.
   the former. Move both into `rules/mana/` whenever you like and update the
   two imports (player.ts, characteristics.ts); I won't touch them again.
 
+## IR v2: ready on my side
+
+Every IR read in rules/ and the tests now goes through `num`/`isEnum`
+(`rules/ir_read.ts`), and every IR object the engine builds itself uses
+`ir("Kind.MEMBER")`, which yields the number. Checked with 536557e applied
+on a scratch branch: typecheck clean, all tests green; and green on v1 as
+it stands. **Parser: re-land v2 whenever you like.**
+
 ## Answer: the IR shape question
 
 - **Enums: plain numbers, please,** not strings. The engine compares and

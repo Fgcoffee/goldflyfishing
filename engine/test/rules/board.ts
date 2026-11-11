@@ -15,8 +15,8 @@ import { installMatchHooks } from "../../src/kernel/hooks";
 import { newPlayer } from "../../src/rules/cr100_game_concepts/player";
 import { manaValue } from "../../src/rules/cr100_game_concepts/mana_value";
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
-import { charsManaValue, hasSubtype, type Characteristics } from "../../src/rules/cr200_parts_of_a_card/characteristics";
-import { flag, list, num, numSet, strs } from "../../src/rules/ir_read";
+import { abilityKeyword, charsManaValue, hasSubtype, type Characteristics } from "../../src/rules/cr200_parts_of_a_card/characteristics";
+import { flag, ir, isEnum, list, num, numSet, strs } from "../../src/rules/ir_read";
 import { installRegistry, SubtypeRegistry } from "../../src/rules/cr200_parts_of_a_card/typeline";
 
 /** The subtype catalog the tests need, as the card database installs it. */
@@ -30,9 +30,9 @@ function installTestRegistry(): void {
 
 export function mana(generic: number, ...colored: Color[]): ManaCost {
   const symbols: ManaSymbol[] = [];
-  if (generic > 0) symbols.push({ $: "ManaSymbol", kind: "ManaSymbolKind.GENERIC", generic });
+  if (generic > 0) symbols.push({ $: "ManaSymbol", kind: ir("ManaSymbolKind.GENERIC"), generic });
   const names: Record<number, string> = { 1: "WHITE", 2: "BLUE", 4: "BLACK", 8: "RED", 16: "GREEN" };
-  for (const c of colored) symbols.push({ $: "ManaSymbol", kind: "ManaSymbolKind.COLORED", colors: `Color.${names[c]}` });
+  for (const c of colored) symbols.push({ $: "ManaSymbol", kind: ir("ManaSymbolKind.COLORED"), colors: ir(`Color.${names[c]}`) });
   return { $: "ManaCost", symbols };
 }
 
@@ -137,7 +137,7 @@ export class Board {
   }
 
   keywords(obj: GameObject): Set<string> {
-    return new Set(this.chars(obj).abilities.map((a) => (typeof a.keyword === "string" ? a.keyword : "")).filter((k) => k));
+    return new Set(this.chars(obj).abilities.map(abilityKeyword).filter((k) => k));
   }
 
   /** Colours this permanent's mana abilities make, as letters. */
@@ -185,21 +185,20 @@ function filterMatches(_game: Game, obj: GameObject, chars: Characteristics, spe
 }
 
 function evaluate(game: Game, value: Value, subject: number): number {
-  const kind = typeof value.kind === "string" ? value.kind : "ValueKind.CONSTANT";
-  if (kind === "ValueKind.CONSTANT") return value.constant ?? 0;
-  if (kind === "ValueKind.MANA_VALUE") {
+  if (isEnum(value.kind, "ValueKind.CONSTANT")) return value.constant ?? 0;
+  if (isEnum(value.kind, "ValueKind.MANA_VALUE")) {
     const obj = game.objects.get(subject);
     return obj === undefined ? 0 : charsManaValue(characteristicsOf(game, obj));
   }
-  throw new Error(`test evaluator: ${kind}`);
+  throw new Error(`test evaluator: ${String(value.kind)}`);
 }
 
 // --- abilities transcribed from oracle text, as in tests/rules/test_layers.py
 
 export const filter = (fields: Partial<ObjectFilter>): ObjectFilter => ({ $: "ObjectFilter", ...fields });
 export const constant = (n: number): Value => ({ $: "Value", constant: n });
-export const staticAbility = (text: string, ...effects: Effect[]): Ability => ({ $: "Ability", kind: "AbilityKind.STATIC", effects, text });
+export const staticAbility = (text: string, ...effects: Effect[]): Ability => ({ $: "Ability", kind: ir("AbilityKind.STATIC"), effects, text });
 export const effect = (fields: Partial<Effect>): Effect => ({ $: "Effect", ...fields });
 
-export const CREATURES_YOU_CONTROL = filter({ types_all: "CardType.CREATURE", controller: "ControllerRelation.YOU" });
-export const ALL_CREATURES = filter({ types_all: "CardType.CREATURE" });
+export const CREATURES_YOU_CONTROL = filter({ types_all: ir("CardType.CREATURE"), controller: ir("ControllerRelation.YOU") });
+export const ALL_CREATURES = filter({ types_all: ir("CardType.CREATURE") });

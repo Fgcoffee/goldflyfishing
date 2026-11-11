@@ -20,7 +20,7 @@ import type { ContinuousEffect, Game } from "../../kernel/game";
 import { isLive, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { NO_PLAYER, type ObjectId, type PlayerId } from "../../kernel/ids";
-import { flag, irEqual, irIncludes, list, num, numSet, str, strs } from "../ir_read";
+import { flag, ir, irEqual, irIncludes, isEnum, list, num, numSet, str, strs } from "../ir_read";
 import { manaValue } from "../cr100_game_concepts/mana_value";
 import {
   abilityKeyword,
@@ -51,8 +51,6 @@ const EK = {
   TEXT_CHANGE: 149,
 } as const;
 const AK = { SPELL: 0, ACTIVATED: 1, TRIGGERED: 2, STATIC: 3 } as const;
-/** ValueKind.UNCHANGED: "power stays as it is" in a SET_PT. */
-const VALUE_UNCHANGED = "UNCHANGED";
 
 /** Which layer each continuous effect kind applies in (CR 613.1). */
 export const EFFECT_LAYERS: ReadonlyMap<number, Layer> = new Map([
@@ -240,13 +238,13 @@ export function isHidden(obj: GameObject): boolean {
 
 const WARD_TWO: Ability = {
   $: "Ability",
-  kind: "AbilityKind.STATIC",
+  kind: ir("AbilityKind.STATIC"),
   keyword: "Ward",
   text: "Ward {2}",
   cost: {
     $: "Cost",
     components: [
-      { $: "CostComponent", kind: "CostKind.MANA", mana: { $: "ManaCost", symbols: [{ $: "ManaSymbol", kind: "ManaSymbolKind.GENERIC", generic: 2 }] } },
+      { $: "CostComponent", kind: ir("CostKind.MANA"), mana: { $: "ManaCost", symbols: [{ $: "ManaSymbol", kind: ir("ManaSymbolKind.GENERIC"), generic: 2 }] } },
     ],
   },
 };
@@ -662,7 +660,11 @@ function operation(game: Game, obj: GameObject, _chars: Characteristics, ce: Con
 }
 
 function isUnchanged(value: Value | undefined): boolean {
-  return typeof value?.kind === "string" ? value.kind.endsWith(`.${VALUE_UNCHANGED}`) : false;
+  return value !== undefined && isEnum(value.kind, "ValueKind.UNCHANGED");
+}
+
+function isConstant(value: Value): boolean {
+  return isEnum(value.kind, "ValueKind.CONSTANT");
 }
 
 /** Apply one continuous effect to a characteristic set. */
@@ -735,7 +737,7 @@ export function applyEffect(game: Game, obj: GameObject, current: Characteristic
 
 /** A bare keyword ability, as granted by name. */
 export function keywordAbility(word: string): Ability {
-  return { $: "Ability", kind: "AbilityKind.STATIC", keyword: word, text: word };
+  return { $: "Ability", kind: ir("AbilityKind.STATIC"), keyword: word, text: word };
 }
 
 /**
@@ -794,9 +796,9 @@ function intrinsicLandAbilities(line: CardTypeLine | TypeLine): Ability[] {
     if (color === undefined) continue;
     out.push({
       $: "Ability",
-      kind: "AbilityKind.ACTIVATED",
-      effects: [{ $: "Effect", kind: "EffectKind.ADD_MANA", colors: colorLiteral(color), text: `Add ${subtype} mana` }],
-      cost: { $: "Cost", components: [{ $: "CostComponent", kind: "CostKind.TAP_SELF", text: "{T}" }] },
+      kind: ir("AbilityKind.ACTIVATED"),
+      effects: [{ $: "Effect", kind: ir("EffectKind.ADD_MANA"), colors: colorLiteral(color), text: `Add ${subtype} mana` }],
+      cost: { $: "Cost", components: [{ $: "CostComponent", kind: ir("CostKind.TAP_SELF"), text: "{T}" }] },
       is_mana_ability: true,
       text: `{T}: Add mana (${subtype})`,
       from_land_type: true,
@@ -813,8 +815,8 @@ const COLOR_NAMES: ReadonlyMap<Color, string> = new Map([
   [Color.GREEN, "GREEN"],
 ]);
 
-function colorLiteral(color: Color): `Color.${string}` {
-  return `Color.${COLOR_NAMES.get(color) ?? "NONE"}`;
+function colorLiteral(color: Color): never {
+  return ir(`Color.${COLOR_NAMES.get(color) ?? "NONE"}`);
 }
 
 /** CR 310.12b: every Siege's exile-and-cast-transformed trigger. */
@@ -823,26 +825,26 @@ function intrinsicBattleAbilities(line: CardTypeLine | TypeLine): Ability[] {
   return [
     {
       $: "Ability",
-      kind: "AbilityKind.TRIGGERED",
+      kind: ir("AbilityKind.TRIGGERED"),
       trigger: {
         $: "TriggerCondition",
-        event_kinds: { $set: ["EventKind.COUNTER_REMOVED"] },
+        event_kinds: { $set: [ir("EventKind.COUNTER_REMOVED")] },
         subject: { $: "ObjectFilter", source_only: true },
         counter_kind: "defense",
         intervening_if: {
           $: "Condition",
-          kind: "ConditionKind.COUNTER_COUNT",
+          kind: ir("ConditionKind.COUNTER_COUNT"),
           counter_type: "defense",
-          constraint: { $: "NumericConstraint", comparison: "Comparison.LE", value: { $: "Value", constant: 0 } },
+          constraint: { $: "NumericConstraint", comparison: ir("Comparison.LE"), value: { $: "Value", constant: 0 } },
           text: "no defense counters remain",
         },
         text: "when the last defense counter is removed from this permanent",
       },
       effects: [
-        { $: "Effect", kind: "EffectKind.EXILE", targets: { $: "ObjectFilter", source_only: true }, text: "exile it" },
+        { $: "Effect", kind: ir("EffectKind.EXILE"), targets: { $: "ObjectFilter", source_only: true }, text: "exile it" },
         {
           $: "Effect",
-          kind: "EffectKind.CAST_WITHOUT_PAYING",
+          kind: ir("EffectKind.CAST_WITHOUT_PAYING"),
           targets: { $: "ObjectFilter", remembered: true },
           face_index: 1,
           text: "you may cast it transformed without paying its mana cost",
@@ -861,7 +863,7 @@ function intrinsicBattleAbilities(line: CardTypeLine | TypeLine): Ability[] {
 function valueOf(game: Game, value: Value | undefined, ce: ContinuousEffect, obj: GameObject | null): number {
   if (value === undefined) return 0;
   // A plain constant needs no hooks (the commonest case).
-  if (value.kind === undefined || value.kind === "ValueKind.CONSTANT") return value.constant ?? 0;
+  if (isConstant(value)) return value.constant ?? 0;
   const hooks = matchHooks();
   const [readsAffected, readsSource] = hooks.valueSubjects(value);
   const affected = flag(value.of_affected) || (readsAffected && !readsSource);
@@ -905,9 +907,9 @@ function affectsControl(game: Game, ce: ContinuousEffect, obj: GameObject, chars
 
 const ENCHANT_CREATURE: Ability = {
   $: "Ability",
-  kind: "AbilityKind.STATIC",
+  kind: ir("AbilityKind.STATIC"),
   keyword: "Enchant",
-  quality: { $: "ObjectFilter", types_all: "CardType.CREATURE" },
+  quality: { $: "ObjectFilter", types_all: ir("CardType.CREATURE") },
   text: "Enchant creature",
 };
 
@@ -969,7 +971,7 @@ function applyCda(game: Game, obj: GameObject, current: Characteristics): Charac
     for (const effect of list(ability.effects)) {
       if (kindOf(effect) !== EK.SET_PT) continue;
       const evaluate = (v: Value | undefined): number =>
-        v === undefined ? 0 : v.kind === undefined || v.kind === "ValueKind.CONSTANT" ? (v.constant ?? 0) : matchHooks().evaluate(game, v, { source: obj.id, controller: obj.controller });
+        v === undefined ? 0 : isConstant(v) ? (v.constant ?? 0) : matchHooks().evaluate(game, v, { source: obj.id, controller: obj.controller });
       chars = replaceCharacteristics(chars, {
         power: isUnchanged(effect.amount) ? chars.power : evaluate(effect.amount),
         toughness: isUnchanged(effect.amount2) ? chars.toughness : evaluate(effect.amount2),
