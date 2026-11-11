@@ -30,6 +30,8 @@ coordinates and merges into `main`.
 | AI and game runner, Web Workers, app build (Vite), serving IR JSON | web session | `engine/src/ai/`, `engine/src/sim/`, `webapp/`, `mtgfish/ui/web/`, `mtgfish/web/` |
 | Test fixtures, differential tests against the Python engine, review | auditor session | `engine/test/fixtures/`, `audit/` |
 
+**Roadmap:** [`ROADMAP.md`](../ROADMAP.md) lists every item by agent. Tick off your own items (with the commit hash) as you finish them.
+
 **Reporting:** each agent keeps `engine/status/<agent>.md` up to date (done, next, questions for the auditor). Direct messages to the auditor are refused, so put questions there or in commit messages.
 
 Shared files (`engine/package.json`, `engine/tsconfig.json`,
