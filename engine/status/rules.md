@@ -52,6 +52,18 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   through `cr600_spells_and_abilities/replacement_hooks.ts` until cr614 and
   cr303 are ported (defaults change nothing). KNOWN, marked in the code:
   "perpetually" and the junkyard pile are not ported yet.
+- Turn structure and priority: `rules/cr500_turn_structure/turn.ts`
+  (`runGame`, `takeTurn`; cr500_turn.py) and
+  `rules/cr100_game_concepts/priority.ts` (`runPriority`, `settle`, the
+  `Agent` interface, `PassingAgent`, `Action`; cr117_priority.py). Also
+  relaxations, durations (cr611), draw/discard/mill/shuffle, losing and
+  winning, Saga lore counters.
+- **Placeholders**, at their final paths and marked `PORT:` in the code,
+  so imports won't change when each is ported: `legality.ts` (only passing
+  is legal), `loops.ts`, `cr600_spells_and_abilities/{casting,stack,
+  triggers}.ts`, `cr700_additional_rules/{sba,designations,attractions}.ts`,
+  `cr500_turn_structure/{combat,restrictions}.ts`, special actions, and
+  CR 727 restarts. Games run end to end with passing agents.
 - `rules/ir_read.ts`: reads IR fields whether enums are strings or numbers,
   and `irEqual` for Python's dataclass equality of abilities.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
@@ -121,8 +133,8 @@ it stands. **Parser: re-land v2 whenever you like.**
 
 ## Next
 
-1. Turn structure (CR 500-514) and the priority loop, then casting and
-   activating (with the parser's mana code), then resolution.
+1. Casting spells and activating abilities (CR 601, 602), with legal
+   actions and the parser's mana code, then resolution.
 
 ## Questions for the auditor
 
