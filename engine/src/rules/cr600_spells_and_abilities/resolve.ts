@@ -22,8 +22,22 @@ import { agentFor, logRecord, player, type Game } from "../../kernel/game";
 import { isLive, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
-import { charsManaValue, hasSupertype } from "../cr200_parts_of_a_card/characteristics";
-import { bounce, destroy, discard, draw, mill, recordLink, sacrifice } from "../cr100_game_concepts/actions";
+import { charsManaValue, hasKeyword, hasSupertype, isCreature } from "../cr200_parts_of_a_card/characteristics";
+import {
+  addPoison,
+  bounce,
+  dealDamage,
+  destroy,
+  discard,
+  draw,
+  gainLife,
+  loseLife,
+  mill,
+  recordLink,
+  sacrifice,
+  tap,
+  untap,
+} from "../cr100_game_concepts/actions";
 import { moveObject } from "../zones";
 import { canPayCost, payCost } from "./paying";
 import { Act } from "../cr500_turn_structure/restrictions";
@@ -1043,4 +1057,112 @@ registerExecutor(ir("EffectKind.ROLL_DICE"), (resolution, effect) => {
     const outcome = outcomes.find((o) => covers(o, result));
     if (outcome !== undefined) execute(resolution, list(outcome.effects));
   }
+});
+
+// -- damage and life ---------------------------------------------------------------------
+
+/** Which object deals an effect's damage: the source, or "it" when the text names it (CR 120.1). */
+function damageDealer(resolution: Resolution, effect: Effect): [ObjectId | null, PlayerId] {
+  if (effect.damage_source == null || !flag(effect.damage_source.remembered)) return [resolution.source, resolution.controller];
+  for (const id of resolution.remembered) {
+    const obj = resolution.game.objects.get(id);
+    if (obj !== undefined) return [obj.id, obj.controller];
+  }
+  return [null, resolution.controller];
+}
+
+registerExecutor(EK.DAMAGE, (resolution, effect) => {
+  const game = resolution.game;
+  const amount = amountOf(resolution, effect);
+  const [dealer, dealerController] = damageDealer(resolution, effect);
+  // Read once, split by kind (CR 115.4); the cursor moves even with no dealer.
+  const chosen = isTargeted(effect) ? targetsFor(resolution, effect) : [];
+  if (dealer === null) return; // CR 608.2b
+  const sourceObj = game.objects.get(dealer);
+  const chars = sourceObj !== undefined ? characteristicsOf(game, sourceObj) : null;
+  const deathtouch = chars !== null && hasKeyword(chars, "Deathtouch");
+  const lifelink = chars !== null && hasKeyword(chars, "Lifelink");
+  const options = { source: dealer, sourceController: dealerController, deathtouch, lifelink };
+  for (const obj of objectsOf(resolution, effect, chosen)) dealDamage(game, obj, amount, options);
+  let recipients = targetedPlayers(chosen);
+  if (recipients.length > 0) resolution.chosenPlayers = recipients.slice(); // "that player"
+  if (recipients.length === 0 && effect.players != null && !isTargeted(effect)) recipients = playersOf(resolution, effect);
+  for (const pid of recipients) dealDamage(game, pid, amount, { source: dealer, sourceController: dealerController, lifelink });
+});
+
+registerExecutor(EK.GAIN_LIFE, (resolution, effect) => {
+  const amount = amountOf(resolution, effect);
+  for (const pid of playersOf(resolution, effect)) gainLife(resolution.game, pid, amount, { source: resolution.source });
+});
+
+registerExecutor(EK.LOSE_LIFE, (resolution, effect) => {
+  const amount = amountOf(resolution, effect);
+  for (const pid of playersOf(resolution, effect)) loseLife(resolution.game, pid, amount, { source: resolution.source });
+});
+
+registerExecutor(ir("EffectKind.SET_LIFE"), (resolution, effect) => {
+  const wanted = amountOf(resolution, effect);
+  for (const pid of playersOf(resolution, effect)) {
+    const delta = wanted - player(resolution.game, pid).life;
+    if (delta > 0) gainLife(resolution.game, pid, delta, { source: resolution.source });
+    else if (delta < 0) loseLife(resolution.game, pid, -delta, { source: resolution.source });
+  }
+});
+
+registerExecutor(ir("EffectKind.ADD_POISON"), (resolution, effect) => {
+  const amount = amountOf(resolution, effect);
+  for (const pid of playersOf(resolution, effect)) addPoison(resolution.game, pid, amount);
+});
+
+/** A target chosen to act in the next instruction: reading it moves the cursor; "it" is remembered. */
+registerExecutor(ir("EffectKind.DESIGNATE"), (resolution, effect) => {
+  objectsOf(resolution, effect);
+});
+
+/** The creature told to fight: the source, "it", or one a description names. */
+function fighter(resolution: Resolution, effect: Effect): GameObject[] {
+  const game = resolution.game;
+  const spec = effect.damage_source!;
+  if (flag(spec.source_only)) {
+    const obj = game.objects.get(resolution.source);
+    return obj !== undefined ? [obj] : [];
+  }
+  if (flag(spec.remembered)) return objectsOf(resolution, { $: "Effect", kind: EK.FIGHT as never, targets: spec });
+  return matchHooks().find(game, spec, { source: resolution.source, controller: resolution.controller });
+}
+
+/** CR 701.14a-c: each deals damage equal to its power to the other; neither if either can't. */
+registerExecutor(EK.FIGHT, (resolution, effect) => {
+  const game = resolution.game;
+  let combatants: GameObject[];
+  if (effect.damage_source != null) {
+    const opponents = objectsOf(resolution, effect); // read first: the cursor moves regardless
+    const fighters = fighter(resolution, effect);
+    if (fighters.length !== 1 || opponents.length !== 1) return;
+    combatants = [fighters[0]!, opponents[0]!];
+  } else {
+    combatants = objectsOf(resolution, effect);
+    if (combatants.length !== 2) return;
+  }
+  const [first, second] = combatants as [GameObject, GameObject];
+  if (first.zone !== Zone.BATTLEFIELD || second.zone !== Zone.BATTLEFIELD) return;
+  const a = characteristicsOf(game, first);
+  const b = characteristicsOf(game, second);
+  if (!isCreature(a) || !isCreature(b)) return;
+  dealDamage(game, second, a.power ?? 0, {
+    source: first.id, sourceController: first.controller, deathtouch: hasKeyword(a, "Deathtouch"), lifelink: hasKeyword(a, "Lifelink"),
+  });
+  dealDamage(game, first, b.power ?? 0, {
+    source: second.id, sourceController: second.controller, deathtouch: hasKeyword(b, "Deathtouch"), lifelink: hasKeyword(b, "Lifelink"),
+  });
+});
+
+// -- permanents --------------------------------------------------------------------------
+
+registerExecutor(ir("EffectKind.TAP"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) tap(resolution.game, obj, { source: resolution.source });
+});
+
+registerExecutor(ir("EffectKind.UNTAP"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) untap(resolution.game, obj, { source: resolution.source });
 });

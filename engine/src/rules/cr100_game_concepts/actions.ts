@@ -14,18 +14,25 @@ import {
   player,
   type Game,
 } from "../../kernel/game";
-import { addCounters as putCounters, isLive, isPermanent, objectText, removeCounters as takeCounters, type GameObject } from "../../kernel/gameobject";
+import { addCounters as putCounters, counterCount, isLive, isPermanent, objectText, removeCounters as takeCounters, type GameObject } from "../../kernel/gameobject";
 import { allocateTimestamp, NO_OBJECT, NO_PLAYER, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { shuffle } from "../../kernel/random";
 import { emit } from "../emit";
 import { replacementHooks } from "../cr600_spells_and_abilities/replacement_hooks";
 import { printedCharacteristics } from "../cr600_spells_and_abilities/layers";
 import { Act, prohibited, restrictionText } from "../cr500_turn_structure/restrictions";
+import { CardType } from "../../kernel/enums";
+import { gainLife as gainLifeRaw, loseLife as loseLifeRaw, takeCommanderDamage } from "./player";
+import { lifeChangeProhibited } from "../cr600_spells_and_abilities/cost_checks";
+import { playerProtectedFrom, protectedFrom } from "./protection";
+import { recordCombatDamageSource } from "../cr700_additional_rules/combat_damage_record";
+import { commanderIdentity } from "../zones";
 import type { Combat } from "../cr500_turn_structure/combat";
-import { hasKeyword } from "../cr200_parts_of_a_card/characteristics";
+import { hasKeyword, hasType, keywordAbilities, type Characteristics } from "../cr200_parts_of_a_card/characteristics";
 import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
 import { initiativeLeftTheGame, monarchLeftTheGame } from "../cr700_additional_rules/designations";
 import { moveObject, removeFromZone } from "../zones";
+import { num } from "../ir_read";
 
 /**
  * Put counters on an object, through replacement effects (CR 122.6, 614.1a).
@@ -365,4 +372,180 @@ export function carryLinks(game: Game, oldId: ObjectId, newId: ObjectId): void {
     entries.push(...recorded);
     game.exiledWith.set(newId, entries);
   }
+}
+
+// -- damage and life (CR 119, 120) -----------------------------------------------------
+
+/** How much of `amount` would be excess damage (CR 120.10), measured before it is dealt. */
+export function excessDamage(game: Game, target: GameObject, amount: number): number {
+  if (amount <= 0) return 0;
+  const chars = characteristicsOf(game, target);
+  const capacities: number[] = [];
+  if (hasType(chars, CardType.CREATURE)) capacities.push(Math.max(0, (chars.toughness ?? 0) - target.damage));
+  if (hasType(chars, CardType.PLANESWALKER)) capacities.push(counterCount(target, "loyalty"));
+  if (hasType(chars, CardType.BATTLE)) capacities.push(counterCount(target, "defense"));
+  if (capacities.length === 0) return 0;
+  return Math.max(0, amount - Math.max(...capacities));
+}
+
+export interface DamageOptions {
+  source?: ObjectId;
+  sourceController?: PlayerId;
+  deathtouch?: boolean;
+  lifelink?: boolean;
+  combat?: boolean;
+  isCommanderSource?: boolean;
+}
+
+/**
+ * Deal damage (CR 120) to a permanent or a player (a number). Nothing is
+ * destroyed here: lethal damage kills through the SBAs (CR 704.5g). Zero or
+ * less deals none (CR 120.8, 107.1b). Returns how much was dealt.
+ */
+export function dealDamage(game: Game, target: GameObject | PlayerId, amountIn: number, options: DamageOptions = {}): number {
+  let amount = amountIn;
+  const source = options.source ?? NO_OBJECT;
+  const sourceController = options.sourceController ?? NO_PLAYER;
+  const combat = options.combat ?? false;
+  const lifelink = options.lifelink ?? false;
+  const kind = combat ? EventKind.COMBAT_DAMAGE_DEALT : EventKind.DAMAGE_DEALT;
+  if (amount <= 0) return 0;
+  const toPlayer = typeof target === "number";
+  // CR 614/615: prevention and modification apply before it is dealt.
+  const hooks = replacementHooks();
+  if (hooks.hasReplacements(game)) {
+    const prospective = hooks.replace(game, event(kind, {
+      objectId: toPlayer ? NO_OBJECT : (target as GameObject).id,
+      player: toPlayer ? (target as PlayerId) : NO_PLAYER,
+      source, sourceController, amount,
+    }));
+    if (prospective === null) return 0;
+    amount = prospective.amount;
+    if (amount <= 0) return 0;
+  }
+  const sourceObj = game.objects.get(source) ?? null;
+  const sourceChars = sourceObj !== null ? characteristicsOf(game, sourceObj) : null;
+  // CR 702.16e.
+  if (!toPlayer && protectedFrom(game, target as GameObject, sourceObj)) {
+    logRecord(game, `${objectText(target as GameObject, characteristicsOf(game, target as GameObject).name)} has protection; damage prevented`, { kind: "protection" });
+    return 0;
+  }
+  if (toPlayer) {
+    return damagePlayer(game, target as PlayerId, amount, { source, sourceController, lifelink, combat, isCommanderSource: options.isCommanderSource ?? false });
+  }
+  const obj = target as GameObject;
+  const chars = characteristicsOf(game, obj);
+  // CR 702.90b, 702.75a: wither and infect deal damage to creatures as -1/-1 counters.
+  if (sourceChars !== null && hasType(chars, CardType.CREATURE) && (hasKeyword(sourceChars, "Wither") || hasKeyword(sourceChars, "Infect"))) {
+    const excess = excessDamage(game, obj, amount);
+    addCounters(game, obj, "-1/-1", amount, { source });
+    emit(game, event(kind, { objectId: obj.id, player: obj.controller, source, sourceController, amount, data: [excess] }));
+    if (lifelink && sourceController !== NO_PLAYER) gainLife(game, sourceController, amount, { source });
+    return amount;
+  }
+  const excess = excessDamage(game, obj, amount); // CR 120.10
+  if (hasType(chars, CardType.PLANESWALKER)) {
+    removeCounters(game, obj, "loyalty", amount, { source });
+  } else if (hasType(chars, CardType.BATTLE)) {
+    removeCounters(game, obj, "defense", amount, { source });
+  } else if (hasType(chars, CardType.CREATURE)) {
+    obj.damage += amount;
+    if (options.deathtouch) obj.dealtDeathtouchDamage = true;
+  } else {
+    return 0; // CR 120.3
+  }
+  emit(game, event(kind, { objectId: obj.id, player: obj.controller, source, sourceController, amount, data: [excess] }));
+  if (lifelink && sourceController !== NO_PLAYER) gainLife(game, sourceController, amount, { source });
+  return amount;
+}
+
+/** Damage to a player causes that much life loss (CR 120.3a), or poison with infect (CR 702.90c). */
+function damagePlayer(
+  game: Game,
+  playerId: PlayerId,
+  amount: number,
+  o: { source: ObjectId; sourceController: PlayerId; lifelink: boolean; combat: boolean; isCommanderSource: boolean },
+): number {
+  const p = player(game, playerId);
+  const kind = o.combat ? EventKind.COMBAT_DAMAGE_DEALT : EventKind.DAMAGE_DEALT;
+  if (playerProtectedFrom(game, playerId, game.objects.get(o.source) ?? null)) {
+    logRecord(game, `${p.name} has protection; damage prevented`, { kind: "protection" }); // CR 702.16e
+    return 0;
+  }
+  if (o.combat && p.hasLost) return 0; // CR 800.4e
+  if (o.combat) recordCombatDamageSource(game, o.source, o.sourceController); // CR 702.76a, 702.173a
+  const sourceObj = game.objects.get(o.source);
+  const sourceChars = sourceObj !== undefined ? characteristicsOf(game, sourceObj) : null;
+  if (sourceChars !== null && hasKeyword(sourceChars, "Infect")) {
+    addPoison(game, playerId, amount);
+    emit(game, event(kind, { player: playerId, source: o.source, sourceController: o.sourceController, amount }));
+    if (o.lifelink && o.sourceController !== NO_PLAYER) gainLife(game, o.sourceController, amount, { source: o.source });
+    if (o.combat) toxicPoison(game, playerId, sourceChars);
+    return amount;
+  }
+  const lifeLost = replacedLifeLoss(game, playerId, amount, { source: o.source });
+  loseLifeRaw(p, lifeLost);
+  // CR 903.10: combat damage from a commander is tracked; 21 from one is lethal.
+  if (o.combat && o.isCommanderSource && o.source !== NO_OBJECT) {
+    const total = takeCommanderDamage(p, commanderIdentity(game, o.source), amount);
+    emit(game, event(EventKind.COMMANDER_DAMAGE_DEALT, { player: playerId, source: o.source, sourceController: o.sourceController, amount: total }));
+  }
+  emit(game, event(kind, { player: playerId, source: o.source, sourceController: o.sourceController, amount }));
+  if (lifeLost > 0) emit(game, event(EventKind.LIFE_LOST, { player: playerId, amount: lifeLost, source: o.source }));
+  if (o.lifelink && o.sourceController !== NO_PLAYER) gainLife(game, o.sourceController, amount, { source: o.source });
+  if (o.combat) toxicPoison(game, playerId, sourceChars);
+  return amount;
+}
+
+/** CR 120.3g, 702.164c: toxic's poison on combat damage, the total toxic value. */
+function toxicPoison(game: Game, playerId: PlayerId, sourceChars: Characteristics | null): void {
+  if (sourceChars === null) return;
+  const total = keywordAbilities(sourceChars, "Toxic").reduce((t, a) => t + num((a.quality as { constant?: number } | null)?.constant ?? 0), 0);
+  if (total > 0) addPoison(game, playerId, total);
+}
+
+/** Gain life (CR 119.3); replaceable, and zero is no event (CR 119.9-10). */
+export function gainLife(game: Game, playerId: PlayerId, amountIn: number, options: { source?: ObjectId } = {}): number {
+  let amount = amountIn;
+  const source = options.source ?? NO_OBJECT;
+  if (amount <= 0) return 0;
+  if (lifeChangeProhibited(game, playerId, true)) return 0; // CR 119.7
+  const hooks = replacementHooks();
+  if (hooks.hasReplacements(game)) {
+    const prospective = hooks.replace(game, event(EventKind.LIFE_GAINED, { player: playerId, amount, source }));
+    if (prospective === null) return 0;
+    if (prospective.kind === EventKind.LIFE_LOST) {
+      loseLife(game, playerId, prospective.amount, { source });
+      return 0;
+    }
+    amount = prospective.amount;
+    if (amount <= 0) return 0;
+  }
+  const gained = gainLifeRaw(player(game, playerId), amount);
+  if (gained) emit(game, event(EventKind.LIFE_GAINED, { player: playerId, amount: gained, source }));
+  return gained;
+}
+
+/** How much life a player actually loses, after replacement (CR 614, 120.3a). */
+export function replacedLifeLoss(game: Game, playerId: PlayerId, amount: number, options: { source?: ObjectId } = {}): number {
+  if (amount > 0 && lifeChangeProhibited(game, playerId, false)) return 0;
+  const hooks = replacementHooks();
+  if (amount <= 0 || !hooks.hasReplacements(game)) return amount;
+  const prospective = hooks.replace(game, event(EventKind.LIFE_LOST, { player: playerId, amount, source: options.source ?? NO_OBJECT }));
+  return prospective === null ? 0 : prospective.amount;
+}
+
+/** Lose life, after replacements (CR 119.3). */
+export function loseLife(game: Game, playerId: PlayerId, amount: number, options: { source?: ObjectId } = {}): number {
+  const lost = loseLifeRaw(player(game, playerId), replacedLifeLoss(game, playerId, amount, options));
+  if (lost) emit(game, event(EventKind.LIFE_LOST, { player: playerId, amount: lost, source: options.source ?? NO_OBJECT }));
+  return lost;
+}
+
+/** Give a player poison counters (CR 122.1, 104.3c); never negative (CR 107.1b). */
+export function addPoison(game: Game, playerId: PlayerId, amount: number): number {
+  if (amount <= 0) return 0;
+  player(game, playerId).poison += amount;
+  emit(game, event(EventKind.POISON_ADDED, { player: playerId, amount }));
+  return amount;
 }

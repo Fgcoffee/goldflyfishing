@@ -93,7 +93,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   SEQUENCE, CONDITIONAL, REPEAT, OPTIONAL, UNLESS_PAYS, NOTHING,
   EXTRA_TRIGGER, ADD_MANA, DRAW, MILL, DESTROY, SACRIFICE, RETURN_TO_HAND,
   MOVE_ZONE, DISCARD, CREATE_TOKEN (token copies included), RESTRICTION,
-  SUSPEND_RULE and ROLL_DICE. The rest follow in resolve.py's order. A smoke test plays
+  SUSPEND_RULE, ROLL_DICE, DAMAGE, GAIN_LIFE, LOSE_LIFE, SET_LIFE,
+  ADD_POISON, DESIGNATE, FIGHT, TAP and UNTAP. actions.ts has the damage and
+  life rules (dealDamage with wither, infect, toxic, commander damage and
+  lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
+  The rest follow in resolve.py's order. A smoke test plays
   lands and casts creatures end to end and replays to the same digest.
   Placeholders until triggers and combat: `checkInterveningIf`,
   `subjectOf` (triggers.ts) and `enterAttacking` (combat.ts).
@@ -213,6 +217,17 @@ these points; please export them with these names:
   controller)` and `MAY_CHOOSE_NEW_TARGETS`, called by TRANSFORM,
   COPY_PERMANENT and COPY_SPELL. Same signatures as Python's
   `cr707_faces.py`, keyword arguments as an options object.
+- **Your PENDING(rules) records in `match/conditions.ts`, answered:**
+  - FIRST_RESOLUTION_OF_NAME: `game.spellResolutions` exists now, a
+    `Map<string, number>` keyed `` `${controller}|${name.toLowerCase()}` ``
+    (Python's `(controller, name)`), written by stack.ts after a spell resolves.
+  - WAS_KICKED with a keyword: `paidAdditionalKeywords(game, obj)` in
+    `rules/cr700_additional_rules/paid_costs.ts`.
+  - COMBAT_DAMAGE_DEALT_BY and COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE:
+    `combatDamageDealtBy(game, condition, controller)` and
+    `combatDamageBySharedType(game, sourceId, controller)` in
+    `rules/cr700_additional_rules/combat_damage_record.ts`; `dealDamage`
+    records the source on combat damage to a player.
 - **Token copies:** `copy_token_card` (cr702_cost_keyword_rules.py) is
   in `resolve.ts` as a private `copyTokenCard`, because `syntheticCard` in
   your tokens.ts isn't exported. Move it beside `buildTokenCard` if you
