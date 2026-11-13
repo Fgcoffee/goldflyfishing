@@ -74,8 +74,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   `cr100_game_concepts/costs.ts` (cr118_costs: components, TotalCost),
   `total_cost.ts` (CR 601.2f with alternative, additional, spree, emerge,
   commander tax, cost changes), `cost_checks.ts` (the payability dry run and
-  what can pay each component). Still to come: paying, `castSpell`, `playLand`,
-  `activateAbility`, `legalActions`, then the ManaPlanHost.
+  what can pay each component), `paying.ts` (paying spells with convoke,
+  improvise and delve; activation costs and limits; player-scoped costs),
+  `mana_host.ts`, and from resolution the dispatcher with ADD_MANA and
+  `resolveManaAbility`. Still to come: `castSpell`, `playLand`,
+  `activateAbility`, `legalActions`.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
 
@@ -112,13 +115,8 @@ in your way rather than working around it.
 
 ## For the parser session (match/)
 
-- **Two new hooks in `kernel/hooks.ts`:** `resolvePlayers(game, spec,
-  {controller, source})` (Python `matching.resolve_players`, APNAP order)
-  and `defendingPlayers(game, source)` (Python `matching._defending_players`).
-  Restrictions (CR 101.2) call them. Your `matching.ts` already has both;
-  please add them to `installMatch` in `match/index.ts` (your file):
-  `resolvePlayers: (g, s, c) => resolvePlayers(g, s, c), defendingPlayers: (g, s) => defendingPlayers(g, s)`.
-- **A third hook:** `wasUndeterminable()`, your `values.ts` function of the
+- `resolvePlayers` and `defendingPlayers` hooks: installed (869a1b1), thanks.
+- **One more hook, please:** `wasUndeterminable()`, your `values.ts` function of the
   same name. Costs read it right after `evaluate` (CR 903.4f: an
   undeterminable amount makes a cost unpayable). Until installed it says
   `false`, so such a cost counts as zero rather than unpayable.
@@ -144,41 +142,28 @@ in your way rather than working around it.
   stay mechanical. The engine's own state (Game, GameObject, Player) is
   camelCase; IR objects are read as they come.
 
-## For the parser session: mana abilities (final signatures)
+## For the parser session: the mana host is done
 
-These are final; bodies that throw "not ported yet" arrive with casting and
-resolution. I implement `ManaPlanHost<Game>` myself, in
-`rules/cr600_spells_and_abilities/mana_host.ts`, once they do; plan.ts needs
-no game imports.
+`ManaPlanHost<Game>` is implemented in
+`rules/cr600_spells_and_abilities/mana_host.ts` as `MANA_HOST`, with the
+game-side wrappers Python had: `planPaymentFor(game, player, cost,
+context)` (plan_payment, including its early return when the pool already
+pays), `canProduceFor` (can_produce) and `executePlanFor` (execute_plan; it
+turns `PlanNoLongerHolds` into a CastError, as Python's F61 guard raises).
+`manaOptions`, `stillActivatable` (by `irEqual`) and the `_predict` port are
+there too. Your Mana planning roadmap item can be ticked.
 
-- **Listing mana abilities:** `manaAbilities(characteristicsOf(game, obj))`
-  in `rules/cr200_parts_of_a_card/characteristics.ts` returns
-  `[index, Ability][]` (index into `chars.abilities`, which is
-  `ManaOption.abilityIndex`); `isUsableManaAbility(ability)` is the test
-  (`is_mana_ability` and not `unparsed`).
-- **Activation (CR 605.3b, no stack):** in
-  `rules/cr600_spells_and_abilities/casting.ts`:
-  `canPayActivation(game, source, ability, xValue = 0): boolean`,
-  `activationManaCost(game, source, ability): ManaCost` (rules/mana/cost),
-  `payActivation(game, source, ability, xValue = 0): void` (throws CastError,
-  having paid nothing); modes: `modalEffect(effects)`,
-  `legalModes(game, source, modal, player)`,
-  `chooseModes(game, source, effects, player, {announced, sourceId})`.
-  Then in `rules/cr600_spells_and_abilities/resolve.ts`:
-  `newResolution(game, sourceId, controller, {chosenModes, manaColor, ...})`
-  and `resolveManaAbility(resolution, effects, {tapped})`;
-  `manaColorChoices(game, controller, effect)`. Then
-  `resolveManaTriggers(game)` in triggers.ts (CR 605.4a).
-- **Tapping:** yes, through `tap(game, obj, {source})` in
-  `rules/cr100_game_concepts/actions.ts` (real now, with `untap`);
-  `payActivation` uses it for {T}, so TAPPED events and "tapped for mana"
-  triggers come out right.
+- **Correction on tapping:** Python's `_pay_activation` sets `tapped` and
+  emits TAPPED itself rather than calling `actions.tap`, and the port does
+  the same. `tap` / `untap` in actions.ts are for effects.
+- **Payment context:** `paymentContextOf(obj)` gives a restriction the
+  printed face's types and subtypes, `{}` for a token, `null` for a bare
+  check, as `SpendOnlyOn.permits` reads them.
 
 ## Next
 
-1. The rest of casting: costs (CR 601.2f-h, 118) with the parser's mana
-   code, castSpell / activateAbility / playLand, legal actions, the
-   ManaPlanHost. Then resolution.
+1. The rest of casting: castSpell / activateAbility / playLand and legal
+   actions. Then resolution's other executors.
 
 ## Questions for the auditor
 
