@@ -5,7 +5,9 @@
  * for the real engine happens in the worker (`worker/handle.ts`), not here.
  */
 
-import { summarize, type RunResult, type RunSetup } from "@goldfly/engine/sim";
+import {
+  buildReport, impact, margin, summarize, topCards, type RunResult, type RunSetup,
+} from "@goldfly/engine/sim";
 import { EngineClient } from "./client";
 import { IrClient, type DeckManifest } from "./ir";
 import { WorkerPool, defaultWorkers } from "./pool";
@@ -24,6 +26,8 @@ const progress = $<HTMLProgressElement>("#progress");
 const runStatus = $("#run-status");
 const notes = $<HTMLUListElement>("#notes");
 const table = $<HTMLTableElement>("#results");
+const cardTable = $<HTMLTableElement>("#cards");
+const cardsHeading = $("#cards-heading");
 
 const irClient = new IrClient();
 const pool = new WorkerPool(defaultWorkers());
@@ -85,6 +89,21 @@ function showTable(manifest: DeckManifest, result: RunResult): void {
     }),
   );
   table.hidden = false;
+
+  // The report's card table: impact of drawing each card, reliable ones only.
+  const report = buildReport(result.records, result.crashed);
+  const ranked = topCards(report, 10);
+  const signed = (x: number): string => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}%`;
+  (cardTable.tBodies[0] as HTMLTableSectionElement).replaceChildren(
+    ...ranked.map((card) => {
+      const row = document.createElement("tr");
+      const cells = [card.name, signed(impact(card)), `${(margin(card) * 100).toFixed(1)}%`,
+                     String(card.drawn), String(card.cast), card.cast ? card.averageCastRound.toFixed(1) : "-"];
+      row.replaceChildren(...cells.map((text) => Object.assign(document.createElement("td"), { textContent: text })));
+      return row;
+    }),
+  );
+  cardTable.hidden = cardsHeading.hidden = ranked.length === 0;
   if (summary.stalls > 0) note(`${summary.stalls} game(s) hit the turn cap with no winner (${percent(summary.stallRate)}).`);
 }
 
@@ -96,6 +115,7 @@ async function run(): Promise<void> {
   notes.replaceChildren();
   runStatus.className = "";
   table.hidden = true;
+  cardTable.hidden = cardsHeading.hidden = true;
   progress.hidden = false;
   progress.value = 0;
   const games = Math.max(1, Math.min(100_000, numberOf("#games", 1000)));

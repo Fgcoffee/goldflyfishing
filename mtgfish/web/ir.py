@@ -71,11 +71,15 @@ def build_fingerprint(index: dict) -> str:
 
     ``card_hash`` covers a card's text, not the parser: after a parser change
     the same hash can map to different IR. So cached card URLs also carry
-    this. ``build`` is the parser's code fingerprint once the exporter writes
-    one; until then ``built_at`` stands in, which changes with every export,
-    so a new export always gets new URLs (over-invalidating, never stale).
+    this: the exporter's ``code`` (``mtgfish.ir.store.code_fingerprint``),
+    shortened to 16 hex digits for the URL. An older export without it
+    falls back to ``built_at``, which changes with every export, so a new
+    export always gets new URLs (over-invalidating, never stale).
     """
-    return str(index.get("build") or index.get("built_at") or "")
+    code = index.get("code") or index.get("build")
+    if code:
+        return str(code)[:16]
+    return str(index.get("built_at") or "")
 
 
 class IrStore:

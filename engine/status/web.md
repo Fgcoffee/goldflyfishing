@@ -86,9 +86,10 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
   3. Every exported card URL carries the export's build fingerprint
      (`?h=<card_hash>&b=<build>`). It is immutable only when both match, and
      `IrClient` keys its cache on hash + build.
-  - `build` is read from `index.json` `build`, falling back to `built_at`
-    until the parser writes a fingerprint. The fallback changes on every
-    export, so it over-invalidates and is never stale.
+  - `build` is the first 16 hex digits of `index.json` `code` (the parser's
+    `code_fingerprint()`, fe93356), falling back to `built_at` for an older
+    export. An export written by other parser code is served entirely live
+    by `IRStore`; that is tested through the endpoint.
   - The per-deck field `missing_ir` is renamed `live_ir`: the cards the
     server parsed live.
 - **End-to-end harness page** (`webapp/index.html`, `src/main.ts`):
@@ -122,10 +123,7 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
 
 ## Questions for the auditor
 
-- For the parser session: I read the build fingerprint from `index.json` key
-  **`build`** (a string). Please use that name, or tell me the one you
-  choose.
 - The Docker image build with the IR export step hasn't been run locally.
   It's checked on the next Render deploy.
-- Resolved: switching to `IRStore` (done above). The Windows encoding bug is
-  with the parser session.
+- Resolved: switching to `IRStore` (done above); the build fingerprint uses
+  the parser's `code` key; the Windows encoding bug was fixed in fe93356.

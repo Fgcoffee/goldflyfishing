@@ -10,6 +10,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from mtgfish.ir.store import code_fingerprint
 from mtgfish.web.auth.ratelimit import RateLimiter
 from mtgfish.web.ir import LIMITS, IrStore, build_router
 
@@ -17,6 +18,8 @@ SAMPLES = Path(__file__).resolve().parents[2] / "schema" / "samples"
 KRENKO = "68418069-f615-40ef-ae0d-764192acae00"
 GOBLIN_GUIDE = "51d9564b-44fc-4de1-9119-09d7b4089378"
 GOBLIN_LACKEY = "213fbbdd-f1bc-4bba-9124-7b26e9a706c8"
+
+BUILD = code_fingerprint()[:16]
 
 DECK = "1 Goblin Lackey\n1 Goblin Guide\n\n// Commander\n1 Krenko, Mob Boss\n"
 
@@ -36,8 +39,9 @@ def ir_dir(tmp_path) -> Path:
         cards[document["oracle_id"]] = {
             "name": document["name"], "card_hash": document["card_hash"],
         }
+    # Written by the code running now, so IRStore treats the export as current.
     index = {"ir_version": 1, "built_at": "2026-11-10T12:00:00", "snapshot": "snap",
-             "build": "b1", "cards": cards, "names": {}}
+             "code": code_fingerprint(), "cards": cards, "names": {}}
     (out / "index.json").write_text(json.dumps(index), encoding="utf-8")
     return out
 
@@ -78,8 +82,8 @@ def test_a_deck_resolves_to_oracle_ids_and_card_urls(client, ir_dir):
     lackey = body["cards"][GOBLIN_LACKEY]
     digest = json.loads((ir_dir / f"{GOBLIN_LACKEY}.json").read_text("utf-8"))["card_hash"]
     assert lackey["card_hash"] == digest
-    assert lackey["url"] == f"/ir/v1/{GOBLIN_LACKEY}.json?h={digest}&b=b1"
-    assert body["build"] == "b1"
+    assert lackey["url"] == f"/ir/v1/{GOBLIN_LACKEY}.json?h={digest}&b={BUILD}"
+    assert body["build"] == BUILD
 
 
 def test_a_card_missing_from_the_export_is_parsed_live_and_sent_inline(client, caplog):
@@ -114,9 +118,18 @@ def test_a_card_exported_from_older_text_is_parsed_live(ir_dir, card_db):
     assert "url" not in lackey and lackey["card_hash"] != "older-text"
 
 
+def test_an_export_from_other_parser_code_is_served_live(ir_dir, card_db):
+    index = json.loads((ir_dir / "index.json").read_text("utf-8"))
+    index["code"] = "written-by-older-parser-code"
+    (ir_dir / "index.json").write_text(json.dumps(index), encoding="utf-8")
+    body = make_client(ir_dir, card_db).post("/api/ir/decks", json={"decklists": [DECK]}).json()
+    assert all("url" not in ref for ref in body["cards"].values())
+    assert sorted(body["decks"][0]["live_ir"]) == ["Goblin Guide", "Goblin Lackey", "Krenko, Mob Boss"]
+
+
 def test_the_build_falls_back_to_the_export_time(ir_dir):
     index = json.loads((ir_dir / "index.json").read_text("utf-8"))
-    del index["build"]
+    del index["code"]
     (ir_dir / "index.json").write_text(json.dumps(index), encoding="utf-8")
     assert make_client(ir_dir).get("/api/ir").json()["build"] == "2026-11-10T12:00:00"
 
