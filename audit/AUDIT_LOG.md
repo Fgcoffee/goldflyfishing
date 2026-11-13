@@ -600,3 +600,18 @@ New findings:
 Also checked: PR #28 (deck-optimisation session, not merged by me) leaves parser and rules alone. Its runner change is deterministic (same game digests fresh or after another deck). Sanguine Bond / Exquisite Blood loops resolve correctly (the opponent dies at 0); the stats report files them as "noncombat damage".
 
 **Verdict: OK to merge.** I merged exactly rules bee40c1 and parser c2b9eb6. Later commits (rules to 1de754f with F53b, F54, F55, F57 and F60 work; parser to a64c185) are round 23. A first look on that merge: F53b fixed (Leyline of Sanctity stops only opponents; True Believer stops everyone), F55 fixed, F57 fixed; F56 still not offered; F54 still under review.
+
+## Round 23 (2026-11-09 to 11-11): PR #36 (rules e1cd04b) and PR #38 (shared branch with parser da34f23), merged at the user's request
+
+- Merged as 4af8660. The tree outside `engine/` and `webapp/` matched the tested merge d60c69d: 3202 passed.
+- On the merge: F53b fixed (Leyline of Sanctity stops only opponents; True Believer stops everyone). F55 and F57 fixed. F56 still not offered. F54 unclear; deferred with the rest.
+- Python was then frozen for the TypeScript port. Bug resolution is paused until the port is done; findings below are logged, not fixed.
+
+## The TypeScript port: findings logged during the port (fixed after it)
+
+| # | Sev | Owner | Finding | Evidence |
+|---|---|---|---|---|
+| F61 | WARN | parser | Python crash in `mana_plan.execute_plan` (IndexError at line 199) when a planned source, here a Treasure, is gone by the time it's activated. The TS port keeps the guard: every source is re-checked and `PlanNoLongerHolds` becomes a CastError. | The user's four-deck run. Game 1 of run 0 (seed 3936583297) does not crash here: 77 turns, winner 2, digest 73b281bb6a971a19. |
+| F62 | WARN | rules | A MOVE_ZONE effect to the library goes to the graveyard instead. `_do_move_zone` reads `effect.zone or Zone.GRAVEYARD`, and the library is Zone 0, which is falsy. Ported as is, marked `// KNOWN: F62` in `resolve.ts`. | Reported by the rules session from the port (status file, 13 Nov). |
+
+Also deferred: karoo lands are always sacrificed.

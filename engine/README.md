@@ -25,8 +25,8 @@ coordinates and merges into `main`.
 | Area | Owner | Paths |
 |---|---|---|
 | Card IR: JSON schema, Python exporter, TS types | parser session | `schema/`, `engine/src/ir/`, `mtgfish/ir/`, `mtgfish/tools/ir_export.py` |
-| Kernel and rules: state, zones, objects, layers, casting, stack, triggers, SBAs, combat, replacements, keywords | rules session | `engine/src/kernel/`, `engine/src/rules/` (except the two folders below) |
-| Mana core, then filter matching, values and conditions (ported from `cr106_mana.py`, `mana_plan.py`, `kernel/matching.py`, `values.py`, `conditions.py`) | parser session | `engine/src/rules/mana/`, `engine/src/rules/match/`, and the modules for the items moved to the parser in `ROADMAP.md` (state-based actions, game setup, copies/faces/tokens) |
+| Kernel and rules: state, zones, objects, layers, casting, the stack and resolution, triggers, combat, `play()` | rules session | `engine/src/kernel/`, `engine/src/rules/` (except the two folders below) |
+| Mana core, then filter matching, values and conditions (ported from `cr106_mana.py`, `mana_plan.py`, `kernel/matching.py`, `values.py`, `conditions.py`) | parser session | `engine/src/rules/mana/`, `engine/src/rules/match/`, and the modules for the items moved to the parser in `ROADMAP.md` (state-based actions, game setup, copies/faces/tokens, replacement and prevention, commander rules, and the CR 700 mechanics that run during a game) |
 | AI and game runner, Web Workers, app build (Vite), serving IR JSON | web session | `engine/src/ai/`, `engine/src/sim/`, `webapp/`, `mtgfish/ui/web/`, `mtgfish/web/` |
 | Test fixtures, differential tests against the Python engine, review | auditor session | `engine/test/fixtures/`, `audit/` |
 

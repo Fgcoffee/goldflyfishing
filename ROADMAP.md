@@ -16,7 +16,7 @@ The paths each owns are in [`engine/README.md`](engine/README.md).
 ## Milestones (what the user is told about)
 
 1. [x] Game state and card characteristics work in TypeScript
-2. [ ] Casting spells and paying mana work
+2. [x] Casting spells and paying mana work (56f037f)
 3. [ ] The stack, triggers and combat work
 4. [ ] A first full game plays to the end in TypeScript
 5. [ ] Games run in the browser, in Web Workers
@@ -43,9 +43,6 @@ and games that don't replay from their seed are fixed now.
 - [ ] Resolving the stack: effect executors (`resolve.py`)
 - [ ] Triggered abilities (CR 603), including look-back
 - [ ] Combat (CR 506-511): attack and block requirements, costs, damage
-- [ ] Replacement and prevention effects (CR 614-616)
-- [ ] Keyword runtime (CR 702)
-- [ ] Commander rules (CR 903): command zone, tax, commander damage
 - [ ] `play(setup, index, seed)` entry point for the runner, agreed with web
 - [ ] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games
 - [ ] Each module's Python board tests ported as Vitest tests
@@ -65,6 +62,17 @@ and games that don't replay from their seed are fixed now.
 - [x] *(moved from rules, 13 Nov)* State-based actions (CR 704) (ff39b13)
 - [x] *(moved from rules, 13 Nov)* Game setup (CR 103): shuffles, mulligans (bfd46b2)
 - [x] *(moved from rules, 13 Nov)* Copies, faces and tokens (CR 707, 711, 712) (80d8ede tokens, 38f0866 faces and copies)
+- [ ] *(moved from rules, 14 Nov)* Replacement and prevention effects (CR 614-616): port `cr614_replacement.py` into the seams in `replacement_hooks.ts` and `zones.ts`. Rules' `resolve.ts` needs `register`, `replacement_from_effect` and `become_chosen_characteristics` from it, so publish those first
+- [ ] *(moved from rules, 14 Nov)* Commander rules (CR 903): `wants_command_zone` and the command-zone choice; check tax (rules' `total_cost.ts`) and commander damage (your `sba.ts`) end to end
+- [ ] *(moved from rules, 14 Nov)* Keyword runtime and the other CR 700 mechanics that run during a game:
+  - face-down (`cr708_face_down.py`);
+  - designations, monarch and initiative (`cr725_designations.py`);
+  - dungeons (`cr309_dungeons.py`);
+  - the Ring (`cr701_ring.py`);
+  - attractions, preparation and digital mechanics;
+  - soulbond and `cr702_cost_keyword_rules.py`.
+
+  Keyword *expansion* (`cr702_keyword_impl.py`, `cr701_keyword_actions.py`) runs at export time and is already in the IR; confirm that in your status file and skip it.
 - [ ] Port the Python board tests for every module you own as Vitest tests
 
 ### web
