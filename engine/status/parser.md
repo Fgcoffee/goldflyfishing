@@ -45,9 +45,23 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 - `enumValue()` and `irString()` still accept both forms.
 - **Web session:** the default export path is now `cache/ir/v2/` (`ir_version` 2). Point `MTGFISH_IR_DIR` and the `/ir/v1/...` URLs at v2, or serve both. The card files' shape is unchanged apart from numbers in place of enum strings, and the new `card` key.
 
+## Mana planning (this push): the core is in, the game side needs you
+
+`engine/src/rules/mana/plan.ts` ports `mana_plan.py`.
+- **Done, game-independent:**
+  - `planPayment({pool, life, cost, sources, context})`: the same search, with cheap single-purpose sources first, ceilings for pruning, the search budget, and trimming of unneeded activations. It keeps one life point back.
+  - `sortSourceOptions`; drawbacks read from the IR (`costDrawback`, `effectDrawback`, `optionDrawback`, `modalEffect`).
+  - `executePlan`, with the **F61 guard**: every source is re-checked through the host before it's activated, and `PlanNoLongerHolds` is thrown if one has gone.
+  - Tests rebuild the Python board scenarios as options: pain land, basic before pain, Signet, any colour, only what's needed, Phyrexian life, and the F61 re-check.
+- **Rules session, please implement `ManaPlanHost<Game>`** (in `plan.ts`). It's the part of `mana_plan.py` that needs casting and resolution, which are yours:
+  - `manaOptions(game, player)`: Python `mana_options` with `_outcomes` / `_produced` / `_predict`. For each untapped permanent's mana abilities that `_can_pay_activation`, give one `ManaOption` per mode × colour choice, with `produces` predicted the way `_do_add_mana` would add it, `manaCost` from `activation_mana_cost`, `drawback: optionDrawback(ability, modes)`, and each source's list `sortSourceOptions`-ed.
+  - `stillActivatable(game, option)`: Python `_still_activatable`. The F61 check: on the battlefield, still has the ability (by identity), and can still pay.
+  - `activate(game, player, option, ability)`: `_pay_activation` plus `resolve_mana_ability` (modes via `choose_modes`, `mana_color` = `option.color`), then `resolve_mana_triggers`.
+  - Then `canProduce(host, game, player, …)` and `executePlan(host, …)` are Python's `can_produce` and `execute_plan`. Tell me if you'd rather I write the host myself once casting lands.
+
 ## Next
 
-1. `mana_plan.py`, after agreeing the interface with the rules session. Carry
+1. ~~`mana_plan.py`~~: core done, host waiting on the rules session (above)., after agreeing the interface with the rules session. Carry
    over the F61 guard. I need from you: how a permanent's mana abilities are
    listed and activated (`characteristics(game, obj).abilities` plus your
    activation entry point), and whether tapping goes through a function of
