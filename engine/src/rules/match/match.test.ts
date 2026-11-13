@@ -240,6 +240,19 @@ describe("records the rules session keeps", () => {
     expect(holds(board.game, kicked("offspring"), { source: bears.id, controller: 0 })).toBe(false);
   });
 
+  it("a cost's object the payment moved is read as it was paid (CR 608.2h)", () => {
+    const board = new Board();
+    const spell = board.play("Grizzly Bears", 0);
+    const victim = board.play("Serra Angel", 0);
+    const asPaid = { ...board.chars(victim), power: 6 }; // pumped when it was sacrificed
+    board.game.costPaidLastKnown.set(victim.id, asPaid);
+    spell.costPaidObjects = [victim.id];
+    board.remove(victim);
+    expect(evaluate(board.game, value({ kind: ValueKind.COST_PAID_POWER }), { source: spell.id, controller: 0 })).toBe(6);
+    board.game.costPaidLastKnown.delete(victim.id); // no record: read as it is
+    expect(evaluate(board.game, value({ kind: ValueKind.COST_PAID_POWER }), { source: spell.id, controller: 0 })).toBe(4);
+  });
+
   it("combat damage conditions need a controller", () => {
     const board = new Board();
     expect(holds(board.game, condition({ kind: ConditionKind.COMBAT_DAMAGE_DEALT_BY }), {})).toBe(false);

@@ -199,15 +199,19 @@ function ofNamedObjects(
 }
 
 /**
- * An object a cost used, as it is or as it last existed (CR 608.2h).
- * KNOWN: Python reads Game.cost_paid_last_known for an object the payment
- * moved; the TS Game has no such record yet, so the object's own
- * lastKnownCharacteristics is used, then its current characteristics.
+ * An object a cost used, as it is or as it last existed (CR 608.2h). One
+ * still where it was (a creature tapped to pay) is read as it is now; one
+ * the payment moved is read from the record taken as it was paid
+ * (`game.costPaidLastKnown`, written by paying.ts), since the object left
+ * behind is off the board and would read as printed.
  */
 function paidAsItWas(game: Game, objectId: ObjectId): Characteristics | null {
   const paid = game.objects.get(objectId);
   if (paid === undefined) return null;
-  if (paid.supersededBy && paid.lastKnownCharacteristics !== null) return paid.lastKnownCharacteristics;
+  if (paid.supersededBy) {
+    const known = game.costPaidLastKnown.get(objectId) as Characteristics | undefined;
+    if (known !== undefined) return known;
+  }
   return characteristicsOf(game, paid);
 }
 
