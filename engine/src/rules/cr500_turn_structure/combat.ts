@@ -22,3 +22,8 @@ export function dealCombatDamage(_game: Game): void {}
 export function endCombat(game: Game): void {
   game.combat = null;
 }
+
+/** CR 508.4, 506.3a: put a permanent onto the battlefield attacking. PORT: placeholder - comes with combat. */
+export function enterAttacking(_game: Game, _permanent: unknown, _options: { like?: readonly number[] } = {}): boolean {
+  return false;
+}

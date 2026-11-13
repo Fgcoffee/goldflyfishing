@@ -122,6 +122,8 @@ export interface Game {
   exiledWith: Map<ObjectId, [ObjectId, number][]>;
   /** Characteristics of objects a cost consumed, as they last were (CR 608.2h). Immutable values. */
   costPaidLastKnown: Map<ObjectId, unknown>;
+  /** CR 702.192a: resolutions by "controller|lower-cased name". */
+  spellResolutions: Map<string, number>;
   combat: unknown;
   commandersAwaitingZoneChoice: ObjectId[];
   dayNight: boolean | null;
@@ -209,6 +211,7 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     ruleOverrides: [],
     exiledWith: new Map(),
     costPaidLastKnown: new Map(),
+    spellResolutions: new Map(),
     combat: null,
     commandersAwaitingZoneChoice: [],
     dayNight: null,
@@ -284,6 +287,7 @@ export function cloneGame(game: Game): Game {
     ruleOverrides: cloneRecords(game.ruleOverrides),
     exiledWith,
     costPaidLastKnown: new Map(game.costPaidLastKnown),
+    spellResolutions: new Map(game.spellResolutions),
     combat: game.combat === null ? null : structuredClone(game.combat),
     commandersAwaitingZoneChoice: game.commandersAwaitingZoneChoice.slice(),
     skippedSteps: new Set(game.skippedSteps),

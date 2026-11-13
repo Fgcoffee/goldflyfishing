@@ -5,9 +5,11 @@
  * cr702_cost_keyword_rules.py (promise_gift, cast_face_index).
  */
 
-import type { AdditionalCost, AlternativeCost, Effect } from "../../ir";
+import type { AdditionalCost, AlternativeCost, Effect, ObjectFilter } from "../../ir";
+import { Zone } from "../../kernel/enums";
+import { execute, newResolution } from "../cr600_spells_and_abilities/resolve";
 import type { CardDef } from "../../kernel/card";
-import { agentFor, livingPlayers, type Game } from "../../kernel/game";
+import { agentFor, invalidateAllCharacteristics, livingPlayers, type Game } from "../../kernel/game";
 import type { GameObject } from "../../kernel/gameobject";
 import type { PlayerId } from "../../kernel/ids";
 import { additionalCosts, charsManaValue } from "../cr200_parts_of_a_card/characteristics";
@@ -70,4 +72,83 @@ export function emergeDiscount(game: Game, playerId: PlayerId, alternative: Alte
     }
   }
   return best;
+}
+
+// -- what a paid alternative cost does to the permanent (CR 702.109a, 702.152a, 702.185a)
+
+/** CR 603.7c: "it" in a delayed ability is the permanent the spell became. */
+const IT: ObjectFilter = { $: "ObjectFilter", remembered: true };
+const SELF: ObjectFilter = { $: "ObjectFilter", source_only: true };
+/** The marker an exile carries for CR 702.185a's permission (cast it after this turn). */
+export const WARPED = "warped";
+const EK = (name: string): never => ir(`EffectKind.${name}`);
+
+function atTheNextEndStep(text: string, ...children: Effect[]): Effect {
+  return {
+    $: "Effect", kind: EK("DELAYED_TRIGGER"), children, text,
+    trigger: { $: "TriggerCondition", event_kinds: { $set: [ir("EventKind.END_STEP")] }, text: "at the beginning of the next end step" },
+  } as Effect;
+}
+
+function haste(text: string): Effect {
+  // No duration end: it lasts while this object is there (CR 400.7, 611.2c).
+  return {
+    $: "Effect", kind: EK("GRANT_ABILITY"), targets: SELF, text, duration: ir("Duration.PERMANENT"),
+    granted_abilities: [{ $: "Ability", kind: ir("AbilityKind.STATIC"), keyword: "Haste", text: "Haste" }],
+  };
+}
+
+function whenItDiesDrawACard(): Effect {
+  return {
+    $: "Effect", kind: EK("GRANT_ABILITY"), targets: SELF, duration: ir("Duration.PERMANENT"),
+    text: 'as long as its blitz cost was paid, it has "when this dies, draw a card"',
+    granted_abilities: [{
+      $: "Ability", kind: ir("AbilityKind.TRIGGERED"), text: "when this dies, draw a card",
+      trigger: {
+        $: "TriggerCondition", event_kinds: { $set: [ir("EventKind.DIES")] },
+        subject: { $: "ObjectFilter", source_only: true, zones: { $set: [] } },
+        uses_last_known_information: true,
+        text: "when this permanent is put into a graveyard from the battlefield",
+      },
+      effects: [{ $: "Effect", kind: EK("DRAW"), players: { $: "PlayerFilter", scope: ir("PlayerScope.YOU") }, amount: { $: "Value", constant: 1 }, text: "draw a card" }],
+    }],
+  } as Effect;
+}
+
+function riders(keyword: string): Effect[] {
+  if (keyword === "dash") {
+    return [
+      haste("as long as its dash cost was paid, it has haste"),
+      atTheNextEndStep("return it to its owner's hand at the beginning of the next end step",
+        { $: "Effect", kind: EK("RETURN_TO_HAND"), targets: IT, text: "return it to hand" }),
+    ];
+  }
+  if (keyword === "blitz") {
+    return [
+      haste("as long as its blitz cost was paid, it has haste"),
+      whenItDiesDrawACard(),
+      atTheNextEndStep("sacrifice it at the beginning of the next end step",
+        { $: "Effect", kind: EK("SACRIFICE"), targets: IT, text: "sacrifice it" }),
+    ];
+  }
+  if (keyword === "warp") {
+    return [
+      atTheNextEndStep("exile it at the beginning of the next end step",
+        { $: "Effect", kind: EK("EXILE"), targets: IT, keywords: [WARPED], text: "exile it" }),
+    ];
+  }
+  return [];
+}
+
+/** The parts of a paid alternative cost that outlast the spell, run as it becomes a permanent (CR 608.3). */
+export function onPermanentSpellResolved(game: Game, permanent: GameObject): void {
+  const effects = riders(permanent.alternativeCostPaid.toLowerCase());
+  if (effects.length === 0) return;
+  execute(newResolution(game, permanent.id, permanent.controller, { remembered: [permanent.id] }), effects);
+  invalidateAllCharacteristics(game);
+}
+
+/** CR 702.27a: a paid buyback cost sends a resolving instant or sorcery to its owner's hand. */
+export function resolutionDestination(game: Game, spell: GameObject): Zone | null {
+  return paidAdditionalKeywords(game, spell).includes("buyback") ? Zone.HAND : null;
 }

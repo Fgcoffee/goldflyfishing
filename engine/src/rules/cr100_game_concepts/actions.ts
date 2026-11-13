@@ -15,7 +15,7 @@ import {
   type Game,
 } from "../../kernel/game";
 import { addCounters as putCounters, isLive, isPermanent, objectText, removeCounters as takeCounters, type GameObject } from "../../kernel/gameobject";
-import { NO_OBJECT, NO_PLAYER, type ObjectId, type PlayerId } from "../../kernel/ids";
+import { allocateTimestamp, NO_OBJECT, NO_PLAYER, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { shuffle } from "../../kernel/random";
 import { emit } from "../emit";
 import { replacementHooks } from "../cr600_spells_and_abilities/replacement_hooks";
@@ -332,4 +332,37 @@ export function destroy(game: Game, obj: GameObject, options: { source?: ObjectI
   emit(game, event(EventKind.DESTROYED, { objectId: obj.id, source }));
   moveObject(game, obj, Zone.GRAVEYARD, { toPlayer: obj.owner });
   return true;
+}
+
+/** Attach an Aura, Equipment or Fortification (CR 701.3); a new timestamp (CR 613.7d). */
+export function attach(game: Game, attachment: GameObject, host: GameObject): boolean {
+  if (attachment.attachedTo === host.id) return false;
+  detach(game, attachment);
+  attachment.attachedTo = host.id;
+  host.attachments.push(attachment.id);
+  attachment.timestamp = allocateTimestamp(game.ids);
+  invalidateAllCharacteristics(game);
+  emit(game, event(EventKind.ATTACHED, { objectId: attachment.id, source: host.id }));
+  return true;
+}
+
+/** CR 303.4b: an Aura that enchants a player is attached to that player. */
+export function attachToPlayer(game: Game, attachment: GameObject, playerId: PlayerId): boolean {
+  if (attachment.attachedPlayer === playerId) return false;
+  detach(game, attachment);
+  attachment.attachedPlayer = playerId;
+  attachment.timestamp = allocateTimestamp(game.ids);
+  invalidateAllCharacteristics(game);
+  emit(game, event(EventKind.ATTACHED, { objectId: attachment.id, player: playerId }));
+  return true;
+}
+
+/** CR 607.2q, 400.7d: the spell's links pass to the permanent it became. */
+export function carryLinks(game: Game, oldId: ObjectId, newId: ObjectId): void {
+  const recorded = game.exiledWith.get(oldId);
+  if (recorded !== undefined && recorded.length > 0) {
+    const entries = game.exiledWith.get(newId) ?? [];
+    entries.push(...recorded);
+    game.exiledWith.set(newId, entries);
+  }
 }

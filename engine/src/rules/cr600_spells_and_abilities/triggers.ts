@@ -18,3 +18,13 @@ export function checkStateTriggers(_game: Game): void {}
 export function resolveManaTriggers(_game: Game): number {
   return 0;
 }
+
+/** CR 603.4: an intervening "if" checked again on resolution. PORT: placeholder (says true). */
+export function checkInterveningIf(_game: Game, _source: unknown, _trigger: unknown, _event: unknown): boolean {
+  return true;
+}
+
+/** The object a trigger event is about (Python `_subject_of`). PORT: placeholder (says none). */
+export function subjectOf(_game: Game, _event: unknown): { id: number } | null {
+  return null;
+}

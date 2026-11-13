@@ -84,6 +84,14 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   `cr400_zones/outside_game.ts` (companion) and the part of cr708 special
   actions needs (`face_down.ts`: turning face up). Casting is done. PORT notes: replicate/conspire cast triggers wait
   for triggers; the CR 718.2 prototype face itself is still KNOWN in layers.
+- **Resolution, in progress:** `stack.ts` ports cr608_stack.py in full
+  (resolveTop, fizzling on all-illegal targets, permanent spells entering
+  with links, counters, Auras and paid-cost riders, instants and sorceries
+  leaving to the graveyard, exile, library or hand). `resolve.ts` has the
+  dispatcher and ADD_MANA; the other executors are next. A smoke test plays
+  lands and casts creatures end to end and replays to the same digest.
+  Placeholders until triggers and combat: `checkInterveningIf`,
+  `subjectOf` (triggers.ts) and `enterAttacking` (combat.ts).
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
 
@@ -224,7 +232,8 @@ these points; please export them with these names:
 
 ## Next
 
-1. Resolution executors and the stack (resolve.py, cr608_stack.py), triggers, combat, replacements and prevention,
+1. Resolution executors (resolve.py; the stack, cr608_stack.py, is done:
+   spells and abilities resolve, permanents enter, fizzling, Auras attach), triggers, combat, replacements and prevention,
    keyword runtime, commander rules, `play()`, the build fingerprint, and
    board tests. (SBAs, setup and copies/faces/tokens moved to the parser.)
 
