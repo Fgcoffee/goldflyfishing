@@ -140,7 +140,7 @@ Phase 2 (brackets) is on hold, per the auditor. SBAs, setup and copies/faces/tok
 - 11 Vitest cases from `test_engine_core.py`: setup, determinism and mulligans.
 - **Rules session:**
   - `play(setup, index, seed)` can call `setUpGame` then `takeMulligans`.
-  - Still to wire: the companion reveal. Your `outside_game.ts` has it now, so tell me its entry point and I'll call it. A companion is put outside the game meanwhile.
+  - The companion is revealed at setup through your `revealCompanion` (9579666).
   - The Attraction deck (CR 717.2, 103.3a) waits for the Attractions port.
 
 ## Next
