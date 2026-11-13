@@ -1,4 +1,4 @@
-"""Card IR for the browser engine: the /api/ir and /ir/v1 routes.
+"""Card IR for the browser engine: the /api/ir and /ir/v<N> routes.
 
 The TypeScript engine reads each card's abilities as JSON IR (see
 ``schema/README.md``) produced by ``python -m mtgfish.tools.ir_export export``.
@@ -12,7 +12,8 @@ cards' files.
                                        cards by oracle id, and every card's
                                        hash and file URL (or the document
                                        itself, when parsed live)
-``GET  /ir/v1/<oracle_id>.json``       one exported card document
+``GET  /ir/v<N>/<oracle_id>.json``     one exported card document (N:
+                                       the parser's ``IR_VERSION``)
 =====================================  =====================================
 
 Cards come through the parser's ``mtgfish.ir.store.IRStore``: the exported
@@ -42,11 +43,11 @@ from urllib.parse import quote
 from fastapi import APIRouter, Request
 from fastapi.responses import Response
 
+from ..ir.codec import IR_VERSION
 from .auth.ratelimit import RateLimited, RateLimiter
 
 log = logging.getLogger("mtgfish.web.ir")
 
-IR_VERSION = 1
 MAX_DECKS = 4
 MAX_DECKLIST = 60_000
 _ORACLE_ID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")

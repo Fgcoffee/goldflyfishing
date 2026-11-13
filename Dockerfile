@@ -35,10 +35,12 @@ USER app
 RUN python -c "from mtgfish.bootstrap import seed_card_database; print(seed_card_database(report=print))" \
  && test -s /app/data/cards.sqlite \
  && python -m mtgfish.tools.parse_store build
-# The card IR as JSON (/app/data/ir/v1), served to the browser engine one
-# card at a time (mtgfish/web/ir.py). About 60 MB and a minute or two.
-RUN PYTHONUTF8=1 python -m mtgfish.tools.ir_export export \
- && test -s /app/data/ir/v1/index.json
+# The card IR as JSON (/app/data/ir/v<IR_VERSION>), served to the browser
+# engine one card at a time (mtgfish/web/ir.py). About 85 MB, under a minute
+# on a few cores. Written by the same code that serves it, so the server
+# never has to parse a card live.
+RUN python -m mtgfish.tools.ir_export export \
+ && python -c "from mtgfish.ir.codec import IR_VERSION as v; import pathlib, sys; p = pathlib.Path('/app/data/ir/v%d/index.json' % v); sys.exit(0 if p.stat().st_size else 1)"
 
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/healthz' % os.environ.get('PORT','8000'), timeout=4)" || exit 1

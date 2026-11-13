@@ -1,4 +1,4 @@
-"""Card IR served to the browser engine: /api/ir, /api/ir/decks, /ir/v1/<id>.json."""
+"""Card IR served to the browser engine: /api/ir, /api/ir/decks, /ir/v<N>/<id>.json."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from mtgfish.ir.codec import IR_VERSION
 from mtgfish.ir.store import code_fingerprint
 from mtgfish.web.auth.ratelimit import RateLimiter
 from mtgfish.web.ir import LIMITS, IrStore, build_router
@@ -20,6 +21,7 @@ GOBLIN_GUIDE = "51d9564b-44fc-4de1-9119-09d7b4089378"
 GOBLIN_LACKEY = "213fbbdd-f1bc-4bba-9124-7b26e9a706c8"
 
 BUILD = code_fingerprint()[:16]
+V = f"/ir/v{IR_VERSION}"
 
 DECK = "1 Goblin Lackey\n1 Goblin Guide\n\n// Commander\n1 Krenko, Mob Boss\n"
 
@@ -40,7 +42,7 @@ def ir_dir(tmp_path) -> Path:
             "name": document["name"], "card_hash": document["card_hash"],
         }
     # Written by the code running now, so IRStore treats the export as current.
-    index = {"ir_version": 1, "built_at": "2026-11-10T12:00:00", "snapshot": "snap",
+    index = {"ir_version": IR_VERSION, "built_at": "2026-11-10T12:00:00", "snapshot": "snap",
              "code": code_fingerprint(), "cards": cards, "names": {}}
     (out / "index.json").write_text(json.dumps(index), encoding="utf-8")
     return out
@@ -62,12 +64,12 @@ def client(ir_dir, card_db):
 def test_status_says_what_is_exported(ir_dir):
     reply = make_client(ir_dir).get("/api/ir").json()
     assert reply["available"] is True
-    assert reply["ir_version"] == 1 and reply["snapshot"] == "snap"
+    assert reply["ir_version"] == IR_VERSION and reply["snapshot"] == "snap"
     assert reply["cards"] > 200
 
 
 def test_status_without_an_export(tmp_path):
-    assert make_client(tmp_path).get("/api/ir").json() == {"available": False, "ir_version": 1}
+    assert make_client(tmp_path).get("/api/ir").json() == {"available": False, "ir_version": IR_VERSION}
 
 
 def test_a_deck_resolves_to_oracle_ids_and_card_urls(client, ir_dir):
@@ -82,7 +84,7 @@ def test_a_deck_resolves_to_oracle_ids_and_card_urls(client, ir_dir):
     lackey = body["cards"][GOBLIN_LACKEY]
     digest = json.loads((ir_dir / f"{GOBLIN_LACKEY}.json").read_text("utf-8"))["card_hash"]
     assert lackey["card_hash"] == digest
-    assert lackey["url"] == f"/ir/v1/{GOBLIN_LACKEY}.json?h={digest}&b={BUILD}"
+    assert lackey["url"] == f"{V}/{GOBLIN_LACKEY}.json?h={digest}&b={BUILD}"
     assert body["build"] == BUILD
 
 
@@ -94,7 +96,7 @@ def test_a_card_missing_from_the_export_is_parsed_live_and_sent_inline(client, c
     # Inline, with no URL: a live parse is never a cacheable file.
     assert "url" not in guide
     assert guide["document"]["oracle_id"] == GOBLIN_GUIDE
-    assert guide["document"]["ir_version"] == 1
+    assert guide["document"]["ir_version"] == IR_VERSION
     assert guide["card_hash"] == guide["document"]["card_hash"]
     assert "parsed 1 card(s) live" in caplog.text and "Goblin Guide" in caplog.text
 
@@ -136,7 +138,7 @@ def test_the_build_falls_back_to_the_export_time(ir_dir):
 
 def test_a_card_under_another_build_is_not_immutable(client, ir_dir):
     digest = json.loads((ir_dir / f"{KRENKO}.json").read_text("utf-8"))["card_hash"]
-    reply = client.get(f"/ir/v1/{KRENKO}.json?h={digest}&b=old-build")
+    reply = client.get(f"{V}/{KRENKO}.json?h={digest}&b=old-build")
     assert reply.status_code == 200
     assert reply.headers["cache-control"] == "no-cache"
 
@@ -155,14 +157,14 @@ def test_a_card_file_with_its_hash_is_immutable(client, ir_dir):
 
 
 def test_a_card_file_without_its_hash_revalidates(client):
-    reply = client.get(f"/ir/v1/{KRENKO}.json")
+    reply = client.get(f"{V}/{KRENKO}.json")
     assert reply.headers["cache-control"] == "no-cache"
-    again = client.get(f"/ir/v1/{KRENKO}.json", headers={"If-None-Match": reply.headers["etag"]})
+    again = client.get(f"{V}/{KRENKO}.json", headers={"If-None-Match": reply.headers["etag"]})
     assert again.status_code == 304
 
 
 def test_card_files_are_gzipped_when_asked(client):
-    reply = client.get(f"/ir/v1/{KRENKO}.json", headers={"Accept-Encoding": "gzip"})
+    reply = client.get(f"{V}/{KRENKO}.json", headers={"Accept-Encoding": "gzip"})
     assert reply.headers.get("content-encoding") == "gzip"
     assert reply.json()["oracle_id"] == KRENKO
 
@@ -172,11 +174,11 @@ def test_card_files_are_gzipped_when_asked(client):
     "00000000-0000-0000-0000-000000000000.json",
 ])
 def test_only_exported_cards_are_served(ir_dir, name):
-    assert make_client(ir_dir).get(f"/ir/v1/{name}").status_code == 404
+    assert make_client(ir_dir).get(f"{V}/{name}").status_code == 404
 
 
 def test_the_index_itself_is_not_served(ir_dir):
-    assert make_client(ir_dir).get("/ir/v1/index.json").status_code == 404
+    assert make_client(ir_dir).get(f"{V}/index.json").status_code == 404
 
 
 def test_decks_must_be_json(ir_dir):
@@ -200,8 +202,8 @@ def test_deck_requests_are_rate_limited(ir_dir):
     client = make_client(ir_dir, limits={"ir_decks": (1, 60), "ir_card": (1, 60)})
     client.post("/api/ir/decks", json={})
     assert client.post("/api/ir/decks", json={}).status_code == 429
-    client.get(f"/ir/v1/{KRENKO}.json")
-    assert client.get(f"/ir/v1/{KRENKO}.json").status_code == 429
+    client.get(f"{V}/{KRENKO}.json")
+    assert client.get(f"{V}/{KRENKO}.json").status_code == 429
 
 
 def test_a_new_export_is_picked_up_without_a_restart(ir_dir):
@@ -224,4 +226,4 @@ def test_the_app_serves_ir_routes(tmp_path, monkeypatch):
 
     with TestClient(create_app()) as client:
         assert client.get("/api/ir").json()["available"] is False
-        assert client.get(f"/ir/v1/{KRENKO}.json").status_code == 404
+        assert client.get(f"{V}/{KRENKO}.json").status_code == 404

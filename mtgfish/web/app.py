@@ -213,6 +213,10 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
     from .library import build_router as library_router
 
     app.include_router(library_router(state.accounts))
+    from .browser_runs import build_router as browser_runs_router
+
+    # Runs played in the browser, sent back and stored.
+    app.include_router(browser_runs_router(state.accounts))
     from .ir import build_router as ir_router
 
     # Card IR for the browser engine (the TypeScript port). Before the static

@@ -1,10 +1,40 @@
-﻿import { fileURLToPath } from "node:url";
+﻿import { createHash } from "node:crypto";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 // The engine is imported from its TypeScript source rather than as a built
 // package, so the app always runs whatever is on the branch and the engine
 // needs no build step or package entry point of its own yet.
 const engineFile = (path: string) => fileURLToPath(new URL(`../engine/src/${path}`, import.meta.url));
+
+/**
+ * A fingerprint of the engine source the bundle is built from: every .ts
+ * file under engine/src except tests, by path and content. Stored with each
+ * browser run, so the server can replay it with the same engine.
+ */
+function engineBuild(): string {
+  const root = engineFile("");
+  const files: string[] = [];
+  const walk = (dir: string): void => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts")) files.push(path);
+    }
+  };
+  walk(root);
+  const hash = createHash("sha256");
+  for (const path of files.sort()) {
+    hash.update(path.slice(root.length).replaceAll("\\", "/"));
+    hash.update("\0");
+    // Line endings normalised, so a Windows checkout builds the same fingerprint.
+    hash.update(readFileSync(path, "utf8").replaceAll("\r\n", "\n"));
+    hash.update("\0");
+  }
+  return hash.digest("hex").slice(0, 16);
+}
 
 // The Python web server, for /api and /ir during `npm run dev`.
 const backend = process.env.GOLDFLY_BACKEND ?? "http://127.0.0.1:8041";
@@ -24,6 +54,7 @@ const toBackend = {
 const proxy = { "/api": toBackend, "/ir": toBackend };
 
 export default defineConfig({
+  define: { __ENGINE_BUILD__: JSON.stringify(engineBuild()) },
   resolve: {
     // Most specific first: "@goldfly/engine" would otherwise also match
     // "@goldfly/engine/ir" as a prefix.

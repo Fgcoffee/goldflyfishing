@@ -11,6 +11,7 @@ import {
 import { EngineClient } from "./client";
 import { IrClient, type DeckManifest } from "./ir";
 import { WorkerPool, defaultWorkers } from "./pool";
+import { ENGINE_BUILD, runUpload, uploadRun } from "./upload";
 
 const $ = <T extends HTMLElement>(selector: string): T => {
   const element = document.querySelector<T>(selector);
@@ -37,7 +38,7 @@ async function checkWorkers(): Promise<void> {
   const client = new EngineClient();
   try {
     const reply = await client.ping();
-    status.textContent = `${pool.size} worker(s) ready, engine ${reply.engineVersion}.`;
+    status.textContent = `${pool.size} worker(s) ready, engine ${reply.engineVersion} (build ${ENGINE_BUILD}).`;
   } catch (error) {
     status.className = "bad";
     status.textContent = `The worker failed to start: ${String(error)}`;
@@ -156,6 +157,16 @@ async function run(): Promise<void> {
       note(`Game ${crash.index} (seed ${crash.seed}) crashed and was left out: ${crash.error}`, true);
     }
     showTable(manifest, result);
+
+    // Every run goes back to the server, cancelled ones with what they did.
+    if (result.records.length + result.crashed.length > 0) {
+      const end = result.complete ? games : Math.max(...[...result.records, ...result.crashed].map((g) => g.index)) + 1;
+      uploadRun(runUpload(manifest, setup, result, { start: 0, end }))
+        .then((stored) => note(`Run stored on the server (${stored.games} games${
+          stored.signed_in ? ", in your account" : ", not linked to you"}; check: ${stored.spot_check}).`))
+        .catch((error: unknown) => note(`The server didn't store this run: ${
+          error instanceof Error ? error.message : String(error)}`, true));
+    }
 
     // Replay check: the first games again must give identical digests.
     if (result.complete && result.records.length > 0) {

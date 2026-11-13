@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { IR_VERSION } from "@goldfly/engine/ir";
 import { IrClient, type DeckManifest, type Fetch } from "../src/ir";
 
 /** schema/samples: real exported cards, by oracle id, plus the bench decks. */
@@ -22,10 +23,10 @@ function manifestFor(deckName: string, build = "b1"): DeckManifest {
     const document = samples.get(id);
     if (document === undefined) throw new Error(`no sample card ${id}`);
     const hash = String(document.card_hash);
-    cards[id] = { name: String(document.name), card_hash: hash, url: `/ir/v1/${id}.json?h=${hash}&b=${build}` };
+    cards[id] = { name: String(document.name), card_hash: hash, url: `/ir/v${IR_VERSION}/${id}.json?h=${hash}&b=${build}` };
   }
   return {
-    ir_version: 1,
+    ir_version: IR_VERSION,
     snapshot: "test",
     build,
     decks: [{ ...deck, unresolved: [], live_ir: [], issues: [] }],
@@ -39,7 +40,7 @@ function fakeServer(manifest: DeckManifest, tamper?: (doc: Record<string, unknow
   const fetch: Fetch = async (input) => {
     calls.push(input);
     if (input.endsWith("/api/ir/decks")) return Response.json(manifest);
-    const id = /\/ir\/v1\/([0-9a-f-]+)\.json/.exec(input)?.[1];
+    const id = /\/ir\/v\d+\/([0-9a-f-]+)\.json/.exec(input)?.[1];
     const document = id === undefined ? undefined : samples.get(id);
     if (document === undefined) return Response.json({ error: "no such card" }, { status: 404 });
     return Response.json(tamper ? tamper(structuredClone(document)) : document);
@@ -56,7 +57,7 @@ describe("IrClient", () => {
     expect(result.cards.size).toBe(Object.keys(manifest.cards).length);
     expect(result.fetched).toBe(result.cards.size);
     const commander = result.manifest.decks[0]?.commanders[0] ?? "";
-    expect(result.cards.get(commander)?.faces[0]?.ir_version).toBe(1);
+    expect(result.cards.get(commander)?.faces[0]?.ir_version).toBe(IR_VERSION);
   });
 
   it("fetches nothing the second time for the same cards", async () => {
@@ -127,7 +128,7 @@ describe("IrClient", () => {
   });
 
   it("refuses a card file of another IR version", async () => {
-    const server = fakeServer(manifestFor("control"), (doc) => ({ ...doc, ir_version: 2 }));
+    const server = fakeServer(manifestFor("control"), (doc) => ({ ...doc, ir_version: IR_VERSION + 1 }));
     await expect(new IrClient({ fetch: server.fetch }).load(["x"])).rejects.toThrow("IR version");
   });
 
@@ -140,7 +141,7 @@ describe("IrClient", () => {
     let sent: RequestInit | undefined;
     const fetch: Fetch = async (_input, init) => {
       sent = init;
-      return Response.json({ ir_version: 1, snapshot: "", build: "", decks: [], cards: {} });
+      return Response.json({ ir_version: IR_VERSION, snapshot: "", build: "", decks: [], cards: {} });
     };
     await new IrClient({ fetch, base: "http://server" }).load(["1 Sol Ring"]);
     expect(sent?.method).toBe("POST");

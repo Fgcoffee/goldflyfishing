@@ -108,22 +108,72 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
     - Cancel stopped a 100,000-game run at 26,210 with `complete: false`.
     - The second run downloaded 0 cards.
 
+- **IR v2.** `mtgfish/web/ir.py` takes `IR_VERSION` from `mtgfish.ir.codec`
+  (now 2), so the routes are `/ir/v2/...` and the default directory is
+  `ir/v2`. The Dockerfile's export check follows the same constant. Card
+  documents, including the printed card data (ff6dec3), are served as the
+  exporter wrote them. Checked in the browser on a fresh v2 export: 261
+  cards, none parsed live.
+- **Run report** (`engine/src/sim/report.ts` `buildReport`): ports
+  `stats.py` `summarize` for what a `GameRecord` carries:
+  - outcomes, win and loss reasons, and `byWinRound`;
+  - the commander histogram, with the games behind each bar;
+  - card impact (drawn vs not drawn, once per game), its 95% margin, and
+    `topCards`/`worstCards` past `MIN_SAMPLE`.
+
+  It is plain JSON-friendly data. The harness shows the top 10 cards.
+- **Every browser run is sent back and stored:**
+  - Table `browser_runs` (migration `0004_browser_runs`): the run seed, game
+    range, hero, turn cap, `complete`, the engine build, IR build and
+    snapshot, the decks as resolved (oracle ids, card hashes, seat order),
+    and a gzipped payload holding every game record (with its seed and
+    digest) and every crashed game (with seed, error and stack).
+    `spot_check` starts as "pending".
+  - `POST /api/browser-runs` takes gzipped JSON, capped at 8 MB compressed
+    and 80 MB unpacked (a zip bomb stops at the cap). It is limited to 30
+    uploads per minute per address. It checks every game's seed against
+    `seed_for(run_seed, index)`, ranges, duplicates, sizes, and that a
+    `complete` run holds every game. A run that fails is refused whole. A
+    cancelled run uploads what it finished.
+  - Signed in, a run belongs to the account: `GET /api/browser-runs` lists
+    them, it is in `/auth/account/export`, and it is deleted with the
+    account. Signed out, it is stored with no link to anyone and purged
+    after 365 days by the existing 6-hourly purge.
+  - `webapp/src/upload.ts` builds the upload, gzips it with
+    `CompressionStream`, and the harness sends it after every run.
+  - The engine build is a sha256 of `engine/src/**/*.ts` (not tests, line
+    endings normalised), baked into the bundle by `vite.config.ts` as
+    `__ENGINE_BUILD__`.
+  - `/privacy` now says that decks and results of browser runs are sent and
+    kept, why (legitimate interests: checking results, finding engine
+    faults), and for how long. `TERMS_VERSION` is now 2026-11-13.
+  - Checked in the browser: 5000 stub games uploaded and stored complete,
+    678 kB gzipped, with every field present in the database.
+
 ## Next
 
-- Swap the stub for the real engine once the kernel can set up and play a
-  game. What I need from the rules session: a `play(setup, index, seed)`
-  entry point, or the pieces to build one. `RunSetup` carries each deck by
-  oracle id plus the cards' IR documents.
-- The AI (`engine/src/ai`): SimpleAgent and lookahead, once there's game
-  state to decide on.
-- The rest of the report: port the remaining parts of
-  `mtgfish/sim/stats.py` `summarize` (card impact, per-turn series,
-  removal) once real games produce that data, so the Results page can read
-  browser runs.
+- **Server-side spot check.** The server needs to run the TS engine in
+  Node. Plan:
+  - a Node build of `engine/src` with a small replay CLI (esbuild);
+  - Node in the Docker image;
+  - a background job that replays a random sample of each pending run and
+    compares digests, then marks the run "ok" or "mismatch".
+
+  Runs from an engine build the server doesn't have stay "pending".
+- Swap the stub for the real engine once the kernel can play: the rules
+  session's `play(setup, index, seed)`.
+- The AI (`engine/src/ai`), once there's game state to decide on.
+- The rest of the report (per-turn series, removal), once records carry
+  them.
 
 ## Questions for the auditor
 
 - The Docker image build with the IR export step hasn't been run locally.
   It's checked on the next Render deploy.
+- Spot check and engine builds: the server can only replay a run with the
+  engine build that played it. My plan is to keep only the current build
+  and leave runs from older builds "pending" (never "ok"). Is that right,
+  or should shared statistics accept runs from older builds whose spot
+  check passed back when they were current?
 - Resolved: switching to `IRStore` (done above); the build fingerprint uses
   the parser's `code` key; the Windows encoding bug was fixed in fe93356.

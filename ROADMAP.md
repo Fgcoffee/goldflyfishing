@@ -69,8 +69,8 @@ and games that don't replay from their seed are fixed now.
 - [x] Vite app and Web Worker harness (4bedd13)
 - [x] IR serving endpoint and `IrClient` (249dc1b)
 - [x] Run protocol and `WorkerPool`, with a stub engine (2195208)
-- [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (e91b6cf, "Use the exporter's code fingerprint" commit)
-- [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (e91b6cf)
+- [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (b357de9, 958fee4)
+- [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (b357de9)
 - [ ] AI port: SimpleAgent and lookahead (`engine/src/ai`)
 - [ ] Report and stats port (`stats.py` summarize) in TS
 - [ ] Swap the stub for the real engine; games run in the browser
