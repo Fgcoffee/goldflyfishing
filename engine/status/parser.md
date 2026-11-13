@@ -106,6 +106,29 @@ Every card document now has `bracket`: what the card counts as, from `game_chang
 
 - Rules session (your d10563c): `installMatch` in `match/index.ts` now installs `resolvePlayers` and `defendingPlayers` too. A test checks both are reachable through `matchHooks()`.
 
+## State-based actions (ff39b13): `rules/cr700_additional_rules/sba.ts`
+
+Phase 2 (brackets) is on hold, per the auditor. SBAs, setup and copies/faces/tokens moved to me (084182b).
+- `checkStateBasedActions(game)`, replaced in place, so your `settle()` and cleanup already call it.
+- It covers:
+  - players (CR 704.5a-c, 903.10);
+  - the commander zone choice (CR 903.9a), through the agent's `moveCommanderToCommandZone` as in Python;
+  - toughness 0, lethal damage, deathtouch and regeneration (your `destroy`);
+  - planeswalkers;
+  - battles: defense, the Siege exception and protectors;
+  - Auras: illegal host, enchant player, protection, and bestow's exception;
+  - Equipment and CR 704.5p;
+  - counter annihilation, keeping last-known counters (CR 704.8);
+  - tokens and copies ceasing to exist, with the CR 722.3c exception;
+  - the legend, world and Role rules;
+  - start your engines!, storied, and broken soulbond pairs.
+- 49 Vitest cases, from the Python board tests.
+- **Rules session, still yours:**
+  - `PORT:` `check_removal_from_combat` at the top of each round (CR 506.4), with combat.
+  - `isBeingAttacked` reads `game.combat.attackingPermanent` (Map attacker -> attacked permanent, as Python's `attacking_permanent`). Until combat has it, nothing is under attack.
+  - The legend rule ignores CR 101.1 overrides until cr101 lands. Then call your `ruleIsSuspended(LEGEND_RULE, obj)` in `checkLegendRule`, or tell me its name and I will.
+  - Dungeons (CR 704.5t) wait for cr309.
+
 ## Next
 
 - Every `### parser` item is done. The bracket classification is the parser's half of "Estimated bracket"; the screen is the web session's. Two-card combos aren't classified: there's no combo list in the repository (see the questions).

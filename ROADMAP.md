@@ -62,7 +62,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Mana planning: port `mana_plan.py`, keeping the F61 guard (26c37d7; the game-side `ManaPlanHost` is the rules session's, in `mana_host.ts`, per e1d7969)
 - [x] Matching, values and conditions: port `matching.py`, `values.py` and `conditions.py` to `engine/src/rules/match/` (d20edb7)
 
-- [ ] *(moved from rules, 13 Nov)* State-based actions (CR 704)
+- [x] *(moved from rules, 13 Nov)* State-based actions (CR 704) (ff39b13)
 - [ ] *(moved from rules, 13 Nov)* Game setup (CR 103): shuffles, mulligans
 - [ ] *(moved from rules, 13 Nov)* Copies, faces and tokens (CR 707, 711, 712)
 - [ ] Port the Python board tests for every module you own as Vitest tests
