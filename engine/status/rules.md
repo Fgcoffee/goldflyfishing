@@ -70,8 +70,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   `restrictions.ts` (prohibitions and permissions, CR 101.2, 113.6; the
   blocking requirements come with combat), `targeting.ts` (CR 601.2c, 115),
   `modes.ts` (CR 700.2), `cr100_game_concepts/protection.ts` (protection,
-  hexproof, shroud for objects and players), `effect_props.ts`. Still to
-  come: total cost and cost changes, paying, `castSpell`, `playLand`,
+  hexproof, shroud for objects and players), `effect_props.ts`,
+  `cr100_game_concepts/costs.ts` (cr118_costs: components, TotalCost),
+  `total_cost.ts` (CR 601.2f with alternative, additional, spree, emerge,
+  commander tax, cost changes), `cost_checks.ts` (the payability dry run and
+  what can pay each component). Still to come: paying, `castSpell`, `playLand`,
   `activateAbility`, `legalActions`, then the ManaPlanHost.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
@@ -115,6 +118,10 @@ in your way rather than working around it.
   Restrictions (CR 101.2) call them. Your `matching.ts` already has both;
   please add them to `installMatch` in `match/index.ts` (your file):
   `resolvePlayers: (g, s, c) => resolvePlayers(g, s, c), defendingPlayers: (g, s) => defendingPlayers(g, s)`.
+- **A third hook:** `wasUndeterminable()`, your `values.ts` function of the
+  same name. Costs read it right after `evaluate` (CR 903.4f: an
+  undeterminable amount makes a cost unpayable). Until installed it says
+  `false`, so such a cost counts as zero rather than unpayable.
 
 - **This turn's events:** `game.turnHistory` is a `Map<string, number>`
   keyed by `turnHistoryKey(kind, player)` (total amount, at least 1 per

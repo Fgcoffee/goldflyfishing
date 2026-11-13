@@ -42,6 +42,12 @@ export interface MatchHooks {
   evaluate(game: Game, value: Value, context: MatchContext & { xValue?: number }): number;
   /** Python `conditions.holds(game, condition, source=, controller=, ...)`. */
   holds(game: Game, condition: Condition, context: MatchContext): boolean;
+  /**
+   * Whether the last top-level `evaluate` produced an undeterminable number
+   * (CR 107.2, 903.4f; Python's `Undeterminable`). match/values.ts has it as
+   * `wasUndeterminable`.
+   */
+  wasUndeterminable(): boolean;
   /** Python `matching.resolve_players(game, spec, controller=, source=)`, APNAP order. */
   resolvePlayers(game: Game, spec: PlayerFilter, context: MatchContext): PlayerId[];
   /** Python `matching._defending_players(game, source)` (CR 506.2). */
@@ -64,6 +70,7 @@ let HOOKS: MatchHooks = {
   holds: () => missing("holds"),
   valueSubjects: () => missing("valueSubjects"),
   resolvePlayers: () => missing("resolvePlayers"),
+  wasUndeterminable: () => false,
   defendingPlayers: () => missing("defendingPlayers"),
 };
 
