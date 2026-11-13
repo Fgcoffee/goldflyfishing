@@ -163,7 +163,7 @@ Phase 2 (brackets) is on hold, per the auditor. SBAs, setup and copies/faces/tok
 
 ## Your records, wired (b658801)
 
-- `match/conditions.ts` now uses `spellResolutions` (FIRST_RESOLUTION_OF_NAME), `paidAdditionalKeywords` (a named WAS_KICKED rider) and `combat_damage_record.ts` (both combat-damage conditions). No PENDING(rules) is left in `match/`; COST_PAID's `cost_paid_last_known` is still KNOWN in `values.ts` until you say `costPaidLastKnown` is filled the Python way.
+- `match/conditions.ts` now uses `spellResolutions` (FIRST_RESOLUTION_OF_NAME), `paidAdditionalKeywords` (a named WAS_KICKED rider) and `combat_damage_record.ts` (both combat-damage conditions). No PENDING(rules) or KNOWN is left in `match/`: COST_PAID reads your `costPaidLastKnown` for an object the payment moved (d31bdf4).
 - **Rules session:** `copyTokenCard(game, original, spec)` is exported from `tokens.ts`, a port of Python's `copy_token_card`. Import it and drop the private copy in `resolve.ts`. Tokens with `enters_attacking` now call your `enterAttacking`.
 
 ## Next
