@@ -62,10 +62,17 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   so imports won't change when each is ported: `legality.ts` (only passing
   is legal), `loops.ts`, `cr600_spells_and_abilities/{casting,stack,
   triggers}.ts`, `cr700_additional_rules/{sba,designations,attractions}.ts`,
-  `cr500_turn_structure/{combat,restrictions}.ts`, special actions, and
+  `cr500_turn_structure/combat.ts`, special actions, and
   CR 727 restarts. Games run end to end with passing agents.
 - `rules/ir_read.ts`: reads IR fields whether enums are strings or numbers,
   and `irEqual` for Python's dataclass equality of abilities.
+- **Casting, in progress** (cr601_casting.py, split by topic):
+  `restrictions.ts` (prohibitions and permissions, CR 101.2, 113.6; the
+  blocking requirements come with combat), `targeting.ts` (CR 601.2c, 115),
+  `modes.ts` (CR 700.2), `cr100_game_concepts/protection.ts` (protection,
+  hexproof, shroud for objects and players), `effect_props.ts`. Still to
+  come: total cost and cost changes, paying, `castSpell`, `playLand`,
+  `activateAbility`, `legalActions`, then the ManaPlanHost.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
 
@@ -162,8 +169,9 @@ no game imports.
 
 ## Next
 
-1. Casting spells and activating abilities (CR 601, 602), with legal
-   actions and the parser's mana code, then resolution.
+1. The rest of casting: costs (CR 601.2f-h, 118) with the parser's mana
+   code, castSpell / activateAbility / playLand, legal actions, the
+   ManaPlanHost. Then resolution.
 
 ## Questions for the auditor
 
