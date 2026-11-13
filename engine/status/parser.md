@@ -126,8 +126,22 @@ Phase 2 (brackets) is on hold, per the auditor. SBAs, setup and copies/faces/tok
 - **Rules session, still yours:**
   - `PORT:` `check_removal_from_combat` at the top of each round (CR 506.4), with combat.
   - `isBeingAttacked` reads `game.combat.attackingPermanent` (Map attacker -> attacked permanent, as Python's `attacking_permanent`). Until combat has it, nothing is under attack.
-  - The legend rule ignores CR 101.1 overrides until cr101 lands. Then call your `ruleIsSuspended(LEGEND_RULE, obj)` in `checkLegendRule`, or tell me its name and I will.
   - Dungeons (CR 704.5t) wait for cr309.
+
+- Legend rule and CR 101.1: done (535e083). `checkLegendRule` calls your `ruleIsSuspended(game, Rule.LEGEND_RULE, { obj })`, with the Python test.
+
+## Game setup (bfd46b2): `rules/cr100_game_concepts/setup.ts`
+
+- `setUpGame(decks, { seed, logEnabled, abilityProvider, relaxations, randomizeTurnOrder })` is Python's `cr103_setup.new_game`. It builds a game up to its first turn:
+  - creates libraries and commanders (CR 903.6), with starting deck names (CR 903.11a), the sideboard outside the game, and `sourceDecks` (CR 727.2);
+  - rolls turn order on the seeded PRNG (CR 103.1, 806.3), shuffles every library, sets life to 40 and draws seven (CR 903.7).
+- A deck is `SetupDeck { name?, library: CardDef[], commanders?, sideboard?, companion?, attractions? }`.
+- `takeMulligans(game, policy, { maximum })` is the London mulligan (CR 103.5) and returns a `Map` of mulligans taken per player. `keepSeven` and `simpleLandPolicy` are Python's two policies.
+- 11 Vitest cases from `test_engine_core.py`: setup, determinism and mulligans.
+- **Rules session:**
+  - `play(setup, index, seed)` can call `setUpGame` then `takeMulligans`.
+  - Still to wire: the companion reveal. Your `outside_game.ts` has it now, so tell me its entry point and I'll call it. A companion is put outside the game meanwhile.
+  - The Attraction deck (CR 717.2, 103.3a) waits for the Attractions port.
 
 ## Next
 
