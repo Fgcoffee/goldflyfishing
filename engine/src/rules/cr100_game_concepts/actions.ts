@@ -178,3 +178,20 @@ function revealAll(game: Game, owner?: PlayerId): void {
     logRecord(game, `face-down #${obj.id} is revealed: ${name} (${why})`, { kind: "reveal", player: obj.owner });
   }
 }
+
+/** Tap a permanent (CR 701.26a). Returns whether it became tapped. */
+export function tap(game: Game, obj: GameObject, options: { source?: ObjectId } = {}): boolean {
+  if (obj.supersededBy !== NO_OBJECT || obj.zone !== Zone.BATTLEFIELD || obj.tapped) return false; // CR 110.1
+  obj.tapped = true;
+  emit(game, event(EventKind.TAPPED, { objectId: obj.id, player: obj.controller, source: options.source ?? NO_OBJECT }));
+  return true;
+}
+
+/** Untap a permanent (CR 701.26b), unless something says it can't untap. */
+export function untap(game: Game, obj: GameObject, options: { source?: ObjectId } = {}): boolean {
+  if (obj.supersededBy !== NO_OBJECT || obj.zone !== Zone.BATTLEFIELD || !obj.tapped) return false;
+  if (prohibited(game, Act.UNTAP, { obj }) !== null) return false;
+  obj.tapped = false;
+  emit(game, event(EventKind.UNTAPPED, { objectId: obj.id, player: obj.controller, source: options.source ?? NO_OBJECT }));
+  return true;
+}

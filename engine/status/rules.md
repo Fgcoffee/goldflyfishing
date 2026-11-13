@@ -108,14 +108,6 @@ in your way rather than working around it.
   `kernel/game.ts`. That is Python's `turn_history` with string keys, for
   EVENT_THIS_TURN conditions and event-count values.
 
-## IR v2: ready on my side
-
-Every IR read in rules/ and the tests now goes through `num`/`isEnum`
-(`rules/ir_read.ts`), and every IR object the engine builds itself uses
-`ir("Kind.MEMBER")`, which yields the number. Checked with 536557e applied
-on a scratch branch: typecheck clean, all tests green; and green on v1 as
-it stands. **Parser: re-land v2 whenever you like.**
-
 ## Answer: the IR shape question
 
 - **Enums: plain numbers, please,** not strings. The engine compares and
@@ -131,6 +123,36 @@ it stands. **Parser: re-land v2 whenever you like.**
   stay mechanical. The engine's own state (Game, GameObject, Player) is
   camelCase; IR objects are read as they come.
 
+## For the parser session: mana abilities (final signatures)
+
+These are final; bodies that throw "not ported yet" arrive with casting and
+resolution. I implement `ManaPlanHost<Game>` myself, in
+`rules/cr600_spells_and_abilities/mana_host.ts`, once they do; plan.ts needs
+no game imports.
+
+- **Listing mana abilities:** `manaAbilities(characteristicsOf(game, obj))`
+  in `rules/cr200_parts_of_a_card/characteristics.ts` returns
+  `[index, Ability][]` (index into `chars.abilities`, which is
+  `ManaOption.abilityIndex`); `isUsableManaAbility(ability)` is the test
+  (`is_mana_ability` and not `unparsed`).
+- **Activation (CR 605.3b, no stack):** in
+  `rules/cr600_spells_and_abilities/casting.ts`:
+  `canPayActivation(game, source, ability, xValue = 0): boolean`,
+  `activationManaCost(game, source, ability): ManaCost` (rules/mana/cost),
+  `payActivation(game, source, ability, xValue = 0): void` (throws CastError,
+  having paid nothing); modes: `modalEffect(effects)`,
+  `legalModes(game, source, modal, player)`,
+  `chooseModes(game, source, effects, player, {announced, sourceId})`.
+  Then in `rules/cr600_spells_and_abilities/resolve.ts`:
+  `newResolution(game, sourceId, controller, {chosenModes, manaColor, ...})`
+  and `resolveManaAbility(resolution, effects, {tapped})`;
+  `manaColorChoices(game, controller, effect)`. Then
+  `resolveManaTriggers(game)` in triggers.ts (CR 605.4a).
+- **Tapping:** yes, through `tap(game, obj, {source})` in
+  `rules/cr100_game_concepts/actions.ts` (real now, with `untap`);
+  `payActivation` uses it for {T}, so TAPPED events and "tapped for mana"
+  triggers come out right.
+
 ## Next
 
 1. Casting spells and activating abilities (CR 601, 602), with legal
@@ -138,13 +160,4 @@ it stands. **Parser: re-land v2 whenever you like.**
 
 ## Questions for the auditor
 
-- **Card data:** the engine needs printed card faces (name, mana cost, type
-  line, P/T, colours) as well as the abilities in the IR. `kernel/card.ts`
-  defines `CardDef`/`FaceDef` in the IR's conventions so the parser
-  session's exporter can emit them from Python's `CardDef` 1:1 (either
-  inside the card IR document or beside it). Who exports it, and where
-  does the web session serve it from?
-
-- None blocking. Please confirm the parser session agrees to numeric enums
-  before I write code against them; until then I read enums through
-  `enumValue`, which works for either form.
+- None.

@@ -13,3 +13,8 @@ export function putTriggersOnStack(_game: Game): number {
 
 /** CR 603.8: state triggers. */
 export function checkStateTriggers(_game: Game): void {}
+
+/** CR 605.4a: triggered mana abilities resolve at once; how many did. PORT: placeholder. */
+export function resolveManaTriggers(_game: Game): number {
+  return 0;
+}

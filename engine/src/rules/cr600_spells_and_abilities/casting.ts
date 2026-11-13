@@ -6,8 +6,11 @@
  * loop treats as an action that did not happen (CR 601.2h).
  */
 
+import type { Ability, Effect } from "../../ir";
 import type { Game } from "../../kernel/game";
-import type { PlayerId } from "../../kernel/ids";
+import type { GameObject } from "../../kernel/gameobject";
+import type { ObjectId, PlayerId } from "../../kernel/ids";
+import type { ManaCost } from "../mana/cost";
 import type { Action } from "../cr100_game_concepts/priority";
 
 /** An attempt that could not be completed; CR 601.2h has rewound it. */
@@ -23,4 +26,52 @@ export function activateAbility(_game: Game, _player: PlayerId, _action: Action)
 
 export function playLand(_game: Game, _player: PlayerId, _action: Action): void {
   throw new CastError("playing lands is not ported yet");
+}
+
+// -- Activation costs and modes. Final signatures, published for
+// rules/mana/plan.ts and the ManaPlanHost (Python `_can_pay_activation`,
+// `activation_mana_cost`, `_pay_activation`, `modal_effect`, `legal_modes`,
+// `choose_modes` in cr601_casting.py). PORT: bodies come with casting.
+
+const notYet = (name: string): never => {
+  throw new Error(`${name} is not ported yet (rules/cr600_spells_and_abilities/casting.ts)`);
+};
+
+/** Whether an ability's cost could be paid now, for an announced X (CR 107.3a). */
+export function canPayActivation(_game: Game, _source: GameObject, _ability: Ability, _xValue = 0): boolean {
+  return notYet("canPayActivation");
+}
+
+/** The mana part of an activation cost, after cost changes (CR 601.2f). */
+export function activationManaCost(_game: Game, _source: GameObject, _ability: Ability): ManaCost {
+  return notYet("activationManaCost");
+}
+
+/**
+ * Pay an activation cost with X as announced (CR 107.3a, 601.2f-h); taps
+ * through `actions.tap`. Throws CastError, having paid nothing, if it can't.
+ */
+export function payActivation(_game: Game, _source: GameObject, _ability: Ability, _xValue = 0): void {
+  notYet("payActivation");
+}
+
+/** The modal instruction among these effects, if any (CR 700.2). */
+export function modalEffect(_effects: readonly Effect[]): Effect | null {
+  return notYet("modalEffect");
+}
+
+/** Which modes may be chosen (CR 700.2a-b). */
+export function legalModes(_game: Game, _source: GameObject | null, _modal: Effect, _player: PlayerId): number[] {
+  return notYet("legalModes");
+}
+
+/** Choose the modes as it goes on the stack (CR 601.2b, 602.2b, 603.3c); [] if none can be. */
+export function chooseModes(
+  _game: Game,
+  _source: GameObject | null,
+  _effects: readonly Effect[],
+  _player: PlayerId,
+  _options: { announced?: readonly number[]; sourceId?: ObjectId } = {},
+): number[] {
+  return notYet("chooseModes");
 }

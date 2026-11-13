@@ -152,3 +152,17 @@ export function characteristicsText(c: Characteristics): string {
   if (c.defense !== null) bits.push(`<${c.defense}>`);
   return bits.join(" ");
 }
+
+/** A mana ability the engine can use (CR 605): read and marked as one. */
+export function isUsableManaAbility(ability: Ability): boolean {
+  return ability.is_mana_ability === true && ability.unparsed !== true;
+}
+
+/** An object's mana abilities with their indices in `chars.abilities`. */
+export function manaAbilities(c: Characteristics): [number, Ability][] {
+  const out: [number, Ability][] = [];
+  c.abilities.forEach((a, i) => {
+    if (isUsableManaAbility(a)) out.push([i, a]);
+  });
+  return out;
+}
