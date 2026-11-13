@@ -11,7 +11,7 @@ import {
 import { EngineClient } from "./client";
 import { IrClient, type DeckManifest } from "./ir";
 import { WorkerPool, defaultWorkers } from "./pool";
-import { ENGINE_BUILD, runUpload, uploadRun } from "./upload";
+import { ENGINE_BUILD, UploadRefused, runUpload, uploadRun } from "./upload";
 
 const $ = <T extends HTMLElement>(selector: string): T => {
   const element = document.querySelector<T>(selector);
@@ -164,8 +164,14 @@ async function run(): Promise<void> {
       uploadRun(runUpload(manifest, setup, result, { start: 0, end }))
         .then((stored) => note(`Run stored on the server (${stored.games} games${
           stored.signed_in ? ", in your account" : ", not linked to you"}; check: ${stored.spot_check}).`))
-        .catch((error: unknown) => note(`The server didn't store this run: ${
-          error instanceof Error ? error.message : String(error)}`, true));
+        .catch((error: unknown) => {
+          if (error instanceof UploadRefused && error.reload) {
+            note("The engine was updated since this page loaded, so this run wasn't stored. " +
+                 "Reload the page and run again.", true);
+          } else {
+            note(`The server didn't store this run: ${error instanceof Error ? error.message : String(error)}`, true);
+          }
+        });
     }
 
     // Replay check: the first games again must give identical digests.

@@ -187,3 +187,57 @@ def test_uploads_are_rate_limited(make_client):
     for _ in range(30):
         client.post("/api/browser-runs", content=b"{}", headers=JSON)
     assert client.post("/api/browser-runs", content=b"{}", headers=JSON).status_code == 429
+
+
+# -- engine builds ------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _server_runs_engine_1(monkeypatch):
+    """The server's engine build, as the runs above were played with."""
+    from mtgfish.web import engine_build
+
+    monkeypatch.setattr(engine_build, "current", lambda: "engine-1")
+
+
+def test_a_run_from_another_engine_build_is_refused_with_reload(make_client, monkeypatch):
+    from mtgfish.web import engine_build
+
+    monkeypatch.setattr(engine_build, "current", lambda: "engine-2")
+    reply = upload(make_client(), a_run())
+    assert reply.status_code == 409
+    assert reply.json()["reload"] is True and reply.json()["engine_build"] == "engine-2"
+
+
+def test_a_server_without_a_known_build_does_not_gate(make_client, monkeypatch):
+    from mtgfish.web import engine_build
+
+    monkeypatch.setattr(engine_build, "current", lambda: None)
+    assert upload(make_client(), a_run()).status_code == 201
+
+
+def test_python_and_the_webapp_compute_the_same_engine_build():
+    import shutil
+    import subprocess
+
+    from mtgfish.web.engine_build import ENGINE_SRC, fingerprint
+
+    node = shutil.which("node") or r"C:\Program Files\nodejs\node.exe"
+    script = ENGINE_SRC.parent.parent / "webapp" / "engine-build.mjs"
+    if not ENGINE_SRC.is_dir() or not shutil.which(node):
+        pytest.skip("needs the engine source and Node")
+    printed = subprocess.run([node, str(script)], capture_output=True, text=True, check=True)
+    assert printed.stdout.strip() == fingerprint(ENGINE_SRC)
+
+
+def test_the_fingerprint_ignores_tests_and_line_endings(tmp_path):
+    from mtgfish.web.engine_build import fingerprint
+
+    (tmp_path / "sim").mkdir()
+    (tmp_path / "sim" / "a.ts").write_bytes(b"export const a = 1;\n")
+    first = fingerprint(tmp_path)
+    (tmp_path / "sim" / "a.test.ts").write_text("test", encoding="utf-8")
+    (tmp_path / "sim" / "a.ts").write_bytes(b"export const a = 1;\r\n")
+    assert fingerprint(tmp_path) == first
+    (tmp_path / "sim" / "a.ts").write_bytes(b"export const a = 2;\n")
+    assert fingerprint(tmp_path) != first

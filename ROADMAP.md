@@ -82,11 +82,11 @@ and games that don't replay from their seed are fixed now.
 - [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (b357de9, 958fee4)
 - [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (b357de9)
 - [ ] AI port: SimpleAgent and lookahead (`engine/src/ai`)
-- [ ] Report and stats port (`stats.py` summarize) in TS
+- [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series and removal wait until game records carry them
 - [ ] Swap the stub for the real engine; games run in the browser
 - [ ] Results and replay screens read browser runs
 - [ ] Switch the website from server simulations to browser simulations
-- [ ] **Every browser run is sent back to the server and stored.** Required before the switch-over. Each run records:
+- [x] **Every browser run is sent back to the server and stored.** (22e390e; uploads from another engine build refused with "reload": engine build gate commit) Required before the switch-over. Each run records:
   - the run seed (master seed), the game range, and each game's own seed and log digest;
   - the engine build fingerprint, the IR build fingerprint and the card-data snapshot;
   - the decks as resolved: oracle ids and card hashes, seat order, the hero seat;

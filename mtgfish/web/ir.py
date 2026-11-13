@@ -44,6 +44,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import Response
 
 from ..ir.codec import IR_VERSION
+from . import engine_build
 from .auth.ratelimit import RateLimited, RateLimiter
 
 log = logging.getLogger("mtgfish.web.ir")
@@ -262,6 +263,8 @@ def build_router(store: IrStore | None = None, limiter: RateLimiter | None = Non
             "built_at": index["built_at"],
             "build": index["build"],
             "cards": len(index["cards"]),
+            # The engine build browser runs must be played with.
+            "engine_build": engine_build.current(),
         })
 
     @router.post("/api/ir/decks")

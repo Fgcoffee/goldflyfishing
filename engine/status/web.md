@@ -150,16 +150,25 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
   - Checked in the browser: 5000 stub games uploaded and stored complete,
     678 kB gzipped, with every field present in the database.
 
+- **Engine build gate** (the auditor's answer: check at upload time):
+  - `mtgfish/web/engine_build.py` fingerprints `engine/src` exactly as
+    `webapp/engine-build.mjs` does, and the Vite config imports that module.
+    A test runs the Node script and checks the two agree.
+  - `POST /api/browser-runs` refuses a run from any other engine build with
+    409 and `"reload": true`. The page then says to reload and run again.
+  - `/api/ir` reports the server's `engine_build`.
+  - The Docker image copies `engine/src` so the server can fingerprint it.
+    `MTGFISH_ENGINE_BUILD` overrides the fingerprint.
+
 ## Next
 
-- **Server-side spot check.** The server needs to run the TS engine in
-  Node. Plan:
+- **Server-side spot check.** A run is only accepted from the server's own
+  engine build, so the server always has the right engine to replay it. A
+  run that passes is marked "ok" for good, with its build recorded. Plan:
   - a Node build of `engine/src` with a small replay CLI (esbuild);
   - Node in the Docker image;
-  - a background job that replays a random sample of each pending run and
-    compares digests, then marks the run "ok" or "mismatch".
-
-  Runs from an engine build the server doesn't have stay "pending".
+  - a background job that replays a random sample of each pending run,
+    compares digests, and marks the run "ok" or "mismatch".
 - Swap the stub for the real engine once the kernel can play: the rules
   session's `play(setup, index, seed)`.
 - The AI (`engine/src/ai`), once there's game state to decide on.
@@ -170,10 +179,7 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
 
 - The Docker image build with the IR export step hasn't been run locally.
   It's checked on the next Render deploy.
-- Spot check and engine builds: the server can only replay a run with the
-  engine build that played it. My plan is to keep only the current build
-  and leave runs from older builds "pending" (never "ok"). Is that right,
-  or should shared statistics accept runs from older builds whose spot
-  check passed back when they were current?
+- Resolved: engine builds are checked at upload time; "ok" is permanent and
+  stored with its build.
 - Resolved: switching to `IRStore` (done above); the build fingerprint uses
   the parser's `code` key; the Windows encoding bug was fixed in fe93356.

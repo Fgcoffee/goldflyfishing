@@ -70,9 +70,21 @@ export async function uploadRun(
     body: await gzip(JSON.stringify(body)),
     credentials: "same-origin",
   });
-  const reply = (await response.json()) as StoredRun | { error?: string };
+  const reply = (await response.json()) as StoredRun | { error?: string; reload?: boolean };
   if (!response.ok) {
-    throw new Error(("error" in reply && reply.error) || `the server didn't store the run (${response.status})`);
+    const message = ("error" in reply && reply.error) || `the server didn't store the run (${response.status})`;
+    throw new UploadRefused(message, "reload" in reply && reply.reload === true);
   }
   return reply as StoredRun;
+}
+
+/**
+ * The server didn't store a run. `reload` means this page's engine is older
+ * than the server's: reload to get the new engine, then run again.
+ */
+export class UploadRefused extends Error {
+  constructor(message: string, readonly reload: boolean) {
+    super(message);
+    this.name = "UploadRefused";
+  }
 }

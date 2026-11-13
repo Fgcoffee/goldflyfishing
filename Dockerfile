@@ -26,6 +26,9 @@ RUN pip install --no-cache-dir -r requirements-web.txt
 
 RUN useradd --create-home --uid 1000 app && mkdir -p /app/data && chown app /app/data
 COPY --chown=app mtgfish ./mtgfish
+# The TS engine's source: the server fingerprints it (mtgfish/web/engine_build.py)
+# to accept only browser runs played with this build.
+COPY --chown=app engine/src ./engine/src
 COPY --chown=app cache/scryfall ./data/scryfall
 COPY --chown=app cache/pool.json cache/comprehensive_rules.txt ./data/
 

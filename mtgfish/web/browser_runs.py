@@ -10,7 +10,13 @@ and IR builds, the card snapshot, and the decks as resolved.
 ``GET  /api/browser-runs``             your stored runs (signed in)
 =====================================  =====================================
 
-A run is checked on arrival. Every game's seed must be the one
+A run must come from the engine build this server runs
+(``engine_build.current()``); any other is refused with 409 and
+``"reload": true``, so the page fetches the new engine and runs again. That
+way the spot check always has the right engine to hand, and a run that
+passes is "ok" for good, with its build recorded.
+
+A run is also checked on arrival. Every game's seed must be the one
 ``seed_for(run_seed, index)`` gives (the same function in both engines),
 indices must lie in the run's range with none repeated, and sizes are
 capped. A run that fails is refused whole. Later, the server replays a
@@ -32,6 +38,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 
+from . import engine_build
 from .auth.ratelimit import RateLimited, RateLimiter
 from .auth.routes import AUTH_COOKIE
 from .auth.service import user_for_session
@@ -228,6 +235,17 @@ def build_router(accounts, limiter: RateLimiter | None = None) -> APIRouter:
         except (BadRun, ValueError) as exc:
             message = str(exc) if isinstance(exc, BadRun) else "the upload is not valid JSON"
             return reply({"error": message}, 413 if "too large" in message else 400)
+
+        # Only runs from the engine this server runs are kept, so a sample can
+        # always be replayed with the right engine. Older pages reload.
+        server_build = engine_build.current()
+        if server_build is not None and run["engine_build"] != server_build:
+            return reply({
+                "error": "the engine has been updated since this page loaded - reload the "
+                         "page and run again",
+                "reload": True,
+                "engine_build": server_build,
+            }, 409)
 
         payload = gzip.compress(
             json.dumps({"records": run["records"], "crashed": run["crashed"]},

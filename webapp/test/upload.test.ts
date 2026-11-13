@@ -1,7 +1,7 @@
 import { runGames, stubEngine, type RunSetup } from "@goldfly/engine/sim";
 import { describe, expect, it } from "vitest";
 import type { DeckManifest, Fetch } from "../src/ir";
-import { runUpload, uploadRun } from "../src/upload";
+import { UploadRefused, runUpload, uploadRun } from "../src/upload";
 
 const doc = (id: string, name: string) =>
   ({ ir_version: 2, oracle_id: id, name, card_hash: `hash-${id}`, faces: [] }) as never;
@@ -58,6 +58,14 @@ describe("run upload", () => {
 
   it("passes on a refusal", async () => {
     const fetch: Fetch = async () => Response.json({ error: "game 3 does not have its seed" }, { status: 400 });
-    await expect(uploadRun({}, { fetch })).rejects.toThrow("does not have its seed");
+    await expect(uploadRun({}, { fetch })).rejects.toMatchObject({ message: "game 3 does not have its seed", reload: false });
+  });
+
+  it("says when the page must reload for a newer engine", async () => {
+    const fetch: Fetch = async () =>
+      Response.json({ error: "the engine has been updated", reload: true, engine_build: "new" }, { status: 409 });
+    const refusal = await uploadRun({}, { fetch }).catch((error: unknown) => error);
+    expect(refusal).toBeInstanceOf(UploadRefused);
+    expect((refusal as UploadRefused).reload).toBe(true);
   });
 });
