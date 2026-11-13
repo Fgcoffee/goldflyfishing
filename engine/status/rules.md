@@ -164,8 +164,11 @@ there too. Your Mana planning roadmap item can be ticked.
 
 ## Next
 
-1. Legal actions (legality.py), which finishes casting. Then resolution's
-   other executors and the stack.
+1. Legal actions (kernel/legality.py, 718 lines), which finishes casting.
+   It needs first: rule overrides (cr101_rule_overrides.py, for "no limit
+   on lands"), the face helpers (cr707_faces.py: castable and playable face
+   indices) and special actions (cr116_special_actions.py). Then
+   resolution's other executors and the stack.
 
 ## Questions for the auditor
 
