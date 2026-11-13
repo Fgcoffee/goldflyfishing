@@ -4,7 +4,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { Board, cardDef, filter, mana } from "../../../test/rules/board";
+import { Board, cardDef, effect, filter, mana, staticAbility } from "../../../test/rules/board";
 import type { Ability } from "../../ir";
 import { CardType, Color, LossReason, Supertype, Zone } from "../../kernel/enums";
 import { createObject } from "../../kernel/game";
@@ -227,6 +227,18 @@ describe("legend and world rules (CR 704.5j-k)", () => {
     sba();
     expect([first, second].filter(onBattlefield).length).toBe(1);
     expect(onBattlefield(second)).toBe(true); // the newest, until the AI chooses
+  });
+
+  it("a card can switch the legend rule off (CR 101.1)", () => {
+    board.script(
+      "Bonesplitter",
+      staticAbility("CR 704.5j does not apply", effect({ kind: ir("EffectKind.SUSPEND_RULE"), rule: "704.5j" })),
+    );
+    play("Bonesplitter");
+    const first = play("Kenrith, the Returned King", 0);
+    const second = play("Kenrith, the Returned King", 0);
+    sba();
+    expect(onBattlefield(first) && onBattlefield(second)).toBe(true);
   });
 
   it("the legend rule is per player", () => {

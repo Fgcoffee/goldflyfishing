@@ -30,6 +30,7 @@ import { emit } from "../emit";
 import { num } from "../ir_read";
 import { destroy, detach, isIndestructible, playerLoses, putIntoGraveyard, sacrifice } from "../cr100_game_concepts/actions";
 import { lethalCommanderDamage, startEngines } from "../cr100_game_concepts/player";
+import { Rule, ruleIsSuspended } from "../cr100_game_concepts/rule_overrides";
 import { playerProtectedFrom, protectedFrom } from "../cr100_game_concepts/protection";
 import {
   abilityKeyword,
@@ -505,9 +506,9 @@ function checkLegendRule(game: Game, choices: [PlayerId, string, GameObject[]][]
   for (const obj of permanents(game)) {
     const chars = characteristicsOf(game, obj);
     if (!hasSupertype(chars, Supertype.LEGENDARY) || !chars.name) continue;
-    // PENDING(rules): CR 101.1, a card switching the legend rule off
-    // (Python game.rule_is_suspended(Rule.LEGEND_RULE)); cr101_rule_overrides
-    // isn't ported, so the rule always applies.
+    // CR 101.1: a card may switch the legend rule off, for its controller
+    // or for everyone.
+    if (ruleIsSuspended(game, Rule.LEGEND_RULE, { obj }) !== null) continue;
     const key = `${obj.controller}\u0000${chars.name}`;
     const entry = grouped.get(key) ?? [obj.controller, chars.name, []];
     entry[2].push(obj);
