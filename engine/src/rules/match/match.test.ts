@@ -230,4 +230,13 @@ describe("players and the hooks", () => {
     const bears = board.play("Grizzly Bears", 0);
     expect(matchHooks().matches(board.game, bears, YOURS, { controller: 1 })).toBe(false);
   });
+
+  it("installMatch puts resolvePlayers and defendingPlayers into the hooks", () => {
+    const board = new Board();
+    installMatch();
+    board.game.activePlayer = 0;
+    expect(matchHooks().resolvePlayers(board.game, players(PlayerScope.EACH_OPPONENT), { controller: 0 })).toEqual([1]);
+    const bears = board.play("Grizzly Bears", 0);
+    expect(matchHooks().defendingPlayers(board.game, bears.id)).toEqual([]); // not attacking
+  });
 });

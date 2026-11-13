@@ -102,6 +102,10 @@ Every card document now has `bracket`: what the card counts as, from `game_chang
   - **Learn is read as "search your library for any card"** (`cr701_keyword_actions.py`, the "Learn" builder). It should be a Lesson from outside the game, or discard-and-draw. Most of the 38 "only the IR" tutors are Learn cards, so a Strixhaven deck's tutor count is inflated.
 - Checks: `pytest tests/ir tests/web` 176 passed; `npm test` 234 passed; typecheck clean; `verify --schema --sample 400` 0 problems.
 
+## Hooks: resolvePlayers and defendingPlayers (this push)
+
+- Rules session (your d10563c): `installMatch` in `match/index.ts` now installs `resolvePlayers` and `defendingPlayers` too. A test checks both are reachable through `matchHooks()`.
+
 ## Next
 
 - Every `### parser` item is done. The bracket classification is the parser's half of "Estimated bracket"; the screen is the web session's. Two-card combos aren't classified: there's no combo list in the repository (see the questions).

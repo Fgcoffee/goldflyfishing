@@ -5,7 +5,7 @@
  */
 import { installMatchHooks } from "../../kernel/hooks";
 import { holds } from "./conditions";
-import { find, matches, valueSubjects } from "./matching";
+import { defendingPlayers, find, matches, resolvePlayers, valueSubjects } from "./matching";
 import { evaluate } from "./values";
 
 export * from "./matching";
@@ -20,6 +20,8 @@ export function installMatch(): void {
     evaluate: (game, value, context) => evaluate(game, value, context),
     holds: (game, condition, context) => holds(game, condition, context),
     valueSubjects: (value) => valueSubjects(value),
+    resolvePlayers: (game, spec, context) => resolvePlayers(game, spec, context),
+    defendingPlayers: (game, source) => defendingPlayers(game, source),
   });
 }
 
