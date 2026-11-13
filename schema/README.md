@@ -8,6 +8,7 @@ are in [`docs/ir-json.md`](../docs/ir-json.md).
 |---|---|
 | `ir.schema.json` | JSON Schema for one card file: the printed card (`CardDef`) and each face's abilities. **The source of truth.** |
 | `samples/` | Every card of the four bench decks (`bench/decks/*.txt`), plus `samples/decks.json`. For the engine's tests. |
+| `brackets.json` | The bracket tags read from the IR (`mtgfish/ir/bracket.py`) against Scryfall's tagger tags, over every format-legal card: how many agree, and each card on which they don't. A cross-check only; the tags never read Scryfall's. |
 | `usage.json` | For each effect, condition, cost, event, value and player kind, IR class and keyword: how many faces use it, how many of those are fully read, and how many bench-deck faces use it. Ordered by bench use, then pool use: the order the engine port pays off in. |
 
 The TypeScript types for the same shapes are `engine/src/ir/types.ts` and
@@ -21,6 +22,7 @@ python -m mtgfish.tools.ir_export export                 # every card -> cache/i
 python -m mtgfish.tools.ir_export export --out DIR       # ... or into DIR
 python -m mtgfish.tools.ir_export samples                # the bench decks -> schema/samples/
 python -m mtgfish.tools.ir_export usage                  # what the pool uses -> schema/usage.json
+python -m mtgfish.tools.ir_export brackets               # bracket tags vs Scryfall's -> schema/brackets.json
 python -m mtgfish.tools.ir_export schema                 # regenerate the schema and the TS types
 python -m mtgfish.tools.ir_export verify --schema        # every face round-trips; 0 problems expected
 ```
@@ -60,8 +62,8 @@ cache/ir/v2/
 * **`face`** is the face's index within the card (0, or 0 and 1 for a
   double-faced, split, adventure or flip card), in `faces[]` order.
 * **`code`** (in `index.json`) fingerprints the code that wrote the export:
-  the parser, the rules and card definitions, and the IR codec
-  (`mtgfish.ir.store.code_fingerprint()`). A parser change can change a
+  the parser, the rules and card definitions, the IR package, and the Game
+  Changers list (`mtgfish.ir.store.code_fingerprint()`). A parser change can change a
   card's IR without changing its text, so an export whose `code` differs
   from the running code is stale. `IRStore` then parses every card live and
   logs it once. Put `code` in cache keys alongside `card_hash`.
@@ -108,8 +110,19 @@ A card document (`<oracle_id>.json`):
    "abilities": [{"$": "Ability", "kind": 0, "effects": ["..."]}],
    "failures": []
   }
- ]
+ ],
+ "bracket": []
 }
+```
+
+`bracket` lists what the card counts as for an estimated Commander bracket
+(`game_changer`, `tutor`, `extra_turn`, `mass_land_denial`, and `unread`
+when part of it couldn't be read); see `docs/ir-json.md`. For a whole deck:
+
+```python
+from mtgfish.ir.bracket import estimate
+result = estimate(documents)   # each document may carry "count" (copies)
+result["bracket"], result["reasons"], result["caveats"], result["cards"]
 ```
 
 `fully_read` is false when any ability could not be read. That ability is

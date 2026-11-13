@@ -475,4 +475,6 @@ export interface CardDocument {
   /** The printed card: faces with mana cost, type line, P/T, colors. */
   card: CardDef;
   faces: Array<FaceDocument>;
+  /** Bracket-estimate tags (mtgfish.ir.bracket); "unread" makes the rest a floor. */
+  bracket?: Array<"game_changer" | "tutor" | "extra_turn" | "mass_land_denial" | "unread">;
 }

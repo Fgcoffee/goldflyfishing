@@ -30,7 +30,7 @@ checks that they match `engine/src/kernel/enums.ts`.
 ## What a card file holds
 
 One file per card, `<oracle_id>.json`: a **card document**,
-`{ir_version, oracle_id, name, card_hash, card, faces}`.
+`{ir_version, oracle_id, name, card_hash, card, faces, bracket}`.
 
 * **card**: the printed card, Python's `CardDef` with its `FaceDef`s and
   their `TypeLine`. That's the name, layout, mana value, color identity and
@@ -41,6 +41,14 @@ One file per card, `<oracle_id>.json`: a **card document**,
   from it. The shape matches `engine/src/kernel/card.ts`, which also adds
   `edhrec_rank`, `scryfall_uri` and `attraction_lights` (CR 717.1).
 * **faces**: one face document per face, below.
+* **bracket**: what the card counts as for a Commander bracket estimate, in
+  this order: `game_changer`, `tutor`, `extra_turn`, `mass_land_denial`,
+  `unread`. Read from the IR by `mtgfish/ir/bracket.py`, except
+  `game_changer`, which is Scryfall's flag (the official list). `unread`
+  means part of the card wasn't read, so its other tags are a floor. An
+  empty list means none apply. `bracket.estimate(documents)` turns a deck's
+  documents into an estimated bracket (2 to 4) with its reasons. Optional in
+  the schema: exports from before it was added don't have it.
 
 ## What a face holds
 
@@ -145,7 +153,7 @@ new enum members do not bump it, because an old reader just never sees them.
 `python -m mtgfish.tools.ir_export export` writes `cache/ir/v2/`:
 
 * `<oracle_id>.json`: one **card document**,
-  `{ir_version, oracle_id, name, card_hash, faces: [face, ...]}`. About
+  `{ir_version, oracle_id, name, card_hash, card, faces: [face, ...], bracket}`. About
   1.6 kB per card; 60 MB for the whole pool, 13 MB gzipped. A deck's worth
   is a few tens of kB.
 * `index.json`: every card and face name (lower case) to its oracle id, and

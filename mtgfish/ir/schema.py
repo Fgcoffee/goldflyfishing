@@ -23,6 +23,7 @@ import typing
 from typing import Any
 
 from .codec import ANY, IR_VERSION, classes, enums, field_default, fields_of
+from .bracket import TAGS as BRACKET_TAGS
 
 _ANY = ANY
 
@@ -181,6 +182,16 @@ def json_schema() -> dict:
             "card_hash": {"type": "string"},
             "card": {"$ref": "#/$defs/CardDef"},
             "faces": {"type": "array", "items": {"$ref": "#/$defs/FaceDocument"}},
+            "bracket": {
+                "description": (
+                    "What the card counts as for a Commander bracket estimate"
+                    " (mtgfish.ir.bracket), in this order. \"unread\": some of the"
+                    " card couldn't be read, so its other tags are a floor."
+                ),
+                "type": "array",
+                "items": {"enum": list(BRACKET_TAGS)},
+                "uniqueItems": True,
+            },
         },
         "required": ["ir_version", "oracle_id", "name", "card_hash", "card", "faces"],
         "additionalProperties": False,
@@ -329,6 +340,8 @@ def typescript() -> str:
         "  /** The printed card: faces with mana cost, type line, P/T, colors. */",
         "  card: CardDef;",
         "  faces: Array<FaceDocument>;",
+        "  /** Bracket-estimate tags (mtgfish.ir.bracket); \"unread\" makes the rest a floor. */",
+        f"  bracket?: Array<{' | '.join(json.dumps(t) for t in BRACKET_TAGS)}>;",
         "}",
         "",
     ]

@@ -35,9 +35,10 @@ _code: str | None = None
 
 
 def code_fingerprint() -> str:
-    """What the IR depends on besides the card data: the parser's own code
-    fingerprint (parser, rules, card definitions) and the IR codec here.
-    A change to either can change the JSON without changing a card.
+    """What the IR depends on besides each card's text: the parser's own code
+    fingerprint (parser, rules, card definitions), this package's code, and
+    the Game Changers list. A change to any can change the JSON without
+    changing a card.
     Computed once per process, like the parser's: a process runs the code it
     imported."""
     global _code
@@ -45,7 +46,12 @@ def code_fingerprint() -> str:
         return _code
     from ..parser.store import code_fingerprint as parser_code
 
+    from .bracket import game_changers_digest
+
     digest = hashlib.sha256(parser_code().encode())
+    # The Game Changers list (in each document's "bracket") comes from the
+    # card dump and can change without any card's text changing.
+    digest.update(game_changers_digest().encode())
     package = Path(__file__).resolve().parent
     for path in sorted(package.glob("*.py")):
         digest.update(path.name.encode())
@@ -53,6 +59,33 @@ def code_fingerprint() -> str:
         digest.update(path.read_bytes())
     _code = digest.hexdigest()
     return _code
+
+
+def card_document(card, digest: str | None = None) -> dict:
+    """A card's IR document, parsed now: what ``ir_export export`` writes to
+    ``<oracle_id>.json`` and what :meth:`IRStore.card` serves live."""
+    from ..parser.compile import parse_face
+    from ..parser.store import card_hash
+    from .bracket import card_tags
+    from .codec import encode_card, encode_face
+
+    if digest is None:
+        digest = card_hash(card)
+    faces = []
+    parsed_faces = []
+    for index in range(max(1, len(card.faces))):
+        parsed = parse_face(card, index)
+        parsed_faces.append((parsed.abilities, not parsed.failures))
+        faces.append(encode_face(card, index, parsed.abilities, parsed.failures, digest))
+    return {
+        "ir_version": IR_VERSION,
+        "oracle_id": card.oracle_id,
+        "name": card.name,
+        "card_hash": digest,
+        "card": encode_card(card),
+        "faces": faces,
+        "bracket": card_tags(card.oracle_id, parsed_faces),
+    }
 
 
 def default_dir() -> Path:
@@ -112,21 +145,7 @@ class IRStore:
         return self._live(card, digest)
 
     def _live(self, card, digest: str) -> dict:
-        from ..parser.compile import parse_face
-        from .codec import encode_card, encode_face
-
-        faces = []
-        for index in range(max(1, len(card.faces))):
-            parsed = parse_face(card, index)
-            faces.append(encode_face(card, index, parsed.abilities, parsed.failures, digest))
-        return {
-            "ir_version": IR_VERSION,
-            "oracle_id": card.oracle_id,
-            "name": card.name,
-            "card_hash": digest,
-            "card": encode_card(card),
-            "faces": faces,
-        }
+        return card_document(card, digest)
 
     def lookup(self, name: str):
         """The card a deck line names, by its full name or a face's name."""

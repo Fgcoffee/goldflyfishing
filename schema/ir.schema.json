@@ -25,6 +25,20 @@
    "items": {
     "$ref": "#/$defs/FaceDocument"
    }
+  },
+  "bracket": {
+   "description": "What the card counts as for a Commander bracket estimate (mtgfish.ir.bracket), in this order. \"unread\": some of the card couldn't be read, so its other tags are a floor.",
+   "type": "array",
+   "items": {
+    "enum": [
+     "game_changer",
+     "tutor",
+     "extra_turn",
+     "mass_land_denial",
+     "unread"
+    ]
+   },
+   "uniqueItems": true
   }
  },
  "required": [
