@@ -50,6 +50,7 @@ and games that don't replay from their seed are fixed now.
 - [ ] Commander rules (CR 903): command zone, tax, commander damage
 - [ ] Game setup (CR 103): shuffles, mulligans
 - [ ] `play(setup, index, seed)` entry point for the runner, agreed with web
+- [ ] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games
 - [ ] Each module's Python board tests ported as Vitest tests
 
 ### parser
@@ -75,6 +76,16 @@ and games that don't replay from their seed are fixed now.
 - [ ] Swap the stub for the real engine; games run in the browser
 - [ ] Results and replay screens read browser runs
 - [ ] Switch the website from server simulations to browser simulations
+- [ ] **Every browser run is sent back to the server and stored.** Required before the switch-over. Each run records:
+  - the run seed (master seed), the game range, and each game's own seed and log digest;
+  - the engine build fingerprint, the IR build fingerprint and the card-data snapshot;
+  - the decks as resolved: oracle ids and card hashes, seat order, the hero seat;
+  - the turn cap;
+  - every game record, and every crashed game with its seed, error and stack;
+  - whether the run finished.
+
+  A cancelled or partial run uploads what it completed. Uploads are compressed. The privacy page says that decklists and simulation results are sent to and kept by the server.
+- [ ] **Server-side spot check of uploaded runs.** The server replays a random sample of each upload in Node with the same engine build, and compares log digests. Mismatches, from a tampered or broken client, are flagged and kept out of any shared statistics (brackets, card impact).
 
 ### auditor
 - [x] Shared branch, ownership, status files, this roadmap
@@ -82,6 +93,7 @@ and games that don't replay from their seed are fixed now.
 - [ ] Language-neutral test fixtures from the Python board tests, with a runner checking both engines
 - [ ] Review each module as it lands; run the bench decks on the TS engine once it plays
 - [ ] Merge the shared branch into `main` at each milestone
+- [ ] Check that uploaded browser runs replay identically: a sample across browsers, so the same seed gives the same digest in Chrome, Firefox and Safari, and in Node
 
 ---
 
