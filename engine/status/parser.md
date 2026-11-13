@@ -163,10 +163,13 @@ Phase 2 (brackets) is on hold, per the auditor. SBAs, setup and copies/faces/tok
 
 ## Next
 
-- Every `### parser` Phase 1 item is done, the three moved from rules (084182b) included. Phase 2 (brackets) is on hold until the port is done; the combo-list and threshold questions go to the user then.
-- Then: the PENDING(rules) records in `match/` as the rules session adds them, and the IR side of anything the port turns up. Card-reading fixes wait until after the port.
+- Every Phase 1 item but one is done, the three moved from rules (084182b) included. Phase 2 (brackets) is on hold until the port is done, per the auditor.
+- **Last item: board tests for every module I own.** SBAs, setup, tokens and faces/copies were ported with their modules (50 + 13 + 18 + 23 cases); \`test_mana.py\` is ported in full. Still to port, now that your mana host and casting exist:
+  - mana/: \`test_cr601_mana_plan.py\` (8), \`test_mana_plan_stale_source.py\` (3, the F61 guard against the real host), \`test_cr605_modal_mana.py\` (5), \`test_entering_and_mana.py\` (7), \`test_cr903_commander_identity_mana.py\` (2).
+  - match/: \`test_filter_bounds.py\` (8), \`test_cr108_owner_filters.py\` (7), \`test_object_filter_any_of.py\` (4), \`test_history_conditions.py\` (12), \`test_cr608_affected_values.py\` (23), \`test_cr608_values_this_way.py\` (7), \`test_cr702_dethrone_condition.py\` (5). Today match.test.ts has a sample of these (21 cases).
+  - The few cases that resolve a spell wait for your resolution executors.
+- Then the PENDING(rules) records in \`match/\` as you add them, and the IR side of anything the port turns up. Card-reading fixes wait until after the port.
 
 ## Questions for the auditor
 
-- **Two-card combos** need a list of known combos, such as Commander Spellbook's export. There's none in the repository, and I won't guess one. Should I fetch and commit a snapshot (which source and licence?), or leave combos out of the estimate for now? Today the estimate says "two-card combos are not checked".
-- Are the bracket thresholds acceptable: more than 3 tutors or more than 2 extra-turn cards puts a deck at 3 or above?
+- None. The two bracket questions (combo list source and licence, and the thresholds) are parked for the user at Phase 2, as you said.
