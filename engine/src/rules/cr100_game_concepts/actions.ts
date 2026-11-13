@@ -14,13 +14,16 @@ import {
   player,
   type Game,
 } from "../../kernel/game";
-import { addCounters as putCounters, isLive, isPermanent, removeCounters as takeCounters, type GameObject } from "../../kernel/gameobject";
+import { addCounters as putCounters, isLive, isPermanent, objectText, removeCounters as takeCounters, type GameObject } from "../../kernel/gameobject";
 import { NO_OBJECT, NO_PLAYER, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { shuffle } from "../../kernel/random";
 import { emit } from "../emit";
 import { replacementHooks } from "../cr600_spells_and_abilities/replacement_hooks";
 import { printedCharacteristics } from "../cr600_spells_and_abilities/layers";
-import { Act, prohibited } from "../cr500_turn_structure/restrictions";
+import { Act, prohibited, restrictionText } from "../cr500_turn_structure/restrictions";
+import type { Combat } from "../cr500_turn_structure/combat";
+import { hasKeyword } from "../cr200_parts_of_a_card/characteristics";
+import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
 import { initiativeLeftTheGame, monarchLeftTheGame } from "../cr700_additional_rules/designations";
 import { moveObject, removeFromZone } from "../zones";
 
@@ -277,4 +280,56 @@ export function removeCounters(game: Game, obj: GameObject, kind: string, amount
     }));
   }
   return removed;
+}
+
+/** CR 702.12b: indestructible permanents ignore destruction and lethal damage. */
+export function isIndestructible(game: Game, obj: GameObject): boolean {
+  return hasKeyword(characteristicsOf(game, obj), "Indestructible");
+}
+
+/**
+ * CR 506.4: remove a permanent from combat. PORT: against the placeholder
+ * Combat (attackers only); the full `combat.remove` comes with combat.
+ */
+export function removeFromCombat(game: Game, obj: GameObject): void {
+  const combat = game.combat as Combat | null;
+  if (combat == null || !combat.attacking.has(obj.id)) return;
+  combat.attacking.delete(obj.id);
+  logRecord(game, `${objectText(obj, characteristicsOf(game, obj).name)} is removed from combat`, { kind: "combat" });
+  invalidateAllCharacteristics(game);
+}
+
+/**
+ * Destroy a permanent (CR 701.7); whether it went to the graveyard.
+ * Indestructible (CR 702.12b), "can't be destroyed" (CR 101.2) and a
+ * regeneration shield (CR 701.15) stop it; `regenerate: false` for "can't be
+ * regenerated", which leaves the shield unused (CR 701.19c).
+ */
+export function destroy(game: Game, obj: GameObject, options: { source?: ObjectId; regenerate?: boolean } = {}): boolean {
+  const source = options.source ?? NO_OBJECT;
+  let regenerate = options.regenerate ?? true;
+  if (!isPermanent(obj)) return false; // CR 110.1: only the live permanent
+  const text = () => objectText(obj, characteristicsOf(game, obj).name);
+  if (isIndestructible(game, obj)) {
+    logRecord(game, `${text()} is indestructible; not destroyed`, { kind: "sba" });
+    return false;
+  }
+  const blocked = prohibited(game, Act.BE_DESTROYED, { obj });
+  if (blocked !== null) {
+    logRecord(game, `${text()} can't be destroyed (${restrictionText(blocked)})`, { kind: "restriction" });
+    return false;
+  }
+  if (regenerate && prohibited(game, Act.BE_REGENERATED, { obj }) !== null) regenerate = false;
+  if (regenerate && obj.regenerationShields > 0) {
+    obj.regenerationShields -= 1;
+    obj.tapped = true;
+    obj.damage = 0;
+    obj.dealtDeathtouchDamage = false;
+    removeFromCombat(game, obj);
+    emit(game, event(EventKind.REGENERATED, { objectId: obj.id, source }));
+    return false;
+  }
+  emit(game, event(EventKind.DESTROYED, { objectId: obj.id, source }));
+  moveObject(game, obj, Zone.GRAVEYARD, { toPlayer: obj.owner });
+  return true;
 }

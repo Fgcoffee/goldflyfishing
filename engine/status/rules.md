@@ -162,13 +162,62 @@ there too. Your Mana planning roadmap item can be ticked.
   printed face's types and subtypes, `{}` for a token, `null` for a bare
   check, as `SpendOnlyOn.permits` reads them.
 
+## For the parser session: SBAs, setup, copies/faces/tokens (moved to you, 084182b)
+
+**State-based actions plug in at one function.** Implement
+`checkStateBasedActions(game): boolean` in
+`rules/cr700_additional_rules/sba.ts` (the placeholder is there; replace it
+in place, it is yours now). It returns whether any SBA was performed. My
+code calls it in two places, and both are already wired:
+- `settle(game)` in `rules/cr100_game_concepts/priority.ts`: before each
+  priority, SBAs, then state triggers, then putting triggers on the stack,
+  repeated until nothing happens (CR 117.5, 704.3). Returns early on
+  `game.gameOver`.
+- cleanup in `rules/cr500_turn_structure/turn.ts` (CR 514.3a): an SBA in
+  cleanup gives priority and repeats the step.
+What it can call from me: `actions.ts` has `destroy` (with indestructible,
+"can't be destroyed", regeneration), `isIndestructible`, `sacrifice`,
+`putIntoGraveyard`, `detach`, `exile`, `removeFromCombat`, `playerLoses`,
+`checkGameOver`; `zones.ts` has `moveObject`; `protection.ts` has
+`protectedFrom` / `playerProtectedFrom` (CR 702.16c-d for Auras);
+`targeting.ts` has `enchantableScope`. Combat is still a placeholder
+(`combat.ts`, attackers only); `check_removal_from_combat` comes with my
+combat port, so leave a call to it marked `PORT:` if you need one.
+Commander damage and the legend rule's choice go through the agent the
+same way Python does (`agentFor`).
+
+**Copies, faces and tokens.** Resolution (mine) calls into your modules at
+these points; please export them with these names:
+- `createTokens(game, spec, controller, count, { source })` and
+  `createEmblem(...)` from `rules/cr100_game_concepts/tokens.ts` (Python
+  `cr111_tokens.create_tokens`, `create_emblem`), called by my CREATE_TOKEN
+  executor;
+- from `rules/cr700_additional_rules/faces.ts`: `transform(game, obj)`,
+  `copyPermanent(...)`, `copySpell(...)`, `chooseNewTargets(game, copy,
+  controller)` and `MAY_CHOOSE_NEW_TARGETS`, called by TRANSFORM,
+  COPY_PERMANENT and COPY_SPELL. Same signatures as Python's
+  `cr707_faces.py`, keyword arguments as an options object.
+- `faces.ts` exists already: I wrote `layoutOf`, `castableFaceIndices` and
+  `playableLandFaceIndices` because legal actions needs them now. The file
+  is yours from here; keep those three.
+- Already in my `layers.ts`, so not needed again: `copiableCharacteristics`,
+  `faceDownCharacteristics`, `fromFace`. The CR 718.2 prototype face is
+  still marked KNOWN there; `hasPrototypeLine` is in `card_types.ts`, and
+  you're welcome to build the face in layers' `printedCharacteristics`.
+- Cast modes (`CastMode`, `castModeForFace`, `RESOLUTION_ZONE`) are in
+  `cr300_card_types/card_types.ts`; `zones.ts` keeps a spell's mode on the
+  permanent (`PERSISTS_ON_BATTLEFIELD`).
+- Setup (CR 103): `newGame` / `createObject` in `kernel/game.ts`,
+  `shuffleLibrary` and `draw` in actions.ts, `runGame` in turn.ts.
+  `play(setup, index, seed)` stays mine and will call your setup.
+
 ## Next
 
-1. Legal actions (kernel/legality.py, 718 lines), which finishes casting.
-   It needs first: rule overrides (cr101_rule_overrides.py, for "no limit
-   on lands"), the face helpers (cr707_faces.py: castable and playable face
-   indices) and special actions (cr116_special_actions.py). Then
-   resolution's other executors and the stack.
+1. Legal actions (kernel/legality.py), which finishes casting; first rule
+   overrides (cr101) and special actions (cr116). Then resolution
+   executors and the stack, triggers, combat, replacements and prevention,
+   keyword runtime, commander rules, `play()`, the build fingerprint, and
+   board tests. (SBAs, setup and copies/faces/tokens moved to the parser.)
 
 ## Questions for the auditor
 
