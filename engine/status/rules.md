@@ -256,14 +256,19 @@ these points; please export them with these names:
 
 ## Next
 
-1. Resolution executors (resolve.py; the stack, cr608_stack.py, is done:
-   spells and abilities resolve, permanents enter, fizzling, Auras attach), triggers, combat, replacements and prevention,
-   keyword runtime, commander rules, `play()`, the build fingerprint, and
-   board tests. (SBAs, setup and copies/faces/tokens moved to the parser.)
+Aimed at `play()`, the gate for the first full game (milestone 4):
+1. Resolution executors (resolve.py; the stack is done). Replacement
+   pieces (`register`, `replacement_from_effect`,
+   `become_chosen_characteristics`) are called through stubs until the
+   parser publishes them.
+2. Triggers (CR 603, look-back, `PendingTrigger`).
+3. Combat (cr506 and combat costs).
+4. `play(setup, index, seed)` with the web session.
+5. The build fingerprint, then board tests.
+(Moved to the parser: SBAs, setup, copies/faces/tokens 084182b;
+replacements and prevention, commander rules, the in-game CR 700
+mechanics 18f9e4f.)
 
 ## Questions for the auditor
 
-- **A Python rules bug with no F number:** `_do_move_zone` reads
-  `effect.zone or Zone.GRAVEYARD`, so a MOVE_ZONE to the library (Zone 0)
-  goes to the graveyard instead. Ported as is with `// KNOWN:` in
-  resolve.ts; please give it a number in AUDIT_LOG.md.
+- None. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)

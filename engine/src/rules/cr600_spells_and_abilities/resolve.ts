@@ -818,8 +818,8 @@ registerExecutor(ir("EffectKind.RETURN_TO_HAND"), (resolution, effect) => {
 });
 
 registerExecutor(ir("EffectKind.MOVE_ZONE"), (resolution, effect) => {
-  // KNOWN: (unnumbered, reported in status/rules.md) Python's `effect.zone or
-  // Zone.GRAVEYARD` sends a LIBRARY destination (0) to the graveyard; ported as is.
+  // KNOWN: F62 - Python's `effect.zone or Zone.GRAVEYARD` sends a LIBRARY
+  // destination (0) to the graveyard; ported as is.
   const destination = effect.zone == null ? Zone.GRAVEYARD : num(effect.zone) || Zone.GRAVEYARD;
   const objects = objectsOf(resolution, effect);
   revealIfSaid(resolution, effect, objects); // CR 701.20
