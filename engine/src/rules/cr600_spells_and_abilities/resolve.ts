@@ -11,25 +11,29 @@
  */
 
 import { PlayerScopeValues } from "../../ir";
-import type { Condition, Effect, Value } from "../../ir";
-import { Color, Duration, Supertype, Zone } from "../../kernel/enums";
+import type { Condition, Effect, ObjectFilter, Restriction, TokenSpec, Value } from "../../ir";
+import { Color, Duration, Layout, Supertype, Zone } from "../../kernel/enums";
+import { randint } from "../../kernel/random";
+import { createEmblem, createTokens } from "../cr100_game_concepts/tokens";
+import { registerOverride, Rule } from "../cr100_game_concepts/rule_overrides";
+import { registerStanding } from "../cr500_turn_structure/restrictions";
 import { event, EventKind, type GameEvent } from "../../kernel/events";
 import { agentFor, logRecord, player, type Game } from "../../kernel/game";
 import { isLive, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { charsManaValue, hasSupertype } from "../cr200_parts_of_a_card/characteristics";
-import { bounce, destroy, discard, draw, mill, sacrifice } from "../cr100_game_concepts/actions";
+import { bounce, destroy, discard, draw, mill, recordLink, sacrifice } from "../cr100_game_concepts/actions";
 import { moveObject } from "../zones";
 import { canPayCost, payCost } from "./paying";
 import { Act } from "../cr500_turn_structure/restrictions";
 import { commanderColorIdentity } from "../cr903_commander/color_identity";
 import { emit } from "../emit";
-import { flag, ir, list, num, str } from "../ir_read";
+import { flag, ir, irEqual, list, num, str } from "../ir_read";
 import { parseManaSymbol } from "../mana/cost";
 import { addMana, manaKind, manaKindKey, poolSnapshot, type ManaKind, type ManaRestriction } from "../mana/pool";
 import { constantOf, isTargeted, targetsAPlayer, targetsItsPlayer } from "./effect_props";
-import { characteristicsOf } from "./layers";
+import { characteristicsOf, copiableCharacteristics, intrinsicAbilities } from "./layers";
 import { attackers } from "../cr500_turn_structure/combat";
 
 const EK = {
@@ -831,4 +835,212 @@ registerExecutor(ir("EffectKind.DISCARD"), (resolution, effect) => {
   }
   // CR 608.2: "if you discarded a nonland card this way".
   if (discarded.length > 0) resolution.remembered = discarded;
+});
+
+// -- tokens and emblems (CR 111, 114) ----------------------------------------------------
+
+/** CR 111.1-2: create tokens for whoever the effect says; "them" names what was made (CR 608.2c). */
+registerExecutor(ir("EffectKind.CREATE_TOKEN"), (resolution, effect) => {
+  if (effect.token == null) return;
+  const game = resolution.game;
+  const count = countOf(resolution, effect);
+  const spec = tokenSizeNow(resolution, effect.token);
+  // CR 707.2: a token copy is built from the copiable values of each object copied.
+  let cards: (unknown | null)[] = [null];
+  if (spec.copy_of != null) cards = copyOriginals(resolution, effect).map((original) => copyTokenCard(game, original, spec));
+  const made: ObjectId[] = [];
+  for (const pid of playersOf(resolution, effect)) {
+    for (const card of cards) {
+      const created = createTokens(game, spec, pid, count, { source: resolution.source, ...(card !== null ? { card } : {}) });
+      for (const token of created) recordLink(game, resolution.source, token.id, linkOf(resolution)); // CR 607.2c
+      made.push(...created.map((t) => t.id));
+    }
+  }
+  if (made.length > 0) resolution.remembered = made;
+});
+
+/** CR 608.2h: an X/X token's size is worked out as the effect resolves, then fixed. */
+function tokenSizeNow(resolution: Resolution, spec: TokenSpec): TokenSpec {
+  const changes: Partial<TokenSpec> = {};
+  for (const name of ["power", "toughness"] as const) {
+    const value = spec[name];
+    if (value != null && constantOf(value) === null) changes[name] = { $: "Value", constant: valueOf(resolution, value) };
+  }
+  return Object.keys(changes).length > 0 ? { ...spec, ...changes } : spec;
+}
+
+/** The objects a "token that's a copy of ..." copies (cr702_cost_keyword_rules.copy_originals). */
+function copyOriginals(resolution: Resolution, effect: Effect): GameObject[] {
+  const spec = effect.token!.copy_of!;
+  if (flag(spec.source_only)) {
+    const obj = resolution.game.objects.get(resolution.source); // CR 608.2h: as it last existed
+    return obj !== undefined ? [obj] : [];
+  }
+  return objectsOf(resolution, { ...effect, targets: spec });
+}
+
+/**
+ * The card a token copy is built from (cr702_cost_keyword_rules.copy_token_card):
+ * the copiable values (CR 707.2), with a power and toughness on the spec as
+ * the copy's exception (CR 707.9b). Written here by the rules session; the
+ * parser may move it beside `buildTokenCard`.
+ */
+function copyTokenCard(game: Game, original: GameObject, spec: TokenSpec): unknown {
+  const chars = copiableCharacteristics(game, original);
+  let power = chars.power;
+  let toughness = chars.toughness;
+  const p = spec.power ?? { $: "Value" as const };
+  const t = spec.toughness ?? { $: "Value" as const };
+  if (!(constantOf(p) === 0) || !(constantOf(t) === 0)) {
+    power = matchHooks().evaluate(game, p, { source: original.id });
+    toughness = matchHooks().evaluate(game, t, { source: original.id });
+  }
+  // The type line's own abilities come back with the type line (CR 305.6).
+  const intrinsic = intrinsicAbilities(chars.typeLine);
+  const abilities = chars.abilities.filter((a) => !intrinsic.some((i) => irEqual(i, a)));
+  const text = (v: number | null): string | null => (v === null ? null : String(v));
+  const face = {
+    name: chars.name,
+    mana_cost: chars.manaCost,
+    has_mana_cost: chars.hasManaCost,
+    type_line: chars.typeLine,
+    oracle_text: chars.text,
+    power: text(power),
+    toughness: text(toughness),
+    loyalty: text(chars.loyalty),
+    defense: text(chars.defense),
+    colors: chars.colors,
+    color_indicator: chars.colors,
+    keywords: [],
+    produced_mana: [],
+  };
+  return {
+    oracle_id: "",
+    name: chars.name,
+    layout: Layout.NORMAL,
+    faces: [face],
+    abilities,
+    face_abilities: [],
+    mana_value: charsManaValue(chars),
+    color_identity: Color.NONE,
+    commander_legal: false,
+  };
+}
+
+/**
+ * CR 114.2: "[player] gets an emblem with [ability]". As in Python, not in
+ * the executor table: there is no CREATE_EMBLEM effect kind yet.
+ */
+export function doCreateEmblem(resolution: Resolution, effect: Effect): void {
+  for (const pid of playersOf(resolution, effect)) {
+    createEmblem(resolution.game, pid, list(effect.granted_abilities), { text: effect.text ?? "" });
+  }
+}
+
+/** CR 607.1: the link id of the ability resolving; zero for a spell. */
+export function linkOf(resolution: Resolution): number {
+  return num(resolution.stackObject?.ability?.link_id ?? 0);
+}
+
+// -- prohibitions and rule overrides from resolved spells (CR 101.1-2, 611.2b) -----------
+
+/** A standing prohibition with its duration; pinned to what was targeted or named now. */
+registerExecutor(ir("EffectKind.RESTRICTION"), (resolution, effect) => {
+  // "Target player can't cast spells this turn": read once, the cursor moves on.
+  const chosen = targetsAPlayer(effect) ? playersOf(resolution, effect) : null;
+  let pinnedObjects: ObjectFilter | null = null;
+  if (isTargeted(effect) && !targetsAPlayer(effect)) {
+    const found = objectsOf(resolution, effect).map((o) => o.id);
+    if (found.length === 0) return;
+    pinnedObjects = { $: "ObjectFilter", specific: found, zones: { $set: [Zone.BATTLEFIELD] } };
+  }
+  for (let restriction of list(effect.restrictions)) {
+    if (pinnedObjects !== null && (restriction.subject == null || irEqual(restriction.subject, effect.targets))) {
+      restriction = { ...restriction, subject: pinnedObjects };
+    }
+    const players = restriction.players ?? effect.players ?? null;
+    const pinned = chosen ?? (players !== null ? referredPlayers(resolution, { ...effect, players }) : null);
+    if (pinned !== null) {
+      // "That player can't ...": named now, since nothing could answer it later.
+      for (const pid of pinned) {
+        registerRestrictionFrom(resolution, effect, { ...restriction, players: { $: "PlayerFilter", scope: PS.SPECIFIC as never, specific: pid } });
+      }
+      continue;
+    }
+    registerRestrictionFrom(resolution, effect, restriction);
+  }
+});
+
+function registerRestrictionFrom(resolution: Resolution, effect: Effect, restriction: Restriction): void {
+  registerStanding(resolution.game, {
+    $: "Restriction",
+    act: restriction.act,
+    subject: restriction.subject ?? effect.targets ?? null,
+    players: restriction.players ?? effect.players ?? null,
+    source: resolution.source,
+    controller: resolution.controller,
+    counterpart: restriction.counterpart ?? null,
+    text: restriction.text || effect.text || "",
+    duration: num(effect.duration),
+    created_turn: resolution.game.turn,
+  });
+}
+
+/** Switch a rule off for a duration (CR 101.1); a rule the engine can't name is logged. */
+registerExecutor(ir("EffectKind.SUSPEND_RULE"), (resolution, effect) => {
+  if (!effect.rule) return;
+  if (!(Object.values(Rule) as string[]).includes(effect.rule)) {
+    logRecord(resolution.game, `cannot suspend CR ${effect.rule}: not a rule this engine can switch off`, { kind: "unimplemented" });
+    return;
+  }
+  registerOverride(resolution.game, {
+    rule: effect.rule as Rule,
+    subject: effect.targets ?? null,
+    players: effect.players ?? null,
+    source: resolution.source,
+    controller: resolution.controller,
+    text: effect.text ?? "",
+    duration: num(effect.duration),
+    createdTurn: resolution.game.turn,
+  });
+});
+
+// -- dice (CR 706) ---------------------------------------------------------------------------
+
+/** Roll a die with `sides` faces (CR 706.1); 1..sides. */
+export function rollDie(game: Game, playerId: PlayerId, sides: number): number {
+  if (sides < 1) return 0;
+  const result = randint(game.rng, 1, sides);
+  logRecord(game, `${player(game, playerId).name} rolls ${result} on a d${sides}`, { kind: "dice", player: playerId });
+  return result;
+}
+
+export function rollDice(game: Game, playerId: PlayerId, count: number, sides: number): number[] {
+  return Array.from({ length: Math.max(0, count) }, () => rollDie(game, playerId, sides)); // CR 107.1b
+}
+
+interface DieOutcome {
+  readonly low: number;
+  readonly high?: number;
+  readonly effects?: readonly Effect[];
+}
+const covers = (o: DieOutcome, result: number): boolean => result >= o.low && ((o.high ?? 0) <= 0 || result <= o.high!);
+
+/** Roll, drop ignored rolls (CR 706.6), add modifiers (CR 706.2), and run the results table (CR 706.3a). */
+registerExecutor(ir("EffectKind.ROLL_DICE"), (resolution, effect) => {
+  const game = resolution.game;
+  const sides = num(effect.dice_sides);
+  if (sides < 1) return;
+  const natural = rollDice(game, resolution.controller, countOf(resolution, effect), sides);
+  if (natural.length === 0) return;
+  const ignore = num(effect.dice_ignore_lowest);
+  const kept = ignore ? [...natural].sort((a, b) => a - b).slice(Math.max(0, ignore)) : natural;
+  const results = kept.map((roll) => roll + num(effect.dice_modifier));
+  resolution.dieResults = results;
+  const outcomes = list(effect.outcomes) as unknown as DieOutcome[];
+  if (outcomes.length === 0) return; // CR 706.4: what follows reads the number
+  for (const result of results) {
+    const outcome = outcomes.find((o) => covers(o, result));
+    if (outcome !== undefined) execute(resolution, list(outcome.effects));
+  }
 });

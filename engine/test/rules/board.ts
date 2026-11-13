@@ -188,6 +188,8 @@ export function installTestMatcher(): void {
 }
 
 function filterMatches(_game: Game, obj: GameObject, chars: Characteristics, spec: ObjectFilter, source: number, controller: number): boolean {
+  const specific = list(spec.specific);
+  if (specific.length > 0 && !specific.includes(obj.id)) return false;
   const zones = numSet(spec.zones, [Zone.BATTLEFIELD]);
   if (zones.size > 0 && !zones.has(obj.zone)) return false;
   const typesAll = num(spec.types_all);

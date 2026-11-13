@@ -92,7 +92,8 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   targets, "it", piles, counts, per-player things), and executors for
   SEQUENCE, CONDITIONAL, REPEAT, OPTIONAL, UNLESS_PAYS, NOTHING,
   EXTRA_TRIGGER, ADD_MANA, DRAW, MILL, DESTROY, SACRIFICE, RETURN_TO_HAND,
-  MOVE_ZONE and DISCARD. The rest follow in resolve.py's order. A smoke test plays
+  MOVE_ZONE, DISCARD, CREATE_TOKEN (token copies included), RESTRICTION,
+  SUSPEND_RULE and ROLL_DICE. The rest follow in resolve.py's order. A smoke test plays
   lands and casts creatures end to end and replays to the same digest.
   Placeholders until triggers and combat: `checkInterveningIf`,
   `subjectOf` (triggers.ts) and `enterAttacking` (combat.ts).
@@ -212,6 +213,10 @@ these points; please export them with these names:
   controller)` and `MAY_CHOOSE_NEW_TARGETS`, called by TRANSFORM,
   COPY_PERMANENT and COPY_SPELL. Same signatures as Python's
   `cr707_faces.py`, keyword arguments as an options object.
+- **Token copies:** `copy_token_card` (cr702_cost_keyword_rules.py) is
+  in `resolve.ts` as a private `copyTokenCard`, because `syntheticCard` in
+  your tokens.ts isn't exported. Move it beside `buildTokenCard` if you
+  like and I'll import it.
 - **Legend rule (CR 101.1):** `ruleIsSuspended(game, Rule.LEGEND_RULE, { obj })`
   from `rules/cr100_game_concepts/rule_overrides.ts`; it returns the
   override or null, as `game.rule_is_suspended` does. Please call it in
