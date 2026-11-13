@@ -42,13 +42,10 @@ and games that don't replay from their seed are fixed now.
 - [ ] Casting spells (CR 601) and activating abilities (602), using the parser's mana code
 - [ ] Resolving the stack: effect executors (`resolve.py`)
 - [ ] Triggered abilities (CR 603), including look-back
-- [ ] State-based actions (CR 704)
 - [ ] Combat (CR 506-511): attack and block requirements, costs, damage
 - [ ] Replacement and prevention effects (CR 614-616)
 - [ ] Keyword runtime (CR 702)
-- [ ] Copies, faces and tokens (CR 707, 711, 712)
 - [ ] Commander rules (CR 903): command zone, tax, commander damage
-- [ ] Game setup (CR 103): shuffles, mulligans
 - [ ] `play(setup, index, seed)` entry point for the runner, agreed with web
 - [ ] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games
 - [ ] Each module's Python board tests ported as Vitest tests
@@ -64,6 +61,11 @@ and games that don't replay from their seed are fixed now.
 - [x] Mana core: port `cr106_mana.py` to `engine/src/rules/mana/`, with its tests (0719d8e)
 - [x] Mana planning: port `mana_plan.py`, keeping the F61 guard (26c37d7; the game-side `ManaPlanHost` is the rules session's, in `mana_host.ts`, per e1d7969)
 - [x] Matching, values and conditions: port `matching.py`, `values.py` and `conditions.py` to `engine/src/rules/match/` (d20edb7)
+
+- [ ] *(moved from rules, 13 Nov)* State-based actions (CR 704)
+- [ ] *(moved from rules, 13 Nov)* Game setup (CR 103): shuffles, mulligans
+- [ ] *(moved from rules, 13 Nov)* Copies, faces and tokens (CR 707, 711, 712)
+- [ ] Port the Python board tests for every module you own as Vitest tests
 
 ### web
 - [x] Vite app and Web Worker harness (4bedd13)
