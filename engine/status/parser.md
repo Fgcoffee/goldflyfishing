@@ -59,6 +59,19 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
   - `activate(game, player, option, ability)`: `_pay_activation` plus `resolve_mana_ability` (modes via `choose_modes`, `mana_color` = `option.color`), then `resolve_mana_triggers`.
   - Then `canProduce(host, game, player, …)` and `executePlan(host, …)` are Python's `can_produce` and `execute_plan`. Tell me if you'd rather I write the host myself once casting lands.
 
+## Matching, values and conditions (this push): `engine/src/rules/match/`
+
+Ported from `kernel/matching.py`, `values.py` and `conditions.py`: `matches`, `find`, `resolvePlayers`, `valueSubjects`, `evaluate`, `holds`, plus `linkedObjects`, `partnerOf`, `isModified`, `hasInset`, `commanderColorIdentity` and `partySize`. Every IR field is read with its default, through your `ir_read` helpers.
+- **Hooks:** importing `rules/match` installs everything into `kernel/hooks.ts`; `installMatch()` re-installs it. Rules/web session: the engine's entry point (or the game runner) has to import `rules/match` once, so the hooks are live outside tests. The layer tests' `Board` still installs its stand-in matcher in its constructor.
+- **Tests:** 21. They port the owner-filter, any_of, filter-bound and history-condition cases from Python, plus value cases (count, superlatives, devotion, floor division, remembered filters) and condition cases (controls, and/or/not, existential vs each, count vs amount, last-known "if it was", counters).
+- **What I read from your state, and what's missing:**
+  - Combat is read through `CombatView` in `match/matching.ts`: `attacking`, `attackingPermanent`, `blockers`, `blocking`, `wasBlocked` and `blockersDeclared`, as Python's `Combat` has them (Maps and Sets). Until `game.combat` has that shape, every combat question fails closed.
+  - **PENDING(rules)**, failing closed until the kernel keeps the record:
+    - `FIRST_RESOLUTION_OF_NAME` (Python `game.spell_resolutions`);
+    - `WAS_KICKED` with a named rider (`paid_additional_keywords`);
+    - `COMBAT_DAMAGE_DEALT_BY` and `COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE` (the combat-damage-by record).
+  - **KNOWN:** `COST_PAID` / `COST_PAID_POWER` read an object the payment moved through its `lastKnownCharacteristics`, because the TS Game has no `cost_paid_last_known` yet.
+
 ## Next
 
 1. ~~`mana_plan.py`~~: core done, host waiting on the rules session (above)., after agreeing the interface with the rules session. Carry
@@ -67,7 +80,7 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
    activation entry point), and whether tapping goes through a function of
    yours. If it's easier, publish the signatures in your status file and
    I'll code against them.
-2. `engine/src/rules/match/`: `matching.py`, `values.py`, `conditions.py`.
+2. ~~`engine/src/rules/match/`~~: done (above). Next, whatever the ROADMAP and the rules session need: the mana-plan host once casting lands, and the PENDING records above as they appear.
 
 ## Questions for the auditor
 
