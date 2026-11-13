@@ -39,7 +39,17 @@ export interface MatchHooks {
   /** Python `matching.find(game, spec, source=, controller=)`. */
   find(game: Game, spec: ObjectFilter, context: MatchContext): GameObject[];
   /** Python `values.evaluate(game, value, source=, controller=, ...)`. */
-  evaluate(game: Game, value: Value, context: MatchContext & { xValue?: number }): number;
+  evaluate(
+    game: Game,
+    value: Value,
+    context: MatchContext & {
+      xValue?: number;
+      eventAmount?: number;
+      dieResults?: readonly number[];
+      remembered?: readonly ObjectId[];
+      thisWay?: ReadonlyMap<number, number>;
+    },
+  ): number;
   /** Python `conditions.holds(game, condition, source=, controller=, ...)`. */
   holds(game: Game, condition: Condition, context: MatchContext): boolean;
   /**

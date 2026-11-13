@@ -43,6 +43,8 @@ export function num(value: unknown, fallback = 0): number {
     }
     return decoded;
   }
+  // IR v2: a plain int in an enum-typed field ("duration": {"$int": 0}).
+  if (typeof value === "object" && typeof (value as { $int?: unknown }).$int === "number") return (value as { $int: number }).$int;
   throw new TypeError(`not an enum value: ${JSON.stringify(value)}`);
 }
 

@@ -14,8 +14,8 @@ import {
   player,
   type Game,
 } from "../../kernel/game";
-import { addCounters as putCounters, type GameObject } from "../../kernel/gameobject";
-import { NO_OBJECT, type ObjectId, type PlayerId } from "../../kernel/ids";
+import { addCounters as putCounters, isLive, isPermanent, removeCounters as takeCounters, type GameObject } from "../../kernel/gameobject";
+import { NO_OBJECT, NO_PLAYER, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { shuffle } from "../../kernel/random";
 import { emit } from "../emit";
 import { replacementHooks } from "../cr600_spells_and_abilities/replacement_hooks";
@@ -194,4 +194,87 @@ export function untap(game: Game, obj: GameObject, options: { source?: ObjectId 
   obj.tapped = false;
   emit(game, event(EventKind.UNTAPPED, { objectId: obj.id, player: obj.controller, source: options.source ?? NO_OBJECT }));
   return true;
+}
+
+/** Sacrifice a permanent (CR 701.17): not destroying, so indestructible doesn't stop it. */
+export function sacrifice(game: Game, obj: GameObject, options: { source?: ObjectId } = {}): boolean {
+  if (!isPermanent(obj)) return false; // CR 110.1
+  emit(game, event(EventKind.SACRIFICED, { objectId: obj.id, player: obj.controller, source: options.source ?? NO_OBJECT }));
+  moveObject(game, obj, Zone.GRAVEYARD, { toPlayer: obj.owner });
+  return true;
+}
+
+/** CR 607.2: remember that this ability moved this object. */
+export function recordLink(game: Game, source: ObjectId, objectId: ObjectId, linkId = 0): void {
+  const entries = game.exiledWith.get(source) ?? [];
+  entries.push([objectId, linkId]);
+  game.exiledWith.set(source, entries);
+}
+
+/** CR 607.2: what the other half of a linked ability refers to, still in place. */
+export function linkedObjects(game: Game, source: ObjectId, linkId = 0): GameObject[] {
+  const out: GameObject[] = [];
+  for (const [id, entryLink] of game.exiledWith.get(source) ?? []) {
+    if (linkId && entryLink !== linkId) continue; // CR 607.2a
+    const obj = game.objects.get(id);
+    if (obj !== undefined && isLive(obj)) out.push(obj);
+  }
+  return out;
+}
+
+/** Exile an object (CR 701.6, 406.2), linking it to what exiled it (CR 607.2); face down per CR 406.3. */
+export function exile(
+  game: Game,
+  obj: GameObject,
+  options: { source?: ObjectId; linkId?: number; faceDown?: boolean } = {},
+): GameObject {
+  const source = options.source ?? NO_OBJECT;
+  emit(game, event(EventKind.EXILED, { objectId: obj.id, source }));
+  const exiled = moveObject(game, obj, Zone.EXILE, options.faceDown ? { faceDown: "" } : {});
+  // CR 607.2a: only a card that really arrived is linked.
+  if (source !== NO_OBJECT && exiled !== obj) recordLink(game, source, exiled.id, options.linkId ?? 0);
+  return exiled;
+}
+
+/** Return an object to its owner's hand. */
+export function bounce(game: Game, obj: GameObject, options: { source?: ObjectId } = {}): GameObject {
+  emit(game, event(EventKind.RETURNED_TO_HAND, { objectId: obj.id, source: options.source ?? NO_OBJECT }));
+  return moveObject(game, obj, Zone.HAND, { toPlayer: obj.owner });
+}
+
+/** Move to the graveyard without destroying (CR 701.7's "put into"). */
+export function putIntoGraveyard(game: Game, obj: GameObject): GameObject {
+  return moveObject(game, obj, Zone.GRAVEYARD, { toPlayer: obj.owner });
+}
+
+/** Unattach (CR 701.3b). */
+export function detach(game: Game, attachment: GameObject): boolean {
+  if (attachment.attachedPlayer !== NO_PLAYER) {
+    attachment.attachedPlayer = NO_PLAYER;
+    invalidateAllCharacteristics(game);
+    emit(game, event(EventKind.UNATTACHED, { objectId: attachment.id }));
+    return true;
+  }
+  if (attachment.attachedTo === NO_OBJECT) return false;
+  const host = game.objects.get(attachment.attachedTo);
+  if (host !== undefined) {
+    const at = host.attachments.indexOf(attachment.id);
+    if (at >= 0) host.attachments.splice(at, 1);
+  }
+  attachment.attachedTo = NO_OBJECT;
+  invalidateAllCharacteristics(game);
+  emit(game, event(EventKind.UNATTACHED, { objectId: attachment.id }));
+  return true;
+}
+
+/** Remove counters from an object; how many came off. */
+export function removeCounters(game: Game, obj: GameObject, kind: string, amount: number, options: { source?: ObjectId } = {}): number {
+  const removed = takeCounters(obj, kind, amount);
+  if (removed) {
+    invalidateAllCharacteristics(game);
+    emit(game, event(EventKind.COUNTER_REMOVED, {
+      objectId: obj.id, player: obj.controller, source: options.source ?? NO_OBJECT, amount: removed, data: [kind],
+    }));
+  }
+  return removed;
 }
