@@ -141,6 +141,8 @@ export interface Game {
   continuingLoopSteps: Set<string>;
   /** Caches over the standing restrictions and permissions. */
   restrictionsCache: unknown[] | null;
+  restrictionsEpoch: number;
+  permissionsCache: unknown[] | null;
   permissionsEpoch: number;
   controlledPlayers: Map<PlayerId, PlayerId>;
   preparedPermanents: Set<ObjectId>;
@@ -220,6 +222,8 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     exhaustedLoopSteps: new Set(),
     continuingLoopSteps: new Set(),
     restrictionsCache: null,
+    restrictionsEpoch: -1,
+    permissionsCache: null,
     permissionsEpoch: -1,
     controlledPlayers: new Map(),
     preparedPermanents: new Set(),
@@ -286,6 +290,8 @@ export function cloneGame(game: Game): Game {
     exhaustedLoopSteps: new Set(game.exhaustedLoopSteps),
     continuingLoopSteps: new Set(game.continuingLoopSteps),
     restrictionsCache: null,
+    restrictionsEpoch: -1,
+    permissionsCache: null,
     permissionsEpoch: -1,
     controlledPlayers: new Map(game.controlledPlayers),
     preparedPermanents: new Set(game.preparedPermanents),

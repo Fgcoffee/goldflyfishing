@@ -166,6 +166,15 @@ export function installTestMatcher(): void {
       return evaluate(game, value, context.source ?? 0);
     },
     holds: () => true,
+    resolvePlayers(game, spec, context) {
+      const you = context.controller ?? -1;
+      const scope = num(spec.scope);
+      const all = game.players.filter((p) => !p.hasLost).map((p) => p.id);
+      if (scope === ir("PlayerScope.YOU")) return you >= 0 ? [you] : [];
+      if (scope === ir("PlayerScope.EACH_PLAYER")) return all;
+      return all.filter((p) => p !== you);
+    },
+    defendingPlayers: () => [],
     valueSubjects: (value: Value) => [flag(value.of_affected), false, false],
   });
 }

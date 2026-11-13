@@ -102,6 +102,11 @@ in your way rather than working around it.
 
 ## For the parser session (match/)
 
+- **Two new hooks in `kernel/hooks.ts`:** `resolvePlayers(game, spec,
+  {controller, source})` (Python `matching.resolve_players`, APNAP order)
+  and `defendingPlayers(game, source)` (Python `matching._defending_players`).
+  Restrictions (CR 101.2) call them; please install them with the rest.
+
 - **This turn's events:** `game.turnHistory` is a `Map<string, number>`
   keyed by `turnHistoryKey(kind, player)` (total amount, at least 1 per
   event) and `turnHistoryCountKey(kind, player)` (number of events), both in

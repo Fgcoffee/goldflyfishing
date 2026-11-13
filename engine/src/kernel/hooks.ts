@@ -11,7 +11,7 @@
  * options object.
  */
 
-import type { Condition, ObjectFilter, Value } from "../ir";
+import type { Condition, ObjectFilter, PlayerFilter, Value } from "../ir";
 import type { Characteristics } from "../rules/cr200_parts_of_a_card/characteristics";
 import type { Game } from "./game";
 import type { GameObject } from "./gameobject";
@@ -42,6 +42,10 @@ export interface MatchHooks {
   evaluate(game: Game, value: Value, context: MatchContext & { xValue?: number }): number;
   /** Python `conditions.holds(game, condition, source=, controller=, ...)`. */
   holds(game: Game, condition: Condition, context: MatchContext): boolean;
+  /** Python `matching.resolve_players(game, spec, controller=, source=)`, APNAP order. */
+  resolvePlayers(game: Game, spec: PlayerFilter, context: MatchContext): PlayerId[];
+  /** Python `matching._defending_players(game, source)` (CR 506.2). */
+  defendingPlayers(game: Game, source: ObjectId): PlayerId[];
   /**
    * Python `matching.value_subjects(value)`: whether the value reads the
    * affected object ("its power"), the source, and the third flag as there.
@@ -59,6 +63,8 @@ let HOOKS: MatchHooks = {
   evaluate: () => missing("evaluate"),
   holds: () => missing("holds"),
   valueSubjects: () => missing("valueSubjects"),
+  resolvePlayers: () => missing("resolvePlayers"),
+  defendingPlayers: () => missing("defendingPlayers"),
 };
 
 export function installMatchHooks(hooks: Partial<MatchHooks>): void {
