@@ -21,7 +21,11 @@ import { ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { NO_OBJECT, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { emit } from "../emit";
-import { flag, ir, list, num, str, strs } from "../ir_read";
+import { flag, ir, irEqual, list, num, str, strs } from "../ir_read";
+import { enterAttacking } from "../cr500_turn_structure/combat";
+import { constantOf } from "../cr600_spells_and_abilities/effect_props";
+import { copiableCharacteristics, intrinsicAbilities } from "../cr600_spells_and_abilities/layers";
+import { manaValue } from "../mana/ir_value";
 import { Act, prohibited } from "../cr500_turn_structure/restrictions";
 import { replacementHooks } from "../cr600_spells_and_abilities/replacement_hooks";
 import { removeFromZone } from "../zones";
@@ -109,6 +113,44 @@ export function buildTokenCard(game: Game, spec: TokenSpec, source: ObjectId = N
 }
 
 /**
+ * The card a token copy of `original` is built from (Python
+ * `cr702_cost_keyword_rules.copy_token_card`). CR 707.2: the copiable
+ * values, fixed as the token is created. CR 707.9b: a power and toughness
+ * on the spec ("except it's 1/1") are part of those values.
+ */
+export function copyTokenCard(game: Game, original: GameObject, spec: TokenSpec): SyntheticCard {
+  const chars = copiableCharacteristics(game, original);
+  let power = chars.power;
+  let toughness = chars.toughness;
+  const p = spec.power ?? { $: "Value" as const };
+  const t = spec.toughness ?? { $: "Value" as const };
+  if (constantOf(p) !== 0 || constantOf(t) !== 0) {
+    power = matchHooks().evaluate(game, p, { source: original.id });
+    toughness = matchHooks().evaluate(game, t, { source: original.id });
+  }
+  // The type line's own abilities come back with the type line (CR 305.6).
+  const intrinsic = intrinsicAbilities(chars.typeLine);
+  const abilities = chars.abilities.filter((a) => !intrinsic.some((i) => irEqual(i, a)));
+  const text = (v: number | null): string | null => (v === null ? null : String(v));
+  const face: FaceDef = {
+    name: chars.name,
+    mana_cost: chars.manaCost,
+    has_mana_cost: chars.hasManaCost,
+    type_line: chars.typeLine,
+    oracle_text: chars.text,
+    power: text(power),
+    toughness: text(toughness),
+    loyalty: text(chars.loyalty),
+    defense: text(chars.defense),
+    colors: chars.colors,
+    color_indicator: chars.colors,
+    keywords: [],
+    produced_mana: [],
+  };
+  return syntheticCard(chars.name, [face], { abilities, mana_value: manaValue(chars.manaCost) });
+}
+
+/**
  * How many tokens are actually created, after replacement (CR 614.1c):
  * Doubling Season and friends replace the token-creation event, so the
  * count goes past the replacement system before any token exists. Two
@@ -165,9 +207,9 @@ export function createTokens(
     }
 
     created.push(obj);
-    // PORT: CR 508.4, `enters_attacking` - Python's cr506_combat.enter_attacking
-    // comes with the rules session's combat port. Until then the token
-    // enters but isn't attacking.
+    // CR 508.4: put onto the battlefield attacking - what it attacks is
+    // chosen as it enters. It never "attacked" (no ATTACKS event).
+    if (flag(spec.enters_attacking)) enterAttacking(game, obj);
     emit(game, event(EventKind.TOKEN_CREATED, { objectId: obj.id, player: controller, source }));
     emit(game, event(EventKind.ENTERS_BATTLEFIELD, { objectId: obj.id, player: controller }));
   }

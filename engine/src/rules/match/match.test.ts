@@ -216,6 +216,37 @@ describe("conditions", () => {
   });
 });
 
+describe("records the rules session keeps", () => {
+  it("first resolution of a name this game, per controller", () => {
+    const board = new Board();
+    const bears = board.play("Grizzly Bears", 0);
+    const first = condition({ kind: ConditionKind.FIRST_RESOLUTION_OF_NAME });
+    expect(holds(board.game, first, { source: bears.id, controller: 0 })).toBe(true);
+    board.game.spellResolutions.set("0|grizzly bears", 1);
+    expect(holds(board.game, first, { source: bears.id, controller: 0 })).toBe(false);
+    expect(holds(board.game, first, { source: bears.id, controller: 1 })).toBe(true);
+  });
+
+  it("a kicker rider asks about its own keyword's cost (CR 702.33e, 702.175b)", () => {
+    const board = new Board();
+    const additional = (keyword: string) =>
+      ({ $: "Ability", kind: 3, additional_cost: { $: "AdditionalCost", cost: { $: "Cost" }, optional: true, keyword }, text: keyword }) as never;
+    board.script("Grizzly Bears", additional("Kicker"), additional("Offspring"));
+    const bears = board.play("Grizzly Bears", 0);
+    bears.additionalCostsPaid = [0]; // kicker paid, offspring not
+    const kicked = (keyword: string) => condition({ kind: ConditionKind.WAS_KICKED, keyword });
+    expect(holds(board.game, kicked(""), { source: bears.id, controller: 0 })).toBe(true);
+    expect(holds(board.game, kicked("kicker"), { source: bears.id, controller: 0 })).toBe(true);
+    expect(holds(board.game, kicked("offspring"), { source: bears.id, controller: 0 })).toBe(false);
+  });
+
+  it("combat damage conditions need a controller", () => {
+    const board = new Board();
+    expect(holds(board.game, condition({ kind: ConditionKind.COMBAT_DAMAGE_DEALT_BY }), {})).toBe(false);
+    expect(holds(board.game, condition({ kind: ConditionKind.COMBAT_DAMAGE_DEALT_BY }), { controller: 0 })).toBe(false); // none dealt
+  });
+});
+
 describe("players and the hooks", () => {
   it("resolves player filters in APNAP order", () => {
     const board = new Board();

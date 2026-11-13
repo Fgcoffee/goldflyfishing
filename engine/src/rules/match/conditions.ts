@@ -2,7 +2,8 @@
  * Whether a condition holds. Ported from mtgfish/rules/kernel/conditions.py.
  *
  * Conditions the TS kernel has no record for yet fail closed, each marked
- * `// PENDING(rules): ...` with what it needs (engine/status/parser.md).
+ * `// PENDING(rules): ...` with what it needs (engine/status/parser.md);
+ * none are left.
  */
 
 import type { Condition, ObjectFilter, PlayerFilter } from "../../ir";
@@ -15,6 +16,8 @@ import { hasType } from "../cr200_parts_of_a_card/characteristics";
 import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
 import { atMaxSpeed } from "../cr100_game_concepts/player";
 import { list, num, str } from "../ir_read";
+import { combatDamageBySharedType, combatDamageDealtBy } from "../cr700_additional_rules/combat_damage_record";
+import { paidAdditionalKeywords } from "../cr700_additional_rules/paid_costs";
 import { ConditionKind, ControllerRelation, PlayerScope } from "./enums";
 import { combatOf, compare, find, matches, partnerOf, resolvePlayers } from "./matching";
 import { evaluate } from "./values";
@@ -251,9 +254,12 @@ export function holds(game: Game, condition: Condition, options: HoldsOptions = 
       if (!constraint || controller === NO_PLAYER) return false;
       return compare(constraint.comparison, playerOf(game, controller).ringTemptedCount, expectedValue());
     }
-    case ConditionKind.FIRST_RESOLUTION_OF_NAME:
-      // PENDING(rules): Python reads game.spell_resolutions[(controller, name)]; the TS Game has no such record yet.
-      return false;
+    case ConditionKind.FIRST_RESOLUTION_OF_NAME: {
+      const spell = game.objects.get(source);
+      if (spell === undefined) return false;
+      const name = characteristicsOf(game, spell).name.toLowerCase();
+      return !(game.spellResolutions.get(`${controller}|${name}`) ?? 0);
+    }
     case ConditionKind.ALTERNATIVE_COST_PAID: {
       const obj = game.objects.get(source);
       if (obj === undefined || !obj.alternativeCostPaid) return false;
@@ -265,14 +271,16 @@ export function holds(game: Game, condition: Condition, options: HoldsOptions = 
       const spell = game.objects.get(source);
       if (spell === undefined || spell.additionalCostsPaid.length === 0) return false;
       if (!str(condition.keyword)) return true;
-      // PENDING(rules): a named rider ("if its offspring cost was paid") needs
-      // Python's paid_additional_keywords (cr702_paid_costs); fails closed.
-      return false;
+      // CR 702.33e, 702.175b: a rider is linked to its own keyword's cost
+      // (CR 607): "if its offspring cost was paid" isn't answered by kicker.
+      return paidAdditionalKeywords(game, spell).includes(str(condition.keyword).toLowerCase());
     }
     case ConditionKind.COMBAT_DAMAGE_DEALT_BY:
+      // CR 702.173a: what the source was as it dealt the damage.
+      return controller !== NO_PLAYER && combatDamageDealtBy(game, condition, controller);
     case ConditionKind.COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE:
-      // PENDING(rules): needs the combat-damage-by record (cr702_cost_keyword_rules); fails closed.
-      return false;
+      // CR 702.76a: a source that had any of this spell's creature types.
+      return controller !== NO_PLAYER && combatDamageBySharedType(game, source, controller);
     case ConditionKind.IS_STEP: {
       // Both the step and, when given, whose turn it is.
       if (!constraint) return false;

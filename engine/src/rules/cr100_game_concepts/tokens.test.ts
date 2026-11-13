@@ -9,7 +9,7 @@ import { Board, ALL_CREATURES, constant } from "../../../test/rules/board";
 import type { Ability, TokenSpec } from "../../ir";
 import { CardType, Color, Layout, Zone } from "../../kernel/enums";
 import { EventKind, type GameEvent } from "../../kernel/events";
-import { isToken } from "../../kernel/gameobject";
+import { addCounters, isToken } from "../../kernel/gameobject";
 import { hasSubtype, hasType } from "../cr200_parts_of_a_card/characteristics";
 import { Act, registerStanding } from "../cr500_turn_structure/restrictions";
 import { installReplacementHooks, replacementHooks } from "../cr600_spells_and_abilities/replacement_hooks";
@@ -17,7 +17,7 @@ import { checkStateBasedActions } from "../cr700_additional_rules/sba";
 import { installMatch } from "../match";
 import { ir, numSet } from "../ir_read";
 import { moveObject } from "../zones";
-import { buildTokenCard, createEmblem, createTokens, tokenName } from "./tokens";
+import { buildTokenCard, copyTokenCard, createEmblem, createTokens, tokenName } from "./tokens";
 
 const SOLDIER: TokenSpec = {
   $: "TokenSpec",
@@ -111,6 +111,27 @@ describe("tokens (CR 111)", () => {
     expect(card.faces.map((f) => f.name)).toEqual(["Soldier Token", "Horror Token"]);
     const token = createTokens(board.game, { ...SOLDIER, back }, 0)[0]!;
     expect(board.chars(token).name).toBe("Soldier Token");
+  });
+});
+
+describe("token copies (CR 707.2, 707.9b)", () => {
+  it("a token copy takes the copiable values, not counters", () => {
+    const bears = board.play("Grizzly Bears", 1);
+    addCounters(bears, "+1/+1", 2);
+    board.refresh();
+    const card = copyTokenCard(board.game, bears, { $: "TokenSpec" });
+    const token = createTokens(board.game, { $: "TokenSpec" }, 0, 1, { card })[0]!;
+    expect(board.chars(token).name).toBe("Grizzly Bears");
+    expect(board.pt(token)).toEqual([2, 2]);
+    expect(isToken(token)).toBe(true);
+  });
+
+  it("an exception on the spec is part of the copy ('except it's 1/1')", () => {
+    const angel = board.play("Serra Angel", 1);
+    const card = copyTokenCard(board.game, angel, { $: "TokenSpec", power: constant(1), toughness: constant(1) });
+    const token = createTokens(board.game, { $: "TokenSpec" }, 0, 1, { card })[0]!;
+    expect(board.chars(token).name).toBe("Serra Angel");
+    expect(board.pt(token)).toEqual([1, 1]);
   });
 });
 
