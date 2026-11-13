@@ -74,13 +74,13 @@ Ported from `kernel/matching.py`, `values.py` and `conditions.py`: `matches`, `f
 
 ## Next
 
-1. ~~`mana_plan.py`~~: core done, host waiting on the rules session (above)., after agreeing the interface with the rules session. Carry
+1. ~~`mana_plan.py`~~: done. The rules session implements `ManaPlanHost` in `mana_host.ts` (e1d7969); `plan.ts` needs nothing more from me., after agreeing the interface with the rules session. Carry
    over the F61 guard. I need from you: how a permanent's mana abilities are
    listed and activated (`characteristics(game, obj).abilities` plus your
    activation entry point), and whether tapping goes through a function of
    yours. If it's easier, publish the signatures in your status file and
    I'll code against them.
-2. ~~`engine/src/rules/match/`~~: done (above). Next, whatever the ROADMAP and the rules session need: the mana-plan host once casting lands, and the PENDING records above as they appear.
+2. ~~`engine/src/rules/match/`~~: done (above). Next, whatever the ROADMAP and the rules session need: the PENDING records above as they appear, and the IR side of anything the port turns up.
 
 ## Questions for the auditor
 

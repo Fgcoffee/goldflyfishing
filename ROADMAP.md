@@ -62,7 +62,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Parser-code fingerprint in `index.json`; `IRStore` treats a stale export as stale (fe93356)
 - [x] Printed card data (name, mana cost, type line, P/T, colours: `CardDef`/`FaceDef`) exported with each card's IR, matching `kernel/card.ts` (ff6dec3)
 - [x] Mana core: port `cr106_mana.py` to `engine/src/rules/mana/`, with its tests (0719d8e)
-- [ ] Mana planning: port `mana_plan.py`, keeping the F61 guard. Core and guard done (26c37d7); the game-side host (`ManaPlanHost`) waits on the rules session's casting
+- [x] Mana planning: port `mana_plan.py`, keeping the F61 guard (26c37d7; the game-side `ManaPlanHost` is the rules session's, in `mana_host.ts`, per e1d7969)
 - [x] Matching, values and conditions: port `matching.py`, `values.py` and `conditions.py` to `engine/src/rules/match/` (d20edb7)
 
 ### web
