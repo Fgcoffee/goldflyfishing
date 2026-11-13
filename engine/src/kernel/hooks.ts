@@ -13,6 +13,7 @@
 
 import type { Condition, ObjectFilter, PlayerFilter, Value } from "../ir";
 import type { Characteristics } from "../rules/cr200_parts_of_a_card/characteristics";
+import type { GameEvent } from "./events";
 import type { Game } from "./game";
 import type { GameObject } from "./gameobject";
 import type { ObjectId, PlayerId } from "./ids";
@@ -51,7 +52,11 @@ export interface MatchHooks {
     },
   ): number;
   /** Python `conditions.holds(game, condition, source=, controller=, ...)`. */
-  holds(game: Game, condition: Condition, context: MatchContext): boolean;
+  holds(
+    game: Game,
+    condition: Condition,
+    context: MatchContext & { remembered?: readonly ObjectId[]; event?: GameEvent | null },
+  ): boolean;
   /**
    * Whether the last top-level `evaluate` produced an undeterminable number
    * (CR 107.2, 903.4f; Python's `Undeterminable`). match/values.ts has it as

@@ -11,21 +11,24 @@
  */
 
 import { PlayerScopeValues } from "../../ir";
-import type { Effect } from "../../ir";
-import { Color, Duration, Supertype } from "../../kernel/enums";
+import type { Condition, Effect, Value } from "../../ir";
+import { Color, Duration, Supertype, Zone } from "../../kernel/enums";
 import { event, EventKind, type GameEvent } from "../../kernel/events";
-import { logRecord, player, type Game } from "../../kernel/game";
-import type { GameObject } from "../../kernel/gameobject";
+import { agentFor, logRecord, player, type Game } from "../../kernel/game";
+import { isLive, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
-import { hasSupertype } from "../cr200_parts_of_a_card/characteristics";
+import { charsManaValue, hasSupertype } from "../cr200_parts_of_a_card/characteristics";
+import { bounce, destroy, discard, draw, mill, sacrifice } from "../cr100_game_concepts/actions";
+import { moveObject } from "../zones";
+import { canPayCost, payCost } from "./paying";
 import { Act } from "../cr500_turn_structure/restrictions";
 import { commanderColorIdentity } from "../cr903_commander/color_identity";
 import { emit } from "../emit";
 import { flag, ir, list, num, str } from "../ir_read";
 import { parseManaSymbol } from "../mana/cost";
 import { addMana, manaKind, manaKindKey, poolSnapshot, type ManaKind, type ManaRestriction } from "../mana/pool";
-import { constantOf, isTargeted, targetsAPlayer } from "./effect_props";
+import { constantOf, isTargeted, targetsAPlayer, targetsItsPlayer } from "./effect_props";
 import { characteristicsOf } from "./layers";
 import { attackers } from "../cr500_turn_structure/combat";
 
@@ -38,6 +41,7 @@ const EK = {
   LOSE_LIFE: ir("EffectKind.LOSE_LIFE") as number,
   GAIN_LIFE: ir("EffectKind.GAIN_LIFE") as number,
   FIGHT: ir("EffectKind.FIGHT") as number,
+  SACRIFICE: ir("EffectKind.SACRIFICE") as number,
 };
 const PS = PlayerScopeValues as Record<string, number>;
 
@@ -194,8 +198,211 @@ function executeOneInner(resolution: Resolution, effect: Effect): void {
     });
     return;
   }
-  // PORT: the _REMEMBERING bookkeeping (what "it" names next) comes with `_objects`.
+  const kind = num(effect.kind);
+  if (
+    REMEMBERING.has(kind) &&
+    effect.targets != null &&
+    !isPerPlayerSacrifice(effect) &&
+    !(NAMING_ONLY.has(kind) && flag(effect.targets.source_only))
+  ) {
+    // Captured before it runs: what dies to it is what the next sentence means (CR 400.7).
+    // Peeking must not spend the target cursor.
+    const cursor = resolution.targetIndex;
+    const actedOn = objectsOf(resolution, effect).map((o) => o.id);
+    resolution.targetIndex = cursor;
+    // CR 608.2b: an illegal chosen target is still what a following "it" names.
+    const chosenObjects = isTargeted(effect) && targetsFor(resolution, effect).some((id) => id >= 0);
+    resolution.targetIndex = cursor;
+    executor(resolution, effect);
+    if (actedOn.length > 0 || chosenObjects) resolution.remembered = actedOn;
+    return;
+  }
   executor(resolution, effect);
+}
+
+/** Kinds whose subject a following sentence can call "it". */
+const REMEMBERING: ReadonlySet<number> = new Set(
+  [
+    "DESTROY", "EXILE", "SACRIFICE", "TAP", "UNTAP", "BLOCKS_SOURCE_IF_ABLE", "RETURN_TO_HAND",
+    "PUT_ONTO_BATTLEFIELD", "CREATE_TOKEN", "ADD_COUNTERS", "GAIN_CONTROL", "COPY_PERMANENT",
+    "SEARCH_LIBRARY", "DAMAGE", "MOVE_ZONE", "PUT_ON_LIBRARY", "COUNTER_SPELL", "REGENERATE",
+    "DOUBLE_COUNTERS", "CHANGE_TARGETS", "MODIFY_PT", "GRANT_ABILITY", "DESIGNATE", "RESTRICTION", "GOAD",
+  ].map((n) => ir(`EffectKind.${n}` as never) as number),
+);
+/** Remembering kinds that only describe; about the source itself they leave "that spell" alone. */
+const NAMING_ONLY: ReadonlySet<number> = new Set(
+  ["MODIFY_PT", "GRANT_ABILITY", "RESTRICTION"].map((n) => ir(`EffectKind.${n}` as never) as number),
+);
+
+/** "Each opponent sacrifices a creature": named players choosing from their own. */
+export function isPerPlayerSacrifice(effect: Effect): boolean {
+  const spec = effect.targets;
+  return (
+    num(effect.kind) === EK.SACRIFICE &&
+    effect.players != null &&
+    (!isTargeted(effect) || targetsItsPlayer(effect)) &&
+    spec != null &&
+    !flag(spec.source_only) &&
+    list(spec.specific).length === 0 &&
+    !flag(spec.remembered)
+  );
+}
+
+// -- selecting what an effect applies to ------------------------------------------------
+
+/**
+ * The objects an effect acts on (resolve.py `_objects`): targets re-checked
+ * (an illegal one is skipped, CR 608.2b), "it" (CR 608.2), the trigger's
+ * source, a targeted player's things, the source, or a fresh match.
+ */
+export function objectsOf(resolution: Resolution, effect: Effect, chosen: readonly number[] | null = null): GameObject[] {
+  const game = resolution.game;
+  const spec = effect.targets;
+  const scope = { source: resolution.source, controller: resolution.controller };
+  if (spec != null && flag(spec.from_pile)) return fromPile(resolution, effect);
+  if (spec != null && flag(spec.remembered)) {
+    const found: GameObject[] = [];
+    for (const id of resolution.remembered) {
+      let obj = game.objects.get(id);
+      // CR 400.7: follow the object to what it became.
+      while (obj !== undefined && obj.supersededBy) obj = game.objects.get(obj.supersededBy);
+      if (obj !== undefined) found.push(obj);
+    }
+    return found;
+  }
+  if (spec != null && flag(spec.trigger_source)) {
+    // "Counter that spell or ability" (CR 702.21a), while it is still where the filter says.
+    const e = triggerEventOf(resolution);
+    const obj = e !== null ? game.objects.get(e.source) : undefined;
+    if (obj === undefined || !isLive(obj)) return [];
+    const zones = list((spec.zones as { $set?: number[] } | undefined)?.$set ?? [Zone.BATTLEFIELD]);
+    return zones.length === 0 || zones.includes(obj.zone) ? [obj] : [];
+  }
+  if (targetsItsPlayer(effect)) {
+    // "Exile target player's graveyard": the player is the target; their things are found now.
+    let players: Set<PlayerId>;
+    if (chosen === null) {
+      players = new Set(playersOf(resolution, effect));
+    } else {
+      players = new Set(targetedPlayers(chosen).filter((p) => !player(game, p).hasLost));
+      resolution.chosenPlayers = [...players];
+    }
+    return matchHooks()
+      .find(game, spec!, scope)
+      .filter((obj) => players.has(obj.zone === Zone.BATTLEFIELD ? obj.controller : obj.owner));
+  }
+  if (isTargeted(effect)) {
+    const out: GameObject[] = [];
+    const picked = chosen ?? targetsFor(resolution, effect);
+    for (const id of picked) {
+      if (id < 0) continue; // a player target
+      const obj = game.objects.get(id);
+      if (obj === undefined) continue;
+      if (spec != null && !matchHooks().matches(game, obj, spec, scope)) {
+        logRecord(game, `Target #${obj.id} is no longer legal`, { kind: "fizzle" }); // CR 608.2b
+        continue;
+      }
+      out.push(obj);
+    }
+    return out;
+  }
+  if (spec == null) {
+    const obj = game.objects.get(resolution.source);
+    return obj !== undefined ? [obj] : [];
+  }
+  let matching = matchHooks().find(game, spec, scope);
+  if (playersSayWhose(effect)) {
+    // "Exile each opponent's graveyard" (CR 108.3, 110.2).
+    const theirs = new Set(playersOf(resolution, effect));
+    matching = matching.filter((obj) => theirs.has(obj.zone === Zone.BATTLEFIELD ? obj.controller : obj.owner));
+  }
+  return narrowedToCount(resolution, effect, matching);
+}
+
+const WHOSE_KINDS: ReadonlySet<number> = new Set(
+  ["EXILE", "REVEAL", "MOVE_ZONE", "PUT_ON_LIBRARY"].map((n) => ir(`EffectKind.${n}` as never) as number),
+);
+
+function playersSayWhose(effect: Effect): boolean {
+  const scope = effect.players == null ? null : num(effect.players.scope);
+  return WHOSE_KINDS.has(num(effect.kind)) && (scope === PS.EACH_OPPONENT || scope === PS.OPPONENT);
+}
+
+/** The cards of the pile a filter picks out ("from among them", "the rest"); zones ignored. */
+function fromPile(resolution: Resolution, effect: Effect): GameObject[] {
+  const game = resolution.game;
+  const loose = { ...effect.targets!, from_pile: false, count: null, up_to: false };
+  const candidates: GameObject[] = [];
+  for (const id of resolution.pile) {
+    const obj = game.objects.get(id);
+    if (obj === undefined || !isLive(obj)) continue;
+    const spec = { ...loose, zones: { $set: [obj.zone] } };
+    if (matchHooks().matches(game, obj, spec, { source: resolution.source, controller: resolution.controller })) candidates.push(obj);
+  }
+  return narrowedToCount(resolution, effect, candidates);
+}
+
+/** What agents may implement to choose objects for an untargeted count (CR 608.2d). */
+export interface ObjectChooser {
+  chooseObjects?(game: Game, player: PlayerId, effect: Effect, candidates: GameObject[], count: number): readonly GameObject[] | null;
+}
+
+/** An untargeted effect that names a number affects that many, chosen by its controller. */
+function narrowedToCount(resolution: Resolution, effect: Effect, matching: GameObject[]): GameObject[] {
+  const spec = effect.targets;
+  if (spec != null && spec.count == null && flag(spec.up_to) && matching.length > 0) {
+    return anyNumberOf(resolution.game, resolution.controller, effect, matching);
+  }
+  if (spec == null || spec.count == null || matching.length <= 1) return matching;
+  const wanted = valueOf(resolution, spec.count);
+  if (wanted <= 0) return flag(spec.up_to) ? [] : matching; // CR 107.1b
+  if (wanted >= matching.length) return matching;
+  const agent = agentFor(resolution.game, resolution.controller) as ObjectChooser | null;
+  if (agent?.chooseObjects !== undefined) {
+    const picked = agent.chooseObjects(resolution.game, resolution.controller, effect, [...matching], wanted) ?? [];
+    const kept = matching.filter((o) => picked.includes(o)).slice(0, wanted);
+    if (kept.length === wanted) return kept;
+  }
+  return matching.slice(0, wanted);
+}
+
+/** "Any number of": the player picks from none to all (CR 107.1c, 608.2d); all with no agent. */
+function anyNumberOf(game: Game, playerId: PlayerId, effect: Effect, matching: GameObject[]): GameObject[] {
+  const agent = agentFor(game, playerId) as ObjectChooser | null;
+  if (agent?.chooseObjects === undefined) return matching;
+  const picked = agent.chooseObjects(game, playerId, effect, [...matching], matching.length);
+  if (picked == null) return matching;
+  return matching.filter((o) => picked.includes(o));
+}
+
+/** A Value against this resolution. */
+export function valueOf(resolution: Resolution, value: Value | number): number {
+  if (typeof value === "number") return value;
+  return matchHooks().evaluate(resolution.game, value, evaluateContext(resolution));
+}
+
+/** Whether an effect's condition holds; "if it's blue" asks about what the guarded effect would act on. */
+export function conditionHolds(resolution: Resolution, effect: Effect): boolean {
+  const condition = effect.condition;
+  if (condition == null || num(condition.kind) === 0) return true;
+  let remembered: readonly ObjectId[] = resolution.remembered.slice();
+  const first = list(effect.children)[0];
+  if (asksAboutAffected(condition) && first !== undefined) {
+    const cursor = resolution.targetIndex;
+    remembered = objectsOf(resolution, first).map((o) => o.id);
+    resolution.targetIndex = cursor;
+  }
+  return matchHooks().holds(resolution.game, condition, {
+    source: resolution.source,
+    controller: resolution.controller,
+    remembered,
+    event: (resolution.stackObject?.triggerEvent as GameEvent | null) ?? null,
+  });
+}
+
+const AFFECTED_MATCHES: number = ir("ConditionKind.AFFECTED_MATCHES");
+function asksAboutAffected(condition: Condition): boolean {
+  return num(condition.kind) === AFFECTED_MATCHES || list(condition.operands).some(asksAboutAffected);
 }
 
 // -- who and how many -----------------------------------------------------------
@@ -437,3 +644,191 @@ export function resolveManaAbility(resolution: Resolution, effects: readonly Eff
     }));
   }
 }
+
+// -- control flow (resolve.py _do_conditional .. _do_nothing) -----------------------------
+
+interface ResolutionAgent {
+  chooseOptional?(game: Game, player: PlayerId, effect: unknown): boolean;
+  chooseDiscard?(game: Game, player: PlayerId): ObjectId;
+  choosePay?(game: Game, player: PlayerId, cost: unknown, effect: Effect): boolean;
+}
+const agentOf = (game: Game, playerId: PlayerId) => agentFor(game, playerId) as ResolutionAgent | null;
+
+registerExecutor(ir("EffectKind.CONDITIONAL"), (resolution, effect) => {
+  execute(resolution, conditionHolds(resolution, effect) ? list(effect.children) : list(effect.otherwise));
+});
+
+registerExecutor(ir("EffectKind.REPEAT"), (resolution, effect) => {
+  const times = Math.max(0, amountOf(resolution, effect));
+  for (let i = 0; i < times; i += 1) execute(resolution, list(effect.children));
+});
+
+/** "May" scopes still decided by the ability's controller. */
+const CONTROLLER_CHOOSES: ReadonlySet<number> = new Set([PS.YOU!, PS.EACH_PLAYER!, PS.EACH_OPPONENT!, PS.OPPONENT!]);
+
+/** "You may ...": the controller decides on resolution; with no agent, yes. */
+registerExecutor(ir("EffectKind.OPTIONAL"), (resolution, effect) => {
+  if (effect.players != null && !CONTROLLER_CHOOSES.has(num(effect.players.scope))) {
+    anotherPlayerMay(resolution, effect);
+    return;
+  }
+  const agent = agentOf(resolution.game, resolution.controller);
+  if (agent?.chooseOptional === undefined || agent.chooseOptional(resolution.game, resolution.controller, effect)) {
+    resolution.didIt = true;
+    execute(resolution, list(effect.children));
+  } else {
+    resolution.didIt = false;
+  }
+});
+
+/** "That player may ...": the player named chooses and carries it out as "you" (CR 608.2d). */
+function anotherPlayerMay(resolution: Resolution, effect: Effect): void {
+  const game = resolution.game;
+  for (const pid of playersOf(resolution, effect)) {
+    const agent = agentOf(game, pid);
+    if (agent?.chooseOptional !== undefined && !agent.chooseOptional(game, pid, effect)) continue;
+    const saved = resolution.controller;
+    resolution.controller = pid;
+    try {
+      execute(resolution, list(effect.children));
+    } finally {
+      resolution.controller = saved;
+    }
+  }
+}
+
+/**
+ * "... unless that player pays {1}." With no agent the default is to pay,
+ * so tax effects don't flatter the deck under test.
+ */
+registerExecutor(ir("EffectKind.UNLESS_PAYS"), (resolution, effect) => {
+  const game = resolution.game;
+  const payers = playersOf(resolution, effect);
+  if (payers.length === 0) {
+    execute(resolution, list(effect.children));
+    return;
+  }
+  for (const pid of payers) {
+    const cost = effect.pay_cost;
+    if (cost == null || !canPayCost(game, pid, cost, { source: resolution.source })) {
+      execute(resolution, list(effect.children));
+      continue;
+    }
+    const agent = agentOf(game, pid);
+    const willing = agent?.choosePay === undefined ? true : agent.choosePay(game, pid, cost, effect);
+    // A failed payment must not waive the effect.
+    if (!(willing && payCost(game, pid, cost, { source: resolution.source }))) execute(resolution, list(effect.children));
+  }
+});
+
+const doNothing: Executor = () => {};
+registerExecutor(ir("EffectKind.NOTHING"), doNothing);
+// A static ability read by the trigger collector rather than resolved.
+registerExecutor(ir("EffectKind.EXTRA_TRIGGER"), doNothing);
+
+// -- cards and zones ------------------------------------------------------------------------
+
+registerExecutor(ir("EffectKind.DRAW"), (resolution, effect) => {
+  const count = amountOf(resolution, effect);
+  for (const pid of playersOf(resolution, effect)) draw(resolution.game, pid, count);
+});
+
+registerExecutor(ir("EffectKind.MILL"), (resolution, effect) => {
+  const count = amountOf(resolution, effect);
+  const game = resolution.game;
+  const milled: ObjectId[] = [];
+  for (const pid of playersOf(resolution, effect)) {
+    const top = player(game, pid).library.slice(0, Math.max(0, count));
+    mill(game, pid, count, { source: resolution.source });
+    // The milled cards, as the objects they became, are the pile "from among them".
+    for (const id of top) {
+      let obj = game.objects.get(id);
+      while (obj !== undefined && obj.supersededBy) obj = game.objects.get(obj.supersededBy);
+      if (obj !== undefined && obj.zone === Zone.GRAVEYARD) milled.push(obj.id);
+    }
+  }
+  resolution.pile = milled;
+});
+
+registerExecutor(ir("EffectKind.DESTROY"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) {
+    destroy(resolution.game, obj, { source: resolution.source, regenerate: !resolution.unregenerable });
+  }
+});
+
+registerExecutor(EK.SACRIFICE, (resolution, effect) => {
+  const game = resolution.game;
+  if (!isPerPlayerSacrifice(effect)) {
+    for (const obj of objectsOf(resolution, effect)) sacrifice(game, obj, { source: resolution.source });
+    return;
+  }
+  // CR 701.21a, 608.2d: each player sacrifices their own, their choice.
+  const everything = matchHooks().find(game, effect.targets!, { source: resolution.source, controller: resolution.controller });
+  const sacrificed: ObjectId[] = [];
+  for (const pid of playersOf(resolution, effect)) {
+    const theirs = everything.filter((o) => o.controller === pid);
+    for (const obj of sacrificeChoice(resolution, effect, theirs, pid)) {
+      sacrificed.push(obj.id);
+      sacrifice(game, obj, { source: resolution.source });
+    }
+  }
+  if (sacrificed.length > 0) resolution.remembered = sacrificed;
+});
+
+/** What this player sacrifices: as many as said, their choice; else cheapest, then id. */
+function sacrificeChoice(resolution: Resolution, effect: Effect, theirs: GameObject[], pid: PlayerId): GameObject[] {
+  const spec = effect.targets!;
+  const game = resolution.game;
+  if (spec.count == null && flag(spec.up_to) && theirs.length > 0) return anyNumberOf(game, pid, effect, theirs);
+  if (spec.count == null) return theirs;
+  const wanted = valueOf(resolution, spec.count);
+  if (wanted <= 0 || theirs.length === 0) return [];
+  if (wanted >= theirs.length) return theirs;
+  const agent = agentFor(game, pid) as ObjectChooser | null;
+  if (agent?.chooseObjects !== undefined) {
+    const picked = agent.chooseObjects(game, pid, effect, [...theirs], wanted) ?? [];
+    const kept = theirs.filter((o) => picked.includes(o)).slice(0, wanted);
+    if (kept.length === wanted) return kept;
+  }
+  return [...theirs]
+    .sort((a, b) => charsManaValue(characteristicsOf(game, a)) - charsManaValue(characteristicsOf(game, b)) || a.id - b.id)
+    .slice(0, wanted);
+}
+
+registerExecutor(ir("EffectKind.RETURN_TO_HAND"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) bounce(resolution.game, obj, { source: resolution.source });
+});
+
+registerExecutor(ir("EffectKind.MOVE_ZONE"), (resolution, effect) => {
+  // KNOWN: (unnumbered, reported in status/rules.md) Python's `effect.zone or
+  // Zone.GRAVEYARD` sends a LIBRARY destination (0) to the graveyard; ported as is.
+  const destination = effect.zone == null ? Zone.GRAVEYARD : num(effect.zone) || Zone.GRAVEYARD;
+  const objects = objectsOf(resolution, effect);
+  revealIfSaid(resolution, effect, objects); // CR 701.20
+  for (const obj of objects) moveObject(resolution.game, obj, destination as Zone, { toPlayer: obj.owner });
+});
+
+function revealIfSaid(resolution: Resolution, effect: Effect, objects: readonly GameObject[]): void {
+  if (!list(effect.keywords).includes("reveal")) return;
+  for (const obj of objects) emit(resolution.game, event(EventKind.REVEALED, { objectId: obj.id, player: obj.owner }));
+}
+
+registerExecutor(ir("EffectKind.DISCARD"), (resolution, effect) => {
+  const game = resolution.game;
+  const count = amountOf(resolution, effect);
+  const discarded: ObjectId[] = [];
+  for (const pid of playersOf(resolution, effect)) {
+    const p = player(game, pid);
+    const agent = agentOf(game, pid);
+    for (let i = 0; i < count; i += 1) {
+      if (p.hand.length === 0) break;
+      const last = p.hand[p.hand.length - 1]!;
+      const choice = agent?.chooseDiscard !== undefined ? agent.chooseDiscard(game, pid) : last;
+      const obj = game.objects.get(choice) ?? game.objects.get(last)!;
+      discarded.push(obj.id);
+      discard(game, obj, { source: resolution.source });
+    }
+  }
+  // CR 608.2: "if you discarded a nonland card this way".
+  if (discarded.length > 0) resolution.remembered = discarded;
+});

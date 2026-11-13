@@ -88,7 +88,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   (resolveTop, fizzling on all-illegal targets, permanent spells entering
   with links, counters, Auras and paid-cost riders, instants and sorceries
   leaving to the graveyard, exile, library or hand). `resolve.ts` has the
-  dispatcher and ADD_MANA; the other executors are next. A smoke test plays
+  dispatcher with the "it" bookkeeping, object selection (`objectsOf`:
+  targets, "it", piles, counts, per-player things), and executors for
+  SEQUENCE, CONDITIONAL, REPEAT, OPTIONAL, UNLESS_PAYS, NOTHING,
+  EXTRA_TRIGGER, ADD_MANA, DRAW, MILL, DESTROY, SACRIFICE, RETURN_TO_HAND,
+  MOVE_ZONE and DISCARD. The rest follow in resolve.py's order. A smoke test plays
   lands and casts creatures end to end and replays to the same digest.
   Placeholders until triggers and combat: `checkInterveningIf`,
   `subjectOf` (triggers.ts) and `enterAttacking` (combat.ts).
@@ -239,4 +243,7 @@ these points; please export them with these names:
 
 ## Questions for the auditor
 
-- None.
+- **A Python rules bug with no F number:** `_do_move_zone` reads
+  `effect.zone or Zone.GRAVEYARD`, so a MOVE_ZONE to the library (Zone 0)
+  goes to the graveyard instead. Ported as is with `// KNOWN:` in
+  resolve.ts; please give it a number in AUDIT_LOG.md.
