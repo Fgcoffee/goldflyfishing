@@ -19,6 +19,7 @@ import { emit } from "../emit";
 import { legalActions } from "../legality";
 import { actionStep, beginWindow, isExhausted, noteStep, resolutionStep } from "../loops";
 import { activateAbility, CastError, castSpell, playLand } from "../cr600_spells_and_abilities/casting";
+import { perform as performSpecial } from "./special_actions";
 import { resolveTop } from "../cr600_spells_and_abilities/stack";
 import { checkStateTriggers, putTriggersOnStack } from "../cr600_spells_and_abilities/triggers";
 import { checkStateBasedActions } from "../cr700_additional_rules/sba";
@@ -231,9 +232,7 @@ export function perform(game: Game, playerId: PlayerId, chosen: Action): boolean
         playLand(game, playerId, chosen);
         break;
       case ActionKind.SPECIAL:
-        // PORT: placeholder - special actions (cr116_special_actions.py)
-        // come with casting.
-        return false;
+        return performSpecial(game, playerId, chosen);
       default:
         break;
     }

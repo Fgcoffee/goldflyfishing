@@ -78,8 +78,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   improvise and delve; activation costs and limits; player-scoped costs),
   `mana_host.ts`, and from resolution the dispatcher with ADD_MANA and
   `resolveManaAbility`; `casting.ts` itself: `castSpell` (CR 601.2 with the
-  rewind), `playLand`, `activateAbility`, `pushAbility` (stack.ts). Still
-  to come: `legalActions`. PORT notes: replicate/conspire cast triggers wait
+  rewind), `playLand`, `activateAbility`, `pushAbility` (stack.ts); and
+  `legality.ts` (`legalActions`, `hasSorcerySpeed`, `canAfford`) with
+  `rule_overrides.ts` (CR 101.1), `special_actions.ts` (CR 116),
+  `cr400_zones/outside_game.ts` (companion) and the part of cr708 special
+  actions needs (`face_down.ts`: turning face up). Casting is done. PORT notes: replicate/conspire cast triggers wait
   for triggers; the CR 718.2 prototype face itself is still KNOWN in layers.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
@@ -197,6 +200,14 @@ these points; please export them with these names:
   controller)` and `MAY_CHOOSE_NEW_TARGETS`, called by TRANSFORM,
   COPY_PERMANENT and COPY_SPELL. Same signatures as Python's
   `cr707_faces.py`, keyword arguments as an options object.
+- **Legend rule (CR 101.1):** `ruleIsSuspended(game, Rule.LEGEND_RULE, { obj })`
+  from `rules/cr100_game_concepts/rule_overrides.ts`; it returns the
+  override or null, as `game.rule_is_suspended` does. Please call it in
+  `checkLegendRule`.
+- **Face-down (cr708):** I ported only what special actions needs, in
+  `rules/cr700_additional_rules/face_down.ts` (`manaCostToTurnUp`,
+  `cannotTurnFaceUp`, `turnFaceUp`, `reveal`). If cr708 counts as faces for
+  you, the rest (manifest, cloak, turning face down) can go in that file.
 - `faces.ts` exists already: I wrote `layoutOf`, `castableFaceIndices` and
   `playableLandFaceIndices` because legal actions needs them now. The file
   is yours from here; keep those three.
@@ -213,9 +224,7 @@ these points; please export them with these names:
 
 ## Next
 
-1. Legal actions (kernel/legality.py), which finishes casting; first rule
-   overrides (cr101) and special actions (cr116). Then resolution
-   executors and the stack, triggers, combat, replacements and prevention,
+1. Resolution executors and the stack (resolve.py, cr608_stack.py), triggers, combat, replacements and prevention,
    keyword runtime, commander rules, `play()`, the build fingerprint, and
    board tests. (SBAs, setup and copies/faces/tokens moved to the parser.)
 

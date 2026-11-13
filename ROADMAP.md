@@ -39,7 +39,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Event bus: emit, observers, per-turn records ("Event bus" commit)
 - [x] Moving objects between zones (`move_object`), with replacement and trigger hooks ("Moving objects" commit)
 - [x] Turn structure (CR 500-514): steps, untap/upkeep/draw, priority loop ("Turn structure" commit)
-- [ ] Casting spells (CR 601) and activating abilities (602), using the parser's mana code
+- [x] Casting spells (CR 601) and activating abilities (602), using the parser's mana code ("Legal actions" commit)
 - [ ] Resolving the stack: effect executors (`resolve.py`)
 - [ ] Triggered abilities (CR 603), including look-back
 - [ ] Combat (CR 506-511): attack and block requirements, costs, damage

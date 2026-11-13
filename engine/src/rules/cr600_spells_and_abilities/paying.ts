@@ -77,12 +77,14 @@ const UNPARSED_KIND: number = ir("EffectKind.UNPARSED");
 // -- paying for a spell -------------------------------------------------------------
 
 /** Activate mana abilities as needed, then pay the whole cost (CR 601.2g-h). */
-export function pay(game: Game, playerId: PlayerId, total: TotalCost, context: GameObject): void {
+export function pay(game: Game, playerId: PlayerId, total: TotalCost, context: GameObject | null): void {
   const p = player(game, playerId);
   const manaCost = finalMana(total);
   let helpedWith = 0;
   // CR 118.3, 601.2h: every non-mana component is checked before any mana is spent.
-  for (const component of total.additional) checkPayable(game, playerId, component, context);
+  // KNOWN: F61 - Python passes a None context on to the component checks; no
+  // caller with a null context (the companion's {3}) has non-mana components.
+  for (const component of total.additional) checkPayable(game, playerId, component, context!);
 
   if (!isEmpty(manaCost)) {
     const paymentContext = paymentContextOf(context);
@@ -92,7 +94,7 @@ export function pay(game: Game, playerId: PlayerId, total: TotalCost, context: G
       tapForMana(game, playerId, manaCost, context);
       payment = find();
     }
-    if (payment === null) {
+    if (payment === null && context !== null) {
       // CR 702.51a, 702.126a, 702.66a: convoke, improvise, delve - as few as will do.
       let found = false;
       const capacity = helperCapacity(game, context, playerId);
@@ -113,20 +115,20 @@ export function pay(game: Game, playerId: PlayerId, total: TotalCost, context: G
     }
     if (payment === null) throw new CastError("cannot pay the mana cost");
 
-    const onStack = context.zone === Zone.STACK;
+    const onStack = context !== null && context.zone === Zone.STACK;
     // CR 601.2h, 702.51a, 702.66a: the mana actually spent.
-    if (onStack) context.manaSpent = Math.max(0, payment.mana.reduce((t, [, n]) => t + n, 0) - helpedWith);
+    if (onStack) context!.manaSpent = Math.max(0, payment.mana.reduce((t, [, n]) => t + n, 0) - helpedWith);
     for (const [kind, amount] of payment.mana) {
       removeMana(p.manaPool, kind, amount);
-      if (amount > 0 && onStack) context.manaSpentColors |= kind.color; // CR 702.44a, converge
+      if (amount > 0 && onStack) context!.manaSpentColors |= kind.color; // CR 702.44a, converge
     }
     if (payment.life) {
       loseLife(p, payment.life);
-      if (onStack) context.phyrexianPaidWithLife += Math.floor(payment.life / 2); // CR 702.150a
+      if (onStack) context!.phyrexianPaidWithLife += Math.floor(payment.life / 2); // CR 702.150a
     }
     emit(game, event(EventKind.MANA_SPENT, { player: playerId, amount: paymentTotalMana(payment) }));
   }
-  for (const component of total.additional) payComponent(game, playerId, component, context);
+  for (const component of total.additional) payComponent(game, playerId, component, context!);
 }
 
 /** Which keyword draws on which resource, and whether its mana takes the source's colour. */

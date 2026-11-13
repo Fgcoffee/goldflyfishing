@@ -10,9 +10,12 @@ import type { CardDef } from "../../kernel/card";
 import { agentFor, livingPlayers, type Game } from "../../kernel/game";
 import type { GameObject } from "../../kernel/gameobject";
 import type { PlayerId } from "../../kernel/ids";
-import { additionalCosts } from "../cr200_parts_of_a_card/characteristics";
+import { additionalCosts, charsManaValue } from "../cr200_parts_of_a_card/characteristics";
+import { matchHooks } from "../../kernel/hooks";
 import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
-import { list, str } from "../ir_read";
+import { ir, list, num, str } from "../ir_read";
+
+const SACRIFICE: number = ir("CostKind.SACRIFICE");
 
 /** The keywords of the optional additional costs paid, one per payment, lower-cased. */
 export function paidAdditionalKeywords(game: Game, obj: GameObject): string[] {
@@ -55,3 +58,16 @@ export function castFaceIndex(spell: GameObject, alternative: AlternativeCost | 
  * until then no copy trigger is put on the stack.
  */
 export function putCastTriggers(_game: Game, _spell: GameObject): void {}
+
+/** The most an emerge cost could be reduced by now (CR 702.119a), for legality's upper bound. */
+export function emergeDiscount(game: Game, playerId: PlayerId, alternative: AlternativeCost): number {
+  if (str(alternative.keyword).toLowerCase() !== "emerge") return 0;
+  let best = 0;
+  for (const component of list(alternative.cost.components)) {
+    if (num(component.kind) !== SACRIFICE || component.filter == null) continue;
+    for (const obj of matchHooks().find(game, component.filter, { controller: playerId })) {
+      best = Math.max(best, charsManaValue(characteristicsOf(game, obj)));
+    }
+  }
+  return best;
+}
