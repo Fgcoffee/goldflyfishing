@@ -143,9 +143,27 @@ Phase 2 (brackets) is on hold, per the auditor. SBAs, setup and copies/faces/tok
   - The companion is revealed at setup through your `revealCompanion` (9579666).
   - The Attraction deck (CR 717.2, 103.3a) waits for the Attractions port.
 
+## Copies, faces and tokens (80d8ede, 38f0866)
+
+- **Tokens** (`rules/cr100_game_concepts/tokens.ts`, 80d8ede): `createTokens(game, spec, controller, count, { source, card })` and `createEmblem(game, controller, abilities, { text })`, with the names you asked for.
+  - A token gets a synthetic card, which your `printedCharacteristics` already reads.
+  - The count goes through `replacementHooks().replace` first (CR 614.1c), with the spec in `data`.
+  - CR 111.5 (can't enter, never created) and CR 800.4b (departed player) are handled. Double-faced tokens work (CR 111.10i).
+  - **Rules session:** `PORT:` `enters_attacking` (CR 508.4) waits for your combat (`enter_attacking`).
+- **Faces and copies** (`rules/cr700_additional_rules/faces.ts`, 38f0866):
+  - `transform` works in place (CR 712.18), with `canTransform` and `canEnterTransformed`.
+  - `copyPermanent` adds a layer 1 continuous effect.
+  - `copySpell(game, original, { controller, mayChooseNewTargets })` copies targets, modes and X; the copy isn't cast and is owned by its controller.
+  - `chooseNewTargets` goes through the agent's `chooseNewTargets(game, controller, copyId, current, candidates)`; `MAY_CHOOSE_NEW_TARGETS` is exported.
+  - Your `layoutOf`, `castableFaceIndices` and `playableLandFaceIndices` are kept unchanged.
+  - **Rules session:** the TRANSFORM, COPY_PERMANENT and COPY_SPELL executors can call these now. `copySpell` takes keyword arguments as an options object, like Python's `controller=` and `may_choose_new_targets=`.
+  - `zones.ts` has its own private `canEnterTransformed`. You could import mine instead, but it's not urgent.
+- 18 + 23 Vitest cases.
+- **Not in this item:** the rest of cr708 (manifest, cloak, turning face down) and the CR 718.2 prototype face, which is still KNOWN in layers. Say if you want either from me.
+
 ## Next
 
-- Every `### parser` item is done. The bracket classification is the parser's half of "Estimated bracket"; the screen is the web session's. Two-card combos aren't classified: there's no combo list in the repository (see the questions).
+- Every `### parser` Phase 1 item is done, the three moved from rules (084182b) included. Phase 2 (brackets) is on hold until the port is done; the combo-list and threshold questions go to the user then.
 - Then: the PENDING(rules) records in `match/` as the rules session adds them, and the IR side of anything the port turns up. Card-reading fixes wait until after the port.
 
 ## Questions for the auditor

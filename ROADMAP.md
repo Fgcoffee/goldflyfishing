@@ -64,7 +64,7 @@ and games that don't replay from their seed are fixed now.
 
 - [x] *(moved from rules, 13 Nov)* State-based actions (CR 704) (ff39b13)
 - [x] *(moved from rules, 13 Nov)* Game setup (CR 103): shuffles, mulligans (bfd46b2)
-- [ ] *(moved from rules, 13 Nov)* Copies, faces and tokens (CR 707, 711, 712)
+- [x] *(moved from rules, 13 Nov)* Copies, faces and tokens (CR 707, 711, 712) (80d8ede tokens, 38f0866 faces and copies)
 - [ ] Port the Python board tests for every module you own as Vitest tests
 
 ### web
