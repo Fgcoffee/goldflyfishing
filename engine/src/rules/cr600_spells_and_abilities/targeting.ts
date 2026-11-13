@@ -300,3 +300,40 @@ export function hasProtectionFrom(game: Game, target: GameObject, source: GameOb
   }
   return protectedFrom(game, target, source);
 }
+
+/** Whether any of an ability's effects is targeted (Python `Ability.is_targeted`). */
+export function abilityIsTargeted(ability: Ability): boolean {
+  return list(ability.effects).some(containsTargeted);
+}
+function containsTargeted(effect: Effect): boolean {
+  if (isTargeted(effect)) return true;
+  return [...list(effect.children), ...list(effect.otherwise)].some(containsTargeted);
+}
+
+/** CR 602.2b, 601.2c: an activated ability's chosen targets are legal. */
+export function validateAbilityTargets(
+  game: Game,
+  source: GameObject,
+  ability: Ability,
+  targets: Targets,
+  chosenModes: readonly number[] = [],
+): void {
+  const effects = targetedNodes(list(ability.effects), chosenOrNull(chosenModes));
+  if (targets.length < effects.length) throw new CastError("not every required target was chosen");
+  checkDistinctTargets(effects, targets);
+  effects.forEach((effect, index) => {
+    for (const id of index < targets.length ? targets[index]! : []) {
+      if (isPlayerTarget(id)) {
+        if (player(game, targetPlayer(id)).hasLost) throw new CastError("that player has left the game");
+        checkPlayerTarget(game, effect, id, source.controller);
+        continue;
+      }
+      if (targetsAPlayer(effect)) throw new CastError("only a player can be this target");
+      const candidate = game.objects.get(id);
+      if (candidate === undefined) throw new CastError("target no longer exists");
+      if (effect.targets != null && !matchHooks().matches(game, candidate, effect.targets, { source: source.id, controller: source.controller })) {
+        throw new CastError("illegal target");
+      }
+    }
+  });
+}

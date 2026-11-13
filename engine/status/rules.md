@@ -77,8 +77,10 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   what can pay each component), `paying.ts` (paying spells with convoke,
   improvise and delve; activation costs and limits; player-scoped costs),
   `mana_host.ts`, and from resolution the dispatcher with ADD_MANA and
-  `resolveManaAbility`. Still to come: `castSpell`, `playLand`,
-  `activateAbility`, `legalActions`.
+  `resolveManaAbility`; `casting.ts` itself: `castSpell` (CR 601.2 with the
+  rewind), `playLand`, `activateAbility`, `pushAbility` (stack.ts). Still
+  to come: `legalActions`. PORT notes: replicate/conspire cast triggers wait
+  for triggers; the CR 718.2 prototype face itself is still KNOWN in layers.
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
 
@@ -162,8 +164,8 @@ there too. Your Mana planning roadmap item can be ticked.
 
 ## Next
 
-1. The rest of casting: castSpell / activateAbility / playLand and legal
-   actions. Then resolution's other executors.
+1. Legal actions (legality.py), which finishes casting. Then resolution's
+   other executors and the stack.
 
 ## Questions for the auditor
 

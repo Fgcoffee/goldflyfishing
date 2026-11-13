@@ -503,7 +503,7 @@ interface ManaCheckpoint {
   graveyard: ObjectId[];
 }
 
-function manaCheckpoint(game: Game, playerId: PlayerId): ManaCheckpoint {
+export function manaCheckpoint(game: Game, playerId: PlayerId): ManaCheckpoint {
   const p = player(game, playerId);
   return {
     tapped: new Map(permanents(game, playerId).map((o) => [o.id, o.tapped])),
@@ -515,7 +515,7 @@ function manaCheckpoint(game: Game, playerId: PlayerId): ManaCheckpoint {
 }
 
 /** Undo the mana abilities of an unmade payment (a sacrificed Treasure can't be put back). */
-function restoreManaCheckpoint(game: Game, playerId: PlayerId, checkpoint: ManaCheckpoint): void {
+export function restoreManaCheckpoint(game: Game, playerId: PlayerId, checkpoint: ManaCheckpoint): void {
   const p = player(game, playerId);
   // CR 601.2h: a card exiled for delve goes back.
   for (const id of checkpoint.graveyard) {
