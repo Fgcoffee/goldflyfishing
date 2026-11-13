@@ -12,6 +12,7 @@ import { CardType, Color, Layout, Supertype, Zone } from "../../src/kernel/enums
 import { createObject, invalidateAllCharacteristics, newGame, type Game } from "../../src/kernel/game";
 import type { GameObject } from "../../src/kernel/gameobject";
 import { installMatchHooks } from "../../src/kernel/hooks";
+import { NO_OBJECT } from "../../src/kernel/ids";
 import { newPlayer } from "../../src/rules/cr100_game_concepts/player";
 import { manaValue } from "../../src/rules/cr100_game_concepts/mana_value";
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
@@ -156,11 +157,18 @@ export class Board {
 }
 
 /** A stand-in for rules/match/: only what the layer tests need. */
+const NO_LIVE = NO_OBJECT;
+
 export function installTestMatcher(): void {
   installMatchHooks({
     matches(game, obj, spec, context) {
       const chars = context.override ?? characteristicsOf(game, obj);
       return filterMatches(game, obj, chars, spec, context.source ?? 0, context.controller ?? -1);
+    },
+    find(game, spec, context) {
+      return [...game.objects.values()].filter(
+        (o) => o.supersededBy === NO_LIVE && filterMatches(game, o, characteristicsOf(game, o), spec, context.source ?? 0, context.controller ?? -1),
+      );
     },
     evaluate(game, value, context) {
       return evaluate(game, value, context.source ?? 0);

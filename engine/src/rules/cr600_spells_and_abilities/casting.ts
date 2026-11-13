@@ -14,7 +14,8 @@ import type { ManaCost } from "../mana/cost";
 import type { Action } from "../cr100_game_concepts/priority";
 
 /** An attempt that could not be completed; CR 601.2h has rewound it. */
-export class CastError extends Error {}
+export { CastError } from "./cast_error";
+import { CastError } from "./cast_error";
 
 export function castSpell(_game: Game, _player: PlayerId, _action: Action): void {
   throw new CastError("casting is not ported yet");
@@ -55,23 +56,4 @@ export function payActivation(_game: Game, _source: GameObject, _ability: Abilit
   notYet("payActivation");
 }
 
-/** The modal instruction among these effects, if any (CR 700.2). */
-export function modalEffect(_effects: readonly Effect[]): Effect | null {
-  return notYet("modalEffect");
-}
-
-/** Which modes may be chosen (CR 700.2a-b). */
-export function legalModes(_game: Game, _source: GameObject | null, _modal: Effect, _player: PlayerId): number[] {
-  return notYet("legalModes");
-}
-
-/** Choose the modes as it goes on the stack (CR 601.2b, 602.2b, 603.3c); [] if none can be. */
-export function chooseModes(
-  _game: Game,
-  _source: GameObject | null,
-  _effects: readonly Effect[],
-  _player: PlayerId,
-  _options: { announced?: readonly number[]; sourceId?: ObjectId } = {},
-): number[] {
-  return notYet("chooseModes");
-}
+export { chooseModes, legalModes, modalEffect } from "./modes";
