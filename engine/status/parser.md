@@ -72,17 +72,42 @@ Ported from `kernel/matching.py`, `values.py` and `conditions.py`: `matches`, `f
     - `COMBAT_DAMAGE_DEALT_BY` and `COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE` (the combat-damage-by record).
   - **KNOWN:** `COST_PAID` / `COST_PAID_POWER` read an object the payment moved through its `lastKnownCharacteristics`, because the TS Game has no `cost_paid_last_known` yet.
 
+## Bracket classification (a073ae9): the parser's half of the estimated bracket
+
+Every card document now has `bracket`: what the card counts as, from `game_changer`, `tutor`, `extra_turn`, `mass_land_denial` and `unread`. It's in exported files, live parses and the samples. `mtgfish/ir/bracket.py` reads them from the IR, not from oracle text or Scryfall's tags.
+- **tutor**: a library search for a card that needn't be a land. Land-only searches (Cultivate, fetch lands, "Forest or Island card") are ramp.
+- **mass_land_denial**: destroys, exiles, bounces or makes players sacrifice lands without targeting:
+  - all of them ("all lands", "all permanents", Jokulhaups);
+  - all of a land type (Boil, per the official definition: four or more lands per player);
+  - two or more, or X, from each player (Death Cloud, Destructive Force).
+  Not recognised yet: static denial (Winter Orb, Blood Moon), triggered denial (Burning Sands), storm copies of a targeted spell, and gaining control of a player's lands.
+- **game_changer**: Scryfall's `game_changer` flag (the official list, 53 cards), from the card dump. The list's hash is part of `code_fingerprint()`, so a new list makes the export stale.
+- **unread**: part of the card wasn't read; its other tags are a floor.
+- **Deck estimate:** `estimate(documents)` gives a bracket from 2 to 4, with reasons, caveats and the cards behind each count.
+  - More than 3 Game Changers, or any mass land denial: 4. Otherwise 1-3 Game Changers, more than 3 tutors, or more than 2 extra-turn cards: 3. Otherwise 2.
+  - It never says 1 or 5: those are about intent and tuning, which a list doesn't show.
+  - The thresholds for "few" tutors and "low quantity" of extra turns are mine. The official descriptions give no numbers.
+  - Web session: it's a suggestion. Use it, or count the tags yourself.
+- **Cross-check against Scryfall's tags**, `ir_export brackets` (written to `schema/brackets.json`), over 32,765 format-legal cards:
+
+  | Tag | Agree | Only the IR | Only Scryfall, read | Only Scryfall, unread |
+  |---|---|---|---|---|
+  | tutor | 253 | 38 | 1 | 265 |
+  | extra_turn | 0 | 0 | 0 | 57 |
+  | mass_land_denial | 29 | 2 | 12 | 68 |
+
+  Nearly every miss is a card the parser can't read, which the `unread` tag flags.
+- **Findings (card readings, deferred until after the port):**
+  - **The parser never emits EXTRA_TURN.** All 57 extra-turn cards (Time Warp included) are unread, so the extra-turn count is always 0 today and those cards carry `unread`.
+  - **Learn is read as "search your library for any card"** (`cr701_keyword_actions.py`, the "Learn" builder). It should be a Lesson from outside the game, or discard-and-draw. Most of the 38 "only the IR" tutors are Learn cards, so a Strixhaven deck's tutor count is inflated.
+- Checks: `pytest tests/ir tests/web` 176 passed; `npm test` 234 passed; typecheck clean; `verify --schema --sample 400` 0 problems.
+
 ## Next
 
-1. ~~`mana_plan.py`~~: done. The rules session implements `ManaPlanHost` in `mana_host.ts` (e1d7969); `plan.ts` needs nothing more from me., after agreeing the interface with the rules session. Carry
-   over the F61 guard. I need from you: how a permanent's mana abilities are
-   listed and activated (`characteristics(game, obj).abilities` plus your
-   activation entry point), and whether tapping goes through a function of
-   yours. If it's easier, publish the signatures in your status file and
-   I'll code against them.
-2. ~~`engine/src/rules/match/`~~: done (above). Next, whatever the ROADMAP and the rules session need: the PENDING records above as they appear, and the IR side of anything the port turns up.
+- Every `### parser` item is done. The bracket classification is the parser's half of "Estimated bracket"; the screen is the web session's. Two-card combos aren't classified: there's no combo list in the repository (see the questions).
+- Then: the PENDING(rules) records in `match/` as the rules session adds them, and the IR side of anything the port turns up. Card-reading fixes wait until after the port.
 
 ## Questions for the auditor
 
-- IR v2 is waiting on the rules session's choice above. Nothing else is blocking.
-- The web session's `/api/ir/*` reads `<data root>/ir/v1` (`MTGFISH_IR_DIR`). When v2 lands, the default export path becomes `ir/v2`, so the web session needs to switch with it. I'll flag it in the commit.
+- **Two-card combos** need a list of known combos, such as Commander Spellbook's export. There's none in the repository, and I won't guess one. Should I fetch and commit a snapshot (which source and licence?), or leave combos out of the estimate for now? Today the estimate says "two-card combos are not checked".
+- Are the bracket thresholds acceptable: more than 3 tutors or more than 2 extra-turn cards puts a deck at 3 or above?

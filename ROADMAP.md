@@ -119,6 +119,7 @@ Not started until Phase 1 is finished.
   - known two-card combos.
 
   Show the bracket with the reasons that drove it. Card classification: parser. Screen: web.
+  - [x] Card classification: each card document's `bracket` tags and `mtgfish.ir.bracket.estimate` (a073ae9). Combos wait on a combo list.
 - [ ] **Actual bracket** from simulations, once a deck has been played enough for a reliable win turn. It comes from win turn and win rate against reference decks, with a confidence level and the number of games it's based on. Shown next to the estimate, flagged when they disagree. Stats: web. Reference decks and sanity checks: auditor.
 
 ### rules and parser (deferred rules fixes)
