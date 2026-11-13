@@ -35,6 +35,7 @@ import {
 import type { GameEvent } from "./events";
 import { cloneGameLog, newGameLog, record, type GameLog } from "./log";
 import { cloneRng, newRng, type Rng } from "./random";
+import { STRICT, type Relaxations } from "./relaxations";
 
 /** Where a card's abilities come from: the IR, keyed by card and face. */
 export interface AbilityProvider {
@@ -75,6 +76,8 @@ export interface Game {
   rng: Rng;
   log: GameLog;
   abilityProvider: AbilityProvider;
+  /** Rules the bench switched off; STRICT in every real run. */
+  relaxations: Relaxations;
   turn: number;
   turnOrder: PlayerId[];
   activePlayer: PlayerId;
@@ -125,6 +128,20 @@ export interface Game {
   endTurnRequested: boolean;
   skippedSteps: Set<Step>;
   extraTurns: PlayerId[];
+  /** CR 500.8, 500.9: queued extra phases and steps; the latest goes first. */
+  extraPhases: Phase[];
+  extraSteps: Step[];
+  /** CR 727: a restart was requested, and who goes first in the new game. */
+  restartRequested: boolean;
+  restartStartingPlayer: PlayerId | null;
+  /** The decks the game was built from, for a restart (CR 727.2). */
+  sourceDecks: unknown[];
+  /** Loop-detection state (rules/loops), cleared each turn. */
+  exhaustedLoopSteps: Set<string>;
+  continuingLoopSteps: Set<string>;
+  /** Caches over the standing restrictions and permissions. */
+  restrictionsCache: unknown[] | null;
+  permissionsEpoch: number;
   controlledPlayers: Map<PlayerId, PlayerId>;
   preparedPermanents: Set<ObjectId>;
   classLevels: Map<ObjectId, number>;
@@ -140,6 +157,7 @@ export interface NewGameOptions {
   seed?: number;
   logEnabled?: boolean;
   abilityProvider?: AbilityProvider;
+  relaxations?: Relaxations;
 }
 
 export function newGame(players: Player[], options: NewGameOptions = {}): Game {
@@ -154,6 +172,7 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     rng: newRng(options.seed ?? 0),
     log: newGameLog(options.logEnabled ?? false),
     abilityProvider: options.abilityProvider ?? NO_ABILITIES,
+    relaxations: options.relaxations ?? STRICT,
     turn: 0,
     turnOrder: players.map((p) => p.id),
     activePlayer: NO_PLAYER,
@@ -193,6 +212,15 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     endTurnRequested: false,
     skippedSteps: new Set(),
     extraTurns: [],
+    extraPhases: [],
+    extraSteps: [],
+    restartRequested: false,
+    restartStartingPlayer: null,
+    sourceDecks: [],
+    exhaustedLoopSteps: new Set(),
+    continuingLoopSteps: new Set(),
+    restrictionsCache: null,
+    permissionsEpoch: -1,
     controlledPlayers: new Map(),
     preparedPermanents: new Set(),
     classLevels: new Map(),
@@ -252,6 +280,13 @@ export function cloneGame(game: Game): Game {
     commandersAwaitingZoneChoice: game.commandersAwaitingZoneChoice.slice(),
     skippedSteps: new Set(game.skippedSteps),
     extraTurns: game.extraTurns.slice(),
+    extraPhases: game.extraPhases.slice(),
+    extraSteps: game.extraSteps.slice(),
+    sourceDecks: game.sourceDecks.slice(),
+    exhaustedLoopSteps: new Set(game.exhaustedLoopSteps),
+    continuingLoopSteps: new Set(game.continuingLoopSteps),
+    restrictionsCache: null,
+    permissionsEpoch: -1,
     controlledPlayers: new Map(game.controlledPlayers),
     preparedPermanents: new Set(game.preparedPermanents),
     classLevels: new Map(game.classLevels),
