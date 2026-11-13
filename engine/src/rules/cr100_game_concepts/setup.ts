@@ -23,6 +23,7 @@ import { shuffle } from "../../kernel/random";
 import type { Relaxations } from "../../kernel/relaxations";
 import { isLand } from "../cr200_parts_of_a_card/characteristics";
 import { printedCharacteristics } from "../cr600_spells_and_abilities/layers";
+import { revealCompanion } from "../cr400_zones/outside_game";
 import { moveObject } from "../zones";
 import { draw, shuffleLibrary } from "./actions";
 import { COMMANDER_STARTING_LIFE, newPlayer, STARTING_HAND_SIZE } from "./player";
@@ -35,7 +36,7 @@ export interface SetupDeck {
   readonly commanders?: readonly CardDef[];
   /** CR 400.11a: stays outside the game, as card definitions. */
   readonly sideboard?: readonly CardDef[];
-  /** CR 103.2b. PENDING(rules): revealing it needs cr400_outside_game. */
+  /** CR 103.2b: revealed at setup, kept outside the game. */
   readonly companion?: CardDef | null;
   /** CR 717.2. PENDING(rules): set up with the Attractions port. */
   readonly attractions?: readonly CardDef[];
@@ -86,9 +87,13 @@ export function setUpGame(decks: readonly SetupDeck[], options: SetupOptions = {
     // CR 903.11a: what a card brought in later may not share a name with.
     p.startingDeckNames = new Set([...deck.library, ...(deck.commanders ?? [])].map((c) => c.name));
     p.outsideGame.push(...(deck.sideboard ?? []));
-    // PENDING(rules): CR 103.2b companion reveal (cr400_outside_game) and the
-    // CR 717.2 Attraction deck aren't ported; a companion still waits outside.
-    if (deck.companion) p.outsideGame.push(deck.companion);
+    // CR 103.2b: a companion is revealed from outside the game, and stays
+    // there until the special action of CR 116.2g brings it in.
+    if (deck.companion) {
+      p.outsideGame.push(deck.companion);
+      revealCompanion(game, index, deck.companion);
+    }
+    // PENDING(rules): the CR 717.2 Attraction deck, with the Attractions port.
   });
 
   // CR 103.1, CR 806.3: turn order at random, then fixed for the game.

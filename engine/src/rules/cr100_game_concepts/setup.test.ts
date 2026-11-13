@@ -5,6 +5,9 @@
 
 import { describe, expect, it } from "vitest";
 import { cardDef, mana } from "../../../test/rules/board";
+import type { Ability } from "../../ir";
+import type { CardDef } from "../../kernel/card";
+import { ir } from "../ir_read";
 import { CardType, Color, Supertype, Zone } from "../../kernel/enums";
 import { logDigest } from "../../kernel/log";
 import { keepSeven, setUpGame, simpleLandPolicy, takeMulligans, type SetupDeck } from "./setup";
@@ -65,6 +68,26 @@ describe("setup (CR 103, 903.6, 903.7)", () => {
 
   it("a fixed turn order when asked", () => {
     expect(setUpGame(fourDecks(), { seed: 1, randomizeTurnOrder: false }).turnOrder).toEqual([0, 1, 2, 3]);
+  });
+});
+
+describe("companions (CR 103.2b)", () => {
+  const LURRUS = cardDef("Lurrus of the Dream-Den", { cost: mana(1, Color.WHITE), types: CardType.CREATURE, power: "3", toughness: "2", colors: Color.WHITE });
+  const companionAbility: Ability = { $: "Ability", kind: ir("AbilityKind.STATIC"), keyword: "Companion", text: "Companion" };
+
+  it("a companion is revealed and stays outside the game", () => {
+    const g = setUpGame([{ ...deck("A"), companion: LURRUS }, deck("B")], {
+      seed: 7,
+      abilityProvider: { abilitiesFor: (card) => ((card as CardDef).name === LURRUS.name ? [companionAbility] : []) },
+    });
+    expect(g.players[0]!.companion).toBe(LURRUS);
+    expect(g.players[0]!.outsideGame).toEqual([LURRUS]);
+    expect([...g.objects.values()].some((o) => o.card === LURRUS)).toBe(false);
+  });
+
+  it("a card with no companion ability isn't revealed", () => {
+    const g = setUpGame([{ ...deck("A"), companion: LURRUS }, deck("B")], { seed: 7 });
+    expect(g.players[0]!.companion).toBeNull();
   });
 });
 
