@@ -15,3 +15,6 @@ Kenrith, the Returned King
 Scoured Barrens
 Llanowar Elves
 Sol Ring
+Simic Growth Chamber
+Temple of Mystery
+Spike Feeder

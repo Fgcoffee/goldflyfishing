@@ -1,0 +1,163 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7e26f0b7-20e6-46d5-8130-d98c14d6aa29",
+ "name": "Temple of Mystery",
+ "card_hash": "47f7f6ea3f62b203b078a8210d3ca884",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7e26f0b7-20e6-46d5-8130-d98c14d6aa29",
+  "name": "Temple of Mystery",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Temple of Mystery",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {G} or {U}.",
+    "keywords": [
+     "Scry"
+    ],
+    "produced_mana": [
+     "G",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 18,
+  "commander_legal": true,
+  "edhrec_rank": 330,
+  "scryfall_uri": "https://scryfall.com/card/soc/414/temple-of-mystery?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7e26f0b7-20e6-46d5-8130-d98c14d6aa29",
+   "name": "Temple of Mystery",
+   "face": 0,
+   "face_name": "Temple of Mystery",
+   "card_hash": "47f7f6ea3f62b203b078a8210d3ca884",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "When this land enters, scry 1.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{G}"
+         ],
+         "colors": 16,
+         "text": "add {G}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": 2,
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {G} or {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
