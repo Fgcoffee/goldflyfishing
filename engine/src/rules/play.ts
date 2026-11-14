@@ -8,9 +8,7 @@
  * game's seeded PRNG, so `play(setup, index, seed)` always plays the same
  * game and gives the same digest.
  *
- * As in Python, no mulligans are taken (`play_one` never calls them) and
- * the record's per-turn series and removal events are left out (the web
- * session's records.ts leaves them out until it wants them).
+ * As in Python, no mulligans are taken (`play_one` never calls them).
  */
 
 // Installed once, here, for every game (the parser's note): the matching,
@@ -22,10 +20,11 @@ import { complete, faceAbilities } from "../ir";
 import type { Ability, CardDocument } from "../ir";
 import type { CardDef } from "../kernel/card";
 import { EventKind, type GameEvent } from "../kernel/events";
-import { player as playerOf, type AbilityProvider, type Game } from "../kernel/game";
+import { permanents, player as playerOf, type AbilityProvider, type Game } from "../kernel/game";
+import { isCreature, isLand } from "./cr200_parts_of_a_card/characteristics";
 import type { GameObject } from "../kernel/gameobject";
 import { logDigest } from "../kernel/log";
-import type { CardCast, Elimination, GameRecord, WinReason } from "../sim/records";
+import type { CardCast, Elimination, GameRecord, RemovalEvent, TurnSnapshot, WinReason } from "../sim/records";
 import type { DeckSpec, GameEngine, RunSetup } from "../sim/runner";
 import { PassingAgent, type Agent } from "./cr100_game_concepts/priority";
 import { setUpGame, type SetupDeck } from "./cr100_game_concepts/setup";
@@ -33,6 +32,16 @@ import { lossReasonName, LossReason } from "../kernel/enums";
 import { characteristicsOf } from "./cr600_spells_and_abilities/layers";
 import { runGame, type TurnOptions } from "./cr500_turn_structure/turn";
 import { setCardCatalog } from "./cr700_additional_rules/digital_mechanics";
+
+/** Zone changes that mean somebody took your permanent, and the word a report shows. */
+const REMOVAL_WORDS: ReadonlyMap<number, string> = new Map([
+  [EventKind.DESTROYED, "destroyed"],
+  [EventKind.EXILED, "exiled"],
+  [EventKind.SACRIFICED, "sacrificed"],
+  [EventKind.RETURNED_TO_HAND, "bounced"],
+  [EventKind.COUNTERED, "countered"],
+  [EventKind.DIES, "died"],
+]);
 
 /** The run is about seat 0 (Python `RunConfig.hero`). */
 export const HERO = 0;
@@ -150,6 +159,10 @@ class Observer {
   /** Turns each player has begun: what a person means by "turn N". */
   private readonly turnsBegun = new Map<number, number>();
   private openingHand: string[] = [];
+  private readonly turnsSeries: TurnSnapshot[] = [];
+  private readonly removal: RemovalEvent[] = [];
+  /** Objects whose departure is already attributed: one leaving emits several events. */
+  private readonly counted = new Set<number>();
   lastCombatDamageTurn = -1;
 
   constructor(
@@ -179,6 +192,8 @@ class Observer {
       case EventKind.PLAYER_LEFT_GAME:
         this.eliminated(game, e);
         break;
+      default:
+        if (REMOVAL_WORDS.has(e.kind)) this.removed(game, e);
     }
   }
 
@@ -226,10 +241,60 @@ class Observer {
     this.eliminations.push({ turn: game.turn, player: e.player, reason: reason !== null ? lossReasonName(reason) : "unknown" });
   }
 
+  /** Somebody's permanent left, possibly because of somebody else; only the hero's losses to others count. */
+  private removed(game: Game, e: GameEvent): void {
+    const victim = game.objects.get(e.objectId);
+    if (victim === undefined || this.counted.has(e.objectId)) return;
+    const owner = victim.controller;
+    const source = e.source ? (game.objects.get(e.source) ?? null) : null;
+    const sourceController = source !== null ? source.controller : e.sourceController;
+    // A cost you chose to pay (your own sacrifice outlet) took nothing from you.
+    if (sourceController === owner || sourceController < 0) return;
+    if (owner !== this.hero) return;
+    this.counted.add(e.objectId);
+    this.removal.push({
+      turn: game.turn,
+      victim: this.nameOf(game, victim),
+      victimController: owner,
+      source: source !== null ? this.nameOf(game, source) : "unknown",
+      sourceController,
+      how: REMOVAL_WORDS.get(e.kind)!,
+    });
+  }
+
+  /** Sample the active player only, at the end of their own turn (Python `_end_of_turn`). */
   private endOfTurn(game: Game): void {
     const p = playerOf(game, game.activePlayer);
     if (p.hasLost) return;
-    this.ownTurns.set(p.id, (this.ownTurns.get(p.id) ?? 0) + 1);
+    const ownTurn = (this.ownTurns.get(p.id) ?? 0) + 1;
+    this.ownTurns.set(p.id, ownTurn);
+    let lands = 0;
+    let creatures = 0;
+    let power = 0;
+    let count = 0;
+    let mana = 0;
+    for (const obj of permanents(game, p.id)) {
+      count += 1;
+      const chars = characteristicsOf(game, obj);
+      if (isLand(chars)) lands += 1;
+      if (isCreature(chars)) {
+        creatures += 1;
+        power += chars.power ?? 0;
+      }
+      // Every mana source, tapped or not: what they can make once they untap.
+      if (chars.abilities.some((a) => a.is_mana_ability && !a.unparsed)) mana += 1;
+    }
+    this.turnsSeries.push({
+      turn: ownTurn,
+      player: p.id,
+      life: p.life,
+      lands,
+      manaAvailable: mana,
+      cardsInHand: p.hand.length,
+      permanents: count,
+      boardPower: power,
+      creatures,
+    });
   }
 
   /** A card's name, cached; falls back to the card for an object that is gone. */
@@ -264,6 +329,11 @@ class Observer {
       openingHand: this.openingHand.slice(),
       drawn: this.drawn.slice(),
       cast: this.cast.slice(),
+      turnsSeries: this.turnsSeries.slice(),
+      removal: this.removal.slice(),
+      // Carried on the record: the log is off unless a replay asked for it.
+      runaway: game.runaway,
+      loopDraw: game.loopDraw,
       digest: logDigest(game.log),
     };
   }

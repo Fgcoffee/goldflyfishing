@@ -9,7 +9,7 @@ let next = 0;
 const game = (over: Partial<GameRecord>): GameRecord => ({
   index: next++, seed: 0, turns: 40, rounds: 10, winner: 0, winReason: "LIFE", eliminations: [],
   commanderLanded: [null, null, null, null], mulligans: [0, 0, 0, 0], openingHand: [], drawn: [], cast: [],
-  digest: "", ...over,
+  turnsSeries: [], removal: [], runaway: "", loopDraw: false, digest: "", ...over,
 });
 
 describe("buildReport outcomes", () => {

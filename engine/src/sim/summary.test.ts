@@ -4,7 +4,7 @@ import { summarize } from "./summary";
 
 const game = (over: Partial<GameRecord>): GameRecord => ({
   index: 0, seed: 0, turns: 40, rounds: 10, winner: 0, winReason: "LIFE", eliminations: [],
-  commanderLanded: [null, null], mulligans: [0, 0], openingHand: [], drawn: [], cast: [], digest: "",
+  commanderLanded: [null, null], mulligans: [0, 0], openingHand: [], drawn: [], cast: [], turnsSeries: [], removal: [], runaway: "", loopDraw: false, digest: "",
   ...over,
 });
 

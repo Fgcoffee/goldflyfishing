@@ -74,3 +74,29 @@ describe("play(setup, index, seed) on the bench decks", () => {
     expect(record.winner).toBeNull();
   });
 });
+
+describe("the record's per-turn series and removal (Python sim/observer.py)", () => {
+  const setup = loadSetup(6);
+  it("each living player is sampled at the end of each of their own turns", () => {
+    const { record, game } = playGame(setup, 0, seedFor(setup.runSeed, 0), { agentFor: eager });
+    expect(record.turnsSeries.length).toBeGreaterThan(0);
+    for (const seat of game.players.map((p) => p.id)) {
+      const turns = record.turnsSeries.filter((s) => s.player === seat).map((s) => s.turn);
+      expect(turns).toEqual(turns.map((_, i) => i + 1));
+    }
+    const first = record.turnsSeries[0]!;
+    expect(first.permanents).toBeGreaterThanOrEqual(first.lands);
+    expect(first.permanents).toBeGreaterThanOrEqual(first.creatures);
+    expect(record.runaway).toBe("");
+  });
+
+  it("removal names only the hero's objects, taken by another player", () => {
+    for (let index = 0; index < 4; index += 1) {
+      const { record } = playGame(setup, index, seedFor(setup.runSeed, index), { agentFor: eager });
+      for (const r of record.removal) {
+        expect(r.victimController).toBe(0);
+        expect(r.sourceController).not.toBe(0);
+      }
+    }
+  });
+});

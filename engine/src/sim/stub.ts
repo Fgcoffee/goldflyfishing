@@ -64,6 +64,10 @@ export const stubEngine: GameEngine = {
       openingHand,
       drawn,
       cast,
+      turnsSeries: [],
+      removal: [],
+      runaway: "",
+      loopDraw: false,
       digest: hexDigest(digest),
     };
   },
