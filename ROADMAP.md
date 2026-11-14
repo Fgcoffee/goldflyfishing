@@ -45,7 +45,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Combat (CR 506-511): attack and block requirements, costs, damage (b2f823b, 1ed92e2)
 - [x] `play(setup, index, seed)` entry point for the runner, agreed with web (50fcbfb; CR 727 restarts 4a7e76a)
 - [x] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games (the fingerprint is web's content hash of engine/src, stamped by Vite and stored with every uploaded run; `play` runs in Node in play.test.ts, see status/rules.md)
-- [x] Each module's Python board tests ported as Vitest tests (each module's own commit, then the files listed in status/rules.md on hand-written IR and the parser's real-card fixtures,; open: test_cr608_each_opponents_cards waits on one fixture, and two granted-keyword cases need Python's keyword builder)
+- [x] Each module's Python board tests ported as Vitest tests (each module's own commit, then the files listed in status/rules.md on hand-written IR and the parser's real-card fixtures; open: test_cr608_each_opponents_cards waits on one fixture, and two granted-keyword cases need Python's keyword builder)
 
 ### parser
 - [x] IR v1: JSON schema, codec, exporter; every face round-trips (70c670b)
