@@ -446,3 +446,74 @@ describe("the Ring's executors (CR 701.54)", () => {
     expect(canBlock(board.game, board.play(BEARS, 1), bears)).toBe(true);
   });
 });
+
+describe("more costs to attack and block (CR 508.1f, 509.1d)", () => {
+  const tax = (act: string, scope: string, subject: object): Ability => ({
+    $: "Ability",
+    kind: ir("AbilityKind.STATIC"),
+    text: `${act} tax`,
+    effects: [
+      {
+        $: "Effect",
+        kind: ir("EffectKind.UNLESS_PAYS"),
+        players: { $: "PlayerFilter", scope: ir(`PlayerScope.${scope}` as never) },
+        pay_cost: {
+          $: "Cost",
+          components: [{ $: "CostComponent", kind: ir("CostKind.MANA"), mana: { $: "ManaCost", symbols: [{ $: "ManaSymbol", kind: ir("ManaSymbolKind.GENERIC"), generic: 2 }] } }],
+        },
+        children: [
+          {
+            $: "Effect",
+            kind: ir("EffectKind.RESTRICTION"),
+            restrictions: [{ $: "Restriction", act: ir(`Act.${act}` as never), subject: subject as never, ...(act === "ATTACK_PLAYER" ? { players: { $: "PlayerFilter", scope: ir("PlayerScope.YOU") } } : {}) }],
+          },
+        ],
+      },
+    ],
+  });
+  const ELF = creature("Elf", 1, 1);
+  const manaElf: Ability = {
+    $: "Ability",
+    kind: ir("AbilityKind.ACTIVATED"),
+    is_mana_ability: true,
+    text: "{T}: Add {G}.",
+    cost: { $: "Cost", components: [{ $: "CostComponent", kind: ir("CostKind.TAP_SELF") }] },
+    effects: [{ $: "Effect", kind: ir("EffectKind.ADD_MANA"), mana_produced: ["{G}"] }],
+  };
+
+  it("an attacker can't tap for mana to pay its own tax: it's tapped by attacking first", () => {
+    const board = combatBoard();
+    board.script("Glorious Anthem", tax("ATTACK_PLAYER", "CONTROLLER_OF", { $: "ObjectFilter", types_all: ir("CardType.CREATURE") }));
+    board.script(ELF, manaElf);
+    board.play("Glorious Anthem", 1);
+    board.play("Forest", 0);
+    const elf = board.play(ELF, 0);
+    attackWith(board, new Map([[elf.id, 1]]));
+    declareAttackers(board.game);
+    expect(combat(board).attacking.size).toBe(0);
+  });
+
+  it("a blocker whose tax is unpaid doesn't block; paid, it blocks", () => {
+    const blockTax = tax("BLOCK", "YOU", { $: "ObjectFilter", source_only: true });
+    const unpaid = combatBoard();
+    unpaid.script(GIANT, blockTax);
+    const myr = unpaid.play(GIANT, 1);
+    unpaid.play("Forest", 1);
+    const bears = unpaid.play(BEARS, 0);
+    attackWith(unpaid, new Map([[bears.id, 1]]), new Map([[myr.id, [bears.id]]]));
+    declareAttackers(unpaid.game);
+    declareBlockers(unpaid.game);
+    expect(combat(unpaid).blocking.size).toBe(0);
+
+    const paid = combatBoard();
+    paid.script(GIANT, blockTax);
+    const behemoth = paid.play(GIANT, 1);
+    const forests = [paid.play("Forest", 1), paid.play("Forest", 1)];
+    const attacker = paid.play(BEARS, 0);
+    attackWith(paid, new Map([[attacker.id, 1]]), new Map([[behemoth.id, [attacker.id]]]));
+    declareAttackers(paid.game);
+    declareBlockers(paid.game);
+    expect(combat(paid).blocking.get(behemoth.id)).toEqual([attacker.id]);
+    expect(forests.every((f) => f.tapped)).toBe(true);
+  });
+});
