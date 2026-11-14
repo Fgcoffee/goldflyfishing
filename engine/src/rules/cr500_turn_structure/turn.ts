@@ -41,7 +41,7 @@ import { checkStateBasedActions } from "../cr700_additional_rules/sba";
 import { emit } from "../emit";
 import { randrange } from "../../kernel/random";
 import { setUpGame, type SetupDeck } from "../cr100_game_concepts/setup";
-import { setCardCatalog, type CardCatalog } from "../cr700_additional_rules/digital_mechanics";
+import { cardCatalog, setCardCatalog } from "../cr700_additional_rules/digital_mechanics";
 import { attackers, dealCombatDamage, declareAttackers, declareBlockers, endCombat } from "./combat";
 import { Act, permitted, prohibited } from "./restrictions";
 
@@ -124,7 +124,7 @@ function restart(game: Game, options: TurnOptions, depth: number): Game {
     randomizeTurnOrder: false,
   });
   // Python passes card_catalog=game.card_catalog; digital_mechanics.ts keeps it on the game.
-  setCardCatalog(fresh, (game as { cardCatalog?: CardCatalog | null }).cardCatalog ?? null);
+  setCardCatalog(fresh, cardCatalog(game));
   fresh.sourceDecks = decks.slice();
   // CR 727.1a
   fresh.activePlayer = starting;

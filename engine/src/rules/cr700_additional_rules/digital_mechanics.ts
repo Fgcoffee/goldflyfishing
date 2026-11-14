@@ -83,6 +83,11 @@ export function setCardCatalog(game: Game, catalog: CardCatalog | null): void {
   digital(game).cardCatalog = catalog;
 }
 
+/** The catalog `setCardCatalog` stored, or null (CR 727's restart hands it to the new game). */
+export function cardCatalog(game: Game): CardCatalog | null {
+  return digital(game).cardCatalog ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Perpetually
 // ---------------------------------------------------------------------------
@@ -281,7 +286,7 @@ export function conjuredName(effect: Effect): string {
 
 /** The card a conjure names, or null - logged - if it can't be found. */
 export function catalogCard(game: Game, name: string): unknown | null {
-  const catalog = digital(game).cardCatalog ?? null;
+  const catalog = cardCatalog(game);
   const card = catalog !== null ? catalog.lookup(name) : null;
   if (card == null) {
     const why = catalog === null ? "no card catalogue for this game" : "no such card";
