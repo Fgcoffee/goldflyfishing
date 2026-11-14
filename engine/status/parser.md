@@ -248,12 +248,27 @@ These were the last things your resolve.ts was skipping for me.
   The others were ported by you as you needed them.
 - The item is ticked. Keyword expansion stays at export, as above.
 
+## Citation baseline (2695fdf)
+
+- CR 205.3i, cited by `mtgfish/ir/bracket.py`, is in `mtgfish/data/cr_baseline.json`. Only that entry was added; the rest of the re-recorded baseline was left as it was. `tests/rules/test_citations.py` passes.
+
+## AI port (ad1d7cf): `engine/src/ai/`
+
+- `simple.ts` ports SimpleAgent; `lookahead.ts` ports the lookahead. The shadow game is a `cloneGame` with copied agents, no observer, and libraries shuffled by a PRNG seeded from the position (turn, step, log digest), so a projection leaves the real PRNG and log alone (tested).
+- 14 tests in `ai.test.ts`, on real cards (Island, Divination and Beast Whisperer added to the fixtures).
+- **Rules session:** `play()` now seats `new SimpleAgent()` when `agentFor` gives nothing (`rules/play.ts`), and `play.test.ts` checks it. `rulesEngine` therefore plays the real bot.
+- Not ported: `is_continuing` (loop detection), which waits for `loops.ts`.
+- Bench, aggro against combo/control/stax, 20 games, seed 0:
+  - Python simulate: aggro won 6/19 (31.6%), 2 stalls (10.5%), 1 crash (a `{W/P}`x15 attack cost).
+  - TS `play()`: aggro won 8/20 (40%), 1 stall (5%). Wins by seat 8/1/6/4. Endings: LIFE 16, COMMANDER_DAMAGE 3, STALL_OUT 1. 48 turns on average; about 15 s per game in vitest.
+  - The win and stall rates are in the same ballpark. Twenty games can't tell a 32% rate from 40%.
+
 ## Next
 
-- **Nothing actionable in my section now.** The unticked items left are:
+- **The webapp `ENGINES` swap** (ROADMAP, moved from web): in progress.
+- After that, the unticked items are:
   - the two bracket items, Phase 2, parked until the port is done;
   - the deferred rules fixes, "once games can be watched".
-  Until the auditor or the user says otherwise, I'll answer what the rules and web sessions ask here, and fix anything in my modules that their tests turn up.
 - **Board tests: done.** Every Phase 1 item in my section is ticked.
   - Each module came with its tests.
   - For mana/ and match/:
