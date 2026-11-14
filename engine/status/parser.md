@@ -236,9 +236,21 @@ These were the last things your resolve.ts was skipping for me.
   - `setUpGame` builds and shuffles each player's Attraction deck from `SetupDeck.attractions`.
   - **One call for zones.ts** (your KNOWN at the CR 717.6a comment): after a move into the command zone, call `arrivedInCommandZone(created)` from `attractions.ts`. That puts a junkyarded Attraction in its owner's junkyard pile, as Python's `move_object` does. Until then it reaches the command zone in no pile.
 
+## CR 700 mechanics: done
+
+- `cr702_cost_keyword_rules.py` needed nothing new. Every function already has a TS home:
+  - `carry_payment_record` is in `zones.ts`;
+  - `times_paid_for`, `do_repeat_per_payment`, `copy_originals` and `do_give_gift` are in `resolve.ts`;
+  - `chosen_cost`, `chosen_mode_costs` and `cheapest_mode_cost` are in `total_cost.ts`;
+  - `cast_face_index`, `CONVERTED_CAST_KEYWORDS` and `promise_gift` are in `paid_costs.ts`;
+  - the combat-damage record is in `combat_damage_record.ts`;
+  - `copy_token_card` is in my `tokens.ts`.
+  The others were ported by you as you needed them.
+- The item is ticked. Keyword expansion stays at export, as above.
+
 ## Next
 
-- Moved to me (18f9e4f): replacements and commander rules are done. Of the CR 700 mechanics, only `cr702_cost_keyword_rules.py` is left. Then the board tests. Phase 2 stays parked.
+- All three items moved to me (18f9e4f) are done. Next is the last Phase 1 item, board tests, file by file below. Phase 2 stays parked.
 - **Last item: board tests for every module I own.** SBAs, setup, tokens and faces/copies were ported with their modules (50 + 13 + 18 + 23 cases); `test_mana.py` is ported in full. Still to port, now that your mana host and casting exist:
   - mana/: `test_cr601_mana_plan.py` (8), `test_mana_plan_stale_source.py` (3, done: 782379a), `test_cr605_modal_mana.py` (5), `test_entering_and_mana.py` (7), `test_cr903_commander_identity_mana.py` (2).
   - match/: `test_filter_bounds.py` (8), `test_cr108_owner_filters.py` (7), `test_object_filter_any_of.py` (4), `test_history_conditions.py` (12), `test_cr608_affected_values.py` (23), `test_cr608_values_this_way.py` (7), `test_cr702_dethrone_condition.py` (5). Today match.test.ts has a sample of these (21 cases).

@@ -64,7 +64,7 @@ and games that don't replay from their seed are fixed now.
 - [x] *(moved from rules, 13 Nov)* Copies, faces and tokens (CR 707, 711, 712) (80d8ede tokens, 38f0866 faces and copies)
 - [x] *(moved from rules, 14 Nov)* Replacement and prevention effects (CR 614-616): port `cr614_replacement.py` into the seams in `replacement_hooks.ts` and `zones.ts`. Rules' `resolve.ts` needs `register`, `replacement_from_effect` and `become_chosen_characteristics` from it, so publish those first (6e05490)
 - [x] *(moved from rules, 14 Nov)* Commander rules (CR 903): `wants_command_zone` and the command-zone choice; check tax (rules' `total_cost.ts`) and commander damage (your `sba.ts`) end to end (d5dc038)
-- [ ] *(moved from rules, 14 Nov)* Keyword runtime and the other CR 700 mechanics that run during a game:
+- [x] *(moved from rules, 14 Nov)* Keyword runtime and the other CR 700 mechanics that run during a game (9ad1ad5 digital, de31695 soulbond, 928b7e9 designations, e25664c dungeons, e093445 Ring, 4fd5043 face-down, 1a047e2 Attractions; 6e05490 preparation; cr702_cost_keyword_rules already ported where used, see engine/status/parser.md):
   - face-down (`cr708_face_down.py`);
   - designations, monarch and initiative (`cr725_designations.py`);
   - dungeons (`cr309_dungeons.py`);
