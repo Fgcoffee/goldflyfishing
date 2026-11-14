@@ -160,21 +160,37 @@ Owner paths: `webapp/`, `engine/src/ai/`, `engine/src/sim/`, `mtgfish/web/`,
   - The Docker image copies `engine/src` so the server can fingerprint it.
     `MTGFISH_ENGINE_BUILD` overrides the fingerprint.
 
+## Back on 14 Nov
+
+The web session is back and takes its items again. Since it was archived,
+others landed the AI port (ad1d7cf), the real engine in the page
+(a41d93e), the per-turn series and removal in the report (78cde2a, d2def4b)
+and the spot check (2cb63b4, 8ab95a8). Thanks.
+
+- **Results payload** (`webapp/src/results.ts` `reportPayload`): a TS
+  `Report` in exactly the JSON `bridge._report_payload` builds for a server
+  run. Same keys (a test checks the list), snake_case, Python's per-turn
+  metric names. So the website's Results screen can draw a browser run
+  unchanged. `unparsedCards(deck, cards)` lists the hero's partly read
+  cards from the IR. `loops` is `{}` until `rules/loops.ts` records them.
+
 ## Next
 
-- **Server-side spot check.** A run is only accepted from the server's own
-  engine build, so the server always has the right engine to replay it. A
-  run that passes is marked "ok" for good, with its build recorded. Plan:
-  - a Node build of `engine/src` with a small replay CLI (esbuild);
-  - Node in the Docker image;
-  - a background job that replays a random sample of each pending run,
-    compares digests, and marks the run "ok" or "mismatch".
-- Swap the stub for the real engine once the kernel can play: the rules
-  session's `play(setup, index, seed)`.
-- The AI (`engine/src/ai`), once there's game state to decide on.
-- The rest of the report (per-turn series, removal), once records carry
-  them.
-
+1. **Switch the website to browser simulations.** Plan:
+   - Build a library bundle of the browser runner from `webapp/` into
+     `mtgfish/ui/web/browser/`, so the live site's static files serve it
+     with no new host.
+   - It exports one call: decklists, games, seed and turn cap in; progress
+     out; the Results payload plus the stored run's id back. It does the
+     IR load, the worker pool, the upload and the payload.
+   - `app.js`'s Run uses it when the browser engine is on, and feeds
+     `onRunFinished` the payload, so Results, charts and History draw it as
+     they draw a server run.
+   - It goes behind a flag (`?engine=browser`, then a setting) first, so
+     both paths can be compared before the server path is removed.
+2. **Replay screen for browser runs:** play one game again in a worker from
+   its seed, and return the log frames the replay screen shows. That needs
+   a frame format from the engine log; I'll agree it with rules.
 ## Questions for the auditor
 
 - The Docker image build with the IR export step hasn't been run locally.

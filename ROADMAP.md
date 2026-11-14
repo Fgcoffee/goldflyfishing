@@ -79,7 +79,7 @@ and games that don't replay from their seed are fixed now.
 
 ### web
 
-*The web session was archived on 14 Nov. Its open items are reassigned as noted on each; it takes them back if it returns.*
+*The web session was archived on 14 Nov and is back the same day; it has its open items again.*
 
 - [x] Vite app and Web Worker harness (4bedd13)
 - [x] IR serving endpoint and `IrClient` (249dc1b)
@@ -87,7 +87,7 @@ and games that don't replay from their seed are fixed now.
 - [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (b357de9, 958fee4)
 - [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (b357de9)
 - [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series, removal, runaways and loop draws: game records carry them (78cde2a) and the report aggregates them (rules)
-- [ ] Results and replay screens read browser runs
+- [ ] Results and replay screens read browser runs. Results payload done (results commit); replay screen next
 - [ ] Switch the website from server simulations to browser simulations
 - [x] **Every browser run is sent back to the server and stored.** (22e390e; uploads from another engine build refused with "reload": engine build gate commit) Required before the switch-over. Each run records:
   - the run seed (master seed), the game range, and each game's own seed and log digest;
