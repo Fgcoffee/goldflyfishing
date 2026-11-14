@@ -21,7 +21,7 @@ import { matchHooks } from "../../kernel/hooks";
 import { allocateObjectId, allocateTimestamp, NO_OBJECT, NO_PLAYER, playerTarget, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { hasKeyword } from "../cr200_parts_of_a_card/characteristics";
 import type { Agent } from "../cr100_game_concepts/priority";
-import { emit, installTriggerCollector } from "../emit";
+import { emit } from "../emit";
 import { flag, ir, irEqual, list, num, numSet } from "../ir_read";
 import { characteristicsOf, printedCharacteristics } from "./layers";
 import { chooseModes, modalEffect } from "./modes";
@@ -740,4 +740,3 @@ function chooseTriggerTargets(game: Game, stackObject: GameObject, controller: P
   return settleTargetChoices(effects, candidates, chosen, { fillRequired: chooser === undefined, bounds });
 }
 
-installTriggerCollector(collectTriggers);

@@ -5,7 +5,7 @@
  * Every event is logged (and hashed into the digest), passed to the
  * simulator's observer, tallied for "this turn" questions, and checked for
  * the few things the game itself reacts to (speed, Ring-bearers, CR 700
- * terms). Then triggered abilities watching it are collected; they go on the
+ * terms). Then triggered abilities watching it are collected (triggers.ts); they go on the
  * stack the next time a player would receive priority (CR 603.3b), not now.
  */
 
@@ -14,18 +14,18 @@ import { logRecord, player, turnHistoryCountKey, turnHistoryKey, type Game } fro
 import { NO_OBJECT, NO_PLAYER } from "../kernel/ids";
 import { increaseSpeed } from "./cr100_game_concepts/player";
 import { GENERAL_TERM_EVENTS, note } from "./cr700_additional_rules/general";
+import { collectTriggers as collectFromTriggers } from "./cr600_spells_and_abilities/triggers";
 
 type TriggerCollector = (game: Game, e: GameEvent) => void;
 
-let collectTriggers: TriggerCollector = () => {};
+/** cr603_triggers.collect_triggers, called at emit time (the modules import each other). */
+const DEFAULT_COLLECTOR: TriggerCollector = (game, e) => collectFromTriggers(game, e);
 
-/**
- * Where triggered abilities are collected (cr603_triggers.collect_triggers).
- * Installed by the triggers module when it is ported; until then nothing
- * triggers.
- */
-export function installTriggerCollector(collector: TriggerCollector): void {
-  collectTriggers = collector;
+let collectTriggers: TriggerCollector = DEFAULT_COLLECTOR;
+
+/** Replace where triggered abilities are collected (tests); null restores triggers.ts. */
+export function installTriggerCollector(collector: TriggerCollector | null): void {
+  collectTriggers = collector ?? DEFAULT_COLLECTOR;
 }
 
 /** Announce that something happened. */

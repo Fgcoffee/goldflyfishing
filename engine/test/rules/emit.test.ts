@@ -24,7 +24,7 @@ describe("the event bus", () => {
     installTriggerCollector((_g, e) => collected.push(e.kind));
     const before = logDigest(board.game.log);
     emit(board.game, event(EventKind.DREW_CARD, { player: 0 }));
-    installTriggerCollector(() => {});
+    installTriggerCollector(null);
     expect(logDigest(board.game.log)).not.toBe(before);
     expect(events.map((e) => e.kind)).toEqual([EventKind.DREW_CARD]);
     expect(collected).toEqual([EventKind.DREW_CARD]);
