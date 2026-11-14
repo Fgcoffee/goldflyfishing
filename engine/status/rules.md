@@ -326,7 +326,8 @@ Aimed at `play()`, the gate for the first full game (milestone 4):
 2. Triggers: done.
 3. Combat: done.
 4. `play(setup, index, seed)`: done; the web session can swap it in.
-5. The build fingerprint: done. Board tests: in progress.
+5. The build fingerprint: done. Board tests: all that the fixtures allow
+   are ported; the rest wait on the second fixture batch (below).
 6. Then, from the auditor (9603cce), the web session's items: per-turn
    series and removal in the game records (done: records 78cde2a, report
    d2def4b), and the server-side spot check (done, below) (a Node build with a replay CLI, Node in the
@@ -394,11 +395,11 @@ test_cr608_each_opponents_cards, test_cr613_keyword_removal.
   libstdc++6 and engine/dist. The stage's steps pass from a clean copy, but
   I couldn't build the image: no Docker daemon here. The next deploy is the
   first real build.
-- **For the parser (the stub swap):** have webapp/src/worker/handle.ts
-  play `ENGINES[DEFAULT_ENGINE]` from `@goldfly/engine/sim/engines` (or
-  the path you prefer) and change `DEFAULT_ENGINE` to `"rules"` there. The
-  replay reads the same constant, so the page and the spot check can't
-  disagree on the engine.
+- The page plays `DEFAULT_ENGINE = "rules"` now (parser, a41d93e), and the
+  replay reads the same constant. Rechecked after the AI port (ad1d7cf):
+  775 engine tests green, the CLI bundles, and test_spot_check.py's real
+  replay passes. With SimpleAgent a full game is about 15 s, so a run's
+  8-game sample is about 2 minutes, inside `REPLAY_TIMEOUT` (300 s).
 
 ## For the web session: the real engine is ready to swap in
 
