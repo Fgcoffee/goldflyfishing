@@ -287,6 +287,16 @@ These were the last things your resolve.ts was skipping for me.
   - The undying granter is Mikaeus, the Unhallowed.
 - **`cardCatalog(game)`** is in digital_mechanics.ts (9b48947). turn.ts's CR 727 restart uses it now: a one-line change in your file, with tests green.
 
+- **Soul-Guide Lantern and Ulamog, the Ceaseless Hunger** are in (d59284f); both read in full. That makes 55 fixtures.
+- **Granted persist and modular:** I looked for a real card that grants persist, to stand in for Python's keyword builder.
+  - Cauldron of Souls is the obvious one, but its ability doesn't parse yet: "Choose any number of target creatures" isn't read. So it's no use as a fixture, and I left it out.
+  - I added that to the card-reading fixes for after the port.
+  - Until then those two cases stay in Python, as you said.
+
+## Card-reading gaps found during the port (for after it)
+
+- Cauldron of Souls: "Choose any number of target creatures. Each of those creatures gains persist until end of turn." is unparsed (the "any number of target" phrasing).
+
 ## Next
 
 - The AI port and the webapp swap are both done.
