@@ -17,8 +17,8 @@ The paths each owns are in [`engine/README.md`](engine/README.md).
 
 1. [x] Game state and card characteristics work in TypeScript
 2. [x] Casting spells and paying mana work (56f037f)
-3. [ ] The stack, triggers and combat work
-4. [ ] A first full game plays to the end in TypeScript
+3. [x] The stack, triggers and combat work (db1ac32, 19e2a40, b2f823b)
+4. [x] A first full game plays to the end in TypeScript (50fcbfb). Checked 14 Nov: 40 games on the bench decks with a simple test agent, 0 crashes, every game won on life or commander damage. The ported AI is next
 5. [ ] Games run in the browser, in Web Workers
 6. [ ] The website runs its simulations in the browser instead of on the server
 
@@ -74,16 +74,19 @@ and games that don't replay from their seed are fixed now.
 
   Keyword *expansion* (`cr702_keyword_impl.py`, `cr701_keyword_actions.py`) runs at export time and is already in the IR; confirm that in your status file and skip it.
 - [x] Port the Python board tests for every module you own as Vitest tests (each module's own commit; mana/ and match/: 782379a, e01e481, 323b664, e9f38b1, a804ba2, c277632, 038ad26, bf242a9, 0b5136a)
+- [ ] *(moved from web, 14 Nov)* **AI port: the gate for real results.** `mtgfish/ai/simple.py` (SimpleAgent) then `lookahead.py`, into `engine/src/ai`, seated through `play()`'s `agentFor`; `rulesEngine` seats it by default. The lookahead's shadow game gets a cloned PRNG
+- [ ] *(moved from web, 14 Nov)* Swap the stub for the real engine in `webapp/src/worker/handle.ts` (`ENGINES`), and check real games in the browser: the harness page, several workers, the replay check
 
 ### web
+
+*The web session was archived on 14 Nov. Its open items are reassigned as noted on each; it takes them back if it returns.*
+
 - [x] Vite app and Web Worker harness (4bedd13)
 - [x] IR serving endpoint and `IrClient` (249dc1b)
 - [x] Run protocol and `WorkerPool`, with a stub engine (2195208)
 - [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (b357de9, 958fee4)
 - [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (b357de9)
-- [ ] AI port: SimpleAgent and lookahead (`engine/src/ai`)
-- [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series and removal wait until game records carry them
-- [ ] Swap the stub for the real engine; games run in the browser
+- [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series and removal wait until game records carry them. *(rules, after its board tests)* Add them to the game records
 - [ ] Results and replay screens read browser runs
 - [ ] Switch the website from server simulations to browser simulations
 - [x] **Every browser run is sent back to the server and stored.** (22e390e; uploads from another engine build refused with "reload": engine build gate commit) Required before the switch-over. Each run records:
@@ -95,7 +98,7 @@ and games that don't replay from their seed are fixed now.
   - whether the run finished.
 
   A cancelled or partial run uploads what it completed. Uploads are compressed. The privacy page says that decklists and simulation results are sent to and kept by the server.
-- [ ] **Server-side spot check of uploaded runs.** The server replays a random sample of each upload in Node with the same engine build, and compares log digests. Mismatches, from a tampered or broken client, are flagged and kept out of any shared statistics (brackets, card impact).
+- [ ] *(rules, after its board tests)* **Server-side spot check of uploaded runs.** The server replays a random sample of each upload in Node with the same engine build, and compares log digests. Mismatches, from a tampered or broken client, are flagged and kept out of any shared statistics (brackets, card impact).
 
 ### auditor
 - [x] Shared branch, ownership, status files, this roadmap
