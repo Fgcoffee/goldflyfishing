@@ -170,6 +170,23 @@ def cmd_schema(args) -> int:
     return 0
 
 
+def cmd_dungeons(args) -> int:
+    """schema/dungeons.json and engine/src/ir/dungeons.ts: the rules'
+    dungeons as IR (mtgfish/ir/dungeons.py)."""
+    from ..ir.dungeons import dungeons_json, dungeons_typescript
+
+    db = _db()
+    out = Path(args.out)
+    out.write_text(dungeons_json(db), encoding="utf-8", newline="\n")
+    written = [out]
+    engine = Path(args.engine)
+    if engine.is_dir():
+        (engine / "dungeons.ts").write_text(dungeons_typescript(db), encoding="utf-8", newline="\n")
+        written.append(engine / "dungeons.ts")
+    print("wrote " + ", ".join(str(p) for p in written))
+    return 0
+
+
 #: The enums whose members say what the engine has to implement.
 _USAGE_ENUMS = ("EffectKind", "ConditionKind", "CostKind", "EventKind", "ValueKind",
                 "PlayerScope", "AbilityKind", "Duration", "Act")
@@ -486,6 +503,10 @@ def main(argv: list[str] | None = None) -> int:
     samples.add_argument("--decks", default=str(_REPO / "bench" / "decks"))
     samples.add_argument("--out", default=str(_REPO / "schema" / "samples"))
     samples.set_defaults(func=cmd_samples)
+    dungeons = sub.add_parser("dungeons")
+    dungeons.add_argument("--out", default=str(_REPO / "schema" / "dungeons.json"))
+    dungeons.add_argument("--engine", default=str(_REPO / "engine" / "src" / "ir"))
+    dungeons.set_defaults(func=cmd_dungeons)
     brackets = sub.add_parser("brackets")
     brackets.add_argument("--out", default=str(_REPO / "schema" / "brackets.json"))
     brackets.add_argument("--jobs", type=int, default=None)

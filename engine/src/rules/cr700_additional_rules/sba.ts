@@ -47,6 +47,7 @@ import { enchantableScope } from "../cr600_spells_and_abilities/targeting";
 import { PlayerScope } from "../match/enums";
 import { chooseProtector, eligibleProtectors, moveObject, removeFromZone } from "../zones";
 import { wantsCommandZone } from "../cr600_spells_and_abilities/replacement";
+import { completeDungeon, finishedDungeons } from "../cr300_card_types/dungeons";
 import { keepsItsPrepareCopy } from "./preparation";
 import { endBrokenPairs, isStillPaired } from "./soulbond";
 
@@ -98,12 +99,14 @@ function onePass(game: Game): boolean {
   checkLegendRule(game, legendChoices);
   checkWorldRule(game, toGraveyard);
   checkRoleRule(game, toGraveyard);
-  // PENDING(rules): CR 704.5t, finished dungeons (cr309_dungeons.py isn't ported).
+  // CR 704.5t: a finished dungeon is removed and completed (CR 309.6).
+  const finishedDungeonList = game.players.some((p) => p.dungeon !== NO_OBJECT) ? finishedDungeons(game, isSourceOnTheStack) : [];
 
   if (
     losers.length + toGraveyard.length + toDestroy.length + toCease.length + toUnattach.length +
       counterAnnihilation.length + legendChoices.length + toSacrifice.length + speedStarts.length +
-      commanderMoves.length ===
+      commanderMoves.length +
+      finishedDungeonList.length ===
     0
   ) {
     return false;
@@ -156,6 +159,7 @@ function onePass(game: Game): boolean {
   for (const obj of toDestroy) destroy(game, obj);
   for (const obj of toSacrifice) sacrifice(game, obj);
   for (const [controller, name, group] of legendChoices) resolveLegendRule(game, controller, name, group);
+  for (const obj of finishedDungeonList) completeDungeon(game, obj);
   for (const [playerId, reason] of losers) playerLoses(game, playerId, reason);
   return true;
 }
