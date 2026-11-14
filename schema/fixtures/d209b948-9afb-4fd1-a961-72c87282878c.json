@@ -1,0 +1,311 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d209b948-9afb-4fd1-a961-72c87282878c",
+ "name": "Kenrith, the Returned King",
+ "card_hash": "f85ba2dc19455ad07b78ece2376761ea",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d209b948-9afb-4fd1-a961-72c87282878c",
+  "name": "Kenrith, the Returned King",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Kenrith, the Returned King",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Noble"
+     ]
+    },
+    "oracle_text": "{R}: All creatures gain trample and haste until end of turn.\n{1}{G}: Put a +1/+1 counter on target creature.\n{2}{W}: Target player gains 5 life.\n{3}{U}: Target player draws a card.\n{4}{B}: Put target creature card from a graveyard onto the battlefield under its owner's control.",
+    "power": "5",
+    "toughness": "5",
+    "colors": 1
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 31,
+  "commander_legal": true,
+  "edhrec_rank": 3104,
+  "scryfall_uri": "https://scryfall.com/card/plst/ELD-303/kenrith-the-returned-king?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d209b948-9afb-4fd1-a961-72c87282878c",
+   "name": "Kenrith, the Returned King",
+   "face": 0,
+   "face_name": "Kenrith, the Returned King",
+   "card_hash": "f85ba2dc19455ad07b78ece2376761ea",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "duration": 1,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "trample",
+         "keyword": "trample"
+        },
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains trample, haste"
+      }
+     ],
+     "text": "{R}: All creatures gain trample and haste until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "{1}{G}: Put a +1/+1 counter on target creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 16,
+           "text": "{G}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 5
+       },
+       "is_targeted": true,
+       "text": "gain life"
+      }
+     ],
+     "text": "{2}{W}: Target player gains 5 life.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 1,
+           "text": "{W}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "draw"
+      }
+     ],
+     "text": "{3}{U}: Target player draws a card.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 3,
+           "text": "{3}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "zones": {
+         "$set": [
+          3
+         ]
+        }
+       },
+       "is_targeted": true,
+       "zone": 2,
+       "text": "put onto the battlefield"
+      }
+     ],
+     "text": "{4}{B}: Put target creature card from a graveyard onto the battlefield under its owner's control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 4,
+           "text": "{4}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 4,
+           "text": "{B}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

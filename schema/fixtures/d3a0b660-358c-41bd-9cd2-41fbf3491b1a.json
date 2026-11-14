@@ -1,0 +1,108 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d3a0b660-358c-41bd-9cd2-41fbf3491b1a",
+ "name": "Birds of Paradise",
+ "card_hash": "d109eeb392999e35826c99ef902656ff",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d3a0b660-358c-41bd-9cd2-41fbf3491b1a",
+  "name": "Birds of Paradise",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Birds of Paradise",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Bird"
+     ]
+    },
+    "oracle_text": "Flying\n{T}: Add one mana of any color.",
+    "power": "0",
+    "toughness": "1",
+    "colors": 16,
+    "keywords": [
+     "Flying"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 35,
+  "scryfall_uri": "https://scryfall.com/card/msc/170/birds-of-paradise?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d3a0b660-358c-41bd-9cd2-41fbf3491b1a",
+   "name": "Birds of Paradise",
+   "face": 0,
+   "face_name": "Birds of Paradise",
+   "card_hash": "d109eeb392999e35826c99ef902656ff",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

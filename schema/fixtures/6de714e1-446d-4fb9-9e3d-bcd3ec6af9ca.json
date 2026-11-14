@@ -1,0 +1,160 @@
+{
+ "ir_version": 2,
+ "oracle_id": "6de714e1-446d-4fb9-9e3d-bcd3ec6af9ca",
+ "name": "Jungle Hollow",
+ "card_hash": "6e949ddd5089380056d83b5a5141be8b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6de714e1-446d-4fb9-9e3d-bcd3ec6af9ca",
+  "name": "Jungle Hollow",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jungle Hollow",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {B} or {G}.",
+    "produced_mana": [
+     "B",
+     "G"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 20,
+  "commander_legal": true,
+  "edhrec_rank": 784,
+  "scryfall_uri": "https://scryfall.com/card/tdm/258/jungle-hollow?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "6de714e1-446d-4fb9-9e3d-bcd3ec6af9ca",
+   "name": "Jungle Hollow",
+   "face": 0,
+   "face_name": "Jungle Hollow",
+   "card_hash": "6e949ddd5089380056d83b5a5141be8b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "When this land enters, you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{B}"
+         ],
+         "colors": 4,
+         "text": "add {B}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{G}"
+         ],
+         "colors": 16,
+         "text": "add {G}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {B} or {G}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

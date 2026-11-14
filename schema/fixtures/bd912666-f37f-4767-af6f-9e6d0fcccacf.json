@@ -1,0 +1,157 @@
+{
+ "ir_version": 2,
+ "oracle_id": "bd912666-f37f-4767-af6f-9e6d0fcccacf",
+ "name": "Karplusan Forest",
+ "card_hash": "3e631a0cac08bd29dacbe9a736eb346a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bd912666-f37f-4767-af6f-9e6d0fcccacf",
+  "name": "Karplusan Forest",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Karplusan Forest",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}: Add {R} or {G}. This land deals 1 damage to you.",
+    "produced_mana": [
+     "C",
+     "G",
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 24,
+  "commander_legal": true,
+  "edhrec_rank": 222,
+  "scryfall_uri": "https://scryfall.com/card/eoc/164/karplusan-forest?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "bd912666-f37f-4767-af6f-9e6d0fcccacf",
+   "name": "Karplusan Forest",
+   "face": 0,
+   "face_name": "Karplusan Forest",
+   "card_hash": "3e631a0cac08bd29dacbe9a736eb346a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{R}"
+         ],
+         "colors": 8,
+         "text": "add {R}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{G}"
+         ],
+         "colors": 16,
+         "text": "add {G}"
+        }
+       ],
+       "text": "add one of several"
+      },
+      {
+       "$": "Effect",
+       "kind": 50,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "{T}: Add {R} or {G}. This land deals 1 damage to you.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

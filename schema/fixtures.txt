@@ -1,0 +1,17 @@
+# Cards the engine's board tests load as real IR (schema/fixtures/), one name
+# per line. Regenerate with `python -m mtgfish.tools.ir_export fixtures`.
+Karplusan Forest
+Lightning Bolt
+Mountain
+Forest
+Jungle Hollow
+Giant Growth
+Birds of Paradise
+Rakdos Signet
+Terminate
+Grizzly Bears
+Command Tower
+Kenrith, the Returned King
+Scoured Barrens
+Llanowar Elves
+Sol Ring

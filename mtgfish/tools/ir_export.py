@@ -405,6 +405,41 @@ def cmd_samples(args) -> int:
     return 0
 
 
+def fixture_names(path: Path) -> list[str]:
+    return [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+
+
+def cmd_fixtures(args) -> int:
+    """schema/fixtures/: the IR of the cards named in schema/fixtures.txt,
+    for the engine's board tests that need real parsed cards."""
+    db = _db()
+    os.environ["MTGFISH_PARSE_STORE"] = "off"
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    for stale in out.glob("*.json"):
+        stale.unlink()
+    missing = []
+    for name in fixture_names(Path(args.names)):
+        card = db.lookup(name)
+        if card is None:
+            missing.append(name)
+            continue
+        (out / f"{card.oracle_id}.json").write_text(
+            json.dumps(_card_document(card), indent=1, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+    print(f"wrote {len(list(out.glob('*.json')))} cards to {out}")
+    if missing:
+        print("not in the card database: " + ", ".join(missing))
+        return 1
+    return 0
+
+
 def cmd_export(args) -> int:
     from concurrent.futures import ProcessPoolExecutor
 
@@ -503,6 +538,10 @@ def main(argv: list[str] | None = None) -> int:
     samples.add_argument("--decks", default=str(_REPO / "bench" / "decks"))
     samples.add_argument("--out", default=str(_REPO / "schema" / "samples"))
     samples.set_defaults(func=cmd_samples)
+    fixtures = sub.add_parser("fixtures")
+    fixtures.add_argument("--names", default=str(_REPO / "schema" / "fixtures.txt"))
+    fixtures.add_argument("--out", default=str(_REPO / "schema" / "fixtures"))
+    fixtures.set_defaults(func=cmd_fixtures)
     dungeons = sub.add_parser("dungeons")
     dungeons.add_argument("--out", default=str(_REPO / "schema" / "dungeons.json"))
     dungeons.add_argument("--engine", default=str(_REPO / "engine" / "src" / "ir"))

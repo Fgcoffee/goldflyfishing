@@ -1,0 +1,66 @@
+{
+ "ir_version": 2,
+ "oracle_id": "14c8f55d-d177-4c25-a931-ebeb9e6062a0",
+ "name": "Grizzly Bears",
+ "card_hash": "6cb00f92b8a0a119915d92998a1d6434",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "14c8f55d-d177-4c25-a931-ebeb9e6062a0",
+  "name": "Grizzly Bears",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Grizzly Bears",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Bear"
+     ]
+    },
+    "oracle_text": "",
+    "power": "2",
+    "toughness": "2",
+    "colors": 16
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 8195,
+  "scryfall_uri": "https://scryfall.com/card/10e/268/grizzly-bears?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "14c8f55d-d177-4c25-a931-ebeb9e6062a0",
+   "name": "Grizzly Bears",
+   "face": 0,
+   "face_name": "Grizzly Bears",
+   "card_hash": "6cb00f92b8a0a119915d92998a1d6434",
+   "fully_read": true,
+   "abilities": [],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

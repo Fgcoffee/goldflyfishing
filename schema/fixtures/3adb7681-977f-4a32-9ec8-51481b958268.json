@@ -1,0 +1,109 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3adb7681-977f-4a32-9ec8-51481b958268",
+ "name": "Rakdos Signet",
+ "card_hash": "711ea0c48d43df3bcc66d2f2ff6f55f5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3adb7681-977f-4a32-9ec8-51481b958268",
+  "name": "Rakdos Signet",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rakdos Signet",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{1}, {T}: Add {B}{R}.",
+    "produced_mana": [
+     "B",
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 12,
+  "commander_legal": true,
+  "edhrec_rank": 166,
+  "scryfall_uri": "https://scryfall.com/card/dsc/250/rakdos-signet?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3adb7681-977f-4a32-9ec8-51481b958268",
+   "name": "Rakdos Signet",
+   "face": 0,
+   "face_name": "Rakdos Signet",
+   "card_hash": "711ea0c48d43df3bcc66d2f2ff6f55f5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{B}",
+        "{R}"
+       ],
+       "colors": 12,
+       "text": "add {B}{R}"
+      }
+     ],
+     "text": "{1}, {T}: Add {B}{R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
