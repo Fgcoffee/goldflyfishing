@@ -14,7 +14,7 @@ import { PlayerScopeValues } from "../../ir";
 import type { Condition, Effect, ObjectFilter, Restriction, TokenSpec, Value } from "../../ir";
 import { Color, Duration, Layout, Supertype, Zone } from "../../kernel/enums";
 import { randint } from "../../kernel/random";
-import { createEmblem, createTokens } from "../cr100_game_concepts/tokens";
+import { copyTokenCard, createEmblem, createTokens } from "../cr100_game_concepts/tokens";
 import { registerOverride, Rule } from "../cr100_game_concepts/rule_overrides";
 import { registerStanding } from "../cr500_turn_structure/restrictions";
 import { event, EventKind, type GameEvent } from "../../kernel/events";
@@ -897,54 +897,6 @@ function copyOriginals(resolution: Resolution, effect: Effect): GameObject[] {
     return obj !== undefined ? [obj] : [];
   }
   return objectsOf(resolution, { ...effect, targets: spec });
-}
-
-/**
- * The card a token copy is built from (cr702_cost_keyword_rules.copy_token_card):
- * the copiable values (CR 707.2), with a power and toughness on the spec as
- * the copy's exception (CR 707.9b). Written here by the rules session; the
- * parser may move it beside `buildTokenCard`.
- */
-function copyTokenCard(game: Game, original: GameObject, spec: TokenSpec): unknown {
-  const chars = copiableCharacteristics(game, original);
-  let power = chars.power;
-  let toughness = chars.toughness;
-  const p = spec.power ?? { $: "Value" as const };
-  const t = spec.toughness ?? { $: "Value" as const };
-  if (!(constantOf(p) === 0) || !(constantOf(t) === 0)) {
-    power = matchHooks().evaluate(game, p, { source: original.id });
-    toughness = matchHooks().evaluate(game, t, { source: original.id });
-  }
-  // The type line's own abilities come back with the type line (CR 305.6).
-  const intrinsic = intrinsicAbilities(chars.typeLine);
-  const abilities = chars.abilities.filter((a) => !intrinsic.some((i) => irEqual(i, a)));
-  const text = (v: number | null): string | null => (v === null ? null : String(v));
-  const face = {
-    name: chars.name,
-    mana_cost: chars.manaCost,
-    has_mana_cost: chars.hasManaCost,
-    type_line: chars.typeLine,
-    oracle_text: chars.text,
-    power: text(power),
-    toughness: text(toughness),
-    loyalty: text(chars.loyalty),
-    defense: text(chars.defense),
-    colors: chars.colors,
-    color_indicator: chars.colors,
-    keywords: [],
-    produced_mana: [],
-  };
-  return {
-    oracle_id: "",
-    name: chars.name,
-    layout: Layout.NORMAL,
-    faces: [face],
-    abilities,
-    face_abilities: [],
-    mana_value: charsManaValue(chars),
-    color_identity: Color.NONE,
-    commander_legal: false,
-  };
 }
 
 /**

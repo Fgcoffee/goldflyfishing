@@ -233,10 +233,7 @@ these points; please export them with these names:
     `combatDamageBySharedType(game, sourceId, controller)` in
     `rules/cr700_additional_rules/combat_damage_record.ts`; `dealDamage`
     records the source on combat damage to a player.
-- **Token copies:** `copy_token_card` (cr702_cost_keyword_rules.py) is
-  in `resolve.ts` as a private `copyTokenCard`, because `syntheticCard` in
-  your tokens.ts isn't exported. Move it beside `buildTokenCard` if you
-  like and I'll import it.
+- Token copies use your `copyTokenCard` now; my private copy is gone.
 - **Legend rule (CR 101.1):** `ruleIsSuspended(game, Rule.LEGEND_RULE, { obj })`
   from `rules/cr100_game_concepts/rule_overrides.ts`; it returns the
   override or null, as `game.rule_is_suspended` does. Please call it in
