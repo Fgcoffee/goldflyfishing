@@ -617,3 +617,16 @@ Also checked: PR #28 (deck-optimisation session, not merged by me) leaves parser
 | F64 | **BLOCK** (crash) | rules | Every VOTE effect raises TypeError in Python: `_do_vote` calls `game.apnap_order(game.next_player(...))`, but `apnap_order` takes no argument. The TS port guards it with the evident intent (turn order from the next player). | Reported by the rules session from the port (status file, 14 Nov). |
 
 Also deferred: karoo lands are always sacrificed.
+
+## Port milestones 2-4 (2026-11-14): PR #39, shared branch @ e1cda56, merged as 2ae64d6
+
+Checks on e1cda56:
+- Python: 3360 passed.
+- Engine: 809 tests. Webapp: 29 tests. Typecheck green on both.
+- The Docker image was built and run locally:
+  - the IR export wrote 38,800 cards in 89 s;
+  - `/healthz` and `/api/ir` are fine;
+  - the Node replay CLI runs.
+- 40 bench games through `play()`: 0 crashes, every game decided.
+
+The image build first failed at the IR export: `bracket.py` read the repository's `cache/`, fixed in e1cda56. F63, the hybrid-cost crash, is open; the parser is fixing it.
