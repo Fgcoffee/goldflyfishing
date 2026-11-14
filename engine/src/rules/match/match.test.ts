@@ -8,6 +8,7 @@ import { createObject, turnHistoryCountKey, turnHistoryKey } from "../../kernel/
 import { addCounters } from "../../kernel/gameobject";
 import { Comparison, ConditionKind, ControllerRelation, PlayerScope, ValueKind } from "./enums";
 import { evaluate, find, holds, installMatch, matches, resolvePlayers } from "./index";
+import { candidatesFor } from "../cr600_spells_and_abilities/targeting";
 import { matchHooks } from "../../kernel/hooks";
 
 const value = (fields: Partial<Value>): Value => ({ $: "Value", ...fields }) as Value;
@@ -70,6 +71,18 @@ describe("any_of", () => {
     expect(found).toContain(forest.id);
     expect(found).not.toContain(anthem.id);
     expect(found).not.toContain(theirBears.id);
+  });
+
+  it("counting and targeting with a disjunction (test_object_filter_any_of.py)", () => {
+    const board = new Board();
+    installMatch();
+    const bears = board.play("Grizzly Bears", 0);
+    const forest = board.play("Forest", 0);
+    const anthem = board.play("Glorious Anthem", 0);
+    const either = filter({ any_of: [filter({ types_all: CardType.CREATURE }), filter({ subtypes_any: ["Forest"] })] } as Partial<ObjectFilter>);
+    expect(evaluate(board.game, value({ kind: ValueKind.COUNT, filter: either }), { controller: 0 })).toBe(2);
+    const targeted = { $: "Effect", kind: 0, targets: either, is_targeted: true } as never;
+    expect(new Set(candidatesFor(board.game, anthem, targeted, 0))).toEqual(new Set([bears.id, forest.id]));
   });
 });
 
