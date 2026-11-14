@@ -1,0 +1,78 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a9d288b8-cdc1-4e55-a0c9-d6edfc95e65d",
+ "name": "Shock",
+ "card_hash": "c205c13e5457f7d74b679abfc9a50e61",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a9d288b8-cdc1-4e55-a0c9-d6edfc95e65d",
+  "name": "Shock",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Shock",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Shock deals 2 damage to any target.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 2213,
+  "scryfall_uri": "https://scryfall.com/card/msc/809/shock?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a9d288b8-cdc1-4e55-a0c9-d6edfc95e65d",
+   "name": "Shock",
+   "face": 0,
+   "face_name": "Shock",
+   "card_hash": "c205c13e5457f7d74b679abfc9a50e61",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 38,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "this deals 2 damage to any target."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

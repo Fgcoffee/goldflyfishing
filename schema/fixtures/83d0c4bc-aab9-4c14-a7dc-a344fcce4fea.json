@@ -1,0 +1,162 @@
+{
+ "ir_version": 2,
+ "oracle_id": "83d0c4bc-aab9-4c14-a7dc-a344fcce4fea",
+ "name": "Wretched Gryff",
+ "card_hash": "64a9f32665e708877ef4065d0b7a0250",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "83d0c4bc-aab9-4c14-a7dc-a344fcce4fea",
+  "name": "Wretched Gryff",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Wretched Gryff",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 7,
+       "text": "{7}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Eldrazi",
+      "Hippogriff"
+     ]
+    },
+    "oracle_text": "Emerge {5}{U} (You may cast this spell by sacrificing a creature and paying the emerge cost reduced by that creature's mana value.)\nWhen you cast this spell, draw a card.\nFlying",
+    "power": "3",
+    "toughness": "4",
+    "keywords": [
+     "Flying",
+     "Emerge"
+    ]
+   }
+  ],
+  "mana_value": 7,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 21211,
+  "scryfall_uri": "https://scryfall.com/card/inr/7/wretched-gryff?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "83d0c4bc-aab9-4c14-a7dc-a344fcce4fea",
+   "name": "Wretched Gryff",
+   "face": 0,
+   "face_name": "Wretched Gryff",
+   "card_hash": "64a9f32665e708877ef4065d0b7a0250",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Emerge {5}{U}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Emerge",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 5,
+            "text": "{5}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 2,
+            "text": "{U}"
+           }
+          ]
+         }
+        },
+        {
+         "$": "CostComponent",
+         "kind": 10,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 1
+         },
+         "text": "sacrifice a creature"
+        }
+       ]
+      },
+      "keyword": "Emerge",
+      "text": "Emerge {5}{U}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "When you cast this spell, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,71 @@
+{
+ "ir_version": 2,
+ "oracle_id": "385c1208-bfea-44e2-b236-4f38bc90db9f",
+ "name": "Gladecover Scout",
+ "card_hash": "99975d47672b5a46b5876c3a64d04af8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "385c1208-bfea-44e2-b236-4f38bc90db9f",
+  "name": "Gladecover Scout",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Gladecover Scout",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elf",
+      "Scout"
+     ]
+    },
+    "oracle_text": "Hexproof (This creature can't be the target of spells or abilities your opponents control.)",
+    "power": "1",
+    "toughness": "1",
+    "colors": 16,
+    "keywords": [
+     "Hexproof"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 14038,
+  "scryfall_uri": "https://scryfall.com/card/m14/176/gladecover-scout?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "385c1208-bfea-44e2-b236-4f38bc90db9f",
+   "name": "Gladecover Scout",
+   "face": 0,
+   "face_name": "Gladecover Scout",
+   "card_hash": "99975d47672b5a46b5876c3a64d04af8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Hexproof",
+     "keyword": "Hexproof"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

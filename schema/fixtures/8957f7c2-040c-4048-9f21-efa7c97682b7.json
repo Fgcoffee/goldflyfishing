@@ -1,0 +1,83 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8957f7c2-040c-4048-9f21-efa7c97682b7",
+ "name": "Ambush Viper",
+ "card_hash": "20365f7b3a77e88e3894fcd594f754fa",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8957f7c2-040c-4048-9f21-efa7c97682b7",
+  "name": "Ambush Viper",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ambush Viper",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Snake"
+     ]
+    },
+    "oracle_text": "Flash\nDeathtouch",
+    "power": "2",
+    "toughness": "1",
+    "colors": 16,
+    "keywords": [
+     "Flash",
+     "Deathtouch"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 4813,
+  "scryfall_uri": "https://scryfall.com/card/inr/186/ambush-viper?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8957f7c2-040c-4048-9f21-efa7c97682b7",
+   "name": "Ambush Viper",
+   "face": 0,
+   "face_name": "Ambush Viper",
+   "card_hash": "20365f7b3a77e88e3894fcd594f754fa",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flash",
+     "keyword": "Flash"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Deathtouch",
+     "keyword": "Deathtouch"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
