@@ -176,7 +176,7 @@ The auditor moved three more items to me (18f9e4f): replacements, commander rule
   - Also exported: `ReplacementKind`, `ReplacementEffect` (camelCase fields), `newReplacementEffect`, `applyReplacements`, `staticReplacements`, `clearExpired`, `hasReplacements`, `commanderZoneReplacement`, `wantsCommandZone`, `tokenSpecMatches`, `amplifyReveals`.
 - **Hooks:** importing the module installs `hasReplacements`, `replace`, `commanderZoneReplacement` and `applySelfEntryReplacements` into your `replacement_hooks.ts`. Your existing `zones.ts`, `actions.ts` and `tokens.ts` calls go through those unchanged.
   - Python's `Game.static_replacements_cache` is a per-game cache inside the module, so `Game` needs no new fields.
-  - **`play()` (or the engine entry point) must import `rules/match` and `rules/cr600_spells_and_abilities/replacement` once**, or the hooks stay at their do-nothing defaults outside tests.
+  - `play()` imports `rules/match` and `replacement` (50fcbfb), so the hooks are live in real games.
   - `junkyardReplacement` and the `aura*` hooks are left as they are: the junkyard comes with Attractions (mine, CR 700), and the Aura ones look like yours (cr303).
 - `preparation.ts` ports cr722 (`becomePrepared`, `keepsItsPrepareCopy`).
 - 18 Vitest cases: static and registered replacements, doublers (CR 614.5), prevention and shields, damage modification, redirect-on-death, CR 903.9b, taplands, untapped-beats-tapped, enters with counters.
@@ -209,6 +209,20 @@ The auditor moved three more items to me (18f9e4f): replacements, commander rule
   - No Python game-time code calls them except `cr708_face_down._ward_two` (Ward {2} for disguise and cloak), which your `layers.ts` already builds by hand.
   - Token keywords become bare keyword abilities, as in Python (`tokens.ts`).
   - So neither module is ported.
+
+## Designations (928b7e9) and dungeons (e25664c)
+
+- **Designations** (`designations.ts`, replacing the placeholder in place):
+  - the monarch, the initiative, day and night, rad counters;
+  - `takeInitiative` is published for your TAKE_INITIATIVE executor;
+  - `combatDamageToMonarch(game, victim, attackerController)` and `combatDamageToInitiativeHolder(game, victim, attackerControllers)` are for your combat to call when combat damage hits a player.
+  - **The initiative's inherent triggers are queued in `game.pendingTriggers` as `{ source: NO_OBJECT, ability, event, controller }`.** That's Python's `PendingTrigger(source, ability, event, controller)`, camelCased. Please give your triggers port's `PendingTrigger` that shape, or tell me yours and I'll match it.
+- **Dungeons** (`rules/cr300_card_types/dungeons.ts`):
+  - `venture(game, player, quality)` is published for your VENTURE executor;
+  - `completeDungeon`, `currentDungeon` and `finishedDungeons`;
+  - `sba.ts` now does CR 704.5t.
+  - Python parses dungeon room effects at game time from the card database, so I export the dungeons as IR instead. `ir_export dungeons` writes `schema/dungeons.json` and the generated `engine/src/ir/dungeons.ts`, and a Python test keeps both current. The engine needs no card database for dungeons.
+  - Room abilities trigger on VENTURE_MARKER_MOVED (amount = room + 1), from the command zone, with `trigger.room` set: your triggers port matches the room there, as Python does.
 
 ## Next
 
