@@ -159,6 +159,11 @@ export interface Game {
   lastLoopTurn: number;
   loopDraw: boolean;
   suppressTriggers: boolean;
+  /** CR 603.8: state triggers whose condition is true and already triggered ("object|ability index"). */
+  armedStateTriggers: Set<string>;
+  /** The triggers module's index of watching abilities, valid while `triggerIndexKey` matches. */
+  triggerIndex: unknown;
+  triggerIndexKey: string;
 }
 
 export interface NewGameOptions {
@@ -242,6 +247,9 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     lastLoopTurn: -1,
     loopDraw: false,
     suppressTriggers: false,
+    armedStateTriggers: new Set(),
+    triggerIndex: null,
+    triggerIndexKey: "",
   };
 }
 
@@ -284,6 +292,9 @@ export function cloneGame(game: Game): Game {
     turnHistory: new Map(game.turnHistory),
     departedInBatch: game.departedInBatch.slice(),
     triggeredOnceThisTurn: new Set(game.triggeredOnceThisTurn),
+    armedStateTriggers: new Set(game.armedStateTriggers),
+    triggerIndex: null,
+    triggerIndexKey: "",
     standingPermissions: cloneRecords(game.standingPermissions),
     standingRestrictions: cloneRecords(game.standingRestrictions),
     standingRequirements: cloneRecords(game.standingRequirements),
