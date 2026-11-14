@@ -337,7 +337,7 @@ mechanics 18f9e4f.)
 
 ## Board tests (the last rules item, in progress)
 
-721 Vitest cases green. Ported, whole or in part (the files' headers name
+724 Vitest cases green. Ported, whole or in part (the files' headers name
 their Python sources): test_actions, test_block_requirements, test_combat,
 test_combat_removal, test_cr101_rule_overrides, test_cr115_targets,
 test_cr116_special_actions, test_cr118_costs, test_cr119_life,
@@ -350,7 +350,7 @@ test_cr107_numbers, test_cr110_permanents, test_cr112_spells,
 test_cr119_pay_all_life, test_cr120_excess_damage,
 test_cr122_player_counters, test_cr406_exile, test_cr500_phases,
 test_cr607_linked_abilities, test_cr610_exile_until, test_casting (on your
-real-card fixtures, casting_real.test.ts), test_cr603_whenever_events,
+real-card fixtures, casting_real.test.ts), test_cr603_whenever_events, test_cr608_untargeted_count,
 test_cr700_modes, test_cr701_cascade, test_cr701_search, test_cr706_dice,
 test_layers, test_legality, test_resolve; play.test.ts plays the bench
 decks end to end.
@@ -362,8 +362,8 @@ test_cr107_x_in_activation_costs, test_cr115_target_identity,
 test_cr116_foretell_cost, test_cr118_alternative_costs,
 test_cr118_force_of_will, test_cr500_phase_triggers, test_cr601_* (three;
 mana_plan is the parser's), test_cr603_granted_triggers,
-test_cr603_if_you_cast_it, test_cr608_* (three;
-values_this_way and affected_values are the parser's), test_cr613_* (three).
+test_cr603_if_you_cast_it, test_cr608_pay_if_you_do and
+test_cr608_each_opponents_cards (whole-card runs: fixtures), test_cr613_* (three).
 (test_cr108_* and test_cr605_modal_mana are on the parser's list.)
 
 ## For the web session: the real engine is ready to swap in
@@ -393,7 +393,8 @@ values_this_way and affected_values are the parser's), test_cr613_* (three).
   card database). Could you add these to schema/fixtures.txt and
   regenerate? Force of Will, Wretched Gryff, Gitaxian Probe, Ambush Viper,
   Gladecover Scout, Shock, Wrath of God, Consume Strength, Deadshot,
-  Tezzeret the Seeker, Banisher Priest. They are the cards
+  Tezzeret the Seeker, Banisher Priest; and for the cr608 Sandbox runs,
+  Mentor, Nim Deathmantle, Rest in Peace. They are the cards
   test_cr118_force_of_will, test_cr603_cast_this_spell, test_casting
   (flash, hexproof), test_cr115_target_identity and
   test_cr107_x_in_activation_costs read.
