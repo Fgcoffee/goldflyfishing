@@ -1,0 +1,76 @@
+// End to end on real card IR: the four bench decks from schema/samples,
+// played through `play(setup, index, seed)` by agents that play lands, cast
+// spells and attack. Not a Python port: the gate for a full game.
+/// <reference types="vite/client" />
+import { describe, expect, it } from "vitest";
+import type { CardDocument } from "../../src/ir";
+import { EventKind } from "../../src/kernel/events";
+import type { Game } from "../../src/kernel/game";
+import type { GameObject } from "../../src/kernel/gameobject";
+import { seedFor } from "../../src/kernel/random";
+import { ActionKind, PassingAgent, type Action, type Agent } from "../../src/rules/cr100_game_concepts/priority";
+import { play, playGame, rulesEngine } from "../../src/rules/play";
+import type { DeckSpec, RunSetup } from "../../src/sim/runner";
+
+// The bench decks' cards and lists, exported by `python -m mtgfish.tools.ir_export samples`.
+const FILES = import.meta.glob("../../../schema/samples/*.json", { eager: true, import: "default" });
+
+function loadSetup(maxRounds: number): RunSetup {
+  const cards: Record<string, CardDocument> = {};
+  let decks: Record<string, DeckSpec> = {};
+  for (const [path, doc] of Object.entries(FILES)) {
+    if (path.endsWith("/decks.json")) decks = doc as Record<string, DeckSpec>;
+    else cards[(doc as CardDocument).oracle_id] = doc as CardDocument;
+  }
+  return { decks: ["aggro", "combo", "control", "stax"].map((k) => decks[k]!), cards, runSeed: 7, maxRounds };
+}
+
+/** Plays a land or casts a spell whenever it can, and attacks the next player with everything. */
+function eager(): Agent {
+  return Object.assign(new PassingAgent(), {
+    chooseAction: (_game: Game, _player: number, legal: readonly Action[]): Action =>
+      legal.find((a) => a.kind === ActionKind.PLAY_LAND) ?? legal.find((a) => a.kind === ActionKind.CAST_SPELL) ?? legal[0]!,
+    declareAttackers: (game: Game, player: number, candidates: readonly GameObject[]) => {
+      const target = game.players.find((p) => p.id !== player && !p.hasLost)?.id;
+      return new Map(target === undefined ? [] : candidates.map((c) => [c.id, target] as const));
+    },
+  });
+}
+
+describe("play(setup, index, seed) on the bench decks", () => {
+  const setup = loadSetup(8);
+
+  it("plays games to the end without crashing, and a seed always gives the same game", () => {
+    for (let index = 0; index < 4; index += 1) {
+      const seed = seedFor(setup.runSeed, index);
+      const first = play(setup, index, seed, { agentFor: eager });
+      const again = play(setup, index, seed, { agentFor: eager });
+      expect(again.digest).toBe(first.digest);
+      expect(first.turns).toBeGreaterThan(0);
+      expect(first.openingHand).toHaveLength(7);
+    }
+  });
+
+  it("different seeds give different games", () => {
+    const a = play(setup, 0, 1, { agentFor: eager });
+    const b = play(setup, 0, 2, { agentFor: eager });
+    expect(a.digest).not.toBe(b.digest);
+  });
+
+  it("cards are cast and creatures attack", () => {
+    const seen = new Map<number, number>();
+    const { record } = playGame(setup, 0, seedFor(setup.runSeed, 0), {
+      agentFor: eager,
+      watch: (_g, e) => void seen.set(e.kind, (seen.get(e.kind) ?? 0) + 1),
+    });
+    expect(record.cast.length).toBeGreaterThan(3);
+    expect(seen.get(EventKind.ATTACKS) ?? 0).toBeGreaterThan(0);
+    expect(seen.get(EventKind.COMBAT_DAMAGE_DEALT) ?? 0).toBeGreaterThan(0);
+  });
+
+  it("the runner's engine passes everyone by default", () => {
+    const record = rulesEngine.play(setup, 0, 3);
+    expect(record.winReason).toBe("STALL_OUT");
+    expect(record.winner).toBeNull();
+  });
+});
