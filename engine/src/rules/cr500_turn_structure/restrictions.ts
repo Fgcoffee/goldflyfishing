@@ -7,17 +7,19 @@
  * `prohibited`, and a new prohibition is data, not code. `permitted` is the
  * mirror image: "you may cast sorceries as though they had flash".
  *
- * PORT: the blocking requirements half of the Python module (Requirement,
- * BlockObligation, the CR 509.1c search) comes with combat.
+ * The requirements half (Requirement, BlockObligation, the CR 509.1c
+ * search) is at the end.
  */
 
 import { ActValues, PlayerScopeValues } from "../../ir";
-import type { Ability, Effect, ObjectFilter, Restriction } from "../../ir";
-import { Zone } from "../../kernel/enums";
+import type { Ability, Condition, Effect, ObjectFilter, Restriction } from "../../ir";
+import { CardType, Zone } from "../../kernel/enums";
 import type { Game } from "../../kernel/game";
 import type { GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
-import { NO_OBJECT, NO_PLAYER, type PlayerId } from "../../kernel/ids";
+import { NO_OBJECT, NO_PLAYER, type ObjectId, type PlayerId } from "../../kernel/ids";
+import { hasKeyword } from "../cr200_parts_of_a_card/characteristics";
+import * as combatModule from "./combat";
 import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
 import { flag, ir, list, num, numSet } from "../ir_read";
 
@@ -225,4 +227,298 @@ export function registerStanding(game: Game, restriction: Restriction): Restrict
   game.standingRestrictions.push(entry);
   game.restrictionsCache = null;
   return entry;
+}
+
+// -- requirements (CR 508.1e, 509.1c)
+//
+// A requirement is not a prohibition with the sign flipped. A prohibition is
+// answered one act at a time and CR 101.2 makes it absolute; a requirement
+// is answered about the declaration as a whole: CR 509.1c makes a block
+// legal only if no other legal block obeys more requirements. Hence a
+// search, not a loop.
+
+/** The engine's spellings of the blocking requirements (keyword strings, not Acts). */
+export const BLOCKS_IF_ABLE = "Blocks each combat if able";
+export const MUST_BE_BLOCKED = "Must be blocked if able";
+export const BLOCKED_BY_ALL_ABLE = "All creatures able to block it do so";
+
+/** "This creature" - the requirement's own source, for the other participant. */
+export const SOURCE_OBJECT: ObjectFilter = { $: "ObjectFilter", source_only: true };
+
+/** Nothing in CR 509.1 caps how many may block one attacker. */
+const UNBOUNDED = 1 << 30;
+
+/** Partial declarations the CR 509.1c search looks at before settling for its best. */
+const SEARCH_BUDGET = 200_000;
+
+/**
+ * One "must" in force (CR 508.1e, 509.1c). `subject` is who is obliged (the
+ * blocker for BLOCK, the attacker for BE_BLOCKED; null: the source);
+ * `counterpart` the other participant (null: any). One requirement per
+ * object matching `subject`: that is how the rules count.
+ */
+export interface Requirement {
+  readonly act: Act;
+  readonly subject: ObjectFilter | null;
+  readonly counterpart: ObjectFilter | null;
+  readonly source: ObjectId;
+  readonly controller: PlayerId;
+  readonly condition: Condition;
+  readonly text: string;
+  /** A standing requirement's Duration and the turn it began (CR 611.2b). */
+  readonly duration: number;
+  readonly createdTurn: number;
+}
+
+export function requirement(act: Act, fields: Partial<Omit<Requirement, "act">> = {}): Requirement {
+  return {
+    act,
+    subject: null,
+    counterpart: null,
+    source: NO_OBJECT,
+    controller: NO_PLAYER,
+    condition: { $: "Condition" },
+    text: "",
+    duration: 0,
+    createdTurn: 0,
+    ...fields,
+  };
+}
+
+/** Keyword ability -> the requirement it creates. */
+const BLOCK_REQUIREMENT_KEYWORDS: ReadonlyMap<string, Requirement> = new Map([
+  [BLOCKS_IF_ABLE.toLowerCase(), requirement(Act.BLOCK, { text: "blocks each combat if able" })],
+  [MUST_BE_BLOCKED.toLowerCase(), requirement(Act.BE_BLOCKED, { text: "must be blocked if able" })],
+  [
+    BLOCKED_BY_ALL_ABLE.toLowerCase(),
+    requirement(Act.BLOCK, {
+      subject: { $: "ObjectFilter", types_all: CardType.CREATURE as never },
+      counterpart: SOURCE_OBJECT,
+      text: "all creatures able to block it do so",
+    }),
+  ],
+]);
+
+/**
+ * One requirement resolved against the creatures in combat: the pairs that
+ * would obey it; an empty list means "any".
+ */
+export interface BlockObligation {
+  readonly blockers: readonly ObjectId[];
+  readonly attackers: readonly ObjectId[];
+  readonly text: string;
+}
+
+type Assignment = ReadonlyMap<ObjectId, ObjectId>;
+
+/** Whether a blocker -> attacker declaration obeys this. */
+export function obligationSatisfied(o: BlockObligation, assignment: Assignment): boolean {
+  for (const [blocker, attacker] of assignment) {
+    if (o.blockers.length > 0 && !o.blockers.includes(blocker)) continue;
+    if (o.attackers.length > 0 && !o.attackers.includes(attacker)) continue;
+    return true;
+  }
+  return false;
+}
+
+/** Whether any of `blockers` could still obey it (the search's only pruning). */
+function obligationReachable(o: BlockObligation, blockers: readonly ObjectId[], options: ReadonlyMap<ObjectId, readonly ObjectId[]>): boolean {
+  for (const blocker of blockers) {
+    if (o.blockers.length > 0 && !o.blockers.includes(blocker)) continue;
+    for (const attacker of options.get(blocker) ?? []) {
+      if (o.attackers.length === 0 || o.attackers.includes(attacker)) return true;
+    }
+  }
+  return false;
+}
+
+/** Every "must" in force, rebuilt from live permanents (CR 611.3), plus standing ones. */
+export function requirements(game: Game): Requirement[] {
+  const out = (game.standingRequirements as Requirement[]).slice();
+  for (const objectId of game.battlefield.slice()) {
+    const obj = game.objects.get(objectId);
+    if (obj === undefined || obj.phasedOut) continue;
+    for (const ability of characteristicsOf(game, obj).abilities) {
+      if (!ability.keyword) continue;
+      const template = BLOCK_REQUIREMENT_KEYWORDS.get(ability.keyword.trim().toLowerCase());
+      if (template === undefined) continue;
+      out.push({ ...template, source: obj.id, controller: obj.controller, condition: ability.static_condition ?? { $: "Condition" } });
+    }
+  }
+  return out;
+}
+
+/** Which of `pool` a filter names, or null for "unsaid". */
+function named(game: Game, pool: readonly GameObject[], spec: ObjectFilter | null, r: Requirement): ObjectId[] | null {
+  if (spec === null) return null;
+  const hooks = matchHooks();
+  return pool.filter((obj) => hooks.matches(game, obj, spec, { source: r.source, controller: r.controller })).map((obj) => obj.id);
+}
+
+/** The combat as the requirements half reads it. */
+interface CombatAttacks {
+  readonly attacking: ReadonlyMap<ObjectId, PlayerId>;
+}
+
+function attackersOf(game: Game, combat: CombatAttacks, defender: PlayerId): GameObject[] {
+  return [...combat.attacking.keys()]
+    .sort((a, b) => a - b)
+    .filter((id) => combat.attacking.get(id) === defender && game.objects.has(id))
+    .map((id) => game.objects.get(id)!);
+}
+
+/**
+ * The requirements CR 509.1c counts, for one defending player. One whose
+ * counterpart names nothing in this combat is dropped: nothing obeys it.
+ */
+export function blockObligations(game: Game, combat: CombatAttacks, defender: PlayerId, candidates: readonly GameObject[]): BlockObligation[] {
+  const attackers = attackersOf(game, combat, defender);
+  if (attackers.length === 0 || candidates.length === 0) return [];
+  const hooks = matchHooks();
+  const out: BlockObligation[] = [];
+  for (const r of requirements(game)) {
+    if (r.act !== Act.BLOCK && r.act !== Act.BE_BLOCKED) continue;
+    if (!conditionAlways(r.condition) && !hooks.holds(game, r.condition, { source: r.source, controller: r.controller })) continue;
+    const [subjectPool, otherPool] = r.act === Act.BLOCK ? [candidates, attackers] : [attackers, candidates];
+    let subjects = named(game, subjectPool, r.subject, r);
+    if (subjects === null) subjects = subjectPool.filter((obj) => obj.id === r.source).map((obj) => obj.id);
+    const others = named(game, otherPool, r.counterpart, r);
+    if (others !== null && others.length === 0) continue;
+    for (const subjectId of subjects) {
+      out.push(
+        r.act === Act.BLOCK
+          ? { blockers: [subjectId], attackers: others ?? [], text: r.text }
+          : { blockers: others ?? [], attackers: [subjectId], text: r.text },
+      );
+    }
+  }
+  return out;
+}
+
+const conditionAlways = (c: Condition | null | undefined): boolean => c == null || num(c.kind) === ir("ConditionKind.ALWAYS");
+
+/**
+ * Apply CR 509.1b-c to a proposed declaration of blockers: obey every
+ * restriction and the most requirements any legal declaration could,
+ * keeping the defender's own choices where compatible. With no requirements
+ * the proposal comes back untouched. A creature that can't block unless a
+ * cost is paid is treated as one that does not block.
+ */
+export function enforceBlockRequirements(
+  game: Game,
+  combat: CombatAttacks,
+  defender: PlayerId,
+  candidates: readonly GameObject[],
+  proposal: ReadonlyMap<ObjectId, readonly ObjectId[]>,
+): Map<ObjectId, readonly ObjectId[]> {
+  const blockers = candidates.filter((obj) => obj.controller === defender && combatModule.canBlockAtAll(game, obj));
+  const obligations = blockObligations(game, combat, defender, blockers);
+  if (obligations.length === 0) return new Map(proposal);
+
+  const attackers = attackersOf(game, combat, defender);
+  // CR 509.1b: every pair the declaration may use, restrictions applied.
+  const options = new Map<ObjectId, ObjectId[]>();
+  for (const blocker of blockers) {
+    const legal = attackers.filter((attacker) => combatModule.canBlock(game, blocker, attacker)).map((a) => a.id);
+    if (legal.length > 0) options.set(blocker.id, legal);
+  }
+  const bounds = new Map(attackers.map((attacker) => [attacker.id, blockCountBounds(game, attacker)] as const));
+  const preferred = new Map<ObjectId, ObjectId | null>();
+  for (const [blockerId, legal] of options) {
+    preferred.set(blockerId, (proposal.get(blockerId) ?? []).find((a) => legal.includes(a)) ?? null);
+  }
+  const assignment = maximiseBlocks(obligations, options, bounds, preferred);
+  const result = new Map<ObjectId, readonly ObjectId[]>();
+  for (const blockerId of [...assignment.keys()].sort((a, b) => a - b)) {
+    const attackerId = assignment.get(blockerId)!;
+    const declared = (proposal.get(blockerId) ?? []).slice();
+    // A multiple block declared through some effect: left as declared.
+    result.set(blockerId, declared.includes(attackerId) && declared.length > 1 ? declared : [attackerId]);
+  }
+  return result;
+}
+
+/** How many may block this attacker at once: menace needs two (CR 702.111b). */
+function blockCountBounds(game: Game, attacker: GameObject): [number, number] {
+  return [hasKeyword(characteristicsOf(game, attacker), "Menace") ? 2 : 1, UNBOUNDED];
+}
+
+/** CR 509.1b, applied to a whole declaration. */
+function blocksAreLegal(assignment: Assignment, bounds: ReadonlyMap<ObjectId, [number, number]>): boolean {
+  const counts = new Map<ObjectId, number>();
+  for (const attackerId of assignment.values()) counts.set(attackerId, (counts.get(attackerId) ?? 0) + 1);
+  for (const [attackerId, count] of counts) {
+    const [low, high] = bounds.get(attackerId) ?? [1, UNBOUNDED];
+    if (!(low <= count && count <= high)) return false;
+  }
+  return true;
+}
+
+/**
+ * The CR 509.1c maximisation, as a bounded search: creatures in the order
+ * the defender's declaration suggests, branches that cannot beat the best
+ * abandoned, the whole capped (the best found is still legal).
+ */
+function maximiseBlocks(
+  obligations: readonly BlockObligation[],
+  options: ReadonlyMap<ObjectId, readonly ObjectId[]>,
+  bounds: ReadonlyMap<ObjectId, [number, number]>,
+  preferred: ReadonlyMap<ObjectId, ObjectId | null>,
+): Map<ObjectId, ObjectId> {
+  const order = [...options.keys()].sort((a, b) => {
+    const pa = (preferred.get(a) ?? null) === null ? 1 : 0;
+    const pb = (preferred.get(b) ?? null) === null ? 1 : 0;
+    return pa - pb || a - b;
+  });
+  const total = obligations.length;
+  let best = new Map<ObjectId, ObjectId>();
+  let bestCount = 0;
+  if (blocksAreLegal(new Map(), bounds)) bestCount = countObeyed(obligations, new Map());
+  const assignment = new Map<ObjectId, ObjectId>();
+  let budget = SEARCH_BUDGET;
+
+  const walk = (index: number): void => {
+    if (budget <= 0 || bestCount >= total) return;
+    budget -= 1;
+    if (index === order.length) {
+      if (!blocksAreLegal(assignment, bounds)) return;
+      const obeyed = countObeyed(obligations, assignment);
+      if (obeyed > bestCount) {
+        bestCount = obeyed;
+        best = new Map(assignment);
+      }
+      return;
+    }
+    let ceiling = countObeyed(obligations, assignment);
+    const free = order.slice(index);
+    for (const o of obligations) {
+      if (obligationSatisfied(o, assignment)) continue;
+      if (obligationReachable(o, free, options)) ceiling += 1;
+    }
+    if (ceiling <= bestCount) return;
+    const blockerId = order[index]!;
+    const chosen = preferred.get(blockerId) ?? null;
+    const choices: (ObjectId | null)[] = [];
+    if (chosen !== null) choices.push(chosen);
+    choices.push(null);
+    for (const attackerId of options.get(blockerId)!) if (attackerId !== chosen) choices.push(attackerId);
+    for (const choice of choices) {
+      if (choice === null) assignment.delete(blockerId);
+      else assignment.set(blockerId, choice);
+      walk(index + 1);
+      assignment.delete(blockerId);
+    }
+  };
+  walk(0);
+  return best;
+}
+
+function countObeyed(obligations: readonly BlockObligation[], assignment: Assignment): number {
+  return obligations.filter((o) => obligationSatisfied(o, assignment)).length;
+}
+
+/** A requirement from a resolved spell that outlives its source ("creatures block this turn if able"). */
+export function registerStandingRequirement(game: Game, r: Requirement): Requirement {
+  game.standingRequirements.push(r);
+  return r;
 }

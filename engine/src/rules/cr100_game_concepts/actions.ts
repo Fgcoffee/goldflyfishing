@@ -27,7 +27,7 @@ import { lifeChangeProhibited } from "../cr600_spells_and_abilities/cost_checks"
 import { playerProtectedFrom, protectedFrom } from "./protection";
 import { recordCombatDamageSource } from "../cr700_additional_rules/combat_damage_record";
 import { commanderIdentity } from "../zones";
-import type { Combat } from "../cr500_turn_structure/combat";
+import { combatRemove, type Combat } from "../cr500_turn_structure/combat";
 import { hasKeyword, hasType, keywordAbilities, type Characteristics } from "../cr200_parts_of_a_card/characteristics";
 import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
 import { initiativeLeftTheGame, monarchLeftTheGame } from "../cr700_additional_rules/designations";
@@ -295,13 +295,24 @@ export function isIndestructible(game: Game, obj: GameObject): boolean {
 }
 
 /**
- * CR 506.4: remove a permanent from combat. PORT: against the placeholder
- * Combat (attackers only); the full `combat.remove` comes with combat.
+ * CR 506.4: remove a permanent from combat - attacking, blocking, blocked,
+ * or being attacked - and recompute the board ("attacking creatures get
+ * +1/+0" stops applying at once).
  */
 export function removeFromCombat(game: Game, obj: GameObject): void {
   const combat = game.combat as Combat | null;
-  if (combat == null || !combat.attacking.has(obj.id)) return;
-  combat.attacking.delete(obj.id);
+  if (combat == null) return;
+  if (
+    !(
+      combat.attacking.has(obj.id) ||
+      combat.blocking.has(obj.id) ||
+      [...combat.attackingPermanent.values()].includes(obj.id) ||
+      combat.wasBlocked.has(obj.id)
+    )
+  ) {
+    return;
+  }
+  combatRemove(combat, obj.id);
   logRecord(game, `${objectText(obj, characteristicsOf(game, obj).name)} is removed from combat`, { kind: "combat" });
   invalidateAllCharacteristics(game);
 }
