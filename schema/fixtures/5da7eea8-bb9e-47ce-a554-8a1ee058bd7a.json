@@ -1,0 +1,119 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5da7eea8-bb9e-47ce-a554-8a1ee058bd7a",
+ "name": "Beast Whisperer",
+ "card_hash": "c907133089a6d6eb9f573a705c0eb378",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5da7eea8-bb9e-47ce-a554-8a1ee058bd7a",
+  "name": "Beast Whisperer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Beast Whisperer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elf",
+      "Druid"
+     ]
+    },
+    "oracle_text": "Whenever you cast a creature spell, draw a card.",
+    "power": "2",
+    "toughness": "3",
+    "colors": 16
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 213,
+  "scryfall_uri": "https://scryfall.com/card/clu/158/beast-whisperer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5da7eea8-bb9e-47ce-a554-8a1ee058bd7a",
+   "name": "Beast Whisperer",
+   "face": 0,
+   "face_name": "Beast Whisperer",
+   "card_hash": "c907133089a6d6eb9f573a705c0eb378",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever you cast a creature spell, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

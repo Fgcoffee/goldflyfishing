@@ -29,3 +29,6 @@ Consume Strength
 Deadshot
 Tezzeret the Seeker
 Banisher Priest
+Island
+Divination
+Beast Whisperer

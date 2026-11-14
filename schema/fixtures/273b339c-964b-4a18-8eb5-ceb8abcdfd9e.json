@@ -1,0 +1,81 @@
+{
+ "ir_version": 2,
+ "oracle_id": "273b339c-964b-4a18-8eb5-ceb8abcdfd9e",
+ "name": "Divination",
+ "card_hash": "759b7e2f40ccd8e357ce6f84056b1f43",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "273b339c-964b-4a18-8eb5-ceb8abcdfd9e",
+  "name": "Divination",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Divination",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Draw two cards.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 6235,
+  "scryfall_uri": "https://scryfall.com/card/m19/51/divination?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "273b339c-964b-4a18-8eb5-ceb8abcdfd9e",
+   "name": "Divination",
+   "face": 0,
+   "face_name": "Divination",
+   "card_hash": "759b7e2f40ccd8e357ce6f84056b1f43",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw two cards."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

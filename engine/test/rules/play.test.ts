@@ -10,6 +10,7 @@ import type { GameObject } from "../../src/kernel/gameobject";
 import { seedFor } from "../../src/kernel/random";
 import { ActionKind, PassingAgent, type Action, type Agent } from "../../src/rules/cr100_game_concepts/priority";
 import { play, playGame, rulesEngine } from "../../src/rules/play";
+import { SimpleAgent } from "../../src/ai/simple";
 import type { DeckSpec, RunSetup } from "../../src/sim/runner";
 
 // The bench decks' cards and lists, exported by `python -m mtgfish.tools.ir_export samples`.
@@ -68,10 +69,11 @@ describe("play(setup, index, seed) on the bench decks", () => {
     expect(seen.get(EventKind.COMBAT_DAMAGE_DEALT) ?? 0).toBeGreaterThan(0);
   });
 
-  it("the runner's engine passes everyone by default", () => {
-    const record = rulesEngine.play(setup, 0, 3);
-    expect(record.winReason).toBe("STALL_OUT");
-    expect(record.winner).toBeNull();
+  it("the runner's engine seats SimpleAgent by default, as Python's runner does", () => {
+    const { game } = playGame(setup, 0, 3);
+    expect([...game.agents.values()].every((a) => a instanceof SimpleAgent)).toBe(true);
+    // Eight rounds is too short for these decks to finish a game.
+    expect(rulesEngine.play(setup, 0, 3).winReason).toBe("STALL_OUT");
   });
 });
 

@@ -26,7 +26,8 @@ import type { GameObject } from "../kernel/gameobject";
 import { logDigest } from "../kernel/log";
 import type { CardCast, Elimination, GameRecord, RemovalEvent, TurnSnapshot, WinReason } from "../sim/records";
 import type { DeckSpec, GameEngine, RunSetup } from "../sim/runner";
-import { PassingAgent, type Agent } from "./cr100_game_concepts/priority";
+import type { Agent } from "./cr100_game_concepts/priority";
+import { SimpleAgent } from "../ai/simple";
 import { setUpGame, type SetupDeck } from "./cr100_game_concepts/setup";
 import { lossReasonName, LossReason } from "../kernel/enums";
 import { characteristicsOf } from "./cr600_spells_and_abilities/layers";
@@ -47,7 +48,7 @@ const REMOVAL_WORDS: ReadonlyMap<number, string> = new Map([
 export const HERO = 0;
 
 export interface PlayOptions {
-  /** Who decides for each seat. Python seats its SimpleAgent; until the AI is ported, everyone passes. */
+  /** Who decides for each seat; SimpleAgent by default, as Python's runner seats it. */
   readonly agentFor?: (seat: number) => Agent;
   /** The full rules log (a replay). Off for a run, as in Python. */
   readonly log?: boolean;
@@ -128,7 +129,7 @@ export function playGame(setup: RunSetup, index: number, seed: number, options: 
   const watch = options.watch;
   game.observer = watch === undefined ? (g, e) => observer.observe(g, e) : (g, e) => (observer.observe(g, e), watch(g, e));
 
-  for (const p of game.players) game.agents.set(p.id, options.agentFor?.(p.id) ?? new PassingAgent());
+  for (const p of game.players) game.agents.set(p.id, options.agentFor?.(p.id) ?? new SimpleAgent());
   observer.recordOpeningHand(game);
 
   const turnOptions: TurnOptions = { firstPlayerSkipsFirstDraw: false, maxRounds: setup.maxRounds };
