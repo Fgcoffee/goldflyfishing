@@ -39,6 +39,9 @@ import {
 } from "../cr700_additional_rules/designations";
 import { checkStateBasedActions } from "../cr700_additional_rules/sba";
 import { emit } from "../emit";
+import { randrange } from "../../kernel/random";
+import { setUpGame, type SetupDeck } from "../cr100_game_concepts/setup";
+import { setCardCatalog, type CardCatalog } from "../cr700_additional_rules/digital_mechanics";
 import { attackers, dealCombatDamage, declareAttackers, declareBlockers, endCombat } from "./combat";
 import { Act, permitted, prohibited } from "./restrictions";
 
@@ -66,7 +69,7 @@ export interface TurnOptions {
 export const DEFAULT_TURN_OPTIONS: TurnOptions = Object.freeze({ firstPlayerSkipsFirstDraw: false, maxRounds: 25 });
 
 /** Play a game to its end, or until the turn cap. Returns the game finished. */
-export function runGame(game: Game, options: TurnOptions = DEFAULT_TURN_OPTIONS): Game {
+export function runGame(game: Game, options: TurnOptions = DEFAULT_TURN_OPTIONS, depth = 0): Game {
   const limit = options.maxRounds * Math.max(1, game.players.length);
   while (!game.gameOver && game.turn < limit) {
     takeTurn(game, options);
@@ -79,12 +82,7 @@ export function runGame(game: Game, options: TurnOptions = DEFAULT_TURN_OPTIONS)
     if (game.gameOver) break;
     game.activePlayer = nextActivePlayer(game);
   }
-  if (game.restartRequested) {
-    // PORT: CR 727 restarts need game setup (cr103_setup), not ported yet;
-    // until then a restarted game simply ends with no winner.
-    logRecord(game, "Restart requested but game setup is not ported yet", { kind: "unsupported" });
-    return game;
-  }
+  if (game.restartRequested) return restart(game, options, depth);
   if (game.runaway) {
     logRecord(
       game,
@@ -95,6 +93,46 @@ export function runGame(game: Game, options: TurnOptions = DEFAULT_TURN_OPTIONS)
     logRecord(game, "Turn cap reached; game is a stall-out", { kind: "stall" });
   }
   return game;
+}
+
+/** CR 727: a cap on restarts restarting; two in a row is already beyond what goldfishing models. */
+export const MAX_RESTARTS = 4;
+
+/**
+ * CR 727.1: build the replacement game and play it. Every card of the old
+ * game is in the new one (727.2), the player who restarted it goes first
+ * (727.1a), and the seed comes from the old game's PRNG, so one run seed
+ * still reproduces everything. As in Python, the new game has no agents or
+ * observer of its own: they were seated on the old one.
+ */
+function restart(game: Game, options: TurnOptions, depth: number): Game {
+  if (depth >= MAX_RESTARTS) {
+    logRecord(game, "Restart cap reached", { kind: "cap" });
+    game.gameOver = true;
+    return game;
+  }
+  const decks = game.sourceDecks as SetupDeck[];
+  if (decks.length === 0) {
+    logRecord(game, "Restart requested but the decks are unknown", { kind: "unsupported" });
+    return game;
+  }
+  const starting = game.restartStartingPlayer ?? 0;
+  const fresh = setUpGame(decks, {
+    seed: randrange(game.rng, 1 << 30),
+    logEnabled: game.log.enabled,
+    abilityProvider: game.abilityProvider,
+    randomizeTurnOrder: false,
+  });
+  // Python passes card_catalog=game.card_catalog; digital_mechanics.ts keeps it on the game.
+  setCardCatalog(fresh, (game as { cardCatalog?: CardCatalog | null }).cardCatalog ?? null);
+  fresh.sourceDecks = decks.slice();
+  // CR 727.1a
+  fresh.activePlayer = starting;
+  logRecord(fresh, "Game restarted (CR 727)", { kind: "restart" });
+  // Python's run_game calls _restart without the depth, so its cap never
+  // counts and a restart that keeps restarting never ends. A hang, so
+  // fixed here: the depth is carried.
+  return runGame(fresh, options, depth + 1);
 }
 
 /** Whose turn is next. CR 500.7: the most recent extra turn is taken first. */
