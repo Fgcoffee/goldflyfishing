@@ -18,14 +18,18 @@ import { createEmblem, createTokens } from "../cr100_game_concepts/tokens";
 import { registerOverride, Rule } from "../cr100_game_concepts/rule_overrides";
 import { registerStanding } from "../cr500_turn_structure/restrictions";
 import { event, EventKind, type GameEvent } from "../../kernel/events";
-import { agentFor, logRecord, player, type Game } from "../../kernel/game";
-import { isLive, type GameObject } from "../../kernel/gameobject";
+import { agentFor, invalidateAllCharacteristics, livingPlayers, logRecord, permanents, player, type Game } from "../../kernel/game";
+import { counterCount, isLive, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
-import { isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
+import { allocateTimestamp, isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { charsManaValue, hasKeyword, hasSupertype, isCreature } from "../cr200_parts_of_a_card/characteristics";
 import {
+  addCounters,
   addPoison,
+  attach,
   bounce,
+  detach,
+  removeCounters,
   dealDamage,
   destroy,
   discard,
@@ -38,7 +42,8 @@ import {
   tap,
   untap,
 } from "../cr100_game_concepts/actions";
-import { moveObject } from "../zones";
+import { moveObject, removeFromZone } from "../zones";
+import { copyPermanent, copySpell, MAY_CHOOSE_NEW_TARGETS, transform } from "../cr700_additional_rules/faces";
 import { canPayCost, payCost } from "./paying";
 import { Act } from "../cr500_turn_structure/restrictions";
 import { commanderColorIdentity } from "../cr903_commander/color_identity";
@@ -47,7 +52,7 @@ import { flag, ir, irEqual, list, num, str } from "../ir_read";
 import { parseManaSymbol } from "../mana/cost";
 import { addMana, manaKind, manaKindKey, poolSnapshot, type ManaKind, type ManaRestriction } from "../mana/pool";
 import { constantOf, isTargeted, targetsAPlayer, targetsItsPlayer } from "./effect_props";
-import { characteristicsOf, copiableCharacteristics, intrinsicAbilities } from "./layers";
+import { characteristicsOf, copiableCharacteristics, EFFECT_LAYERS, intrinsicAbilities, layerFor } from "./layers";
 import { attackers } from "../cr500_turn_structure/combat";
 
 const EK = {
@@ -207,7 +212,8 @@ export function executeOne(resolution: Resolution, effect: Effect): void {
 }
 
 function executeOneInner(resolution: Resolution, effect: Effect): void {
-  const executor = EXECUTORS.get(num(effect.kind));
+  // effects.py: every continuous kind with no executor of its own registers a continuous effect.
+  const executor = EXECUTORS.get(num(effect.kind)) ?? (CONTINUOUS_KINDS.has(num(effect.kind)) ? registerContinuous : undefined);
   if (executor === undefined) {
     // No executor: UNPARSED, or a kind not implemented. It does nothing, loudly.
     logRecord(resolution.game, `Effect not executed (${num(effect.kind)}): ${str(effect.text) || "effect"}`, {
@@ -1166,3 +1172,215 @@ registerExecutor(ir("EffectKind.TAP"), (resolution, effect) => {
 registerExecutor(ir("EffectKind.UNTAP"), (resolution, effect) => {
   for (const obj of objectsOf(resolution, effect)) untap(resolution.game, obj, { source: resolution.source });
 });
+
+// -- counters, attaching, control, copies ------------------------------------------------------
+
+registerExecutor(ir("EffectKind.ADD_COUNTERS"), (resolution, effect) => {
+  const amount = amountOf(resolution, effect);
+  const objects = objectsOf(resolution, effect);
+  const type = effect.counter_type ?? "";
+  if (flag(effect.divided) && objects.length > 0) {
+    // CR 601.2d: shared out as evenly as possible, the remainder to the first.
+    const share = Math.floor(amount / objects.length);
+    const extra = amount % objects.length;
+    objects.forEach((obj, index) => {
+      const given = share + (index < extra ? 1 : 0);
+      if (given) addCounters(resolution.game, obj, type, given, { source: resolution.source });
+    });
+    return;
+  }
+  for (const obj of objects) addCounters(resolution.game, obj, type, amount, { source: resolution.source });
+});
+
+/** CR 701.10e: as many of those counters as it already has, as an ordinary placing (CR 614.1a). */
+registerExecutor(ir("EffectKind.DOUBLE_COUNTERS"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) {
+    const kinds = effect.counter_type ? [effect.counter_type] : [...obj.counters.keys()];
+    for (const kind of kinds) {
+      const present = counterCount(obj, kind);
+      if (present > 0) addCounters(resolution.game, obj, kind, present, { source: resolution.source });
+    }
+  }
+});
+
+registerExecutor(ir("EffectKind.REMOVE_COUNTERS"), (resolution, effect) => {
+  const amount = amountOf(resolution, effect);
+  for (const obj of objectsOf(resolution, effect)) {
+    removeCounters(resolution.game, obj, effect.counter_type ?? "", amount, { source: resolution.source });
+  }
+});
+
+/** CR 701.28: one more of each kind; by default all of your own and none of theirs. */
+registerExecutor(ir("EffectKind.PROLIFERATE"), (resolution) => {
+  const game = resolution.game;
+  for (const obj of [...permanents(game, resolution.controller)]) {
+    for (const kind of [...obj.counters.keys()]) addCounters(game, obj, kind, 1, { source: resolution.source });
+  }
+});
+
+/** CR 701.3: `targets` is what it attaches to; what moves is the source unless named. */
+registerExecutor(ir("EffectKind.ATTACH"), (resolution, effect) => {
+  const game = resolution.game;
+  let moving = game.objects.get(resolution.source);
+  if (effect.attached_to != null) {
+    const candidates = matchHooks().find(game, effect.attached_to, { source: resolution.source, controller: resolution.controller });
+    if (candidates.length > 0) moving = candidates[0];
+  }
+  if (moving === undefined) return;
+  for (const obj of objectsOf(resolution, effect)) attach(game, moving, obj);
+});
+
+registerExecutor(ir("EffectKind.UNATTACH"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) detach(resolution.game, obj);
+});
+
+/** Control change is a layer 2 continuous effect, not an immediate write. */
+registerExecutor(ir("EffectKind.GAIN_CONTROL"), (resolution, effect) => registerContinuous(resolution, effect));
+
+/** CR 712.18: turn it over, keeping the same object. */
+registerExecutor(ir("EffectKind.TRANSFORM"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) transform(resolution.game, obj);
+});
+
+/** CR 707.1: make the source a copy of another permanent. */
+registerExecutor(ir("EffectKind.COPY_PERMANENT"), (resolution, effect) => {
+  const copier = resolution.game.objects.get(resolution.source);
+  if (copier === undefined) return;
+  for (const original of objectsOf(resolution, effect)) copyPermanent(resolution.game, copier, original);
+});
+
+/** CR 707.10: a copy on the stack, never cast; "the copy" is what's remembered. */
+registerExecutor(ir("EffectKind.COPY_SPELL"), (resolution, effect) => {
+  const count = countOf(resolution, effect);
+  const made: ObjectId[] = [];
+  for (const original of objectsOf(resolution, effect)) {
+    let copier: PlayerId | null = resolution.controller;
+    if (effect.players != null && num(effect.players.scope) === PS.OPPONENT) {
+      copier = chooseCopyingOpponent(resolution, original); // CR 702.144a
+      if (copier === null) continue;
+    }
+    for (let i = 0; i < count; i += 1) {
+      const copy = copySpell(resolution.game, original, {
+        controller: copier,
+        mayChooseNewTargets: list(effect.keywords).includes(MAY_CHOOSE_NEW_TARGETS),
+      });
+      if (copy !== null) made.push(copy.id);
+    }
+  }
+  if (made.length > 0) resolution.remembered = made;
+});
+
+/** CR 702.144a: the opponent who also copies it; the agent's pick, else the first in turn order. */
+function chooseCopyingOpponent(resolution: Resolution, spell: GameObject): PlayerId | null {
+  const game = resolution.game;
+  const me = resolution.controller;
+  const opponents = livingPlayers(game).map((p) => p.id).filter((p) => p !== me);
+  if (opponents.length === 0) return null;
+  const agent = agentFor(game, me) as { chooseCopyingOpponent?(g: Game, p: PlayerId, s: GameObject, o: readonly PlayerId[]): PlayerId } | null;
+  const chosen = agent?.chooseCopyingOpponent?.(game, me, spell, opponents);
+  return chosen !== undefined && opponents.includes(chosen) ? chosen : opponents[0]!;
+}
+
+registerExecutor(ir("EffectKind.GOAD"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) {
+    obj.goadedBy.add(resolution.controller);
+    logRecord(resolution.game, `#${obj.id} is goaded`, { kind: "effect" });
+  }
+});
+
+/** CR 701.5: off the stack and into its owner's graveyard; an ability simply ceases. */
+registerExecutor(ir("EffectKind.COUNTER_SPELL"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone !== Zone.STACK) continue;
+    if (hasKeyword(characteristicsOf(game, obj), "Can't be countered")) {
+      logRecord(game, `#${obj.id} can't be countered`, { kind: "effect" });
+      continue;
+    }
+    emit(game, event(EventKind.COUNTERED, { objectId: obj.id, source: resolution.source }));
+    if (obj.kind === ObjectKind.ABILITY) {
+      removeFromZone(game, obj);
+      game.objects.delete(obj.id);
+    } else {
+      moveObject(game, obj, Zone.GRAVEYARD, { toPlayer: obj.owner });
+    }
+  }
+});
+
+// -- continuous effects from resolving spells and abilities (CR 611) -----------------------------
+
+/** effects.py CONTINUOUS_KINDS: kinds with no executor of their own register a continuous effect. */
+const CONTINUOUS_KINDS: ReadonlySet<number> = new Set(
+  [
+    "MODIFY_PT", "SET_PT", "SWITCH_PT", "GRANT_ABILITY", "REMOVE_ABILITIES", "SET_COLOR", "ADD_TYPE",
+    "REMOVE_TYPE", "SET_TYPE", "TEXT_CHANGE", "RESTRICTION", "PERMISSION", "SUSPEND_RULE", "MODIFY_COST", "REPLACEMENT",
+  ].map((n) => ir(`EffectKind.${n}` as never) as number),
+);
+
+/** CR 611.2c: effects on characteristics, and control changes, settle their set as they begin. */
+function settlesItsSet(effect: Effect): boolean {
+  return EFFECT_LAYERS.has(num(effect.kind)) || num(effect.kind) === ir("EffectKind.GAIN_CONTROL");
+}
+
+/** CR 608.2h: a resolving effect's numbers are worked out now, except those read per affected object. */
+function lockedAmounts(resolution: Resolution, effect: Effect): Effect {
+  const changes: Partial<Effect> = {};
+  const fixedKinds = new Set([ir("ValueKind.CONSTANT") as number, ir("ValueKind.UNCHANGED") as number]);
+  for (const name of ["amount", "amount2"] as const) {
+    const value = effect[name] ?? { $: "Value" as const };
+    if (fixedKinds.has(num(value.kind))) continue;
+    const [affected] = matchHooks().valueSubjects(value);
+    if (affected) continue;
+    changes[name] = { $: "Value", constant: amountOf(resolution, effect, name === "amount2") };
+  }
+  return Object.keys(changes).length > 0 ? { ...effect, ...changes } : effect;
+}
+
+/** Create a continuous effect from a resolving spell or ability (CR 611.2), timestamped now. */
+export function registerContinuous(resolution: Resolution, effect: Effect): void {
+  const game = resolution.game;
+  const duration = num(effect.duration) || Duration.PERMANENT;
+  const push = (resolved: Effect): void => {
+    game.continuousEffects.push({
+      effect: resolved,
+      source: resolution.source,
+      controller: resolution.controller,
+      timestamp: allocateTimestamp(game.ids),
+      layer: layerFor(resolved),
+      duration,
+      createdTurn: game.turn,
+      ability: null,
+      fromStaticAbility: false,
+      isCda: false,
+      expired: false,
+    });
+  };
+  if (num(effect.kind) === ir("EffectKind.GRANT_ABILITY") && effect.targets == null && effect.players != null) {
+    // CR 702.11a, 702.16a: an ability a player has, registered per player, aimed at no object.
+    for (const pid of playersOf(resolution, effect)) {
+      push({
+        ...effect,
+        players: { $: "PlayerFilter", scope: effect.players.scope, specific: pid },
+        targets: { $: "ObjectFilter", specific: [NO_OBJECT] },
+      });
+    }
+    invalidateAllCharacteristics(game);
+    return;
+  }
+  let resolved = effect;
+  if (isTargeted(effect) || settlesItsSet(effect)) {
+    const chosen = objectsOf(resolution, effect).map((o) => o.id);
+    // An empty set stays empty: never register an empty `specific`, which means "anything".
+    if (chosen.length === 0) return;
+    // CR 112.4: the zones its objects are in now, plus the battlefield they may be heading for.
+    const zones = new Set<number>(chosen.flatMap((id) => (game.objects.has(id) ? [game.objects.get(id)!.zone] : [])));
+    zones.add(Zone.BATTLEFIELD);
+    resolved = {
+      ...effect,
+      targets: { $: "ObjectFilter", specific: chosen, zones: { $set: [...zones].sort((a, b) => a - b) } },
+      is_targeted: false,
+    };
+  }
+  push(lockedAmounts(resolution, resolved));
+  invalidateAllCharacteristics(game);
+}

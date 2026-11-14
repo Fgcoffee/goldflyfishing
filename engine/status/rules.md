@@ -94,7 +94,12 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   EXTRA_TRIGGER, ADD_MANA, DRAW, MILL, DESTROY, SACRIFICE, RETURN_TO_HAND,
   MOVE_ZONE, DISCARD, CREATE_TOKEN (token copies included), RESTRICTION,
   SUSPEND_RULE, ROLL_DICE, DAMAGE, GAIN_LIFE, LOSE_LIFE, SET_LIFE,
-  ADD_POISON, DESIGNATE, FIGHT, TAP and UNTAP. actions.ts has the damage and
+  ADD_POISON, DESIGNATE, FIGHT, TAP, UNTAP, ADD_COUNTERS, DOUBLE_COUNTERS,
+  REMOVE_COUNTERS, PROLIFERATE, ATTACH, UNATTACH, GAIN_CONTROL, TRANSFORM,
+  COPY_PERMANENT, COPY_SPELL, GOAD, COUNTER_SPELL, and continuous effects
+  from resolving spells (`registerContinuous`, CR 611.2: settled sets,
+  locked amounts, player abilities) as the default for effects.py's
+  CONTINUOUS_KINDS. actions.ts has the damage and
   life rules (dealDamage with wither, infect, toxic, commander damage and
   lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
   The rest follow in resolve.py's order. A smoke test plays
