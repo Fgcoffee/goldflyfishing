@@ -62,7 +62,7 @@ and games that don't replay from their seed are fixed now.
 - [x] *(moved from rules, 13 Nov)* State-based actions (CR 704) (ff39b13)
 - [x] *(moved from rules, 13 Nov)* Game setup (CR 103): shuffles, mulligans (bfd46b2)
 - [x] *(moved from rules, 13 Nov)* Copies, faces and tokens (CR 707, 711, 712) (80d8ede tokens, 38f0866 faces and copies)
-- [ ] *(moved from rules, 14 Nov)* Replacement and prevention effects (CR 614-616): port `cr614_replacement.py` into the seams in `replacement_hooks.ts` and `zones.ts`. Rules' `resolve.ts` needs `register`, `replacement_from_effect` and `become_chosen_characteristics` from it, so publish those first
+- [x] *(moved from rules, 14 Nov)* Replacement and prevention effects (CR 614-616): port `cr614_replacement.py` into the seams in `replacement_hooks.ts` and `zones.ts`. Rules' `resolve.ts` needs `register`, `replacement_from_effect` and `become_chosen_characteristics` from it, so publish those first (6e05490)
 - [ ] *(moved from rules, 14 Nov)* Commander rules (CR 903): `wants_command_zone` and the command-zone choice; check tax (rules' `total_cost.ts`) and commander damage (your `sba.ts`) end to end
 - [ ] *(moved from rules, 14 Nov)* Keyword runtime and the other CR 700 mechanics that run during a game:
   - face-down (`cr708_face_down.py`);
