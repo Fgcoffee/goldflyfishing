@@ -6,7 +6,7 @@
 import { installMatchHooks } from "../../kernel/hooks";
 import { holds } from "./conditions";
 import { defendingPlayers, find, matches, resolvePlayers, valueSubjects } from "./matching";
-import { evaluate } from "./values";
+import { evaluate, wasUndeterminable } from "./values";
 
 export * from "./matching";
 export * from "./values";
@@ -22,6 +22,7 @@ export function installMatch(): void {
     valueSubjects: (value) => valueSubjects(value),
     resolvePlayers: (game, spec, context) => resolvePlayers(game, spec, context),
     defendingPlayers: (game, source) => defendingPlayers(game, source),
+    wasUndeterminable: () => wasUndeterminable(),
   });
 }
 
