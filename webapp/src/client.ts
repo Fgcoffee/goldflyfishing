@@ -2,7 +2,7 @@
  * The page's side of a simulation worker: requests in, promises out.
  */
 
-import type { RunResult, RunSetup } from "@goldfly/engine/sim";
+import { DEFAULT_ENGINE, type RunResult, type RunSetup } from "@goldfly/engine/sim";
 import type { PongReply, Reply, Request, RunRequest } from "./worker/protocol";
 
 /** The part of `Worker` the client uses, so tests can pass a fake. */
@@ -55,7 +55,7 @@ export class EngineClient {
     start: number,
     end: number,
     onProgress?: (done: number, total: number) => void,
-    engine: RunRequest["engine"] = "stub",
+    engine: RunRequest["engine"] = DEFAULT_ENGINE,
   ): RunHandle {
     const id = this.nextId++;
     const result = this.request({ type: "run", id, setup, start, end, engine }, onProgress).then(

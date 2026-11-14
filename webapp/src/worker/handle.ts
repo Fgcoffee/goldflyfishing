@@ -7,10 +7,8 @@
  */
 
 import { ENGINE_VERSION } from "@goldfly/engine";
-import { runGames, stubEngine, type GameEngine } from "@goldfly/engine/sim";
+import { ENGINES, runGames } from "@goldfly/engine/sim";
 import { isRequest, type Reply, type RunRequest } from "./protocol";
-
-const ENGINES: Record<RunRequest["engine"], GameEngine> = { stub: stubEngine };
 
 /** How often a running worker reports progress and reads new messages. */
 const PROGRESS_EVERY = 5;

@@ -1,8 +1,8 @@
 /**
  * The harness page, end to end: decklists in, card IR fetched from the
  * server, games played in Web Workers, a result table out. The real app's
- * Results page replaces the table once real games run; swapping the stub
- * for the real engine happens in the worker (`worker/handle.ts`), not here.
+ * Results page replaces the table. Which engine plays is `DEFAULT_ENGINE`
+ * (engine/src/sim/engines.ts): the real rules engine.
  */
 
 import {

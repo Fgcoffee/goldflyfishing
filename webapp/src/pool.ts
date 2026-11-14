@@ -8,7 +8,7 @@
  * playing them all in one.
  */
 
-import { mergeResults, splitRange, type RunResult, type RunSetup } from "@goldfly/engine/sim";
+import { DEFAULT_ENGINE, mergeResults, splitRange, type EngineName, type RunResult, type RunSetup } from "@goldfly/engine/sim";
 import { EngineClient } from "./client";
 
 export interface PoolRun {
@@ -35,7 +35,12 @@ export class WorkerPool {
   }
 
   /** Play `games` games of a run, reporting overall progress. */
-  run(setup: RunSetup, games: number, onProgress?: (done: number, total: number) => void): PoolRun {
+  run(
+    setup: RunSetup,
+    games: number,
+    onProgress?: (done: number, total: number) => void,
+    engine: EngineName = DEFAULT_ENGINE,
+  ): PoolRun {
     const ranges = splitRange(games, this.clients.length);
     const done = new Array<number>(ranges.length).fill(0);
     const handles = ranges.map(([start, end], slot) => {
@@ -43,7 +48,7 @@ export class WorkerPool {
       const handle = client.run(setup, start, end, (finished) => {
         done[slot] = finished;
         onProgress?.(done.reduce((a, b) => a + b, 0), games);
-      });
+      }, engine);
       return { client, handle };
     });
     const result = Promise.all(handles.map(({ handle }) => handle.result)).then(mergeResults);

@@ -13,7 +13,7 @@
  * Any request can instead get an `error` reply.
  */
 
-import type { RunResult, RunSetup } from "@goldfly/engine/sim";
+import { ENGINES, type EngineName, type RunResult, type RunSetup } from "@goldfly/engine/sim";
 
 export interface PingRequest {
   readonly type: "ping";
@@ -29,8 +29,8 @@ export interface RunRequest {
   /** Games `start` to `end - 1` of the run. */
   readonly start: number;
   readonly end: number;
-  /** Which engine plays. Only "stub" exists until the kernel can play. */
-  readonly engine: "stub";
+  /** Which engine plays, by name (`ENGINES` in engine/src/sim/engines.ts). */
+  readonly engine: EngineName;
 }
 
 export interface CancelRequest {
@@ -83,7 +83,7 @@ export function isRequest(value: unknown): value is Request {
       return (
         typeof candidate.setup === "object" && candidate.setup !== null &&
         Number.isInteger(candidate.start) && Number.isInteger(candidate.end) &&
-        candidate.engine === "stub"
+        typeof candidate.engine === "string" && Object.hasOwn(ENGINES, candidate.engine)
       );
     case "cancel":
       return Number.isInteger(candidate.run);

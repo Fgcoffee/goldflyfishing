@@ -3,6 +3,7 @@ export type { CardCast, CrashedGame, Elimination, GameRecord, WinReason } from "
 export type { DeckSpec, GameEngine, RunHooks, RunResult, RunSetup } from "./runner";
 export { crashedGame, mergeResults, runGames, splitRange } from "./runner";
 export { stubEngine } from "./stub";
+export { DEFAULT_ENGINE, ENGINES, type EngineName } from "./engines";
 export type { CardImpact, Report, ReportOptions } from "./report";
 export {
   MIN_SAMPLE, averageWinRound, averageWinTurn, buildReport, impact, margin, reliable, stallRate, topCards,

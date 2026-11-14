@@ -5,8 +5,8 @@
  * run with the engine its fingerprint names, and that is only sound if the
  * page and the replay pick the engine the same way.
  *
- * The webapp worker should play `ENGINES[DEFAULT_ENGINE]`; swapping the stub
- * for the real engine is changing DEFAULT_ENGINE here.
+ * The webapp worker plays `ENGINES[request.engine]`, and the page asks for
+ * DEFAULT_ENGINE: the real rules engine, seating SimpleAgent.
  */
 
 import { rulesEngine } from "../rules/play";
@@ -17,4 +17,4 @@ export const ENGINES = { stub: stubEngine, rules: rulesEngine } as const satisfi
 export type EngineName = keyof typeof ENGINES;
 
 /** What the page plays today. */
-export const DEFAULT_ENGINE: EngineName = "stub";
+export const DEFAULT_ENGINE: EngineName = "rules";

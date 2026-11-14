@@ -33,8 +33,8 @@ for the shell first.
   (`POST /api/ir/decks`), then fetches only the card files it doesn't hold
   at that hash.
 - `src/main.ts` + `index.html`: the current harness page. It pings every
-  worker, loads card IR for pasted decks, and runs 1000 stub games twice to
-  check replay.
+  worker, loads card IR for pasted decks, and plays the games, then replays the
+  first 100 to check they come out identical.
 
 The engine is imported from its TypeScript source through aliases
 (`@goldfly/engine`, `/ir`, `/sim`; see `vite.config.ts` and the
@@ -45,8 +45,9 @@ The dev and preview servers proxy `/api` and `/ir` to the Python server
 export: `python -m mtgfish.tools.ir_export export` (set `MTGFISH_IR_DIR`
 to serve one from elsewhere).
 
-Games are played by `engine/src/sim` (`runGames`). For now that's the stub
-engine, until the kernel can play.
+Games are played by `engine/src/sim` (`runGames`) with `ENGINES[DEFAULT_ENGINE]`
+(`engine/src/sim/engines.ts`): the real rules engine, the simple bot in every
+seat. The stub engine is still there by name, for the worker plumbing tests.
 
 The live Python app (`mtgfish/web`, `mtgfish/ui/web`) is untouched and stays
 on `main` until the switch-over.

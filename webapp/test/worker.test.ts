@@ -1,5 +1,5 @@
 import { ENGINE_VERSION } from "@goldfly/engine";
-import { runGames, stubEngine, type RunSetup } from "@goldfly/engine/sim";
+import { DEFAULT_ENGINE, ENGINES, runGames, stubEngine, type RunSetup } from "@goldfly/engine/sim";
 import { describe, expect, it } from "vitest";
 import { EngineClient, type WorkerLike } from "../src/client";
 import { WorkerPool } from "../src/pool";
@@ -139,14 +139,14 @@ describe("EngineClient", () => {
   it("runs games and reports progress", async () => {
     const client = new EngineClient(new FakeWorker());
     const seen: number[] = [];
-    const result = await client.run(setup, 3, 10, (done) => seen.push(done)).result;
+    const result = await client.run(setup, 3, 10, (done) => seen.push(done), "stub").result;
     expect(result.records.map((r) => r.index)).toEqual([3, 4, 5, 6, 7, 8, 9]);
     expect(seen.at(-1)).toBe(7);
   });
 
   it("stops a run when cancelled, and still answers", async () => {
     const client = new EngineClient(new FakeWorker());
-    const handle = client.run(setup, 0, 10_000);
+    const handle = client.run(setup, 0, 10_000, undefined, "stub");
     client.cancel(handle.id);
     const result = await handle.result;
     expect(result.complete).toBe(false);
@@ -158,8 +158,8 @@ describe("WorkerPool", () => {
   const pool = (size: number) => new WorkerPool(size, () => new EngineClient(new FakeWorker()));
 
   it("gives the same games with one worker or several", async () => {
-    const one = await pool(1).run(setup, 40).result;
-    const three = await pool(3).run(setup, 40).result;
+    const one = await pool(1).run(setup, 40, undefined, "stub").result;
+    const three = await pool(3).run(setup, 40, undefined, "stub").result;
     expect(three).toEqual(one);
     expect(one.records.map((r) => r.index)).toEqual(Array.from({ length: 40 }, (_, i) => i));
     expect(one).toEqual(await runGames(stubEngine, setup, 0, 40));
@@ -170,12 +170,12 @@ describe("WorkerPool", () => {
     await pool(4).run(setup, 30, (done, total) => {
       expect(total).toBe(30);
       seen.push(done);
-    }).result;
+    }, "stub").result;
     expect(seen.at(-1)).toBe(30);
   });
 
   it("cancels every worker", async () => {
-    const run = pool(3).run(setup, 30_000);
+    const run = pool(3).run(setup, 30_000, undefined, "stub");
     run.cancel();
     const result = await run.result;
     expect(result.complete).toBe(false);
@@ -183,7 +183,44 @@ describe("WorkerPool", () => {
   });
 
   it("uses no more workers than there are games", async () => {
-    const result = await pool(8).run(setup, 3).result;
+    const result = await pool(8).run(setup, 3, undefined, "stub").result;
     expect(result.records.map((r) => r.index)).toEqual([0, 1, 2]);
   });
+});
+
+describe("the real engine", () => {
+  /** Real parsed cards from schema/fixtures/, as the IR server would send them. */
+  const fixtures = new Map<string, { oracle_id: string; name: string }>();
+  const files = import.meta.glob<{ oracle_id: string; name: string }>("../../schema/fixtures/*.json", {
+    eager: true,
+    import: "default",
+  });
+  for (const card of Object.values(files)) fixtures.set(card.name, card);
+  const id = (name: string) => fixtures.get(name)!.oracle_id;
+  const real: RunSetup = {
+    decks: [0, 1, 2, 3].map(() => ({
+      commanders: [],
+      cards: [
+        { oracle_id: id("Forest"), count: 40 },
+        { oracle_id: id("Grizzly Bears"), count: 30 },
+        { oracle_id: id("Llanowar Elves"), count: 29 },
+      ],
+    })),
+    cards: Object.fromEntries(["Forest", "Grizzly Bears", "Llanowar Elves"].map((n) => [id(n), fixtures.get(n) as never])),
+    runSeed: 7,
+    maxRounds: 6,
+  };
+
+  it("is what the page plays by default", () => {
+    expect(DEFAULT_ENGINE).toBe("rules");
+  });
+
+  it("plays real games in the workers, the same with one worker or two, and replays", async () => {
+    const pool = (size: number) => new WorkerPool(size, () => new EngineClient(new FakeWorker()));
+    const one = await pool(1).run(real, 4).result;
+    expect(one.crashed).toEqual([]);
+    expect(one.records.map((r) => r.index)).toEqual([0, 1, 2, 3]);
+    expect(await pool(2).run(real, 4).result).toEqual(one);
+    expect(one).toEqual(await runGames(ENGINES.rules, real, 0, 4));
+  }, 120_000);
 });
