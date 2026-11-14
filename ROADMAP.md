@@ -40,7 +40,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Moving objects between zones (`move_object`), with replacement and trigger hooks ("Moving objects" commit)
 - [x] Turn structure (CR 500-514): steps, untap/upkeep/draw, priority loop ("Turn structure" commit)
 - [x] Casting spells (CR 601) and activating abilities (602), using the parser's mana code ("Legal actions" commit)
-- [ ] Resolving the stack: effect executors (`resolve.py`)
+- [x] Resolving the stack: effect executors (`resolve.py`) (stack.ts; every executor registered, the last in 8184567)
 - [x] Triggered abilities (CR 603), including look-back (19e2a40, 3582b6f, 0be4a86)
 - [x] Combat (CR 506-511): attack and block requirements, costs, damage (b2f823b, 1ed92e2)
 - [x] `play(setup, index, seed)` entry point for the runner, agreed with web (50fcbfb; CR 727 restarts 4a7e76a)
