@@ -305,3 +305,30 @@ describe("copy triggers of paid costs (CR 702.56a, 702.78a)", () => {
     expect(noted!.ability.effects![0]!.targets!.specific).toEqual([spell.id]);
   });
 });
+
+describe("triggers that name what happened (CR 113.6k, 510.2)", () => {
+  it("'when you cast this spell' triggers from the stack (CR 113.6k)", () => {
+    const board = new Board();
+    const text = "When you cast this spell, draw a card";
+    board.script("Serra Angel", triggered(text, [EventKind.CAST_SPELL], { subject: THIS }));
+    const spell = createObject(board.game, CARDS["Serra Angel"]!, 0, Zone.STACK);
+    board.refresh();
+    emit(board.game, event(EventKind.CAST_SPELL, { objectId: spell.id, player: 0 }));
+    expect(fired(board, text)).toBe(1);
+  });
+
+  it("'deals combat damage to a player' fires for a player, not a blocker (CR 510.2)", () => {
+    const board = new Board();
+    const text = "Whenever this creature deals combat damage to a player";
+    const me = watch(board, triggered(text, [EventKind.COMBAT_DAMAGE_DEALT], { source: THIS, to_player: true }));
+    const blocker = board.play("Grizzly Bears", 1);
+    board.game.pendingTriggers.length = 0;
+    emit(board.game, event(EventKind.COMBAT_DAMAGE_DEALT, { player: 1, source: me.id, sourceController: 0, amount: 2 }));
+    expect(fired(board, text)).toBe(1);
+    emit(board.game, event(EventKind.COMBAT_DAMAGE_DEALT, { objectId: blocker.id, player: 1, source: me.id, sourceController: 0, amount: 2 }));
+    expect(fired(board, text)).toBe(0);
+    // Noncombat damage is a different event.
+    emit(board.game, event(EventKind.DAMAGE_DEALT, { player: 1, source: me.id, sourceController: 0, amount: 2 }));
+    expect(fired(board, text)).toBe(0);
+  });
+});

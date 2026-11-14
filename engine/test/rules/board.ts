@@ -191,7 +191,8 @@ function filterMatches(_game: Game, obj: GameObject, chars: Characteristics, spe
   const specific = list(spec.specific);
   if (specific.length > 0 && !specific.includes(obj.id)) return false;
   const zones = numSet(spec.zones, [Zone.BATTLEFIELD]);
-  if (zones.size > 0 && !zones.has(obj.zone)) return false;
+  // As match/matching.ts: "this" names one object wherever it is.
+  if (zones.size > 0 && !spec.source_only && !zones.has(obj.zone)) return false;
   const typesAll = num(spec.types_all);
   if (typesAll && (chars.typeLine.types & typesAll) !== typesAll) return false;
   const supertypesNone = num(spec.supertypes_none);
