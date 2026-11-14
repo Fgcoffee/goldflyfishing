@@ -1,14 +1,15 @@
 // Ported from tests/rules/test_legality.py, test_cr101_rule_overrides.py and
-// test_cr116_special_actions.py: what a player with priority is offered.
+// test_cr116_special_actions.py and test_cr119_pay_all_life.py: what a player with priority is offered.
 import { describe, expect, it } from "vitest";
-import { Phase, Step, Zone } from "../../src/kernel/enums";
+import { CardType, Phase, Step, Zone } from "../../src/kernel/enums";
 import { createObject, player } from "../../src/kernel/game";
 import { ActionKind, perform, type Action } from "../../src/rules/cr100_game_concepts/priority";
 import { registerOverride, Rule } from "../../src/rules/cr100_game_concepts/rule_overrides";
 import { SpecialKind } from "../../src/rules/cr100_game_concepts/special_actions";
 import { legalActions } from "../../src/rules/legality";
 import { ir } from "../../src/rules/ir_read";
-import { Board, CARDS } from "./board";
+import { Board, CARDS, cardDef } from "./board";
+import { castSpell } from "../../src/rules/cr600_spells_and_abilities/casting";
 
 function mainPhase(board: Board, active = 0): void {
   board.game.activePlayer = active;
@@ -79,5 +80,35 @@ describe("special actions (CR 116)", () => {
     const exiled = board.game.objects.get(angel.supersededBy)!;
     expect(exiled.zone).toBe(Zone.EXILE);
     expect(exiled.counters.get("time")).toBe(1);
+  });
+});
+
+// From tests/rules/test_cr119_pay_all_life.py: CR 119.4, a player can pay
+// life only up to their life total - so the last two for Phyrexian mana, not more.
+describe("paying life for Phyrexian mana (CR 119.4, 107.4f)", () => {
+  CARDS["Probe"] = cardDef("Probe", {
+    types: CardType.SORCERY,
+    cost: { $: "ManaCost", symbols: [{ $: "ManaSymbol", kind: ir("ManaSymbolKind.PHYREXIAN"), colors: ir("Color.BLUE") }] },
+  });
+  function setup(life: number) {
+    const board = new Board();
+    board.game.activePlayer = 0;
+    board.game.phase = Phase.PRECOMBAT_MAIN;
+    board.game.step = Step.MAIN;
+    player(board.game, 0).life = life;
+    const probe = createObject(board.game, CARDS["Probe"]!, 0, Zone.HAND);
+    const casts = legalActions(board.game, 0).filter((a) => a.kind === ActionKind.CAST_SPELL && a.source === probe.id);
+    return { board, casts };
+  }
+
+  it("may be paid with the last two life", () => {
+    const { board, casts } = setup(2);
+    expect(casts).toHaveLength(1);
+    castSpell(board.game, 0, casts[0]!);
+    expect(player(board.game, 0).life).toBe(0);
+  });
+
+  it("not with less life than the cost", () => {
+    expect(setup(1).casts).toHaveLength(0);
   });
 });
