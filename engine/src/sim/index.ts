@@ -13,3 +13,4 @@ export type { RunSummary, SeatSummary } from "./summary";
 export { summarize } from "./summary";
 export { atFrame, BoardRecorder, type BoardCard, type BoardCardRef, type BoardFilm, type BoardSeat, type BoardSnapshot, type BoardStackItem } from "./board";
 export { buildTurns, describeBoard, DETAIL_LEVELS, KEY_KINDS, NOISE_KINDS, replayGame, shownAt, type DetailLevel, type ReplayFrame, type ReplaySeat, type ReplayTurn, type ReplayView } from "./replay_view";
+export { boardPayload, inertCards, parseStatus, replayPayload, resultsPayload, type ResultsExtras } from "./payload";
