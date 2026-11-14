@@ -47,6 +47,22 @@ describe("players", () => {
     expect(p.counters.has("ticket")).toBe(false);
   });
 
+  // The rest of tests/rules/test_cr122_player_counters.py.
+  it("removing a named counter moves its field; nothing added, nothing held, kinds kept apart (CR 122.1)", () => {
+    const p = newPlayer(0);
+    p.poison = 5;
+    expect(removePlayerCounters(p, "poison", 2)).toBe(2);
+    expect(p.poison).toBe(3);
+    expect(addPlayerCounters(p, "ticket", 0)).toBe(0);
+    expect(playerCounterCount(p, "ticket")).toBe(0);
+    expect(playerCounterCount(p, "never-heard-of-it")).toBe(0);
+    addPlayerCounters(p, "ticket", 2);
+    addPlayerCounters(p, "acorn", 1);
+    expect([playerCounterCount(p, "ticket"), playerCounterCount(p, "acorn")]).toEqual([2, 1]);
+    removePlayerCounters(p, "acorn", 1);
+    expect(p.counters.has("acorn")).toBe(false);
+  });
+
   it("commander tax and commander damage (CR 903.8, 903.10a)", () => {
     const p = newPlayer(0);
     expect(commanderTax(p, 7)).toBe(0);

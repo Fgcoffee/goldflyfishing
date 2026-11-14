@@ -251,6 +251,24 @@ describe("executors that make triggers (CR 603.7, 603.9, 610.3)", () => {
     expect(back.controller).toBe(1);
   });
 
+  it("an exile with no duration is permanent; another permanent leaving doesn't bring an 'until' exile back (CR 610.3)", () => {
+    const board = new Board();
+    board.game.activePlayer = 0;
+    const plain = board.play("Grizzly Bears", 1);
+    const priest = board.play("Serra Angel");
+    execute(newResolution(board.game, priest.id, 0, { targets: [[plain.id]] }), [E("EXILE", { targets: ALL_CREATURES, is_targeted: true })]);
+    expect(board.game.delayedTriggers).toHaveLength(0);
+
+    const held = board.play("Grizzly Bears", 1);
+    const bystander = board.play("Grizzly Bears");
+    execute(newResolution(board.game, priest.id, 0, { targets: [[held.id]] }), [
+      E("EXILE", { targets: ALL_CREATURES, is_targeted: true, duration: Duration.WHILE_SOURCE_PERSISTS as never }),
+    ]);
+    destroy(board.game, bystander);
+    expect(putTriggersOnStack(board.game)).toBe(0);
+    expect(board.game.objects.get(held.supersededBy)!.zone).toBe(Zone.EXILE);
+  });
+
   it("an 'until' exile whose source is already gone exiles nothing (CR 610.3a)", () => {
     const board = new Board();
     const bears = board.play("Grizzly Bears", 1);
