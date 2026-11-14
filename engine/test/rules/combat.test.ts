@@ -25,7 +25,8 @@ import { checkStateBasedActions } from "../../src/rules/cr700_additional_rules/s
 import { ir } from "../../src/rules/ir_read";
 import { moveObject } from "../../src/rules/zones";
 import { setAgent } from "./agent_util";
-import { Board, CARDS, cardDef } from "./board";
+import { ALL_CREATURES, Board, CARDS, cardDef } from "./board";
+import { execute, newResolution } from "../../src/rules/cr600_spells_and_abilities/resolve";
 
 const kw = (keyword: string): Ability => ({ $: "Ability", kind: ir("AbilityKind.STATIC"), keyword, text: keyword });
 
@@ -414,5 +415,21 @@ describe("costs to attack (CR 508.1c-j)", () => {
     attackWith(board, new Map());
     declareAttackers(board.game);
     expect(combat(board).attacking.has(bears.id)).toBe(false);
+  });
+});
+
+describe("BLOCKS_SOURCE_IF_ABLE (CR 509.1c)", () => {
+  it("the creature acted on must block the source this turn", () => {
+    const board = combatBoard();
+    const source = board.play(BEARS, 0);
+    const blocker = board.play(BEARS, 1);
+    const other = board.play(GIANT, 0);
+    execute(newResolution(board.game, source.id, 0, { targets: [[blocker.id]] }), [
+      { $: "Effect", kind: ir("EffectKind.BLOCKS_SOURCE_IF_ABLE"), targets: ALL_CREATURES, is_targeted: true, duration: ir("Duration.END_OF_TURN") },
+    ]);
+    attackWith(board, new Map([[source.id, 1], [other.id, 1]]), new Map([[blocker.id, [other.id]]]));
+    declareAttackers(board.game);
+    declareBlockers(board.game);
+    expect(combat(board).blocking.get(blocker.id)).toEqual([source.id]);
   });
 });

@@ -55,7 +55,7 @@ import {
 } from "../../kernel/game";
 import { becomePrepared } from "../cr700_additional_rules/preparation";
 import { takeInitiative } from "../cr700_additional_rules/designations";
-import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, ObjectKind, type GameObject } from "../../kernel/gameobject";
+import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, ObjectKind, objectText, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { allocateTimestamp, isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { charsManaValue, hasKeyword, hasSupertype, isCreature, isLand } from "../cr200_parts_of_a_card/characteristics";
@@ -85,7 +85,7 @@ import {
 import { moveObject, removeFromZone } from "../zones";
 import { chooseNewTargets, copyPermanent, copySpell, MAY_CHOOSE_NEW_TARGETS, transform } from "../cr700_additional_rules/faces";
 import { canPayCost, payCost } from "./paying";
-import { Act } from "../cr500_turn_structure/restrictions";
+import { Act, registerStandingRequirement, requirement } from "../cr500_turn_structure/restrictions";
 import { commanderColorIdentity } from "../cr903_commander/color_identity";
 import { emit } from "../emit";
 import { flag, ir, irEqual, list, num, str } from "../ir_read";
@@ -943,6 +943,31 @@ registerExecutor(ir("EffectKind.REFLEXIVE_TRIGGER"), (resolution, effect) => {
       resolution.controller,
     ),
   );
+});
+
+/**
+ * A requirement (CR 509.1c) that each creature acted on blocks the source if
+ * able, for the effect's duration; pinned to these objects (CR 400.7).
+ */
+registerExecutor(ir("EffectKind.BLOCKS_SOURCE_IF_ABLE"), (resolution, effect) => {
+  const game = resolution.game;
+  const source = game.objects.get(resolution.source);
+  if (source === undefined || source.zone !== Zone.BATTLEFIELD) return;
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone !== Zone.BATTLEFIELD) continue;
+    registerStandingRequirement(
+      game,
+      requirement(Act.BLOCK, {
+        subject: { $: "ObjectFilter", specific: [obj.id] },
+        counterpart: { $: "ObjectFilter", specific: [source.id] },
+        source: source.id,
+        controller: resolution.controller,
+        text: effect.text || `${objectText(obj, characteristicsOf(game, obj).name)} blocks ${objectText(source, characteristicsOf(game, source).name)} if able`,
+        duration: num(effect.duration),
+        createdTurn: game.turn,
+      }),
+    );
+  }
 });
 
 registerExecutor(EK.SACRIFICE, (resolution, effect) => {
