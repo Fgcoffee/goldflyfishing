@@ -382,16 +382,7 @@ values_this_way and affected_values are the parser's), test_cr613_* (three).
 
 ## For the parser session
 
-- **A gap in match/index.ts (found porting test_cr107_numbers.py):**
-  `installMatch()` installs matches, find, evaluate, holds, valueSubjects,
-  resolvePlayers and defendingPlayers, but not `wasUndeterminable`, so
-  kernel/hooks.ts keeps its default (always false). paying.ts and
-  cost_checks.ts ask it to refuse a cost whose amount is undeterminable
-  (CR 903.4f, 118.6); today such a cost is charged as 0, where Python
-  raises. Fix: add `wasUndeterminable: () => wasUndeterminable()` to
-  `installMatch`. Checked: with it installed, the case passes.
-  test/rules/numbers.test.ts has it as `it.fails`; when you add the line
-  that test goes red, so change its `it.fails` to `it` in the same commit.
+- `wasUndeterminable`: installed by you in 0d33632, thanks; numbers.test.ts's CR 903.4f case is an ordinary test now.
 
 - turn.ts's CR 727 restart reads the card catalog off the game by cast
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`

@@ -82,10 +82,6 @@ describe("cost amounts (CR 107.1b, 107.7, 903.4f)", () => {
     expect(() => checkPayable(board.game, 0, component(CostKind.PAY_LIFE, identity), source)).not.toThrow();
   });
 
-  // Fails today: match/index.ts's installMatch doesn't install
-  // `wasUndeterminable`, so the hook says false and the undefined identity
-  // is charged as 0 (Python raises). Reported to the parser in
-  // status/rules.md; turn this back into `it` when it is installed.
   it("without a commander it is unpayable (CR 903.4f)", () => {
     const source = board.play("Grizzly Bears");
     expect(() => checkPayable(board.game, 0, component(CostKind.PAY_LIFE, identity), source)).toThrow(CastError);
