@@ -40,6 +40,7 @@ import { event, EventKind, type GameEvent } from "../../kernel/events";
 import {
   agentFor,
   apnapOrder,
+  controlPlayer,
   createObject,
   invalidateAllCharacteristics,
   livingPlayers,
@@ -47,9 +48,11 @@ import {
   nextPlayer,
   permanents,
   player,
+  releasePlayer,
   turnOrderFrom,
   type Game,
 } from "../../kernel/game";
+import { becomePrepared } from "../cr700_additional_rules/preparation";
 import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { allocateTimestamp, isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
@@ -2316,4 +2319,31 @@ registerExecutor(ir("EffectKind.GIVE_GIFT"), (resolution, effect) => {
     resolution.thatPlayer = before;
   }
   emit(game, event(EventKind.GIFT_GIVEN, { objectId: obj.id, player: resolution.controller, data: [recipient] }));
+});
+
+// -- players, the game ---------------------------------------------------------------------------
+
+/** CR 723.1: control another player during their next turn; of yourself, nothing (CR 723.9). */
+registerExecutor(ir("EffectKind.CONTROL_PLAYER"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const pid of playersOf(resolution, effect)) {
+    if (pid === resolution.controller) {
+      releasePlayer(game, pid);
+      continue;
+    }
+    controlPlayer(game, pid, resolution.controller);
+  }
+});
+
+/** CR 727.1: the game ends with no winner or loser; the controller starts the new one (CR 727.1a). */
+registerExecutor(ir("EffectKind.RESTART_GAME"), (resolution) => {
+  const game = resolution.game;
+  game.restartRequested = true;
+  game.restartStartingPlayer = resolution.controller;
+  logRecord(game, "The game will restart; no player wins or loses this one", { kind: "restart", player: resolution.controller });
+});
+
+/** CR 722.3a, c: a permanent with a prepare spell becomes prepared. */
+registerExecutor(ir("EffectKind.BECOME_PREPARED"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) becomePrepared(resolution.game, obj);
 });
