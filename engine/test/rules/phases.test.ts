@@ -131,3 +131,53 @@ describe("the end step (CR 513.1a, 513.2)", () => {
     expect(resolved).not.toContain("end step probe");
   });
 });
+
+// From tests/rules/test_cr500_phase_triggers.py: a phase trigger fires once,
+// as its own phase begins (CR 500.6, 505.1a), and "your" means your turn.
+describe("phase triggers (CR 500.6)", () => {
+  const you = { $: "PlayerFilter" as const, scope: ir("PlayerScope.YOU") };
+  const atPhase = (text: string, phases: Phase[], yours: boolean): Ability => ({
+    $: "Ability",
+    kind: ir("AbilityKind.TRIGGERED"),
+    trigger: { $: "TriggerCondition", event_kinds: { $set: [EventKind.PHASE_BEGAN] }, phases: { $set: phases }, ...(yours ? { players: you } : {}), text },
+    effects: [{ $: "Effect", kind: ir("EffectKind.NOTHING"), text }],
+    text,
+  });
+  const COMBAT = atPhase("combat on your turn", [Phase.COMBAT], true);
+  const FIRST_MAIN = atPhase("your precombat main", [Phase.PRECOMBAT_MAIN], true);
+  const SECOND_MAIN = atPhase("your postcombat main", [Phase.POSTCOMBAT_MAIN], true);
+  const EACH_MAIN = atPhase("each main phase", [Phase.PRECOMBAT_MAIN, Phase.POSTCOMBAT_MAIN], false);
+
+  function resolvedCounts(board: Board): Map<string, number> {
+    const counts = new Map<string, number>();
+    board.game.observer = (g, e) => {
+      if (e.kind !== EventKind.ABILITY_RESOLVED) return;
+      const text = g.objects.get(e.objectId)?.ability?.text ?? "";
+      counts.set(text, (counts.get(text) ?? 0) + 1);
+    };
+    return counts;
+  }
+
+  it("each phase trigger fires once in its own phase; 'each main phase' twice", () => {
+    const board = table();
+    board.script("Grizzly Bears", COMBAT, FIRST_MAIN, SECOND_MAIN, EACH_MAIN);
+    board.play("Grizzly Bears");
+    const counts = resolvedCounts(board);
+    takeTurn(board.game);
+    expect(Object.fromEntries(counts)).toEqual({
+      "combat on your turn": 1,
+      "your precombat main": 1,
+      "your postcombat main": 1,
+      "each main phase": 2,
+    });
+  });
+
+  it("'your' phase trigger doesn't fire on an opponent's turn", () => {
+    const board = table();
+    board.script("Grizzly Bears", COMBAT);
+    board.play("Grizzly Bears", 1);
+    const counts = resolvedCounts(board);
+    takeTurn(board.game);
+    expect(counts.size).toBe(0);
+  });
+});

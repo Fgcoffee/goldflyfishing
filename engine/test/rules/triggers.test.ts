@@ -4,7 +4,7 @@
 // with the parser; there is no TS parser, so the IR is written by hand.
 import { describe, expect, it } from "vitest";
 import type { Ability, Condition, Effect, TriggerCondition } from "../../src/ir";
-import { Color, Duration, Zone } from "../../src/kernel/enums";
+import { Color, Duration, Phase, Step, Zone } from "../../src/kernel/enums";
 import { event, EventKind } from "../../src/kernel/events";
 import { createObject, player } from "../../src/kernel/game";
 import { installMatchHooks } from "../../src/kernel/hooks";
@@ -25,6 +25,11 @@ import { amountOfColor } from "../../src/rules/mana/pool";
 import { installMatch } from "../../src/rules/match";
 import { checkStateBasedActions } from "../../src/rules/cr700_additional_rules/sba";
 import type { GameObject } from "../../src/kernel/gameobject";
+import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
+import { action, ActionKind } from "../../src/rules/cr100_game_concepts/priority";
+import { castSpell } from "../../src/rules/cr600_spells_and_abilities/casting";
+import { copySpell } from "../../src/rules/cr700_additional_rules/faces";
+import { moveObject } from "../../src/rules/zones";
 import { ALL_CREATURES, Board, CARDS, effect, filter } from "./board";
 import { putCastTriggers } from "../../src/rules/cr700_additional_rules/paid_costs";
 
@@ -403,5 +408,53 @@ describe("an intervening if keeps the rest of the trigger (CR 603.2c, 603.4)", (
     board.game.pendingTriggers.length = 0;
     kill(board, b);
     expect(fired(board, text)).toBe(1);
+  });
+});
+
+// From tests/rules/test_cr603_if_you_cast_it.py: "when this enters, if you
+// cast it" (CR 603.4) - a cast creature triggers; one put onto the
+// battlefield, or a copy of the spell, doesn't. On the real conditions.
+describe("'if you cast it' (CR 603.4, 707.10)", () => {
+  const ifYouCastIt = triggered("when this creature enters, if you cast it", [EventKind.ENTERS_BATTLEFIELD], {
+    subject: THIS,
+    intervening_if: { $: "Condition", kind: ir("ConditionKind.WAS_CAST") },
+  });
+  function castBoard(): Board {
+    const board = new Board();
+    installMatch();
+    board.game.activePlayer = 0;
+    board.game.phase = Phase.PRECOMBAT_MAIN;
+    board.game.step = Step.MAIN;
+    board.script("Grizzly Bears", ifYouCastIt);
+    return board;
+  }
+  const mine = (board: Board): PendingTrigger[] =>
+    pending(board).filter((p) => (board.game.objects.get(p.source)?.card as { name?: string } | null)?.name === "Grizzly Bears");
+  const castBears = (board: Board) => {
+    addMana(player(board.game, 0).manaPool, manaKind(Color.GREEN), 2);
+    return castSpell(board.game, 0, action(ActionKind.CAST_SPELL, { source: createObject(board.game, CARDS["Grizzly Bears"]!, 0, Zone.HAND).id }));
+  };
+
+  it("a cast creature triggers", () => {
+    const board = castBoard();
+    castBears(board);
+    resolveTop(board.game);
+    expect(mine(board)).toHaveLength(1);
+  });
+
+  it("a creature put onto the battlefield doesn't", () => {
+    const board = castBoard();
+    moveObject(board.game, createObject(board.game, CARDS["Grizzly Bears"]!, 0, Zone.GRAVEYARD), Zone.BATTLEFIELD);
+    expect(mine(board)).toHaveLength(0);
+  });
+
+  it("a copy of the spell wasn't cast", () => {
+    const board = castBoard();
+    const spell = castBears(board);
+    copySpell(board.game, spell, { controller: 0 });
+    resolveTop(board.game); // the copy
+    expect(mine(board)).toHaveLength(0);
+    resolveTop(board.game); // the original
+    expect(mine(board)).toHaveLength(1);
   });
 });
