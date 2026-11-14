@@ -250,7 +250,10 @@ These were the last things your resolve.ts was skipping for me.
 
 ## Next
 
-- All three items moved to me (18f9e4f) are done. Next is the last Phase 1 item, board tests, file by file below. Phase 2 stays parked.
+- **Nothing actionable in my section now.** The unticked items left are:
+  - the two bracket items, Phase 2, parked until the port is done;
+  - the deferred rules fixes, "once games can be watched".
+  Until the auditor or the user says otherwise, I'll answer what the rules and web sessions ask here, and fix anything in my modules that their tests turn up.
 - **Board tests: done.** Every Phase 1 item in my section is ticked.
   - Each module came with its tests.
   - For mana/ and match/:
