@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { GameRecord } from "./records";
 import {
-  MIN_SAMPLE, averageWinRound, buildReport, impact, margin, reliable, stallRate, topCards, winRate, worstCards,
+  METRICS, MIN_SAMPLE, averageWinRound, buildReport, worstSource, impact, margin, reliable, stallRate, topCards, winRate, worstCards,
   type CardImpact,
 } from "./report";
 
@@ -100,5 +100,57 @@ describe("card impact", () => {
     expect(reliable(report.cards.find((c) => c.name === "Rare") as CardImpact)).toBe(false);
     expect(topCards(report).map((c) => c.name)).toEqual(["Good", "Bad"]);
     expect(worstCards(report).map((c) => c.name)).toEqual(["Bad", "Good"]);
+  });
+});
+
+// Python stats.py _removal, _series, runaways and loop draws.
+describe("removal, series, runaways and loop draws", () => {
+  const snap = (player: number, turn: number, lands: number) => ({
+    turn, player, life: 40, lands, manaAvailable: lands, cardsInHand: 7, permanents: lands, boardPower: 0, creatures: 0,
+  });
+  const lost = (victim: string, source: string, how: string) => ({ turn: 3, victim, victimController: 0, source, sourceController: 1, how });
+
+  it("removal is grouped by victim, most losses first, with sources and methods", () => {
+    next = 0;
+    const report = buildReport([
+      game({ removal: [lost("Krenko", "Swords", "exiled"), lost("Bears", "Bolt", "died")] }),
+      game({ removal: [lost("Krenko", "Swords", "exiled"), lost("Krenko", "Doom Blade", "destroyed")] }),
+    ]);
+    expect(report.removal.map((t) => [t.victim, t.losses])).toEqual([["Krenko", 3], ["Bears", 1]]);
+    expect(report.removal[0]!.bySource).toEqual({ Swords: 2, "Doom Blade": 1 });
+    expect(report.removal[0]!.byMethod).toEqual({ exiled: 2, destroyed: 1 });
+    expect(worstSource(report.removal[0]!)).toEqual(["Swords", 2]);
+  });
+
+  it("a series averages over the games that reached each turn, and names the game nearest each mean", () => {
+    next = 0;
+    const report = buildReport([
+      game({ turnsSeries: [snap(0, 1, 1), snap(0, 2, 2)] }),
+      game({ turnsSeries: [snap(0, 1, 1), snap(0, 2, 4), snap(0, 3, 5)] }),
+      game({ turnsSeries: [snap(0, 1, 2)] }),
+    ]);
+    const lands = report.series.find((s) => s.metric === "lands" && s.player === 0)!;
+    expect(lands.turns).toEqual([1, 2, 3]);
+    expect(lands.values[0]).toBeCloseTo(4 / 3);
+    expect(lands.values.slice(1)).toEqual([3, 5]);
+    expect(lands.samples).toEqual([3, 2, 1]);
+    expect(lands.examples[0]).toEqual([0, 1, 2]);
+    // Turn 2's mean is 3: games 0 (2) and 1 (4) tie, the lower index wins.
+    expect(lands.representative[1]).toBe(0);
+    expect(lands.representativeValue[1]).toBe(2);
+    expect(report.series.map((s) => s.metric)).toEqual([...METRICS].sort());
+  });
+
+  it("runaways are counted by what looped; a loop draw is not a stall-out", () => {
+    next = 0;
+    const report = buildReport([
+      game({ winner: null, runaway: "Card X's ability" }),
+      game({ winner: null, loopDraw: true, winReason: "DRAW" }),
+      game({ winner: null }),
+    ]);
+    expect(report.runaways).toEqual({ "Card X's ability": 1 });
+    expect(report.loopDraws).toBe(1);
+    expect(report.stalls).toBe(2);
+    expect(report.winReasons).toEqual({ DRAW: 1, STALL_OUT: 2 });
   });
 });

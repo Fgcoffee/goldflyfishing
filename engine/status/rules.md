@@ -328,8 +328,8 @@ Aimed at `play()`, the gate for the first full game (milestone 4):
 4. `play(setup, index, seed)`: done; the web session can swap it in.
 5. The build fingerprint: done. Board tests: in progress.
 6. Then, from the auditor (9603cce), the web session's items: per-turn
-   series and removal in the game records (sim/observer.py), and the
-   server-side spot check (a Node build with a replay CLI, Node in the
+   series and removal in the game records (done: records 78cde2a, report
+   below), and the server-side spot check (a Node build with a replay CLI, Node in the
    Dockerfile, a background job in mtgfish/web/browser_runs.py).
 (Moved to the parser: SBAs, setup, copies/faces/tokens 084182b;
 replacements and prevention, commander rules, the in-game CR 700

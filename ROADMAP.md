@@ -86,7 +86,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Run protocol and `WorkerPool`, with a stub engine (2195208)
 - [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (b357de9, 958fee4)
 - [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (b357de9)
-- [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series and removal wait until game records carry them. *(rules, after its board tests)* Add them to the game records
+- [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series, removal, runaways and loop draws: game records carry them (78cde2a) and the report aggregates them (rules)
 - [ ] Results and replay screens read browser runs
 - [ ] Switch the website from server simulations to browser simulations
 - [x] **Every browser run is sent back to the server and stored.** (22e390e; uploads from another engine build refused with "reload": engine build gate commit) Required before the switch-over. Each run records:

@@ -8,8 +8,9 @@
  * - **Which cards matter?** Win rate when drawn minus win rate when not,
  *   with a 95% margin, and ranked only past `MIN_SAMPLE` games each way.
  *
- * Still to port, once the engine records the data: per-turn series
- * (`TurnSeries`), removal ("what do I lose to"), runaways and loop draws.
+ * - **What do I lose to?** Removal by victim, with its sources and methods.
+ *
+ * Plus the per-turn series (`TurnSeries`), runaways and loop draws.
  *
  * The report is plain data (no Maps or classes), so it can cross from a
  * worker or be saved as JSON. Counters are `Record<string, number>`.
@@ -34,12 +35,54 @@ export interface CardImpact {
   readonly openingHand: number;
 }
 
+/** A card of the hero's that keeps getting answered (Python `RemovalTarget`). */
+export interface RemovalTarget {
+  readonly victim: string;
+  readonly losses: number;
+  readonly bySource: Readonly<Record<string, number>>;
+  readonly byMethod: Readonly<Record<string, number>>;
+}
+
+/** The source that took it most often, ties to the first seen; ["", 0] if none. */
+export function worstSource(t: RemovalTarget): [string, number] {
+  let best: [string, number] = ["", 0];
+  for (const [name, n] of Object.entries(t.bySource)) if (n > best[1]) best = [name, n];
+  return best;
+}
+
+/** The per-turn metrics a series can show (Python `METRICS`). */
+export const METRICS = ["life", "lands", "manaAvailable", "cardsInHand", "permanents", "boardPower", "creatures"] as const;
+export type Metric = (typeof METRICS)[number];
+
+/** How many games behind each chart point stay clickable. */
+export const EXAMPLES_PER_POINT = 20;
+
+/**
+ * One metric over time for one player, averaged over the games that reached
+ * each turn (Python `TurnSeries`). `representative` is the game closest to
+ * each mean: a mean may have happened in no game, the nearest one did.
+ */
+export interface TurnSeries {
+  readonly metric: Metric;
+  readonly player: number;
+  readonly turns: readonly number[];
+  readonly values: readonly number[];
+  readonly samples: readonly number[];
+  readonly examples: readonly (readonly number[])[];
+  readonly representative: readonly number[];
+  readonly representativeValue: readonly number[];
+}
+
 export interface Report {
   readonly games: number;
   readonly hero: number;
   readonly seats: number;
   readonly wins: number;
   readonly stalls: number;
+  /** CR 104.4b: draws on a mandatory loop, apart from stall-outs. */
+  readonly loopDraws: number;
+  /** Games the action budget stopped, by what was looping (a card bug, not the deck). */
+  readonly runaways: Readonly<Record<string, number>>;
   /** The hero's own turn in each game they won. */
   readonly winRounds: readonly number[];
   /** The same games in the engine's player-turn counter. */
@@ -52,6 +95,9 @@ export interface Report {
   readonly commanderLandedGames: Readonly<Record<string, readonly number[]>>;
   readonly commanderNever: number;
   readonly cards: readonly CardImpact[];
+  /** Most-answered first. */
+  readonly removal: readonly RemovalTarget[];
+  readonly series: readonly TurnSeries[];
   /** Round -> indices of games the hero won on that round. */
   readonly byWinRound: Readonly<Record<string, readonly number[]>>;
   readonly crashed: readonly { readonly index: number; readonly seed: number; readonly error: string }[];
@@ -123,6 +169,8 @@ export function buildReport(
 
   let wins = 0;
   let stalls = 0;
+  let loopDraws = 0;
+  const runaways: Record<string, number> = {};
   const winRounds: number[] = [];
   const winTurns: number[] = [];
   const winReasons: Record<string, number> = {};
@@ -133,8 +181,12 @@ export function buildReport(
   let commanderNever = 0;
 
   for (const record of records) {
+    if (record.runaway) bump(runaways, record.runaway);
     // Outcomes (Python _outcomes).
-    if (record.winner === null) {
+    if (record.winner === null && record.loopDraw) {
+      loopDraws += 1;
+      bump(winReasons, "DRAW"); // Python LOOP_DRAW
+    } else if (record.winner === null) {
       stalls += 1;
       bump(winReasons, "STALL_OUT");
     } else if (record.winner === hero) {
@@ -164,6 +216,8 @@ export function buildReport(
     seats,
     wins,
     stalls,
+    loopDraws,
+    runaways,
     winRounds,
     winTurns,
     winReasons,
@@ -172,6 +226,8 @@ export function buildReport(
     commanderLandedGames,
     commanderNever,
     cards: cardImpact(records, hero),
+    removal: removalTargets(records),
+    series: turnSeries(records),
     byWinRound,
     crashed: crashed.map(({ index, seed, error }) => ({ index, seed, error })),
   };
@@ -224,4 +280,89 @@ function cardImpact(records: readonly GameRecord[], hero: number): CardImpact[] 
       openingHand: opening.get(name) ?? 0,
     };
   });
+}
+
+/** Removal by victim, most losses first; ties keep first-seen order (Python `_removal`). */
+function removalTargets(records: readonly GameRecord[]): RemovalTarget[] {
+  const targets = new Map<string, { victim: string; losses: number; bySource: Record<string, number>; byMethod: Record<string, number> }>();
+  for (const record of records) {
+    for (const event of record.removal) {
+      let target = targets.get(event.victim);
+      if (target === undefined) targets.set(event.victim, (target = { victim: event.victim, losses: 0, bySource: {}, byMethod: {} }));
+      target.losses += 1;
+      bump(target.bySource, event.source);
+      bump(target.byMethod, event.how);
+    }
+  }
+  return [...targets.values()].sort((a, b) => b.losses - a.losses);
+}
+
+const cmp = (a: string | number, b: string | number): number => (a < b ? -1 : a > b ? 1 : 0);
+
+/**
+ * Each metric per player per turn, averaged over the games that reached
+ * that turn (so a metric doesn't decay just because games ended), with up to
+ * EXAMPLES_PER_POINT games behind each point and the one nearest its mean
+ * (Python `_series`).
+ */
+function turnSeries(records: readonly GameRecord[]): TurnSeries[] {
+  type Key = string;
+  const keyOf = (metric: Metric, player: number, turn: number): Key => `${metric}|${player}|${turn}`;
+  const totals = new Map<Key, { metric: Metric; player: number; turn: number; total: number; count: number }>();
+  const examples = new Map<Key, number[]>();
+  for (const record of records) {
+    for (const snapshot of record.turnsSeries) {
+      for (const metric of METRICS) {
+        const key = keyOf(metric, snapshot.player, snapshot.turn);
+        let bucket = totals.get(key);
+        if (bucket === undefined) totals.set(key, (bucket = { metric, player: snapshot.player, turn: snapshot.turn, total: 0, count: 0 }));
+        bucket.total += snapshot[metric];
+        bucket.count += 1;
+        let seen = examples.get(key);
+        if (seen === undefined) examples.set(key, (seen = []));
+        if (seen.length < EXAMPLES_PER_POINT) seen.push(record.index);
+      }
+    }
+  }
+  const means = new Map<Key, number>();
+  for (const [key, b] of totals) means.set(key, b.count ? b.total / b.count : 0);
+
+  // The game nearest each mean; ties to the lower index, so a rerun opens the same game.
+  const nearest = new Map<Key, [number, number, number]>();
+  for (const record of records) {
+    for (const snapshot of record.turnsSeries) {
+      for (const metric of METRICS) {
+        const key = keyOf(metric, snapshot.player, snapshot.turn);
+        const value = snapshot[metric];
+        const distance = Math.abs(value - means.get(key)!);
+        const best = nearest.get(key);
+        if (best === undefined || distance < best[0] || (distance === best[0] && record.index < best[1])) {
+          nearest.set(key, [distance, record.index, value]);
+        }
+      }
+    }
+  }
+
+  // Python sorts the (metric, player, turn) keys; metric names compare as strings.
+  const ordered = [...totals.values()].sort((a, b) => cmp(a.metric, b.metric) || a.player - b.player || a.turn - b.turn);
+  const grouped = new Map<string, { metric: Metric; player: number; turns: number[]; values: number[]; samples: number[]; examples: number[][]; representative: number[]; representativeValue: number[] }>();
+  for (const b of ordered) {
+    const groupKey = `${b.metric}|${b.player}`;
+    let series = grouped.get(groupKey);
+    if (series === undefined) {
+      grouped.set(
+        groupKey,
+        (series = { metric: b.metric, player: b.player, turns: [], values: [], samples: [], examples: [], representative: [], representativeValue: [] }),
+      );
+    }
+    const key = keyOf(b.metric, b.player, b.turn);
+    series.turns.push(b.turn);
+    series.values.push(means.get(key)!);
+    series.samples.push(b.count);
+    series.examples.push(examples.get(key)!);
+    const [, index, value] = nearest.get(key) ?? [0, -1, 0];
+    series.representative.push(index);
+    series.representativeValue.push(value);
+  }
+  return [...grouped.values()];
 }
