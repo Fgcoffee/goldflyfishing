@@ -5,8 +5,9 @@
 
 import type { CardDef, FaceDef } from "../../kernel/card";
 import { Layout, Zone } from "../../kernel/enums";
-import { permanents, type Game } from "../../kernel/game";
-import type { GameObject } from "../../kernel/gameobject";
+import { invalidateAllCharacteristics, logRecord, permanents, type Game } from "../../kernel/game";
+import { invalidateCharacteristics, type GameObject } from "../../kernel/gameobject";
+import { allocateTimestamp, type ObjectId } from "../../kernel/ids";
 import { num } from "../ir_read";
 import { addCounters } from "../cr100_game_concepts/actions";
 import { hasSubtype, type Characteristics } from "../cr200_parts_of_a_card/characteristics";
@@ -73,4 +74,47 @@ export function castModeForFace(obj: GameObject, faceIndex: number): CastMode {
   if (subtypes.includes("Adventure")) return CastMode.ADVENTURE;
   if (subtypes.includes("Omen")) return CastMode.OMEN;
   return CastMode.NORMAL;
+}
+
+// -- designations kept beside the object (CR 716, 719, 710) -----------------------------
+
+/** A new timestamp and dropped caches: a designation abilities key off changed (CR 613.7d). */
+function restamp(game: Game, obj: GameObject): void {
+  obj.timestamp = allocateTimestamp(game.ids);
+  invalidateCharacteristics(obj);
+  obj.printed = null;
+  obj.printedKey = "";
+  invalidateAllCharacteristics(game);
+}
+
+/** CR 716.2b, d: a permanent's Class level, 1 by default; not copiable, so kept on the game. */
+export function classLevel(game: Game, objectId: ObjectId): number {
+  return game.classLevels.get(objectId) ?? 1;
+}
+
+export function setClassLevel(game: Game, objectId: ObjectId, level: number): void {
+  game.classLevels.set(objectId, level);
+  const obj = game.objects.get(objectId);
+  if (obj !== undefined) restamp(game, obj);
+}
+
+/** CR 719.3b: the Case becomes solved, and stays so until it leaves. */
+export function becomeSolved(game: Game, objectId: ObjectId): boolean {
+  if (game.solvedPermanents.has(objectId)) return false;
+  game.solvedPermanents.add(objectId);
+  const obj = game.objects.get(objectId);
+  if (obj !== undefined) {
+    restamp(game, obj);
+    logRecord(game, `#${obj.id} becomes solved`, { kind: "solved" });
+  }
+  return true;
+}
+
+/** CR 710: flip a permanent, one way and forever (CR 710.4); colour and cost stay (CR 710.1c). */
+export function flip(game: Game, obj: GameObject): boolean {
+  if (obj.flipped || obj.zone !== Zone.BATTLEFIELD) return false;
+  obj.flipped = true;
+  restamp(game, obj);
+  logRecord(game, `#${obj.id} flips`, { kind: "flip", player: obj.controller });
+  return true;
 }

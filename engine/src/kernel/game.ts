@@ -124,6 +124,8 @@ export interface Game {
   costPaidLastKnown: Map<ObjectId, unknown>;
   /** CR 702.192a: resolutions by "controller|lower-cased name". */
   spellResolutions: Map<string, number>;
+  /** CR 701.34: the last vote's tally, choice -> votes. */
+  lastVote: Map<number, number>;
   combat: unknown;
   commandersAwaitingZoneChoice: ObjectId[];
   dayNight: boolean | null;
@@ -212,6 +214,7 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     exiledWith: new Map(),
     costPaidLastKnown: new Map(),
     spellResolutions: new Map(),
+    lastVote: new Map(),
     combat: null,
     commandersAwaitingZoneChoice: [],
     dayNight: null,
@@ -288,6 +291,7 @@ export function cloneGame(game: Game): Game {
     exiledWith,
     costPaidLastKnown: new Map(game.costPaidLastKnown),
     spellResolutions: new Map(game.spellResolutions),
+    lastVote: new Map(game.lastVote),
     combat: game.combat === null ? null : structuredClone(game.combat),
     commandersAwaitingZoneChoice: game.commandersAwaitingZoneChoice.slice(),
     skippedSteps: new Set(game.skippedSteps),

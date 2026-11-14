@@ -21,7 +21,13 @@ import {
 } from "./replacement";
 import { CONSUMING_COSTS, CostKind } from "../cr100_game_concepts/costs";
 import { startEngines } from "../cr100_game_concepts/player";
-import { Color, Duration, Layout, LossReason, Step, Supertype, Zone } from "../../kernel/enums";
+import { Color, Duration, Layout, LossReason, Phase, Step, Supertype, Zone } from "../../kernel/enums";
+import { becomeSolved, classLevel, flip, setClassLevel } from "../cr300_card_types/card_types";
+import { action, ActionKind } from "../cr100_game_concepts/priority";
+import { timesPaid } from "../cr700_additional_rules/paid_costs";
+import { CastError } from "./cast_error";
+import { castSpell, playLand } from "./casting";
+import { targetedNodes } from "./targeting";
 import { turnFaceUp } from "../cr700_additional_rules/face_down";
 import { isStillPaired, pair } from "../cr700_additional_rules/soulbond";
 import { randint, randrange, shuffle } from "../../kernel/random";
@@ -31,7 +37,19 @@ import { copyTokenCard, createEmblem, createTokens } from "../cr100_game_concept
 import { registerOverride, Rule } from "../cr100_game_concepts/rule_overrides";
 import { registerStanding } from "../cr500_turn_structure/restrictions";
 import { event, EventKind, type GameEvent } from "../../kernel/events";
-import { agentFor, invalidateAllCharacteristics, livingPlayers, logRecord, permanents, player, type Game } from "../../kernel/game";
+import {
+  agentFor,
+  apnapOrder,
+  createObject,
+  invalidateAllCharacteristics,
+  livingPlayers,
+  logRecord,
+  nextPlayer,
+  permanents,
+  player,
+  turnOrderFrom,
+  type Game,
+} from "../../kernel/game";
 import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { allocateTimestamp, isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
@@ -59,7 +77,7 @@ import {
   untap,
 } from "../cr100_game_concepts/actions";
 import { moveObject, removeFromZone } from "../zones";
-import { copyPermanent, copySpell, MAY_CHOOSE_NEW_TARGETS, transform } from "../cr700_additional_rules/faces";
+import { chooseNewTargets, copyPermanent, copySpell, MAY_CHOOSE_NEW_TARGETS, transform } from "../cr700_additional_rules/faces";
 import { canPayCost, payCost } from "./paying";
 import { Act } from "../cr500_turn_structure/restrictions";
 import { commanderColorIdentity } from "../cr903_commander/color_identity";
@@ -2020,3 +2038,282 @@ registerExecutor(ir("EffectKind.HAUNT"), (resolution, effect) => {
 // (cr708, cr725, cr701_ring), not published yet; BLOCKS_SOURCE_IF_ABLE needs
 // the requirements half of restrictions (comes with combat). Logged and
 // skipped until then.
+
+// -- choices, modes, designations, casting during a resolution, turn changes ----------------------
+
+/** CR 701.55: each facing player, in APNAP order, picks an option and all of it happens. */
+registerExecutor(ir("EffectKind.VILLAINOUS_CHOICE"), (resolution, effect) => {
+  const game = resolution.game;
+  const options = list(effect.children);
+  if (options.length === 0) return;
+  const facing = new Set(playersOf(resolution, effect));
+  const previous = resolution.thatPlayer;
+  for (const pid of apnapOrder(game).filter((p) => facing.has(p))) {
+    const agent = agentFor(game, pid) as { chooseVillainousOption?(g: Game, p: PlayerId, o: readonly Effect[]): number } | null;
+    const picked = agent?.chooseVillainousOption?.(game, pid, options);
+    const index = typeof picked === "number" && picked >= 0 && picked < options.length ? picked : 0;
+    logRecord(game, `${player(game, pid).name} chooses: ${options[index]!.text || index}`, { kind: "choice", player: pid });
+    resolution.thatPlayer = pid;
+    executeOne(resolution, options[index]!);
+  }
+  resolution.thatPlayer = previous;
+});
+
+/** CR 700.2: only the modes chosen on announcement (a mana ability's ride on the resolution, CR 605.3b). */
+registerExecutor(ir("EffectKind.CHOOSE_MODE"), (resolution, effect) => {
+  const chosen = resolution.stackObject !== null ? resolution.stackObject.chosenModes : resolution.chosenModes;
+  const children = list(effect.children);
+  for (const index of chosen) if (index >= 0 && index < children.length) executeOne(resolution, children[index]!);
+});
+
+/** CR 716.2a: "this Class's level becomes N", announced to its watchers (CR 716.2). */
+registerExecutor(ir("EffectKind.SET_CLASS_LEVEL"), (resolution, effect) => {
+  const amount = amountOf(resolution, effect);
+  for (const obj of objectsOf(resolution, effect)) {
+    if (classLevel(resolution.game, obj.id) === amount) continue;
+    setClassLevel(resolution.game, obj.id, amount);
+    logRecord(resolution.game, `#${obj.id} becomes level ${amount}`, { kind: "class-level", player: obj.controller });
+    emit(resolution.game, event(EventKind.CLASS_LEVEL_GAINED, { objectId: obj.id, player: obj.controller, amount }));
+  }
+});
+
+registerExecutor(ir("EffectKind.BECOME_SOLVED"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) becomeSolved(resolution.game, obj.id);
+});
+
+registerExecutor(ir("EffectKind.FLIP_PERMANENT"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) flip(resolution.game, obj);
+});
+
+/**
+ * CR 115.7: change the targets of something on the stack; each new target
+ * legal and not one already chosen (CR 115.3), else the old one stays. A
+ * spell's new targets are its controller's choice, as a copy's are.
+ */
+registerExecutor(ir("EffectKind.CHANGE_TARGETS"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone !== Zone.STACK) continue;
+    if (obj.ability === null) {
+      chooseNewTargets(game, obj, resolution.controller);
+      continue;
+    }
+    const nodes = targetedNodes(list(obj.ability.effects), obj.chosenModes.length > 0 ? obj.chosenModes : null).filter((n) => n.targets != null);
+    const rebuilt: number[][] = [];
+    let changed = false;
+    nodes.forEach((node, index) => {
+      const current = index < obj.targets.length ? obj.targets[index]! : [];
+      const legal = matchHooks().find(game, node.targets!, { source: obj.id, controller: obj.controller }).map((c) => c.id).filter((id) => !current.includes(id));
+      if (legal.length === 0) {
+        rebuilt.push(current.slice());
+        return;
+      }
+      rebuilt.push([legal[0]!]);
+      changed = true;
+    });
+    if (changed) {
+      obj.targets = rebuilt;
+      logRecord(game, `Targets changed for #${obj.id}`, { kind: "effect" });
+    }
+  }
+});
+
+/** CR 118.5: cast without paying the mana cost (cascade, suspend, rebound): still casting. */
+registerExecutor(ir("EffectKind.CAST_WITHOUT_PAYING"), (resolution, effect) => {
+  const game = resolution.game;
+  if (flag(effect.cast_a_copy)) {
+    castACopyWithoutPaying(resolution, effect);
+    return;
+  }
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone === Zone.BATTLEFIELD || obj.zone === Zone.STACK) continue;
+    if (!wants(resolution, effect)) continue;
+    obj.castWithoutPaying = true;
+    try {
+      castSpell(game, resolution.controller, action(ActionKind.CAST_SPELL, { source: obj.id, faceIndex: num(effect.face_index) }));
+    } catch (e) {
+      if (!(e instanceof CastError)) throw e;
+      obj.castWithoutPaying = false;
+      logRecord(game, `Free cast abandoned: ${e.message}`, { kind: "illegal" });
+    }
+  }
+});
+
+/** CR 707.12: cast a copy of the object, owned by who casts it (CR 112.2a); an uncast copy is left for CR 704.5e. */
+function castACopyWithoutPaying(resolution: Resolution, effect: Effect): void {
+  const game = resolution.game;
+  const spec = effect.targets;
+  let originals: GameObject[];
+  if (spec == null || flag(spec.source_only)) {
+    const original = game.objects.get(resolution.source);
+    originals = original !== undefined && original.card != null ? [original] : [];
+  } else {
+    originals = objectsOf(resolution, effect);
+  }
+  for (const original of originals) {
+    const zone = effect.zone != null ? (num(effect.zone) as Zone) : original.zone;
+    const copy = createObject(game, original.card, resolution.controller, zone, { kind: ObjectKind.COPY, faceIndex: original.faceIndex });
+    if (!wants(resolution, effect)) continue;
+    copy.castWithoutPaying = true;
+    try {
+      castSpell(game, resolution.controller, action(ActionKind.CAST_SPELL, { source: copy.id, faceIndex: num(effect.face_index) }));
+    } catch (e) {
+      if (!(e instanceof CastError)) throw e;
+      logRecord(game, `Free cast of a copy abandoned: ${e.message}`, { kind: "illegal" });
+    }
+  }
+}
+
+/** CR 702.85a: against this spell's mana value as it last existed. */
+registerExecutor(ir("EffectKind.CASCADE"), (resolution) => {
+  const spell = resolution.game.objects.get(resolution.source);
+  if (spell === undefined) return;
+  const below = charsManaValue(characteristicsOf(resolution.game, spell));
+  exileUntilAFreeCast(resolution, (mv) => mv < below, false);
+});
+
+/** CR 701.57a: discover N. */
+registerExecutor(ir("EffectKind.DISCOVER"), (resolution, effect) => {
+  const limit = amountOf(resolution, effect);
+  exileUntilAFreeCast(resolution, (mv) => mv <= limit, true);
+});
+
+/**
+ * Cascade and discover: exile from the top until a nonland card that fits;
+ * it may be cast free (discover: else to hand); the rest go to the bottom in
+ * a random order (the game's generator).
+ */
+function exileUntilAFreeCast(resolution: Resolution, fits: (manaValue: number) => boolean, toHandIfNotCast: boolean): void {
+  const game = resolution.game;
+  const pid = resolution.controller;
+  const library = player(game, pid).library;
+  const exiled: GameObject[] = [];
+  let hit: GameObject | null = null;
+  while (library.length > 0) {
+    const card = game.objects.get(library[0]!)!;
+    const moved = moveObject(game, card, Zone.EXILE, { toPlayer: card.owner });
+    const chars = characteristicsOf(game, moved);
+    if (!isLand(chars) && fits(charsManaValue(chars))) {
+      hit = moved;
+      break;
+    }
+    exiled.push(moved);
+  }
+  if (hit !== null) {
+    let cast = false;
+    if (wants(resolution, { $: "Effect", kind: ir("EffectKind.CAST_WITHOUT_PAYING"), text: "cast it free" })) {
+      hit.castWithoutPaying = true;
+      try {
+        castSpell(game, pid, action(ActionKind.CAST_SPELL, { source: hit.id }));
+        cast = true;
+      } catch (e) {
+        if (!(e instanceof CastError)) throw e;
+        hit.castWithoutPaying = false;
+        logRecord(game, `Free cast abandoned: ${e.message}`, { kind: "illegal" });
+      }
+    }
+    if (!cast) {
+      if (toHandIfNotCast) moveObject(game, hit, Zone.HAND, { toPlayer: hit.owner });
+      else exiled.push(hit);
+    }
+  }
+  shuffle(game.rng, exiled);
+  for (const obj of exiled) if (isLive(obj) && obj.zone === Zone.EXILE) moveObject(game, obj, Zone.LIBRARY, { toPlayer: obj.owner });
+}
+
+/** CR 601.3: play from elsewhere; a land uses the land drop (CR 305.2), a spell pays its cost. */
+registerExecutor(ir("EffectKind.PLAY_FROM_ZONE"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const obj of objectsOf(resolution, effect)) {
+    if (!wants(resolution, effect)) continue;
+    const p = player(game, resolution.controller);
+    try {
+      if (isLand(characteristicsOf(game, obj))) {
+        if (p.landsPlayed >= p.maxLands) continue;
+        playLand(game, resolution.controller, action(ActionKind.PLAY_LAND, { source: obj.id }));
+      } else {
+        castSpell(game, resolution.controller, action(ActionKind.CAST_SPELL, { source: obj.id, faceIndex: num(effect.face_index) }));
+      }
+    } catch (e) {
+      if (!(e instanceof CastError)) throw e;
+      logRecord(game, `Play abandoned: ${e.message}`, { kind: "illegal" });
+    }
+  }
+});
+
+/** CR 500.8: an extra phase after this one (the amount names it; main by default). */
+registerExecutor(ir("EffectKind.EXTRA_PHASE"), (resolution, effect) => {
+  const c = constantOf(effect.amount ?? { $: "Value" });
+  const phase = (c ? c : Phase.PRECOMBAT_MAIN) as Phase;
+  resolution.game.extraPhases.push(phase);
+  logRecord(resolution.game, `Extra phase ${phase}`, { kind: "effect" });
+});
+
+/** CR 500.8: an extra step after this one. */
+registerExecutor(ir("EffectKind.EXTRA_STEP"), (resolution, effect) => {
+  const c = constantOf(effect.amount ?? { $: "Value" });
+  const step = (c ? c : Step.MAIN) as Step;
+  resolution.game.extraSteps.push(step);
+  logRecord(resolution.game, `Extra step ${step}`, { kind: "effect" });
+});
+
+/** Skip the whole untap step, its turn-based actions included. */
+registerExecutor(ir("EffectKind.UNTAP_STEP_SKIP"), (resolution) => {
+  resolution.game.skippedSteps.add(Step.UNTAP);
+});
+
+/**
+ * CR 701.34: each player votes, starting with the player after the
+ * controller in turn order; the tally is kept; the winner's child happens.
+ * KNOWN: F61 - Python calls `game.apnap_order(next_player(...))`, but
+ * apnap_order takes no argument, so every vote crashes there; guarded here
+ * with the evident intent, turn order from the next player.
+ */
+registerExecutor(ir("EffectKind.VOTE"), (resolution, effect) => {
+  const game = resolution.game;
+  const children = list(effect.children);
+  const choices = Array.from({ length: Math.max(2, children.length) }, (_, i) => i);
+  const tally = new Map(choices.map((c) => [c, 0]));
+  for (const pid of turnOrderFrom(game, nextPlayer(game, resolution.controller))) {
+    const agent = agentFor(game, pid) as { chooseVote?(g: Game, p: PlayerId, c: readonly number[]): number } | null;
+    let pick = agent?.chooseVote?.(game, pid, choices) ?? choices[0]!;
+    if (!tally.has(pick)) pick = choices[0]!;
+    tally.set(pick, tally.get(pick)! + 1);
+  }
+  game.lastVote = tally;
+  let winner = choices[0]!;
+  for (const c of choices) if (tally.get(c)! > tally.get(winner)!) winner = c;
+  if (winner >= 0 && winner < children.length) executeOne(resolution, children[winner]!);
+});
+
+/** How many times the resolving object's `keyword` cost was paid (CR 608.2h: as it last existed). */
+function timesPaidFor(resolution: Resolution, keyword: string): number {
+  let obj: GameObject | undefined | null = resolution.stackObject;
+  if (obj === null || obj.ability !== null) obj = resolution.game.objects.get(resolution.source);
+  return obj == null ? 0 : timesPaid(resolution.game, obj, keyword);
+}
+
+/** CR 702.33d, 702.157a: the children once per payment of the cost named first. */
+registerExecutor(ir("EffectKind.REPEAT_PER_PAYMENT"), (resolution, effect) => {
+  const keyword = list(effect.keywords)[0];
+  if (keyword === undefined) return;
+  for (let i = timesPaidFor(resolution, keyword); i > 0; i -= 1) execute(resolution, list(effect.children));
+});
+
+/** CR 702.174b: the promised gift, with that opponent as "that player"; CR 702.174c's event. */
+registerExecutor(ir("EffectKind.GIVE_GIFT"), (resolution, effect) => {
+  const game = resolution.game;
+  let obj: GameObject | undefined | null = resolution.stackObject;
+  if (obj === null || obj.ability !== null) obj = game.objects.get(resolution.source);
+  if (obj == null || obj.chosenPlayer === NO_PLAYER) return;
+  const recipient = obj.chosenPlayer;
+  if (player(game, recipient).hasLost) return;
+  const before = resolution.thatPlayer;
+  resolution.thatPlayer = recipient;
+  try {
+    execute(resolution, list(effect.children));
+  } finally {
+    resolution.thatPlayer = before;
+  }
+  emit(game, event(EventKind.GIFT_GIVEN, { objectId: obj.id, player: resolution.controller, data: [recipient] }));
+});

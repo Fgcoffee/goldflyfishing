@@ -110,13 +110,13 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   Also TURN_FACE_UP, PHASE_OUT, REGENERATE, MONSTROSITY, ADAPT,
   EXCHANGE_CONTROL, EXCHANGE_LIFE, END_TURN, SKIP_STEP, ADD_EXPERIENCE,
   HARNESS, PAIR, SEPARATE_INTO_PILES, BECOME_SADDLED, BECOME_RENOWNED, HAUNT.
-  **Still to come (28):** with triggers: choose_quality, delayed_trigger,
-  reflexive_trigger; with combat: blocks_source_if_able; mine, next:
-  control_player, restart_game, become_prepared, villainous_choice,
-  choose_mode, set_class_level, become_solved, flip_permanent,
-  change_targets, cast_without_paying, cascade, discover, play_from_zone,
-  extra_phase, extra_step, untap_step_skip, vote, repeat_per_payment,
-  give_gift. **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
+  Also VILLAINOUS_CHOICE, CHOOSE_MODE, SET_CLASS_LEVEL, BECOME_SOLVED,
+  FLIP_PERMANENT, CHANGE_TARGETS, CAST_WITHOUT_PAYING (copies too),
+  CASCADE, DISCOVER, PLAY_FROM_ZONE, EXTRA_PHASE, EXTRA_STEP,
+  UNTAP_STEP_SKIP, VOTE, REPEAT_PER_PAYMENT, GIVE_GIFT.
+  **Still to come (6):** with triggers: choose_quality, delayed_trigger,
+  reflexive_trigger; with combat: blocks_source_if_able; and
+  control_player, restart_game, become_prepared. **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
   `turnFaceDown`, `manifest`, `manifestDread` (cr708); TAKE_INITIATIVE needs
   `takeInitiative` (cr725); VENTURE needs cr309's `venture`; RING_TEMPTS and
   SACRIFICE_BLOCKERS_AT_END_OF_COMBAT need `tempt` and
@@ -296,4 +296,9 @@ mechanics 18f9e4f.)
 
 ## Questions for the auditor
 
-- None. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)
+- **A Python crash, guarded:** `_do_vote` calls
+  `game.apnap_order(game.next_player(...))`, but `apnap_order` takes no
+  argument, so every VOTE raises TypeError in Python. Guarded in resolve.ts
+  with the evident intent (turn order from the next player) and marked
+  `// KNOWN: F61`, as the port rules say for crashes. It may deserve its
+  own finding number. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)
