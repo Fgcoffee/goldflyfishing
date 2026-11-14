@@ -118,7 +118,7 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   Also CHOOSE_QUALITY and TAKE_INITIATIVE (your designations.ts), and
   EXILE (with the CR 610.3 "until" return), DELAYED_TRIGGER and
   REFLEXIVE_TRIGGER (3582b6f); `createDelayedTrigger` is exported from
-  resolve.ts. **Still to come (1):** with combat: blocks_source_if_able. **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
+  resolve.ts. BLOCKS_SOURCE_IF_ABLE is done too (1ed92e2). **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
   `turnFaceDown`, `manifest`, `manifestDread` (cr708); VENTURE needs cr309's `venture`; RING_TEMPTS and
   SACRIFICE_BLOCKERS_AT_END_OF_COMBAT need `tempt` and
   `sacrificeBlockersAtEndOfCombat` (cr701_ring); OPEN_ATTRACTION and
@@ -128,7 +128,31 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
   The rest follow in resolve.py's order. A smoke test plays
   lands and casts creatures end to end and replays to the same digest.
-  Placeholder until combat: `enterAttacking` (combat.ts).
+- **Combat, done (b2f823b):** `combat.ts` ports cr506_combat.py,
+  `combat_costs.ts` ports combat_costs.py (`taxRefusal` included), and
+  restrictions.ts has the requirements half (`Requirement`,
+  `requirements`, `blockObligations`, `enforceBlockRequirements` with the
+  CR 509.1c search, `registerStandingRequirement`). `Combat` is plain data
+  (Maps and Sets) matching match/'s `CombatView`, plus `controllers` and
+  `leftAttacking`. Agents may implement `declareAttackers`,
+  `declareBlockers`, `assignCombatDamage` (a Map keyed by recipient
+  index) and `chooseEnlist` (`CombatAgent`); without them nobody attacks
+  or blocks and the default division is lethal-first. Commander damage
+  passes `isCommanderSource`, as the auditor asked. `removeFromCombat`
+  (actions.ts) is now Python's full version.
+- **`play(setup, index, seed)`, done (50fcbfb):** `rules/play.ts`.
+  `rulesEngine` is the `GameEngine`; `play` and `playGame` (which also
+  returns the finished game) take options `{ agentFor, log, watch }`. It
+  builds decks and an ability provider from the RunSetup's IR once per run
+  (cached by setup object), imports `rules/match` and `replacement` once,
+  sets the card catalog (the run's own cards, by name), seats agents and
+  returns a `GameRecord`. As in Python's `play_one`, no mulligans are taken.
+  The record half of sim/observer.py (`Observer`, `finish`) is ported in
+  play.ts. Tested on the four bench decks in schema/samples: games run to
+  the cap or a win, a seed always gives the same digest. `runGame` now
+  restarts games (CR 727, 4a7e76a).
+- emit.ts calls `collectTriggers` at emit time (ce40f0e): combat's imports
+  made the load-time install run before emit existed.
 - **Triggers, done (19e2a40):** `triggers.ts` ports cr603_triggers.py in
   full. Published: `PendingTrigger` with `pendingTrigger(source, ability,
   event, controller, batch?)` (your designations.ts `SourcelessTrigger` is
@@ -293,15 +317,41 @@ these points; please export them with these names:
 ## Next
 
 Aimed at `play()`, the gate for the first full game (milestone 4):
-1. Resolution executors: done except blocks_source_if_able (combat) and
-   the seven waiting on parser modules.
+1. Resolution executors: done except the seven waiting on parser modules.
 2. Triggers: done.
-3. Combat (cr506 and combat costs).
-4. `play(setup, index, seed)` with the web session.
+3. Combat: done.
+4. `play(setup, index, seed)`: done; the web session can swap it in.
 5. The build fingerprint, then board tests.
 (Moved to the parser: SBAs, setup, copies/faces/tokens 084182b;
 replacements and prevention, commander rules, the in-game CR 700
 mechanics 18f9e4f.)
+
+## For the web session: the real engine is ready to swap in
+
+- `import { rulesEngine } from "engine/src/rules/play"` replaces
+  `stubEngine`; same `GameEngine` shape, no other change.
+- **Agents:** Python's sim seats `SimpleAgent` (mtgfish/ai/simple.py). That
+  is your AI item; until it lands `rulesEngine` seats `PassingAgent`, so
+  every game is a stall-out. `play(setup, index, seed, { agentFor })` takes
+  any agent factory: the test in test/rules/play.test.ts uses a small eager
+  one (plays lands, casts, attacks).
+- **WinReason:** records.ts's union (`LIFE`, `DECKING`, `CONCEDE`, `DRAW`,
+  ...) doesn't match Python's `WinReason` (`COMBAT_DAMAGE`,
+  `NONCOMBAT_DAMAGE`, `MILL`, `LAST_STANDING`, `LOOP_DRAW`, `LOOP_KILL`,
+  `CONCEDED`, ...). play.ts maps Python's onto yours (the three damage
+  kinds -> `LIFE`, `LAST_STANDING` -> `ALTERNATE`, `LOOP_DRAW` -> `DRAW`).
+  If you switch records.ts to Python's names, tell me and I'll record the
+  exact reason (the observer already tracks the last combat-damage turn).
+- The record's `cast[].round` is the hero's own turn number, as your
+  records.ts documents.
+
+## For the parser session
+
+- combat.ts inlines `isARingBearer` (cr701_ring.is_a_ring_bearer, yours,
+  not yet published). When you publish the Ring module I'll import it.
+- turn.ts's CR 727 restart reads the card catalog off the game by cast
+  (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
+  getter there would be tidier; say if you add one.
 
 ## Questions for the auditor
 

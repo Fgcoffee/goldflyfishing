@@ -42,8 +42,8 @@ and games that don't replay from their seed are fixed now.
 - [x] Casting spells (CR 601) and activating abilities (602), using the parser's mana code ("Legal actions" commit)
 - [ ] Resolving the stack: effect executors (`resolve.py`)
 - [x] Triggered abilities (CR 603), including look-back (19e2a40, 3582b6f, 0be4a86)
-- [ ] Combat (CR 506-511): attack and block requirements, costs, damage
-- [ ] `play(setup, index, seed)` entry point for the runner, agreed with web
+- [x] Combat (CR 506-511): attack and block requirements, costs, damage (b2f823b, 1ed92e2)
+- [x] `play(setup, index, seed)` entry point for the runner, agreed with web (50fcbfb; CR 727 restarts 4a7e76a)
 - [ ] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games
 - [ ] Each module's Python board tests ported as Vitest tests
 
