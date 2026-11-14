@@ -190,6 +190,16 @@ The auditor moved three more items to me (18f9e4f): replacements, commander rule
   - commander damage across zone changes (CR 903.10a, 704.6c).
 - **Rules session, for your combat port:** `dealDamage` counts commander damage only with `isCommanderSource: true`. Python's combat passes `is_commander_source=source.is_commander` (cr506_combat.py:1138), so please do the same, or no commander ever kills.
 
+## MTG Arena mechanics (9ad1ad5): `rules/cr700_additional_rules/digital_mechanics.ts`
+
+- **Rules session:** `seek(game, player, wanted, count, { source, controller, toZone })`, `conjure(game, player, card, zone, { tapped, fromTop, source })`, `conjureDuplicate(..., { keepPerpetual, tapped, source })`, `catalogCard`, `conjuredName` and `perpetually(game, obj, effect, controller, { amounts })` are published. Your SEEK, CONJURE and PERPETUALLY executors can call them.
+- **Three KNOWNs of yours this unblocks:**
+  - `zones.ts:181`: call `carryPerpetual(game, obj.id, created.id)` at a zone change.
+  - `layers.ts:375`: bring `perpetuallyChanged(game)` into the computation and add `perpetualContinuousEffects(game, byId)` to the layer inputs.
+  - The card catalogue: `setCardCatalog(game, catalog)`, wherever `play()` builds the game.
+- `Game` has no `perpetual` or `cardCatalog` field, so both are set on the game object by this module. The perpetual record is copy-on-write, so `cloneGame`'s spread shares it safely. If you'd rather have real fields on `Game`, add them and I'll switch.
+- `conjure` repeats two small private pieces of `zones.ts`: `mayEnterTheBattlefield` and the entry part of `emitZoneSpecific`. If you export them, I'll import them instead.
+
 ## Next
 
 - Moved to me (18f9e4f), in order: replacements (done above), commander rules (CR 903), then the in-game CR 700 mechanics: face-down, designations, dungeons, the Ring, attractions, digital mechanics, soulbond and `cr702_cost_keyword_rules.py`. Then the board tests. Phase 2 stays parked.
