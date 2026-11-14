@@ -375,18 +375,7 @@ function colorsMatch(colors: Color, spec: ObjectFilter): boolean {
   return true;
 }
 
-/** CR 702.95: the creature this one is paired with, if the pair still holds. */
-export function partnerOf(game: Game, obj: GameObject): GameObject | null {
-  if (obj.pairedWith === NO_OBJECT) return null;
-  const partner = game.objects.get(obj.pairedWith);
-  if (partner === undefined || partner.pairedWith !== obj.id) return null;
-  const pairable = (o: GameObject) =>
-    o.zone === Zone.BATTLEFIELD &&
-    isLive(o) &&
-    o.controller === obj.pairController &&
-    hasType(characteristicsOf(game, o), CardType.CREATURE);
-  return pairable(obj) && pairable(partner) ? partner : null;
-}
+export { partnerOf };
 
 /** CR 700.9: a counter on it, equipped, or enchanted by an Aura its controller controls. */
 export function isModified(game: Game, obj: GameObject): boolean {
@@ -611,4 +600,5 @@ export function hasInset(game: Game, obj: GameObject, subtype: string): boolean 
 }
 
 import { EffectKindValues } from "../../ir";
+import { partnerOf } from "../cr700_additional_rules/soulbond";
 const COPY_PERMANENT = EffectKindValues.COPY_PERMANENT ?? -1;

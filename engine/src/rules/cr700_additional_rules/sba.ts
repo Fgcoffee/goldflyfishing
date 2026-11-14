@@ -48,8 +48,9 @@ import { PlayerScope } from "../match/enums";
 import { chooseProtector, eligibleProtectors, moveObject, removeFromZone } from "../zones";
 import { wantsCommandZone } from "../cr600_spells_and_abilities/replacement";
 import { keepsItsPrepareCopy } from "./preparation";
+import { endBrokenPairs, isStillPaired } from "./soulbond";
 
-export { keepsItsPrepareCopy, wantsCommandZone };
+export { endBrokenPairs, isStillPaired, keepsItsPrepareCopy, wantsCommandZone };
 
 /** Guard against an effect loop that keeps generating work forever. */
 export const MAX_ITERATIONS = 100;
@@ -435,42 +436,6 @@ function grantEnduringStories(game: Game): void {
       logRecord(game, `${p.name} has an enduring story`, { kind: "designation" });
     }
   }
-}
-
-function pairable(game: Game, obj: GameObject | undefined, controller: PlayerId): boolean {
-  return (
-    obj !== undefined &&
-    isLive(obj) &&
-    obj.zone === Zone.BATTLEFIELD &&
-    obj.controller === controller &&
-    isCreature(characteristicsOf(game, obj))
-  );
-}
-
-/** CR 702.95b, 702.95e: whether this creature is paired now. */
-export function isStillPaired(game: Game, obj: GameObject): boolean {
-  if (obj.pairedWith === NO_OBJECT) return false;
-  const partner = game.objects.get(obj.pairedWith);
-  return (
-    partner !== undefined &&
-    partner.pairedWith === obj.id &&
-    pairable(game, obj, obj.pairController) &&
-    pairable(game, partner, obj.pairController)
-  );
-}
-
-/** CR 702.95e: clear every pair that has ended; whether any did. */
-export function endBrokenPairs(game: Game): boolean {
-  let ended = false;
-  for (const id of [...game.battlefield]) {
-    const obj = game.objects.get(id);
-    if (obj !== undefined && obj.pairedWith !== NO_OBJECT && !isStillPaired(game, obj)) {
-      obj.pairedWith = NO_OBJECT;
-      ended = true;
-    }
-  }
-  if (ended) invalidateAllCharacteristics(game);
-  return ended;
 }
 
 // ---------------------------------------------------------------------------
