@@ -591,7 +591,7 @@ class DependencyProbe {
     if (found === undefined) {
       const effect = this.effects[index] as ContinuousEffect;
       found = new Map();
-      for (const id of this.ids) {
+      for (const id of this.candidates(effect)) {
         const obj = this.byId.get(id) as GameObject;
         const base = this.state.get(id) as Characteristics;
         if (affects(this.game, effect, obj, base)) found.set(id, applyEffect(this.game, obj, base, effect));
@@ -599,6 +599,33 @@ class DependencyProbe {
       this.footprints.set(index, found);
     }
     return found;
+  }
+
+  /**
+   * The objects `affects` could say yes to, in id order: only the named ones
+   * when the filter names objects (matching rejects every other id first),
+   * only the source when there is no filter. Everything otherwise. A
+   * shortcut with the same answers: a swarm of tokens each given "+2/+0
+   * until end of turn" made this pairwise search the whole game's cost.
+   */
+  private candidates(effect: ContinuousEffect): readonly ObjectId[] {
+    const spec = (effect.effect as Effect).targets;
+    if (spec === undefined || spec === null) return this.byId.has(effect.source) ? [effect.source] : [];
+    const named = list(spec.specific);
+    if (named.length === 0) return this.ids;
+    const wanted = new Set(named);
+    return this.ids.filter((id) => wanted.has(id));
+  }
+
+  private readonly reaches = new Map<number, ReadonlySet<ObjectId> | null>();
+
+  /** `candidates` as a set, or null for "any object". */
+  private reach(index: number): ReadonlySet<ObjectId> | null {
+    if (!this.reaches.has(index)) {
+      const found = this.candidates(this.effects[index] as ContinuousEffect);
+      this.reaches.set(index, found === this.ids ? null : new Set(found));
+    }
+    return this.reaches.get(index) ?? null;
   }
 
   private appliesBefore(index: number, id: ObjectId): boolean {
@@ -639,7 +666,10 @@ class DependencyProbe {
         return true;
       }
     }
+    const reach = this.reach(i);
     for (const [id, afterB] of footprint) {
+      // An object A can never apply to: no change of B's makes it start (or stop).
+      if (reach !== null && !reach.has(id)) continue;
       const obj = this.byId.get(id) as GameObject;
       const before = this.appliesBefore(i, id);
       if (before !== affects(this.game, a, obj, afterB)) return true;
