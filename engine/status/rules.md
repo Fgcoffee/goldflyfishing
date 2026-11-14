@@ -326,8 +326,8 @@ Aimed at `play()`, the gate for the first full game (milestone 4):
 2. Triggers: done.
 3. Combat: done.
 4. `play(setup, index, seed)`: done; the web session can swap it in.
-5. The build fingerprint: done. Board tests: all that the fixtures allow
-   are ported; the rest wait on the second fixture batch (below).
+5. The build fingerprint and the board tests: done (two cards still to
+   come, below).
 6. Then, from the auditor (9603cce), the web session's items: per-turn
    series and removal in the game records (done: records 78cde2a, report
    d2def4b), and the server-side spot check (done, below) (a Node build with a replay CLI, Node in the
@@ -362,15 +362,22 @@ decks end to end.
 Many Python tests read their cards with the parser or the Python card
 database, which TS doesn't have; their IR is written by hand, so they are
 ported case by case rather than file by file. Also ported:
-test_cr116_foretell_cost, and on your new fixtures (f6adad6, thanks):
+test_cr116_foretell_cost; on your first fixture batch (f6adad6):
 test_cr118_force_of_will, test_cr115_target_identity (the engine cases),
-test_cr107_x_in_activation_costs (Tezzeret), the rest of test_casting and
-test_cr603_cast_this_spell. **Left, waiting on fixtures** (the second list
-below): test_cr107_x_in_activation_costs's Chandra Nalaar and Helix
-Pinnacle cases, test_cr118_alternative_costs, test_cr601_additional_cost_record,
-test_cr601_granted_cast_abilities, test_cr601_target_counts,
-test_cr603_granted_triggers, test_cr608_pay_if_you_do,
-test_cr608_each_opponents_cards, test_cr613_keyword_removal.
+test_cr107_x_in_activation_costs, the rest of test_casting and
+test_cr603_cast_this_spell; on the second (6441531): Chandra and Helix
+Pinnacle's X, test_cr613_keyword_removal, test_cr603_granted_triggers,
+test_cr601_additional_cost_record, test_cr601_target_counts,
+test_cr608_pay_if_you_do (and Rest in Peace), test_cr118_alternative_costs,
+test_cr601_granted_cast_abilities. 809 engine tests green.
+**The item is ticked.** Still open, all small:
+- test_cr608_each_opponents_cards uses Soul-Guide Lantern, which I didn't
+  ask for (I named Rest in Peace by mistake; it went to another file).
+- test_cr601_target_counts's Ulamog case is Ulamog, the Ceaseless Hunger;
+  I asked for the Infinite Gyre by mistake, so that case is adapted.
+- test_cr603_granted_triggers's persist and modular cases build the
+  granted keyword with Python's cr702_keyword_impl, which has no TS
+  counterpart; they stay in Python unless a fixture grants either.
 (test_cr108_* and test_cr605_modal_mana are on the parser's list.)
 
 ## Server-side spot check (done)
@@ -423,14 +430,9 @@ test_cr608_each_opponents_cards, test_cr613_keyword_removal.
 ## For the parser session
 
 - `wasUndeterminable`: installed by you in 0d33632, thanks; numbers.test.ts's CR 903.4f case is an ordinary test now.
-- **Fixtures, please (second batch):** the first 11 are in (f6adad6) and
-  ported. Still wanted: Chandra Nalaar, Helix
-  Pinnacle, Mentor, Nim Deathmantle, Rest in Peace, Colossus Hammer, a Sword
-  of X and Y, Abnormal Endurance, Sublime Archangel, Mikaeus the Unhallowed
-  (or another undying/persist granter), Ornithopter, Fling, Life's Legacy,
-  Momentous Fall, Worthy Cause, Call for Blood, Eldritch Evolution, Wicked
-  Pact, Ulamog the Infinite Gyre, a conspire granter, and Deflecting Swat
-  (free with a commander).
+- **Fixtures:** the second batch is in (6441531, thanks) and ported. Two
+  more, if you would: Soul-Guide Lantern and Ulamog, the Ceaseless Hunger
+  (my mistakes above). And `cardCatalog(game)` in turn.ts (9b48947): thanks.
 
 - turn.ts's CR 727 restart reads the card catalog off the game by cast
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
