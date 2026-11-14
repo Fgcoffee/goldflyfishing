@@ -102,7 +102,20 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   CONTINUOUS_KINDS; PLAYER_WINS, PLAYER_LOSES, BECOME_MONARCH, IF_YOU_DONT,
   PAY_COST, START_ENGINES, ADD_ENERGY, EXTRA_LAND_DROP, EXTRA_TURN,
   SEARCH_LIBRARY, SHUFFLE, REVEAL, SCRY, SURVEIL, PUT_ONTO_BATTLEFIELD,
-  PUT_ON_LIBRARY, LOOK_AT_TOP and EXPLORE. actions.ts has the damage and
+  PUT_ON_LIBRARY, LOOK_AT_TOP and EXPLORE.
+  **Still to come (51 executors):** choose_quality, delayed_trigger,
+  reflexive_trigger (with triggers), replacement, prevent_damage,
+  redirect_damage, enters_as_choice (through stubs for your cr614 pieces),
+  turn_face_up/down, manifest (your cr708), take_initiative, ring_tempts,
+  venture, open_attraction, roll_to_visit, pair (your CR 700 mechanics),
+  and control_player, restart_game, become_prepared, phase_out, regenerate,
+  monstrosity, adapt, exchange_control, exchange_life, end_turn, skip_step,
+  add_experience, sacrifice_blockers_at_end_of_combat, harness,
+  separate_into_piles, become_saddled, become_renowned, haunt,
+  blocks_source_if_able, villainous_choice, choose_mode, set_class_level,
+  become_solved, flip_permanent, change_targets, cast_without_paying,
+  cascade, discover, play_from_zone, extra_phase, extra_step,
+  untap_step_skip, vote, repeat_per_payment, give_gift. actions.ts has the damage and
   life rules (dealDamage with wither, infect, toxic, commander damage and
   lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
   The rest follow in resolve.py's order. A smoke test plays
