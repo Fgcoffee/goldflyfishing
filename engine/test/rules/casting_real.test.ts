@@ -9,7 +9,9 @@ import { player } from "../../src/kernel/game";
 import type { GameObject } from "../../src/kernel/gameobject";
 import { playerTarget } from "../../src/kernel/ids";
 import { addMana, manaKind, poolTotal } from "../../src/rules/cr100_game_concepts/mana_pool";
-import { ActionKind, perform, type Action } from "../../src/rules/cr100_game_concepts/priority";
+import { ActionKind, perform, settle, type Action } from "../../src/rules/cr100_game_concepts/priority";
+import { castSpell } from "../../src/rules/cr600_spells_and_abilities/casting";
+import { CastError } from "../../src/rules/cr600_spells_and_abilities/cast_error";
 import { resolveTop } from "../../src/rules/cr600_spells_and_abilities/stack";
 import { checkStateBasedActions } from "../../src/rules/cr700_additional_rules/sba";
 import { legalActions } from "../../src/rules/legality";
@@ -136,5 +138,65 @@ describe("resolving and paying (CR 601.2g-h, 608.3)", () => {
     const forests = [b.play("Forest"), b.play("Forest")];
     castFirst(b, b.hand("Grizzly Bears"));
     expect(forests.every((f) => f.tapped)).toBe(true);
+  });
+});
+
+// More of test_casting.py, now that the parser exported Ambush Viper,
+// Gladecover Scout, Shock and Wrath of God; and test_cr603_cast_this_spell.py.
+describe("flash, hexproof, untargeted spells, cast triggers", () => {
+  it("flash makes a creature instant speed (CR 702.8a)", () => {
+    const b = board();
+    b.game.activePlayer = 1;
+    giveMana(b, 0, 2, Color.GREEN);
+    expect(casts(b, b.hand("Ambush Viper")).length).toBeGreaterThan(0);
+  });
+
+  it("hexproof stops an opponent's targeting, not its controller's (CR 702.11b)", () => {
+    const b = board();
+    giveMana(b, 0, 2);
+    const theirs = b.play("Gladecover Scout", 1);
+    const mine = b.play("Gladecover Scout", 0);
+    const shock = b.hand("Shock");
+    expect(casts(b, shock).length).toBeGreaterThan(0);
+    const handBefore = player(b.game, 0).hand.length;
+    expect(() => castSpell(b.game, 0, { ...casts(b, shock)[0]!, targets: [[theirs.id]] })).toThrow(CastError);
+    expect(player(b.game, 0).hand.length).toBe(handBefore);
+    expect(b.game.stack).toHaveLength(0);
+    // The refused cast is rewound (CR 732); a second Shock casts at your own.
+    const second = b.hand("Shock");
+    expect(castSpell(b.game, 0, { ...casts(b, second)[0]!, targets: [[mine.id]] }).zone).toBe(Zone.STACK);
+  });
+
+  it("an untargeted spell hits whatever is there as it resolves (CR 608.2)", () => {
+    const b = board();
+    giveMana(b, 0, 2, Color.WHITE);
+    giveMana(b, 0, 2);
+    const early = b.play("Grizzly Bears", 1);
+    castFirst(b, b.hand("Wrath of God"));
+    const late = b.play("Grizzly Bears", 1);
+    resolveTop(b.game);
+    expect(b.game.battlefield.includes(early.id)).toBe(false);
+    expect(b.game.battlefield.includes(late.id)).toBe(false);
+  });
+
+  it("casting Wretched Gryff triggers its 'when you cast this spell' (CR 113.6k)", () => {
+    const b = board();
+    // Python puts three Islands in the library to draw from.
+    const library = player(b.game, 0).library;
+    for (let i = 0; i < 3; i += 1) {
+      const card = b.hand("Mountain");
+      player(b.game, 0).hand.splice(player(b.game, 0).hand.indexOf(card.id), 1);
+      card.zone = Zone.LIBRARY;
+      library.push(card.id);
+    }
+    giveMana(b, 0, 8, Color.BLUE);
+    const gryff = b.hand("Wretched Gryff");
+    const handBefore = player(b.game, 0).hand.length;
+    const action = casts(b, gryff).find((a) => a.alternativeCost < 0)!;
+    expect(perform(b.game, 0, action)).toBe(true);
+    settle(b.game);
+    for (let i = 0; i < 5 && b.game.stack.length > 0; i += 1) resolveTop(b.game);
+    // The Gryff left the hand and the trigger drew one.
+    expect(player(b.game, 0).hand.length).toBe(handBefore);
   });
 });
