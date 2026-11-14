@@ -166,9 +166,25 @@ Phase 2 (brackets) is on hold, per the auditor. SBAs, setup and copies/faces/tok
 - `match/conditions.ts` now uses `spellResolutions` (FIRST_RESOLUTION_OF_NAME), `paidAdditionalKeywords` (a named WAS_KICKED rider) and `combat_damage_record.ts` (both combat-damage conditions). No PENDING(rules) or KNOWN is left in `match/`: COST_PAID reads your `costPaidLastKnown` for an object the payment moved (d31bdf4).
 - **Rules session:** `copyTokenCard(game, original, spec)` is exported from `tokens.ts`, a port of Python's `copy_token_card`. Import it and drop the private copy in `resolve.ts`. Tokens with `enters_attacking` now call your `enterAttacking`.
 
+## Replacement and prevention (6e05490): `rules/cr600_spells_and_abilities/replacement.ts`
+
+The auditor moved three more items to me (18f9e4f): replacements, commander rules, and the in-game CR 700 mechanics. Replacements came first because your resolve.ts needs them.
+- **Rules session: the three you're calling through stubs are published, with Python's signatures (keyword arguments as an options object):**
+  - `register(game, effect: ReplacementEffect): ReplacementEffect`;
+  - `replacementFromEffect(effect: Effect, { source, controller, condition?, duration?, createdTurn? }): ReplacementEffect | null`;
+  - `becomeChosenCharacteristics(game, obj, effect)`, which calls your `execute(newResolution(...))`.
+  - Also exported: `ReplacementKind`, `ReplacementEffect` (camelCase fields), `newReplacementEffect`, `applyReplacements`, `staticReplacements`, `clearExpired`, `hasReplacements`, `commanderZoneReplacement`, `wantsCommandZone`, `tokenSpecMatches`, `amplifyReveals`.
+- **Hooks:** importing the module installs `hasReplacements`, `replace`, `commanderZoneReplacement` and `applySelfEntryReplacements` into your `replacement_hooks.ts`. Your existing `zones.ts`, `actions.ts` and `tokens.ts` calls go through those unchanged.
+  - Python's `Game.static_replacements_cache` is a per-game cache inside the module, so `Game` needs no new fields.
+  - **`play()` (or the engine entry point) must import `rules/match` and `rules/cr600_spells_and_abilities/replacement` once**, or the hooks stay at their do-nothing defaults outside tests.
+  - `junkyardReplacement` and the `aura*` hooks are left as they are: the junkyard comes with Attractions (mine, CR 700), and the Aura ones look like yours (cr303).
+- `preparation.ts` ports cr722 (`becomePrepared`, `keepsItsPrepareCopy`).
+- 18 Vitest cases: static and registered replacements, doublers (CR 614.5), prevention and shields, damage modification, redirect-on-death, CR 903.9b, taplands, untapped-beats-tapped, enters with counters.
+- **Your digital_mechanics question:** yes, it's in my CR 700 list (18f9e4f, "attractions, preparation and digital mechanics"). I'll publish `seek`, `conjure` and `perpetually` under Python's names.
+
 ## Next
 
-- Every Phase 1 item but one is done, the three moved from rules (084182b) included. Phase 2 (brackets) is on hold until the port is done, per the auditor.
+- Moved to me (18f9e4f), in order: replacements (done above), commander rules (CR 903), then the in-game CR 700 mechanics: face-down, designations, dungeons, the Ring, attractions, digital mechanics, soulbond and `cr702_cost_keyword_rules.py`. Then the board tests. Phase 2 stays parked.
 - **Last item: board tests for every module I own.** SBAs, setup, tokens and faces/copies were ported with their modules (50 + 13 + 18 + 23 cases); `test_mana.py` is ported in full. Still to port, now that your mana host and casting exist:
   - mana/: `test_cr601_mana_plan.py` (8), `test_mana_plan_stale_source.py` (3, done: 782379a), `test_cr605_modal_mana.py` (5), `test_entering_and_mana.py` (7), `test_cr903_commander_identity_mana.py` (2).
   - match/: `test_filter_bounds.py` (8), `test_cr108_owner_filters.py` (7), `test_object_filter_any_of.py` (4), `test_history_conditions.py` (12), `test_cr608_affected_values.py` (23), `test_cr608_values_this_way.py` (7), `test_cr702_dethrone_condition.py` (5). Today match.test.ts has a sample of these (21 cases).
