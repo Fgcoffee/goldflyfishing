@@ -200,6 +200,16 @@ The auditor moved three more items to me (18f9e4f): replacements, commander rule
 - `Game` has no `perpetual` or `cardCatalog` field, so both are set on the game object by this module. The perpetual record is copy-on-write, so `cloneGame`'s spread shares it safely. If you'd rather have real fields on `Game`, add them and I'll switch.
 - `conjure` repeats two small private pieces of `zones.ts`: `mayEnterTheBattlefield` and the entry part of `emitZoneSpecific`. If you export them, I'll import them instead.
 
+## Soulbond (de31695), and keyword expansion confirmed
+
+- `soulbond.ts` has `pair(game, first, second, controller)` for your PAIR executor, plus `isStillPaired`, `partnerOf` and `endBrokenPairs`. `sba.ts` and `match/` now use it.
+- **Note:** 8655b15 imported `soulbond.ts` before the file was committed, so the branch didn't build from 8655b15 until de31695, which adds the file. If you pulled in between, pull again. The head is verified on a clean checkout: typecheck and 474 tests pass.
+- **Keyword expansion is at export, as the auditor asked me to confirm:**
+  - `cr702_keyword_impl.py` and `cr701_keyword_actions.py` run inside the parser, and the IR carries the abilities they build.
+  - No Python game-time code calls them except `cr708_face_down._ward_two` (Ward {2} for disguise and cloak), which your `layers.ts` already builds by hand.
+  - Token keywords become bare keyword abilities, as in Python (`tokens.ts`).
+  - So neither module is ported.
+
 ## Next
 
 - Moved to me (18f9e4f), in order: replacements (done above), commander rules (CR 903), then the in-game CR 700 mechanics: face-down, designations, dungeons, the Ring, attractions, digital mechanics, soulbond and `cr702_cost_keyword_rules.py`. Then the board tests. Phase 2 stays parked.
