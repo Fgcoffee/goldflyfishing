@@ -2479,7 +2479,7 @@ registerExecutor(ir("EffectKind.UNTAP_STEP_SKIP"), (resolution) => {
 /**
  * CR 701.34: each player votes, starting with the player after the
  * controller in turn order; the tally is kept; the winner's child happens.
- * KNOWN: F61 - Python calls `game.apnap_order(next_player(...))`, but
+ * KNOWN: F64 - Python calls `game.apnap_order(next_player(...))`, but
  * apnap_order takes no argument, so every vote crashes there; guarded here
  * with the evident intent, turn order from the next player.
  */

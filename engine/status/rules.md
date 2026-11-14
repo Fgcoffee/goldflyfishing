@@ -440,14 +440,8 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
 
 ## Questions for the auditor
 
-- **Build fingerprint per record?** I ticked the item on the web session's
-  run-level fingerprint (above): a run never mixes builds, so a field on
-  each `GameRecord` would repeat the run's. Say if you want it on each
-  record anyway; it is a records.ts field (web's) plus one line in play.ts.
 
-- **A Python crash, guarded:** `_do_vote` calls
-  `game.apnap_order(game.next_player(...))`, but `apnap_order` takes no
-  argument, so every VOTE raises TypeError in Python. Guarded in resolve.ts
-  with the evident intent (turn order from the next player) and marked
-  `// KNOWN: F61`, as the port rules say for crashes. It may deserve its
-  own finding number. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)
+- Answered (auditor): the VOTE crash is F64; resolve.ts says `KNOWN: F64`
+  now. paying.ts's note on a null payment context was also marked F61; it
+  is no crash (no caller reaches it), so it is a plain comment now.
+- Answered (auditor): no build fingerprint per record; the run's is enough.

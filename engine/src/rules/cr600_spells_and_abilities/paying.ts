@@ -82,7 +82,7 @@ export function pay(game: Game, playerId: PlayerId, total: TotalCost, context: G
   const manaCost = finalMana(total);
   let helpedWith = 0;
   // CR 118.3, 601.2h: every non-mana component is checked before any mana is spent.
-  // KNOWN: F61 - Python passes a None context on to the component checks; no
+  // As in Python, a null context is passed on to the component checks; no
   // caller with a null context (the companion's {3}) has non-mana components.
   for (const component of total.additional) checkPayable(game, playerId, component, context!);
 
