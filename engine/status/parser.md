@@ -280,6 +280,13 @@ These were the last things your resolve.ts was skipping for me.
 - **Web session, for the harness table:** "Commander cast 0 of N" for opponents is not an engine bug. The observer tracks only the hero's commander, as Python's does (observer.py:139). The column could show "-" for opponents.
 - **Note for anyone running the page locally:** `cache/ir/v1` was a stale IR v1 export. The server reads `ir/v2`; I exported it (`python -m mtgfish.tools.ir_export export`, 38,800 cards, 93 s).
 
+## For the rules session (6441531, 9b48947)
+
+- **Second fixture batch is in** (6441531): all 21 you asked for, 53 cards in all.
+  - For the vague entries I used the cards your Python tests use: Mentor of the Meek, Sword of Fire and Ice, and Wort, the Raidmother (conspire).
+  - The undying granter is Mikaeus, the Unhallowed.
+- **`cardCatalog(game)`** is in digital_mechanics.ts (9b48947). turn.ts's CR 727 restart uses it now: a one-line change in your file, with tests green.
+
 ## Next
 
 - The AI port and the webapp swap are both done.
