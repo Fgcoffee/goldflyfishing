@@ -46,6 +46,10 @@ import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
 import { enchantableScope } from "../cr600_spells_and_abilities/targeting";
 import { PlayerScope } from "../match/enums";
 import { chooseProtector, eligibleProtectors, moveObject, removeFromZone } from "../zones";
+import { wantsCommandZone } from "../cr600_spells_and_abilities/replacement";
+import { keepsItsPrepareCopy } from "./preparation";
+
+export { keepsItsPrepareCopy, wantsCommandZone };
 
 /** Guard against an effect loop that keeps generating work forever. */
 export const MAX_ITERATIONS = 100;
@@ -184,21 +188,6 @@ function checkCommanderZoneChoice(game: Game): GameObject[] {
     if (wantsCommandZone(game, obj, obj.zone)) moves.push(obj);
   }
   return moves;
-}
-
-/**
- * Whether the commander's owner takes the CR 903.9 option: the agent's
- * `moveCommanderToCommandZone(game, owner, obj, zone)` if it has one, else
- * yes (Python `cr614_replacement.wants_command_zone`).
- */
-export function wantsCommandZone(game: Game, obj: GameObject, toZone: Zone): boolean {
-  const agent = agentFor(game, obj.owner) as {
-    moveCommanderToCommandZone?: (game: Game, owner: PlayerId, obj: GameObject, zone: Zone) => boolean;
-  } | null | undefined;
-  if (agent && typeof agent.moveCommanderToCommandZone === "function") {
-    return Boolean(agent.moveCommanderToCommandZone(game, obj.owner, obj, toZone));
-  }
-  return true;
 }
 
 function moveCommanderHome(game: Game, obj: GameObject): void {
@@ -410,18 +399,6 @@ function checkCeased(game: Game, toCease: GameObject[]): void {
       toCease.push(obj);
     }
   }
-}
-
-/** CR 722.3c: the copy stays while its permanent is on the battlefield and prepared. */
-export function keepsItsPrepareCopy(game: Game, copy: GameObject): boolean {
-  if (copy.prepareCopyOf === NO_OBJECT || copy.zone !== Zone.EXILE) return false;
-  const permanent = game.objects.get(copy.prepareCopyOf);
-  return (
-    permanent !== undefined &&
-    isLive(permanent) &&
-    permanent.zone === Zone.BATTLEFIELD &&
-    game.preparedPermanents.has(permanent.id)
-  );
 }
 
 // ---------------------------------------------------------------------------
