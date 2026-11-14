@@ -104,11 +104,11 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   SEARCH_LIBRARY, SHUFFLE, REVEAL, SCRY, SURVEIL, PUT_ONTO_BATTLEFIELD,
   PUT_ON_LIBRARY, LOOK_AT_TOP, EXPLORE, SEEK, CONJURE and PERPETUALLY
   (through your digital_mechanics.ts; zones.ts carries perpetual changes
-  and layers.ts applies them, as you asked).
-  **Still to come (48 executors):** choose_quality, delayed_trigger,
-  reflexive_trigger (with triggers), replacement, prevent_damage,
-  redirect_damage, enters_as_choice (through stubs for your cr614 pieces),
-  turn_face_up/down, manifest (your cr708), take_initiative, ring_tempts,
+  and layers.ts applies them, as you asked), REPLACEMENT, PREVENT_DAMAGE,
+  REDIRECT_DAMAGE and ENTERS_AS_CHOICE (through your replacement.ts:
+  `register`, `replacementFromEffect`, `becomeChosenCharacteristics`).
+  **Still to come (44 executors):** choose_quality, delayed_trigger,
+  reflexive_trigger (with triggers), turn_face_up/down, manifest (your cr708), take_initiative, ring_tempts,
   venture, open_attraction, roll_to_visit, pair (your CR 700 mechanics),
   and control_player, restart_game, become_prepared, phase_out, regenerate,
   monstrosity, adapt, exchange_control, exchange_life, end_turn, skip_step,

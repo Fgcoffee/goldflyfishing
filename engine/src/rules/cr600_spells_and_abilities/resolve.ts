@@ -11,7 +11,14 @@
  */
 
 import { PlayerScopeValues } from "../../ir";
-import type { Condition, Cost, CostComponent, Effect, ObjectFilter, Restriction, TokenSpec, Value } from "../../ir";
+import type { Condition, Cost, CostComponent, Effect, ObjectFilter, PlayerFilter, Restriction, TokenSpec, Value } from "../../ir";
+import {
+  becomeChosenCharacteristics,
+  newReplacementEffect,
+  register as registerReplacementEffect,
+  ReplacementKind,
+  replacementFromEffect,
+} from "./replacement";
 import { CONSUMING_COSTS, CostKind } from "../cr100_game_concepts/costs";
 import { startEngines } from "../cr100_game_concepts/player";
 import { Color, Duration, Layout, LossReason, Supertype, Zone } from "../../kernel/enums";
@@ -1683,5 +1690,113 @@ registerExecutor(ir("EffectKind.EXPLORE"), (resolution, effect) => {
     if (isLand(printedCharacteristics(game, top))) moveObject(game, top, Zone.HAND, { toPlayer: p.id });
     else addCounters(game, obj, "+1/+1", 1, { source: resolution.source });
     emit(game, event(EventKind.EXPLORED, { objectId: obj.id, player: p.id }));
+  }
+});
+
+// -- replacement and prevention from resolving spells (the parser's replacement.ts) ---------------
+
+/**
+ * A replacement effect made by a resolution (CR 614.1). Unearth's "if it
+ * would leave, exile it instead" is bound to the permanent and used up
+ * once (CR 400.7); the rest go through registerReplacement, and a shape
+ * with no replacement kind is a continuous effect as before.
+ */
+registerExecutor(ir("EffectKind.REPLACEMENT"), (resolution, effect) => {
+  const spec = effect.targets;
+  if (num(effect.replacement_kind) !== ReplacementKind.REDIRECT_ZONE_CHANGE || effect.zone == null || spec == null || !flag(spec.source_only)) {
+    if (num(effect.replacement_kind)) registerReplacement(resolution, effect);
+    else registerContinuous(resolution, effect);
+    return;
+  }
+  for (const obj of objectsOf(resolution, effect)) {
+    if (!isPermanent(obj)) continue;
+    registerReplacementEffect(resolution.game, newReplacementEffect({
+      kind: ReplacementKind.REDIRECT_ZONE_CHANGE,
+      eventKinds: new Set([EventKind.ZONE_CHANGE]),
+      source: resolution.source,
+      controller: resolution.controller,
+      subject: { $: "ObjectFilter", specific: [obj.id], zones: { $set: [Zone.BATTLEFIELD] } },
+      destination: num(effect.zone) as Zone,
+      oneShot: true,
+      text: effect.text ?? "",
+    }));
+  }
+});
+
+/** CR 611.2, 614: lasts its duration whether or not its source survives; named objects settled now. */
+function registerReplacement(resolution: Resolution, effect: Effect): void {
+  const game = resolution.game;
+  for (const [targets, players] of boundRecipients(resolution, effect)) {
+    const built = replacementFromEffect({ ...effect, targets, players, is_targeted: false }, {
+      source: resolution.source, controller: resolution.controller, duration: num(effect.duration), createdTurn: game.turn,
+    });
+    if (built !== null) registerReplacementEffect(game, built);
+  }
+}
+
+type Recipient = [ObjectFilter | null, PlayerFilter | null];
+
+/**
+ * What a resolving replacement or prevention is about, one (objects,
+ * players) pair per shield: targets and "it" become specific; with `each`,
+ * one shield per object or player a mass filter matches now; otherwise the
+ * filter stays live.
+ */
+function boundRecipients(resolution: Resolution, effect: Effect, each = false): Recipient[] {
+  const one = (id: ObjectId): Recipient => [{ $: "ObjectFilter", specific: [id], zones: { $set: [] } }, null];
+  const who = (pid: PlayerId): Recipient => [null, { $: "PlayerFilter", scope: PS.SPECIFIC as never, specific: pid }];
+  const spec = effect.targets ?? null;
+  if (isTargeted(effect)) {
+    if (targetsAPlayer(effect)) return playersOf(resolution, effect).map(who);
+    const chosen = targetsFor(resolution, effect);
+    const objects = objectsOf(resolution, effect, chosen);
+    return [...objects.map((o) => one(o.id)), ...targetedPlayers(chosen).map(who)];
+  }
+  if (spec !== null && flag(spec.remembered)) return objectsOf(resolution, effect).map((o) => one(o.id));
+  if (each && spec !== null && !flag(spec.source_only)) {
+    const pairs = objectsOf(resolution, effect).map((o) => one(o.id));
+    if (effect.players != null) pairs.push(...playersOf(resolution, effect).map(who));
+    return pairs;
+  }
+  if (each && spec === null && effect.players != null) return playersOf(resolution, effect).map(who);
+  return [[spec, effect.players ?? null]];
+}
+
+/** CR 615: a prevention shield; -1 is "all", otherwise a size worked out now (CR 608.2h, 615.7). */
+registerExecutor(ir("EffectKind.PREVENT_DAMAGE"), (resolution, effect) => {
+  const game = resolution.game;
+  const constant = constantOf(effect.amount ?? { $: "Value" });
+  const everything = constant !== null && constant < 0;
+  const size = everything ? -1 : amountOf(resolution, effect);
+  if (!everything && size <= 0) return;
+  for (const [targets, players] of boundRecipients(resolution, effect, !everything)) {
+    const built = replacementFromEffect({ ...effect, targets, players, is_targeted: false }, {
+      source: resolution.source, controller: resolution.controller, duration: num(effect.duration), createdTurn: game.turn,
+    });
+    if (built === null) continue;
+    built.amount = size;
+    built.oneShot = !everything;
+    registerReplacementEffect(game, built);
+  }
+});
+
+/** CR 614.9: damage that would be dealt to one thing is dealt to another. */
+registerExecutor(ir("EffectKind.REDIRECT_DAMAGE"), (resolution, effect) => {
+  const chosen = objectsOf(resolution, effect);
+  if (chosen.length === 0) return;
+  registerReplacementEffect(resolution.game, newReplacementEffect({
+    kind: ReplacementKind.REDIRECT_DAMAGE,
+    eventKinds: new Set([EventKind.DAMAGE_DEALT, EventKind.COMBAT_DAMAGE_DEALT]),
+    source: resolution.source,
+    controller: resolution.controller,
+    redirectTo: chosen[0]!.id,
+    text: effect.text || "redirect damage",
+  }));
+});
+
+/** CR 208.2b by resolution: the choice made for the permanent the effect refers to. */
+registerExecutor(ir("EffectKind.ENTERS_AS_CHOICE"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone === Zone.BATTLEFIELD) becomeChosenCharacteristics(resolution.game, obj, effect);
   }
 });
