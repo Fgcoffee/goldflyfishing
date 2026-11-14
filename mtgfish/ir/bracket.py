@@ -68,9 +68,12 @@ def land_types() -> frozenset[str]:
     global _land_types
     if _land_types is None:
         import json
-        from pathlib import Path
 
-        catalog = Path(__file__).resolve().parents[2] / "cache" / "scryfall" / "catalog-land-types.json"
+        from ..paths import scryfall_cache
+
+        # The data root, not the repository: the server image keeps the
+        # Scryfall data in /app/data (MTGFISH_DATA_DIR).
+        catalog = scryfall_cache() / "catalog-land-types.json"
         _land_types = frozenset(json.loads(catalog.read_text(encoding="utf-8")))
     return _land_types
 
