@@ -15,7 +15,8 @@ import type { Condition, Cost, CostComponent, Effect, ObjectFilter, Restriction,
 import { CONSUMING_COSTS, CostKind } from "../cr100_game_concepts/costs";
 import { startEngines } from "../cr100_game_concepts/player";
 import { Color, Duration, Layout, LossReason, Supertype, Zone } from "../../kernel/enums";
-import { randint, shuffle } from "../../kernel/random";
+import { randint, randrange, shuffle } from "../../kernel/random";
+import { catalogCard, conjure, conjureDuplicate, conjuredName, PERPETUAL_KINDS, perpetually, seek } from "../cr700_additional_rules/digital_mechanics";
 import { enterAttacking } from "../cr500_turn_structure/combat";
 import { copyTokenCard, createEmblem, createTokens } from "../cr100_game_concepts/tokens";
 import { registerOverride, Rule } from "../cr100_game_concepts/rule_overrides";
@@ -57,7 +58,7 @@ import { emit } from "../emit";
 import { flag, ir, irEqual, list, num, str } from "../ir_read";
 import { parseManaSymbol } from "../mana/cost";
 import { addMana, manaKind, manaKindKey, poolSnapshot, type ManaKind, type ManaRestriction } from "../mana/pool";
-import { constantOf, isTargeted, targetsAPlayer, targetsItsPlayer } from "./effect_props";
+import { constantOf, isTargeted, targetsAPlayer, targetsItsPlayer, walk } from "./effect_props";
 import { characteristicsOf, copiableCharacteristics, EFFECT_LAYERS, intrinsicAbilities, layerFor, printedCharacteristics } from "./layers";
 import { attackers } from "../cr500_turn_structure/combat";
 
@@ -1485,8 +1486,81 @@ registerExecutor(ir("EffectKind.SHUFFLE"), (resolution, effect) => {
   for (const pid of playersOf(resolution, effect)) shuffleLibrary(resolution.game, pid);
 });
 
-// PORT: SEEK, CONJURE and PERPETUALLY call digital_mechanics.py, not ported
-// yet (asked in status/rules.md who owns it); until then they are logged and skipped.
+// -- MTG Arena's digital-only mechanics (the parser's digital_mechanics.ts) -------------------
+
+/** Seek: matching cards at random from the library, into the hand; "it" is what was found. */
+registerExecutor(ir("EffectKind.SEEK"), (resolution, effect) => {
+  const game = resolution.game;
+  const count = countOf(resolution, effect);
+  const found: ObjectId[] = [];
+  for (const pid of playersOf(resolution, effect)) {
+    const toZone = effect.zone == null ? Zone.HAND : (num(effect.zone) as Zone);
+    found.push(...seek(game, pid, effect.targets ?? null, count, { source: resolution.source, controller: resolution.controller, toZone }).map((o) => o.id));
+  }
+  resolution.remembered = found;
+});
+
+/** Conjure: by name from the catalogue, or a duplicate of an object (keeping perpetual changes). */
+registerExecutor(ir("EffectKind.CONJURE"), (resolution, effect) => {
+  const game = resolution.game;
+  const zone = effect.zone == null ? Zone.HAND : (num(effect.zone) as Zone);
+  const count = countOf(resolution, effect);
+  const keywords = list(effect.keywords);
+  const tapped = keywords.includes("tapped");
+  const fromTop = constantOf(effect.amount2 ?? { $: "Value" }) === 0 ? 0 : amount2Of(resolution, effect);
+  const made: ObjectId[] = [];
+  const players = playersOf(resolution, effect);
+  const name = conjuredName(effect);
+  if (name) {
+    const card = catalogCard(game, name);
+    if (card !== null) {
+      for (const pid of players) {
+        for (let i = 0; i < count; i += 1) {
+          const obj = conjure(game, pid, card, zone, { tapped, fromTop, source: resolution.source });
+          if (obj !== null) made.push(obj.id);
+        }
+      }
+    }
+  } else if (effect.targets != null) {
+    const originals = objectsOf(resolution, effect);
+    const keepPerpetual = keywords.includes("duplicate");
+    for (const pid of players) {
+      for (const original of originals) {
+        for (let i = 0; i < count; i += 1) {
+          const obj = conjureDuplicate(game, pid, original, zone, { keepPerpetual, tapped, source: resolution.source });
+          if (obj !== null) made.push(obj.id);
+        }
+      }
+    }
+  }
+  resolution.remembered = made;
+});
+
+/** Perpetually: each change bound to each object for good; the set settled now (CR 611.2c). */
+registerExecutor(ir("EffectKind.PERPETUALLY"), (resolution, effect) => {
+  const game = resolution.game;
+  const objects = perpetualObjects(resolution, effect);
+  const changes = [...walk(effect)].filter((node) => PERPETUAL_KINDS.has(num(node.kind)));
+  const pt = new Set([ir("EffectKind.MODIFY_PT") as number, ir("EffectKind.SET_PT") as number]);
+  for (const obj of objects) {
+    for (const change of changes) {
+      const amounts: [number, number] | null = pt.has(num(change.kind)) ? [amountOf(resolution, change), amountOf(resolution, change, true)] : null;
+      perpetually(game, obj, change, resolution.controller, { amounts });
+    }
+  }
+  if (objects.length > 0) resolution.remembered = objects.map((o) => o.id);
+});
+
+/** "A random" one is picked with the game's generator. */
+function perpetualObjects(resolution: Resolution, effect: Effect): GameObject[] {
+  if (!list(effect.keywords).includes("at random") || effect.targets == null) return objectsOf(resolution, effect);
+  const spec = effect.targets;
+  const pool = matchHooks().find(resolution.game, { ...spec, count: null, up_to: false }, { source: resolution.source, controller: resolution.controller });
+  const wanted = spec.count != null ? valueOf(resolution, spec.count) : 1;
+  const picked: GameObject[] = [];
+  while (pool.length > 0 && picked.length < wanted) picked.push(pool.splice(randrange(resolution.game.rng, pool.length), 1)[0]!);
+  return picked;
+}
 
 // -- looking, revealing, putting (CR 701.18, 701.20, 701.44) ------------------------------------
 

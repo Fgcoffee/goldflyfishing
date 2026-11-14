@@ -10,6 +10,7 @@
  * cr600_spells_and_abilities/replacement_hooks.ts until cr614 is ported.
  */
 
+import { carryPerpetual } from "./cr700_additional_rules/digital_mechanics";
 import { CardType, Layout, Zone, zoneName } from "../kernel/enums";
 import type { CardDef } from "../kernel/card";
 import { event, EventKind, replaced, type GameEvent } from "../kernel/events";
@@ -178,7 +179,8 @@ export function moveObject(game: Game, obj: GameObject, toZoneIn: Zone, options:
   // The old object keeps its old zone: last-known information (CR 603.6e).
   obj.supersededBy = created.id;
   created.previousId = obj.id;
-  // KNOWN: MTG Arena "perpetually" (game.perpetual) is not ported yet.
+  // MTG Arena's "perpetually": the changes follow the card to the new object.
+  carryPerpetual(game, obj.id, created.id);
 
   game.objects.set(created.id, created);
   // KNOWN: CR 717.6a (arrived_in_command_zone, the Attraction junkyard pile)

@@ -29,6 +29,7 @@ import {
   replaceCharacteristics,
   type Characteristics,
 } from "../cr200_parts_of_a_card/characteristics";
+import { perpetualContinuousEffects, perpetuallyChanged } from "../cr700_additional_rules/digital_mechanics";
 import { activeRegistry, addingTypes, removingTypes, type TypeLine } from "../cr200_parts_of_a_card/typeline";
 
 // IR enum numbers this module dispatches on (EffectKind, AbilityKind, ValueKind).
@@ -372,8 +373,9 @@ function reachedElsewhere(game: Game, scope: readonly GameObject[]): GameObject[
       for (const id of ids) admit(game.objects.get(id));
     }
   }
-  // KNOWN: MTG Arena "perpetually" (digital_mechanics.perpetually_changed) is
-  // not ported; perpetual changes are not applied.
+  // MTG Arena's "perpetually": a card changed perpetually carries the
+  // change into every zone, so it is computed wherever it is.
+  for (const obj of perpetuallyChanged(game)) admit(obj);
   return out;
 }
 
@@ -465,6 +467,8 @@ function groupByLayer(effects: readonly ContinuousEffect[]): Map<number, Continu
  */
 function liveEffects(game: Game, state: Board, byId: Map<ObjectId, GameObject>, grants: Grants | null = null): ContinuousEffect[] {
   const out = game.continuousEffects.filter((ce) => !ce.expired && EFFECT_LAYERS.has(kindOf(ce.effect as Effect)));
+  // MTG Arena's "perpetually": each card's perpetual changes, to that card alone, in every zone.
+  out.push(...perpetualContinuousEffects(game, byId));
   for (const [id, obj] of byId) {
     if (obj.phasedOut) continue;
     if (obj.zone !== Zone.BATTLEFIELD && !(obj.zone === Zone.COMMAND && obj.kind === ObjectKind.EMBLEM)) continue;

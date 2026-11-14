@@ -102,8 +102,10 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   CONTINUOUS_KINDS; PLAYER_WINS, PLAYER_LOSES, BECOME_MONARCH, IF_YOU_DONT,
   PAY_COST, START_ENGINES, ADD_ENERGY, EXTRA_LAND_DROP, EXTRA_TURN,
   SEARCH_LIBRARY, SHUFFLE, REVEAL, SCRY, SURVEIL, PUT_ONTO_BATTLEFIELD,
-  PUT_ON_LIBRARY, LOOK_AT_TOP and EXPLORE.
-  **Still to come (51 executors):** choose_quality, delayed_trigger,
+  PUT_ON_LIBRARY, LOOK_AT_TOP, EXPLORE, SEEK, CONJURE and PERPETUALLY
+  (through your digital_mechanics.ts; zones.ts carries perpetual changes
+  and layers.ts applies them, as you asked).
+  **Still to come (48 executors):** choose_quality, delayed_trigger,
   reflexive_trigger (with triggers), replacement, prevent_damage,
   redirect_damage, enters_as_choice (through stubs for your cr614 pieces),
   turn_face_up/down, manifest (your cr708), take_initiative, ring_tempts,
@@ -289,7 +291,4 @@ mechanics 18f9e4f.)
 
 ## Questions for the auditor
 
-- **digital_mechanics.py** (seek, conjure, perpetually, the Arena
-  mechanics): does it count as one of the in-game CR 700 mechanics moved to
-  the parser (18f9e4f)? My SEEK, CONJURE and PERPETUALLY executors call it;
-  until it exists they are logged and skipped. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)
+- None. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)
