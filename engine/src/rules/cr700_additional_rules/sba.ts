@@ -48,6 +48,7 @@ import { PlayerScope } from "../match/enums";
 import { chooseProtector, eligibleProtectors, moveObject, removeFromZone } from "../zones";
 import { wantsCommandZone } from "../cr600_spells_and_abilities/replacement";
 import { completeDungeon, finishedDungeons } from "../cr300_card_types/dungeons";
+import { checkRemovalFromCombat } from "../cr500_turn_structure/combat";
 import { keepsItsPrepareCopy } from "./preparation";
 import { endBrokenPairs, isStillPaired } from "./soulbond";
 
@@ -64,8 +65,10 @@ export const MAX_ITERATIONS = 100;
 export function checkStateBasedActions(game: Game): boolean {
   let didAnything = false;
   for (let i = 0; i < MAX_ITERATIONS; i++) {
-    // PORT: Python calls check_removal_from_combat(game) here (CR 506.4); it
-    // comes with the rules session's combat port.
+    // CR 506.4 isn't a state-based action - a permanent leaves combat the
+    // instant it stops qualifying - but this is when the game next looks,
+    // before anyone gets priority, so nothing observes the gap.
+    checkRemovalFromCombat(game);
     // CR 704.3: one round is simultaneous - every creature it puts into a
     // graveyard dies at the same time (CR 603.2c).
     game.eventBatch += 1;

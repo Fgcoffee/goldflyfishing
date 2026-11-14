@@ -16,6 +16,7 @@ import { ir } from "../ir_read";
 import { draw, loseLife, mill } from "../cr100_game_concepts/actions";
 import { isLand } from "../cr200_parts_of_a_card/characteristics";
 import { printedCharacteristics } from "../cr600_spells_and_abilities/layers";
+import { pendingTrigger, type PendingTrigger } from "../cr600_spells_and_abilities/triggers";
 
 // ---------------------------------------------------------------------------
 // The monarch (CR 725)
@@ -74,17 +75,8 @@ export function initiativeHolder(game: Game): PlayerId {
   return NO_PLAYER;
 }
 
-/**
- * A trigger with no source, as Python's `PendingTrigger(source, ability,
- * event, controller)`. PORT: the rules session's triggers port defines
- * PendingTrigger; this is its shape, camelCased.
- */
-export interface SourcelessTrigger {
-  source: number;
-  ability: Ability;
-  event: GameEvent;
-  controller: PlayerId;
-}
+/** The queued initiative trigger: the triggers port's PendingTrigger. */
+export type SourcelessTrigger = PendingTrigger;
 
 /**
  * CR 726.2: one of the initiative's inherent triggered abilities. No
@@ -100,8 +92,7 @@ function initiativeTrigger(game: Game, controller: PlayerId, effect: Effect, e: 
     trigger: { $: "TriggerCondition", event_kinds: { $set: [e.kind] }, text },
     text,
   };
-  const pending: SourcelessTrigger = { source: NO_OBJECT, ability, event: e, controller };
-  game.pendingTriggers.push(pending);
+  game.pendingTriggers.push(pendingTrigger(NO_OBJECT, ability, e, controller));
 }
 
 const ventureIntoUndercity = (): Effect => ({
