@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import type { Ability, Condition, Effect, TriggerCondition } from "../../src/ir";
 import { Color, Duration, Zone } from "../../src/kernel/enums";
 import { event, EventKind } from "../../src/kernel/events";
-import { player } from "../../src/kernel/game";
+import { createObject, player } from "../../src/kernel/game";
 import { installMatchHooks } from "../../src/kernel/hooks";
 import { addCounters, destroy } from "../../src/rules/cr100_game_concepts/actions";
 import {
@@ -22,7 +22,8 @@ import { resolveTop } from "../../src/rules/cr600_spells_and_abilities/stack";
 import { emit } from "../../src/rules/emit";
 import { ir } from "../../src/rules/ir_read";
 import { amountOfColor } from "../../src/rules/mana/pool";
-import { ALL_CREATURES, Board, effect, filter } from "./board";
+import { ALL_CREATURES, Board, CARDS, effect, filter } from "./board";
+import { putCastTriggers } from "../../src/rules/cr700_additional_rules/paid_costs";
 
 const E = (kind: string, fields: Partial<Effect> = {}): Effect => effect({ kind: ir(`EffectKind.${kind}` as never), ...fields });
 const YOU = { $: "PlayerFilter" as const, scope: ir("PlayerScope.YOU") };
@@ -284,5 +285,23 @@ describe("executors that make triggers (CR 603.7, 603.9, 610.3)", () => {
     expect(board.game.pendingTriggers).toHaveLength(0);
     execute(newResolution(board.game, anthem.id, 0), [reflexive]);
     expect(fired(board, "when you do")).toBe(1);
+  });
+});
+
+describe("copy triggers of paid costs (CR 702.56a, 702.78a)", () => {
+  it("replicate paid twice makes one trigger copying it twice", () => {
+    const board = new Board();
+    board.script("Glorious Anthem", {
+      $: "Ability",
+      kind: ir("AbilityKind.SPELL"),
+      additional_cost: { $: "AdditionalCost", cost: { $: "Cost" }, optional: true, keyword: "Replicate" },
+    });
+    const spell = createObject(board.game, CARDS["Glorious Anthem"]!, 0, Zone.STACK);
+    spell.additionalCostsPaid = [0, 0];
+    putCastTriggers(board.game, spell);
+    const [noted] = pending(board);
+    expect(pending(board)).toHaveLength(1);
+    expect(noted!.ability.effects![0]!.amount).toEqual({ $: "Value", constant: 2 });
+    expect(noted!.ability.effects![0]!.targets!.specific).toEqual([spell.id]);
   });
 });

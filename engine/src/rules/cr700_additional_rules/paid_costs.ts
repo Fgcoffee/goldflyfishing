@@ -5,7 +5,10 @@
  * cr702_cost_keyword_rules.py (promise_gift, cast_face_index).
  */
 
-import type { AdditionalCost, AlternativeCost, Effect, ObjectFilter } from "../../ir";
+import type { Ability, AdditionalCost, AlternativeCost, Effect, ObjectFilter } from "../../ir";
+import { event, EventKind } from "../../kernel/events";
+import { pendingTrigger } from "../cr600_spells_and_abilities/triggers";
+import { MAY_CHOOSE_NEW_TARGETS } from "./faces";
 import { Zone } from "../../kernel/enums";
 import { execute, newResolution } from "../cr600_spells_and_abilities/resolve";
 import type { CardDef } from "../../kernel/card";
@@ -54,12 +57,49 @@ export function castFaceIndex(spell: GameObject, alternative: AlternativeCost | 
   return 1;
 }
 
+const COPIED_AS_CAST: readonly [string, string][] = [
+  ["replicate", "copy it for each time its replicate cost was paid"],
+  ["conspire", "copy it"],
+];
+
 /**
- * CR 702.56a, 702.78a: replicate's and conspire's "when you cast this spell"
- * copy triggers. PORT: they need PendingTrigger from the triggers port;
- * until then no copy trigger is put on the stack.
+ * CR 702.56a, 702.78a: the "when you cast this spell" copy triggers.
+ * Replicate copies once per payment, each paid conspire once (CR 702.78b);
+ * they go on the stack above the spell.
  */
-export function putCastTriggers(_game: Game, _spell: GameObject): void {}
+export function putCastTriggers(game: Game, spell: GameObject): void {
+  for (const [keyword, text] of COPIED_AS_CAST) putCopyTrigger(game, spell, keyword, text);
+}
+
+function putCopyTrigger(game: Game, spell: GameObject, keyword: string, text: string): void {
+  const count = timesPaid(game, spell, keyword);
+  if (!count) return;
+  const ability: Ability = {
+    $: "Ability",
+    kind: ir("AbilityKind.TRIGGERED"),
+    trigger: {
+      $: "TriggerCondition",
+      event_kinds: { $set: [EventKind.CAST_SPELL] },
+      functions_in: { $set: [Zone.STACK] },
+      text: `when you cast this spell, if a ${keyword} cost was paid for it`,
+    },
+    effects: [
+      {
+        $: "Effect",
+        kind: EK("COPY_SPELL"),
+        targets: { $: "ObjectFilter", specific: [spell.id], zones: { $set: [Zone.STACK] } },
+        amount: { $: "Value", constant: count },
+        // CR 702.56a, 702.78a: the copies may be given new targets.
+        keywords: [MAY_CHOOSE_NEW_TARGETS],
+        text,
+      },
+    ],
+    text: keyword.charAt(0).toUpperCase() + keyword.slice(1),
+  };
+  game.pendingTriggers.push(
+    pendingTrigger(spell.id, ability, event(EventKind.CAST_SPELL, { objectId: spell.id, player: spell.controller }), spell.controller),
+  );
+}
 
 /** The most an emerge cost could be reduced by now (CR 702.119a), for legality's upper bound. */
 export function emergeDiscount(game: Game, playerId: PlayerId, alternative: AlternativeCost): number {
