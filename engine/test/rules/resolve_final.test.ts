@@ -6,6 +6,7 @@ import { Zone } from "../../src/kernel/enums";
 import { createObject, player } from "../../src/kernel/game";
 import { classLevel } from "../../src/rules/cr300_card_types/card_types";
 import { currentDungeon } from "../../src/rules/cr300_card_types/dungeons";
+import { setUpAttractionDeck } from "../../src/rules/cr700_additional_rules/attractions";
 import { execute, newResolution } from "../../src/rules/cr600_spells_and_abilities/resolve";
 import { ir } from "../../src/rules/ir_read";
 import { Board, CARDS, effect, filter } from "./board";
@@ -112,5 +113,23 @@ describe("face down (CR 701.40, 708)", () => {
     const manifested = board.game.objects.get(card.supersededBy);
     expect(manifested?.zone).toBe(Zone.BATTLEFIELD);
     expect(manifested?.faceDown).toBe(true);
+  });
+});
+
+describe("Attractions (CR 701.51, 701.52)", () => {
+  it("OPEN_ATTRACTION opens one each time; ROLL_TO_VISIT keeps the roll", () => {
+    const board = new Board();
+    board.game.activePlayer = 0;
+    const source = board.play("Glorious Anthem");
+    setUpAttractionDeck(board.game, 0, [CARDS["Glorious Anthem"]!, CARDS["Gaea's Anthem"]!]);
+    const before = board.game.battlefield.length;
+    const you = { $: "PlayerFilter" as const, scope: ir("PlayerScope.YOU") };
+    execute(newResolution(board.game, source.id, 0), [effect({ kind: ir("EffectKind.OPEN_ATTRACTION"), players: you, amount: { $: "Value", constant: 2 } })]);
+    expect(board.game.battlefield.length).toBe(before + 2);
+    const r = newResolution(board.game, source.id, 0);
+    execute(r, [effect({ kind: ir("EffectKind.ROLL_TO_VISIT"), players: you })]);
+    expect(r.dieResults).toHaveLength(1);
+    expect(r.dieResults[0]).toBeGreaterThanOrEqual(1);
+    expect(r.dieResults[0]).toBeLessThanOrEqual(6);
   });
 });

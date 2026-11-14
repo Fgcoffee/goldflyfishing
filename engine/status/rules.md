@@ -120,9 +120,8 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   REFLEXIVE_TRIGGER (3582b6f); `createDelayedTrigger` is exported from
   resolve.ts. BLOCKS_SOURCE_IF_ABLE is done too (1ed92e2). Wired to your modules: TURN_FACE_DOWN and MANIFEST (face_down.ts); VENTURE is wired to your dungeons.ts; RING_TEMPTS and
   SACRIFICE_BLOCKERS_AT_END_OF_COMBAT to your ring.ts (combat.ts now imports
-  your `isARingBearer`); OPEN_ATTRACTION and
-  ROLL_TO_VISIT need the Attractions functions. Until then those are logged
-  and skipped. actions.ts has the damage and
+  your `isARingBearer`); OPEN_ATTRACTION and ROLL_TO_VISIT to your
+  attractions.ts. **Every executor in resolve.py is now registered.** actions.ts has the damage and
   life rules (dealDamage with wither, infect, toxic, commander damage and
   lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
   The rest follow in resolve.py's order. A smoke test plays
@@ -323,7 +322,7 @@ these points; please export them with these names:
 ## Next
 
 Aimed at `play()`, the gate for the first full game (milestone 4):
-1. Resolution executors: done except the seven waiting on parser modules.
+1. Resolution executors: all done.
 2. Triggers: done.
 3. Combat: done.
 4. `play(setup, index, seed)`: done; the web session can swap it in.

@@ -25,6 +25,7 @@ import { Color, Duration, Layout, LossReason, Phase, Step, Supertype, Zone } fro
 import { becomeSolved, classLevel, flip, setClassLevel } from "../cr300_card_types/card_types";
 import { venture } from "../cr300_card_types/dungeons";
 import { sacrificeBlockersAtEndOfCombat, tempt } from "../cr700_additional_rules/ring";
+import { openAttraction, rollToVisit } from "../cr700_additional_rules/attractions";
 import { action, ActionKind } from "../cr100_game_concepts/priority";
 import { timesPaid, WARPED } from "../cr700_additional_rules/paid_costs";
 import { delayedTrigger, pendingTrigger } from "./triggers";
@@ -1008,6 +1009,19 @@ registerExecutor(ir("EffectKind.MANIFEST"), (resolution, effect) => {
   }
   how = how.toLowerCase() === "cloak" ? "Cloak" : "Manifest";
   for (const obj of objectsOf(resolution, effect).slice()) manifest(game, resolution.controller, obj, how);
+});
+
+/** CR 701.51b: open an Attraction, each its own opening (CR 701.51c), through attractions.ts. */
+registerExecutor(ir("EffectKind.OPEN_ATTRACTION"), (resolution, effect) => {
+  const count = countOf(resolution, effect);
+  for (const playerId of playersOf(resolution, effect)) {
+    for (let i = 0; i < Math.max(0, count); i += 1) openAttraction(resolution.game, playerId);
+  }
+});
+
+/** CR 701.52a: roll to visit your Attractions; the roll is there for the rest of the ability (CR 706.4). */
+registerExecutor(ir("EffectKind.ROLL_TO_VISIT"), (resolution, effect) => {
+  for (const playerId of playersOf(resolution, effect)) resolution.dieResults = [rollToVisit(resolution.game, playerId)];
 });
 
 registerExecutor(EK.SACRIFICE, (resolution, effect) => {
