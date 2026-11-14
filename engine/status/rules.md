@@ -82,8 +82,8 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   `legality.ts` (`legalActions`, `hasSorcerySpeed`, `canAfford`) with
   `rule_overrides.ts` (CR 101.1), `special_actions.ts` (CR 116),
   `cr400_zones/outside_game.ts` (companion) and the part of cr708 special
-  actions needs (`face_down.ts`: turning face up). Casting is done. PORT notes: replicate/conspire cast triggers wait
-  for triggers; the CR 718.2 prototype face itself is still KNOWN in layers.
+  actions needs (`face_down.ts`: turning face up). Casting is done, replicate/conspire copy triggers included (0be4a86).
+  The CR 718.2 prototype face itself is still KNOWN in layers.
 - **Resolution, in progress:** `stack.ts` ports cr608_stack.py in full
   (resolveTop, fizzling on all-illegal targets, permanent spells entering
   with links, counters, Auras and paid-cost riders, instants and sorceries
@@ -115,8 +115,10 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   CASCADE, DISCOVER, PLAY_FROM_ZONE, EXTRA_PHASE, EXTRA_STEP,
   UNTAP_STEP_SKIP, VOTE, REPEAT_PER_PAYMENT, GIVE_GIFT.
   Also CONTROL_PLAYER, RESTART_GAME, BECOME_PREPARED.
-  Also CHOOSE_QUALITY and TAKE_INITIATIVE (your designations.ts). **Still to come (3):** with triggers:
-  delayed_trigger, reflexive_trigger; with combat: blocks_source_if_able. **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
+  Also CHOOSE_QUALITY and TAKE_INITIATIVE (your designations.ts), and
+  EXILE (with the CR 610.3 "until" return), DELAYED_TRIGGER and
+  REFLEXIVE_TRIGGER (3582b6f); `createDelayedTrigger` is exported from
+  resolve.ts. **Still to come (1):** with combat: blocks_source_if_able. **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
   `turnFaceDown`, `manifest`, `manifestDread` (cr708); VENTURE needs cr309's `venture`; RING_TEMPTS and
   SACRIFICE_BLOCKERS_AT_END_OF_COMBAT need `tempt` and
   `sacrificeBlockersAtEndOfCombat` (cr701_ring); OPEN_ATTRACTION and
@@ -126,8 +128,18 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
   The rest follow in resolve.py's order. A smoke test plays
   lands and casts creatures end to end and replays to the same digest.
-  Placeholders until triggers and combat: `checkInterveningIf`,
-  `subjectOf` (triggers.ts) and `enterAttacking` (combat.ts).
+  Placeholder until combat: `enterAttacking` (combat.ts).
+- **Triggers, done (19e2a40):** `triggers.ts` ports cr603_triggers.py in
+  full. Published: `PendingTrigger` with `pendingTrigger(source, ability,
+  event, controller, batch?)` (your designations.ts `SourcelessTrigger` is
+  compatible: a missing `batch` never folds), `DelayedTrigger` with
+  `delayedTrigger(...)`, `collectTriggers` (installed on the event bus
+  when triggers.ts loads), `putTriggersOnStack`, `checkStateTriggers`,
+  `checkInterveningIf`, `subjectOf`, `conditionMet`,
+  `isTriggeredManaAbility`, `resolveManaTriggers`. Look-back covers departed
+  tokens, cards and whole batches (CR 603.10a). Game gained
+  `armedStateTriggers` and the watcher index (`triggerIndex`,
+  `triggerIndexKey`; dropped by `cloneGame`).
 - `kernel/events.ts`: EventKind (generated; a test pins it to the IR's
   table), the event record, look-back-in-time kinds (CR 603.10).
 
@@ -281,11 +293,9 @@ these points; please export them with these names:
 ## Next
 
 Aimed at `play()`, the gate for the first full game (milestone 4):
-1. Resolution executors (resolve.py; the stack is done). Replacement
-   pieces (`register`, `replacement_from_effect`,
-   `become_chosen_characteristics`) are called through stubs until the
-   parser publishes them.
-2. Triggers (CR 603, look-back, `PendingTrigger`).
+1. Resolution executors: done except blocks_source_if_able (combat) and
+   the seven waiting on parser modules.
+2. Triggers: done.
 3. Combat (cr506 and combat costs).
 4. `play(setup, index, seed)` with the web session.
 5. The build fingerprint, then board tests.
