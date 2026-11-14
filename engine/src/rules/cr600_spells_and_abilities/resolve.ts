@@ -31,7 +31,7 @@ import { delayedTrigger, pendingTrigger } from "./triggers";
 import { CastError } from "./cast_error";
 import { castSpell, playLand } from "./casting";
 import { targetedNodes } from "./targeting";
-import { turnFaceUp } from "../cr700_additional_rules/face_down";
+import { manifest, manifestDread, turnFaceDown, turnFaceUp } from "../cr700_additional_rules/face_down";
 import { isStillPaired, pair } from "../cr700_additional_rules/soulbond";
 import { randint, randrange, shuffle } from "../../kernel/random";
 import { catalogCard, conjure, conjureDuplicate, conjuredName, PERPETUAL_KINDS, perpetually, seek } from "../cr700_additional_rules/digital_mechanics";
@@ -987,6 +987,27 @@ registerExecutor(ir("EffectKind.SACRIFICE_BLOCKERS_AT_END_OF_COMBAT"), (resoluti
   const e = (resolution.stackObject?.triggerEvent ?? null) as GameEvent | null;
   if (e === null) return;
   sacrificeBlockersAtEndOfCombat(resolution.game, e.objectId, resolution.controller);
+});
+
+/** CR 708.2a-b; CR 712.16 keeps a double-faced permanent face up (face_down.ts). */
+registerExecutor(ir("EffectKind.TURN_FACE_DOWN"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) turnFaceDown(resolution.game, obj);
+});
+
+/**
+ * CR 701.40a, 701.58a, 701.62a: manifest, cloak, or manifest dread - each
+ * chosen card face down, one at a time; dread looks at two and manifests one.
+ */
+registerExecutor(ir("EffectKind.MANIFEST"), (resolution, effect) => {
+  const game = resolution.game;
+  const first = list(effect.keywords)[0];
+  let how = first !== undefined ? str(first) : "Manifest";
+  if (how.toLowerCase() === "manifest dread") {
+    manifestDread(game, resolution.controller);
+    return;
+  }
+  how = how.toLowerCase() === "cloak" ? "Cloak" : "Manifest";
+  for (const obj of objectsOf(resolution, effect).slice()) manifest(game, resolution.controller, obj, how);
 });
 
 registerExecutor(EK.SACRIFICE, (resolution, effect) => {

@@ -92,3 +92,25 @@ describe("VENTURE (CR 701.49)", () => {
     expect(currentDungeon(board.game, 1)).toBeNull();
   });
 });
+
+describe("face down (CR 701.40, 708)", () => {
+  it("TURN_FACE_DOWN and MANIFEST make 2/2 face-down permanents, through face_down.ts", () => {
+    const board = new Board();
+    board.game.activePlayer = 0;
+    const source = board.play("Glorious Anthem");
+    const bears = board.play("Serra Angel");
+    execute(newResolution(board.game, source.id, 0, { targets: [[bears.id]] }), [
+      effect({ kind: ir("EffectKind.TURN_FACE_DOWN"), targets: filter({ types_all: ir("CardType.CREATURE") }), is_targeted: true }),
+    ]);
+    expect(bears.faceDown).toBe(true);
+    expect(board.pt(bears)).toEqual([2, 2]);
+
+    const card = createObject(board.game, CARDS["Serra Angel"]!, 0, Zone.LIBRARY);
+    execute(newResolution(board.game, source.id, 0), [
+      effect({ kind: ir("EffectKind.MANIFEST"), targets: filter({ specific: [card.id], zones: { $set: [Zone.LIBRARY] } }) }),
+    ]);
+    const manifested = board.game.objects.get(card.supersededBy);
+    expect(manifested?.zone).toBe(Zone.BATTLEFIELD);
+    expect(manifested?.faceDown).toBe(true);
+  });
+});
