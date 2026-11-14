@@ -315,3 +315,161 @@ def purge_anonymous(db, moment) -> int:
         )
     )
     return result.rowcount or 0
+
+
+# ---------------------------------------------------------------------------
+# The spot check: replay a sample of each pending run in Node
+# ---------------------------------------------------------------------------
+#
+# A run is "pending" when stored. The check rebuilds the run's setup from the
+# exported card IR (each card's hash must still be the one the run recorded),
+# replays a deterministic sample of its games with the engine's Node CLI
+# (engine/dist/replay.cjs, ``npm run build:replay``), and compares digests:
+#
+# - "ok": every sampled game replayed to its uploaded digest (and a game that
+#   crashed in the browser crashed again). Permanent: the build is recorded.
+# - "mismatch": a digest differed - a tampered or broken client, or an engine
+#   that reads unordered state. Kept out of any shared statistics.
+# - "unverifiable": the server can't replay it as played - a card's IR has
+#   changed since, or the run is from another engine build. Also kept out.
+
+#: Games replayed per run. Enough to catch a client that fakes results
+#: wholesale; one game is a fraction of a second.
+SAMPLE_GAMES = 8
+#: Seconds the replay of one run's sample may take.
+REPLAY_TIMEOUT = 300
+#: Pending runs looked at per pass of the background job.
+RUNS_PER_PASS = 20
+
+REPLAY_CLI = engine_build.ENGINE_SRC.parent / "dist" / "replay.cjs"
+
+
+class Unverifiable(Exception):
+    """The run can't be replayed as it was played."""
+
+
+def node_binary() -> str | None:
+    import os
+    import shutil
+
+    return os.environ.get("MTGFISH_NODE") or shutil.which("node")
+
+
+def replay_cli() -> "Path":
+    import os
+    from pathlib import Path
+
+    return Path(os.environ.get("MTGFISH_REPLAY_CLI") or REPLAY_CLI)
+
+
+def node_replayer(request: dict) -> list[dict]:
+    """Run the engine's replay CLI on ``request``; its per-game results."""
+    import subprocess
+
+    node = node_binary()
+    cli = replay_cli()
+    if node is None or not cli.is_file():
+        raise Unverifiable("no Node replay CLI on this server")
+    done = subprocess.run(
+        [node, str(cli)], input=json.dumps(request).encode(), capture_output=True,
+        timeout=REPLAY_TIMEOUT, check=False,
+    )
+    if done.returncode != 0:
+        raise RuntimeError(f"replay CLI failed ({done.returncode}): {done.stderr.decode()[:500]}")
+    return json.loads(done.stdout)["results"]
+
+
+def exported_cards(ir_store, decks: list[dict]) -> dict:
+    """Each card the decks name, as exported now - refused if its hash changed."""
+    cards: dict[str, dict] = {}
+    wanted: dict[str, str | None] = {}
+    for deck in decks:
+        for oracle_id in deck.get("commanders", []):
+            wanted.setdefault(oracle_id, None)
+        for entry in deck.get("cards", []):
+            wanted[entry["oracle_id"]] = entry.get("card_hash")
+    for oracle_id, card_hash in wanted.items():
+        path = ir_store.card_path(oracle_id)
+        if path is None:
+            raise Unverifiable(f"card {oracle_id} is not in this server's IR export")
+        document = json.loads(path.read_text(encoding="utf-8"))
+        if card_hash is not None and document.get("card_hash") != card_hash:
+            raise Unverifiable(f"card {document.get('name', oracle_id)} has changed since the run")
+        cards[oracle_id] = document
+    return cards
+
+
+def sample(run_id: str, games: list[dict], count: int = SAMPLE_GAMES) -> list[dict]:
+    """A deterministic sample of a run's games (the same each time it's checked)."""
+    import random
+
+    ordered = sorted(games, key=lambda game: game["index"])
+    if len(ordered) <= count:
+        return ordered
+    return sorted(random.Random(run_id).sample(ordered, count), key=lambda game: game["index"])
+
+
+def check_run(run: BrowserRun, ir_store, replayer=node_replayer) -> tuple[str, str]:
+    """Replay a sample of one run: ("ok" | "mismatch" | "unverifiable", detail)."""
+    server_build = engine_build.current()
+    if server_build is not None and run.engine_build != server_build:
+        return "unverifiable", f"engine build {run.engine_build} is not this server's ({server_build})"
+    games = json.loads(gzip.decompress(run.payload))
+    decks = json.loads(run.decks)
+    try:
+        cards = exported_cards(ir_store, decks)
+    except Unverifiable as exc:
+        return "unverifiable", str(exc)
+    expected = {g["index"]: ("digest", g["digest"]) for g in games["records"]}
+    expected |= {g["index"]: ("error", None) for g in games["crashed"]}
+    chosen = sample(run.id, games["records"] + games["crashed"])
+    request = {
+        "setup": {
+            "decks": [{"commanders": deck.get("commanders", []),
+                       "cards": [{"oracle_id": e["oracle_id"], "count": e["count"]}
+                                 for e in deck.get("cards", [])]} for deck in decks],
+            "cards": cards,
+            "runSeed": run.run_seed,
+            "maxRounds": run.max_rounds,
+        },
+        "games": [{"index": g["index"], "seed": g["seed"]} for g in chosen],
+    }
+    try:
+        results = replayer(request)
+    except Unverifiable as exc:
+        return "unverifiable", str(exc)
+    differ = []
+    for result in results:
+        kind, digest = expected[result["index"]]
+        if kind == "digest" and result.get("digest") != digest:
+            differ.append(f"game {result['index']}: {digest} uploaded, "
+                          f"{result.get('digest') or result.get('error')} replayed")
+        elif kind == "error" and "error" not in result:
+            differ.append(f"game {result['index']}: crashed in the browser, not on replay")
+    if differ:
+        return "mismatch", "; ".join(differ[:5])
+    return "ok", f"{len(results)} game(s) replayed to their digests"
+
+
+def check_pending(database, ir_store, replayer=node_replayer, limit: int = RUNS_PER_PASS) -> int:
+    """Spot-check up to ``limit`` pending runs, oldest first. Returns how many."""
+    with database.session() as db:
+        ids = list(db.scalars(
+            select(BrowserRun.id).where(BrowserRun.spot_check == "pending")
+            .order_by(BrowserRun.created_at).limit(limit)
+        ))
+    for run_id in ids:
+        with database.session() as db:
+            run = db.get(BrowserRun, run_id)
+            if run is None or run.spot_check != "pending":
+                continue
+            try:
+                verdict, detail = check_run(run, ir_store, replayer)
+            except Exception as exc:  # noqa: BLE001 - stays pending, tried next pass
+                log.warning("spot check of run %s failed: %s", run_id, exc)
+                continue
+            run.spot_check = verdict
+            run.spot_check_detail = detail[:2000]
+            db.commit()
+            log.info("spot check of run %s: %s (%s)", run_id, verdict, detail)
+    return len(ids)

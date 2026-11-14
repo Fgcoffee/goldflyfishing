@@ -77,6 +77,7 @@ class AppState:
         self.accounts = accounts
         accounts.on_forget = self.forget_user
         self._start_purging()
+        self._start_spot_checks()
         self.api = Api(settings)
         self.sessions = SessionManager(self.api, settings)
         self.sessions.on_finished = self.job_finished
@@ -137,6 +138,34 @@ class AppState:
                 purge()
 
         threading.Thread(target=loop, daemon=True, name="purge").start()
+
+    def _start_spot_checks(self) -> None:
+        """Replay a sample of each uploaded browser run in Node, every
+        ``spot_check_interval`` seconds (browser_runs.check_pending), so only
+        runs that replay to their digests are marked "ok"."""
+        import threading
+
+        from .browser_runs import check_pending, node_binary, replay_cli
+        from .ir import IrStore
+
+        interval = self.settings.spot_check_interval
+        if interval <= 0:
+            return
+        if node_binary() is None or not replay_cli().is_file():
+            log.warning("spot check off: no node or no %s (npm run build:replay)", replay_cli())
+            return
+
+        # Only card_path is used, which reads the export directory: no database.
+        cards = IrStore()
+
+        def loop(stop=threading.Event()) -> None:
+            while not stop.wait(interval):
+                try:
+                    check_pending(self.accounts.db, cards)
+                except Exception:  # noqa: BLE001 - never take the site down over a check
+                    log.warning("spot check pass failed", exc_info=True)
+
+        threading.Thread(target=loop, daemon=True, name="spot-check").start()
 
     def forget_user(self, user_id: str) -> None:
         for session in self.sessions.all():
