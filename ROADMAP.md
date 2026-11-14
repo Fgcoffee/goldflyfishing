@@ -98,7 +98,7 @@ and games that don't replay from their seed are fixed now.
   - whether the run finished.
 
   A cancelled or partial run uploads what it completed. Uploads are compressed. The privacy page says that decklists and simulation results are sent to and kept by the server.
-- [ ] *(rules, after its board tests)* **Server-side spot check of uploaded runs.** The server replays a random sample of each upload in Node with the same engine build, and compares log digests. Mismatches, from a tampered or broken client, are flagged and kept out of any shared statistics (brackets, card impact).
+- [x] *(rules)* **Server-side spot check of uploaded runs.** (2cb63b4 engine CLI, 8ab95a8 server job, Dockerfile in the next commit; the image build itself not run here: no Docker daemon) The server replays a random sample of each upload in Node with the same engine build, and compares log digests. Mismatches, from a tampered or broken client, are flagged and kept out of any shared statistics (brackets, card impact).
 
 ### auditor
 - [x] Shared branch, ownership, status files, this roadmap

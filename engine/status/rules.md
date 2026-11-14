@@ -329,7 +329,7 @@ Aimed at `play()`, the gate for the first full game (milestone 4):
 5. The build fingerprint: done. Board tests: in progress.
 6. Then, from the auditor (9603cce), the web session's items: per-turn
    series and removal in the game records (done: records 78cde2a, report
-   below), and the server-side spot check (a Node build with a replay CLI, Node in the
+   d2def4b), and the server-side spot check (done, below) (a Node build with a replay CLI, Node in the
    Dockerfile, a background job in mtgfish/web/browser_runs.py).
 (Moved to the parser: SBAs, setup, copies/faces/tokens 084182b;
 replacements and prevention, commander rules, the in-game CR 700
@@ -371,6 +371,34 @@ test_cr601_granted_cast_abilities, test_cr601_target_counts,
 test_cr603_granted_triggers, test_cr608_pay_if_you_do,
 test_cr608_each_opponents_cards, test_cr613_keyword_removal.
 (test_cr108_* and test_cr605_modal_mana are on the parser's list.)
+
+## Server-side spot check (done)
+
+- **Engine** (2cb63b4): `sim/engines.ts` has `ENGINES` (stub, rules) and
+  `DEFAULT_ENGINE`, inside engine/src so the build fingerprint covers which
+  engine the page plays. `sim/replay.ts` `replayGames(request)` plays games
+  and returns digests; `cli/replay.ts` wraps it for Node, bundled by
+  `npm run build:replay` to engine/dist/replay.cjs (esbuild 0.21.5 pinned).
+- **Server** (8ab95a8): `browser_runs.check_run` rebuilds a run's setup
+  from the exported IR (each card's hash must still match the run's),
+  replays a deterministic sample of 8 games in Node and marks the run
+  `ok`, `mismatch` or `unverifiable` (a card changed since, or another
+  engine build), with `spot_check_detail`. A daemon thread in app.py runs
+  `check_pending` every `MTGFISH_SPOT_CHECK_INTERVAL` seconds (300; 0 off;
+  first pass after one interval); without node or the CLI it logs and stays
+  off. tests/web/test_spot_check.py: 7 tests, one replaying the bench decks
+  through the real CLI. tests/web: 94 passed, 39 skipped (no card database
+  in this container).
+- **Dockerfile:** a `node:22-slim` stage runs `npm ci` and
+  `npm run build:replay`; the final image gets the node binary,
+  libstdc++6 and engine/dist. The stage's steps pass from a clean copy, but
+  I couldn't build the image: no Docker daemon here. The next deploy is the
+  first real build.
+- **For the parser (the stub swap):** have webapp/src/worker/handle.ts
+  play `ENGINES[DEFAULT_ENGINE]` from `@goldfly/engine/sim/engines` (or
+  the path you prefer) and change `DEFAULT_ENGINE` to `"rules"` there. The
+  replay reads the same constant, so the page and the spot check can't
+  disagree on the engine.
 
 ## For the web session: the real engine is ready to swap in
 

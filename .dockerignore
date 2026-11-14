@@ -8,6 +8,7 @@
 .claude
 build
 dist
+**/node_modules
 tests
 docs
 runs
