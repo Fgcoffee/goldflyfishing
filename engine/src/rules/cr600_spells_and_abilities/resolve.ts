@@ -21,7 +21,9 @@ import {
 } from "./replacement";
 import { CONSUMING_COSTS, CostKind } from "../cr100_game_concepts/costs";
 import { startEngines } from "../cr100_game_concepts/player";
-import { Color, Duration, Layout, LossReason, Supertype, Zone } from "../../kernel/enums";
+import { Color, Duration, Layout, LossReason, Step, Supertype, Zone } from "../../kernel/enums";
+import { turnFaceUp } from "../cr700_additional_rules/face_down";
+import { isStillPaired, pair } from "../cr700_additional_rules/soulbond";
 import { randint, randrange, shuffle } from "../../kernel/random";
 import { catalogCard, conjure, conjureDuplicate, conjuredName, PERPETUAL_KINDS, perpetually, seek } from "../cr700_additional_rules/digital_mechanics";
 import { enterAttacking } from "../cr500_turn_structure/combat";
@@ -1800,3 +1802,221 @@ registerExecutor(ir("EffectKind.ENTERS_AS_CHOICE"), (resolution, effect) => {
     if (obj.zone === Zone.BATTLEFIELD) becomeChosenCharacteristics(resolution.game, obj, effect);
   }
 });
+
+// -- permanents and players, continued ---------------------------------------------------------
+
+/** An effect turns a face-down permanent up (CR 708.7-8): no cost, so no megamorph counter. */
+registerExecutor(ir("EffectKind.TURN_FACE_UP"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) turnFaceUp(resolution.game, obj);
+});
+
+/**
+ * CR 702.26b: phased out, treated as not existing, back in at its
+ * controller's next untap step. As in Python, CR 610.4 "phase out until
+ * [event]" isn't implemented (the parser drops the "until").
+ */
+registerExecutor(ir("EffectKind.PHASE_OUT"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const obj of objectsOf(resolution, effect)) {
+    obj.phasedOut = true;
+    obj.phasingScheduled = true;
+    invalidateAllCharacteristics(game);
+    emit(game, event(EventKind.PHASED_OUT, { objectId: obj.id, player: obj.controller }));
+  }
+});
+
+/** CR 701.15: a regeneration shield. */
+registerExecutor(ir("EffectKind.REGENERATE"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) obj.regenerationShields += 1;
+});
+
+/** CR 701.31: if not monstrous, N +1/+1 counters and it becomes monstrous (CR 701.37b event). */
+registerExecutor(ir("EffectKind.MONSTROSITY"), (resolution, effect) => {
+  const amount = Math.max(1, amountOf(resolution, effect));
+  for (const obj of objectsOf(resolution, effect)) {
+    if (counterCount(obj, "monstrous")) continue;
+    addCounters(resolution.game, obj, "+1/+1", amount, { source: resolution.source });
+    putObjectCounters(obj, "monstrous", 1);
+    emit(resolution.game, event(EventKind.BECAME_MONSTROUS, { objectId: obj.id, player: obj.controller, source: resolution.source }));
+  }
+});
+
+/** CR 701.43: N +1/+1 counters, only if it has none. */
+registerExecutor(ir("EffectKind.ADAPT"), (resolution, effect) => {
+  const amount = Math.max(1, amountOf(resolution, effect));
+  for (const obj of objectsOf(resolution, effect)) {
+    if (counterCount(obj, "+1/+1")) continue;
+    addCounters(resolution.game, obj, "+1/+1", amount, { source: resolution.source });
+  }
+});
+
+/** CR 701.10: two permanents swap controllers, or neither does; the base moves too (no duration). */
+registerExecutor(ir("EffectKind.EXCHANGE_CONTROL"), (resolution, effect) => {
+  const objects = objectsOf(resolution, effect);
+  if (objects.length !== 2) return; // CR 701.10c
+  const [first, second] = objects as [GameObject, GameObject];
+  [first.controller, second.controller] = [second.controller, first.controller];
+  [first.baseController, second.baseController] = [second.baseController, first.baseController];
+  first.summoningSick = second.summoningSick = true;
+  first.newlyControlled = second.newlyControlled = true;
+  invalidateAllCharacteristics(resolution.game);
+  for (const obj of objects) emit(resolution.game, event(EventKind.CONTROL_CHANGED, { objectId: obj.id, player: obj.controller }));
+});
+
+/** CR 701.10: two life totals swap, as gains and losses. */
+registerExecutor(ir("EffectKind.EXCHANGE_LIFE"), (resolution, effect) => {
+  const players = playersOf(resolution, effect);
+  if (players.length !== 2) return;
+  const game = resolution.game;
+  const [first, second] = players as [PlayerId, PlayerId];
+  const a = player(game, first).life;
+  const b = player(game, second).life;
+  for (const [pid, wanted] of [[first, b], [second, a]] as const) {
+    const current = player(game, pid).life;
+    if (wanted > current) gainLife(game, pid, wanted - current, { source: resolution.source });
+    else if (wanted < current) loseLife(game, pid, current - wanted, { source: resolution.source });
+  }
+});
+
+/** CR 724: end the turn - the stack is exiled and the turn goes to cleanup. */
+registerExecutor(ir("EffectKind.END_TURN"), (resolution) => {
+  const game = resolution.game;
+  for (const id of game.stack.slice()) {
+    const obj = game.objects.get(id);
+    if (obj !== undefined) {
+      removeFromZone(game, obj);
+      game.objects.delete(id);
+    }
+  }
+  game.stack.length = 0;
+  game.pendingTriggers.length = 0;
+  game.endTurnRequested = true;
+  logRecord(game, "The turn ends immediately", { kind: "turn" });
+});
+
+registerExecutor(ir("EffectKind.SKIP_STEP"), (resolution, effect) => {
+  resolution.game.skippedSteps.add(amountOf(resolution, effect) as Step);
+});
+
+registerExecutor(ir("EffectKind.ADD_EXPERIENCE"), (resolution, effect) => {
+  const amount = Math.max(1, amountOf(resolution, effect));
+  for (const pid of playersOf(resolution, effect)) player(resolution.game, pid).experience += amount;
+});
+
+/** CR 701.64a-b: only a permanent, and it stays harnessed. */
+registerExecutor(ir("EffectKind.HARNESS"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone === Zone.BATTLEFIELD && !obj.harnessed) {
+      obj.harnessed = true;
+      invalidateAllCharacteristics(resolution.game);
+      logRecord(resolution.game, `#${obj.id} becomes harnessed`, { kind: "designation" });
+    }
+  }
+});
+
+/** Whether the controller takes an optional effect (resolve.py `_wants`). */
+function wants(resolution: Resolution, effect: Effect): boolean {
+  const agent = agentOf(resolution.game, resolution.controller);
+  return agent?.chooseOptional === undefined ? true : !!agent.chooseOptional(resolution.game, resolution.controller, effect);
+}
+
+/** CR 702.95a, c: pair the soulbond creature with the creature that entered, or one its controller chooses. */
+registerExecutor(ir("EffectKind.PAIR"), (resolution, effect) => {
+  const game = resolution.game;
+  const source = game.objects.get(resolution.source);
+  if (source === undefined) return;
+  const e = (resolution.stackObject?.triggerEvent as GameEvent | null) ?? null;
+  let other = e !== null ? game.objects.get(e.objectId) : undefined;
+  if (other === undefined || other.id === source.id) {
+    const candidates = permanents(game, resolution.controller).filter(
+      (o) => o.id !== source.id && isCreature(characteristicsOf(game, o)) && !isStillPaired(game, o),
+    );
+    if (candidates.length === 0) return;
+    const agent = agentFor(game, resolution.controller) as { choosePair?(g: Game, p: PlayerId, s: GameObject, c: GameObject[]): GameObject } | null;
+    other = agent?.choosePair?.(game, resolution.controller, source, candidates);
+    if (other === undefined || !candidates.includes(other)) {
+      const power = (o: GameObject) => characteristicsOf(game, o).power ?? 0;
+      other = candidates.reduce((best, o) => (power(o) > power(best) || (power(o) === power(best) && o.id < best.id) ? o : best));
+    }
+  }
+  if (wants(resolution, effect)) pair(game, source, other, resolution.controller);
+});
+
+/**
+ * CR 700.3: separate into two piles (either may be empty), then a player
+ * picks one. Defaults: alternate from the highest mana value down; choose
+ * the pile with more total mana value.
+ */
+registerExecutor(ir("EffectKind.SEPARATE_INTO_PILES"), (resolution, effect) => {
+  const game = resolution.game;
+  const objects = objectsOf(resolution, effect);
+  if (objects.length === 0) return;
+  const ids = objects.map((o) => o.id);
+  const worth = (id: ObjectId) => charsManaValue(characteristicsOf(game, game.objects.get(id)!));
+  const separators = matchHooks().resolvePlayers(game, effect.actor ?? { $: "PlayerFilter", scope: PS.YOU as never }, { controller: resolution.controller });
+  const separator = separators[0] ?? resolution.controller;
+  const sepAgent = agentFor(game, separator) as { separatePiles?(g: Game, p: PlayerId, ids: ObjectId[]): ObjectId[] | null } | null;
+  let first = sepAgent?.separatePiles?.(game, separator, ids.slice()) ?? null;
+  if (first === null) first = [...ids].sort((a, b) => worth(b) - worth(a) || a - b).filter((_, i) => i % 2 === 0);
+  const inFirst = new Set(first);
+  const pileA = ids.filter((id) => inFirst.has(id));
+  const pileB = ids.filter((id) => !inFirst.has(id));
+  logRecord(game, `Piles: ${pileA.length} and ${pileB.length}`, { kind: "effect" });
+  const choosers = effect.players != null ? playersOf(resolution, effect) : [resolution.controller];
+  const chooser = choosers[0] ?? resolution.controller;
+  const pickAgent = agentFor(game, chooser) as { choosePile?(g: Game, p: PlayerId, a: ObjectId[], b: ObjectId[]): number } | null;
+  let chosen = pickAgent?.choosePile?.(game, chooser, pileA.slice(), pileB.slice());
+  if (chosen !== 0 && chosen !== 1) {
+    const sum = (pile: ObjectId[]) => pile.reduce((t, id) => t + worth(id), 0);
+    chosen = sum(pileA) >= sum(pileB) ? 0 : 1;
+  }
+  const [picked, rest] = chosen === 0 ? [pileA, pileB] : [pileB, pileA];
+  resolution.remembered = picked.slice();
+  execute(resolution, list(effect.children));
+  resolution.remembered = rest.slice();
+  execute(resolution, list(effect.otherwise));
+});
+
+/** CR 702.171a, c: saddled until end of turn, by the creatures tapped to pay. */
+registerExecutor(ir("EffectKind.BECOME_SADDLED"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone !== Zone.BATTLEFIELD) continue;
+    obj.saddledTurn = game.turn;
+    obj.saddledBy = obj.costPaidObjects.slice();
+    logRecord(game, `#${obj.id} becomes saddled`, { kind: "designation" });
+    emit(game, event(EventKind.BECAME_SADDLED, { objectId: obj.id, player: obj.controller }));
+  }
+});
+
+/** CR 702.112b: renowned until it leaves the battlefield. */
+registerExecutor(ir("EffectKind.BECOME_RENOWNED"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) {
+    if (obj.zone === Zone.BATTLEFIELD && !obj.renowned) {
+      obj.renowned = true;
+      invalidateAllCharacteristics(resolution.game);
+      logRecord(resolution.game, `#${obj.id} becomes renowned`, { kind: "designation" });
+      emit(resolution.game, event(EventKind.BECAME_RENOWNED, { objectId: obj.id, player: obj.controller, source: resolution.source }));
+    }
+  }
+});
+
+/** CR 702.55a-b: exile the haunt card from the graveyard, haunting the target. */
+registerExecutor(ir("EffectKind.HAUNT"), (resolution, effect) => {
+  const game = resolution.game;
+  const haunted = objectsOf(resolution, effect);
+  let card = game.objects.get(resolution.source);
+  if (card !== undefined && !isLive(card)) card = game.objects.get(card.supersededBy);
+  if (card === undefined || !isLive(card) || card.zone !== Zone.GRAVEYARD) return;
+  const exiled = moveObject(game, card, Zone.EXILE, { toPlayer: card.owner });
+  if (haunted.length > 0) {
+    exiled.haunting = haunted[0]!.id;
+    logRecord(game, `#${exiled.id} haunts #${haunted[0]!.id}`, { kind: "effect" });
+  }
+});
+
+// PORT: TURN_FACE_DOWN, MANIFEST, TAKE_INITIATIVE, RING_TEMPTS and
+// SACRIFICE_BLOCKERS_AT_END_OF_COMBAT call the parser's CR 700 modules
+// (cr708, cr725, cr701_ring), not published yet; BLOCKS_SOURCE_IF_ABLE needs
+// the requirements half of restrictions (comes with combat). Logged and
+// skipped until then.
