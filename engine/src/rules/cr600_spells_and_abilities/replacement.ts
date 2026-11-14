@@ -33,6 +33,7 @@ import { hasKeyword, hasSubtype, charsManaValue } from "../cr200_parts_of_a_card
 import { creatureTypesOf } from "../cr200_parts_of_a_card/typeline";
 import { chapterNumbers } from "../cr300_card_types/card_types";
 import { becomePrepared } from "../cr700_additional_rules/preparation";
+import { junkyardReplacement } from "../cr700_additional_rules/attractions";
 import { copyPermanent } from "../cr700_additional_rules/faces";
 import { characteristicsOf } from "./layers";
 import { installReplacementHooks } from "./replacement_hooks";
@@ -795,6 +796,8 @@ export function installReplacements(): void {
     replace: (game, e) => (hasReplacements(game) ? applyReplacements(game, e) : e),
     commanderZoneReplacement: (game, e) => commanderZoneReplacement(game, e),
     applySelfEntryReplacements: (game, obj) => applySelfEntryReplacements(game, obj),
+    // CR 717.6, after the other replacements (zones.ts calls it last).
+    junkyardReplacement: (game, obj, e) => junkyardReplacement(game, obj, e),
   });
 }
 

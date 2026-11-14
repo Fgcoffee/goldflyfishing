@@ -24,6 +24,7 @@ import type { Relaxations } from "../../kernel/relaxations";
 import { isLand } from "../cr200_parts_of_a_card/characteristics";
 import { printedCharacteristics } from "../cr600_spells_and_abilities/layers";
 import { revealCompanion } from "../cr400_zones/outside_game";
+import { setUpAttractionDeck, shuffleAttractionDeck } from "../cr700_additional_rules/attractions";
 import { moveObject } from "../zones";
 import { draw, shuffleLibrary } from "./actions";
 import { COMMANDER_STARTING_LIFE, newPlayer, STARTING_HAND_SIZE } from "./player";
@@ -38,7 +39,7 @@ export interface SetupDeck {
   readonly sideboard?: readonly CardDef[];
   /** CR 103.2b: revealed at setup, kept outside the game. */
   readonly companion?: CardDef | null;
-  /** CR 717.2. PENDING(rules): set up with the Attractions port. */
+  /** CR 717.2: the Attraction deck, in the command zone. */
   readonly attractions?: readonly CardDef[];
 }
 
@@ -93,7 +94,8 @@ export function setUpGame(decks: readonly SetupDeck[], options: SetupOptions = {
       p.outsideGame.push(deck.companion);
       revealCompanion(game, index, deck.companion);
     }
-    // PENDING(rules): the CR 717.2 Attraction deck, with the Attractions port.
+    // CR 717.2: an Attraction deck begins in the command zone.
+    setUpAttractionDeck(game, index, deck.attractions ?? []);
   });
 
   // CR 103.1, CR 806.3: turn order at random, then fixed for the game.
@@ -106,8 +108,10 @@ export function setUpGame(decks: readonly SetupDeck[], options: SetupOptions = {
   game.phase = Phase.BEGINNING;
   game.step = Step.UNTAP;
 
-  // PORT: CR 103.3a also shuffles each Attraction deck, with the Attractions port.
-  for (const id of order) shuffleLibrary(game, id);
+  for (const id of order) {
+    shuffleLibrary(game, id);
+    shuffleAttractionDeck(game, id); // CR 103.3a: shuffled with it
+  }
   // CR 903.7: once the starting player is known, life becomes 40 and each draws seven.
   for (const id of order) players[id]!.life = COMMANDER_STARTING_LIFE;
   for (const id of order) draw(game, id, STARTING_HAND_SIZE);
