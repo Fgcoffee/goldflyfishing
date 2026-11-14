@@ -216,7 +216,7 @@ The auditor moved three more items to me (18f9e4f): replacements, commander rule
   - the monarch, the initiative, day and night, rad counters;
   - `takeInitiative` is published for your TAKE_INITIATIVE executor;
   - `combatDamageToMonarch(game, victim, attackerController)` and `combatDamageToInitiativeHolder(game, victim, attackerControllers)` are for your combat to call when combat damage hits a player.
-  - **The initiative's inherent triggers are queued in `game.pendingTriggers` as `{ source: NO_OBJECT, ability, event, controller }`.** That's Python's `PendingTrigger(source, ability, event, controller)`, camelCased. Please give your triggers port's `PendingTrigger` that shape, or tell me yours and I'll match it.
+  - The initiative's inherent triggers are queued with your `pendingTrigger(NO_OBJECT, ability, event, controller)` (e093445).
 - **Dungeons** (`rules/cr300_card_types/dungeons.ts`):
   - `venture(game, player, quality)` is published for your VENTURE executor;
   - `completeDungeon`, `currentDungeon` and `finishedDungeons`;
@@ -224,9 +224,21 @@ The auditor moved three more items to me (18f9e4f): replacements, commander rule
   - Python parses dungeon room effects at game time from the card database, so I export the dungeons as IR instead. `ir_export dungeons` writes `schema/dungeons.json` and the generated `engine/src/ir/dungeons.ts`, and a Python test keeps both current. The engine needs no card database for dungeons.
   - Room abilities trigger on VENTURE_MARKER_MOVED (amount = room + 1), from the command zone, with `trigger.room` set: your triggers port matches the room there, as Python does.
 
+## The Ring (e093445), face-down (4fd5043), Attractions (1a047e2)
+
+These were the last things your resolve.ts was skipping for me.
+- **The Ring** (`ring.ts`): `tempt(game, player)` and `sacrificeBlockersAtEndOfCombat(game, attackerId, controller)`, which adds one of your `delayedTrigger`s. Also `ringAbilities`, `ringBearer` and `isARingBearer`.
+  - Your `combat.ts` has a private inlined `isARingBearer`; you can import mine.
+  - `sba.ts` now calls your `checkRemovalFromCombat` at the top of each round, as Python does.
+- **Face-down** (added to your `face_down.ts`): `manifest(game, player, card, how)` (cloak is `how = "Cloak"`), `manifestDread`, `turnFaceDown`, plus `mayLookAt`, `characteristicsSeenBy`, `faceDownOrder`, `revealAll` and `isHidden`. I see you already wired TURN_FACE_DOWN and MANIFEST (26565d5).
+- **Attractions** (`attractions.ts`, replacing the placeholder in place): `openAttraction(game, player)` and `rollToVisit(game, player)` for OPEN_ATTRACTION and ROLL_TO_VISIT; your turn.ts already calls `rollToVisit` and `controlsAnAttraction`.
+  - The CR 717.6 junkyard replacement is installed into your `junkyardReplacement` hook by `replacement.ts`.
+  - `setUpGame` builds and shuffles each player's Attraction deck from `SetupDeck.attractions`.
+  - **One call for zones.ts** (your KNOWN at the CR 717.6a comment): after a move into the command zone, call `arrivedInCommandZone(created)` from `attractions.ts`. That puts a junkyarded Attraction in its owner's junkyard pile, as Python's `move_object` does. Until then it reaches the command zone in no pile.
+
 ## Next
 
-- Moved to me (18f9e4f), in order: replacements (done above), commander rules (CR 903), then the in-game CR 700 mechanics: face-down, designations, dungeons, the Ring, attractions, digital mechanics, soulbond and `cr702_cost_keyword_rules.py`. Then the board tests. Phase 2 stays parked.
+- Moved to me (18f9e4f): replacements and commander rules are done. Of the CR 700 mechanics, only `cr702_cost_keyword_rules.py` is left. Then the board tests. Phase 2 stays parked.
 - **Last item: board tests for every module I own.** SBAs, setup, tokens and faces/copies were ported with their modules (50 + 13 + 18 + 23 cases); `test_mana.py` is ported in full. Still to port, now that your mana host and casting exist:
   - mana/: `test_cr601_mana_plan.py` (8), `test_mana_plan_stale_source.py` (3, done: 782379a), `test_cr605_modal_mana.py` (5), `test_entering_and_mana.py` (7), `test_cr903_commander_identity_mana.py` (2).
   - match/: `test_filter_bounds.py` (8), `test_cr108_owner_filters.py` (7), `test_object_filter_any_of.py` (4), `test_history_conditions.py` (12), `test_cr608_affected_values.py` (23), `test_cr608_values_this_way.py` (7), `test_cr702_dethrone_condition.py` (5). Today match.test.ts has a sample of these (21 cases).
