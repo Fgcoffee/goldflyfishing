@@ -53,6 +53,7 @@ import {
   type Game,
 } from "../../kernel/game";
 import { becomePrepared } from "../cr700_additional_rules/preparation";
+import { takeInitiative } from "../cr700_additional_rules/designations";
 import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { allocateTimestamp, isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
@@ -2036,9 +2037,13 @@ registerExecutor(ir("EffectKind.HAUNT"), (resolution, effect) => {
   }
 });
 
-// PORT: TURN_FACE_DOWN, MANIFEST, TAKE_INITIATIVE, RING_TEMPTS and
+registerExecutor(ir("EffectKind.TAKE_INITIATIVE"), (resolution, effect) => {
+  for (const pid of playersOf(resolution, effect)) takeInitiative(resolution.game, pid);
+});
+
+// PORT: TURN_FACE_DOWN, MANIFEST, RING_TEMPTS and
 // SACRIFICE_BLOCKERS_AT_END_OF_COMBAT call the parser's CR 700 modules
-// (cr708, cr725, cr701_ring), not published yet; BLOCKS_SOURCE_IF_ABLE needs
+// (cr708, cr701_ring), not published yet; BLOCKS_SOURCE_IF_ABLE needs
 // the requirements half of restrictions (comes with combat). Logged and
 // skipped until then.
 

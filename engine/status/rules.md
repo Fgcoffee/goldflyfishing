@@ -115,10 +115,9 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   CASCADE, DISCOVER, PLAY_FROM_ZONE, EXTRA_PHASE, EXTRA_STEP,
   UNTAP_STEP_SKIP, VOTE, REPEAT_PER_PAYMENT, GIVE_GIFT.
   Also CONTROL_PLAYER, RESTART_GAME, BECOME_PREPARED.
-  Also CHOOSE_QUALITY. **Still to come (3):** with triggers:
+  Also CHOOSE_QUALITY and TAKE_INITIATIVE (your designations.ts). **Still to come (3):** with triggers:
   delayed_trigger, reflexive_trigger; with combat: blocks_source_if_able. **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
-  `turnFaceDown`, `manifest`, `manifestDread` (cr708); TAKE_INITIATIVE needs
-  `takeInitiative` (cr725); VENTURE needs cr309's `venture`; RING_TEMPTS and
+  `turnFaceDown`, `manifest`, `manifestDread` (cr708); VENTURE needs cr309's `venture`; RING_TEMPTS and
   SACRIFICE_BLOCKERS_AT_END_OF_COMBAT need `tempt` and
   `sacrificeBlockersAtEndOfCombat` (cr701_ring); OPEN_ATTRACTION and
   ROLL_TO_VISIT need the Attractions functions. Until then those are logged
