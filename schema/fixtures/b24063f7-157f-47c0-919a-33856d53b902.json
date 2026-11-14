@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b24063f7-157f-47c0-919a-33856d53b902",
+ "name": "Worthy Cause",
+ "card_hash": "ab7b094ce6d492c0a725f4291e595088",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b24063f7-157f-47c0-919a-33856d53b902",
+  "name": "Worthy Cause",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Worthy Cause",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Buyback {2} (You may pay an additional {2} as you cast this spell. If you do, put this card into your hand as it resolves.)\nAs an additional cost to cast this spell, sacrifice a creature.\nYou gain life equal to the sacrificed creature's toughness.",
+    "colors": 1,
+    "keywords": [
+     "Buyback"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 22219,
+  "scryfall_uri": "https://scryfall.com/card/tmp/53/worthy-cause?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b24063f7-157f-47c0-919a-33856d53b902",
+   "name": "Worthy Cause",
+   "face": 0,
+   "face_name": "Worthy Cause",
+   "card_hash": "ab7b094ce6d492c0a725f4291e595088",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Buyback {2}",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Buyback",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 2,
+            "text": "{2}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Buyback",
+      "text": "Buyback {2}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, sacrifice a creature.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 10,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "sacrifice"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 30,
+        "operands": [
+         {
+          "$": "Value",
+          "kind": 4
+         }
+        ]
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "You gain life equal to the sacrificed creature's toughness."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

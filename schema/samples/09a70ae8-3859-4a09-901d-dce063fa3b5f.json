@@ -1,0 +1,124 @@
+{
+ "ir_version": 2,
+ "oracle_id": "09a70ae8-3859-4a09-901d-dce063fa3b5f",
+ "name": "Wasteland",
+ "card_hash": "8f7cc00a0a4755cd21767f7ba0c6e828",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09a70ae8-3859-4a09-901d-dce063fa3b5f",
+  "name": "Wasteland",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Wasteland",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}, Sacrifice this land: Destroy target nonbasic land.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1206,
+  "scryfall_uri": "https://scryfall.com/card/ema/248/wasteland?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "09a70ae8-3859-4a09-901d-dce063fa3b5f",
+   "name": "Wasteland",
+   "face": 0,
+   "face_name": "Wasteland",
+   "card_hash": "8f7cc00a0a4755cd21767f7ba0c6e828",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "supertypes_none": 1
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "{T}, Sacrifice this land: Destroy target nonbasic land.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

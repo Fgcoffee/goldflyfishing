@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
+ "name": "Knight of the White Orchid",
+ "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
+  "name": "Knight of the White Orchid",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Knight of the White Orchid",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Knight"
+     ]
+    },
+    "oracle_text": "First strike\nWhen this creature enters, if an opponent controls more lands than you, you may search your library for a Plains card, put it onto the battlefield, then shuffle.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 1,
+    "keywords": [
+     "First strike"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 648,
+  "scryfall_uri": "https://scryfall.com/card/moc/193/knight-of-the-white-orchid?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
+   "name": "Knight of the White Orchid",
+   "face": 0,
+   "face_name": "Knight of the White Orchid",
+   "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "First strike",
+     "keyword": "First strike"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 23,
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Plains"
+          ],
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": 2,
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this creature enters, if an opponent controls more lands than you, you may search your library for a Plains card, put it onto the battlefield, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": 19,
+       "filter": {
+        "$": "ObjectFilter",
+        "types_all": 16
+       },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 1
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": 4,
+        "value": {
+         "$": "Value",
+         "kind": 2,
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 16,
+          "controller": 1
+         }
+        }
+       },
+       "text": "an opponent controls more all land than you"
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

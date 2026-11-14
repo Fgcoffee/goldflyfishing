@@ -1,0 +1,102 @@
+{
+ "ir_version": 2,
+ "oracle_id": "711c10cb-7a85-417d-be24-79d4e4a89993",
+ "name": "Deadshot",
+ "card_hash": "b6ebb8a03d6ca5cb3a89959317837fa2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "711c10cb-7a85-417d-be24-79d4e4a89993",
+  "name": "Deadshot",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Deadshot",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Tap target creature. It deals damage equal to its power to another target creature.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 29498,
+  "scryfall_uri": "https://scryfall.com/card/tpr/129/deadshot?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "711c10cb-7a85-417d-be24-79d4e4a89993",
+   "name": "Deadshot",
+   "face": 0,
+   "face_name": "Deadshot",
+   "card_hash": "b6ebb8a03d6ca5cb3a89959317837fa2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      },
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 3,
+        "filter": {
+         "$": "ObjectFilter",
+         "remembered": true
+        }
+       },
+       "is_targeted": true,
+       "distinct_from_earlier_targets": true,
+       "damage_source": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "Tap target creature. It deals damage equal to its power to another target creature."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

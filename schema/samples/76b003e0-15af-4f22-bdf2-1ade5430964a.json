@@ -1,0 +1,120 @@
+{
+ "ir_version": 2,
+ "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
+ "name": "Zulaport Cutthroat",
+ "card_hash": "6d3ff59e597364aebee6e0bb61fdab87",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
+  "name": "Zulaport Cutthroat",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Zulaport Cutthroat",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Rogue",
+      "Ally"
+     ]
+    },
+    "oracle_text": "Whenever this creature or another creature you control dies, each opponent loses 1 life and you gain 1 life.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 236,
+  "scryfall_uri": "https://scryfall.com/card/soc/233/zulaport-cutthroat?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "76b003e0-15af-4f22-bdf2-1ade5430964a",
+   "name": "Zulaport Cutthroat",
+   "face": 0,
+   "face_name": "Zulaport Cutthroat",
+   "card_hash": "6d3ff59e597364aebee6e0bb61fdab87",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "lose life"
+      },
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Whenever this creature or another creature you control dies, each opponent loses 1 life and you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        3
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something dies"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

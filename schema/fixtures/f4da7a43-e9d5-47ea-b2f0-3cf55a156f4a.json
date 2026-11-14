@@ -1,0 +1,192 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f4da7a43-e9d5-47ea-b2f0-3cf55a156f4a",
+ "name": "Chandra Nalaar",
+ "card_hash": "b9142fbec529b4ce11e4e24b357f88c3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f4da7a43-e9d5-47ea-b2f0-3cf55a156f4a",
+  "name": "Chandra Nalaar",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Chandra Nalaar",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Chandra"
+     ]
+    },
+    "oracle_text": "+1: Chandra Nalaar deals 1 damage to target player or planeswalker.\n−X: Chandra Nalaar deals X damage to target creature.\n−8: Chandra Nalaar deals 10 damage to target player or planeswalker and each creature that player or that planeswalker's controller controls.",
+    "loyalty": "6",
+    "colors": 8
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 14325,
+  "scryfall_uri": "https://scryfall.com/card/jvc/34/chandra-nalaar?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f4da7a43-e9d5-47ea-b2f0-3cf55a156f4a",
+   "name": "Chandra Nalaar",
+   "face": 0,
+   "face_name": "Chandra Nalaar",
+   "card_hash": "b9142fbec529b4ce11e4e24b357f88c3",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 32,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "deal damage"
+      }
+     ],
+     "text": "+1: this deals 1 damage to target player or planeswalker.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 1
+       },
+       "is_targeted": true,
+       "text": "deal damage"
+      }
+     ],
+     "text": "-X: this deals X damage to target creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "kind": 13,
+         "operands": [
+          {
+           "$": "Value"
+          },
+          {
+           "$": "Value",
+           "kind": 1
+          }
+         ]
+        },
+        "text": "-X"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "-8: this deals 10 damage to target player or planeswalker and each creature that player or that planeswalker's controller controls."
+      }
+     ],
+     "text": "-8: this deals 10 damage to target player or planeswalker and each creature that player or that planeswalker's controller controls.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "-8: this deals 10 damage to target player or planeswalker and each creature that player or that planeswalker's controller controls.",
+     "reason": "not fully consumed",
+     "consumed": 12,
+     "remaining": [
+      "that",
+      "player",
+      "or",
+      "that",
+      "planeswalker's",
+      "controller",
+      "controls",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

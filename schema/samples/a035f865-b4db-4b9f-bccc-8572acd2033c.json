@@ -1,0 +1,108 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
+ "name": "Magus of the Moat",
+ "card_hash": "bf3fc3e91083ed30518610659a74dcc2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
+  "name": "Magus of the Moat",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Magus of the Moat",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Creatures without flying can't attack.",
+    "power": "0",
+    "toughness": "3",
+    "colors": 1
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 7569,
+  "scryfall_uri": "https://scryfall.com/card/fut/12/magus-of-the-moat?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
+   "name": "Magus of the Moat",
+   "face": 0,
+   "face_name": "Magus of the Moat",
+   "card_hash": "bf3fc3e91083ed30518610659a74dcc2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "lacks_keyword": [
+         "flying"
+        ]
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 20,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "lacks_keyword": [
+           "flying"
+          ]
+         },
+         "text": "can't attack"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Creatures without flying can't attack."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

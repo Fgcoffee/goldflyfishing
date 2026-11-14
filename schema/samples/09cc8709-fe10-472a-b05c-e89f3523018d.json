@@ -1,0 +1,171 @@
+{
+ "ir_version": 2,
+ "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
+ "name": "Austere Command",
+ "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
+  "name": "Austere Command",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Austere Command",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Choose two —\n• Destroy all artifacts.\n• Destroy all enchantments.\n• Destroy all creatures with mana value 3 or less.\n• Destroy all creatures with mana value 4 or greater.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 169,
+  "scryfall_uri": "https://scryfall.com/card/msc/121/austere-command?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
+   "name": "Austere Command",
+   "face": 0,
+   "face_name": "Austere Command",
+   "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 29,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 1
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all artifacts."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 29,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 8
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all enchantments."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 29,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "mana_value": {
+             "$": "NumericConstraint",
+             "comparison": 3,
+             "value": {
+              "$": "Value",
+              "constant": 3
+             }
+            }
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all creatures with mana value 3 or less."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 29,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "mana_value": {
+             "$": "NumericConstraint",
+             "comparison": 5,
+             "value": {
+              "$": "Value",
+              "constant": 4
+             }
+            }
+           },
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy all creatures with mana value 4 or greater."
+        }
+       ],
+       "text": "Choose two -"
+      }
+     ],
+     "text": "Choose two -",
+     "functions_in": {
+      "$set": [
+       4
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

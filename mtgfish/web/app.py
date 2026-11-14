@@ -10,6 +10,8 @@ Routes (the contract the page in ``ui/web`` is written against)::
     GET  /api/jobs            this browser's simulations, queued to finished
     POST /api/jobs/<id>/cancel
     GET  /healthz             liveness, session count, whether a run is going
+    GET  /api/ir, POST /api/ir/decks, GET /ir/v1/<id>.json
+                              card IR for the browser engine (see ``ir``)
 
 The bridge is synchronous and every call to a session's bridge happens on
 that session's own thread, so the async handlers here only ever *wait* for
@@ -75,6 +77,7 @@ class AppState:
         self.accounts = accounts
         accounts.on_forget = self.forget_user
         self._start_purging()
+        self._start_spot_checks()
         self.api = Api(settings)
         self.sessions = SessionManager(self.api, settings)
         self.sessions.on_finished = self.job_finished
@@ -136,6 +139,34 @@ class AppState:
 
         threading.Thread(target=loop, daemon=True, name="purge").start()
 
+    def _start_spot_checks(self) -> None:
+        """Replay a sample of each uploaded browser run in Node, every
+        ``spot_check_interval`` seconds (browser_runs.check_pending), so only
+        runs that replay to their digests are marked "ok"."""
+        import threading
+
+        from .browser_runs import check_pending, node_binary, replay_cli
+        from .ir import IrStore
+
+        interval = self.settings.spot_check_interval
+        if interval <= 0:
+            return
+        if node_binary() is None or not replay_cli().is_file():
+            log.warning("spot check off: no node or no %s (npm run build:replay)", replay_cli())
+            return
+
+        # Only card_path is used, which reads the export directory: no database.
+        cards = IrStore()
+
+        def loop(stop=threading.Event()) -> None:
+            while not stop.wait(interval):
+                try:
+                    check_pending(self.accounts.db, cards)
+                except Exception:  # noqa: BLE001 - never take the site down over a check
+                    log.warning("spot check pass failed", exc_info=True)
+
+        threading.Thread(target=loop, daemon=True, name="spot-check").start()
+
     def forget_user(self, user_id: str) -> None:
         for session in self.sessions.all():
             if session.user_id == user_id:
@@ -163,6 +194,7 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
         # Runs stopped and their worker processes gone before exiting, rather
         # than the interpreter waiting at exit for games nobody will see.
         await asyncio.to_thread(state.sessions.close_all)
+        ir_routes.ir_store.close()
 
     app = FastAPI(
         title="MTG Goldfisher",
@@ -210,6 +242,16 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
     from .library import build_router as library_router
 
     app.include_router(library_router(state.accounts))
+    from .browser_runs import build_router as browser_runs_router
+
+    # Runs played in the browser, sent back and stored.
+    app.include_router(browser_runs_router(state.accounts))
+    from .ir import build_router as ir_router
+
+    # Card IR for the browser engine (the TypeScript port). Before the static
+    # catch-all below, which would otherwise answer /ir/... with a 404.
+    ir_routes = ir_router()
+    app.include_router(ir_routes)
 
     allowed_origins = {state.accounts.settings.public_base_url.rstrip("/")}
     production = state.accounts.settings.production

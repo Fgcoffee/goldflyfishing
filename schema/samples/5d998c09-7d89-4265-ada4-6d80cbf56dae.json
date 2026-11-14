@@ -1,0 +1,131 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
+ "name": "Blind Obedience",
+ "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
+  "name": "Blind Obedience",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Blind Obedience",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Extort (Whenever you cast a spell, you may pay {W/B}. If you do, each opponent loses 1 life and you gain that much life.)\nArtifacts and creatures your opponents control enter tapped.",
+    "colors": 1,
+    "keywords": [
+     "Extort"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 503,
+  "scryfall_uri": "https://scryfall.com/card/rvr/9/blind-obedience?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
+   "name": "Blind Obedience",
+   "face": 0,
+   "face_name": "Blind Obedience",
+   "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 52,
+         "players": {
+          "$": "PlayerFilter",
+          "scope": 3
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        {
+         "$": "Effect",
+         "kind": 51,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        }
+       ]
+      }
+     ],
+     "text": "Extort",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever you cast a spell"
+     },
+     "keyword": "Extort"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 5,
+        "controller": 2
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Artifacts and creatures your opponents control enter tapped."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

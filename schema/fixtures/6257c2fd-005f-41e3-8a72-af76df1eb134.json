@@ -1,0 +1,100 @@
+{
+ "ir_version": 2,
+ "oracle_id": "6257c2fd-005f-41e3-8a72-af76df1eb134",
+ "name": "Terminate",
+ "card_hash": "455263f6ec959f5b606a270f0849fe3c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6257c2fd-005f-41e3-8a72-af76df1eb134",
+  "name": "Terminate",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Terminate",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Destroy target creature. It can't be regenerated.",
+    "colors": 12
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 12,
+  "commander_legal": true,
+  "edhrec_rank": 224,
+  "scryfall_uri": "https://scryfall.com/card/msc/189/terminate?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "6257c2fd-005f-41e3-8a72-af76df1eb134",
+   "name": "Terminate",
+   "face": 0,
+   "face_name": "Terminate",
+   "card_hash": "455263f6ec959f5b606a270f0849fe3c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 64,
+         "subject": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Destroy target creature. It can't be regenerated."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

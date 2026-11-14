@@ -1,0 +1,157 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
+ "name": "Adarkar Wastes",
+ "card_hash": "c316f6c85d79c0702699c7fab4c90ac6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
+  "name": "Adarkar Wastes",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Adarkar Wastes",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}: Add {W} or {U}. This land deals 1 damage to you.",
+    "produced_mana": [
+     "C",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 3,
+  "commander_legal": true,
+  "edhrec_rank": 147,
+  "scryfall_uri": "https://scryfall.com/card/eoc/147/adarkar-wastes?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
+   "name": "Adarkar Wastes",
+   "face": 0,
+   "face_name": "Adarkar Wastes",
+   "card_hash": "c316f6c85d79c0702699c7fab4c90ac6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": 1,
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": 2,
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      },
+      {
+       "$": "Effect",
+       "kind": 50,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}. This land deals 1 damage to you.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

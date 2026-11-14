@@ -1,0 +1,101 @@
+{
+ "ir_version": 2,
+ "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
+ "name": "Goblin Recruiter",
+ "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
+  "name": "Goblin Recruiter",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Recruiter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 3338,
+  "scryfall_uri": "https://scryfall.com/card/6ed/186/goblin-recruiter?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
+   "name": "Goblin Recruiter",
+   "face": 0,
+   "face_name": "Goblin Recruiter",
+   "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order."
+      }
+     ],
+     "text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this creature enters, search your library for any number of Goblin cards, reveal them, then shuffle and put those cards on top in any order.",
+     "reason": "not fully consumed",
+     "consumed": 21,
+     "remaining": [
+      "put",
+      "those",
+      "cards",
+      "on",
+      "top",
+      "in",
+      "any",
+      "order",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

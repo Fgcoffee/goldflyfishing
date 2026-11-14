@@ -1,0 +1,126 @@
+{
+ "ir_version": 2,
+ "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
+ "name": "Boggart Harbinger",
+ "card_hash": "bd325211ec4b8e3a71d5836a9d81dc5a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
+  "name": "Boggart Harbinger",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Boggart Harbinger",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Shaman"
+     ]
+    },
+    "oracle_text": "When this creature enters, you may search your library for a Goblin card, reveal it, then shuffle and put that card on top.",
+    "power": "2",
+    "toughness": "1",
+    "colors": 4
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 10610,
+  "scryfall_uri": "https://scryfall.com/card/lrw/102/boggart-harbinger?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "56508ae7-6013-4149-8935-96b8d5091baa",
+   "name": "Boggart Harbinger",
+   "face": 0,
+   "face_name": "Boggart Harbinger",
+   "card_hash": "bd325211ec4b8e3a71d5836a9d81dc5a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 23,
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": 0,
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this creature enters, you may search your library for a Goblin card, reveal it, then shuffle and put that card on top.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

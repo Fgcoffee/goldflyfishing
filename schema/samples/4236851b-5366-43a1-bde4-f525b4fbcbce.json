@@ -1,0 +1,146 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
+ "name": "Bloodchief's Thirst",
+ "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
+  "name": "Bloodchief's Thirst",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Bloodchief's Thirst",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Kicker {2}{B} (You may pay an additional {2}{B} as you cast this spell.)\nDestroy target creature or planeswalker with mana value 2 or less. If this spell was kicked, instead destroy target creature or planeswalker.",
+    "colors": 4,
+    "keywords": [
+     "Kicker"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 14302,
+  "scryfall_uri": "https://scryfall.com/card/znr/94/bloodchiefs-thirst?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
+   "name": "Bloodchief's Thirst",
+   "face": 0,
+   "face_name": "Bloodchief's Thirst",
+   "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Kicker {2}{B}",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Kicker",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 2,
+            "text": "{2}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 4,
+            "text": "{B}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Kicker",
+      "text": "Kicker {2}{B}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 36,
+        "mana_value": {
+         "$": "NumericConstraint",
+         "comparison": 3,
+         "value": {
+          "$": "Value",
+          "constant": 2
+         }
+        }
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 999,
+       "duration": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 29,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_any": 36
+         },
+         "is_targeted": true,
+         "text": "destroy"
+        }
+       ],
+       "text": "if ... would ..., ... instead"
+      }
+     ],
+     "text": "Destroy target creature or planeswalker with mana value 2 or less. If this spell was kicked, instead destroy target creature or planeswalker."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

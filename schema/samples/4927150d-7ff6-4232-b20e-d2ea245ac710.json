@@ -1,0 +1,164 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
+ "name": "Tectonic Edge",
+ "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
+  "name": "Tectonic Edge",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tectonic Edge",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{1}, {T}, Sacrifice this land: Destroy target nonbasic land. Activate only if an opponent controls four or more lands.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 4105,
+  "scryfall_uri": "https://scryfall.com/card/c14/313/tectonic-edge?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
+   "name": "Tectonic Edge",
+   "face": 0,
+   "face_name": "Tectonic Edge",
+   "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "supertypes_none": 1
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "text": "activate only ..."
+      }
+     ],
+     "text": "{1}, {T}, Sacrifice this land: Destroy target nonbasic land. Activate only if an opponent controls four or more lands.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     },
+     "activation_condition": {
+      "$": "Condition",
+      "kind": 19,
+      "filter": {
+       "$": "ObjectFilter",
+       "types_all": 16
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": 1
+      },
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": 5,
+       "value": {
+        "$": "Value",
+        "constant": 4
+       }
+      },
+      "text": "a player controls ..."
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

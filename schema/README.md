@@ -1,0 +1,133 @@
+# `schema/`: the card IR as JSON
+
+What the parser produces for each card, as versioned JSON. The engine in the
+browser reads it instead of oracle text. The format and its encoding rules
+are in [`docs/ir-json.md`](../docs/ir-json.md).
+
+| File | What it is |
+|---|---|
+| `ir.schema.json` | JSON Schema for one card file: the printed card (`CardDef`) and each face's abilities. **The source of truth.** |
+| `samples/` | Every card of the four bench decks (`bench/decks/*.txt`), plus `samples/decks.json`. For the engine's tests. |
+| `brackets.json` | The bracket tags read from the IR (`mtgfish/ir/bracket.py`) against Scryfall's tagger tags, over every format-legal card: how many agree, and each card on which they don't. A cross-check only; the tags never read Scryfall's. |
+| `usage.json` | For each effect, condition, cost, event, value and player kind, IR class and keyword: how many faces use it, how many of those are fully read, and how many bench-deck faces use it. Ordered by bench use, then pool use: the order the engine port pays off in. |
+
+The TypeScript types for the same shapes are `engine/src/ir/types.ts` and
+`defaults.ts`. They are generated from the same Python classes as the schema
+and are the only TS copy.
+
+## Exporting
+
+```bash
+python -m mtgfish.tools.ir_export export                 # every card -> cache/ir/v2/
+python -m mtgfish.tools.ir_export export --out DIR       # ... or into DIR
+python -m mtgfish.tools.ir_export samples                # the bench decks -> schema/samples/
+python -m mtgfish.tools.ir_export usage                  # what the pool uses -> schema/usage.json
+python -m mtgfish.tools.ir_export brackets               # bracket tags vs Scryfall's -> schema/brackets.json
+python -m mtgfish.tools.ir_export schema                 # regenerate the schema and the TS types
+python -m mtgfish.tools.ir_export verify --schema        # every face round-trips; 0 problems expected
+```
+
+Rerun `export` after the parser or the card data changes. It writes every
+card, about 75 seconds on four cores. To serve one deck, look up its cards
+in `index.json` and send their card files.
+
+## Serving a deck from Python
+
+```python
+from mtgfish.ir.store import IRStore
+
+store = IRStore.open(db)                                  # reads cache/ir/v2
+documents, missing = store.deck(["Lightning Bolt", "Sol Ring"])
+```
+
+`documents` holds one card document per distinct card, ready to send as JSON.
+A card whose file is missing, or whose `card_hash` no longer matches the
+card data, is parsed live instead, so the answer is never stale. `missing`
+lists names that match no card.
+
+## Layout and keys
+
+```
+cache/ir/v2/
+  index.json              names -> oracle ids, and each card's hash
+  <oracle_id>.json        one card document, all its faces
+```
+
+* **`ir_version`** is in every document and in the path (`v2/`). Version 2
+  writes enums as numbers; see `docs/ir-json.md`. A reader
+  must refuse a version it doesn't know. It changes only when a reader of
+  the old JSON would misread the new.
+* **`oracle_id`** names the card: Scryfall's oracle id, shared by every
+  printing. The file name is `<oracle_id>.json`.
+* **`face`** is the face's index within the card (0, or 0 and 1 for a
+  double-faced, split, adventure or flip card), in `faces[]` order.
+* **`code`** (in `index.json`) fingerprints the code that wrote the export:
+  the parser, the rules and card definitions, the IR package, and the Game
+  Changers list (`mtgfish.ir.store.code_fingerprint()`). A parser change can change a
+  card's IR without changing its text, so an export whose `code` differs
+  from the running code is stale. `IRStore` then parses every card live and
+  logs it once. Put `code` in cache keys alongside `card_hash`.
+* **`card_hash`** is a hash of the whole card definition, which changes when
+  the card's text does. A client holding a file whose `card_hash` matches
+  `index.json` needn't fetch it again.
+
+`index.json`:
+
+```json
+{
+ "ir_version": 2,
+ "built_at": "2026-11-10T12:20:00",
+ "snapshot": "<card data hash>",
+ "code": "<code fingerprint>",
+ "cards": {"4457ed35-7c10-48c8-9776-456485fdf070": {"name": "Lightning Bolt", "card_hash": "cbd8799e266d1b8182a241ba7be078e6"}},
+ "names": {"lightning bolt": "4457ed35-7c10-48c8-9776-456485fdf070"}
+}
+```
+
+`names` holds each card's full name and each face's name, in lower case. It
+is 7 MB for the whole pool, so resolve names on the server and send only the
+card files a deck needs (about 1.6 kB per card; 60 MB for all 38,800 cards,
+13 MB gzipped).
+
+A card document (`<oracle_id>.json`):
+
+```json
+{
+ "ir_version": 2,
+ "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
+ "name": "Lightning Bolt",
+ "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
+ "card": {"$": "CardDef", "oracle_id": "4457ed35-...", "name": "Lightning Bolt", "layout": "...", "faces": ["..."], "mana_value": 1, "color_identity": "...", "commander_legal": true},
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
+   "name": "Lightning Bolt",
+   "face": 0,
+   "face_name": "Lightning Bolt",
+   "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
+   "fully_read": true,
+   "abilities": [{"$": "Ability", "kind": 0, "effects": ["..."]}],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
+```
+
+`bracket` lists what the card counts as for an estimated Commander bracket
+(`game_changer`, `tutor`, `extra_turn`, `mass_land_denial`, and `unread`
+when part of it couldn't be read); see `docs/ir-json.md`. For a whole deck:
+
+```python
+from mtgfish.ir.bracket import estimate
+result = estimate(documents)   # each document may carry "count" (copies)
+result["bracket"], result["reasons"], result["caveats"], result["cards"]
+```
+
+`fully_read` is false when any ability could not be read. That ability is
+still in `abilities` (inert, `unparsed: true`), and `failures` says what
+failed, so the browser can show the card as partly understood.
+
+The export holds what the parser produces today, misreads included. Fixes
+to card readings are paused during the port.

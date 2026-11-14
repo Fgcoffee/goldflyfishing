@@ -1,0 +1,181 @@
+{
+ "ir_version": 2,
+ "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
+ "name": "Mystic Confluence",
+ "card_hash": "19172c2260a2b670eb8237ffceb5f447",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
+  "name": "Mystic Confluence",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mystic Confluence",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Choose three. You may choose the same mode more than once.\n• Counter target spell unless its controller pays {3}.\n• Return target creature to its owner's hand.\n• Draw a card.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1460,
+  "scryfall_uri": "https://scryfall.com/card/cmm/108/mystic-confluence?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
+   "name": "Mystic Confluence",
+   "face": 0,
+   "face_name": "Mystic Confluence",
+   "card_hash": "19172c2260a2b670eb8237ffceb5f447",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 6,
+           "players": {
+            "$": "PlayerFilter",
+            "scope": 13007
+           },
+           "pay_cost": {
+            "$": "Cost",
+            "components": [
+             {
+              "$": "CostComponent",
+              "kind": 0,
+              "mana": {
+               "$": "ManaCost",
+               "symbols": [
+                {
+                 "$": "ManaSymbol",
+                 "kind": 0,
+                 "generic": 3,
+                 "text": "{3}"
+                }
+               ]
+              }
+             }
+            ]
+           },
+           "children": [
+            {
+             "$": "Effect",
+             "kind": 100,
+             "targets": {
+              "$": "ObjectFilter",
+              "zones": {
+               "$set": [
+                4
+               ]
+              },
+              "is_ability": false
+             },
+             "is_targeted": true,
+             "text": "counter"
+            }
+           ],
+           "text": "unless its controller pays {3}"
+          }
+         ],
+         "text": "Counter target spell unless its controller pays {3}."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 32,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "is_targeted": true,
+           "text": "return to hand"
+          }
+         ],
+         "text": "Return target creature to its owner's hand."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 20,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "text": "draw"
+          }
+         ],
+         "text": "Draw a card."
+        }
+       ],
+       "modes_may_repeat": true,
+       "text": "Choose three. You may choose the same mode more than once."
+      }
+     ],
+     "text": "Choose three. You may choose the same mode more than once.",
+     "functions_in": {
+      "$set": [
+       4
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

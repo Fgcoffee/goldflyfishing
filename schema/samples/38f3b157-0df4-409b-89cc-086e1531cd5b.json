@@ -1,0 +1,122 @@
+{
+ "ir_version": 2,
+ "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
+ "name": "Gray Merchant of Asphodel",
+ "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
+  "name": "Gray Merchant of Asphodel",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Gray Merchant of Asphodel",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Zombie"
+     ]
+    },
+    "oracle_text": "When this creature enters, each opponent loses X life, where X is your devotion to black. You gain life equal to the life lost this way. (Each {B} in the mana costs of permanents you control counts toward your devotion to black.)",
+    "power": "2",
+    "toughness": "4",
+    "colors": 4
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 245,
+  "scryfall_uri": "https://scryfall.com/card/dsc/142/gray-merchant-of-asphodel?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
+   "name": "Gray Merchant of Asphodel",
+   "face": 0,
+   "face_name": "Gray Merchant of Asphodel",
+   "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 22,
+        "colors": 4
+       },
+       "text": "lose life"
+      },
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 7001,
+        "event_kinds": [
+         63
+        ]
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "When this creature enters, each opponent loses X life, where X is your devotion to black. You gain life equal to the life lost this way.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

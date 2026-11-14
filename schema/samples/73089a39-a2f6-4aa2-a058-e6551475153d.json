@@ -1,0 +1,101 @@
+{
+ "ir_version": 2,
+ "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
+ "name": "Sanguine Bond",
+ "card_hash": "d7155414321cf552098ddd1f1b543f4e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
+  "name": "Sanguine Bond",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sanguine Bond",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever you gain life, target opponent loses that much life.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 506,
+  "scryfall_uri": "https://scryfall.com/card/c21/153/sanguine-bond?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
+   "name": "Sanguine Bond",
+   "face": 0,
+   "face_name": "Sanguine Bond",
+   "card_hash": "d7155414321cf552098ddd1f1b543f4e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 5
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 25
+       },
+       "is_targeted": true,
+       "text": "lose life"
+      }
+     ],
+     "text": "Whenever you gain life, target opponent loses that much life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        62
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player gains life"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

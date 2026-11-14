@@ -1,0 +1,140 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0bfa4512-e35a-4c93-b324-80ec659f5a97",
+ "name": "Ulamog, the Ceaseless Hunger",
+ "card_hash": "55f178354197c5bb52674c9e43762ff4",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0bfa4512-e35a-4c93-b324-80ec659f5a97",
+  "name": "Ulamog, the Ceaseless Hunger",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ulamog, the Ceaseless Hunger",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 10,
+       "text": "{10}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Eldrazi"
+     ]
+    },
+    "oracle_text": "When you cast this spell, exile two target permanents.\nIndestructible\nWhenever Ulamog attacks, defending player exiles the top twenty cards of their library.",
+    "power": "10",
+    "toughness": "10",
+    "keywords": [
+     "Indestructible"
+    ]
+   }
+  ],
+  "mana_value": 10,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1343,
+  "scryfall_uri": "https://scryfall.com/card/cmm/5/ulamog-the-ceaseless-hunger?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0bfa4512-e35a-4c93-b324-80ec659f5a97",
+   "name": "Ulamog, the Ceaseless Hunger",
+   "face": 0,
+   "face_name": "Ulamog, the Ceaseless Hunger",
+   "card_hash": "55f178354197c5bb52674c9e43762ff4",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "count": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "is_targeted": true,
+       "text": "exile"
+      }
+     ],
+     "text": "When you cast this spell, exile two target permanents.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Indestructible",
+     "keyword": "Indestructible"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 11
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 20
+       },
+       "from_zone": 0,
+       "text": "exile from the top of a library"
+      }
+     ],
+     "text": "Whenever this attacks, defending player exiles the top twenty cards of their library.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

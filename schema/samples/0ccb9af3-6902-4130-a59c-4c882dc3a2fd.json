@@ -1,0 +1,140 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
+ "name": "Legion Warboss",
+ "card_hash": "d172539dcc8dd041aa2bda537d62e262",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
+  "name": "Legion Warboss",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Legion Warboss",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Soldier"
+     ]
+    },
+    "oracle_text": "Mentor (Whenever this creature attacks, put a +1/+1 counter on target attacking creature with lesser power.)\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 8,
+    "keywords": [
+     "Mentor"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1797,
+  "scryfall_uri": "https://scryfall.com/card/tdc/220/legion-warboss?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
+   "name": "Legion Warboss",
+   "face": 0,
+   "face_name": "Legion Warboss",
+   "card_hash": "d172539dcc8dd041aa2bda537d62e262",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "other_than_source": true,
+        "controller": 1,
+        "attacking": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "counter_type": "+1/+1"
+      }
+     ],
+     "text": "Mentor",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "whenever this attacks (Mentor)"
+     },
+     "keyword": "Mentor"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able."
+      }
+     ],
+     "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token. That token gains haste until end of turn and attacks this combat if able.",
+     "reason": "not fully consumed",
+     "consumed": 26,
+     "remaining": [
+      "attacks",
+      "this",
+      "combat",
+      "if",
+      "able",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

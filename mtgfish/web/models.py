@@ -8,12 +8,14 @@ import datetime as dt
 import uuid
 
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     DateTime,
     Float,
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     String,
     Text,
     UniqueConstraint,
@@ -211,3 +213,49 @@ class Run(Base):
     card_db_hash: Mapped[str] = mapped_column(String(64), default="")
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
     finished_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class BrowserRun(Base):
+    """A run played in someone's browser by the TypeScript engine, sent back
+    so its results are kept and can be checked.
+
+    Everything needed to replay any game is here: the run seed and each
+    game's own seed, the engine and IR builds and card snapshot it ran on,
+    and the decks as resolved (oracle ids and card hashes). The game records
+    themselves are one gzipped JSON blob, since they're only ever read whole.
+    """
+
+    __tablename__ = "browser_runs"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    #: Null for a run uploaded without signing in: not linked to anyone.
+    user_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
+    #: 32-bit unsigned, so wider than a signed INTEGER.
+    run_seed: Mapped[int] = mapped_column(BigInteger)
+    game_start: Mapped[int] = mapped_column(Integer)
+    game_end: Mapped[int] = mapped_column(Integer)
+    #: Games recorded, and games that crashed (both are in ``payload``).
+    games: Mapped[int] = mapped_column(Integer)
+    crashed: Mapped[int] = mapped_column(Integer)
+    #: False for a run cancelled or cut short: it holds what was completed.
+    complete: Mapped[bool] = mapped_column(Boolean)
+    hero: Mapped[int] = mapped_column(Integer)
+    max_rounds: Mapped[int] = mapped_column(Integer)
+    engine_build: Mapped[str] = mapped_column(String(80))
+    ir_build: Mapped[str] = mapped_column(String(80))
+    snapshot: Mapped[str] = mapped_column(String(80))
+    #: JSON: seats in order, each {"commanders": [...], "cards": [{"oracle_id",
+    #: "card_hash", "count"}]}.
+    decks: Mapped[str] = mapped_column(Text)
+    #: gzip of JSON {"records": [...], "crashed": [...]}.
+    payload: Mapped[bytes] = mapped_column(LargeBinary)
+    #: "pending" until the server replays a sample; then "ok" or "mismatch".
+    #: A mismatched run is kept out of any shared statistics.
+    spot_check: Mapped[str] = mapped_column(String(16), default="pending")
+    spot_check_detail: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+Index("ix_browser_runs_created", BrowserRun.created_at)

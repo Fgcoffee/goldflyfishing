@@ -1,0 +1,149 @@
+{
+ "ir_version": 2,
+ "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
+ "name": "Frenzied Goblin",
+ "card_hash": "18f8203df2509495adb03417a4e13a5c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
+  "name": "Frenzied Goblin",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Frenzied Goblin",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Berserker"
+     ]
+    },
+    "oracle_text": "Whenever this creature attacks, you may pay {R}. If you do, target creature can't block this turn.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 8
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 9572,
+  "scryfall_uri": "https://scryfall.com/card/fdn/199/frenzied-goblin?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
+   "name": "Frenzied Goblin",
+   "face": 0,
+   "face_name": "Frenzied Goblin",
+   "card_hash": "18f8203df2509495adb03417a4e13a5c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 200,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 0,
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": 2,
+               "colors": 8,
+               "text": "{R}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay {R}"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": 219,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 150,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "is_targeted": true,
+         "duration": 1,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 23,
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "text": "can't block"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "if you do"
+      }
+     ],
+     "text": "Whenever this creature attacks, you may pay {R}. If you do, target creature can't block this turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

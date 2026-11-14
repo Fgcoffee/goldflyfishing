@@ -1,0 +1,127 @@
+{
+ "ir_version": 2,
+ "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
+ "name": "The Tabernacle at Pendrell Vale",
+ "card_hash": "7d5992070cd7b0318400c164d758cca5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
+  "name": "The Tabernacle at Pendrell Vale",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "The Tabernacle at Pendrell Vale",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 16
+    },
+    "oracle_text": "All creatures have \"At the beginning of your upkeep, destroy this creature unless you pay {1}.\""
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 8877,
+  "scryfall_uri": "https://scryfall.com/card/me3/212/the-tabernacle-at-pendrell-vale?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
+   "name": "The Tabernacle at Pendrell Vale",
+   "face": 0,
+   "face_name": "The Tabernacle at Pendrell Vale",
+   "card_hash": "7d5992070cd7b0318400c164d758cca5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 2,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 6,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "pay_cost": {
+            "$": "Cost",
+            "components": [
+             {
+              "$": "CostComponent",
+              "kind": 0,
+              "mana": {
+               "$": "ManaCost",
+               "symbols": [
+                {
+                 "$": "ManaSymbol",
+                 "kind": 0,
+                 "generic": 1,
+                 "text": "{1}"
+                }
+               ]
+              }
+             }
+            ]
+           },
+           "children": [
+            {
+             "$": "Effect",
+             "kind": 29,
+             "targets": {
+              "$": "ObjectFilter",
+              "source_only": true
+             },
+             "text": "destroy"
+            }
+           ],
+           "text": "unless you pays {1}"
+          }
+         ],
+         "text": "At the beginning of your upkeep , destroy this creature unless you pay {1} .",
+         "trigger": {
+          "$": "TriggerCondition",
+          "event_kinds": {
+           "$set": [
+            127
+           ]
+          },
+          "players": {
+           "$": "PlayerFilter"
+          },
+          "text": "at the beginning of upkeep"
+         }
+        }
+       ],
+       "text": "gains At the beginning of your upkeep , destroy this creature unless you pay {1} ."
+      }
+     ],
+     "text": "All creatures have \"At the beginning of your upkeep, destroy this creature unless you pay {1}.\""
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer"
+ ]
+}

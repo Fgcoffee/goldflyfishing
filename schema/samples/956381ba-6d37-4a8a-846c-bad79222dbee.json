@@ -1,0 +1,149 @@
+{
+ "ir_version": 2,
+ "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
+ "name": "Force of Will",
+ "card_hash": "9840d8f32ff3f4d156e9b133d4806445",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
+  "name": "Force of Will",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Force of Will",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "You may pay 1 life and exile a blue card from your hand rather than pay this spell's mana cost.\nCounter target spell.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 194,
+  "scryfall_uri": "https://scryfall.com/card/dmr/50/force-of-will?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "956381ba-6d37-4a8a-846c-bad79222dbee",
+   "name": "Force of Will",
+   "face": 0,
+   "face_name": "Force of Will",
+   "card_hash": "9840d8f32ff3f4d156e9b133d4806445",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "You may pay 1 life and exile a blue card from your hand rather than pay this spell's mana cost.",
+     "functions_in": {
+      "$set": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ]
+     },
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 30,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "pay life"
+        },
+        {
+         "$": "CostComponent",
+         "kind": 13,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "colors_any": 2,
+          "zones": {
+           "$set": [
+            1
+           ]
+          },
+          "owner": 1,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "exile a card"
+        }
+       ]
+      },
+      "text": "alternative cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 100,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          4
+         ]
+        },
+        "is_ability": false
+       },
+       "is_targeted": true,
+       "text": "counter"
+      }
+     ],
+     "text": "Counter target spell."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer"
+ ]
+}

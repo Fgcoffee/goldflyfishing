@@ -1,0 +1,179 @@
+{
+ "ir_version": 2,
+ "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
+ "name": "Increasing Ambition",
+ "card_hash": "f4e654c1551c51797a2c078d9337fb17",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
+  "name": "Increasing Ambition",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Increasing Ambition",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Search your library for a card and put that card into your hand. If this spell was cast from a graveyard, instead search your library for two cards and put those cards into your hand. Then shuffle.\nFlashback {7}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "colors": 4,
+    "keywords": [
+     "Flashback"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 9453,
+  "scryfall_uri": "https://scryfall.com/card/dka/69/increasing-ambition?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
+   "name": "Increasing Ambition",
+   "face": 0,
+   "face_name": "Increasing Ambition",
+   "card_hash": "f4e654c1551c51797a2c078d9337fb17",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": 999,
+       "duration": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 23,
+         "targets": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 2
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "zone": 1,
+         "text": "search library"
+        },
+        {
+         "$": "Effect",
+         "kind": 24,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "shuffle"
+        }
+       ],
+       "text": "if ... would ..., ... instead"
+      }
+     ],
+     "text": "Search your library for a card and put that card into your hand. If this spell was cast from a graveyard, instead search your library for two cards and put those cards into your hand. Then shuffle."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flashback {7}{B}",
+     "functions_in": {
+      "$set": [
+       3
+      ]
+     },
+     "keyword": "Flashback",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 7,
+            "text": "{7}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 4,
+            "text": "{B}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "from_zone": 3,
+      "keyword": "Flashback",
+      "text": "Flashback {7}{B}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

@@ -1,0 +1,125 @@
+{
+ "ir_version": 2,
+ "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
+ "name": "Goblin Matron",
+ "card_hash": "088ef786a114eae901f55ccc617dfe33",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
+  "name": "Goblin Matron",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Matron",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "When this creature enters, you may search your library for a Goblin card, reveal that card, put it into your hand, then shuffle.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1787,
+  "scryfall_uri": "https://scryfall.com/card/plst/DMR-123/goblin-matron?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
+   "name": "Goblin Matron",
+   "face": 0,
+   "face_name": "Goblin Matron",
+   "card_hash": "088ef786a114eae901f55ccc617dfe33",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 23,
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": 1,
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this creature enters, you may search your library for a Goblin card, reveal that card, put it into your hand, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

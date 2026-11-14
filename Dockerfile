@@ -7,6 +7,17 @@
 # Scryfall dumps in the repository, so a host with no persistent disk (Render's
 # free tier) starts with everything it needs, and a restart costs nothing.
 # Accounts, decks and history live in Postgres (DATABASE_URL), never here.
+
+# The TS engine's Node replay CLI, for the spot check of browser runs
+# (mtgfish/web/browser_runs.py): bundled from the same engine/src the server
+# fingerprints, so it replays exactly the build the page ran.
+FROM node:22-slim AS engine
+WORKDIR /engine
+COPY engine/package.json engine/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY engine/src ./src
+RUN npm run build:replay
+
 FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1 \
@@ -26,6 +37,16 @@ RUN pip install --no-cache-dir -r requirements-web.txt
 
 RUN useradd --create-home --uid 1000 app && mkdir -p /app/data && chown app /app/data
 COPY --chown=app mtgfish ./mtgfish
+# The TS engine's source: the server fingerprints it (mtgfish/web/engine_build.py)
+# to accept only browser runs played with this build.
+COPY --chown=app engine/src ./engine/src
+# Node (the binary alone, from the same Debian release) and the replay CLI.
+# Node links libstdc++, which a slim Python image may not carry.
+RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 \
+ && rm -rf /var/lib/apt/lists/*
+COPY --from=engine /usr/local/bin/node /usr/local/bin/node
+COPY --from=engine --chown=app /engine/dist ./engine/dist
+RUN node --version && test -s engine/dist/replay.cjs
 COPY --chown=app cache/scryfall ./data/scryfall
 COPY --chown=app cache/pool.json cache/comprehensive_rules.txt ./data/
 
@@ -35,6 +56,12 @@ USER app
 RUN python -c "from mtgfish.bootstrap import seed_card_database; print(seed_card_database(report=print))" \
  && test -s /app/data/cards.sqlite \
  && python -m mtgfish.tools.parse_store build
+# The card IR as JSON (/app/data/ir/v<IR_VERSION>), served to the browser
+# engine one card at a time (mtgfish/web/ir.py). About 85 MB, under a minute
+# on a few cores. Written by the same code that serves it, so the server
+# never has to parse a card live.
+RUN python -m mtgfish.tools.ir_export export \
+ && python -c "from mtgfish.ir.codec import IR_VERSION as v; import pathlib, sys; p = pathlib.Path('/app/data/ir/v%d/index.json' % v); sys.exit(0 if p.stat().st_size else 1)"
 
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/healthz' % os.environ.get('PORT','8000'), timeout=4)" || exit 1

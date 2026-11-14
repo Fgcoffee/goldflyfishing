@@ -1,0 +1,167 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
+ "name": "Crypt Ghast",
+ "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
+  "name": "Crypt Ghast",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Crypt Ghast",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Spirit"
+     ]
+    },
+    "oracle_text": "Extort (Whenever you cast a spell, you may pay {W/B}. If you do, each opponent loses 1 life and you gain that much life.)\nWhenever you tap a Swamp for mana, add an additional {B}.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 4,
+    "keywords": [
+     "Extort"
+    ],
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 531,
+  "scryfall_uri": "https://scryfall.com/card/rvr/70/crypt-ghast?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
+   "name": "Crypt Ghast",
+   "face": 0,
+   "face_name": "Crypt Ghast",
+   "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 52,
+         "players": {
+          "$": "PlayerFilter",
+          "scope": 3
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        {
+         "$": "Effect",
+         "kind": 51,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         }
+        }
+       ]
+      }
+     ],
+     "text": "Extort",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever you cast a spell"
+     },
+     "keyword": "Extort"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": 4,
+       "text": "add {B}"
+      }
+     ],
+     "text": "Whenever you tap a Swamp for mana, add an additional {B}.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        148
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "subtypes_all": [
+        "Swamp"
+       ],
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player taps something for mana"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,130 @@
+{
+ "ir_version": 2,
+ "oracle_id": "96a4e515-2b4e-4c2d-aa1a-963597484723",
+ "name": "Tsabo's Web",
+ "card_hash": "09e161ebb51e1a2ae36dd367202534a6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "96a4e515-2b4e-4c2d-aa1a-963597484723",
+  "name": "Tsabo's Web",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tsabo's Web",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "When this artifact enters, draw a card.\nEach land with an activated ability that isn't a mana ability doesn't untap during its controller's untap step."
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 19657,
+  "scryfall_uri": "https://scryfall.com/card/inv/317/tsabos-web?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "96a4e515-2b4e-4c2d-aa1a-963597484723",
+   "name": "Tsabo's Web",
+   "face": 0,
+   "face_name": "Tsabo's Web",
+   "card_hash": "09e161ebb51e1a2ae36dd367202534a6",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "When this artifact enters, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Each land with an activated ability that isn't a mana ability doesn't untap during its controller's untap step."
+      }
+     ],
+     "text": "Each land with an activated ability that isn't a mana ability doesn't untap during its controller's untap step.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each land with an activated ability that isn't a mana ability doesn't untap during its controller's untap step.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Each",
+      "land",
+      "with",
+      "an",
+      "activated",
+      "ability",
+      "that",
+      "isn't",
+      "a",
+      "mana",
+      "ability",
+      "doesn't",
+      "untap",
+      "during",
+      "its",
+      "controller's",
+      "untap",
+      "step",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

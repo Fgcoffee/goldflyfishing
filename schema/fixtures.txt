@@ -1,0 +1,57 @@
+# Cards the engine's board tests load as real IR (schema/fixtures/), one name
+# per line. Regenerate with `python -m mtgfish.tools.ir_export fixtures`.
+Karplusan Forest
+Lightning Bolt
+Mountain
+Forest
+Jungle Hollow
+Giant Growth
+Birds of Paradise
+Rakdos Signet
+Terminate
+Grizzly Bears
+Command Tower
+Kenrith, the Returned King
+Scoured Barrens
+Llanowar Elves
+Sol Ring
+Simic Growth Chamber
+Temple of Mystery
+Spike Feeder
+Force of Will
+Wretched Gryff
+Gitaxian Probe
+Ambush Viper
+Gladecover Scout
+Shock
+Wrath of God
+Consume Strength
+Deadshot
+Tezzeret the Seeker
+Banisher Priest
+Island
+Divination
+Beast Whisperer
+Chandra Nalaar
+Helix Pinnacle
+Mentor of the Meek
+Nim Deathmantle
+Rest in Peace
+Colossus Hammer
+Sword of Fire and Ice
+Abnormal Endurance
+Sublime Archangel
+Mikaeus, the Unhallowed
+Ornithopter
+Fling
+Life's Legacy
+Momentous Fall
+Worthy Cause
+Call for Blood
+Eldritch Evolution
+Wicked Pact
+Ulamog, the Infinite Gyre
+Wort, the Raidmother
+Deflecting Swat
+Soul-Guide Lantern
+Ulamog, the Ceaseless Hunger

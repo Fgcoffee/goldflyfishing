@@ -1,0 +1,95 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
+ "name": "Shared Animosity",
+ "card_hash": "ad80641d12bda7a20bc2cb658943cfcd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
+  "name": "Shared Animosity",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Shared Animosity",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 681,
+  "scryfall_uri": "https://scryfall.com/card/lcc/231/shared-animosity?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
+   "name": "Shared Animosity",
+   "face": 0,
+   "face_name": "Shared Animosity",
+   "card_hash": "ad80641d12bda7a20bc2cb658943cfcd",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it."
+      }
+     ],
+     "text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever a creature you control attacks, it gets +1/+0 until end of turn for each other attacking creature that shares a creature type with it.",
+     "reason": "not fully consumed",
+     "consumed": 19,
+     "remaining": [
+      "that",
+      "shares",
+      "a",
+      "creature",
+      "type",
+      "with",
+      "it",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

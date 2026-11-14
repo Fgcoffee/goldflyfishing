@@ -1,0 +1,139 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ab1cc360-b9de-48d9-9983-4dfe4a7d2a37",
+ "name": "Arcane Denial",
+ "card_hash": "6a712f98fd3937a638eb8682efd602f6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ab1cc360-b9de-48d9-9983-4dfe4a7d2a37",
+  "name": "Arcane Denial",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Arcane Denial",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Counter target spell. Its controller may draw up to two cards at the beginning of the next turn's upkeep.\nYou draw a card at the beginning of the next turn's upkeep.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 53,
+  "scryfall_uri": "https://scryfall.com/card/msc/147/arcane-denial?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ab1cc360-b9de-48d9-9983-4dfe4a7d2a37",
+   "name": "Arcane Denial",
+   "face": 0,
+   "face_name": "Arcane Denial",
+   "card_hash": "6a712f98fd3937a638eb8682efd602f6",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Counter target spell. Its controller may draw up to two cards at the beginning of the next turn's upkeep."
+      }
+     ],
+     "text": "Counter target spell. Its controller may draw up to two cards at the beginning of the next turn's upkeep.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 213,
+       "trigger": {
+        "$": "TriggerCondition",
+        "event_kinds": {
+         "$set": [
+          127
+         ]
+        },
+        "text": "at the next upkeep"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 20,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "draw"
+        }
+       ],
+       "text": "later"
+      }
+     ],
+     "text": "You draw a card at the beginning of the next turn's upkeep."
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Counter target spell. Its controller may draw up to two cards at the beginning of the next turn's upkeep.",
+     "reason": "not fully consumed",
+     "consumed": 4,
+     "remaining": [
+      "Its",
+      "controller",
+      "may",
+      "draw",
+      "up",
+      "to",
+      "two",
+      "cards",
+      "at",
+      "the",
+      "beginning",
+      "of",
+      "the",
+      "next",
+      "turn's",
+      "upkeep",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

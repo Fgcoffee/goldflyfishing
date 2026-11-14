@@ -1,0 +1,99 @@
+{
+ "ir_version": 2,
+ "oracle_id": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
+ "name": "Llanowar Elves",
+ "card_hash": "5b59649d28266705d9a6db93dc82ebe7",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
+  "name": "Llanowar Elves",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Llanowar Elves",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elf",
+      "Druid"
+     ]
+    },
+    "oracle_text": "{T}: Add {G}.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 16,
+    "produced_mana": [
+     "G"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 58,
+  "scryfall_uri": "https://scryfall.com/card/fdn/227/llanowar-elves?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
+   "name": "Llanowar Elves",
+   "face": 0,
+   "face_name": "Llanowar Elves",
+   "card_hash": "5b59649d28266705d9a6db93dc82ebe7",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{G}"
+       ],
+       "colors": 16,
+       "text": "add {G}"
+      }
+     ],
+     "text": "{T}: Add {G}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

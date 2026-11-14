@@ -1,0 +1,82 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5748ebf1-24e3-499d-ab7c-c2cebd462a24",
+ "name": "Giant Growth",
+ "card_hash": "1bf9a2abbf6f5299df816c3e79af9523",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5748ebf1-24e3-499d-ab7c-c2cebd462a24",
+  "name": "Giant Growth",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Giant Growth",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Target creature gets +3/+3 until end of turn.",
+    "colors": 16
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 3331,
+  "scryfall_uri": "https://scryfall.com/card/msh/167/giant-growth?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5748ebf1-24e3-499d-ab7c-c2cebd462a24",
+   "name": "Giant Growth",
+   "face": 0,
+   "face_name": "Giant Growth",
+   "card_hash": "1bf9a2abbf6f5299df816c3e79af9523",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 3
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "text": "gets +3/+3"
+      }
+     ],
+     "text": "Target creature gets +3/+3 until end of turn."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

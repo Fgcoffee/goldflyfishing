@@ -1,0 +1,2661 @@
+{
+ "ir_version": 2,
+ "dungeons": [
+  {
+   "name": "Lost Mine of Phandelver",
+   "oracle_id": "5c446a7f-0301-4343-b0df-146cf2db605b",
+   "entry_quality": "",
+   "mappable": true,
+   "bottommost": 6,
+   "face": {
+    "$": "FaceDef",
+    "name": "Lost Mine of Phandelver",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1024
+    },
+    "oracle_text": "Cave Entrance — Scry 1. (Leads to: Goblin Lair, Mine Tunnels)\nGoblin Lair — Create a 1/1 red Goblin creature token. (Leads to: Storeroom, Dark Pool)\nMine Tunnels — Create a Treasure token. (Leads to: Dark Pool, Fungi Cavern)\nStoreroom — Put a +1/+1 counter on target creature. (Leads to: Temple of Dumathoin)\nDark Pool — Each opponent loses 1 life and you gain 1 life. (Leads to: Temple of Dumathoin)\nFungi Cavern — Target creature gets -4/-0 until your next turn. (Leads to: Temple of Dumathoin)\nTemple of Dumathoin — Draw a card.",
+    "keywords": [
+     "Treasure",
+     "Scry"
+    ]
+   },
+   "rooms": [
+    {
+     "name": "Cave Entrance",
+     "effect_text": "Scry 1.",
+     "leads_to": [
+      1,
+      2
+     ]
+    },
+    {
+     "name": "Goblin Lair",
+     "effect_text": "Create a 1/1 red Goblin creature token.",
+     "leads_to": [
+      3,
+      4
+     ]
+    },
+    {
+     "name": "Mine Tunnels",
+     "effect_text": "Create a Treasure token.",
+     "leads_to": [
+      4,
+      5
+     ]
+    },
+    {
+     "name": "Storeroom",
+     "effect_text": "Put a +1/+1 counter on target creature.",
+     "leads_to": [
+      6
+     ]
+    },
+    {
+     "name": "Dark Pool",
+     "effect_text": "Each opponent loses 1 life and you gain 1 life.",
+     "leads_to": [
+      6
+     ]
+    },
+    {
+     "name": "Fungi Cavern",
+     "effect_text": "Target creature gets -4/-0 until your next turn.",
+     "leads_to": [
+      6
+     ]
+    },
+    {
+     "name": "Temple of Dumathoin",
+     "effect_text": "Draw a card.",
+     "leads_to": []
+    }
+   ],
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "Cave Entrance — Scry 1.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 1,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": 8,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Goblin Lair — Create a 1/1 red Goblin creature token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 2,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Mine Tunnels — Create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 3,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "Storeroom — Put a +1/+1 counter on target creature.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 4,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "lose life"
+      },
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Dark Pool — Each opponent loses 1 life and you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 5,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -4
+       },
+       "is_targeted": true,
+       "duration": 3,
+       "text": "gets -4/-0"
+      }
+     ],
+     "text": "Fungi Cavern — Target creature gets -4/-0 until your next turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 6,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Temple of Dumathoin — Draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 7,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "name": "Dungeon of the Mad Mage",
+   "oracle_id": "30d0398c-bf5a-4b30-936f-afdb5a109b4b",
+   "entry_quality": "",
+   "mappable": true,
+   "bottommost": 8,
+   "face": {
+    "$": "FaceDef",
+    "name": "Dungeon of the Mad Mage",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1024
+    },
+    "oracle_text": "Yawning Portal — You gain 1 life. (Leads to: Dungeon Level)\nDungeon Level — Scry 1. (Leads to: Goblin Bazaar, Twisted Caverns)\nGoblin Bazaar — Create a Treasure token. (Leads to: Lost Level)\nTwisted Caverns — Target creature can't attack until your next turn. (Leads to: Lost Level)\nLost Level — Scry 2. (Leads to: Runestone Caverns, Muiral's Graveyard)\nRunestone Caverns — Exile the top two cards of your library. You may play them. (Leads to: Deep Mines)\nMuiral's Graveyard — Create two 1/1 black Skeleton creature tokens. (Leads to: Deep Mines)\nDeep Mines — Scry 3. (Leads to: Mad Wizard's Lair)\nMad Wizard's Lair — Draw three cards and reveal them. You may cast one of them without paying its mana cost.",
+    "keywords": [
+     "Treasure",
+     "Scry"
+    ]
+   },
+   "rooms": [
+    {
+     "name": "Yawning Portal",
+     "effect_text": "You gain 1 life.",
+     "leads_to": [
+      1
+     ]
+    },
+    {
+     "name": "Dungeon Level",
+     "effect_text": "Scry 1.",
+     "leads_to": [
+      2,
+      3
+     ]
+    },
+    {
+     "name": "Goblin Bazaar",
+     "effect_text": "Create a Treasure token.",
+     "leads_to": [
+      4
+     ]
+    },
+    {
+     "name": "Twisted Caverns",
+     "effect_text": "Target creature can't attack until your next turn.",
+     "leads_to": [
+      4
+     ]
+    },
+    {
+     "name": "Lost Level",
+     "effect_text": "Scry 2.",
+     "leads_to": [
+      5,
+      6
+     ]
+    },
+    {
+     "name": "Runestone Caverns",
+     "effect_text": "Exile the top two cards of your library. You may play them.",
+     "leads_to": [
+      7
+     ]
+    },
+    {
+     "name": "Muiral's Graveyard",
+     "effect_text": "Create two 1/1 black Skeleton creature tokens.",
+     "leads_to": [
+      7
+     ]
+    },
+    {
+     "name": "Deep Mines",
+     "effect_text": "Scry 3.",
+     "leads_to": [
+      8
+     ]
+    },
+    {
+     "name": "Mad Wizard's Lair",
+     "effect_text": "Draw three cards and reveal them. You may cast one of them without paying its mana cost.",
+     "leads_to": []
+    }
+   ],
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Yawning Portal — You gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 1,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "Dungeon Level — Scry 1.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 2,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Goblin Bazaar — Create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 3,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 3,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 20,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "text": "can't attack"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Twisted Caverns — Target creature can't attack until your next turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 4,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "Lost Level — Scry 2.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 5,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          0
+         ]
+        },
+        "from_top": 2,
+        "owner": 1,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 104,
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "play"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Runestone Caverns — Exile the top two cards of your library. You may play them.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 6,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Skeleton",
+        "subtypes": [
+         "Skeleton"
+        ],
+        "colors": 4,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Muiral's Graveyard — Create two 1/1 black Skeleton creature tokens.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 7,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "Deep Mines — Scry 3.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 8,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Draw three cards and reveal them. You may cast one of them without paying its mana cost."
+      }
+     ],
+     "text": "Mad Wizard's Lair — Draw three cards and reveal them. You may cast one of them without paying its mana cost.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 9,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "name": "Tomb of Annihilation",
+   "oracle_id": "d2ea2605-0ca0-4782-851d-e706bd0114e4",
+   "entry_quality": "",
+   "mappable": true,
+   "bottommost": 4,
+   "face": {
+    "$": "FaceDef",
+    "name": "Tomb of Annihilation",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1024
+    },
+    "oracle_text": "Trapped Entry — Each player loses 1 life. (Leads to: Veils of Fear, Oubliette)\nVeils of Fear — Each player loses 2 life unless they discard a card. (Leads to: Sandfall Cell)\nSandfall Cell — Each player loses 2 life unless they sacrifice a creature, artifact, or land of their choice. (Leads to: Cradle of the Death God)\nOubliette — Discard a card and sacrifice a creature, an artifact, and a land. (Leads to: Cradle of the Death God)\nCradle of the Death God — Create The Atropal, a legendary 4/4 black God Horror creature token with deathtouch."
+   },
+   "rooms": [
+    {
+     "name": "Trapped Entry",
+     "effect_text": "Each player loses 1 life.",
+     "leads_to": [
+      1,
+      3
+     ]
+    },
+    {
+     "name": "Veils of Fear",
+     "effect_text": "Each player loses 2 life unless they discard a card.",
+     "leads_to": [
+      2
+     ]
+    },
+    {
+     "name": "Sandfall Cell",
+     "effect_text": "Each player loses 2 life unless they sacrifice a creature, artifact, or land of their choice.",
+     "leads_to": [
+      4
+     ]
+    },
+    {
+     "name": "Oubliette",
+     "effect_text": "Discard a card and sacrifice a creature, an artifact, and a land.",
+     "leads_to": [
+      4
+     ]
+    },
+    {
+     "name": "Cradle of the Death God",
+     "effect_text": "Create The Atropal, a legendary 4/4 black God Horror creature token with deathtouch.",
+     "leads_to": []
+    }
+   ],
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 2
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Trapped Entry — Each player loses 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 1,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 6,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 13001
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": 11,
+          "amount": {
+           "$": "Value",
+           "constant": 1
+          },
+          "filter": {
+           "$": "ObjectFilter",
+           "zones": {
+            "$set": []
+           },
+           "count": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "discard 1 object"
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 52,
+         "players": {
+          "$": "PlayerFilter",
+          "scope": 2
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "text": "lose life"
+        }
+       ],
+       "text": "unless that player (unresolved) pays discard 1 object"
+      }
+     ],
+     "text": "Veils of Fear — Each player loses 2 life unless they discard a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 2,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Each player loses 2 life unless they sacrifice a creature, artifact, or land of their choice."
+      }
+     ],
+     "text": "Sandfall Cell — Each player loses 2 life unless they sacrifice a creature, artifact, or land of their choice.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 3,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Discard a card and sacrifice a creature, an artifact, and a land."
+      }
+     ],
+     "text": "Oubliette — Discard a card and sacrifice a creature, an artifact, and a land.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 4,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Create The Atropal, a legendary 4/4 black God Horror creature token with deathtouch."
+      }
+     ],
+     "text": "Cradle of the Death God — Create The Atropal, a legendary 4/4 black God Horror creature token with deathtouch.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 5,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "name": "Baldur's Gate Wilderness",
+   "oracle_id": "06b9590d-01bf-4fae-9837-352c9e04267a",
+   "entry_quality": "",
+   "mappable": false,
+   "bottommost": -1,
+   "face": {
+    "$": "FaceDef",
+    "name": "Baldur's Gate Wilderness",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1024
+    },
+    "oracle_text": "Crash Landing — Search your library for a basic land card, reveal it, put it into your hand, then shuffle.\nGoblin Camp — Create a Treasure token.\nEmerald Grove — Create a 2/2 white Knight creature token.\nAuntie's Teahouse — Scry 3.\nDefiled Temple — You may sacrifice a permanent. If you do, draw a card.\nMountain Pass — You may put a land card from your hand onto the battlefield.\nEbonlake Grotto — Create two 1/1 blue Faerie Dragon creature tokens with flying.\nGrymforge — For each opponent, goad up to one target creature that player controls.\nGithyanki Crèche — Distribute three +1/+1 counters among up to three target creatures you control.\nLast Light Inn — Draw two cards.\nReithwin Tollhouse — Roll 2d4 and create that many Treasure tokens.\nMoonrise Towers — Instant and sorcery spells you cast this turn cost {3} less to cast.\nGauntlet of Shar — Each opponent loses 5 life.\nBalthazar's Lab — Return up to two target creature cards from your graveyard to your hand.\nCircus of the Last Days — Create a token that's a copy of one of your commanders, except it's not legendary.\nUndercity Ruins — Create three 4/1 black Skeleton creature tokens with menace.\nSteel Watch Foundry — You get an emblem with \"Creatures you control get +2/+2 and have trample.\"\nAnsur's Sanctum — Reveal the top four cards of your library and put them into your hand. Each opponent loses life equal to those cards' total mana value.\nTemple of Bhaal — Creatures your opponents control get -5/-5 until end of turn.",
+    "keywords": [
+     "Goad",
+     "Treasure",
+     "Crash Landing",
+     "Scry"
+    ]
+   },
+   "rooms": [
+    {
+     "name": "Crash Landing",
+     "effect_text": "Search your library for a basic land card, reveal it, put it into your hand, then shuffle.",
+     "leads_to": []
+    },
+    {
+     "name": "Goblin Camp",
+     "effect_text": "Create a Treasure token.",
+     "leads_to": []
+    },
+    {
+     "name": "Emerald Grove",
+     "effect_text": "Create a 2/2 white Knight creature token.",
+     "leads_to": []
+    },
+    {
+     "name": "Auntie's Teahouse",
+     "effect_text": "Scry 3.",
+     "leads_to": []
+    },
+    {
+     "name": "Defiled Temple",
+     "effect_text": "You may sacrifice a permanent. If you do, draw a card.",
+     "leads_to": []
+    },
+    {
+     "name": "Mountain Pass",
+     "effect_text": "You may put a land card from your hand onto the battlefield.",
+     "leads_to": []
+    },
+    {
+     "name": "Ebonlake Grotto",
+     "effect_text": "Create two 1/1 blue Faerie Dragon creature tokens with flying.",
+     "leads_to": []
+    },
+    {
+     "name": "Grymforge",
+     "effect_text": "For each opponent, goad up to one target creature that player controls.",
+     "leads_to": []
+    },
+    {
+     "name": "Githyanki Crèche",
+     "effect_text": "Distribute three +1/+1 counters among up to three target creatures you control.",
+     "leads_to": []
+    },
+    {
+     "name": "Last Light Inn",
+     "effect_text": "Draw two cards.",
+     "leads_to": []
+    },
+    {
+     "name": "Reithwin Tollhouse",
+     "effect_text": "Roll 2d4 and create that many Treasure tokens.",
+     "leads_to": []
+    },
+    {
+     "name": "Moonrise Towers",
+     "effect_text": "Instant and sorcery spells you cast this turn cost {3} less to cast.",
+     "leads_to": []
+    },
+    {
+     "name": "Gauntlet of Shar",
+     "effect_text": "Each opponent loses 5 life.",
+     "leads_to": []
+    },
+    {
+     "name": "Balthazar's Lab",
+     "effect_text": "Return up to two target creature cards from your graveyard to your hand.",
+     "leads_to": []
+    },
+    {
+     "name": "Circus of the Last Days",
+     "effect_text": "Create a token that's a copy of one of your commanders, except it's not legendary.",
+     "leads_to": []
+    },
+    {
+     "name": "Undercity Ruins",
+     "effect_text": "Create three 4/1 black Skeleton creature tokens with menace.",
+     "leads_to": []
+    },
+    {
+     "name": "Steel Watch Foundry",
+     "effect_text": "You get an emblem with \"Creatures you control get +2/+2 and have trample.\"",
+     "leads_to": []
+    },
+    {
+     "name": "Ansur's Sanctum",
+     "effect_text": "Reveal the top four cards of your library and put them into your hand. Each opponent loses life equal to those cards' total mana value.",
+     "leads_to": []
+    },
+    {
+     "name": "Temple of Bhaal",
+     "effect_text": "Creatures your opponents control get -5/-5 until end of turn.",
+     "leads_to": []
+    }
+   ],
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "supertypes_all": 1,
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      }
+     ],
+     "text": "Crash Landing — Search your library for a basic land card, reveal it, put it into your hand, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 1,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Goblin Camp — Create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 2,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Knight",
+        "subtypes": [
+         "Knight"
+        ],
+        "colors": 1,
+        "power": {
+         "$": "Value",
+         "constant": 2
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Emerald Grove — Create a 2/2 white Knight creature token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 3,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "Auntie's Teahouse — Scry 3.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 4,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 31,
+         "targets": {
+          "$": "ObjectFilter",
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "sacrifice"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": 219,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 20,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "draw"
+        }
+       ],
+       "text": "if you do"
+      }
+     ],
+     "text": "Defiled Temple — You may sacrifice a permanent. If you do, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 5,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 33,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 16,
+          "zones": {
+           "$set": [
+            1
+           ]
+          },
+          "owner": 1,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "zone": 2,
+         "text": "put onto the battlefield"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Mountain Pass — You may put a land card from your hand onto the battlefield.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 6,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Faerie",
+        "subtypes": [
+         "Faerie",
+         "Dragon"
+        ],
+        "colors": 2,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        },
+        "keywords": [
+         "flying"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Ebonlake Grotto — Create two 1/1 blue Faerie Dragon creature tokens with flying.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 7,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 2,
+       "amount": {
+        "$": "Value",
+        "kind": 2,
+        "players": {
+         "$": "PlayerFilter",
+         "scope": 3
+        }
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 85,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 4,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          },
+          "up_to": true
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "is_targeted": true,
+         "text": "goad"
+        }
+       ],
+       "text": "for each ..."
+      }
+     ],
+     "text": "Grymforge — For each opponent, goad up to one target creature that player controls.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 8,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1,
+        "count": {
+         "$": "Value",
+         "constant": 3
+        },
+        "up_to": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "is_targeted": true,
+       "counter_type": "+1/+1",
+       "divided": true,
+       "text": "distribute 3 +1/+1 counters"
+      }
+     ],
+     "text": "Githyanki Crèche — Distribute three +1/+1 counters among up to three target creatures you control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 9,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Last Light Inn — Draw two cards.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 10,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Roll 2d4 and create that many Treasure tokens."
+      }
+     ],
+     "text": "Reithwin Tollhouse — Roll 2d4 and create that many Treasure tokens.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 11,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Instant and sorcery spells you cast this turn cost {3} less to cast."
+      }
+     ],
+     "text": "Moonrise Towers — Instant and sorcery spells you cast this turn cost {3} less to cast.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 12,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 5
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Gauntlet of Shar — Each opponent loses 5 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 13,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "zones": {
+         "$set": [
+          3
+         ]
+        },
+        "owner": 1,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        },
+        "up_to": true
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "Balthazar's Lab — Return up to two target creature cards from your graveyard to your hand.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 14,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Create a token that's a copy of one of your commanders, except it's not legendary."
+      }
+     ],
+     "text": "Circus of the Last Days — Create a token that's a copy of one of your commanders, except it's not legendary.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 15,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Skeleton",
+        "subtypes": [
+         "Skeleton"
+        ],
+        "colors": 4,
+        "power": {
+         "$": "Value",
+         "constant": 4
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        },
+        "keywords": [
+         "menace"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Undercity Ruins — Create three 4/1 black Skeleton creature tokens with menace.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 16,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "You get an emblem with \"Creatures you control get +2/+2 and have trample.\""
+      }
+     ],
+     "text": "Steel Watch Foundry — You get an emblem with \"Creatures you control get +2/+2 and have trample.\"",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 17,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Reveal the top four cards of your library and put them into your hand. Each opponent loses life equal to those cards' total mana value."
+      }
+     ],
+     "text": "Ansur's Sanctum — Reveal the top four cards of your library and put them into your hand. Each opponent loses life equal to those cards' total mana value.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 18,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 2
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -5
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": -5
+       },
+       "duration": 1,
+       "text": "gets -5/-5"
+      }
+     ],
+     "text": "Temple of Bhaal — Creatures your opponents control get -5/-5 until end of turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 19,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "name": "Undercity",
+   "oracle_id": "36b61021-72f0-4c22-a41d-9b2f093d7ca8",
+   "entry_quality": "Undercity",
+   "mappable": true,
+   "bottommost": 8,
+   "face": {
+    "$": "FaceDef",
+    "name": "Undercity",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1024,
+     "subtypes": [
+      "Undercity"
+     ]
+    },
+    "oracle_text": "You can't enter this dungeon unless you \"venture into Undercity.\"\nSecret Entrance — Search your library for a basic land card, reveal it, put it into your hand, then shuffle. (Leads to: Forge, Lost Well)\nForge — Put two +1/+1 counters on target creature. (Leads to: Trap!, Arena)\nLost Well — Scry 2. (Leads to: Arena, Stash)\nTrap! — Target player loses 5 life. (Leads to: Archives)\nArena — Goad target creature. (Leads to: Archives, Catacombs)\nStash — Create a Treasure token. (Leads to: Catacombs)\nArchives — Draw a card. (Leads to: Throne of the Dead Three)\nCatacombs — Create a 4/1 black Skeleton creature token with menace. (Leads to: Throne of the Dead Three)\nThrone of the Dead Three — Reveal the top ten cards of your library. Put a creature card from among them onto the battlefield with three +1/+1 counters on it. It gains hexproof until your next turn. Then shuffle.",
+    "keywords": [
+     "Goad",
+     "Treasure",
+     "Scry"
+    ]
+   },
+   "rooms": [
+    {
+     "name": "Secret Entrance",
+     "effect_text": "Search your library for a basic land card, reveal it, put it into your hand, then shuffle.",
+     "leads_to": [
+      1,
+      2
+     ]
+    },
+    {
+     "name": "Forge",
+     "effect_text": "Put two +1/+1 counters on target creature.",
+     "leads_to": [
+      3,
+      4
+     ]
+    },
+    {
+     "name": "Lost Well",
+     "effect_text": "Scry 2.",
+     "leads_to": [
+      4,
+      5
+     ]
+    },
+    {
+     "name": "Trap!",
+     "effect_text": "Target player loses 5 life.",
+     "leads_to": [
+      6
+     ]
+    },
+    {
+     "name": "Arena",
+     "effect_text": "Goad target creature.",
+     "leads_to": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "Stash",
+     "effect_text": "Create a Treasure token.",
+     "leads_to": [
+      7
+     ]
+    },
+    {
+     "name": "Archives",
+     "effect_text": "Draw a card.",
+     "leads_to": [
+      8
+     ]
+    },
+    {
+     "name": "Catacombs",
+     "effect_text": "Create a 4/1 black Skeleton creature token with menace.",
+     "leads_to": [
+      8
+     ]
+    },
+    {
+     "name": "Throne of the Dead Three",
+     "effect_text": "Reveal the top ten cards of your library. Put a creature card from among them onto the battlefield with three +1/+1 counters on it. It gains hexproof until your next turn. Then shuffle.",
+     "leads_to": []
+    }
+   ],
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "supertypes_all": 1,
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      }
+     ],
+     "text": "Secret Entrance — Search your library for a basic land card, reveal it, put it into your hand, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 1,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "is_targeted": true,
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "Forge — Put two +1/+1 counters on target creature.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 2,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "scry/surveil"
+      }
+     ],
+     "text": "Lost Well — Scry 2.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 3,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 5
+       },
+       "is_targeted": true,
+       "text": "lose life"
+      }
+     ],
+     "text": "Trap! — Target player loses 5 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 4,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 85,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "Goad"
+      }
+     ],
+     "text": "Arena — Goad target creature.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 5,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Stash — Create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 6,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Archives — Draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 7,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Skeleton",
+        "subtypes": [
+         "Skeleton"
+        ],
+        "colors": 4,
+        "power": {
+         "$": "Value",
+         "constant": 4
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        },
+        "keywords": [
+         "menace"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Catacombs — Create a 4/1 black Skeleton creature token with menace.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 8,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Reveal the top ten cards of your library. Put a creature card from among them onto the battlefield with three +1/+1 counters on it. It gains hexproof until your next turn. Then shuffle."
+      }
+     ],
+     "text": "Throne of the Dead Three — Reveal the top ten cards of your library. Put a creature card from among them onto the battlefield with three +1/+1 counters on it. It gains hexproof until your next turn. Then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        300
+       ]
+      },
+      "functions_in": {
+       "$set": [
+        6
+       ]
+      },
+      "room": 9,
+      "text": "when you move your venture marker into this room"
+     },
+     "functions_in": {
+      "$set": [
+       6
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

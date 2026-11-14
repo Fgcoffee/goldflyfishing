@@ -1,0 +1,184 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5b147eab-39dd-4c2a-8f59-d778037788aa",
+ "name": "Spike Feeder",
+ "card_hash": "ded812ed8814f10f7f5f989513118127",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5b147eab-39dd-4c2a-8f59-d778037788aa",
+  "name": "Spike Feeder",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Spike Feeder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Spike"
+     ]
+    },
+    "oracle_text": "This creature enters with two +1/+1 counters on it.\n{2}, Remove a +1/+1 counter from this creature: Put a +1/+1 counter on target creature.\nRemove a +1/+1 counter from this creature: You gain 2 life.",
+    "power": "0",
+    "toughness": "0",
+    "colors": 16
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 9328,
+  "scryfall_uri": "https://scryfall.com/card/tpr/196/spike-feeder?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5b147eab-39dd-4c2a-8f59-d778037788aa",
+   "name": "Spike Feeder",
+   "face": 0,
+   "face_name": "Spike Feeder",
+   "card_hash": "ded812ed8814f10f7f5f989513118127",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "counter_type": "+1/+1",
+       "text": "enters with counters"
+      }
+     ],
+     "text": "This creature enters with two +1/+1 counters on it."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "{2}, Remove a +1/+1 counter from this creature: Put a +1/+1 counter on target creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 32,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "counter_type": "+1/+1",
+        "text": "remove counters"
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Remove a +1/+1 counter from this creature: You gain 2 life.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 32,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "counter_type": "+1/+1",
+        "text": "remove counters"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

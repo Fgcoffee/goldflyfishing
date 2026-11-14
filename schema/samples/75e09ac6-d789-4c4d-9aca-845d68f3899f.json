@@ -1,0 +1,148 @@
+{
+ "ir_version": 2,
+ "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
+ "name": "Windborn Muse",
+ "card_hash": "e4a547d807aa3715ad561366e6d9d997",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
+  "name": "Windborn Muse",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Windborn Muse",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Spirit"
+     ]
+    },
+    "oracle_text": "Flying\nCreatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+    "power": "2",
+    "toughness": "3",
+    "colors": 1,
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 1000,
+  "scryfall_uri": "https://scryfall.com/card/mkc/92/windborn-muse?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
+   "name": "Windborn Muse",
+   "face": 0,
+   "face_name": "Windborn Muse",
+   "card_hash": "e4a547d807aa3715ad561366e6d9d997",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 6,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 7
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": 0,
+          "mana": {
+           "$": "ManaCost",
+           "symbols": [
+            {
+             "$": "ManaSymbol",
+             "kind": 0,
+             "generic": 2,
+             "text": "{2}"
+            }
+           ]
+          },
+          "scale": {
+           "$": "Value",
+           "kind": 2,
+           "filter": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "controller": 4,
+            "attacking": true
+           }
+          }
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 150,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "duration": 0,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 21,
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "can't attack you"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "unless its controller pays {2}"
+      }
+     ],
+     "text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

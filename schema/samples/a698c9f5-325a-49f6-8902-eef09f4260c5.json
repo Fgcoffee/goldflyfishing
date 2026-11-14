@@ -1,0 +1,87 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
+ "name": "Lodestone Golem",
+ "card_hash": "a9e004bb7b3067663af23b374a4c4755",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
+  "name": "Lodestone Golem",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lodestone Golem",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Golem"
+     ]
+    },
+    "oracle_text": "Nonartifact spells cost {1} more to cast.",
+    "power": "5",
+    "toughness": "3"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 7158,
+  "scryfall_uri": "https://scryfall.com/card/mm2/219/lodestone-golem?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
+   "name": "Lodestone Golem",
+   "face": 0,
+   "face_name": "Lodestone Golem",
+   "card_hash": "a9e004bb7b3067663af23b374a4c4755",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 152,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": 1,
+        "zones": {
+         "$set": [
+          4
+         ]
+        },
+        "is_ability": false
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": 0,
+       "text": "costs less to cast"
+      }
+     ],
+     "text": "Nonartifact spells cost {1} more to cast."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

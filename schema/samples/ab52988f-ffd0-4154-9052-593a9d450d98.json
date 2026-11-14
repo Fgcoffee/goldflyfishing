@@ -1,0 +1,155 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
+ "name": "Goblin Heelcutter",
+ "card_hash": "0cd570588abe65e3ca1315f878b580f9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
+  "name": "Goblin Heelcutter",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Heelcutter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Berserker"
+     ]
+    },
+    "oracle_text": "Whenever this creature attacks, target creature can't block this turn.\nDash {2}{R} (You may cast this spell for its dash cost. If you do, it gains haste, and it's returned from the battlefield to its owner's hand at the beginning of the next end step.)",
+    "power": "3",
+    "toughness": "2",
+    "colors": 8,
+    "keywords": [
+     "Dash"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 20586,
+  "scryfall_uri": "https://scryfall.com/card/frf/102/goblin-heelcutter?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ab52988f-ffd0-4154-9052-593a9d450d98",
+   "name": "Goblin Heelcutter",
+   "face": 0,
+   "face_name": "Goblin Heelcutter",
+   "card_hash": "0cd570588abe65e3ca1315f878b580f9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 23,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "text": "can't block"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Whenever this creature attacks, target creature can't block this turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Dash {2}{R}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Dash",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 2,
+            "text": "{2}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 8,
+            "text": "{R}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Dash",
+      "text": "Dash {2}{R}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

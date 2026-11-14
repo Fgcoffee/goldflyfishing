@@ -1,0 +1,118 @@
+{
+ "ir_version": 2,
+ "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
+ "name": "Blood Artist",
+ "card_hash": "f7ff84c803c9a18b6c97279b3cfcba2f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
+  "name": "Blood Artist",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Blood Artist",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Vampire"
+     ]
+    },
+    "oracle_text": "Whenever this creature or another creature dies, target player loses 1 life and you gain 1 life.",
+    "power": "0",
+    "toughness": "1",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 140,
+  "scryfall_uri": "https://scryfall.com/card/soc/209/blood-artist?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "310f141c-7f37-4729-aed6-dd9c09db448d",
+   "name": "Blood Artist",
+   "face": 0,
+   "face_name": "Blood Artist",
+   "card_hash": "f7ff84c803c9a18b6c97279b3cfcba2f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "lose life"
+      },
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Whenever this creature or another creature dies, target player loses 1 life and you gain 1 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        3
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "whenever something dies"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

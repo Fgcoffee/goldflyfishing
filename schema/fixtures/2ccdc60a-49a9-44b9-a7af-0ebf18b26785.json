@@ -1,0 +1,228 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2ccdc60a-49a9-44b9-a7af-0ebf18b26785",
+ "name": "Sword of Fire and Ice",
+ "card_hash": "07f2a93f513039a0715eaf323217070b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2ccdc60a-49a9-44b9-a7af-0ebf18b26785",
+  "name": "Sword of Fire and Ice",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sword of Fire and Ice",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature gets +2/+2 and has protection from red and from blue.\nWhenever equipped creature deals combat damage to a player, this Equipment deals 2 damage to any target and you draw a card.\nEquip {2}",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1331,
+  "scryfall_uri": "https://scryfall.com/card/2xm/297/sword-of-fire-and-ice?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2ccdc60a-49a9-44b9-a7af-0ebf18b26785",
+   "name": "Sword of Fire and Ice",
+   "face": 0,
+   "face_name": "Sword of Fire and Ice",
+   "card_hash": "07f2a93f513039a0715eaf323217070b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 140,
+         "targets": {
+          "$": "ObjectFilter",
+          "has_attached": {
+           "$": "ObjectFilter",
+           "source_only": true
+          }
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 2
+         },
+         "duration": 0,
+         "text": "gets +2/+2"
+        },
+        {
+         "$": "Effect",
+         "kind": 143,
+         "targets": {
+          "$": "ObjectFilter",
+          "has_attached": {
+           "$": "ObjectFilter",
+           "source_only": true
+          }
+         },
+         "duration": 0,
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": 3,
+           "text": "Protection",
+           "keyword": "Protection",
+           "quality": {
+            "$": "ObjectFilter",
+            "colors_any": 8,
+            "zones": {
+             "$set": []
+            }
+           }
+          },
+          {
+           "$": "Ability",
+           "kind": 3,
+           "text": "Protection",
+           "keyword": "Protection",
+           "quality": {
+            "$": "ObjectFilter",
+            "colors_any": 2,
+            "zones": {
+             "$set": []
+            }
+           }
+          }
+         ],
+         "text": "and has Protection, Protection"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Equipped creature gets +2/+2 and has protection from red and from blue."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 38,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      },
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever equipped creature deals combat damage to a player, this Equipment deals 2 damage to any target and you draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "has_attached": {
+        "$": "ObjectFilter",
+        "source_only": true
+       }
+      },
+      "to_player": true,
+      "text": "whenever something deals combat damage to a player"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {2}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

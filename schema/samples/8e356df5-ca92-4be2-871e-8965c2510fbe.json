@@ -1,0 +1,102 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
+ "name": "Tempt with Vengeance",
+ "card_hash": "526e12022aebe26ecbf45503164eb9d8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
+  "name": "Tempt with Vengeance",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tempt with Vengeance",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Tempting offer — Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste.",
+    "colors": 8,
+    "keywords": [
+     "Tempting offer"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 2664,
+  "scryfall_uri": "https://scryfall.com/card/tdc/239/tempt-with-vengeance?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
+   "name": "Tempt with Vengeance",
+   "face": 0,
+   "face_name": "Tempt with Vengeance",
+   "card_hash": "526e12022aebe26ecbf45503164eb9d8",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste."
+      }
+     ],
+     "text": "Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Create X 1/1 red Elemental creature tokens with haste. Each opponent may create X 1/1 red Elemental creature tokens with haste. For each opponent who does, create X 1/1 red Elemental creature tokens with haste.",
+     "reason": "not fully consumed",
+     "consumed": 26,
+     "remaining": [
+      "who",
+      "does",
+      ",",
+      "create",
+      "X",
+      "1/1",
+      "red",
+      "Elemental",
+      "creature",
+      "tokens",
+      "with",
+      "haste",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

@@ -1,0 +1,96 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
+ "name": "Feed the Swarm",
+ "card_hash": "96a90980d1a324ea97af2853ee529b35",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
+  "name": "Feed the Swarm",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Feed the Swarm",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Destroy target creature or enchantment an opponent controls. You lose life equal to that permanent's mana value.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 89,
+  "scryfall_uri": "https://scryfall.com/card/tle/257/feed-the-swarm?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
+   "name": "Feed the Swarm",
+   "face": 0,
+   "face_name": "Feed the Swarm",
+   "card_hash": "96a90980d1a324ea97af2853ee529b35",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 12,
+        "controller": 2
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 5,
+        "filter": {
+         "$": "ObjectFilter",
+         "remembered": true
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Destroy target creature or enchantment an opponent controls. You lose life equal to that permanent's mana value."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

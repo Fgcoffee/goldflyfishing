@@ -1,0 +1,101 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
+ "name": "Vampiric Tutor",
+ "card_hash": "1deebce9869dee2505377aa060303388",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
+  "name": "Vampiric Tutor",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vampiric Tutor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 113,
+  "scryfall_uri": "https://scryfall.com/card/dmr/108/vampiric-tutor?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ededbdae-d9dc-4206-9335-d7158f2d7700",
+   "name": "Vampiric Tutor",
+   "face": 0,
+   "face_name": "Vampiric Tutor",
+   "card_hash": "1deebce9869dee2505377aa060303388",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 0,
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer",
+  "tutor"
+ ]
+}

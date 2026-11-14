@@ -1,0 +1,106 @@
+{
+ "ir_version": 2,
+ "oracle_id": "9f560b83-32d4-4bb4-a956-8f5db18599db",
+ "name": "Banisher Priest",
+ "card_hash": "21c3bab1da82e35ca55207b04af16d2a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9f560b83-32d4-4bb4-a956-8f5db18599db",
+  "name": "Banisher Priest",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Banisher Priest",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Cleric"
+     ]
+    },
+    "oracle_text": "When this creature enters, exile target creature an opponent controls until this creature leaves the battlefield.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 1
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 11565,
+  "scryfall_uri": "https://scryfall.com/card/moc/173/banisher-priest?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "9f560b83-32d4-4bb4-a956-8f5db18599db",
+   "name": "Banisher Priest",
+   "face": 0,
+   "face_name": "Banisher Priest",
+   "card_hash": "21c3bab1da82e35ca55207b04af16d2a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 2
+       },
+       "is_targeted": true,
+       "duration": 5,
+       "text": "exile until this leaves"
+      }
+     ],
+     "text": "When this creature enters, exile target creature an opponent controls until this creature leaves the battlefield.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

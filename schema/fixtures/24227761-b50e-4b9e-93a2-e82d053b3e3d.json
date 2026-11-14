@@ -1,0 +1,121 @@
+{
+ "ir_version": 2,
+ "oracle_id": "24227761-b50e-4b9e-93a2-e82d053b3e3d",
+ "name": "Fling",
+ "card_hash": "4acf86d870b458589a2a4cb6e737bd9c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "24227761-b50e-4b9e-93a2-e82d053b3e3d",
+  "name": "Fling",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Fling",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nFling deals damage equal to the sacrificed creature's power to any target.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1453,
+  "scryfall_uri": "https://scryfall.com/card/jmp/320/fling?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "24227761-b50e-4b9e-93a2-e82d053b3e3d",
+   "name": "Fling",
+   "face": 0,
+   "face_name": "Fling",
+   "card_hash": "4acf86d870b458589a2a4cb6e737bd9c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, sacrifice a creature.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 10,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "sacrifice"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 38,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 21
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "this deals damage equal to the sacrificed creature's power to any target."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

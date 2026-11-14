@@ -1,0 +1,132 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
+ "name": "Carrion Feeder",
+ "card_hash": "cd5c285396b879627444f1022cad25b5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
+  "name": "Carrion Feeder",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Carrion Feeder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Zombie"
+     ]
+    },
+    "oracle_text": "This creature can't block.\nSacrifice a creature: Put a +1/+1 counter on this creature.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 4
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 613,
+  "scryfall_uri": "https://scryfall.com/card/mh1/81/carrion-feeder?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
+   "name": "Carrion Feeder",
+   "face": 0,
+   "face_name": "Carrion Feeder",
+   "card_hash": "cd5c285396b879627444f1022cad25b5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 23,
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "can't block"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "This creature can't block."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "Sacrifice a creature: Put a +1/+1 counter on this creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

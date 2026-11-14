@@ -1,0 +1,131 @@
+{
+ "ir_version": 2,
+ "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
+ "name": "Diabolic Intent",
+ "card_hash": "881c339c0729c876582ac03fd7d1d44f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
+  "name": "Diabolic Intent",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Diabolic Intent",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nSearch your library for a card, put that card into your hand, then shuffle.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 271,
+  "scryfall_uri": "https://scryfall.com/card/bro/89/diabolic-intent?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
+   "name": "Diabolic Intent",
+   "face": 0,
+   "face_name": "Diabolic Intent",
+   "card_hash": "881c339c0729c876582ac03fd7d1d44f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, sacrifice a creature.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 10,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "sacrifice"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for a card, put that card into your hand, then shuffle."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

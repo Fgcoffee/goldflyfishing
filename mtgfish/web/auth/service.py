@@ -36,7 +36,7 @@ from .discord import DiscordProfile
 
 #: Bump when the Terms or the Privacy Policy change in a way people must
 #: agree to again; the date of the change is the usual choice.
-TERMS_VERSION = "2026-11-10"
+TERMS_VERSION = "2026-11-13"
 
 #: Unverified email accounts older than this are deleted (Privacy Policy,
 #: "How long we keep data").
@@ -342,8 +342,12 @@ def purge_expired(db: Session) -> dict:
     ).all()
     for user in stale:
         db.delete(user)
+    from ..browser_runs import purge_anonymous
+
+    anonymous_runs = purge_anonymous(db, moment)
     db.commit()
-    return {"sessions": sessions or 0, "tokens": tokens or 0, "unverified_users": len(stale)}
+    return {"sessions": sessions or 0, "tokens": tokens or 0, "unverified_users": len(stale),
+            "anonymous_runs": anonymous_runs}
 
 
 def export_data(db: Session, user: User) -> dict:
@@ -396,4 +400,7 @@ def export_data(db: Session, user: User) -> dict:
         }
         for r in db.scalars(select(Run).where(Run.user_id == user.id))
     ]
+    from ..browser_runs import export_runs
+
+    out["browser_runs"] = export_runs(db, user.id)
     return out

@@ -1,0 +1,254 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5d27c63e-d1ef-48af-b51d-01ebc6daeac9",
+ "name": "Mikaeus, the Unhallowed",
+ "card_hash": "56be68c4cecdbb5e9534c144a3c3de72",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5d27c63e-d1ef-48af-b51d-01ebc6daeac9",
+  "name": "Mikaeus, the Unhallowed",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mikaeus, the Unhallowed",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Zombie",
+      "Cleric"
+     ]
+    },
+    "oracle_text": "Intimidate (This creature can't be blocked except by artifact creatures and/or creatures that share a color with it.)\nWhenever a Human deals damage to you, destroy it.\nOther non-Human creatures you control get +1/+1 and have undying. (When a creature with undying dies, if it had no +1/+1 counters on it, return it to the battlefield under its owner's control with a +1/+1 counter on it.)",
+    "power": "5",
+    "toughness": "5",
+    "colors": 4,
+    "keywords": [
+     "Intimidate"
+    ]
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 1311,
+  "scryfall_uri": "https://scryfall.com/card/cmm/173/mikaeus-the-unhallowed?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5d27c63e-d1ef-48af-b51d-01ebc6daeac9",
+   "name": "Mikaeus, the Unhallowed",
+   "face": 0,
+   "face_name": "Mikaeus, the Unhallowed",
+   "card_hash": "56be68c4cecdbb5e9534c144a3c3de72",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Intimidate",
+     "keyword": "Intimidate"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "text": "destroy"
+      }
+     ],
+     "text": "Whenever a Human deals damage to you, destroy it.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        60,
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "subtypes_all": [
+        "Human"
+       ],
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "to_player": true,
+      "text": "whenever something deals damage"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 140,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "subtypes_none": [
+           "Human"
+          ],
+          "other_than_source": true,
+          "controller": 1
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 1
+         },
+         "duration": 0,
+         "text": "gets +1/+1"
+        },
+        {
+         "$": "Effect",
+         "kind": 143,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "subtypes_none": [
+           "Human"
+          ],
+          "other_than_source": true,
+          "controller": 1
+         },
+         "duration": 0,
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": 2,
+           "effects": [
+            {
+             "$": "Effect",
+             "kind": 1,
+             "condition": {
+              "$": "Condition",
+              "kind": 2,
+              "filter": {
+               "$": "ObjectFilter",
+               "source_only": true,
+               "has_counter": "+1/+1"
+              },
+              "constraint": {
+               "$": "NumericConstraint",
+               "comparison": 0,
+               "value": {
+                "$": "Value"
+               }
+              },
+              "text": "if it had no +1/+1 counter on it"
+             },
+             "children": [
+              {
+               "$": "Effect",
+               "kind": 33,
+               "amount": {
+                "$": "Value",
+                "constant": 1
+               },
+               "counter_type": "+1/+1",
+               "text": "return it with a +1/+1 counter on it"
+              }
+             ]
+            }
+           ],
+           "text": "undying",
+           "trigger": {
+            "$": "TriggerCondition",
+            "event_kinds": {
+             "$set": [
+              3
+             ]
+            },
+            "subject": {
+             "$": "ObjectFilter",
+             "source_only": true,
+             "zones": {
+              "$set": []
+             }
+            },
+            "functions_in": {
+             "$set": [
+              2,
+              3
+             ]
+            },
+            "uses_last_known_information": true,
+            "text": "when this dies (undying)"
+           },
+           "functions_in": {
+            "$set": [
+             2,
+             3
+            ]
+           },
+           "keyword": "undying"
+          }
+         ],
+         "text": "and has undying"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Other non-Human creatures you control get +1/+1 and have undying."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

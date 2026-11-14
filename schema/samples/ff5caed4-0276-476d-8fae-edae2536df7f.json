@@ -1,0 +1,293 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
+ "name": "Archangel of Tithes",
+ "card_hash": "5cf346af67c6d90ee9625e906287d39a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
+  "name": "Archangel of Tithes",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Archangel of Tithes",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Angel"
+     ]
+    },
+    "oracle_text": "Flying\nAs long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures.\nAs long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures.",
+    "power": "3",
+    "toughness": "5",
+    "colors": 1,
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 2195,
+  "scryfall_uri": "https://scryfall.com/card/otj/2/archangel-of-tithes?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ff5caed4-0276-476d-8fae-edae2536df7f",
+   "name": "Archangel of Tithes",
+   "face": 0,
+   "face_name": "Archangel of Tithes",
+   "card_hash": "5cf346af67c6d90ee9625e906287d39a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "duration": 5,
+       "condition": {
+        "$": "Condition",
+        "kind": 5,
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "tapped": false
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 5,
+         "value": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "a state condition"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 6,
+         "players": {
+          "$": "PlayerFilter",
+          "scope": 7
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 0,
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": 0,
+               "generic": 1,
+               "text": "{1}"
+              }
+             ]
+            },
+            "scale": {
+             "$": "Value",
+             "kind": 2,
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": 4,
+              "remembered": true
+             }
+            }
+           }
+          ]
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 150,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "duration": 0,
+           "restrictions": [
+            {
+             "$": "Restriction",
+             "act": 21,
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": 4
+             },
+             "players": {
+              "$": "PlayerFilter"
+             },
+             "text": "can't attack you"
+            },
+            {
+             "$": "Restriction",
+             "act": 22,
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": 4
+             },
+             "counterpart": {
+              "$": "ObjectFilter",
+              "types_all": 32,
+              "controller": 1
+             },
+             "text": "can't attack planeswalkers you control"
+            }
+           ],
+           "text": "can't"
+          }
+         ],
+         "text": "unless its controller pays {1}"
+        }
+       ],
+       "text": "as long as"
+      }
+     ],
+     "text": "As long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "duration": 5,
+       "condition": {
+        "$": "Condition",
+        "kind": 5,
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "attacking": true
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 5,
+         "value": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "a state condition"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 6,
+         "players": {
+          "$": "PlayerFilter",
+          "scope": 7
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 0,
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": 0,
+               "generic": 1,
+               "text": "{1}"
+              }
+             ]
+            },
+            "scale": {
+             "$": "Value",
+             "kind": 2,
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": 4,
+              "remembered": true
+             }
+            }
+           }
+          ]
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 150,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "duration": 0,
+           "restrictions": [
+            {
+             "$": "Restriction",
+             "act": 23,
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": 4
+             },
+             "text": "can't block"
+            }
+           ],
+           "text": "can't"
+          }
+         ],
+         "text": "unless its controller pays {1}"
+        }
+       ],
+       "text": "as long as"
+      }
+     ],
+     "text": "As long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

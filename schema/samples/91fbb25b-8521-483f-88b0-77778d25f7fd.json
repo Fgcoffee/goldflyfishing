@@ -1,0 +1,194 @@
+{
+ "ir_version": 2,
+ "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
+ "name": "Castle Embereth",
+ "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
+  "name": "Castle Embereth",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Castle Embereth",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped unless you control a Mountain.\n{T}: Add {R}.\n{1}{R}{R}, {T}: Creatures you control get +1/+0 until end of turn.",
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1082,
+  "scryfall_uri": "https://scryfall.com/card/tdc/347/castle-embereth?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
+   "name": "Castle Embereth",
+   "face": 0,
+   "face_name": "Castle Embereth",
+   "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 5,
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_all": [
+            "Mountain"
+           ],
+           "controller": 1
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control a Mountain."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      }
+     ],
+     "text": "{T}: Add {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": 1,
+       "text": "gets +1/+0"
+      }
+     ],
+     "text": "{1}{R}{R}, {T}: Creatures you control get +1/+0 until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

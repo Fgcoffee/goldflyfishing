@@ -1,0 +1,209 @@
+{
+ "ir_version": 2,
+ "oracle_id": "07c82cde-f00d-4454-9df4-9286e344c9bb",
+ "name": "Muxus, Goblin Grandee",
+ "card_hash": "b08e9d4bb28a2bae6169fc5043d79800",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "07c82cde-f00d-4454-9df4-9286e344c9bb",
+  "name": "Muxus, Goblin Grandee",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Muxus, Goblin Grandee",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Noble"
+     ]
+    },
+    "oracle_text": "When Muxus enters, reveal the top six cards of your library. Put all Goblin creature cards with mana value 5 or less from among them onto the battlefield and the rest on the bottom of your library in a random order.\nWhenever Muxus attacks, it gets +1/+1 until end of turn for each other Goblin you control.",
+    "power": "4",
+    "toughness": "4",
+    "colors": 8
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 3985,
+  "scryfall_uri": "https://scryfall.com/card/jmp/24/muxus-goblin-grandee?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "07c82cde-f00d-4454-9df4-9286e344c9bb",
+   "name": "Muxus, Goblin Grandee",
+   "face": 0,
+   "face_name": "Muxus, Goblin Grandee",
+   "card_hash": "b08e9d4bb28a2bae6169fc5043d79800",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 10001,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 6
+       },
+       "keywords": [
+        "reveal"
+       ],
+       "text": "reveal the top"
+      },
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 33,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "from_pile": true,
+          "zones": {
+           "$set": []
+          },
+          "mana_value": {
+           "$": "NumericConstraint",
+           "comparison": 3,
+           "value": {
+            "$": "Value",
+            "constant": 5
+           }
+          }
+         },
+         "zone": 2,
+         "text": "put onto the battlefield"
+        },
+        {
+         "$": "Effect",
+         "kind": 34,
+         "targets": {
+          "$": "ObjectFilter",
+          "from_pile": true
+         },
+         "keywords": [
+          "bottom",
+          "random"
+         ],
+         "text": "put on the bottom of library"
+        }
+       ],
+       "text": "put them"
+      }
+     ],
+     "text": "When this enters, reveal the top six cards of your library. Put all Goblin creature cards with mana value 5 or less from among them onto the battlefield and the rest on the bottom of your library in a random order.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Goblin"
+         ],
+         "other_than_source": true,
+         "controller": 1
+        }
+       },
+       "amount2": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Goblin"
+         ],
+         "other_than_source": true,
+         "controller": 1
+        }
+       },
+       "duration": 1,
+       "text": "gets +1/+1"
+      }
+     ],
+     "text": "Whenever this attacks, it gets +1/+1 until end of turn for each other Goblin you control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

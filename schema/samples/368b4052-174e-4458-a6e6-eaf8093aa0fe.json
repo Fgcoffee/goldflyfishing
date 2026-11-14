@@ -1,0 +1,142 @@
+{
+ "ir_version": 2,
+ "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
+ "name": "Goblin Chieftain",
+ "card_hash": "130055bfce47610a36f4cd922d9f26d0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
+  "name": "Goblin Chieftain",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Chieftain",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "Haste (This creature can attack and {T} as soon as it comes under your control.)\nOther Goblin creatures you control get +1/+1 and have haste.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 8,
+    "keywords": [
+     "Haste"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 2567,
+  "scryfall_uri": "https://scryfall.com/card/jmp/324/goblin-chieftain?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
+   "name": "Goblin Chieftain",
+   "face": 0,
+   "face_name": "Goblin Chieftain",
+   "card_hash": "130055bfce47610a36f4cd922d9f26d0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 140,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "other_than_source": true,
+          "controller": 1
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 1
+         },
+         "duration": 0,
+         "text": "gets +1/+1"
+        },
+        {
+         "$": "Effect",
+         "kind": 143,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "other_than_source": true,
+          "controller": 1
+         },
+         "duration": 0,
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": 3,
+           "text": "haste",
+           "keyword": "haste"
+          }
+         ],
+         "text": "and has haste"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Other Goblin creatures you control get +1/+1 and have haste."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

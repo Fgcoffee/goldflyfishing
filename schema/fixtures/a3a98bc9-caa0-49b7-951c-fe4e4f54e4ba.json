@@ -1,0 +1,68 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a3a98bc9-caa0-49b7-951c-fe4e4f54e4ba",
+ "name": "Ornithopter",
+ "card_hash": "af1a956d99203f6ad243551736eace22",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a3a98bc9-caa0-49b7-951c-fe4e4f54e4ba",
+  "name": "Ornithopter",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ornithopter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Thopter"
+     ]
+    },
+    "oracle_text": "Flying",
+    "power": "0",
+    "toughness": "2",
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 777,
+  "scryfall_uri": "https://scryfall.com/card/dmr/233/ornithopter?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a3a98bc9-caa0-49b7-951c-fe4e4f54e4ba",
+   "name": "Ornithopter",
+   "face": 0,
+   "face_name": "Ornithopter",
+   "card_hash": "af1a956d99203f6ad243551736eace22",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

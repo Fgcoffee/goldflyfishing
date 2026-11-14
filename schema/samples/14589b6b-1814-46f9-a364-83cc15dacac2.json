@@ -1,0 +1,100 @@
+{
+ "ir_version": 2,
+ "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
+ "name": "Diabolic Tutor",
+ "card_hash": "6938a7bb9b1683d7c708cff7661abcfd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
+  "name": "Diabolic Tutor",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Diabolic Tutor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Search your library for a card, put that card into your hand, then shuffle.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 485,
+  "scryfall_uri": "https://scryfall.com/card/cma/54/diabolic-tutor?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "14589b6b-1814-46f9-a364-83cc15dacac2",
+   "name": "Diabolic Tutor",
+   "face": 0,
+   "face_name": "Diabolic Tutor",
+   "card_hash": "6938a7bb9b1683d7c708cff7661abcfd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for a card, put that card into your hand, then shuffle."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

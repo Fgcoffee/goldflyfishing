@@ -1,0 +1,216 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
+ "name": "Bolas's Citadel",
+ "card_hash": "93a9c8eb46b2981d12e187729d363307",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
+  "name": "Bolas's Citadel",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Bolas's Citadel",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1
+    },
+    "oracle_text": "You may look at the top card of your library any time.\nYou may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost.\n{T}, Sacrifice ten nonland permanents: Each opponent loses 10 life.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 269,
+  "scryfall_uri": "https://scryfall.com/card/war/79/bolass-citadel?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
+   "name": "Bolas's Citadel",
+   "face": 0,
+   "face_name": "Bolas's Citadel",
+   "card_hash": "93a9c8eb46b2981d12e187729d363307",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 151,
+         "targets": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": [
+            0
+           ]
+          },
+          "from_top": true,
+          "count": 1
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": 0,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 102,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "may look at the top card of their library"
+          }
+         ],
+         "text": "the top card of your library is visible"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may look at the top card of your library any time."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "You may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost."
+      }
+     ],
+     "text": "You may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 10
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "{T}, Sacrifice ten nonland permanents: Each opponent loses 10 life.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 10
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_none": 16,
+         "count": {
+          "$": "Value",
+          "constant": 10
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "You may play lands and cast spells from the top of your library. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost.",
+     "reason": "not fully consumed",
+     "consumed": 14,
+     "remaining": [
+      "If",
+      "you",
+      "cast",
+      "a",
+      "spell",
+      "this",
+      "way",
+      ",",
+      "pay",
+      "life",
+      "equal",
+      "to",
+      "its",
+      "mana",
+      "value",
+      "rather",
+      "than",
+      "pay",
+      "its",
+      "mana",
+      "cost",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "game_changer",
+  "unread"
+ ]
+}

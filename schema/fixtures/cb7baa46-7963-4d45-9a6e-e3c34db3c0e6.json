@@ -1,0 +1,118 @@
+{
+ "ir_version": 2,
+ "oracle_id": "cb7baa46-7963-4d45-9a6e-e3c34db3c0e6",
+ "name": "Life's Legacy",
+ "card_hash": "a3fde07959a5ced18300808a5df86d88",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cb7baa46-7963-4d45-9a6e-e3c34db3c0e6",
+  "name": "Life's Legacy",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Life's Legacy",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nDraw cards equal to the sacrificed creature's power.",
+    "colors": 16
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 2522,
+  "scryfall_uri": "https://scryfall.com/card/ncc/300/lifes-legacy?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "cb7baa46-7963-4d45-9a6e-e3c34db3c0e6",
+   "name": "Life's Legacy",
+   "face": 0,
+   "face_name": "Life's Legacy",
+   "card_hash": "a3fde07959a5ced18300808a5df86d88",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, sacrifice a creature.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 10,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "sacrifice"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 21
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw cards equal to the sacrificed creature's power."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

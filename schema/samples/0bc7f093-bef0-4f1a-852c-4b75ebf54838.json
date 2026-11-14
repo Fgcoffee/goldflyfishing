@@ -1,0 +1,94 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+ "name": "Arcane Signet",
+ "card_hash": "23d459e07ff7ef38b32fb6656192f16d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+  "name": "Arcane Signet",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Arcane Signet",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}: Add one mana of any color in your commander's color identity.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 3,
+  "scryfall_uri": "https://scryfall.com/card/msc/191/arcane-signet?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+   "name": "Arcane Signet",
+   "face": 0,
+   "face_name": "Arcane Signet",
+   "card_hash": "23d459e07ff7ef38b32fb6656192f16d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "colors_in_commander_identity": true,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color in your commander's color identity.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

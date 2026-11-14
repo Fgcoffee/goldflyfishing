@@ -1,0 +1,134 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
+ "name": "Mana Crypt",
+ "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
+  "name": "Mana Crypt",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mana Crypt",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you.\n{T}: Add {C}{C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": false,
+  "edhrec_rank": 14443,
+  "scryfall_uri": "https://scryfall.com/card/2xm/270/mana-crypt?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
+   "name": "Mana Crypt",
+   "face": 0,
+   "face_name": "Mana Crypt",
+   "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you."
+      }
+     ],
+     "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of your upkeep, flip a coin. If you lose the flip, this artifact deals 3 damage to you.",
+     "reason": "not fully consumed",
+     "consumed": 7,
+     "remaining": [
+      "flip",
+      "a",
+      "coin",
+      ".",
+      "If",
+      "you",
+      "lose",
+      "the",
+      "flip",
+      ",",
+      "this",
+      "artifact",
+      "deals",
+      "3",
+      "damage",
+      "to",
+      "you",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

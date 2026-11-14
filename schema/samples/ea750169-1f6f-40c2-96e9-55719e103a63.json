@@ -1,0 +1,94 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
+ "name": "Throne of the God-Pharaoh",
+ "card_hash": "78e4c141a80d59ee242147b12bab2086",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
+  "name": "Throne of the God-Pharaoh",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Throne of the God-Pharaoh",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1
+    },
+    "oracle_text": "At the beginning of your end step, each opponent loses life equal to the number of tapped creatures you control."
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 2635,
+  "scryfall_uri": "https://scryfall.com/card/akh/237/throne-of-the-god-pharaoh?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ea750169-1f6f-40c2-96e9-55719e103a63",
+   "name": "Throne of the God-Pharaoh",
+   "face": 0,
+   "face_name": "Throne of the God-Pharaoh",
+   "card_hash": "78e4c141a80d59ee242147b12bab2086",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "controller": 1,
+         "tapped": true
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "At the beginning of your end step, each opponent loses life equal to the number of tapped creatures you control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        129
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of end step"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

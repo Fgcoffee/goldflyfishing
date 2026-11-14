@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b9f4f96b-6e54-4fe6-8df7-623e0fc72409",
+ "name": "Mentor of the Meek",
+ "card_hash": "88b3d8744a433ae8dd761b8f0e16d5bf",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b9f4f96b-6e54-4fe6-8df7-623e0fc72409",
+  "name": "Mentor of the Meek",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mentor of the Meek",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Soldier"
+     ]
+    },
+    "oracle_text": "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 1
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 650,
+  "scryfall_uri": "https://scryfall.com/card/hoc/170/mentor-of-the-meek?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b9f4f96b-6e54-4fe6-8df7-623e0fc72409",
+   "name": "Mentor of the Meek",
+   "face": 0,
+   "face_name": "Mentor of the Meek",
+   "card_hash": "88b3d8744a433ae8dd761b8f0e16d5bf",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 200,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 0,
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": 0,
+               "generic": 1,
+               "text": "{1}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay {1}"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": 219,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 20,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "draw"
+        }
+       ],
+       "text": "if you do"
+      }
+     ],
+     "text": "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "other_than_source": true,
+       "controller": 1,
+       "power": {
+        "$": "NumericConstraint",
+        "comparison": 3,
+        "value": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

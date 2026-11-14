@@ -1,0 +1,109 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
+ "name": "Catastrophe",
+ "card_hash": "6f066def213dc1aa14075b71657865da",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
+  "name": "Catastrophe",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Catastrophe",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Destroy all lands or all creatures. Creatures destroyed this way can't be regenerated.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 12458,
+  "scryfall_uri": "https://scryfall.com/card/usg/6/catastrophe?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
+   "name": "Catastrophe",
+   "face": 0,
+   "face_name": "Catastrophe",
+   "card_hash": "6f066def213dc1aa14075b71657865da",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 20
+       },
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "remembered": true
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 64,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Destroy all lands or all creatures. Creatures destroyed this way can't be regenerated."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "mass_land_denial"
+ ]
+}

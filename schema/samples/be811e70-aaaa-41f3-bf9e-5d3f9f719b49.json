@@ -1,0 +1,212 @@
+{
+ "ir_version": 2,
+ "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
+ "name": "Castle Locthwain",
+ "card_hash": "13e66d59deb093fd5e492deaffd74509",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
+  "name": "Castle Locthwain",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Castle Locthwain",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped unless you control a Swamp.\n{T}: Add {B}.\n{1}{B}{B}, {T}: Draw a card, then you lose life equal to the number of cards in your hand.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 793,
+  "scryfall_uri": "https://scryfall.com/card/clb/884/castle-locthwain?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
+   "name": "Castle Locthwain",
+   "face": 0,
+   "face_name": "Castle Locthwain",
+   "card_hash": "13e66d59deb093fd5e492deaffd74509",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 5,
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_all": [
+            "Swamp"
+           ],
+           "controller": 1
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control a Swamp."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": 4,
+       "text": "add {B}"
+      }
+     ],
+     "text": "{T}: Add {B}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "zones": {
+          "$set": [
+           1
+          ]
+         },
+         "owner": 1
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "{1}{B}{B}, {T}: Draw a card, then you lose life equal to the number of cards in your hand.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 4,
+           "text": "{B}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 4,
+           "text": "{B}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

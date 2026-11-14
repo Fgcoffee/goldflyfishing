@@ -1,0 +1,126 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
+ "name": "Archon of Emeria",
+ "card_hash": "ba0434c43b26af11616854337a2b680a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
+  "name": "Archon of Emeria",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Archon of Emeria",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Archon"
+     ]
+    },
+    "oracle_text": "Flying\nEach player can't cast more than one spell each turn.\nNonbasic lands your opponents control enter tapped.",
+    "power": "2",
+    "toughness": "3",
+    "colors": 1,
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 2108,
+  "scryfall_uri": "https://scryfall.com/card/znr/4/archon-of-emeria?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
+   "name": "Archon of Emeria",
+   "face": 0,
+   "face_name": "Archon of Emeria",
+   "card_hash": "ba0434c43b26af11616854337a2b680a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Each player can't cast more than one spell each turn."
+      }
+     ],
+     "text": "Each player can't cast more than one spell each turn.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "supertypes_none": 1,
+        "controller": 2
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Nonbasic lands your opponents control enter tapped."
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each player can't cast more than one spell each turn.",
+     "reason": "not fully consumed",
+     "consumed": 4,
+     "remaining": [
+      "more",
+      "than",
+      "one",
+      "spell",
+      "each",
+      "turn",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

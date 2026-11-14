@@ -1,0 +1,204 @@
+{
+ "ir_version": 2,
+ "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
+ "name": "Goblin Rabblemaster",
+ "card_hash": "9da14d96824a561bad4c26f03774eff6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
+  "name": "Goblin Rabblemaster",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Rabblemaster",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Other Goblin creatures you control attack each combat if able.\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token with haste.\nWhenever this creature attacks, it gets +1/+0 until end of turn for each other attacking Goblin.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 4545,
+  "scryfall_uri": "https://scryfall.com/card/ddt/46/goblin-rabblemaster?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
+   "name": "Goblin Rabblemaster",
+   "face": 0,
+   "face_name": "Goblin Rabblemaster",
+   "card_hash": "9da14d96824a561bad4c26f03774eff6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "subtypes_all": [
+         "Goblin"
+        ],
+        "other_than_source": true,
+        "controller": 1
+       },
+       "duration": 0,
+       "keywords": [
+        "Attacks each combat if able"
+       ],
+       "text": "attacks each combat if able"
+      }
+     ],
+     "text": "Other Goblin creatures you control attack each combat if able."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 6,
+        "text": "during your turn"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 35,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "token": {
+          "$": "TokenSpec",
+          "name": "Goblin",
+          "subtypes": [
+           "Goblin"
+          ],
+          "colors": 8,
+          "power": {
+           "$": "Value",
+           "constant": 1
+          },
+          "toughness": {
+           "$": "Value",
+           "constant": 1
+          },
+          "keywords": [
+           "haste"
+          ]
+         },
+         "text": "create token"
+        }
+       ],
+       "text": "during your turn"
+      }
+     ],
+     "text": "At the beginning of combat on your turn, create a 1/1 red Goblin creature token with haste.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        121
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "phases": {
+       "$set": [
+        {
+         "$int": 2
+        }
+       ]
+      },
+      "text": "at the beginning of combat"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Goblin"
+         ],
+         "other_than_source": true,
+         "attacking": true
+        }
+       },
+       "duration": 1,
+       "text": "gets +1/+0"
+      }
+     ],
+     "text": "Whenever this creature attacks, it gets +1/+0 until end of turn for each other attacking Goblin.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

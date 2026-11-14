@@ -1,0 +1,134 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
+ "name": "Ghostly Prison",
+ "card_hash": "0afea804a89670ac82c9b2b1e4274712",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
+  "name": "Ghostly Prison",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ghostly Prison",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 162,
+  "scryfall_uri": "https://scryfall.com/card/soc/146/ghostly-prison?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
+   "name": "Ghostly Prison",
+   "face": 0,
+   "face_name": "Ghostly Prison",
+   "card_hash": "0afea804a89670ac82c9b2b1e4274712",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 6,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 7
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": 0,
+          "mana": {
+           "$": "ManaCost",
+           "symbols": [
+            {
+             "$": "ManaSymbol",
+             "kind": 0,
+             "generic": 2,
+             "text": "{2}"
+            }
+           ]
+          },
+          "scale": {
+           "$": "Value",
+           "kind": 2,
+           "filter": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "controller": 4,
+            "attacking": true
+           }
+          }
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 150,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "duration": 0,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 21,
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "can't attack you"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "unless its controller pays {2}"
+      }
+     ],
+     "text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

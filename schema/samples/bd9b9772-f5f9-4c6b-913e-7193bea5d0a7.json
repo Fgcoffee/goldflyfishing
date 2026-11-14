@@ -1,0 +1,129 @@
+{
+ "ir_version": 2,
+ "oracle_id": "bd9b9772-f5f9-4c6b-913e-7193bea5d0a7",
+ "name": "Oblivion Ring",
+ "card_hash": "e837e521807ce2e6a04476878d5add42",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bd9b9772-f5f9-4c6b-913e-7193bea5d0a7",
+  "name": "Oblivion Ring",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Oblivion Ring",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "When this enchantment enters, exile another target nonland permanent.\nWhen this enchantment leaves the battlefield, return the exiled card to the battlefield under its owner's control.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 5030,
+  "scryfall_uri": "https://scryfall.com/card/mm2/29/oblivion-ring?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "bd9b9772-f5f9-4c6b-913e-7193bea5d0a7",
+   "name": "Oblivion Ring",
+   "face": 0,
+   "face_name": "Oblivion Ring",
+   "card_hash": "e837e521807ce2e6a04476878d5add42",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": 16,
+        "other_than_source": true
+       },
+       "is_targeted": true,
+       "text": "exile"
+      }
+     ],
+     "text": "When this enchantment enters, exile another target nonland permanent.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true,
+        "zones": {
+         "$set": [
+          5
+         ]
+        }
+       },
+       "zone": 2,
+       "text": "return"
+      }
+     ],
+     "text": "When this enchantment leaves the battlefield, return the exiled card to the battlefield under its owner's control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        2
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "uses_last_known_information": true,
+      "text": "when this leaves the battlefield"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

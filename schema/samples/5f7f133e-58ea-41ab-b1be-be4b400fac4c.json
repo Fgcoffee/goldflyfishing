@@ -1,0 +1,90 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
+ "name": "Coat of Arms",
+ "card_hash": "34dd01bf619085916024d266751ae6fa",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
+  "name": "Coat of Arms",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Coat of Arms",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 5,
+       "text": "{5}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it. (For example, if two Goblin Warriors and a Goblin Shaman are on the battlefield, each gets +2/+2.)"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 942,
+  "scryfall_uri": "https://scryfall.com/card/dds/58/coat-of-arms?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
+   "name": "Coat of Arms",
+   "face": 0,
+   "face_name": "Coat of Arms",
+   "card_hash": "34dd01bf619085916024d266751ae6fa",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it."
+      }
+     ],
+     "text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it.",
+     "reason": "not fully consumed",
+     "consumed": 11,
+     "remaining": [
+      "that",
+      "shares",
+      "at",
+      "least",
+      "one",
+      "creature",
+      "type",
+      "with",
+      "it",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

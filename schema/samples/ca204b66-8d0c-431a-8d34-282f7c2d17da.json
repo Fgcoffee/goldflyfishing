@@ -1,0 +1,134 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
+ "name": "Lightning Greaves",
+ "card_hash": "8c6f4c1ece112fc542ed34f4fd4b8749",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
+  "name": "Lightning Greaves",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lightning Greaves",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature has haste and shroud. (It can't be the target of spells or abilities.)\nEquip {0}",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 13,
+  "scryfall_uri": "https://scryfall.com/card/msc/202/lightning-greaves?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
+   "name": "Lightning Greaves",
+   "face": 0,
+   "face_name": "Lightning Greaves",
+   "card_hash": "8c6f4c1ece112fc542ed34f4fd4b8749",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "haste",
+         "keyword": "haste"
+        },
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "shroud",
+         "keyword": "shroud"
+        }
+       ],
+       "text": "gains haste, shroud"
+      }
+     ],
+     "text": "Equipped creature has haste and shroud."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {0}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "text": "{0}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

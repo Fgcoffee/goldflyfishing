@@ -1,0 +1,119 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2f533667-e29b-4bec-897a-e7a9eee08314",
+ "name": "Hullbreacher",
+ "card_hash": "53edca53ed858347b31856d0c174fd31",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2f533667-e29b-4bec-897a-e7a9eee08314",
+  "name": "Hullbreacher",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hullbreacher",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Merfolk",
+      "Pirate"
+     ]
+    },
+    "oracle_text": "Flash\nIf an opponent would draw a card except the first one they draw in each of their draw steps, instead you create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+    "power": "3",
+    "toughness": "2",
+    "colors": 2,
+    "keywords": [
+     "Treasure",
+     "Flash"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": false,
+  "scryfall_uri": "https://scryfall.com/card/cmr/74/hullbreacher?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2f533667-e29b-4bec-897a-e7a9eee08314",
+   "name": "Hullbreacher",
+   "face": 0,
+   "face_name": "Hullbreacher",
+   "card_hash": "53edca53ed858347b31856d0c174fd31",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flash",
+     "keyword": "Flash"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "duration": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 35,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "token": {
+          "$": "TokenSpec",
+          "name": "Treasure",
+          "types": 1,
+          "subtypes": [
+           "Treasure"
+          ]
+         },
+         "text": "create token"
+        }
+       ],
+       "text": "if ... would ..., ... instead"
+      }
+     ],
+     "text": "If an opponent would draw a card except the first one they draw in each of their draw steps, instead you create a Treasure token."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

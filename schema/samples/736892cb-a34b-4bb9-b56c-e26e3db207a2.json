@@ -1,0 +1,245 @@
+{
+ "ir_version": 2,
+ "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
+ "name": "Mana Vault",
+ "card_hash": "65a8a518acc87465a6dce684bc6b446e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
+  "name": "Mana Vault",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mana Vault",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "This artifact doesn't untap during your untap step.\nAt the beginning of your upkeep, you may pay {4}. If you do, untap this artifact.\nAt the beginning of your draw step, if this artifact is tapped, it deals 1 damage to you.\n{T}: Add {C}{C}{C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 148,
+  "scryfall_uri": "https://scryfall.com/card/2x2/308/mana-vault?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
+   "name": "Mana Vault",
+   "face": 0,
+   "face_name": "Mana Vault",
+   "card_hash": "65a8a518acc87465a6dce684bc6b446e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 99,
+         "subject": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "doesn't untap during its controller's untap step"
+        }
+       ],
+       "text": "doesn't untap"
+      }
+     ],
+     "text": "This artifact doesn't untap during your untap step."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 200,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 0,
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": 0,
+               "generic": 4,
+               "text": "{4}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay {4}"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": 219,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 71,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "tap/untap"
+        }
+       ],
+       "text": "if you do"
+      }
+     ],
+     "text": "At the beginning of your upkeep, you may pay {4}. If you do, untap this artifact.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        127
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "At the beginning of your draw step, if this artifact is tapped, it deals 1 damage to you.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        128
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": 5,
+       "filter": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "tapped": true
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": 5,
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "a state condition"
+      },
+      "text": "at the beginning of draw step"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer"
+ ]
+}

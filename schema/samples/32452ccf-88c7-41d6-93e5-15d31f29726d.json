@@ -1,0 +1,79 @@
+{
+ "ir_version": 2,
+ "oracle_id": "32452ccf-88c7-41d6-93e5-15d31f29726d",
+ "name": "Frozen Aether",
+ "card_hash": "4318bfdfcec089b9ea7a03e9c22e520d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "32452ccf-88c7-41d6-93e5-15d31f29726d",
+  "name": "Frozen Aether",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Frozen Aether",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Artifacts, creatures, and lands your opponents control enter tapped.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 8611,
+  "scryfall_uri": "https://scryfall.com/card/plc/54/frozen-aether?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "32452ccf-88c7-41d6-93e5-15d31f29726d",
+   "name": "Frozen Aether",
+   "face": 0,
+   "face_name": "Frozen Aether",
+   "card_hash": "4318bfdfcec089b9ea7a03e9c22e520d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 21,
+        "controller": 2
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Artifacts, creatures, and lands your opponents control enter tapped."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,97 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
+ "name": "Dragon Fodder",
+ "card_hash": "18de91607642ec32ce26b2d60ed76336",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
+  "name": "Dragon Fodder",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dragon Fodder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Create two 1/1 red Goblin creature tokens.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1944,
+  "scryfall_uri": "https://scryfall.com/card/fdn/535/dragon-fodder?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
+   "name": "Dragon Fodder",
+   "face": 0,
+   "face_name": "Dragon Fodder",
+   "card_hash": "18de91607642ec32ce26b2d60ed76336",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": 8,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Create two 1/1 red Goblin creature tokens."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

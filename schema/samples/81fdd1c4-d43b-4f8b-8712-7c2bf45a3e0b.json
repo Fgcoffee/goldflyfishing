@@ -1,0 +1,79 @@
+{
+ "ir_version": 2,
+ "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
+ "name": "Kismet",
+ "card_hash": "ebeaa5622e6b3f77d144616584724e79",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
+  "name": "Kismet",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Kismet",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Artifacts, creatures, and lands your opponents control enter tapped.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 11948,
+  "scryfall_uri": "https://scryfall.com/card/me4/17/kismet?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
+   "name": "Kismet",
+   "face": 0,
+   "face_name": "Kismet",
+   "card_hash": "ebeaa5622e6b3f77d144616584724e79",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 21,
+        "controller": 2
+       },
+       "text": "those permanents enter tapped"
+      }
+     ],
+     "text": "Artifacts, creatures, and lands your opponents control enter tapped."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

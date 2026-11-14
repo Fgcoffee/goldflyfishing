@@ -1,0 +1,125 @@
+{
+ "ir_version": 2,
+ "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
+ "name": "Reassembling Skeleton",
+ "card_hash": "1e372052ebc7806ce1845c6b1bef6f33",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
+  "name": "Reassembling Skeleton",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Reassembling Skeleton",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Skeleton",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "{1}{B}: Return this card from your graveyard to the battlefield tapped.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 773,
+  "scryfall_uri": "https://scryfall.com/card/tdc/195/reassembling-skeleton?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
+   "name": "Reassembling Skeleton",
+   "face": 0,
+   "face_name": "Reassembling Skeleton",
+   "card_hash": "1e372052ebc7806ce1845c6b1bef6f33",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "zones": {
+         "$set": [
+          3
+         ]
+        }
+       },
+       "zone": 2,
+       "from_zone": 3,
+       "keywords": [
+        "tapped"
+       ],
+       "text": "return from a zone"
+      }
+     ],
+     "text": "{1}{B}: Return this card from your graveyard to the battlefield tapped.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 4,
+           "text": "{B}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "functions_in": {
+      "$set": [
+       3
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

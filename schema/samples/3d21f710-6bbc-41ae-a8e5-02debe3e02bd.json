@@ -1,0 +1,117 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
+ "name": "Hushbringer",
+ "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
+  "name": "Hushbringer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hushbringer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Faerie"
+     ]
+    },
+    "oracle_text": "Flying, lifelink\nCreatures entering or dying don't cause abilities to trigger.",
+    "power": "1",
+    "toughness": "2",
+    "colors": 1,
+    "keywords": [
+     "Flying",
+     "Lifelink"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 3961,
+  "scryfall_uri": "https://scryfall.com/card/eld/18/hushbringer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
+   "name": "Hushbringer",
+   "face": 0,
+   "face_name": "Hushbringer",
+   "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "lifelink",
+     "keyword": "lifelink"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Creatures entering or dying don't cause abilities to trigger."
+      }
+     ],
+     "text": "Creatures entering or dying don't cause abilities to trigger.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Creatures entering or dying don't cause abilities to trigger.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Creatures",
+      "entering",
+      "or",
+      "dying",
+      "don't",
+      "cause",
+      "abilities",
+      "to",
+      "trigger",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

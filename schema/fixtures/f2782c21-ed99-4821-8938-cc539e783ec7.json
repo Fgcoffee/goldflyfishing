@@ -1,0 +1,146 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f2782c21-ed99-4821-8938-cc539e783ec7",
+ "name": "Call for Blood",
+ "card_hash": "cb93283ea03d5b9257d58fdd5341f7af",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f2782c21-ed99-4821-8938-cc539e783ec7",
+  "name": "Call for Blood",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Call for Blood",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64,
+     "subtypes": [
+      "Arcane"
+     ]
+    },
+    "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nTarget creature gets -X/-X until end of turn, where X is the sacrificed creature's power.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 29084,
+  "scryfall_uri": "https://scryfall.com/card/bok/63/call-for-blood?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f2782c21-ed99-4821-8938-cc539e783ec7",
+   "name": "Call for Blood",
+   "face": 0,
+   "face_name": "Call for Blood",
+   "card_hash": "cb93283ea03d5b9257d58fdd5341f7af",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, sacrifice a creature.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 10,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "sacrifice"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 13,
+        "operands": [
+         {
+          "$": "Value"
+         },
+         {
+          "$": "Value",
+          "kind": 21
+         }
+        ]
+       },
+       "amount2": {
+        "$": "Value",
+        "kind": 13,
+        "operands": [
+         {
+          "$": "Value"
+         },
+         {
+          "$": "Value",
+          "kind": 21
+         }
+        ]
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "text": "gets -X/-X"
+      }
+     ],
+     "text": "Target creature gets -X/-X until end of turn, where X is the sacrificed creature's power."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

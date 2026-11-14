@@ -1,0 +1,128 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
+ "name": "Dark Confidant",
+ "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
+  "name": "Dark Confidant",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dark Confidant",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "At the beginning of your upkeep, reveal the top card of your library and put that card into your hand. You lose life equal to its mana value.",
+    "power": "2",
+    "toughness": "1",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 1241,
+  "scryfall_uri": "https://scryfall.com/card/fin/94/dark-confidant?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
+   "name": "Dark Confidant",
+   "face": 0,
+   "face_name": "Dark Confidant",
+   "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 10001,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "keywords": [
+        "reveal"
+       ],
+       "text": "reveal the top"
+      },
+      {
+       "$": "Effect",
+       "kind": 28,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "zone": 1,
+       "text": "put into a zone"
+      },
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 5,
+        "filter": {
+         "$": "ObjectFilter",
+         "remembered": true
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "At the beginning of your upkeep, reveal the top card of your library and put that card into your hand. You lose life equal to its mana value.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        127
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

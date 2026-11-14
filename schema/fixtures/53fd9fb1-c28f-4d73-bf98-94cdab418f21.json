@@ -1,0 +1,114 @@
+{
+ "ir_version": 2,
+ "oracle_id": "53fd9fb1-c28f-4d73-bf98-94cdab418f21",
+ "name": "Consume Strength",
+ "card_hash": "fbb9fddce992a272c3b0165e55399f97",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "53fd9fb1-c28f-4d73-bf98-94cdab418f21",
+  "name": "Consume Strength",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Consume Strength",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Target creature gets +2/+2 until end of turn. Another target creature gets -2/-2 until end of turn.",
+    "colors": 20
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 20,
+  "commander_legal": true,
+  "edhrec_rank": 27430,
+  "scryfall_uri": "https://scryfall.com/card/ddm/74/consume-strength?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "53fd9fb1-c28f-4d73-bf98-94cdab418f21",
+   "name": "Consume Strength",
+   "face": 0,
+   "face_name": "Consume Strength",
+   "card_hash": "fbb9fddce992a272c3b0165e55399f97",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 2
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "text": "gets +2/+2"
+      },
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -2
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": -2
+       },
+       "is_targeted": true,
+       "distinct_from_earlier_targets": true,
+       "duration": 1,
+       "text": "gets -2/-2"
+      }
+     ],
+     "text": "Target creature gets +2/+2 until end of turn. Another target creature gets -2/-2 until end of turn."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

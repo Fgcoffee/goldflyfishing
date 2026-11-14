@@ -1,0 +1,141 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
+ "name": "Aetherflux Reservoir",
+ "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
+  "name": "Aetherflux Reservoir",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Aetherflux Reservoir",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "Whenever you cast a spell, you gain 1 life for each spell you've cast this turn.\nPay 50 life: This artifact deals 50 damage to any target."
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 373,
+  "scryfall_uri": "https://scryfall.com/card/kld/192/aetherflux-reservoir?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
+   "name": "Aetherflux Reservoir",
+   "face": 0,
+   "face_name": "Aetherflux Reservoir",
+   "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 26,
+        "players": {
+         "$": "PlayerFilter"
+        },
+        "event_kinds": [
+         20
+        ]
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "Whenever you cast a spell, you gain 1 life for each spell you've cast this turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 38,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 50
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "Pay 50 life: This artifact deals 50 damage to any target.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 30,
+        "amount": {
+         "$": "Value",
+         "constant": 50
+        },
+        "text": "pay life"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

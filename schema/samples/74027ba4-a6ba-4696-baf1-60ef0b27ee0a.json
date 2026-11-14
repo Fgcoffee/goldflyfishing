@@ -1,0 +1,132 @@
+{
+ "ir_version": 2,
+ "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
+ "name": "Chalice of the Void",
+ "card_hash": "7a8c800247135a58bc129fc86128756f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
+  "name": "Chalice of the Void",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Chalice of the Void",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "This artifact enters with X charge counters on it.\nWhenever a player casts a spell with mana value equal to the number of charge counters on this artifact, counter that spell."
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 9320,
+  "scryfall_uri": "https://scryfall.com/card/a25/222/chalice-of-the-void?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
+   "name": "Chalice of the Void",
+   "face": 0,
+   "face_name": "Chalice of the Void",
+   "card_hash": "7a8c800247135a58bc129fc86128756f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "kind": 1
+       },
+       "counter_type": "charge",
+       "text": "enters with counters"
+      }
+     ],
+     "text": "This artifact enters with X charge counters on it."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 100,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true,
+        "zones": {
+         "$set": [
+          4
+         ]
+        }
+       },
+       "text": "counter"
+      }
+     ],
+     "text": "Whenever a player casts a spell with mana value equal to the number of charge counters on this artifact, counter that spell.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "mana_value": {
+        "$": "NumericConstraint",
+        "comparison": 0,
+        "value": {
+         "$": "Value",
+         "kind": 10,
+         "counter_type": "charge"
+        }
+       },
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": 2
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

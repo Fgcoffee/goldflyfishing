@@ -1,0 +1,164 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
+ "name": "Farewell",
+ "card_hash": "9cbf3783faaba69e7ac1a33860906ef0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
+  "name": "Farewell",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Farewell",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Choose one or more —\n• Exile all artifacts.\n• Exile all creatures.\n• Exile all enchantments.\n• Exile all graveyards.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 173,
+  "scryfall_uri": "https://scryfall.com/card/mkc/64/farewell?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4eb813fd-2d5a-4b02-8193-662681ef4e7d",
+   "name": "Farewell",
+   "face": 0,
+   "face_name": "Farewell",
+   "card_hash": "9cbf3783faaba69e7ac1a33860906ef0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 30,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 1
+           },
+           "text": "exile"
+          }
+         ],
+         "text": "Exile all artifacts."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 30,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "text": "exile"
+          }
+         ],
+         "text": "Exile all creatures."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 30,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 8
+           },
+           "text": "exile"
+          }
+         ],
+         "text": "Exile all enchantments."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 30,
+           "targets": {
+            "$": "ObjectFilter",
+            "zones": {
+             "$set": [
+              3
+             ]
+            }
+           },
+           "zone": 5,
+           "text": "exile every graveyard"
+          }
+         ],
+         "text": "Exile all graveyards."
+        }
+       ],
+       "modes_up_to": true,
+       "modes_at_least": 1,
+       "text": "Choose one or more -"
+      }
+     ],
+     "text": "Choose one or more -",
+     "functions_in": {
+      "$set": [
+       4
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer"
+ ]
+}

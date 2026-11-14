@@ -1,0 +1,143 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d3df7128-31dd-4d71-90be-87e2e9ff51b4",
+ "name": "Dust Bowl",
+ "card_hash": "f56ff3479a0767092b7e02631ce750c2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d3df7128-31dd-4d71-90be-87e2e9ff51b4",
+  "name": "Dust Bowl",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dust Bowl",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{3}, {T}, Sacrifice a land: Destroy target nonbasic land.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 5254,
+  "scryfall_uri": "https://scryfall.com/card/mmq/316/dust-bowl?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d3df7128-31dd-4d71-90be-87e2e9ff51b4",
+   "name": "Dust Bowl",
+   "face": 0,
+   "face_name": "Dust Bowl",
+   "card_hash": "f56ff3479a0767092b7e02631ce750c2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "supertypes_none": 1
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "{3}, {T}, Sacrifice a land: Destroy target nonbasic land.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 3,
+           "text": "{3}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 16,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,126 @@
+{
+ "ir_version": 2,
+ "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
+ "name": "Consecrated Sphinx",
+ "card_hash": "4cee806fbf241b9d9d99daa9163ea5c6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
+  "name": "Consecrated Sphinx",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Consecrated Sphinx",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Sphinx"
+     ]
+    },
+    "oracle_text": "Flying\nWhenever an opponent draws a card, you may draw two cards.",
+    "power": "4",
+    "toughness": "6",
+    "colors": 2,
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 667,
+  "scryfall_uri": "https://scryfall.com/card/2x2/43/consecrated-sphinx?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "311a449d-dc74-46e6-9a47-6a597931f736",
+   "name": "Consecrated Sphinx",
+   "face": 0,
+   "face_name": "Consecrated Sphinx",
+   "card_hash": "4cee806fbf241b9d9d99daa9163ea5c6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 20,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "text": "draw"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Whenever an opponent draws a card, you may draw two cards.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        80
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": 1
+      },
+      "text": "whenever a player draws"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer"
+ ]
+}

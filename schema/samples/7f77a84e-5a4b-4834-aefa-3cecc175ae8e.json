@@ -1,0 +1,235 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
+ "name": "Jace, the Mind Sculptor",
+ "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
+  "name": "Jace, the Mind Sculptor",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jace, the Mind Sculptor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Jace"
+     ]
+    },
+    "oracle_text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library.\n0: Draw three cards, then put two cards from your hand on top of your library in any order.\n−1: Return target creature to its owner's hand.\n−12: Exile all cards from target player's library, then that player shuffles their hand into their library.",
+    "loyalty": "3",
+    "colors": 2
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 3566,
+  "scryfall_uri": "https://scryfall.com/card/2xm/56/jace-the-mind-sculptor?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
+   "name": "Jace, the Mind Sculptor",
+   "face": 0,
+   "face_name": "Jace, the Mind Sculptor",
+   "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library."
+      }
+     ],
+     "text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": 34,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          1
+         ]
+        },
+        "owner": 1,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "text": "put on library"
+      }
+     ],
+     "text": "0: Draw three cards, then put two cards from your hand on top of your library in any order.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "text": "+0"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "-1: Return target creature to its owner's hand.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": -1
+        },
+        "text": "-1"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "-12: Exile all cards from target player's library, then that player shuffles their hand into their library."
+      }
+     ],
+     "text": "-12: Exile all cards from target player's library, then that player shuffles their hand into their library.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "+2: Look at the top card of target player's library. You may put that card on the bottom of that player's library.",
+     "reason": "not fully consumed",
+     "consumed": 10,
+     "remaining": [
+      "You",
+      "may",
+      "put",
+      "that",
+      "card",
+      "on",
+      "the",
+      "bottom",
+      "of",
+      "that",
+      "player's",
+      "library",
+      "."
+     ],
+     "rule": "activated"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "-12: Exile all cards from target player's library, then that player shuffles their hand into their library.",
+     "reason": "not fully consumed",
+     "consumed": 3,
+     "remaining": [
+      "from",
+      "target",
+      "player's",
+      "library",
+      ",",
+      "then",
+      "that",
+      "player",
+      "shuffles",
+      "their",
+      "hand",
+      "into",
+      "their",
+      "library",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

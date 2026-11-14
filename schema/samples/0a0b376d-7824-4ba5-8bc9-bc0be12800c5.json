@@ -1,0 +1,144 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
+ "name": "Detention Sphere",
+ "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
+  "name": "Detention Sphere",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Detention Sphere",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "When this enchantment enters, you may exile target nonland permanent not named Detention Sphere and all other permanents with the same name as that permanent.\nWhen this enchantment leaves the battlefield, return the exiled cards to the battlefield under their owner's control.",
+    "colors": 3
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 3,
+  "commander_legal": true,
+  "edhrec_rank": 8400,
+  "scryfall_uri": "https://scryfall.com/card/rtr/155/detention-sphere?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
+   "name": "Detention Sphere",
+   "face": 0,
+   "face_name": "Detention Sphere",
+   "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent."
+      }
+     ],
+     "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true,
+        "zones": {
+         "$set": [
+          5
+         ]
+        }
+       },
+       "zone": 2,
+       "text": "return"
+      }
+     ],
+     "text": "When this enchantment leaves the battlefield, return the exiled cards to the battlefield under their owner's control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        2
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "uses_last_known_information": true,
+      "text": "when this leaves the battlefield"
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this enchantment enters, you may exile target nonland permanent not named this and all other permanents with the same name as that permanent.",
+     "reason": "not fully consumed",
+     "consumed": 11,
+     "remaining": [
+      "not",
+      "named",
+      "this",
+      "and",
+      "all",
+      "other",
+      "permanents",
+      "with",
+      "the",
+      "same",
+      "name",
+      "as",
+      "that",
+      "permanent",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

@@ -1,0 +1,134 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+ "name": "Propaganda",
+ "card_hash": "d234af37ef382bd77f4fb50aa0c6f383",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+  "name": "Propaganda",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Propaganda",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 114,
+  "scryfall_uri": "https://scryfall.com/card/msc/151/propaganda?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+   "name": "Propaganda",
+   "face": 0,
+   "face_name": "Propaganda",
+   "card_hash": "d234af37ef382bd77f4fb50aa0c6f383",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 6,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 7
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": 0,
+          "mana": {
+           "$": "ManaCost",
+           "symbols": [
+            {
+             "$": "ManaSymbol",
+             "kind": 0,
+             "generic": 2,
+             "text": "{2}"
+            }
+           ]
+          },
+          "scale": {
+           "$": "Value",
+           "kind": 2,
+           "filter": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "controller": 4,
+            "attacking": true
+           }
+          }
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 150,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "duration": 0,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 21,
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "can't attack you"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "unless its controller pays {2}"
+      }
+     ],
+     "text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

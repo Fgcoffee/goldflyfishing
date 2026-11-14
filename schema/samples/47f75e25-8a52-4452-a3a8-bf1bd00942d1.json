@@ -1,0 +1,136 @@
+{
+ "ir_version": 2,
+ "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
+ "name": "Warren Instigator",
+ "card_hash": "2a6728c3ea964167289f5f15262fa007",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
+  "name": "Warren Instigator",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Warren Instigator",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Berserker"
+     ]
+    },
+    "oracle_text": "Double strike\nWhenever this creature deals damage to an opponent, you may put a Goblin creature card from your hand onto the battlefield.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 8,
+    "keywords": [
+     "Double strike"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 5662,
+  "scryfall_uri": "https://scryfall.com/card/ddt/32/warren-instigator?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
+   "name": "Warren Instigator",
+   "face": 0,
+   "face_name": "Warren Instigator",
+   "card_hash": "2a6728c3ea964167289f5f15262fa007",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Double strike",
+     "keyword": "Double strike"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 33,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "zones": {
+           "$set": [
+            1
+           ]
+          },
+          "owner": 1,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "zone": 2,
+         "text": "put onto the battlefield"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Whenever this creature deals damage to an opponent, you may put a Goblin creature card from your hand onto the battlefield.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        60,
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": 1
+      },
+      "to_player": true,
+      "text": "when this deals damage"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

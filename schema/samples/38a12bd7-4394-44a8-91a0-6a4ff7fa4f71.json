@@ -1,0 +1,93 @@
+{
+ "ir_version": 2,
+ "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
+ "name": "Maze of Ith",
+ "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
+  "name": "Maze of Ith",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Maze of Ith",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Untap target attacking creature. Prevent all combat damage that would be dealt to and dealt by that creature this turn."
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 548,
+  "scryfall_uri": "https://scryfall.com/card/dmr/250/maze-of-ith?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
+   "name": "Maze of Ith",
+   "face": 0,
+   "face_name": "Maze of Ith",
+   "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "attacking": true
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      },
+      {
+       "$": "Effect",
+       "kind": 55,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": -1
+       },
+       "duration": 1,
+       "both_ways": true,
+       "keywords": [
+        "combat"
+       ],
+       "text": "prevent damage"
+      }
+     ],
+     "text": "{T}: Untap target attacking creature. Prevent all combat damage that would be dealt to and dealt by that creature this turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

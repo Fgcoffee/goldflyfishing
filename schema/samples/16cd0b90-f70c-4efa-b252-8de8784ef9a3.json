@@ -1,0 +1,101 @@
+{
+ "ir_version": 2,
+ "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
+ "name": "Imperial Seal",
+ "card_hash": "60f05adba37775ca58cb271dde9ad680",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
+  "name": "Imperial Seal",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Imperial Seal",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 523,
+  "scryfall_uri": "https://scryfall.com/card/2x2/79/imperial-seal?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "16cd0b90-f70c-4efa-b252-8de8784ef9a3",
+   "name": "Imperial Seal",
+   "face": 0,
+   "face_name": "Imperial Seal",
+   "card_hash": "60f05adba37775ca58cb271dde9ad680",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 0,
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Search your library for a card, then shuffle and put that card on top. You lose 2 life."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer",
+  "tutor"
+ ]
+}

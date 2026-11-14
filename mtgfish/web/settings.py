@@ -51,6 +51,12 @@ def _env_bool(name: str, default: bool = False) -> bool:
 
 @dataclass
 class Settings:
+    #: Seconds between spot-check passes over uploaded browser runs (replays a
+    #: sample of each pending run in Node, browser_runs.check_pending). The
+    #: first pass waits one interval. 0 turns the job off.
+    spot_check_interval: int = field(
+        default_factory=lambda: _env_int("MTGFISH_SPOT_CHECK_INTERVAL", 300)
+    )
     #: Concurrent browser sessions, each with its own bridge (~30 MB each).
     max_sessions: int = field(default_factory=lambda: _env_int("MTGFISH_MAX_SESSIONS", 16))
     #: Seconds a session may sit unused before it is closed.

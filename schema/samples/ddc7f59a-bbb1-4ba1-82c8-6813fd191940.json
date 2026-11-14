@@ -1,0 +1,188 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
+ "name": "Siege-Gang Commander",
+ "card_hash": "641e8afc08f10050f1f361f7815581ce",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
+  "name": "Siege-Gang Commander",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Siege-Gang Commander",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin"
+     ]
+    },
+    "oracle_text": "When this creature enters, create three 1/1 red Goblin creature tokens.\n{1}{R}, Sacrifice a Goblin: This creature deals 2 damage to any target.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 8
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1590,
+  "scryfall_uri": "https://scryfall.com/card/plst/DMR-136/siege-gang-commander?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
+   "name": "Siege-Gang Commander",
+   "face": 0,
+   "face_name": "Siege-Gang Commander",
+   "card_hash": "641e8afc08f10050f1f361f7815581ce",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Goblin",
+        "subtypes": [
+         "Goblin"
+        ],
+        "colors": 8,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "When this creature enters, create three 1/1 red Goblin creature tokens.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 38,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "{1}{R}, Sacrifice a Goblin: This creature deals 2 damage to any target.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Goblin"
+         ],
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

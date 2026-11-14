@@ -1,0 +1,2987 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://goldflyfishing/ir/v2/card.schema.json",
+ "title": "Card IR document, IR version 2",
+ "description": "One card: the printed card (CardDef) and each face's abilities and parse failures (FaceDocument). One file per card, <oracle_id>.json. See docs/ir-json.md.",
+ "type": "object",
+ "properties": {
+  "ir_version": {
+   "const": 2
+  },
+  "oracle_id": {
+   "type": "string"
+  },
+  "name": {
+   "type": "string"
+  },
+  "card_hash": {
+   "type": "string"
+  },
+  "card": {
+   "$ref": "#/$defs/CardDef"
+  },
+  "faces": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/FaceDocument"
+   }
+  },
+  "bracket": {
+   "description": "What the card counts as for a Commander bracket estimate (mtgfish.ir.bracket), in this order. \"unread\": some of the card couldn't be read, so its other tags are a floor.",
+   "type": "array",
+   "items": {
+    "enum": [
+     "game_changer",
+     "tutor",
+     "extra_turn",
+     "mass_land_denial",
+     "unread"
+    ]
+   },
+   "uniqueItems": true
+  }
+ },
+ "required": [
+  "ir_version",
+  "oracle_id",
+  "name",
+  "card_hash",
+  "card",
+  "faces"
+ ],
+ "additionalProperties": false,
+ "$defs": {
+  "Ability": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "Ability"
+    },
+    "kind": {
+     "$ref": "#/$defs/enum.AbilityKind"
+    },
+    "effects": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Effect"
+     },
+     "default": []
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    },
+    "cost": {
+     "$ref": "#/$defs/Cost",
+     "default": {
+      "$": "Cost"
+     }
+    },
+    "timing": {
+     "$ref": "#/$defs/enum.Timing",
+     "default": 1
+    },
+    "is_mana_ability": {
+     "type": "boolean",
+     "default": false
+    },
+    "is_loyalty_ability": {
+     "type": "boolean",
+     "default": false
+    },
+    "once_each_turn": {
+     "type": "boolean",
+     "default": false
+    },
+    "only_once": {
+     "type": "boolean",
+     "default": false
+    },
+    "reduced_by_own_mana_cost_on_entry": {
+     "type": "boolean",
+     "default": false
+    },
+    "activation_condition": {
+     "$ref": "#/$defs/Condition",
+     "default": {
+      "$": "Condition"
+     }
+    },
+    "trigger": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TriggerCondition"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "static_condition": {
+     "$ref": "#/$defs/Condition",
+     "default": {
+      "$": "Condition"
+     }
+    },
+    "functions_in": {
+     "type": "object",
+     "properties": {
+      "$set": {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/enum.Zone"
+       }
+      }
+     },
+     "required": [
+      "$set"
+     ],
+     "additionalProperties": false,
+     "default": {
+      "$set": [
+       2
+      ]
+     }
+    },
+    "keyword": {
+     "type": "string",
+     "default": ""
+    },
+    "link_id": {
+     "type": "integer",
+     "default": 0
+    },
+    "quality": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "$ref": "#/$defs/PlayerFilter"
+      },
+      {
+       "$ref": "#/$defs/Value"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "alternative_cost": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/AlternativeCost"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "additional_cost": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/AdditionalCost"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "chapter": {
+     "type": "integer",
+     "default": 0
+    },
+    "is_characteristic_defining": {
+     "type": "boolean",
+     "default": false
+    },
+    "from_land_type": {
+     "type": "boolean",
+     "default": false
+    },
+    "unparsed": {
+     "type": "boolean",
+     "default": false
+    },
+    "remembered": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$",
+    "kind"
+   ],
+   "additionalProperties": false
+  },
+  "TriggerCondition": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "TriggerCondition"
+    },
+    "event_kinds": {
+     "type": "object",
+     "properties": {
+      "$set": {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/enum.EventKind"
+       }
+      }
+     },
+     "required": [
+      "$set"
+     ],
+     "additionalProperties": false,
+     "default": {
+      "$set": []
+     }
+    },
+    "subject": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "source": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "players": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PlayerFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "intervening_if": {
+     "$ref": "#/$defs/Condition",
+     "default": {
+      "$": "Condition"
+     }
+    },
+    "ordinal": {
+     "type": "integer",
+     "default": 0
+    },
+    "alternatives": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/TriggerCondition"
+     },
+     "default": []
+    },
+    "functions_in": {
+     "type": "object",
+     "properties": {
+      "$set": {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/enum.Zone"
+       }
+      }
+     },
+     "required": [
+      "$set"
+     ],
+     "additionalProperties": false,
+     "default": {
+      "$set": [
+       2
+      ]
+     }
+    },
+    "chapter": {
+     "type": "integer",
+     "default": 0
+    },
+    "is_state_trigger": {
+     "type": "boolean",
+     "default": false
+    },
+    "room": {
+     "type": "integer",
+     "default": 0
+    },
+    "counter_kind": {
+     "type": "string",
+     "default": ""
+    },
+    "each_counter": {
+     "type": "boolean",
+     "default": false
+    },
+    "batched": {
+     "type": "boolean",
+     "default": false
+    },
+    "once_each_turn": {
+     "type": "boolean",
+     "default": false
+    },
+    "phases": {
+     "type": "object",
+     "properties": {
+      "$set": {
+       "type": "array",
+       "items": {
+        "anyOf": [
+         {
+          "$ref": "#/$defs/enum.Phase"
+         },
+         {
+          "$ref": "#/$defs/IRInt"
+         }
+        ]
+       }
+      }
+     },
+     "required": [
+      "$set"
+     ],
+     "additionalProperties": false,
+     "default": {
+      "$set": []
+     }
+    },
+    "steps": {
+     "type": "object",
+     "properties": {
+      "$set": {
+       "type": "array",
+       "items": {
+        "anyOf": [
+         {
+          "$ref": "#/$defs/enum.Step"
+         },
+         {
+          "$ref": "#/$defs/IRInt"
+         }
+        ]
+       }
+      }
+     },
+     "required": [
+      "$set"
+     ],
+     "additionalProperties": false,
+     "default": {
+      "$set": []
+     }
+    },
+    "to_player": {
+     "type": "boolean",
+     "default": false
+    },
+    "from_zones": {
+     "type": "object",
+     "properties": {
+      "$set": {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/enum.Zone"
+       }
+      }
+     },
+     "required": [
+      "$set"
+     ],
+     "additionalProperties": false,
+     "default": {
+      "$set": []
+     }
+    },
+    "expend": {
+     "type": "integer",
+     "default": 0
+    },
+    "uses_last_known_information": {
+     "type": "boolean",
+     "default": false
+    },
+    "during_own_resolution": {
+     "type": "boolean",
+     "default": false
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "Effect": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "Effect"
+    },
+    "kind": {
+     "$ref": "#/$defs/enum.EffectKind",
+     "default": 5
+    },
+    "targets": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "players": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PlayerFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "amount": {
+     "$ref": "#/$defs/Value",
+     "default": {
+      "$": "Value"
+     }
+    },
+    "amount2": {
+     "$ref": "#/$defs/Value",
+     "default": {
+      "$": "Value"
+     }
+    },
+    "is_targeted": {
+     "type": "boolean",
+     "default": false
+    },
+    "same_target": {
+     "type": "boolean",
+     "default": false
+    },
+    "distinct_from_earlier_targets": {
+     "type": "boolean",
+     "default": false
+    },
+    "duration": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/enum.Duration"
+      },
+      {
+       "$ref": "#/$defs/IRInt"
+      }
+     ],
+     "default": {
+      "$int": 0
+     }
+    },
+    "zone": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/enum.Zone"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "from_zone": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/enum.Zone"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "counter_type": {
+     "type": "string",
+     "default": ""
+    },
+    "pay_cost": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Cost"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "replacement_kind": {
+     "type": "integer",
+     "default": 0
+    },
+    "multiplier": {
+     "type": "integer",
+     "default": 1
+    },
+    "damage_source": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "both_ways": {
+     "type": "boolean",
+     "default": false
+    },
+    "actor": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PlayerFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "event_zone": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/enum.Zone"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "under_owners_control": {
+     "type": "boolean",
+     "default": false
+    },
+    "mana_restriction": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/SpendOnlyOn"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "mana_produced": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "token": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TokenSpec"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "keywords": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "types": {
+     "$ref": "#/$defs/enum.CardType",
+     "default": 0
+    },
+    "colors": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "condition": {
+     "$ref": "#/$defs/Condition",
+     "default": {
+      "$": "Condition"
+     }
+    },
+    "trigger": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TriggerCondition"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "repeats": {
+     "type": "boolean",
+     "default": false
+    },
+    "children": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Effect"
+     },
+     "default": []
+    },
+    "mode_weights": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/IRValue"
+     },
+     "default": []
+    },
+    "mode_costs": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/IRValue"
+     },
+     "default": []
+    },
+    "modes_may_repeat": {
+     "type": "boolean",
+     "default": false
+    },
+    "modes_up_to": {
+     "type": "boolean",
+     "default": false
+    },
+    "modes_at_least": {
+     "type": "integer",
+     "default": 0
+    },
+    "modes_instead": {
+     "type": "array",
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/$defs/Condition"
+       },
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "integer"
+       }
+      ]
+     },
+     "default": []
+    },
+    "otherwise": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Effect"
+     },
+     "default": []
+    },
+    "granted_abilities": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Ability"
+     },
+     "default": []
+    },
+    "restrictions": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Restriction"
+     },
+     "default": []
+    },
+    "dice_sides": {
+     "type": "integer",
+     "default": 0
+    },
+    "dice_modifier": {
+     "type": "integer",
+     "default": 0
+    },
+    "dice_ignore_lowest": {
+     "type": "integer",
+     "default": 0
+    },
+    "outcomes": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/IRValue"
+     },
+     "default": []
+    },
+    "face_index": {
+     "type": "integer",
+     "default": 0
+    },
+    "cast_a_copy": {
+     "type": "boolean",
+     "default": false
+    },
+    "supertypes": {
+     "$ref": "#/$defs/enum.Supertype",
+     "default": 0
+    },
+    "rule": {
+     "type": "string",
+     "default": ""
+    },
+    "copy_source": {
+     "type": "integer",
+     "default": 0
+    },
+    "divided": {
+     "type": "boolean",
+     "default": false
+    },
+    "of_chosen_type": {
+     "type": "boolean",
+     "default": false
+    },
+    "colors_chosen": {
+     "type": "boolean",
+     "default": false
+    },
+    "colors_from_trigger": {
+     "type": "boolean",
+     "default": false
+    },
+    "colors_in_commander_identity": {
+     "type": "boolean",
+     "default": false
+    },
+    "also_when_turned_face_up": {
+     "type": "boolean",
+     "default": false
+    },
+    "attached_to": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "trigger_cause": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "dungeon_quality": {
+     "type": "string",
+     "default": ""
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "TokenSpec": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "TokenSpec"
+    },
+    "name": {
+     "type": "string",
+     "default": ""
+    },
+    "types": {
+     "$ref": "#/$defs/enum.CardType",
+     "default": 4
+    },
+    "subtypes": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "colors": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "power": {
+     "$ref": "#/$defs/Value",
+     "default": {
+      "$": "Value"
+     }
+    },
+    "toughness": {
+     "$ref": "#/$defs/Value",
+     "default": {
+      "$": "Value"
+     }
+    },
+    "keywords": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "abilities": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Ability"
+     },
+     "default": []
+    },
+    "enters_tapped": {
+     "type": "boolean",
+     "default": false
+    },
+    "enters_attacking": {
+     "type": "boolean",
+     "default": false
+    },
+    "copy_of": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "back": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/TokenSpec"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "ObjectFilter": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "ObjectFilter"
+    },
+    "types_any": {
+     "$ref": "#/$defs/enum.CardType",
+     "default": 0
+    },
+    "types_all": {
+     "$ref": "#/$defs/enum.CardType",
+     "default": 0
+    },
+    "types_none": {
+     "$ref": "#/$defs/enum.CardType",
+     "default": 0
+    },
+    "supertypes_all": {
+     "$ref": "#/$defs/enum.Supertype",
+     "default": 0
+    },
+    "supertypes_none": {
+     "$ref": "#/$defs/enum.Supertype",
+     "default": 0
+    },
+    "subtypes_any": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "subtypes_all": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "subtypes_none": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "colors_any": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "colors_all": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "colors_none": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "must_be_colorless": {
+     "type": "boolean",
+     "default": false
+    },
+    "must_be_coloured": {
+     "type": "boolean",
+     "default": false
+    },
+    "must_be_multicolored": {
+     "type": "boolean",
+     "default": false
+    },
+    "must_be_monocolored": {
+     "type": "boolean",
+     "default": false
+    },
+    "shares_color_with_source": {
+     "type": "boolean",
+     "default": false
+    },
+    "named": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "not_named": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "other_than_source": {
+     "type": "boolean",
+     "default": false
+    },
+    "source_only": {
+     "type": "boolean",
+     "default": false
+    },
+    "includes_players": {
+     "type": "boolean",
+     "default": false
+    },
+    "remembered": {
+     "type": "boolean",
+     "default": false
+    },
+    "trigger_source": {
+     "type": "boolean",
+     "default": false
+    },
+    "specific": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     },
+     "default": []
+    },
+    "linked_to_source": {
+     "type": "boolean",
+     "default": false
+    },
+    "link_id": {
+     "type": "integer",
+     "default": 0
+    },
+    "from_pile": {
+     "type": "boolean",
+     "default": false
+    },
+    "zones": {
+     "type": "object",
+     "properties": {
+      "$set": {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/enum.Zone"
+       }
+      }
+     },
+     "required": [
+      "$set"
+     ],
+     "additionalProperties": false,
+     "default": {
+      "$set": [
+       2
+      ]
+     }
+    },
+    "from_top": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "boolean"
+      }
+     ],
+     "default": 0
+    },
+    "controller": {
+     "$ref": "#/$defs/enum.ControllerRelation",
+     "default": 0
+    },
+    "controller_specific": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "owner": {
+     "$ref": "#/$defs/enum.ControllerRelation",
+     "default": 0
+    },
+    "tapped": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "attacking": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "blocking": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "blocked": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "ring_bearer": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "modified": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "in_pair_with_source": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "haunted_by_source": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "activated_this_turn": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "face_down": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "has_inset": {
+     "type": "string",
+     "default": ""
+    },
+    "is_token": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "of_chosen_type": {
+     "type": "boolean",
+     "default": false
+    },
+    "of_chosen_color": {
+     "type": "boolean",
+     "default": false
+    },
+    "of_chosen_name": {
+     "type": "boolean",
+     "default": false
+    },
+    "not_of_chosen_type": {
+     "type": "boolean",
+     "default": false
+    },
+    "is_ability": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "is_commander": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "phased_out": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "entered_this_turn": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "summoning_sick": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "arrived_since_last_turn": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "power": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "toughness": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "base_power": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "base_toughness": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "mana_value": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "loyalty": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "has_counter": {
+     "type": "string",
+     "default": ""
+    },
+    "counter_constraint": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "attached_to": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "has_attached": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "has_keyword": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "lacks_keyword": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "count": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Value"
+      },
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "up_to": {
+     "type": "boolean",
+     "default": false
+    },
+    "any_of": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/ObjectFilter"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "PlayerFilter": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "PlayerFilter"
+    },
+    "scope": {
+     "$ref": "#/$defs/enum.PlayerScope",
+     "default": 0
+    },
+    "specific": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "reference": {
+     "type": "integer",
+     "default": 0
+    },
+    "controls": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "life_constraint": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "Value": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "Value"
+    },
+    "kind": {
+     "$ref": "#/$defs/enum.ValueKind",
+     "default": 0
+    },
+    "constant": {
+     "type": "integer",
+     "default": 0
+    },
+    "filter": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "players": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PlayerFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "counter_type": {
+     "type": "string",
+     "default": ""
+    },
+    "colors": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "operands": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Value"
+     },
+     "default": []
+    },
+    "of_affected": {
+     "type": "boolean",
+     "default": false
+    },
+    "event_kinds": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "Condition": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "Condition"
+    },
+    "kind": {
+     "$ref": "#/$defs/enum.ConditionKind",
+     "default": 0
+    },
+    "filter": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "players": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PlayerFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "constraint": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/NumericConstraint"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "counter_type": {
+     "type": "string",
+     "default": ""
+    },
+    "event_kinds": {
+     "type": "array",
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/$defs/enum.EventKind"
+       },
+       {
+        "$ref": "#/$defs/IRInt"
+       }
+      ]
+     },
+     "default": []
+    },
+    "operands": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Condition"
+     },
+     "default": []
+    },
+    "keyword": {
+     "type": "string",
+     "default": ""
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    },
+    "value": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Value"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "NumericConstraint": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "NumericConstraint"
+    },
+    "comparison": {
+     "$ref": "#/$defs/enum.Comparison"
+    },
+    "value": {
+     "$ref": "#/$defs/Value"
+    }
+   },
+   "required": [
+    "$",
+    "comparison",
+    "value"
+   ],
+   "additionalProperties": false
+  },
+  "Cost": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "Cost"
+    },
+    "components": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/CostComponent"
+     },
+     "default": []
+    },
+    "choices": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Cost"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "CostComponent": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "CostComponent"
+    },
+    "kind": {
+     "$ref": "#/$defs/enum.CostKind"
+    },
+    "mana": {
+     "$ref": "#/$defs/ManaCost",
+     "default": {
+      "$": "ManaCost"
+     }
+    },
+    "amount": {
+     "$ref": "#/$defs/Value",
+     "default": {
+      "$": "Value"
+     }
+    },
+    "scale": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Value"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "filter": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "counter_type": {
+     "type": "string",
+     "default": ""
+    },
+    "total_power": {
+     "type": "boolean",
+     "default": false
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    }
+   },
+   "required": [
+    "$",
+    "kind"
+   ],
+   "additionalProperties": false
+  },
+  "AdditionalCost": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "AdditionalCost"
+    },
+    "cost": {
+     "$ref": "#/$defs/Cost"
+    },
+    "optional": {
+     "type": "boolean",
+     "default": false
+    },
+    "keyword": {
+     "type": "string",
+     "default": ""
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    }
+   },
+   "required": [
+    "$",
+    "cost"
+   ],
+   "additionalProperties": false
+  },
+  "AlternativeCost": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "AlternativeCost"
+    },
+    "cost": {
+     "$ref": "#/$defs/Cost"
+    },
+    "from_zone": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/enum.Zone"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "condition": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Condition"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "instant_speed": {
+     "type": "boolean",
+     "default": false
+    },
+    "enters_tapped_and_attacking": {
+     "type": "boolean",
+     "default": false
+    },
+    "pays_mana_cost": {
+     "type": "boolean",
+     "default": false
+    },
+    "keyword": {
+     "type": "string",
+     "default": ""
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    }
+   },
+   "required": [
+    "$",
+    "cost"
+   ],
+   "additionalProperties": false
+  },
+  "ManaCost": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "ManaCost"
+    },
+    "symbols": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/ManaSymbol"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "ManaSymbol": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "ManaSymbol"
+    },
+    "kind": {
+     "$ref": "#/$defs/enum.ManaSymbolKind"
+    },
+    "colors": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "generic": {
+     "type": "integer",
+     "default": 0
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    }
+   },
+   "required": [
+    "$",
+    "kind"
+   ],
+   "additionalProperties": false
+  },
+  "SpendOnlyOn": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "SpendOnlyOn"
+    },
+    "key": {
+     "type": "string"
+    },
+    "filter": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    }
+   },
+   "required": [
+    "$",
+    "key"
+   ],
+   "additionalProperties": false
+  },
+  "Restriction": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "Restriction"
+    },
+    "act": {
+     "$ref": "#/$defs/enum.Act"
+    },
+    "subject": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "players": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PlayerFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "source": {
+     "type": "integer",
+     "default": 0
+    },
+    "controller": {
+     "type": "integer",
+     "default": -1
+    },
+    "condition": {
+     "$ref": "#/$defs/Condition",
+     "default": {
+      "$": "Condition"
+     }
+    },
+    "counterpart": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/ObjectFilter"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "text": {
+     "type": "string",
+     "default": ""
+    },
+    "duration": {
+     "type": "integer",
+     "default": 0
+    },
+    "created_turn": {
+     "type": "integer",
+     "default": 0
+    }
+   },
+   "required": [
+    "$",
+    "act"
+   ],
+   "additionalProperties": false
+  },
+  "ParseFailure": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "ParseFailure"
+    },
+    "text": {
+     "type": "string"
+    },
+    "reason": {
+     "type": "string"
+    },
+    "consumed": {
+     "type": "integer",
+     "default": 0
+    },
+    "remaining": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "rule": {
+     "type": "string",
+     "default": ""
+    }
+   },
+   "required": [
+    "$",
+    "text",
+    "reason"
+   ],
+   "additionalProperties": false
+  },
+  "CardDef": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "CardDef"
+    },
+    "oracle_id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "layout": {
+     "$ref": "#/$defs/enum.Layout"
+    },
+    "faces": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/FaceDef"
+     }
+    },
+    "mana_value": {
+     "type": "integer"
+    },
+    "color_identity": {
+     "$ref": "#/$defs/enum.Color"
+    },
+    "commander_legal": {
+     "type": "boolean"
+    },
+    "edhrec_rank": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "scryfall_uri": {
+     "type": "string",
+     "default": ""
+    },
+    "attraction_lights": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$",
+    "oracle_id",
+    "name",
+    "layout",
+    "faces",
+    "mana_value",
+    "color_identity",
+    "commander_legal"
+   ],
+   "additionalProperties": false
+  },
+  "FaceDef": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "FaceDef"
+    },
+    "name": {
+     "type": "string"
+    },
+    "mana_cost": {
+     "$ref": "#/$defs/ManaCost"
+    },
+    "has_mana_cost": {
+     "type": "boolean"
+    },
+    "type_line": {
+     "$ref": "#/$defs/TypeLine"
+    },
+    "oracle_text": {
+     "type": "string"
+    },
+    "power": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "toughness": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "loyalty": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "defense": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "colors": {
+     "$ref": "#/$defs/enum.Color",
+     "default": 0
+    },
+    "color_indicator": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/enum.Color"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "keywords": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    },
+    "produced_mana": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$",
+    "name",
+    "mana_cost",
+    "has_mana_cost",
+    "type_line",
+    "oracle_text"
+   ],
+   "additionalProperties": false
+  },
+  "TypeLine": {
+   "type": "object",
+   "properties": {
+    "$": {
+     "const": "TypeLine"
+    },
+    "supertypes": {
+     "$ref": "#/$defs/enum.Supertype",
+     "default": 0
+    },
+    "types": {
+     "$ref": "#/$defs/enum.CardType",
+     "default": 0
+    },
+    "subtypes": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "default": []
+    }
+   },
+   "required": [
+    "$"
+   ],
+   "additionalProperties": false
+  },
+  "enum.AbilityKind": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "description": "enum AbilityKind: SPELL=0, ACTIVATED=1, TRIGGERED=2, STATIC=3"
+  },
+  "enum.Act": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    5,
+    2,
+    3,
+    4,
+    20,
+    21,
+    22,
+    23,
+    24,
+    40,
+    41,
+    42,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    101,
+    102,
+    100
+   ],
+   "description": "enum Act: CAST_SPELL=0, PLAY_LAND=1, CAST_AS_THOUGH_FLASH=5, ACTIVATE_ABILITY=2, ACTIVATE_MANA_ABILITY=3, ACTIVATE_LOYALTY_ABILITY=4, ATTACK=20, ATTACK_PLAYER=21, ATTACK_PLANESWALKER=22, BLOCK=23, BE_BLOCKED=24, BE_COUNTERED=40, BE_TARGETED=41, COPY=42, UNTAP=60, TAP=61, BE_DESTROYED=62, BE_SACRIFICED=63, BE_REGENERATED=64, ENTER_BATTLEFIELD=65, LEAVE_BATTLEFIELD=66, HAVE_COUNTERS_PLACED=67, BE_EXILED=68, CHANGE_CONTROL=69, PHASE_OUT=70, DRAW_CARD=90, GAIN_LIFE=91, LOSE_LIFE=92, SEARCH_LIBRARY=93, WIN_GAME=94, LOSE_GAME=95, BE_DEALT_DAMAGE=96, SHUFFLE=97, CAST_MORE_THAN_ONE_SPELL=98, UNTAP_DURING_UNTAP_STEP=99, LIFE_TOTAL_CHANGE=101, LOOK_AT_TOP_CARD=102, DISCARD_TO_HAND_SIZE=100"
+  },
+  "enum.CardType": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "flag enum CardType: the OR of its bits (ARTIFACT=1, BATTLE=2, CREATURE=4, ENCHANTMENT=8, LAND=16, PLANESWALKER=32, INSTANT=64, SORCERY=128, KINDRED=256, CONSPIRACY=512, DUNGEON=1024, PHENOMENON=2048, PLANE=4096, SCHEME=8192, VANGUARD=16384, EMBLEM=32768, STICKERS=65536, HERO=131072, EVENT=262144, BOSS=524288, CARD=1048576; NONE=0)"
+  },
+  "enum.Color": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "flag enum Color: the OR of its bits (WHITE=1, BLUE=2, BLACK=4, RED=8, GREEN=16; NONE=0)"
+  },
+  "enum.Comparison": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "description": "enum Comparison: EQ=0, NE=1, LT=2, LE=3, GT=4, GE=5"
+  },
+  "enum.ConditionKind": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    16,
+    18,
+    17,
+    13,
+    23,
+    15,
+    14,
+    26,
+    27,
+    28,
+    85,
+    86,
+    87,
+    18001,
+    18002,
+    30,
+    31,
+    24,
+    75,
+    76,
+    25,
+    11,
+    19,
+    20,
+    21,
+    22,
+    2001,
+    2002,
+    2003,
+    99
+   ],
+   "description": "enum ConditionKind: ALWAYS=0, NEVER=1, OBJECT_COUNT=2, LIFE=3, CARDS_IN_HAND=4, CONTROLS_MATCHING=5, IS_YOUR_TURN=6, IS_MAIN_PHASE=7, EVENT_THIS_TURN=8, CLASS_LEVEL=9, IS_SOLVED=10, AT_MAX_SPEED=16, REMEMBERED_MATCHES=18, PLAYER_COUNT=17, IS_STEP=13, WAS_CAST=23, NO_MANA_SPENT=15, WAS_KICKED=14, RING_TEMPTED_TIMES=26, HAS_ENDURING_STORY=27, IS_HARNESSED=28, ATTACKING_PLAYER_WITH_MOST_LIFE=85, IS_SADDLED=86, IS_PAIRED=87, IS_RENOWNED=18001, SPELL_MANA_EXCEEDS_POWER_OR_TOUGHNESS=18002, COMPLETED_DUNGEON=30, HAS_INITIATIVE=31, ALTERNATIVE_COST_PAID=24, COMBAT_DAMAGE_DEALT_BY=75, COMBAT_DAMAGE_BY_SHARED_CREATURE_TYPE=76, FIRST_RESOLUTION_OF_NAME=25, COUNTER_COUNT=11, COMPARE_COUNTS=19, AND=20, OR=21, NOT=22, TRIGGER_OBJECT_MATCHES=2001, AFFECTED_MATCHES=2002, VALUE_COMPARE=2003, UNPARSED=99"
+  },
+  "enum.ControllerRelation": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "description": "enum ControllerRelation: ANY=0, YOU=1, OPPONENT=2, SAME_AS_SOURCE=3, SPECIFIC=4, DEFENDING_PLAYER=5"
+  },
+  "enum.CostKind": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    4001,
+    4002,
+    30,
+    31,
+    32,
+    33,
+    34,
+    40,
+    41,
+    99
+   ],
+   "description": "enum CostKind: MANA=0, TAP_SELF=1, UNTAP_SELF=2, TAP_OTHER=3, UNTAP_OTHER=4, SACRIFICE=10, DISCARD=11, EXILE_FROM_GRAVEYARD=12, EXILE_FROM_HAND=13, EXILE_FROM_LIBRARY=14, RETURN_TO_HAND=15, PUT_ON_LIBRARY=16, MILL=17, REVEAL=18, EXILE_FROM_BATTLEFIELD=19, DISCARD_AT_RANDOM=4001, EXILE_MATERIALS=4002, PAY_LIFE=30, PAY_ENERGY=31, REMOVE_COUNTERS=32, PUT_COUNTERS=33, LOYALTY=34, UNATTACH=40, CHOOSE=41, UNPARSED=99"
+  },
+  "enum.Duration": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "description": "enum Duration: PERMANENT=0, END_OF_TURN=1, END_OF_COMBAT=2, YOUR_NEXT_TURN=3, END_OF_YOUR_NEXT_TURN=4, WHILE_SOURCE_PERSISTS=5, CUSTOM=6"
+  },
+  "enum.EffectKind": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    10001,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    88,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    100,
+    101,
+    102,
+    103,
+    104,
+    120,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    154,
+    152,
+    153,
+    170,
+    171,
+    172,
+    173,
+    174,
+    175,
+    176,
+    190,
+    191,
+    192,
+    193,
+    194,
+    195,
+    196,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    210,
+    211,
+    214,
+    218,
+    212,
+    213,
+    219,
+    215,
+    216,
+    217,
+    220,
+    221,
+    222,
+    223,
+    224,
+    18001,
+    18002,
+    18003,
+    280,
+    285,
+    286,
+    287,
+    240,
+    270,
+    271,
+    300,
+    301,
+    6000,
+    6001,
+    6002,
+    999
+   ],
+   "description": "enum EffectKind: SEQUENCE=0, CONDITIONAL=1, REPEAT=2, CHOOSE_MODE=3, OPTIONAL=4, NOTHING=5, UNLESS_PAYS=6, DRAW=20, DISCARD=21, MILL=22, SEARCH_LIBRARY=23, SHUFFLE=24, REVEAL=25, SCRY=26, SURVEIL=27, MOVE_ZONE=28, DESTROY=29, EXILE=30, SACRIFICE=31, RETURN_TO_HAND=32, PUT_ONTO_BATTLEFIELD=33, PUT_ON_LIBRARY=34, CREATE_TOKEN=35, EXPLORE=36, LOOK_AT_TOP=10001, DAMAGE=50, GAIN_LIFE=51, LOSE_LIFE=52, SET_LIFE=53, EXCHANGE_LIFE=54, PREVENT_DAMAGE=55, REDIRECT_DAMAGE=56, ADD_POISON=57, FIGHT=58, DESIGNATE=59, TAP=70, UNTAP=71, ADD_COUNTERS=72, REMOVE_COUNTERS=73, PROLIFERATE=74, ATTACH=75, UNATTACH=76, GAIN_CONTROL=77, EXCHANGE_CONTROL=78, TRANSFORM=79, DOUBLE_COUNTERS=88, TURN_FACE_UP=80, TURN_FACE_DOWN=81, PHASE_OUT=82, REGENERATE=83, COPY_PERMANENT=84, GOAD=85, MONSTROSITY=86, ADAPT=87, COUNTER_SPELL=100, COPY_SPELL=101, CHANGE_TARGETS=102, CAST_WITHOUT_PAYING=103, PLAY_FROM_ZONE=104, ADD_MANA=120, MODIFY_PT=140, SET_PT=141, SWITCH_PT=142, GRANT_ABILITY=143, REMOVE_ABILITIES=144, SET_COLOR=145, ADD_TYPE=146, REMOVE_TYPE=147, SET_TYPE=148, TEXT_CHANGE=149, RESTRICTION=150, PERMISSION=151, SUSPEND_RULE=154, MODIFY_COST=152, REPLACEMENT=153, EXTRA_TURN=170, EXTRA_PHASE=171, EXTRA_STEP=172, SKIP_STEP=173, END_TURN=174, UNTAP_STEP_SKIP=175, EXTRA_LAND_DROP=176, PLAYER_WINS=190, PLAYER_LOSES=191, BECOME_MONARCH=192, TAKE_INITIATIVE=193, ADD_ENERGY=194, ADD_EXPERIENCE=195, VOTE=196, VENTURE=197, RING_TEMPTS=198, START_ENGINES=199, PAY_COST=200, IF_YOU_DONT=201, ROLL_DICE=202, SET_CLASS_LEVEL=210, EXTRA_TRIGGER=211, CHOOSE_QUALITY=214, BECOME_SOLVED=218, FLIP_PERMANENT=212, DELAYED_TRIGGER=213, REFLEXIVE_TRIGGER=219, CONTROL_PLAYER=215, RESTART_GAME=216, BECOME_PREPARED=217, SACRIFICE_BLOCKERS_AT_END_OF_COMBAT=220, CASCADE=221, DISCOVER=222, VILLAINOUS_CHOICE=223, HARNESS=224, BECOME_RENOWNED=18001, BLOCKS_SOURCE_IF_ABLE=18002, HAUNT=18003, ENTERS_AS_CHOICE=280, BECOME_SADDLED=285, PAIR=286, SEPARATE_INTO_PILES=287, MANIFEST=240, OPEN_ATTRACTION=270, ROLL_TO_VISIT=271, REPEAT_PER_PAYMENT=300, GIVE_GIFT=301, PERPETUALLY=6000, CONJURE=6001, SEEK=6002, UNPARSED=999"
+  },
+  "enum.EventKind": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    100,
+    101,
+    102,
+    103,
+    104,
+    18001,
+    18003,
+    105,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    160,
+    161,
+    162,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    187,
+    186,
+    330,
+    331,
+    332,
+    380,
+    370,
+    300,
+    301,
+    310,
+    350,
+    351,
+    352,
+    19001,
+    18002
+   ],
+   "description": "enum EventKind: ZONE_CHANGE=0, ENTERS_BATTLEFIELD=1, LEAVES_BATTLEFIELD=2, DIES=3, PUT_INTO_GRAVEYARD=4, EXILED=5, RETURNED_TO_HAND=6, SHUFFLED_INTO_LIBRARY=7, TOKEN_CREATED=8, CEASED_TO_EXIST=9, CAST_SPELL=20, SPELL_RESOLVED=21, ABILITY_ACTIVATED=22, ABILITY_TRIGGERED=23, ABILITY_RESOLVED=24, COUNTERED=25, FIZZLED=26, TARGETED=27, COPIED=28, PUT_ON_STACK=29, TAPPED=40, UNTAPPED=41, COUNTER_ADDED=42, COUNTER_REMOVED=43, ATTACHED=44, UNATTACHED=45, TRANSFORMED=46, TURNED_FACE_UP=47, TURNED_FACE_DOWN=48, PHASED_OUT=49, PHASED_IN=50, CONTROL_CHANGED=51, SACRIFICED=52, DESTROYED=53, REGENERATED=54, DAMAGE_DEALT=60, COMBAT_DAMAGE_DEALT=61, LIFE_GAINED=62, LIFE_LOST=63, LIFE_SET=64, DAMAGE_PREVENTED=65, POISON_ADDED=66, SPEED_INCREASED=67, DREW_CARD=80, DISCARDED=81, MILLED=82, REVEALED=83, SCRIED=84, SURVEILLED=85, SEARCHED_LIBRARY=86, CLASS_LEVEL_GAINED=87, SHUFFLED=88, ATTACKERS_DECLARED=100, ATTACKS=101, BLOCKERS_DECLARED=102, BLOCKS=103, BECOMES_BLOCKED=104, BECOMES_BLOCKED_BY=18001, ATTACKS_UNBLOCKED=18003, REMOVED_FROM_COMBAT=105, TURN_BEGAN=120, PHASE_BEGAN=121, STEP_BEGAN=122, STEP_ENDED=123, PHASE_ENDED=124, TURN_ENDED=125, UNTAP_STEP=126, UPKEEP=127, DRAW_STEP=128, END_STEP=129, CLEANUP=130, PLAYER_LOST=140, PLAYER_WON=141, PLAYER_LEFT_GAME=142, MANA_ADDED=143, MANA_SPENT=144, MANA_EMPTIED=145, PRIORITY_RECEIVED=146, LAND_PLAYED=147, TAPPED_FOR_MANA=148, COMMANDER_CAST=160, COMMANDER_MOVED_TO_COMMAND_ZONE=161, COMMANDER_DAMAGE_DEALT=162, BECAME_MONARCH=180, TOOK_INITIATIVE=181, ENERGY_GAINED=182, EXPERIENCE_GAINED=183, DAY_NIGHT_CHANGED=184, RING_TEMPTED=185, EXPLORED=187, DUNGEON_VENTURED=186, DESCENDED=330, CRIME_COMMITTED=331, EXPENDED=332, BECAME_SADDLED=380, GIFT_GIVEN=370, VENTURE_MARKER_MOVED=300, DUNGEON_COMPLETED=301, MANIFESTED_DREAD=310, ATTRACTION_OPENED=350, ROLLED_TO_VISIT=351, ATTRACTION_VISITED=352, BECAME_MONSTROUS=19001, BECAME_RENOWNED=18002"
+  },
+  "enum.Layout": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+   ],
+   "description": "enum Layout: NORMAL=0, SPLIT=1, FLIP=2, TRANSFORM=3, MODAL_DFC=4, MELD=5, LEVELER=6, CLASS=7, SAGA=8, ADVENTURE=9, MUTATE=10, PROTOTYPE=11, CASE=12, ROOM=13, BATTLE=14, TOKEN=15, EMBLEM=16, REVERSIBLE=17, AUGMENT=18, HOST=19, ART_SERIES=20, DOUBLE_FACED_TOKEN=21, PLANAR=22, SCHEME=23, VANGUARD=24, PREPARE=25"
+  },
+  "enum.ManaSymbolKind": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "description": "enum ManaSymbolKind: GENERIC=0, VARIABLE=1, COLORED=2, COLORLESS=3, SNOW=4, HYBRID=5, MONOCOLOR_HYBRID=6, PHYREXIAN=7, HALF=8, INFINITY=9"
+  },
+  "enum.Phase": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "description": "enum Phase: BEGINNING=0, PRECOMBAT_MAIN=1, COMBAT=2, POSTCOMBAT_MAIN=3, ENDING=4"
+  },
+  "enum.PlayerScope": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    4001,
+    13001,
+    13002,
+    13003,
+    13004,
+    13005,
+    13006,
+    13007,
+    13008,
+    14001
+   ],
+   "description": "enum PlayerScope: YOU=0, OPPONENT=1, EACH_PLAYER=2, EACH_OPPONENT=3, TARGET_PLAYER=4, TARGET_OPPONENT=5, ACTIVE_PLAYER=6, CONTROLLER_OF=7, OWNER_OF=8, SPECIFIC=9, MONARCH=10, DEFENDING_PLAYER=11, THAT_PLAYER=12, TRIGGER_SOURCE_CONTROLLER=4001, REFERRED_PLAYER=13001, TRIGGER_PLAYER=13002, REMEMBERED_CONTROLLER=13003, REMEMBERED_OWNER=13004, TRIGGER_OBJECT_CONTROLLER=13005, TRIGGER_OBJECT_OWNER=13006, AFFECTED_CONTROLLER=13007, CHOSEN_PLAYER=13008, ENCHANTED_PLAYER=14001"
+  },
+  "enum.Step": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "description": "enum Step: UNTAP=0, UPKEEP=1, DRAW=2, MAIN=3, BEGINNING_OF_COMBAT=4, DECLARE_ATTACKERS=5, DECLARE_BLOCKERS=6, FIRST_STRIKE_COMBAT_DAMAGE=7, COMBAT_DAMAGE=8, END_OF_COMBAT=9, END_STEP=10, CLEANUP=11"
+  },
+  "enum.Supertype": {
+   "type": "integer",
+   "minimum": 0,
+   "description": "flag enum Supertype: the OR of its bits (BASIC=1, LEGENDARY=2, ONGOING=4, SNOW=8, WORLD=16, TOKEN=32, HOST=64, ELITE=128; NONE=0)"
+  },
+  "enum.Timing": {
+   "type": "integer",
+   "enum": [
+    0,
+    1
+   ],
+   "description": "enum Timing: SORCERY=0, INSTANT=1"
+  },
+  "enum.ValueKind": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    22,
+    23,
+    24,
+    21,
+    30,
+    25,
+    26,
+    60,
+    61,
+    27,
+    28,
+    29,
+    7001,
+    7002,
+    18001,
+    18002
+   ],
+   "description": "enum ValueKind: CONSTANT=0, X=1, COUNT=2, POWER=3, TOUGHNESS=4, MANA_VALUE=5, LIFE_TOTAL=6, CARDS_IN_HAND=7, POISON_COUNTERS=8, ENERGY=9, COUNTERS=10, SUM=11, PRODUCT=12, DIFFERENCE=13, HALF_ROUNDED_UP=14, HALF_ROUNDED_DOWN=15, MAXIMUM=16, MINIMUM=17, GREATEST_AMONG=18, LEAST_AMONG=19, UNCHANGED=20, DEVOTION=22, COLOURS_AMONG=23, MANA_SPENT=24, COST_PAID_POWER=21, COST_PAID=30, EVENT_AMOUNT=25, EVENT_COUNT_THIS_TURN=26, PARTY_SIZE=60, COLORS_OF_MANA_SPENT=61, TOTAL_AMONG=27, COMMANDER_COLOUR_IDENTITY=28, DIE_ROLL_RESULT=29, AMOUNT_THIS_WAY=7001, EVENT_AMOUNT_THIS_TURN=7002, BLOCKERS_OF_SOURCE=18001, PLAYER_COUNT=18002"
+  },
+  "enum.Zone": {
+   "type": "integer",
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "description": "enum Zone: LIBRARY=0, HAND=1, BATTLEFIELD=2, GRAVEYARD=3, STACK=4, EXILE=5, COMMAND=6"
+  },
+  "IRInt": {
+   "type": "object",
+   "properties": {
+    "$int": {
+     "type": "integer"
+    }
+   },
+   "required": [
+    "$int"
+   ],
+   "additionalProperties": false,
+   "description": "a plain integer in a field whose type is an enum"
+  },
+  "IRValue": {
+   "anyOf": [
+    {
+     "type": [
+      "null",
+      "boolean",
+      "integer",
+      "string"
+     ]
+    },
+    {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/IRValue"
+     }
+    },
+    {
+     "$ref": "#/$defs/Ability"
+    },
+    {
+     "$ref": "#/$defs/TriggerCondition"
+    },
+    {
+     "$ref": "#/$defs/Effect"
+    },
+    {
+     "$ref": "#/$defs/TokenSpec"
+    },
+    {
+     "$ref": "#/$defs/ObjectFilter"
+    },
+    {
+     "$ref": "#/$defs/PlayerFilter"
+    },
+    {
+     "$ref": "#/$defs/Value"
+    },
+    {
+     "$ref": "#/$defs/Condition"
+    },
+    {
+     "$ref": "#/$defs/NumericConstraint"
+    },
+    {
+     "$ref": "#/$defs/Cost"
+    },
+    {
+     "$ref": "#/$defs/CostComponent"
+    },
+    {
+     "$ref": "#/$defs/AdditionalCost"
+    },
+    {
+     "$ref": "#/$defs/AlternativeCost"
+    },
+    {
+     "$ref": "#/$defs/ManaCost"
+    },
+    {
+     "$ref": "#/$defs/ManaSymbol"
+    },
+    {
+     "$ref": "#/$defs/SpendOnlyOn"
+    },
+    {
+     "$ref": "#/$defs/Restriction"
+    },
+    {
+     "$ref": "#/$defs/ParseFailure"
+    },
+    {
+     "$ref": "#/$defs/CardDef"
+    },
+    {
+     "$ref": "#/$defs/FaceDef"
+    },
+    {
+     "$ref": "#/$defs/TypeLine"
+    }
+   ],
+   "description": "any IR value (never an enum: an enum is only where a field declares one)"
+  },
+  "FaceDocument": {
+   "type": "object",
+   "description": "One card face: its abilities and the parse failures.",
+   "properties": {
+    "ir_version": {
+     "const": 2
+    },
+    "oracle_id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "face": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "face_name": {
+     "type": "string"
+    },
+    "card_hash": {
+     "type": "string"
+    },
+    "fully_read": {
+     "type": "boolean"
+    },
+    "abilities": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/Ability"
+     }
+    },
+    "failures": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/ParseFailure"
+     }
+    }
+   },
+   "required": [
+    "ir_version",
+    "oracle_id",
+    "name",
+    "face",
+    "face_name",
+    "card_hash",
+    "fully_read",
+    "abilities",
+    "failures"
+   ],
+   "additionalProperties": false
+  }
+ }
+}

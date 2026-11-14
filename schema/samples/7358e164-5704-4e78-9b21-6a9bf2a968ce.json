@@ -1,0 +1,110 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
+ "name": "Cabal Coffers",
+ "card_hash": "6c307419a06a18350b57e5c6e0745496",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
+  "name": "Cabal Coffers",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cabal Coffers",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{2}, {T}: Add {B} for each Swamp you control.",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 196,
+  "scryfall_uri": "https://scryfall.com/card/mh2/301/cabal-coffers?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
+   "name": "Cabal Coffers",
+   "face": 0,
+   "face_name": "Cabal Coffers",
+   "card_hash": "6c307419a06a18350b57e5c6e0745496",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Swamp"
+         ],
+         "controller": 1
+        }
+       },
+       "mana_produced": [
+        "{B}"
+       ],
+       "colors": 4,
+       "text": "add {B}"
+      }
+     ],
+     "text": "{2}, {T}: Add {B} for each Swamp you control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

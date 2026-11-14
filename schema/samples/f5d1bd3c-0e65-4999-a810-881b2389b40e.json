@@ -1,0 +1,213 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
+ "name": "Conspicuous Snoop",
+ "card_hash": "0f340222764a151fc25a7466c0e21e55",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
+  "name": "Conspicuous Snoop",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Conspicuous Snoop",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Rogue"
+     ]
+    },
+    "oracle_text": "Play with the top card of your library revealed.\nYou may cast Goblin spells from the top of your library.\nAs long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 3262,
+  "scryfall_uri": "https://scryfall.com/card/m21/139/conspicuous-snoop?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
+   "name": "Conspicuous Snoop",
+   "face": 0,
+   "face_name": "Conspicuous Snoop",
+   "card_hash": "0f340222764a151fc25a7466c0e21e55",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 151,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          0
+         ]
+        },
+        "from_top": true,
+        "count": 1
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 102,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "may look at the top card of their library"
+        }
+       ],
+       "text": "the top card of your library is visible"
+      }
+     ],
+     "text": "Play with the top card of your library revealed."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 151,
+         "targets": {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Goblin"
+          ],
+          "zones": {
+           "$set": [
+            0
+           ]
+          },
+          "from_top": 1,
+          "is_ability": false
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 0,
+           "subject": {
+            "$": "ObjectFilter",
+            "subtypes_all": [
+             "Goblin"
+            ],
+            "zones": {
+             "$set": [
+              0
+             ]
+            },
+            "from_top": 1,
+            "is_ability": false
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "play from the top of your library"
+          }
+         ],
+         "text": "may play from elsewhere"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may cast Goblin spells from the top of your library."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card."
+      }
+     ],
+     "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "As long as the top card of your library is a Goblin card, this creature has all activated abilities of that card.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "As",
+      "long",
+      "as",
+      "the",
+      "top",
+      "card",
+      "of",
+      "your",
+      "library",
+      "is",
+      "a",
+      "Goblin",
+      "card",
+      ",",
+      "this",
+      "creature",
+      "has",
+      "all",
+      "activated",
+      "abilities",
+      "of",
+      "that",
+      "card",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

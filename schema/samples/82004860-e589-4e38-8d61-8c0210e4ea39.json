@@ -1,0 +1,95 @@
+{
+ "ir_version": 2,
+ "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
+ "name": "Demonic Tutor",
+ "card_hash": "de744fc7543ea2b2de2f930765e433f9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
+  "name": "Demonic Tutor",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Demonic Tutor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Search your library for a card, put that card into your hand, then shuffle.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 62,
+  "scryfall_uri": "https://scryfall.com/card/cmm/150/demonic-tutor?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
+   "name": "Demonic Tutor",
+   "face": 0,
+   "face_name": "Demonic Tutor",
+   "card_hash": "de744fc7543ea2b2de2f930765e433f9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for a card, put that card into your hand, then shuffle."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer",
+  "tutor"
+ ]
+}

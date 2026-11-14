@@ -1,0 +1,131 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
+ "name": "Aura of Silence",
+ "card_hash": "6014f43ecc410ffa37d8728a5fc4e006",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
+  "name": "Aura of Silence",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Aura of Silence",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Artifact and enchantment spells your opponents cast cost {2} more to cast.\nSacrifice this enchantment: Destroy target artifact or enchantment.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 2184,
+  "scryfall_uri": "https://scryfall.com/card/c15/60/aura-of-silence?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
+   "name": "Aura of Silence",
+   "face": 0,
+   "face_name": "Aura of Silence",
+   "card_hash": "6014f43ecc410ffa37d8728a5fc4e006",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 152,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 9,
+        "zones": {
+         "$set": [
+          4
+         ]
+        },
+        "controller": 2,
+        "is_ability": false
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "duration": 0,
+       "text": "costs less to cast"
+      }
+     ],
+     "text": "Artifact and enchantment spells your opponents cast cost {2} more to cast."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 9
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "Sacrifice this enchantment: Destroy target artifact or enchantment.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

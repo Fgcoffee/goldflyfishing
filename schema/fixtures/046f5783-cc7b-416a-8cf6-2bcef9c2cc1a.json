@@ -1,0 +1,137 @@
+{
+ "ir_version": 2,
+ "oracle_id": "046f5783-cc7b-416a-8cf6-2bcef9c2cc1a",
+ "name": "Simic Growth Chamber",
+ "card_hash": "95ae325fdb794e00db47146ecc1e9566",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "046f5783-cc7b-416a-8cf6-2bcef9c2cc1a",
+  "name": "Simic Growth Chamber",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Simic Growth Chamber",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {G}{U}.",
+    "produced_mana": [
+     "G",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 18,
+  "commander_legal": true,
+  "edhrec_rank": 313,
+  "scryfall_uri": "https://scryfall.com/card/dsc/298/simic-growth-chamber?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "046f5783-cc7b-416a-8cf6-2bcef9c2cc1a",
+   "name": "Simic Growth Chamber",
+   "face": 0,
+   "face_name": "Simic Growth Chamber",
+   "card_hash": "95ae325fdb794e00db47146ecc1e9566",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "controller": 1,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "return to hand"
+      }
+     ],
+     "text": "When this land enters, return a land you control to its owner's hand.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{G}",
+        "{U}"
+       ],
+       "colors": 18,
+       "text": "add {G}{U}"
+      }
+     ],
+     "text": "{T}: Add {G}{U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

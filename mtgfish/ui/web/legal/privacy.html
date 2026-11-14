@@ -31,6 +31,7 @@ data, including the requests in section 8, contact <a href="mailto:{{CONTACT_EMA
 <tr><td>When you accepted these terms, and which version</td><td>When you create an account</td></tr>
 <tr><td>Saved decks (names, decklists, versions)</td><td>When you save a deck</td></tr>
 <tr><td>Simulation history (the decklists, settings, seed and results of each run)</td><td>When you run a simulation while signed in with a verified account</td></tr>
+<tr><td>Simulations run in your browser: the decks as played (which cards, by card ID, and seat order), the settings and seeds, the versions of the engine and card data used, and every game&rsquo;s result</td><td>Every time a simulation runs in your browser, whether or not you are signed in. If you are signed in, the run is kept in your account. If not, it is stored with nothing linking it to you. We keep it so results can be checked by replaying games, and so faults in the engine can be found.</td></tr>
 <tr><td>Sandbox card verdicts (&ldquo;this card reads wrong&rdquo;)</td><td>When you mark a card in the sandbox while signed in</td></tr>
 <tr><td>Sign-in sessions (a hashed session ID and its expiry)</td><td>While you are signed in</td></tr>
 <tr><td>Your IP address</td><td>Every request reaches our host, which keeps request logs. Our own application uses it only briefly, in memory, to rate-limit sign-in attempts.</td></tr>
@@ -41,7 +42,8 @@ The sign-in token Archidekt returns is kept only in the server&rsquo;s memory fo
 session.</p>
 <p>Without an account, Goldfisher keeps the decks you paste and your settings in your own
 browser&rsquo;s local storage, and your simulation state in the server&rsquo;s memory
-until your session ends.</p>
+until your session ends. When a simulation runs in your browser, the decks it played and
+its results are sent to our server and kept as described above.</p>
 
 <h2>3. Why we use it, and our lawful basis</h2>
 <ul>
@@ -49,6 +51,9 @@ until your session ends.</p>
 history and sign-in (performance of a contract, UK GDPR Art. 6(1)(b)).</li>
 <li><strong>To keep the service secure and working</strong> &mdash; rate limits, preventing
 abuse, investigating faults (our legitimate interests, Art. 6(1)(f)).</li>
+<li><strong>To check simulation results and improve the engine</strong> &mdash; keeping the
+runs played in your browser, replaying a sample to confirm their results, and finding cards
+the engine plays wrongly (our legitimate interests, Art. 6(1)(f)).</li>
 <li><strong>To send you service emails</strong> &mdash; address verification and password
 resets, only when you ask for them (performance of a contract). We send no marketing.</li>
 <li><strong>To meet legal obligations</strong> where they apply (Art. 6(1)(c)).</li>
@@ -67,8 +72,9 @@ analytics, advertising or tracking cookies.</p>
 <tr><td><code>mtgfish_oauth</code></td><td>Checks a Discord sign-in started in your browser</td><td>10 minutes</td></tr>
 </table>
 <p>Local storage on your device holds your pasted decklists, lab settings, theme and
-whether you have dismissed the cookie notice. It never leaves your browser unless you save
-a deck to your account.</p>
+whether you have dismissed the cookie notice. Local storage itself is never sent to us.
+The decks you save to your account, and the decks and results of simulations run in your
+browser, are sent to our server (see section 2).</p>
 
 <h2>5. Who else is involved</h2>
 <ul>
@@ -96,6 +102,8 @@ verification and reset emails.</li>
 or 30 minutes (password reset), and they work once.</li>
 <li>Anonymous simulation sessions: in memory only, gone after a few hours of inactivity or a
 server restart.</li>
+<li>Simulations run in your browser: in your account until you delete the account; if you
+were not signed in, 12 months, then deleted automatically.</li>
 <li>Our host&rsquo;s request logs: according to Render&rsquo;s log retention (days, not
 months).</li>
 </ul>
