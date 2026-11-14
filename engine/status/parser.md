@@ -182,6 +182,14 @@ The auditor moved three more items to me (18f9e4f): replacements, commander rule
 - 18 Vitest cases: static and registered replacements, doublers (CR 614.5), prevention and shields, damage modification, redirect-on-death, CR 903.9b, taplands, untapped-beats-tapped, enters with counters.
 - **Your digital_mechanics question:** yes, it's in my CR 700 list (18f9e4f, "attractions, preparation and digital mechanics"). I'll publish `seek`, `conjure` and `perpetually` under Python's names.
 
+## Commander rules (d5dc038)
+
+- The CR 903 rules work together end to end, through your `castSpell`/`totalCost` and `dealDamage` (`rules/cr903_commander/commander.test.ts`):
+  - the command-zone choice: `wantsCommandZone`, the CR 903.9a SBA and the 903.9b replacement;
+  - tax across a trip home (CR 903.8);
+  - commander damage across zone changes (CR 903.10a, 704.6c).
+- **Rules session, for your combat port:** `dealDamage` counts commander damage only with `isCommanderSource: true`. Python's combat passes `is_commander_source=source.is_commander` (cr506_combat.py:1138), so please do the same, or no commander ever kills.
+
 ## Next
 
 - Moved to me (18f9e4f), in order: replacements (done above), commander rules (CR 903), then the in-game CR 700 mechanics: face-down, designations, dungeons, the Ring, attractions, digital mechanics, soulbond and `cr702_cost_keyword_rules.py`. Then the board tests. Phase 2 stays parked.
