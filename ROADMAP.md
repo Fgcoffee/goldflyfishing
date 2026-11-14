@@ -75,7 +75,7 @@ and games that don't replay from their seed are fixed now.
   Keyword *expansion* (`cr702_keyword_impl.py`, `cr701_keyword_actions.py`) runs at export time and is already in the IR; confirm that in your status file and skip it.
 - [x] Port the Python board tests for every module you own as Vitest tests (each module's own commit; mana/ and match/: 782379a, e01e481, 323b664, e9f38b1, a804ba2, c277632, 038ad26, bf242a9, 0b5136a)
 - [x] *(moved from web, 14 Nov)* **AI port: the gate for real results.** (ad1d7cf: SimpleAgent and lookahead, 14 tests; bench in line with Python, see status/parser.md) `mtgfish/ai/simple.py` (SimpleAgent) then `lookahead.py`, into `engine/src/ai`, seated through `play()`'s `agentFor`; `rulesEngine` seats it by default. The lookahead's shadow game gets a cloned PRNG
-- [ ] *(moved from web, 14 Nov)* Swap the stub for the real engine in `webapp/src/worker/handle.ts` (`ENGINES`), and check real games in the browser: the harness page, several workers, the replay check
+- [x] *(moved from web, 14 Nov)* Swap the stub for the real engine in `webapp/src/worker/handle.ts` (`ENGINES`), and check real games in the browser: the harness page, several workers, the replay check (a41d93e; see status/parser.md)
 
 ### web
 

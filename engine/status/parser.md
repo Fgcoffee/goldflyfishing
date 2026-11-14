@@ -263,9 +263,26 @@ These were the last things your resolve.ts was skipping for me.
   - TS `play()`: aggro won 8/20 (40%), 1 stall (5%). Wins by seat 8/1/6/4. Endings: LIFE 16, COMMANDER_DAMAGE 3, STALL_OUT 1. 48 turns on average; about 15 s per game in vitest.
   - The win and stall rates are in the same ballpark. Twenty games can't tell a 32% rate from 40%.
 
+## The page plays the real engine (a41d93e)
+
+- `DEFAULT_ENGINE` is `"rules"` (`engine/src/sim/engines.ts`, exported from `@goldfly/engine/sim`).
+  - The worker plays `ENGINES[request.engine]`.
+  - The protocol accepts any engine by name.
+  - The client and pool default to `DEFAULT_ENGINE`.
+  - The plumbing tests in `webapp/test/worker.test.ts` pin `"stub"`; a new test plays real fixture cards through the pool.
+- Checked in Chromium on the built page (vite preview, the Python server on a fresh IR export), with 3 workers:
+  - the default deck in all four seats, 40 games: 5.4 s, replay check identical, run stored;
+  - the four bench decks, 40 games: 37 played, 1 stall, aggro 35.1% (13/37), replay check identical, run stored.
+- **Crash, same as Python:** 3 of the 40 bench games crashed with "unreasonable number of hybrid symbols in a cost".
+  - It is an attack cost with one `{W/P}` per attacker, against a Goblin swarm. Python's bench hits it too (1 of 20 games).
+  - The guard is in `find_payment` (mana/), which searches every way to pay hybrid and Phyrexian symbols.
+  - A fix would pay Phyrexian symbols greedily instead of searching. That changes behaviour against Python, so it waits until after the port unless the auditor says otherwise.
+- **Web session, for the harness table:** "Commander cast 0 of N" for opponents is not an engine bug. The observer tracks only the hero's commander, as Python's does (observer.py:139). The column could show "-" for opponents.
+- **Note for anyone running the page locally:** `cache/ir/v1` was a stale IR v1 export. The server reads `ir/v2`; I exported it (`python -m mtgfish.tools.ir_export export`, 38,800 cards, 93 s).
+
 ## Next
 
-- **The webapp `ENGINES` swap** (ROADMAP, moved from web): in progress.
+- The AI port and the webapp swap are both done.
 - After that, the unticked items are:
   - the two bracket items, Phase 2, parked until the port is done;
   - the deferred rules fixes, "once games can be watched".
