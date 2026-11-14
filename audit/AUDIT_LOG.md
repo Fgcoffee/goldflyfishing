@@ -613,5 +613,6 @@ Also checked: PR #28 (deck-optimisation session, not merged by me) leaves parser
 |---|---|---|---|---|
 | F61 | WARN | parser | Python crash in `mana_plan.execute_plan` (IndexError at line 199) when a planned source, here a Treasure, is gone by the time it's activated. The TS port keeps the guard: every source is re-checked and `PlanNoLongerHolds` becomes a CastError. | The user's four-deck run. Game 1 of run 0 (seed 3936583297) does not crash here: 77 turns, winner 2, digest 73b281bb6a971a19. |
 | F62 | WARN | rules | A MOVE_ZONE effect to the library goes to the graveyard instead. `_do_move_zone` reads `effect.zone or Zone.GRAVEYARD`, and the library is Zone 0, which is falsy. Ported as is, marked `// KNOWN: F62` in `resolve.ts`. | Reported by the rules session from the port (status file, 13 Nov). |
+| F63 | **BLOCK** (crash) | parser | An attack cost of one `{W/P}` per attacker (Norn's Annex-style) against a wide board crashes the game: "unreasonable number of hybrid symbols in a cost" (TS `payment.ts:111`; Python `cr106_mana.py:684`). Fixed now in TS, since crashes are in scope during the port; Python stays frozen. | Bench decks: 3 of 40 TS games in the browser, 1 of 20 Python games. |
 
 Also deferred: karoo lands are always sacrificed.
