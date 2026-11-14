@@ -120,8 +120,8 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   REFLEXIVE_TRIGGER (3582b6f); `createDelayedTrigger` is exported from
   resolve.ts. BLOCKS_SOURCE_IF_ABLE is done too (1ed92e2). **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
   `turnFaceDown`, `manifest`, `manifestDread` (cr708); VENTURE is wired to your dungeons.ts; RING_TEMPTS and
-  SACRIFICE_BLOCKERS_AT_END_OF_COMBAT need `tempt` and
-  `sacrificeBlockersAtEndOfCombat` (cr701_ring); OPEN_ATTRACTION and
+  SACRIFICE_BLOCKERS_AT_END_OF_COMBAT to your ring.ts (combat.ts now imports
+  your `isARingBearer`); OPEN_ATTRACTION and
   ROLL_TO_VISIT need the Attractions functions. Until then those are logged
   and skipped. actions.ts has the damage and
   life rules (dealDamage with wither, infect, toxic, commander damage and
@@ -354,8 +354,6 @@ mechanics 18f9e4f.)
 
 ## For the parser session
 
-- combat.ts inlines `isARingBearer` (cr701_ring.is_a_ring_bearer, yours,
-  not yet published). When you publish the Ring module I'll import it.
 - turn.ts's CR 727 restart reads the card catalog off the game by cast
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.

@@ -12,7 +12,7 @@
  */
 
 import type { Ability, Effect } from "../../ir";
-import { CardType, Color, Duration, Phase, Step, Zone } from "../../kernel/enums";
+import { CardType, Color, Duration, Phase, Step } from "../../kernel/enums";
 import { event, EventKind } from "../../kernel/events";
 import {
   agentFor,
@@ -34,6 +34,7 @@ import { hasKeyword, hasType, isCreature, type Characteristics } from "../cr200_
 import { characteristicsOf } from "../cr600_spells_and_abilities/layers";
 import { pendingTrigger, type PendingTrigger } from "../cr600_spells_and_abilities/triggers";
 import { combatDamageToInitiativeHolder, combatDamageToMonarch } from "../cr700_additional_rules/designations";
+import { isARingBearer } from "../cr700_additional_rules/ring";
 import { emit } from "../emit";
 import { ir, num } from "../ir_read";
 import { costText, isEmpty, type ManaCost } from "../mana/cost";
@@ -610,23 +611,6 @@ export function canBlock(game: Game, blocker: GameObject, attacker: GameObject):
   // CR 702.13b
   if (a("Intimidate") && !(hasType(blockerChars, CardType.ARTIFACT) || blockerChars.colors & attackerChars.colors)) return false;
   return true;
-}
-
-/**
- * CR 701.54a/e: whether this is its controller's Ring-bearer; a stale
- * designation is cleared as it is seen. Python cr701_ring.is_a_ring_bearer
- * (the parser's module, not yet published), inlined.
- */
-function isARingBearer(game: Game, obj: GameObject): boolean {
-  if (obj.controller < 0 || obj.controller >= game.players.length) return false;
-  const p = playerOf(game, obj.controller);
-  const bearer = game.objects.get(p.ringBearer);
-  if (bearer === undefined) return false;
-  if (bearer.supersededBy !== NO_OBJECT || bearer.zone !== Zone.BATTLEFIELD || bearer.controller !== p.id) {
-    p.ringBearer = NO_OBJECT;
-    return false;
-  }
-  return bearer.id === obj.id;
 }
 
 /** CR 702.15b: does the defending player control a land of the walked type? */

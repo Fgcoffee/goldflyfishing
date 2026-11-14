@@ -433,3 +433,16 @@ describe("BLOCKS_SOURCE_IF_ABLE (CR 509.1c)", () => {
     expect(combat(board).blocking.get(blocker.id)).toEqual([source.id]);
   });
 });
+
+describe("the Ring's executors (CR 701.54)", () => {
+  it("RING_TEMPTS makes a Ring-bearer, who can't be blocked by greater power", () => {
+    const board = combatBoard();
+    const bears = board.play(BEARS, 0);
+    execute(newResolution(board.game, bears.id, 0), [
+      { $: "Effect", kind: ir("EffectKind.RING_TEMPTS"), players: { $: "PlayerFilter", scope: ir("PlayerScope.YOU") } },
+    ]);
+    expect(player(board.game, 0).ringBearer).toBe(bears.id);
+    expect(canBlock(board.game, board.play(ANGEL, 1), bears)).toBe(false);
+    expect(canBlock(board.game, board.play(BEARS, 1), bears)).toBe(true);
+  });
+});
