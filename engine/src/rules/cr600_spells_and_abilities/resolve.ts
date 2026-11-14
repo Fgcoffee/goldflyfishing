@@ -2347,3 +2347,78 @@ registerExecutor(ir("EffectKind.RESTART_GAME"), (resolution) => {
 registerExecutor(ir("EffectKind.BECOME_PREPARED"), (resolution, effect) => {
   for (const obj of objectsOf(resolution, effect)) becomePrepared(resolution.game, obj);
 });
+
+// -- choosing a quality (CR 614.1b) ---------------------------------------------------------------
+
+/**
+ * Choose a creature type, card name or colour, recorded on the permanent
+ * that asked. A colour the payment planner needed is the one chosen (CR
+ * 605.3b). With no agent: the commonest among what the chooser has.
+ */
+registerExecutor(ir("EffectKind.CHOOSE_QUALITY"), (resolution, effect) => {
+  const game = resolution.game;
+  const obj = game.objects.get(resolution.source);
+  if (obj === undefined) return;
+  const kind = list(effect.keywords)[0] ?? "creature type";
+  const wanted = resolution.manaColor;
+  if (kind === "color" && wanted && singleColors(wanted).length === 1) {
+    obj.chosenColor = wanted;
+    invalidateAllCharacteristics(game);
+    return;
+  }
+  const agent = agentFor(game, resolution.controller) as { chooseQuality?(g: Game, p: PlayerId, kind: string): unknown } | null;
+  if (agent?.chooseQuality !== undefined) {
+    const picked = agent.chooseQuality(game, resolution.controller, kind);
+    if (picked != null) {
+      if (kind === "color") obj.chosenColor = Number(picked);
+      else if (kind === "card name") obj.chosenName = String(picked);
+      else obj.chosenType = String(picked);
+      return;
+    }
+  }
+  if (kind === "color") obj.chosenColor = commonestColour(game, resolution.controller);
+  else if (kind === "card name") obj.chosenName = commonestOpposingName(game, resolution.controller); // CR 201.4 stand-in
+  else obj.chosenType = commonestSubtype(game, resolution.controller);
+  invalidateAllCharacteristics(game);
+});
+
+const byCountThenName = (a: [string, number], b: [string, number]): number => b[1] - a[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+
+/** The name an opponent has most of on the battlefield; ties by name. */
+function commonestOpposingName(game: Game, controller: PlayerId): string {
+  const seen = new Map<string, number>();
+  for (const opponent of game.players.filter((p) => p.id !== controller && !p.hasLost)) {
+    for (const obj of permanents(game, opponent.id)) {
+      const name = characteristicsOf(game, obj).name;
+      if (name) seen.set(name, (seen.get(name) ?? 0) + 1);
+    }
+  }
+  return [...seen].sort(byCountThenName)[0]?.[0] ?? "";
+}
+
+/** The subtype this player has most of, on the battlefield and in hand; ties by name. */
+function commonestSubtype(game: Game, pid: PlayerId): string {
+  const tally = new Map<string, number>();
+  for (const zone of [game.battlefield, player(game, pid).hand]) {
+    for (const id of zone) {
+      const obj = game.objects.get(id);
+      if (obj === undefined || obj.controller !== pid) continue;
+      for (const subtype of characteristicsOf(game, obj).typeLine.subtypes) tally.set(subtype, (tally.get(subtype) ?? 0) + 1);
+    }
+  }
+  return [...tally].sort(byCountThenName)[0]?.[0] ?? "";
+}
+
+/** The colour this player has most of among their permanents; ties to the lowest bit. */
+function commonestColour(game: Game, pid: PlayerId): number {
+  const tally = new Map<number, number>();
+  for (const id of game.battlefield) {
+    const obj = game.objects.get(id);
+    if (obj === undefined || obj.controller !== pid) continue;
+    const colors = characteristicsOf(game, obj).colors as number;
+    for (const bit of [1, 2, 4, 8, 16]) if (colors & bit) tally.set(bit, (tally.get(bit) ?? 0) + 1);
+  }
+  if (tally.size === 0) return 0;
+  const best = Math.max(...tally.values());
+  return Math.min(...[...tally].filter(([, c]) => c === best).map(([b]) => b));
+}

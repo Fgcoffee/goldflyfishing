@@ -64,3 +64,17 @@ describe("the last executors", () => {
     expect(player(board.game, 0).hand).toHaveLength(1);
   });
 });
+
+describe("choosing a quality (CR 614.1b)", () => {
+  it("with no agent, the creature type the chooser has most of; a planned colour wins", () => {
+    const board = new Board();
+    board.play("Grizzly Bears");
+    board.play("Grizzly Bears");
+    board.play("Serra Angel");
+    const source = board.play("Glorious Anthem");
+    execute(newResolution(board.game, source.id, 0), [E("CHOOSE_QUALITY", { keywords: ["creature type"] })]);
+    expect(source.chosenType).toBe("Bear");
+    execute(newResolution(board.game, source.id, 0, { manaColor: 8 }), [E("CHOOSE_QUALITY", { keywords: ["color"] })]);
+    expect(source.chosenColor).toBe(8);
+  });
+});
