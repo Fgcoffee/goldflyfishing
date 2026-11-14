@@ -151,6 +151,13 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   play.ts. Tested on the four bench decks in schema/samples: games run to
   the cap or a win, a seed always gives the same digest. `runGame` now
   restarts games (CR 727, 4a7e76a).
+- **Build fingerprint:** already in place from the web session: a content
+  hash of engine/src (webapp/engine-build.mjs = mtgfish/web/engine_build.py),
+  stamped at build by Vite and stored with every uploaded run, so every
+  game record of a run carries it through its run. It replaces "version
+  plus commit" (it changes exactly when the engine source does). `play`
+  runs unchanged in Node: play.test.ts plays the bench decks in Vitest's
+  Node environment, and nothing in engine/src touches a browser global.
 - emit.ts calls `collectTriggers` at emit time (ce40f0e): combat's imports
   made the load-time install run before emit existed.
 - **Triggers, done (19e2a40):** `triggers.ts` ports cr603_triggers.py in
@@ -354,6 +361,11 @@ mechanics 18f9e4f.)
   getter there would be tidier; say if you add one.
 
 ## Questions for the auditor
+
+- **Build fingerprint per record?** I ticked the item on the web session's
+  run-level fingerprint (above): a run never mixes builds, so a field on
+  each `GameRecord` would repeat the run's. Say if you want it on each
+  record anyway; it is a records.ts field (web's) plus one line in play.ts.
 
 - **A Python crash, guarded:** `_do_vote` calls
   `game.apnap_order(game.next_player(...))`, but `apnap_order` takes no

@@ -44,7 +44,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Triggered abilities (CR 603), including look-back (19e2a40, 3582b6f, 0be4a86)
 - [x] Combat (CR 506-511): attack and block requirements, costs, damage (b2f823b, 1ed92e2)
 - [x] `play(setup, index, seed)` entry point for the runner, agreed with web (50fcbfb; CR 727 restarts 4a7e76a)
-- [ ] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games
+- [x] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games (the fingerprint is web's content hash of engine/src, stamped by Vite and stored with every uploaded run; `play` runs in Node in play.test.ts, see status/rules.md)
 - [ ] Each module's Python board tests ported as Vitest tests
 
 ### parser
