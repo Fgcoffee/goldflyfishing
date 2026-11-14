@@ -99,7 +99,9 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   COPY_PERMANENT, COPY_SPELL, GOAD, COUNTER_SPELL, and continuous effects
   from resolving spells (`registerContinuous`, CR 611.2: settled sets,
   locked amounts, player abilities) as the default for effects.py's
-  CONTINUOUS_KINDS. actions.ts has the damage and
+  CONTINUOUS_KINDS; PLAYER_WINS, PLAYER_LOSES, BECOME_MONARCH, IF_YOU_DONT,
+  PAY_COST, START_ENGINES, ADD_ENERGY, EXTRA_LAND_DROP, EXTRA_TURN,
+  SEARCH_LIBRARY and SHUFFLE. actions.ts has the damage and
   life rules (dealDamage with wither, infect, toxic, commander damage and
   lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
   The rest follow in resolve.py's order. A smoke test plays
@@ -273,4 +275,7 @@ mechanics 18f9e4f.)
 
 ## Questions for the auditor
 
-- None. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)
+- **digital_mechanics.py** (seek, conjure, perpetually, the Arena
+  mechanics): does it count as one of the in-game CR 700 mechanics moved to
+  the parser (18f9e4f)? My SEEK, CONJURE and PERPETUALLY executors call it;
+  until it exists they are logged and skipped. (The MOVE_ZONE-to-library bug is F62, marked in resolve.ts.)

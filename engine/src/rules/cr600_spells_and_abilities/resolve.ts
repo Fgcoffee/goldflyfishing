@@ -11,8 +11,10 @@
  */
 
 import { PlayerScopeValues } from "../../ir";
-import type { Condition, Effect, ObjectFilter, Restriction, TokenSpec, Value } from "../../ir";
-import { Color, Duration, Layout, Supertype, Zone } from "../../kernel/enums";
+import type { Condition, Cost, CostComponent, Effect, ObjectFilter, Restriction, TokenSpec, Value } from "../../ir";
+import { CONSUMING_COSTS, CostKind } from "../cr100_game_concepts/costs";
+import { startEngines } from "../cr100_game_concepts/player";
+import { Color, Duration, Layout, LossReason, Supertype, Zone } from "../../kernel/enums";
 import { randint } from "../../kernel/random";
 import { copyTokenCard, createEmblem, createTokens } from "../cr100_game_concepts/tokens";
 import { registerOverride, Rule } from "../cr100_game_concepts/rule_overrides";
@@ -37,7 +39,10 @@ import {
   gainLife,
   loseLife,
   mill,
+  playerLoses,
+  playerWins,
   recordLink,
+  shuffleLibrary,
   sacrifice,
   tap,
   untap,
@@ -1336,3 +1341,148 @@ export function registerContinuous(resolution: Resolution, effect: Effect): void
   push(lockedAmounts(resolution, resolved));
   invalidateAllCharacteristics(game);
 }
+
+// -- players -------------------------------------------------------------------------------
+
+registerExecutor(ir("EffectKind.PLAYER_WINS"), (resolution, effect) => {
+  for (const pid of playersOf(resolution, effect)) playerWins(resolution.game, pid);
+});
+
+registerExecutor(ir("EffectKind.PLAYER_LOSES"), (resolution, effect) => {
+  for (const pid of playersOf(resolution, effect)) playerLoses(resolution.game, pid, LossReason.EFFECT);
+});
+
+registerExecutor(ir("EffectKind.BECOME_MONARCH"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const pid of playersOf(resolution, effect)) {
+    for (const p of game.players) p.isMonarch = p.id === pid;
+    emit(game, event(EventKind.BECAME_MONARCH, { player: pid }));
+  }
+});
+
+/** "You may X. If you don't, ..." (CR 603.9 inverted): when the preceding option wasn't taken. */
+registerExecutor(ir("EffectKind.IF_YOU_DONT"), (resolution, effect) => {
+  if (resolution.didIt !== null) {
+    if (resolution.didIt) return;
+  } else if (resolution.remembered.length > 0) {
+    return;
+  }
+  execute(resolution, list(effect.children));
+});
+
+const isDefaultZeroValue = (v: Value | undefined): boolean =>
+  v === undefined || (num(v.kind) === 0 && num(v.constant) === 0 && list(v.operands).length === 0);
+
+/** "You may pay {2}": success is remembered, for "if you do" (CR 603.9, 608.2d). */
+registerExecutor(ir("EffectKind.PAY_COST"), (resolution, effect) => {
+  const game = resolution.game;
+  let cost = effect.pay_cost;
+  if (cost == null) return;
+  // CR 702.24a: "pay its upkeep cost for each age counter", as one payment.
+  if (!isDefaultZeroValue(effect.amount)) cost = costTimes(cost, amountOf(resolution, effect));
+  let paid = false;
+  for (const pid of playersOf(resolution, effect)) {
+    if (canPayCost(game, pid, cost) && payCost(game, pid, cost)) {
+      resolution.remembered.push(resolution.source);
+      paid = true;
+    }
+  }
+  resolution.didIt = paid;
+});
+
+/** A cost charged `times` times over: mana summed, other amounts multiplied, paid whole or not at all. */
+function costTimes(cost: Cost, times: number): Cost {
+  if (times === 1) return cost;
+  if (times <= 0) return { $: "Cost", components: [] };
+  const manaSymbols: unknown[] = [];
+  const others: CostComponent[] = [];
+  for (const component of list(cost.components)) {
+    if (num(component.kind) === CostKind.MANA) {
+      for (let i = 0; i < times; i += 1) manaSymbols.push(...list(component.mana?.symbols));
+    } else {
+      let each: Value = component.amount ?? { $: "Value" };
+      if (isDefaultZeroValue(component.amount) && CONSUMING_COSTS.has(num(component.kind))) each = { $: "Value", constant: 1 };
+      others.push({ ...component, amount: { $: "Value", kind: ir("ValueKind.PRODUCT"), constant: times, operands: [each] } });
+    }
+  }
+  if (manaSymbols.length > 0) others.unshift({ $: "CostComponent", kind: CostKind.MANA as never, mana: { $: "ManaCost", symbols: manaSymbols as never } });
+  return { $: "Cost", components: others };
+}
+
+/** CR 702.179a: speed becomes 1 if it was 0. */
+registerExecutor(ir("EffectKind.START_ENGINES"), (resolution, effect) => {
+  for (const pid of playersOf(resolution, effect)) {
+    if (startEngines(player(resolution.game, pid))) emit(resolution.game, event(EventKind.SPEED_INCREASED, { player: pid, amount: 1 }));
+  }
+});
+
+registerExecutor(ir("EffectKind.ADD_ENERGY"), (resolution, effect) => {
+  const amount = amountOf(resolution, effect);
+  for (const pid of playersOf(resolution, effect)) {
+    player(resolution.game, pid).energy += amount;
+    emit(resolution.game, event(EventKind.ENERGY_GAINED, { player: pid, amount }));
+  }
+});
+
+registerExecutor(ir("EffectKind.EXTRA_LAND_DROP"), (resolution, effect) => {
+  const amount = Math.max(1, amountOf(resolution, effect));
+  for (const pid of playersOf(resolution, effect)) player(resolution.game, pid).maxLands += amount;
+});
+
+registerExecutor(ir("EffectKind.EXTRA_TURN"), (resolution, effect) => {
+  for (const pid of playersOf(resolution, effect)) resolution.game.extraTurns.push(pid);
+});
+
+// -- the library (CR 701.23) ---------------------------------------------------------------
+
+/**
+ * CR 701.23: search a library, put what's found where it says (the
+ * library, zone 0, compared against null: "put that card on top" goes on
+ * top after the shuffle), then shuffle.
+ */
+registerExecutor(ir("EffectKind.SEARCH_LIBRARY"), (resolution, effect) => {
+  const game = resolution.game;
+  const spec = effect.targets ?? null;
+  const anyNumber = spec !== null && spec.count == null && flag(spec.up_to);
+  const wanted = Math.max(1, amountOf(resolution, effect));
+  const destination = effect.zone != null ? (num(effect.zone) as Zone) : Zone.HAND;
+  const keywords = list(effect.keywords);
+  for (const pid of playersOf(resolution, effect)) {
+    const p = player(game, pid);
+    let found: GameObject[] = [];
+    for (const id of p.library.slice()) {
+      const obj = game.objects.get(id);
+      if (obj === undefined) continue;
+      if (spec === null || matchHooks().matches(game, obj, spec, { source: resolution.source, controller: pid })) found.push(obj);
+      if (!anyNumber && found.length >= wanted) break;
+    }
+    if (anyNumber && found.length > 0) found = anyNumberOf(game, pid, effect, found);
+    const tapped = keywords.includes("tapped"); // CR 614.1c
+    const onTop: GameObject[] = [];
+    found.forEach((obj, index) => {
+      const where = keywords.includes("other to hand") && index > 0 ? Zone.HAND : destination;
+      if (where === Zone.LIBRARY) {
+        onTop.push(obj);
+        return;
+      }
+      const moved = moveObject(game, obj, where, { toPlayer: pid });
+      if (tapped && where === Zone.BATTLEFIELD && moved.zone === Zone.BATTLEFIELD) moved.tapped = true;
+    });
+    emit(game, event(EventKind.SEARCHED_LIBRARY, { player: pid, amount: found.length }));
+    if (onTop.length > 0) {
+      for (const obj of onTop) p.library.splice(p.library.indexOf(obj.id), 1);
+      shuffleLibrary(game, pid);
+      for (const obj of [...onTop].reverse()) p.library.unshift(obj.id);
+    } else {
+      shuffleLibrary(game, pid);
+    }
+    resolution.remembered = found.map((o) => o.id);
+  }
+});
+
+registerExecutor(ir("EffectKind.SHUFFLE"), (resolution, effect) => {
+  for (const pid of playersOf(resolution, effect)) shuffleLibrary(resolution.game, pid);
+});
+
+// PORT: SEEK, CONJURE and PERPETUALLY call digital_mechanics.py, not ported
+// yet (asked in status/rules.md who owns it); until then they are logged and skipped.
