@@ -23,6 +23,7 @@ import { CONSUMING_COSTS, CostKind } from "../cr100_game_concepts/costs";
 import { startEngines } from "../cr100_game_concepts/player";
 import { Color, Duration, Layout, LossReason, Phase, Step, Supertype, Zone } from "../../kernel/enums";
 import { becomeSolved, classLevel, flip, setClassLevel } from "../cr300_card_types/card_types";
+import { venture } from "../cr300_card_types/dungeons";
 import { action, ActionKind } from "../cr100_game_concepts/priority";
 import { timesPaid, WARPED } from "../cr700_additional_rules/paid_costs";
 import { delayedTrigger, pendingTrigger } from "./triggers";
@@ -968,6 +969,11 @@ registerExecutor(ir("EffectKind.BLOCKS_SOURCE_IF_ABLE"), (resolution, effect) =>
       }),
     );
   }
+});
+
+/** CR 701.49: venture into the dungeon, or into [quality] (701.49d), through dungeons.ts. */
+registerExecutor(ir("EffectKind.VENTURE"), (resolution, effect) => {
+  for (const playerId of playersOf(resolution, effect)) venture(resolution.game, playerId, effect.dungeon_quality ?? "");
 });
 
 registerExecutor(EK.SACRIFICE, (resolution, effect) => {

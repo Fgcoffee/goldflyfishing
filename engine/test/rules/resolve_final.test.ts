@@ -5,6 +5,7 @@ import type { Effect } from "../../src/ir";
 import { Zone } from "../../src/kernel/enums";
 import { createObject, player } from "../../src/kernel/game";
 import { classLevel } from "../../src/rules/cr300_card_types/card_types";
+import { currentDungeon } from "../../src/rules/cr300_card_types/dungeons";
 import { execute, newResolution } from "../../src/rules/cr600_spells_and_abilities/resolve";
 import { ir } from "../../src/rules/ir_read";
 import { Board, CARDS, effect, filter } from "./board";
@@ -76,5 +77,18 @@ describe("choosing a quality (CR 614.1b)", () => {
     expect(source.chosenType).toBe("Bear");
     execute(newResolution(board.game, source.id, 0, { manaColor: 8 }), [E("CHOOSE_QUALITY", { keywords: ["color"] })]);
     expect(source.chosenColor).toBe(8);
+  });
+});
+
+describe("VENTURE (CR 701.49)", () => {
+  it("venturing puts a dungeon in the command zone, through dungeons.ts", () => {
+    const board = new Board();
+    board.game.activePlayer = 0;
+    const source = board.play("Glorious Anthem");
+    execute(newResolution(board.game, source.id, 0), [
+      { $: "Effect", kind: ir("EffectKind.VENTURE"), players: { $: "PlayerFilter", scope: ir("PlayerScope.YOU") } },
+    ]);
+    expect(currentDungeon(board.game, 0)).not.toBeNull();
+    expect(currentDungeon(board.game, 1)).toBeNull();
   });
 });

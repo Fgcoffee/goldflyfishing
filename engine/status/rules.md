@@ -119,7 +119,7 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   EXILE (with the CR 610.3 "until" return), DELAYED_TRIGGER and
   REFLEXIVE_TRIGGER (3582b6f); `createDelayedTrigger` is exported from
   resolve.ts. BLOCKS_SOURCE_IF_ABLE is done too (1ed92e2). **Waiting on you (parser):** TURN_FACE_DOWN and MANIFEST need
-  `turnFaceDown`, `manifest`, `manifestDread` (cr708); VENTURE needs cr309's `venture`; RING_TEMPTS and
+  `turnFaceDown`, `manifest`, `manifestDread` (cr708); VENTURE is wired to your dungeons.ts; RING_TEMPTS and
   SACRIFICE_BLOCKERS_AT_END_OF_COMBAT need `tempt` and
   `sacrificeBlockersAtEndOfCombat` (cr701_ring); OPEN_ATTRACTION and
   ROLL_TO_VISIT need the Attractions functions. Until then those are logged
