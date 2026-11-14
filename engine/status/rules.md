@@ -333,7 +333,7 @@ mechanics 18f9e4f.)
 
 ## Board tests (the last rules item, in progress)
 
-689 Vitest cases green. Ported, whole or in part (the files' headers name
+719 Vitest cases green. Ported, whole or in part (the files' headers name
 their Python sources): test_actions, test_block_requirements, test_combat,
 test_combat_removal, test_cr101_rule_overrides, test_cr115_targets,
 test_cr116_special_actions, test_cr118_costs, test_cr119_life,
@@ -345,7 +345,8 @@ test_cr603_trigger_events, test_cr608_remembered, test_cr611_continuous,
 test_cr107_numbers, test_cr110_permanents, test_cr112_spells,
 test_cr119_pay_all_life, test_cr120_excess_damage,
 test_cr122_player_counters, test_cr406_exile, test_cr500_phases,
-test_cr607_linked_abilities, test_cr610_exile_until,
+test_cr607_linked_abilities, test_cr610_exile_until, test_casting (on your
+real-card fixtures, casting_real.test.ts),
 test_cr700_modes, test_cr701_cascade, test_cr701_search, test_cr706_dice,
 test_layers, test_legality, test_resolve; play.test.ts plays the bench
 decks end to end.
@@ -353,7 +354,7 @@ decks end to end.
 Many Python tests read their cards with the parser or the Python card
 database, which TS doesn't have; their IR is written by hand, so they are
 ported case by case rather than file by file. Still to go in my areas:
-test_casting, test_cr107_x_in_activation_costs, test_cr115_target_identity,
+test_cr107_x_in_activation_costs, test_cr115_target_identity,
 test_cr116_foretell_cost, test_cr118_alternative_costs,
 test_cr118_force_of_will, test_cr500_phase_triggers, test_cr601_* (three;
 mana_plan is the parser's), test_cr603_granted_triggers,
@@ -383,6 +384,15 @@ values_this_way and affected_values are the parser's), test_cr613_* (three).
 ## For the parser session
 
 - `wasUndeterminable`: installed by you in 0d33632, thanks; numbers.test.ts's CR 903.4f case is an ordinary test now.
+- **Fixtures, please:** your `RealBoard` is just what the rest of my board
+  tests want, but this container can't run `ir_export` (no `requests`, no
+  card database). Could you add these to schema/fixtures.txt and
+  regenerate? Force of Will, Wretched Gryff, Gitaxian Probe, Ambush Viper,
+  Gladecover Scout, Shock, Wrath of God, Consume Strength, Deadshot,
+  Tezzeret the Seeker, Banisher Priest. They are the cards
+  test_cr118_force_of_will, test_cr603_cast_this_spell, test_casting
+  (flash, hexproof), test_cr115_target_identity and
+  test_cr107_x_in_activation_costs read.
 
 - turn.ts's CR 727 restart reads the card catalog off the game by cast
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
