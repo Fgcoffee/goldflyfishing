@@ -15,16 +15,17 @@ import type { Condition, Cost, CostComponent, Effect, ObjectFilter, Restriction,
 import { CONSUMING_COSTS, CostKind } from "../cr100_game_concepts/costs";
 import { startEngines } from "../cr100_game_concepts/player";
 import { Color, Duration, Layout, LossReason, Supertype, Zone } from "../../kernel/enums";
-import { randint } from "../../kernel/random";
+import { randint, shuffle } from "../../kernel/random";
+import { enterAttacking } from "../cr500_turn_structure/combat";
 import { copyTokenCard, createEmblem, createTokens } from "../cr100_game_concepts/tokens";
 import { registerOverride, Rule } from "../cr100_game_concepts/rule_overrides";
 import { registerStanding } from "../cr500_turn_structure/restrictions";
 import { event, EventKind, type GameEvent } from "../../kernel/events";
 import { agentFor, invalidateAllCharacteristics, livingPlayers, logRecord, permanents, player, type Game } from "../../kernel/game";
-import { counterCount, isLive, ObjectKind, type GameObject } from "../../kernel/gameobject";
+import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { allocateTimestamp, isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
-import { charsManaValue, hasKeyword, hasSupertype, isCreature } from "../cr200_parts_of_a_card/characteristics";
+import { charsManaValue, hasKeyword, hasSupertype, isCreature, isLand } from "../cr200_parts_of_a_card/characteristics";
 import {
   addCounters,
   addPoison,
@@ -57,7 +58,7 @@ import { flag, ir, irEqual, list, num, str } from "../ir_read";
 import { parseManaSymbol } from "../mana/cost";
 import { addMana, manaKind, manaKindKey, poolSnapshot, type ManaKind, type ManaRestriction } from "../mana/pool";
 import { constantOf, isTargeted, targetsAPlayer, targetsItsPlayer } from "./effect_props";
-import { characteristicsOf, copiableCharacteristics, EFFECT_LAYERS, intrinsicAbilities, layerFor } from "./layers";
+import { characteristicsOf, copiableCharacteristics, EFFECT_LAYERS, intrinsicAbilities, layerFor, printedCharacteristics } from "./layers";
 import { attackers } from "../cr500_turn_structure/combat";
 
 const EK = {
@@ -1486,3 +1487,127 @@ registerExecutor(ir("EffectKind.SHUFFLE"), (resolution, effect) => {
 
 // PORT: SEEK, CONJURE and PERPETUALLY call digital_mechanics.py, not ported
 // yet (asked in status/rules.md who owns it); until then they are logged and skipped.
+
+// -- looking, revealing, putting (CR 701.18, 701.20, 701.44) ------------------------------------
+
+/** CR 701.20b: revealing moves nothing. */
+registerExecutor(ir("EffectKind.REVEAL"), (resolution, effect) => {
+  for (const obj of objectsOf(resolution, effect)) emit(resolution.game, event(EventKind.REVEALED, { objectId: obj.id, player: obj.owner }));
+});
+
+/** What agents may implement to decide which looked-at cards stay on top. */
+interface TopOfLibraryChooser {
+  chooseTopOfLibrary?(game: Game, player: PlayerId, looked: GameObject[], toGraveyard: boolean): readonly GameObject[];
+}
+
+/**
+ * Scry (CR 701.18) and surveil (CR 701.44): look at the top N; the rejects
+ * go to the bottom or the graveyard. With no agent, lands and cards of mana
+ * value 3 or less stay.
+ */
+function lookAtTop(resolution: Resolution, effect: Effect, toGraveyard: boolean): void {
+  const game = resolution.game;
+  const count = Math.max(0, amountOf(resolution, effect));
+  if (!count) return;
+  for (const pid of playersOf(resolution, effect)) {
+    const looked = player(game, pid).library.slice(0, count).filter((id) => game.objects.has(id)).map((id) => game.objects.get(id)!);
+    if (looked.length === 0) continue;
+    const agent = agentFor(game, pid) as TopOfLibraryChooser | null;
+    const keep = agent?.chooseTopOfLibrary !== undefined
+      ? agent.chooseTopOfLibrary(game, pid, looked, toGraveyard)
+      : looked.filter((obj) => {
+          const printed = printedCharacteristics(game, obj);
+          return isLand(printed) || charsManaValue(printed) <= 3;
+        });
+    for (const obj of looked.filter((o) => !keep.includes(o))) {
+      moveObject(game, obj, toGraveyard ? Zone.GRAVEYARD : Zone.LIBRARY, { toPlayer: pid });
+    }
+    emit(game, event(toGraveyard ? EventKind.SURVEILLED : EventKind.SCRIED, { player: pid, amount: count }));
+  }
+}
+registerExecutor(ir("EffectKind.SCRY"), (resolution, effect) => lookAtTop(resolution, effect, false));
+registerExecutor(ir("EffectKind.SURVEIL"), (resolution, effect) => lookAtTop(resolution, effect, true));
+
+/**
+ * Put a card onto the battlefield without casting it: tapped, attacking
+ * (enterAttacking decides, CR 506.3, 508.4), face down (CR 708.3),
+ * transformed (CR 712.14a), under its owner's control (CR 610.3c).
+ */
+registerExecutor(ir("EffectKind.PUT_ONTO_BATTLEFIELD"), (resolution, effect) => {
+  const game = resolution.game;
+  const keywords = list(effect.keywords);
+  const tapped = keywords.includes("tapped");
+  const attacking = keywords.includes("attacking");
+  const paid = resolution.stackObject !== null ? resolution.stackObject.costPaidObjects.slice() : [];
+  for (const obj of objectsOf(resolution, effect)) {
+    if (!isLive(obj)) continue; // CR 400.7: the husk of something already moved
+    const to = flag(effect.under_owners_control) ? obj.owner : resolution.controller;
+    const permanent = moveObject(game, obj, Zone.BATTLEFIELD, {
+      toPlayer: to,
+      ...(keywords.includes("face down") ? { faceDown: "" } : {}),
+      transformed: keywords.includes("transformed"),
+    });
+    permanent.controller = to;
+    if (permanent !== obj) recordLink(game, resolution.source, permanent.id, linkOf(resolution)); // CR 607.2c
+    if (effect.counter_type) putObjectCounters(permanent, effect.counter_type, Math.max(1, amountOf(resolution, effect)));
+    invalidateAllCharacteristics(game);
+    if (!isPermanent(permanent)) continue; // a replacement sent it elsewhere
+    if (tapped) permanent.tapped = true;
+    if (attacking) enterAttacking(game, permanent, { like: paid });
+  }
+});
+
+/**
+ * Put objects on the top or bottom of their owners' libraries, in the order
+ * chosen ("random": shuffled). One already in that library moves within it:
+ * not a zone change (CR 400.7). What was placed leaves the pile.
+ */
+registerExecutor(ir("EffectKind.PUT_ON_LIBRARY"), (resolution, effect) => {
+  const game = resolution.game;
+  const keywords = list(effect.keywords);
+  const onTop = num(effect.amount?.constant) >= 0 && !keywords.includes("bottom");
+  const objects = objectsOf(resolution, effect).slice();
+  revealIfSaid(resolution, effect, objects);
+  if (keywords.includes("random")) shuffle(game.rng, objects);
+  if (onTop) objects.reverse();
+  const placed = new Set<ObjectId>();
+  for (const obj of objects) {
+    placed.add(obj.id);
+    const lib = player(game, obj.owner).library;
+    if (isLive(obj) && obj.zone === Zone.LIBRARY && lib.includes(obj.id)) {
+      lib.splice(lib.indexOf(obj.id), 1);
+      if (onTop) lib.unshift(obj.id);
+      else lib.push(obj.id);
+      continue;
+    }
+    moveObject(game, obj, Zone.LIBRARY, { toPlayer: obj.owner, toTop: onTop });
+  }
+  if (placed.size > 0 && resolution.pile.length > 0) resolution.pile = resolution.pile.filter((id) => !placed.has(id));
+});
+
+/** "Look at / reveal the top N": no card moves; they become the pile and "them". */
+registerExecutor(ir("EffectKind.LOOK_AT_TOP"), (resolution, effect) => {
+  const game = resolution.game;
+  const count = Math.max(0, amountOf(resolution, effect));
+  const pile: ObjectId[] = [];
+  for (const pid of playersOf(resolution, effect)) pile.push(...player(game, pid).library.slice(0, count));
+  resolution.pile = pile;
+  resolution.remembered = pile.slice();
+  if (list(effect.keywords).includes("reveal")) {
+    for (const id of pile) emit(game, event(EventKind.REVEALED, { objectId: id, player: game.objects.get(id)!.owner }));
+  }
+});
+
+/** CR 701.40: reveal the top card; a land to hand, otherwise a +1/+1 counter. */
+registerExecutor(ir("EffectKind.EXPLORE"), (resolution, effect) => {
+  const game = resolution.game;
+  for (const obj of objectsOf(resolution, effect)) {
+    const p = player(game, obj.controller);
+    if (p.library.length === 0) continue;
+    const top = game.objects.get(p.library[0]!)!;
+    emit(game, event(EventKind.REVEALED, { objectId: top.id, player: p.id }));
+    if (isLand(printedCharacteristics(game, top))) moveObject(game, top, Zone.HAND, { toPlayer: p.id });
+    else addCounters(game, obj, "+1/+1", 1, { source: resolution.source });
+    emit(game, event(EventKind.EXPLORED, { objectId: obj.id, player: p.id }));
+  }
+});

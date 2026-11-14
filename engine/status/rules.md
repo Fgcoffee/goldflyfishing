@@ -101,7 +101,8 @@ All on `claude/modest-bohr-yqrqm7`, `npm test` and `npm run typecheck` green.
   locked amounts, player abilities) as the default for effects.py's
   CONTINUOUS_KINDS; PLAYER_WINS, PLAYER_LOSES, BECOME_MONARCH, IF_YOU_DONT,
   PAY_COST, START_ENGINES, ADD_ENERGY, EXTRA_LAND_DROP, EXTRA_TURN,
-  SEARCH_LIBRARY and SHUFFLE. actions.ts has the damage and
+  SEARCH_LIBRARY, SHUFFLE, REVEAL, SCRY, SURVEIL, PUT_ONTO_BATTLEFIELD,
+  PUT_ON_LIBRARY, LOOK_AT_TOP and EXPLORE. actions.ts has the damage and
   life rules (dealDamage with wither, infect, toxic, commander damage and
   lifelink; gainLife, loseLife, replacedLifeLoss, addPoison, excessDamage).
   The rest follow in resolve.py's order. A smoke test plays
