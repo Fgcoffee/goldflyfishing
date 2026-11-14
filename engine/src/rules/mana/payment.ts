@@ -83,6 +83,61 @@ function assignSpecific(symbols: ManaSymbol[], kinds: ManaKind[], counts: number
   return recurse(0);
 }
 
+/** Choice symbols (Phyrexian, {2/W}) searched exhaustively: 2^12 branches at most. */
+export const MAX_SEARCHED_CHOICES = 12;
+
+interface SettledChoices {
+  /** Indexes into the specific symbols that take their alternative (life, or the generic half). */
+  readonly alternative: Set<number>;
+  readonly life: number;
+  readonly extraGeneric: number;
+}
+
+/**
+ * The greedy half of F63: each choice symbol past the searched ones is paid
+ * with mana if a unit that symbol accepts is still spare (reserved in order,
+ * so two of them don't count the same unit), else with its alternative: 2
+ * life for a Phyrexian symbol, 2 generic for {2/W}. A payment that uses
+ * this fallback never pays life down to 0, a policy rather than a rule
+ * (CR 119.4 would allow it), so a long cost never kills its payer. Null when
+ * even that can't be paid.
+ */
+function settleExtraChoices(
+  specific: readonly ManaSymbol[],
+  extras: readonly number[],
+  kinds: readonly ManaKind[],
+  counts: readonly number[],
+  lifeAvailable: number,
+): SettledChoices | null {
+  const alternative = new Set<number>();
+  let life = 0;
+  let extraGeneric = 0;
+  if (extras.length === 0) return { alternative, life, extraGeneric };
+  const spare = counts.slice();
+  // Mana the other colored symbols need comes first.
+  specific.forEach((sym, idx) => {
+    if (isChoice(sym)) return;
+    const ki = kinds.findIndex((k, i) => (spare[i] as number) > 0 && accepts(sym, k));
+    if (ki >= 0) spare[ki] = (spare[ki] as number) - 1;
+  });
+  for (const idx of extras) {
+    const sym = specific[idx] as ManaSymbol;
+    const ki = kinds.findIndex((k, i) => (spare[i] as number) > 0 && accepts(sym, k));
+    if (ki >= 0) {
+      spare[ki] = (spare[ki] as number) - 1;
+      continue;
+    }
+    alternative.add(idx);
+    if (sym.kind === ManaSymbolKind.PHYREXIAN) {
+      life += lifeCost(sym);
+      if (life >= lifeAvailable) return null;
+    } else {
+      extraGeneric += sym.generic;
+    }
+  }
+  return { alternative, life, extraGeneric };
+}
+
 /**
  * A legal payment for `cost` from `pool`, or null. Prefers mana over life
  * for Phyrexian symbols and the colored half of {2/W}; choosing *well* is
@@ -108,15 +163,24 @@ export function findPayment(pool: ManaPool, cost: ManaCost, options: PaymentOpti
   specific.forEach((s, i) => {
     if (isChoice(s)) choicePoints.push(i);
   });
-  if (choicePoints.length > 12) throw new RangeError(`unreasonable number of hybrid symbols in a cost`);
+  // KNOWN: F63 (Python raises here). Past MAX_SEARCHED_CHOICES the search
+  // would be 2^n branches, so the choice symbols beyond it are settled
+  // greedily first and the search covers the rest; a cost at or under the
+  // limit is searched exactly as before.
+  const extras = choicePoints.splice(MAX_SEARCHED_CHOICES);
+  const fixed = settleExtraChoices(specific, extras, kinds, counts, lifeAvailable);
+  if (fixed === null) return null;
+  // With the fallback in play a payment that pays life keeps 1; otherwise CR 119.4 alone.
+  const tooMuchLife = (life: number) => life > lifeAvailable || (extras.length > 0 && life > 0 && life >= lifeAvailable);
 
   for (const branch of branches(choicePoints.length)) {
     const spend = kinds.map(() => 0);
-    let life = 0;
-    let extraGeneric = 0;
+    let life = fixed.life;
+    let extraGeneric = fixed.extraGeneric;
     const mustMatch: ManaSymbol[] = [];
 
     specific.forEach((sym, idx) => {
+      if (fixed.alternative.has(idx)) return;
       const point = choicePoints.indexOf(idx);
       // Branch bit 1 takes the alternative: life for Phyrexian, the generic half of {2/W}.
       if (point >= 0 && branch[point]) {
@@ -127,7 +191,7 @@ export function findPayment(pool: ManaPool, cost: ManaCost, options: PaymentOpti
       mustMatch.push(sym);
     });
 
-    if (life > lifeAvailable) continue;
+    if (tooMuchLife(life)) continue;
     if (!assignSpecific(mustMatch, kinds, counts, spend)) continue;
 
     let need = genericNeeded + extraGeneric;

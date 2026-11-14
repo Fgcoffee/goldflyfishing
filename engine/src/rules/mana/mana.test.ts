@@ -205,6 +205,27 @@ describe("payment (CR 601.2h)", () => {
     expect(paymentTotalMana(p!)).toBe(0);
   });
 
+  it("F63: a cost past the searched choices pays its extra Phyrexian symbols greedily, mana first", () => {
+    const fifteen = cost("{W/P}".repeat(15));
+    const p = findPayment(pool({ W: 2 }), fifteen, { lifeAvailable: 40 });
+    expect(p).not.toBeNull();
+    expect(paymentTotalMana(p!)).toBe(2);
+    expect(p!.life).toBe(26);
+  });
+
+  it("F63: the greedy part never pays the last life, so an unpayable long cost is just unpayable", () => {
+    const fifteen = cost("{W/P}".repeat(15));
+    expect(canPay(pool({ W: 2 }), fifteen, { lifeAvailable: 26 })).toBe(false);
+    expect(canPay(pool({ W: 2 }), fifteen, { lifeAvailable: 27 })).toBe(true);
+    expect(canPay(newManaPool(), cost("{W/P}".repeat(40)), { lifeAvailable: 40 })).toBe(false);
+  });
+
+  it("F63: extra {2/W} symbols take two generic when no white is spare", () => {
+    const p = findPayment(pool({ G: 30 }), cost("{2/W}".repeat(14)));
+    expect(paymentTotalMana(p!)).toBe(28);
+    expect(canPay(pool({ G: 27 }), cost("{2/W}".repeat(14)))).toBe(false);
+  });
+
   it("monocolored hybrid prefers the cheaper colored half", () => {
     expect(paymentTotalMana(findPayment(pool({ R: 1, G: 3 }), cost("{2/R}"))!)).toBe(1);
   });
