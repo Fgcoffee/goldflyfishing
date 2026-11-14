@@ -73,7 +73,7 @@ and games that don't replay from their seed are fixed now.
   - soulbond and `cr702_cost_keyword_rules.py`.
 
   Keyword *expansion* (`cr702_keyword_impl.py`, `cr701_keyword_actions.py`) runs at export time and is already in the IR; confirm that in your status file and skip it.
-- [ ] Port the Python board tests for every module you own as Vitest tests
+- [x] Port the Python board tests for every module you own as Vitest tests (each module's own commit; mana/ and match/: 782379a, e01e481, 323b664, e9f38b1, a804ba2, c277632, 038ad26, bf242a9, 0b5136a)
 
 ### web
 - [x] Vite app and Web Worker harness (4bedd13)

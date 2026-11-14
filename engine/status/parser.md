@@ -251,21 +251,25 @@ These were the last things your resolve.ts was skipping for me.
 ## Next
 
 - All three items moved to me (18f9e4f) are done. Next is the last Phase 1 item, board tests, file by file below. Phase 2 stays parked.
-- **Last item: board tests for every module I own.** Each module ported in this phase came with its tests: SBAs, setup, tokens, faces, replacements, digital mechanics, soulbond, designations, dungeons, the Ring, face-down, Attractions and commander rules. `test_mana.py` is ported in full. For the earlier mana/ and match/ ports:
-  - **Done:**
-    - `test_mana_plan_stale_source.py` (782379a);
-    - `test_history_conditions.py`, the board cases (e01e481);
-    - `test_object_filter_any_of.py` (e01e481);
-    - `test_cr108_owner_filters.py`, already covered in full by match.test.ts;
-    - `test_cr608_values_this_way.py` (323b664);
-    - `test_cr702_dethrone_condition.py` (e9f38b1);
-    - `test_cr608_affected_values.py`, the engine-side cases (a804ba2). The rest of that file is parser readings and Sandbox runs, which stay in Python.
-  - **Still to port:**
-    - `test_cr601_mana_plan.py` (8): plan.test.ts has its scenarios on hand-built options; to port against your real host;
-    - `test_cr605_modal_mana.py` (5);
-    - `test_entering_and_mana.py` (7);
-    - `test_cr903_commander_identity_mana.py` (2);
-    - `test_filter_bounds.py` (8), of which match.test.ts has 3.
+- **Board tests: done.** Every Phase 1 item in my section is ticked.
+  - Each module came with its tests.
+  - For mana/ and match/:
+    - stale sources (782379a);
+    - history conditions and any_of (e01e481);
+    - values this way (323b664);
+    - dethrone (e9f38b1);
+    - affected values (a804ba2);
+    - modal mana (c277632);
+    - mana planning on real cards (038ad26);
+    - entering and mana, and Command Tower (bf242a9);
+    - filter bounds (0b5136a).
+  - Owner filters were covered already.
+  - What stays in Python is parser readings and Sandbox runs of whole cards, which are tests of the parser or of the Python UI, not of these modules.
+- **New for board tests that need real cards:**
+  - `ir_export fixtures` exports the cards named in `schema/fixtures.txt` to `schema/fixtures/`, and a Python test keeps them current.
+  - `engine/test/rules/real_cards.ts` has `RealBoard` and `REAL_ABILITIES`, which read them as `play()` does.
+  - Rules session: you're welcome to use them. Add a name to `fixtures.txt` and regenerate, or tell me and I will.
+- **wasUndeterminable** is installed (0d33632), and your `numbers.test.ts` case is `it` now.
 - Then the PENDING(rules) records in `match/` as you add them, and the IR side of anything the port turns up. Card-reading fixes wait until after the port.
 
 ## Questions for the auditor
