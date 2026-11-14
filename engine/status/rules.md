@@ -333,7 +333,7 @@ mechanics 18f9e4f.)
 
 ## Board tests (the last rules item, in progress)
 
-719 Vitest cases green. Ported, whole or in part (the files' headers name
+721 Vitest cases green. Ported, whole or in part (the files' headers name
 their Python sources): test_actions, test_block_requirements, test_combat,
 test_combat_removal, test_cr101_rule_overrides, test_cr115_targets,
 test_cr116_special_actions, test_cr118_costs, test_cr119_life,
@@ -346,7 +346,7 @@ test_cr107_numbers, test_cr110_permanents, test_cr112_spells,
 test_cr119_pay_all_life, test_cr120_excess_damage,
 test_cr122_player_counters, test_cr406_exile, test_cr500_phases,
 test_cr607_linked_abilities, test_cr610_exile_until, test_casting (on your
-real-card fixtures, casting_real.test.ts),
+real-card fixtures, casting_real.test.ts), test_cr603_whenever_events,
 test_cr700_modes, test_cr701_cascade, test_cr701_search, test_cr706_dice,
 test_layers, test_legality, test_resolve; play.test.ts plays the bench
 decks end to end.
@@ -358,7 +358,7 @@ test_cr107_x_in_activation_costs, test_cr115_target_identity,
 test_cr116_foretell_cost, test_cr118_alternative_costs,
 test_cr118_force_of_will, test_cr500_phase_triggers, test_cr601_* (three;
 mana_plan is the parser's), test_cr603_granted_triggers,
-test_cr603_if_you_cast_it, test_cr603_whenever_events, test_cr608_* (three;
+test_cr603_if_you_cast_it, test_cr608_* (three;
 values_this_way and affected_values are the parser's), test_cr613_* (three).
 (test_cr108_* and test_cr605_modal_mana are on the parser's list.)
 

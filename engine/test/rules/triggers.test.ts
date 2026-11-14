@@ -22,6 +22,9 @@ import { resolveTop } from "../../src/rules/cr600_spells_and_abilities/stack";
 import { emit } from "../../src/rules/emit";
 import { ir } from "../../src/rules/ir_read";
 import { amountOfColor } from "../../src/rules/mana/pool";
+import { installMatch } from "../../src/rules/match";
+import { checkStateBasedActions } from "../../src/rules/cr700_additional_rules/sba";
+import type { GameObject } from "../../src/kernel/gameobject";
 import { ALL_CREATURES, Board, CARDS, effect, filter } from "./board";
 import { putCastTriggers } from "../../src/rules/cr700_additional_rules/paid_costs";
 
@@ -348,5 +351,57 @@ describe("triggers that name what happened (CR 113.6k, 510.2)", () => {
     // Noncombat damage is a different event.
     emit(board.game, event(EventKind.DAMAGE_DEALT, { player: 1, source: me.id, sourceController: 0, amount: 2 }));
     expect(fired(board, text)).toBe(0);
+  });
+});
+
+// From tests/rules/test_cr603_whenever_events.py, on the real matcher and
+// conditions: an intervening if adds a check and takes nothing away (CR 603.4).
+describe("an intervening if keeps the rest of the trigger (CR 603.2c, 603.4)", () => {
+  const yourTurn = { $: "Condition" as const, kind: ir("ConditionKind.IS_YOUR_TURN") };
+  const otherCreatures = filter({ types_all: ir("CardType.CREATURE"), other_than_source: true });
+  function realBoard(): Board {
+    const board = new Board();
+    installMatch();
+    return board;
+  }
+  function kill(board: Board, ...objs: GameObject[]): void {
+    for (const o of objs) o.damage = 100;
+    board.refresh();
+    checkStateBasedActions(board.game);
+  }
+
+  it("'one or more other creatures die, if it's your turn' is one trigger for a wipe", () => {
+    const board = realBoard();
+    board.game.activePlayer = 0;
+    const text = "one or more other creatures die, if it's your turn";
+    watch(board, triggered(text, [EventKind.DIES], { subject: otherCreatures, batched: true, intervening_if: yourTurn }), "Glorious Anthem");
+    const a = board.play("Serra Angel", 1);
+    const b = board.play("Serra Angel", 1);
+    board.game.pendingTriggers.length = 0;
+    kill(board, a, b);
+    expect(fired(board, text)).toBe(1);
+  });
+
+  it("an if after a disjunction is asked of the whole trigger", () => {
+    const board = realBoard();
+    const text = "another creature dies or a creature card leaves your graveyard, if it's your turn";
+    const dies: TriggerCondition = { $: "TriggerCondition", event_kinds: { $set: [EventKind.DIES] }, subject: otherCreatures };
+    const leaves: TriggerCondition = {
+      $: "TriggerCondition",
+      event_kinds: { $set: [EventKind.ZONE_CHANGE] },
+      from_zones: { $set: [Zone.GRAVEYARD] },
+      subject: filter({ types_all: ir("CardType.CREATURE"), zones: { $set: [Zone.GRAVEYARD] }, controller: ir("ControllerRelation.YOU") }),
+    };
+    watch(board, triggered(text, [], { alternatives: [dies, leaves], intervening_if: yourTurn }), "Glorious Anthem");
+    board.game.activePlayer = 1;
+    const a = board.play("Serra Angel", 1);
+    board.game.pendingTriggers.length = 0;
+    kill(board, a);
+    expect(fired(board, text)).toBe(0);
+    board.game.activePlayer = 0;
+    const b = board.play("Serra Angel", 1);
+    board.game.pendingTriggers.length = 0;
+    kill(board, b);
+    expect(fired(board, text)).toBe(1);
   });
 });
