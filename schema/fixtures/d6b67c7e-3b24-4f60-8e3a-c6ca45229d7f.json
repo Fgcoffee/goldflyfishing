@@ -1,0 +1,188 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d6b67c7e-3b24-4f60-8e3a-c6ca45229d7f",
+ "name": "Wort, the Raidmother",
+ "card_hash": "254cd1fae6277e8fc301ae032419f3ff",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d6b67c7e-3b24-4f60-8e3a-c6ca45229d7f",
+  "name": "Wort, the Raidmother",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Wort, the Raidmother",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 5,
+       "colors": 24,
+       "text": "{R/G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 5,
+       "colors": 24,
+       "text": "{R/G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Shaman"
+     ]
+    },
+    "oracle_text": "When Wort enters, create two 1/1 red and green Goblin Warrior creature tokens.\nEach red or green instant or sorcery spell you cast has conspire. (As you cast the spell, you may tap two untapped creatures you control that share a color with it. When you do, copy it and you may choose new targets for the copy.)",
+    "power": "3",
+    "toughness": "3",
+    "colors": 24
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 24,
+  "commander_legal": true,
+  "edhrec_rank": 12994,
+  "scryfall_uri": "https://scryfall.com/card/c20/234/wort-the-raidmother?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d6b67c7e-3b24-4f60-8e3a-c6ca45229d7f",
+   "name": "Wort, the Raidmother",
+   "face": 0,
+   "face_name": "Wort, the Raidmother",
+   "card_hash": "254cd1fae6277e8fc301ae032419f3ff",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Warrior",
+        "subtypes": [
+         "Warrior"
+        ],
+        "colors": 24,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "When this enters, create two 1/1 red and green Goblin Warrior creature tokens.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 192,
+        "colors_any": 24,
+        "zones": {
+         "$set": [
+          4
+         ]
+        },
+        "controller": 1,
+        "is_ability": false
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "conspire",
+         "functions_in": {
+          "$set": [
+           1,
+           4
+          ]
+         },
+         "keyword": "conspire",
+         "additional_cost": {
+          "$": "AdditionalCost",
+          "cost": {
+           "$": "Cost",
+           "components": [
+            {
+             "$": "CostComponent",
+             "kind": 3,
+             "amount": {
+              "$": "Value",
+              "constant": 2
+             },
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": 4,
+              "shares_color_with_source": true,
+              "controller": 1
+             },
+             "text": "tap two untapped creatures you control that each share a color with it"
+            }
+           ]
+          },
+          "optional": true,
+          "keyword": "conspire",
+          "text": "conspire"
+         }
+        }
+       ],
+       "text": "gains conspire"
+      }
+     ],
+     "text": "Each red or green instant or sorcery spell you cast has conspire."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

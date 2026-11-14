@@ -1,0 +1,102 @@
+{
+ "ir_version": 2,
+ "oracle_id": "39e21a5a-b278-478a-854c-17695c0f6246",
+ "name": "Wicked Pact",
+ "card_hash": "6cd98fdc4845fc38d7155bd7920bd122",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "39e21a5a-b278-478a-854c-17695c0f6246",
+  "name": "Wicked Pact",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Wicked Pact",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Destroy two target nonblack creatures. You lose 5 life.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 26443,
+  "scryfall_uri": "https://scryfall.com/card/me4/102/wicked-pact?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "39e21a5a-b278-478a-854c-17695c0f6246",
+   "name": "Wicked Pact",
+   "face": 0,
+   "face_name": "Wicked Pact",
+   "card_hash": "6cd98fdc4845fc38d7155bd7920bd122",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "colors_none": 4,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 5
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Destroy two target nonblack creatures. You lose 5 life."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

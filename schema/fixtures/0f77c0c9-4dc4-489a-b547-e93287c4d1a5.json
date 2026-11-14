@@ -1,0 +1,189 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0f77c0c9-4dc4-489a-b547-e93287c4d1a5",
+ "name": "Eldritch Evolution",
+ "card_hash": "caa05698704e1d2a26a86a5efee957f6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0f77c0c9-4dc4-489a-b547-e93287c4d1a5",
+  "name": "Eldritch Evolution",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Eldritch Evolution",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nSearch your library for a creature card with mana value X or less, where X is 2 plus the sacrificed creature's mana value. Put that card onto the battlefield, then shuffle. Exile Eldritch Evolution.",
+    "colors": 16
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 751,
+  "scryfall_uri": "https://scryfall.com/card/inr/195/eldritch-evolution?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0f77c0c9-4dc4-489a-b547-e93287c4d1a5",
+   "name": "Eldritch Evolution",
+   "face": 0,
+   "face_name": "Eldritch Evolution",
+   "card_hash": "caa05698704e1d2a26a86a5efee957f6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, sacrifice a creature.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 10,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "sacrifice"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "zones": {
+         "$set": []
+        },
+        "mana_value": {
+         "$": "NumericConstraint",
+         "comparison": 3,
+         "value": {
+          "$": "Value",
+          "kind": 11,
+          "operands": [
+           {
+            "$": "Value",
+            "constant": 2
+           },
+           {
+            "$": "Value",
+            "kind": 30,
+            "operands": [
+             {
+              "$": "Value",
+              "kind": 5
+             }
+            ]
+           }
+          ]
+         }
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      },
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "zone": 2,
+       "text": "put onto the battlefield"
+      },
+      {
+       "$": "Effect",
+       "kind": 24,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "text": "shuffle"
+      },
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "text": "exile"
+      }
+     ],
+     "text": "Search your library for a creature card with mana value X or less, where X is 2 plus the sacrificed creature's mana value. Put that card onto the battlefield, then shuffle. Exile this."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

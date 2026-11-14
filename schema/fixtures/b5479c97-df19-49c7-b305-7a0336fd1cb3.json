@@ -1,0 +1,224 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b5479c97-df19-49c7-b305-7a0336fd1cb3",
+ "name": "Sublime Archangel",
+ "card_hash": "524a712557c52f3c5c9b8ff74d450dbd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b5479c97-df19-49c7-b305-7a0336fd1cb3",
+  "name": "Sublime Archangel",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sublime Archangel",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Angel"
+     ]
+    },
+    "oracle_text": "Flying\nExalted (Whenever a creature you control attacks alone, that creature gets +1/+1 until end of turn.)\nOther creatures you control have exalted. (If a creature has multiple instances of exalted, each triggers separately.)",
+    "power": "4",
+    "toughness": "3",
+    "colors": 1,
+    "keywords": [
+     "Flying",
+     "Exalted"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 8447,
+  "scryfall_uri": "https://scryfall.com/card/uma/38/sublime-archangel?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b5479c97-df19-49c7-b305-7a0336fd1cb3",
+   "name": "Sublime Archangel",
+   "face": 0,
+   "face_name": "Sublime Archangel",
+   "card_hash": "524a712557c52f3c5c9b8ff74d450dbd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "attacking": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": {
+        "$int": 1
+       }
+      }
+     ],
+     "text": "Exalted",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "controller": 1
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": 2,
+       "filter": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "attacking": true
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": 0,
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "if it is attacking alone"
+      },
+      "text": "whenever a creature you control attacks alone"
+     },
+     "keyword": "Exalted"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "other_than_source": true,
+        "controller": 1
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 2,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 140,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "attacking": true
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "amount2": {
+            "$": "Value",
+            "constant": 1
+           },
+           "duration": {
+            "$int": 1
+           }
+          }
+         ],
+         "text": "exalted",
+         "trigger": {
+          "$": "TriggerCondition",
+          "event_kinds": {
+           "$set": [
+            101
+           ]
+          },
+          "subject": {
+           "$": "ObjectFilter",
+           "types_all": 4,
+           "controller": 1
+          },
+          "intervening_if": {
+           "$": "Condition",
+           "kind": 2,
+           "filter": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "attacking": true
+           },
+           "constraint": {
+            "$": "NumericConstraint",
+            "comparison": 0,
+            "value": {
+             "$": "Value",
+             "constant": 1
+            }
+           },
+           "text": "if it is attacking alone"
+          },
+          "text": "whenever a creature you control attacks alone"
+         },
+         "keyword": "exalted"
+        }
+       ],
+       "text": "gains exalted"
+      }
+     ],
+     "text": "Other creatures you control have exalted."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

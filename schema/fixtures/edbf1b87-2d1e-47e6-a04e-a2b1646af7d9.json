@@ -1,0 +1,148 @@
+{
+ "ir_version": 2,
+ "oracle_id": "edbf1b87-2d1e-47e6-a04e-a2b1646af7d9",
+ "name": "Abnormal Endurance",
+ "card_hash": "ff965c2fd244d53a04632cc8c05b5492",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "edbf1b87-2d1e-47e6-a04e-a2b1646af7d9",
+  "name": "Abnormal Endurance",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Abnormal Endurance",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Until end of turn, target creature gets +2/+0 and gains \"When this creature dies, return it to the battlefield tapped under its owner's control.\"",
+    "colors": 4
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 9219,
+  "scryfall_uri": "https://scryfall.com/card/m19/85/abnormal-endurance?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "edbf1b87-2d1e-47e6-a04e-a2b1646af7d9",
+   "name": "Abnormal Endurance",
+   "face": 0,
+   "face_name": "Abnormal Endurance",
+   "card_hash": "ff965c2fd244d53a04632cc8c05b5492",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "duration": 1,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "duration": 1,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 140,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 2
+           },
+           "is_targeted": true,
+           "duration": 1,
+           "text": "gets +2/+0"
+          },
+          {
+           "$": "Effect",
+           "kind": 143,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "is_targeted": true,
+           "same_target": true,
+           "duration": 1,
+           "granted_abilities": [
+            {
+             "$": "Ability",
+             "kind": 2,
+             "effects": [
+              {
+               "$": "Effect",
+               "kind": 33,
+               "targets": {
+                "$": "ObjectFilter",
+                "remembered": true
+               },
+               "zone": 2,
+               "keywords": [
+                "tapped"
+               ],
+               "text": "return"
+              }
+             ],
+             "text": "When this creature dies , return it to the battlefield tapped under its owner's control .",
+             "trigger": {
+              "$": "TriggerCondition",
+              "event_kinds": {
+               "$set": [
+                3
+               ]
+              },
+              "subject": {
+               "$": "ObjectFilter",
+               "source_only": true
+              },
+              "uses_last_known_information": true,
+              "text": "when this dies"
+             }
+            }
+           ],
+           "text": "and has When this creature dies , return it to the battlefield tapped under its owner's control ."
+          }
+         ],
+         "text": "gets P/T and gains abilities"
+        }
+       ],
+       "text": "for a duration"
+      }
+     ],
+     "text": "Until end of turn, target creature gets +2/+0 and gains \"When this creature dies, return it to the battlefield tapped under its owner's control.\""
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

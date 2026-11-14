@@ -1,0 +1,146 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b817bc56-9b4d-4c50-bafa-3c652b99578f",
+ "name": "Ulamog, the Infinite Gyre",
+ "card_hash": "9c18838cacbbc57261ff077d656ef4e1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b817bc56-9b4d-4c50-bafa-3c652b99578f",
+  "name": "Ulamog, the Infinite Gyre",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ulamog, the Infinite Gyre",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 11,
+       "text": "{11}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Eldrazi"
+     ]
+    },
+    "oracle_text": "When you cast this spell, destroy target permanent.\nIndestructible\nAnnihilator 4 (Whenever this creature attacks, defending player sacrifices four permanents of their choice.)\nWhen Ulamog is put into a graveyard from anywhere, its owner shuffles their graveyard into their library.",
+    "power": "10",
+    "toughness": "10",
+    "keywords": [
+     "Indestructible",
+     "Annihilator"
+    ]
+   }
+  ],
+  "mana_value": 11,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1387,
+  "scryfall_uri": "https://scryfall.com/card/2x2/3/ulamog-the-infinite-gyre?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b817bc56-9b4d-4c50-bafa-3c652b99578f",
+   "name": "Ulamog, the Infinite Gyre",
+   "face": 0,
+   "face_name": "Ulamog, the Infinite Gyre",
+   "card_hash": "9c18838cacbbc57261ff077d656ef4e1",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter"
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "When you cast this spell, destroy target permanent.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Indestructible",
+     "keyword": "Indestructible"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Annihilator 4"
+      }
+     ],
+     "text": "Annihilator 4",
+     "keyword": "Annihilator"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "When this is put into a graveyard from anywhere, its owner shuffles their graveyard into their library."
+      }
+     ],
+     "text": "When this is put into a graveyard from anywhere, its owner shuffles their graveyard into their library.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this is put into a graveyard from anywhere, its owner shuffles their graveyard into their library.",
+     "reason": "not fully consumed",
+     "consumed": 14,
+     "remaining": [
+      "graveyard",
+      "into",
+      "their",
+      "library",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

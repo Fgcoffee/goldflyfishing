@@ -1,0 +1,152 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8ec03b88-8d3a-4a32-8b7c-7da59b0c03d0",
+ "name": "Colossus Hammer",
+ "card_hash": "33dbbf9a4c201895c37e859e07b81323",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8ec03b88-8d3a-4a32-8b7c-7da59b0c03d0",
+  "name": "Colossus Hammer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Colossus Hammer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature gets +10/+10 and loses flying.\nEquip {8} ({8}: Attach to target creature you control. Equip only as a sorcery.)",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 822,
+  "scryfall_uri": "https://scryfall.com/card/afc/202/colossus-hammer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8ec03b88-8d3a-4a32-8b7c-7da59b0c03d0",
+   "name": "Colossus Hammer",
+   "face": 0,
+   "face_name": "Colossus Hammer",
+   "card_hash": "33dbbf9a4c201895c37e859e07b81323",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 140,
+         "targets": {
+          "$": "ObjectFilter",
+          "has_attached": {
+           "$": "ObjectFilter",
+           "source_only": true
+          }
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 10
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 10
+         },
+         "duration": 0,
+         "text": "gets +10/+10"
+        },
+        {
+         "$": "Effect",
+         "kind": 144,
+         "targets": {
+          "$": "ObjectFilter",
+          "has_attached": {
+           "$": "ObjectFilter",
+           "source_only": true
+          }
+         },
+         "duration": 0,
+         "keywords": [
+          "flying"
+         ],
+         "text": "and loses flying"
+        }
+       ],
+       "text": "gets P/T and gains abilities"
+      }
+     ],
+     "text": "Equipped creature gets +10/+10 and loses flying."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {8}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 8,
+           "text": "{8}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
