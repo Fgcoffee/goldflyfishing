@@ -4,7 +4,7 @@
 // with the parser; there is no TS parser, so the IR is written by hand.
 import { describe, expect, it } from "vitest";
 import type { Ability, Condition, Effect, TriggerCondition } from "../../src/ir";
-import { Color, Zone } from "../../src/kernel/enums";
+import { Color, Duration, Zone } from "../../src/kernel/enums";
 import { event, EventKind } from "../../src/kernel/events";
 import { player } from "../../src/kernel/game";
 import { installMatchHooks } from "../../src/kernel/hooks";
@@ -17,6 +17,8 @@ import {
   putTriggersOnStack,
   type PendingTrigger,
 } from "../../src/rules/cr600_spells_and_abilities/triggers";
+import { execute, newResolution } from "../../src/rules/cr600_spells_and_abilities/resolve";
+import { resolveTop } from "../../src/rules/cr600_spells_and_abilities/stack";
 import { emit } from "../../src/rules/emit";
 import { ir } from "../../src/rules/ir_read";
 import { amountOfColor } from "../../src/rules/mana/pool";
@@ -226,5 +228,61 @@ describe("putting triggers on the stack (CR 603.3)", () => {
     expect(board.game.stack).toHaveLength(0);
     expect(amountOfColor(player(board.game, 0).manaPool, Color.GREEN)).toBe(1);
     expect(land.zone).toBe(Zone.BATTLEFIELD);
+  });
+});
+
+describe("executors that make triggers (CR 603.7, 603.9, 610.3)", () => {
+  it("exile until this leaves: the card comes back when the exiler leaves (CR 610.3)", () => {
+    const board = new Board();
+    board.game.activePlayer = 0;
+    const bears = board.play("Grizzly Bears", 1);
+    const priest = board.play("Serra Angel");
+    const r = newResolution(board.game, priest.id, 0, { targets: [[bears.id]] });
+    execute(r, [E("EXILE", { targets: ALL_CREATURES, is_targeted: true, duration: Duration.WHILE_SOURCE_PERSISTS as never })]);
+    const exiled = board.game.objects.get(bears.supersededBy)!;
+    expect(exiled.zone).toBe(Zone.EXILE);
+    expect(board.game.delayedTriggers).toHaveLength(1);
+    destroy(board.game, priest);
+    expect(putTriggersOnStack(board.game)).toBe(1);
+    resolveTop(board.game);
+    const back = board.game.objects.get(exiled.supersededBy)!;
+    expect(back.zone).toBe(Zone.BATTLEFIELD);
+    expect(back.controller).toBe(1);
+  });
+
+  it("an 'until' exile whose source is already gone exiles nothing (CR 610.3a)", () => {
+    const board = new Board();
+    const bears = board.play("Grizzly Bears", 1);
+    const priest = board.play("Serra Angel");
+    board.remove(priest);
+    execute(newResolution(board.game, priest.id, 0, { targets: [[bears.id]] }), [
+      E("EXILE", { targets: ALL_CREATURES, is_targeted: true, duration: Duration.WHILE_SOURCE_PERSISTS as never }),
+    ]);
+    expect(bears.zone).toBe(Zone.BATTLEFIELD);
+    expect(board.game.delayedTriggers).toHaveLength(0);
+  });
+
+  it("a delayed trigger remembers what 'it' has become (CR 603.7c)", () => {
+    const board = new Board();
+    board.game.activePlayer = 0;
+    const bears = board.play("Grizzly Bears");
+    const anthem = board.play("Glorious Anthem");
+    const r = newResolution(board.game, anthem.id, 0, { targets: [[bears.id]] });
+    const later: TriggerCondition = { $: "TriggerCondition", event_kinds: { $set: [EventKind.END_STEP] } };
+    execute(r, [E("EXILE", { targets: ALL_CREATURES, is_targeted: true }), E("DELAYED_TRIGGER", { trigger: later, children: [E("NOTHING")] })]);
+    const [made] = board.game.delayedTriggers as { remembered: number[] }[];
+    expect(made!.remembered).toEqual([bears.supersededBy]);
+  });
+
+  it("'when you do' triggers only if it was done (CR 603.9)", () => {
+    const board = new Board();
+    const anthem = board.play("Glorious Anthem");
+    const reflexive = E("REFLEXIVE_TRIGGER", { children: [E("NOTHING")], text: "when you do" });
+    const declined = newResolution(board.game, anthem.id, 0);
+    declined.didIt = false;
+    execute(declined, [reflexive]);
+    expect(board.game.pendingTriggers).toHaveLength(0);
+    execute(newResolution(board.game, anthem.id, 0), [reflexive]);
+    expect(fired(board, "when you do")).toBe(1);
   });
 });

@@ -11,7 +11,7 @@
  */
 
 import { PlayerScopeValues } from "../../ir";
-import type { Condition, Cost, CostComponent, Effect, ObjectFilter, PlayerFilter, Restriction, TokenSpec, Value } from "../../ir";
+import type { Ability, Condition, Cost, CostComponent, Effect, ObjectFilter, PlayerFilter, Restriction, TokenSpec, TriggerCondition, Value } from "../../ir";
 import {
   becomeChosenCharacteristics,
   newReplacementEffect,
@@ -24,7 +24,8 @@ import { startEngines } from "../cr100_game_concepts/player";
 import { Color, Duration, Layout, LossReason, Phase, Step, Supertype, Zone } from "../../kernel/enums";
 import { becomeSolved, classLevel, flip, setClassLevel } from "../cr300_card_types/card_types";
 import { action, ActionKind } from "../cr100_game_concepts/priority";
-import { timesPaid } from "../cr700_additional_rules/paid_costs";
+import { timesPaid, WARPED } from "../cr700_additional_rules/paid_costs";
+import { delayedTrigger, pendingTrigger } from "./triggers";
 import { CastError } from "./cast_error";
 import { castSpell, playLand } from "./casting";
 import { targetedNodes } from "./targeting";
@@ -68,6 +69,7 @@ import {
   dealDamage,
   destroy,
   discard,
+  exile,
   draw,
   gainLife,
   loseLife,
@@ -816,6 +818,131 @@ registerExecutor(ir("EffectKind.DESTROY"), (resolution, effect) => {
   for (const obj of objectsOf(resolution, effect)) {
     destroy(resolution.game, obj, { source: resolution.source, regenerate: !resolution.unregenerable });
   }
+});
+
+/**
+ * Exile, and for an "until" exile arrange the return (CR 610.3). Python
+ * `_do_exile`.
+ */
+registerExecutor(ir("EffectKind.EXILE"), (resolution, effect) => {
+  const game = resolution.game;
+  const untilSourceLeaves = num(effect.duration) === Duration.WHILE_SOURCE_PERSISTS;
+  // CR 610.3a, 610.3b: the named event already happened - never exiled.
+  if (untilSourceLeaves && !sourceIsOnTheBattlefield(resolution)) return;
+  const returning: ObjectId[] = [];
+  const keywords = list(effect.keywords);
+  // CR 406.3: "exile it face down".
+  const faceDown = keywords.includes("face down");
+  for (const obj of objectsOf(resolution, effect)) {
+    const exiled = exile(game, obj, { source: resolution.source, linkId: linkOf(resolution), faceDown });
+    if (untilSourceLeaves) returning.push(exiled.id);
+    if (keywords.includes(WARPED)) {
+      // CR 702.185a: its owner may cast it once this turn has ended.
+      exiled.playableFromHereBy = exiled.owner;
+      exiled.playableFace = exiled.faceIndex;
+      exiled.playableFromTurn = game.turn + 1;
+    }
+  }
+  if (returning.length > 0) returnWhenTheSourceLeaves(resolution, returning);
+});
+
+function sourceIsOnTheBattlefield(resolution: Resolution): boolean {
+  const source = resolution.game.objects.get(resolution.source);
+  return source !== undefined && isPermanent(source);
+}
+
+/**
+ * The second one-shot effect of an "until" exile (CR 610.3). DIVERGENCE (as
+ * Python): set up as a delayed triggered ability (CR 603.7), so the return
+ * uses the stack; what returns, when and to whom is right.
+ */
+function returnWhenTheSourceLeaves(resolution: Resolution, exiled: readonly ObjectId[]): void {
+  const allZones = Object.values(Zone).filter((z) => typeof z === "number") as number[];
+  createDelayedTrigger(
+    resolution,
+    {
+      $: "TriggerCondition",
+      event_kinds: { $set: [EventKind.LEAVES_BATTLEFIELD] },
+      // Matched on last known information (CR 603.6e).
+      subject: { $: "ObjectFilter", specific: [resolution.source], zones: { $set: [] } },
+      functions_in: { $set: allZones },
+      uses_last_known_information: true,
+      text: "when the exiling permanent leaves the battlefield",
+    },
+    [
+      {
+        $: "Effect",
+        kind: ir("EffectKind.PUT_ONTO_BATTLEFIELD"),
+        targets: { $: "ObjectFilter", specific: exiled.slice(), zones: { $set: [Zone.EXILE] } },
+        // CR 610.3c: under its owner's control.
+        under_owners_control: true,
+        text: "return the exiled card to the battlefield",
+      },
+    ],
+  );
+}
+
+/** What each remembered object has become within this resolution (CR 400.7). */
+function currentIncarnations(resolution: Resolution): ObjectId[] {
+  const game = resolution.game;
+  const out: ObjectId[] = [];
+  for (const id of resolution.remembered) {
+    let obj = game.objects.get(id);
+    while (obj !== undefined && obj.supersededBy) obj = game.objects.get(obj.supersededBy);
+    if (obj !== undefined) out.push(obj.id);
+  }
+  return out;
+}
+
+/**
+ * CR 603.7: set up an ability that fires later. CR 610.2: creating it is all
+ * the one-shot effect does. CR 603.7c: it remembers what this resolution
+ * was talking about, as those objects are now.
+ */
+export function createDelayedTrigger(
+  resolution: Resolution,
+  trigger: TriggerCondition,
+  effects: readonly Effect[],
+  options: { repeating?: boolean } = {},
+): void {
+  resolution.game.delayedTriggers.push(
+    delayedTrigger(trigger, effects, resolution.controller, resolution.source, {
+      repeating: options.repeating ?? false,
+      remembered: currentIncarnations(resolution),
+    }),
+  );
+}
+
+/** CR 603.7: "at the beginning of the next end step, sacrifice it". */
+registerExecutor(ir("EffectKind.DELAYED_TRIGGER"), (resolution, effect) => {
+  if (effect.trigger == null) return;
+  createDelayedTrigger(resolution, effect.trigger, list(effect.children), { repeating: flag(effect.repeats) });
+});
+
+/**
+ * CR 603.9: a reflexive triggered ability - "when you do". It triggers
+ * because the preceding action happened, inside this resolution, carrying
+ * what was acted on (CR 603.12) on its event.
+ */
+registerExecutor(ir("EffectKind.REFLEXIVE_TRIGGER"), (resolution, effect) => {
+  if (resolution.didIt === false) return;
+  const condition = effect.condition;
+  const always = condition == null || num(condition.kind) === ir("ConditionKind.ALWAYS");
+  if (resolution.remembered.length === 0 && !always) return;
+  const ability: Ability = {
+    $: "Ability",
+    kind: ir("AbilityKind.TRIGGERED"),
+    effects: list(effect.children).slice(),
+    text: effect.text || "when you do",
+  };
+  resolution.game.pendingTriggers.push(
+    pendingTrigger(
+      resolution.source,
+      ability,
+      event(EventKind.ABILITY_TRIGGERED, { objectId: resolution.source, data: resolution.remembered.slice() }),
+      resolution.controller,
+    ),
+  );
 });
 
 registerExecutor(EK.SACRIFICE, (resolution, effect) => {
