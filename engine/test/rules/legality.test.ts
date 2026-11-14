@@ -1,7 +1,8 @@
 // Ported from tests/rules/test_legality.py, test_cr101_rule_overrides.py and
 // test_cr116_special_actions.py and test_cr119_pay_all_life.py: what a player with priority is offered.
 import { describe, expect, it } from "vitest";
-import { CardType, Phase, Step, Zone } from "../../src/kernel/enums";
+import { CardType, Color, Phase, Step, Zone } from "../../src/kernel/enums";
+import { addMana, manaKind, poolTotal } from "../../src/rules/cr100_game_concepts/mana_pool";
 import { createObject, player } from "../../src/kernel/game";
 import { ActionKind, perform, type Action } from "../../src/rules/cr100_game_concepts/priority";
 import { registerOverride, Rule } from "../../src/rules/cr100_game_concepts/rule_overrides";
@@ -80,6 +81,33 @@ describe("special actions (CR 116)", () => {
     const exiled = board.game.objects.get(angel.supersededBy)!;
     expect(exiled.zone).toBe(Zone.EXILE);
     expect(exiled.counters.get("time")).toBe(1);
+  });
+});
+
+// From tests/rules/test_cr116_foretell_cost.py: foretelling costs {2} (CR 702.143a).
+describe("foretell (CR 116.2h, 702.143a)", () => {
+  function setup(mana: number) {
+    const board = new Board();
+    board.script("Serra Angel", { $: "Ability", kind: ir("AbilityKind.STATIC"), keyword: "Foretell", text: "Foretell" });
+    const card = createObject(board.game, CARDS["Serra Angel"]!, 0, Zone.HAND);
+    mainPhase(board);
+    addMana(player(board.game, 0).manaPool, manaKind(Color.BLUE), mana);
+    const foretell = kinds(legalActions(board.game, 0), ActionKind.SPECIAL).filter((a) => a.abilityIndex === SpecialKind.FORETELL);
+    return { board, card, foretell };
+  }
+
+  it("foretelling spends two mana and exiles the card face down", () => {
+    const { board, card, foretell } = setup(3);
+    expect(foretell).toHaveLength(1);
+    expect(perform(board.game, 0, foretell[0]!)).toBe(true);
+    expect(poolTotal(player(board.game, 0).manaPool)).toBe(1);
+    const exiled = board.game.objects.get(card.supersededBy)!;
+    expect(exiled.zone).toBe(Zone.EXILE);
+    expect(exiled.faceDown).toBe(true);
+  });
+
+  it("isn't offered without the mana", () => {
+    expect(setup(1).foretell).toHaveLength(0);
   });
 });
 

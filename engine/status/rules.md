@@ -337,7 +337,7 @@ mechanics 18f9e4f.)
 
 ## Board tests (the last rules item, in progress)
 
-735 Vitest cases green. Ported, whole or in part (the files' headers name
+737 Vitest cases green. Ported, whole or in part (the files' headers name
 their Python sources): test_actions, test_block_requirements, test_combat,
 test_combat_removal, test_cr101_rule_overrides, test_cr115_targets,
 test_cr116_special_actions, test_cr118_costs, test_cr119_life,
@@ -360,14 +360,16 @@ decks end to end.
 
 Many Python tests read their cards with the parser or the Python card
 database, which TS doesn't have; their IR is written by hand, so they are
-ported case by case rather than file by file. Still to go in my areas:
-test_cr107_x_in_activation_costs, test_cr115_target_identity,
-test_cr116_foretell_cost, test_cr118_alternative_costs,
-test_cr118_force_of_will, test_cr601_* (three;
-mana_plan is the parser's), test_cr603_granted_triggers,
-test_cr608_pay_if_you_do and
-test_cr608_each_opponents_cards (whole-card runs: fixtures),
-test_cr613_keyword_removal (whole cards: fixtures).
+ported case by case rather than file by file. Also ported:
+test_cr116_foretell_cost. **Everything left in my areas reads whole real
+cards** (Sandbox runs, or Python's keyword expansion), so it waits on the
+fixtures asked for below: test_cr107_x_in_activation_costs,
+test_cr115_target_identity, test_cr118_alternative_costs,
+test_cr118_force_of_will, test_cr601_additional_cost_record,
+test_cr601_granted_cast_abilities, test_cr601_target_counts,
+test_cr603_granted_triggers, test_cr608_pay_if_you_do,
+test_cr608_each_opponents_cards, test_cr613_keyword_removal. Meanwhile I
+start on the auditor's next items (step 6 above).
 (test_cr108_* and test_cr605_modal_mana are on the parser's list.)
 
 ## For the web session: the real engine is ready to swap in
@@ -399,7 +401,12 @@ test_cr613_keyword_removal (whole cards: fixtures).
   Gladecover Scout, Shock, Wrath of God, Consume Strength, Deadshot,
   Tezzeret the Seeker, Banisher Priest; and for the cr608 Sandbox runs,
   Mentor, Nim Deathmantle, Rest in Peace; Colossus Hammer and a Sword of
-  X and Y for test_cr613_keyword_removal. They are the cards
+  X and Y for test_cr613_keyword_removal; Abnormal Endurance, Sublime
+  Archangel, Mikaeus the Unhallowed (or another undying/persist granter),
+  Ornithopter, Fling, Life's Legacy, Momentous Fall, Worthy Cause, Call for
+  Blood, Eldritch Evolution, Wicked Pact, Ulamog the Infinite Gyre, a
+  conspire granter, and a free-with-a-commander spell (Deflecting Swat).
+  They are the cards
   test_cr118_force_of_will, test_cr603_cast_this_spell, test_casting
   (flash, hexproof), test_cr115_target_identity and
   test_cr107_x_in_activation_costs read.
