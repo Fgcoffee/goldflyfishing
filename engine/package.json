@@ -7,9 +7,11 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:replay": "esbuild src/cli/replay.ts --bundle --platform=node --format=cjs --target=node18 --outfile=dist/replay.cjs"
   },
   "devDependencies": {
+    "esbuild": "^0.21.5",
     "typescript": "5.6.3",
     "vitest": "2.1.8"
   }
