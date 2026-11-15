@@ -1,0 +1,66 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a35c2e20-eb90-4132-b65f-be1fcb569819",
+ "name": "Watchwolf",
+ "card_hash": "da35540c0686dc64ff3f1b2869677c2b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a35c2e20-eb90-4132-b65f-be1fcb569819",
+  "name": "Watchwolf",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Watchwolf",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Wolf"
+     ]
+    },
+    "oracle_text": "",
+    "power": "3",
+    "toughness": "3",
+    "colors": 17
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 17,
+  "commander_legal": true,
+  "edhrec_rank": 12989,
+  "scryfall_uri": "https://scryfall.com/card/a25/220/watchwolf?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a35c2e20-eb90-4132-b65f-be1fcb569819",
+   "name": "Watchwolf",
+   "face": 0,
+   "face_name": "Watchwolf",
+   "card_hash": "da35540c0686dc64ff3f1b2869677c2b",
+   "fully_read": true,
+   "abilities": [],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

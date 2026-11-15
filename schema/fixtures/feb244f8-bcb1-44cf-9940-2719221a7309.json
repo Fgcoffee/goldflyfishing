@@ -1,0 +1,97 @@
+{
+ "ir_version": 2,
+ "oracle_id": "feb244f8-bcb1-44cf-9940-2719221a7309",
+ "name": "Vampire Nighthawk",
+ "card_hash": "8f4763ffa28c79c45a252be0881c88dd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "feb244f8-bcb1-44cf-9940-2719221a7309",
+  "name": "Vampire Nighthawk",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vampire Nighthawk",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Vampire",
+      "Shaman"
+     ]
+    },
+    "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+    "power": "2",
+    "toughness": "3",
+    "colors": 4,
+    "keywords": [
+     "Deathtouch",
+     "Flying",
+     "Lifelink"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 1743,
+  "scryfall_uri": "https://scryfall.com/card/fdn/757/vampire-nighthawk?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "feb244f8-bcb1-44cf-9940-2719221a7309",
+   "name": "Vampire Nighthawk",
+   "face": 0,
+   "face_name": "Vampire Nighthawk",
+   "card_hash": "8f4763ffa28c79c45a252be0881c88dd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Deathtouch",
+     "keyword": "Deathtouch"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Lifelink",
+     "keyword": "Lifelink"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

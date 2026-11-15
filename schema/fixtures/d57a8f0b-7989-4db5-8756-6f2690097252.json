@@ -1,0 +1,105 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
+ "name": "Damnation",
+ "card_hash": "3d35e27b14fcef5e54cdf8b42c10dbe8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
+  "name": "Damnation",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Damnation",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Destroy all creatures. They can't be regenerated.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 386,
+  "scryfall_uri": "https://scryfall.com/card/2x2/73/damnation?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d57a8f0b-7989-4db5-8756-6f2690097252",
+   "name": "Damnation",
+   "face": 0,
+   "face_name": "Damnation",
+   "card_hash": "3d35e27b14fcef5e54cdf8b42c10dbe8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 64,
+         "subject": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Destroy all creatures. They can't be regenerated."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,67 @@
+{
+ "ir_version": 2,
+ "oracle_id": "50608184-90d3-43d2-a221-deb186c78323",
+ "name": "Goblin Piker",
+ "card_hash": "91a92e94730283f056aa4e34f7f48a68",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "50608184-90d3-43d2-a221-deb186c78323",
+  "name": "Goblin Piker",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goblin Piker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Goblin",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "",
+    "power": "2",
+    "toughness": "1",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 25844,
+  "scryfall_uri": "https://scryfall.com/card/m12/141/goblin-piker?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "50608184-90d3-43d2-a221-deb186c78323",
+   "name": "Goblin Piker",
+   "face": 0,
+   "face_name": "Goblin Piker",
+   "card_hash": "91a92e94730283f056aa4e34f7f48a68",
+   "fully_read": true,
+   "abilities": [],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

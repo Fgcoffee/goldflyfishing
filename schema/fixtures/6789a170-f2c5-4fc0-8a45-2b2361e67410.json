@@ -1,0 +1,149 @@
+{
+ "ir_version": 2,
+ "oracle_id": "6789a170-f2c5-4fc0-8a45-2b2361e67410",
+ "name": "Chord of Calling",
+ "card_hash": "7c1bbbbc7d699c7cedeb8d020bb6b451",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6789a170-f2c5-4fc0-8a45-2b2361e67410",
+  "name": "Chord of Calling",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Chord of Calling",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nSearch your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.",
+    "colors": 16,
+    "keywords": [
+     "Convoke"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 521,
+  "scryfall_uri": "https://scryfall.com/card/rvr/134/chord-of-calling?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "6789a170-f2c5-4fc0-8a45-2b2361e67410",
+   "name": "Chord of Calling",
+   "face": 0,
+   "face_name": "Chord of Calling",
+   "card_hash": "7c1bbbbc7d699c7cedeb8d020bb6b451",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 151,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "keywords": [
+        "Convoke"
+       ],
+       "text": "Convoke: tap to help pay"
+      }
+     ],
+     "text": "Convoke",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Convoke",
+     "quality": {
+      "$": "ObjectFilter",
+      "types_all": 4,
+      "controller": 1
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "zones": {
+         "$set": []
+        },
+        "mana_value": {
+         "$": "NumericConstraint",
+         "comparison": 3,
+         "value": {
+          "$": "Value",
+          "kind": 1
+         }
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 2,
+       "text": "search library"
+      }
+     ],
+     "text": "Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

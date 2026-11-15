@@ -1,0 +1,125 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2249001c-08d5-4c0a-86f8-d97519a39f37",
+ "name": "Stoke the Flames",
+ "card_hash": "1a7c0c1d534df0a7a4fd86e6cf40148d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2249001c-08d5-4c0a-86f8-d97519a39f37",
+  "name": "Stoke the Flames",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Stoke the Flames",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nStoke the Flames deals 4 damage to any target.",
+    "colors": 8,
+    "keywords": [
+     "Convoke"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 10317,
+  "scryfall_uri": "https://scryfall.com/card/mom/166/stoke-the-flames?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2249001c-08d5-4c0a-86f8-d97519a39f37",
+   "name": "Stoke the Flames",
+   "face": 0,
+   "face_name": "Stoke the Flames",
+   "card_hash": "1a7c0c1d534df0a7a4fd86e6cf40148d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 151,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "keywords": [
+        "Convoke"
+       ],
+       "text": "Convoke: tap to help pay"
+      }
+     ],
+     "text": "Convoke",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Convoke",
+     "quality": {
+      "$": "ObjectFilter",
+      "types_all": 4,
+      "controller": 1
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 38,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "is_targeted": true,
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "this deals 4 damage to any target."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

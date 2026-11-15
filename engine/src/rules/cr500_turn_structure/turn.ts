@@ -251,7 +251,7 @@ function emptyManaPools(game: Game, step: Step | null = null): void {
 }
 
 /** CR 703.1, 703.3: what a step does as it begins, before priority. */
-function turnBasedActions(game: Game, step: Step, options: TurnOptions): void {
+export function turnBasedActions(game: Game, step: Step, options: TurnOptions): void {
   if (step === Step.UNTAP) {
     untapStep(game);
   } else if (step === Step.MAIN && game.phase === Phase.PRECOMBAT_MAIN) {

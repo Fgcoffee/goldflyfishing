@@ -1,0 +1,171 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3f347ebf-e0d2-4ae0-ad84-df7a460404e0",
+ "name": "Coral Atoll",
+ "card_hash": "bf3d17ca9829a153aca13976376b8cd1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3f347ebf-e0d2-4ae0-ad84-df7a460404e0",
+  "name": "Coral Atoll",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Coral Atoll",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped.\nWhen this land enters, sacrifice it unless you return an untapped Island you control to its owner's hand.\n{T}: Add {C}{U}.",
+    "produced_mana": [
+     "C",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 5805,
+  "scryfall_uri": "https://scryfall.com/card/cmr/480/coral-atoll?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3f347ebf-e0d2-4ae0-ad84-df7a460404e0",
+   "name": "Coral Atoll",
+   "face": 0,
+   "face_name": "Coral Atoll",
+   "card_hash": "bf3d17ca9829a153aca13976376b8cd1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 6,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "pay_cost": {
+        "$": "Cost",
+        "components": [
+         {
+          "$": "CostComponent",
+          "kind": 15,
+          "amount": {
+           "$": "Value",
+           "constant": 1
+          },
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_all": [
+            "Island"
+           ],
+           "controller": 1,
+           "tapped": false,
+           "count": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "return to hand"
+         }
+        ]
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 31,
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "sacrifice"
+        }
+       ],
+       "text": "unless you pays return 1 Island you control untapped to its owner's hand"
+      }
+     ],
+     "text": "When this land enters, sacrifice it unless you return an untapped Island you control to its owner's hand.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{C}",
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {C}{U}"
+      }
+     ],
+     "text": "{T}: Add {C}{U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

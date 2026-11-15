@@ -1,0 +1,116 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f22c3624-6bd5-4761-b8ad-ac301ad9351c",
+ "name": "Curse of the Pierced Heart",
+ "card_hash": "65bc660f148d38dda0db4f347c9fc59a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f22c3624-6bd5-4761-b8ad-ac301ad9351c",
+  "name": "Curse of the Pierced Heart",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Curse of the Pierced Heart",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8,
+     "subtypes": [
+      "Aura",
+      "Curse"
+     ]
+    },
+    "oracle_text": "Enchant player\nAt the beginning of enchanted player's upkeep, this Aura deals 1 damage to that player or a planeswalker that player controls.",
+    "colors": 8,
+    "keywords": [
+     "Enchant"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 12845,
+  "scryfall_uri": "https://scryfall.com/card/isd/138/curse-of-the-pierced-heart?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f22c3624-6bd5-4761-b8ad-ac301ad9351c",
+   "name": "Curse of the Pierced Heart",
+   "face": 0,
+   "face_name": "Curse of the Pierced Heart",
+   "card_hash": "65bc660f148d38dda0db4f347c9fc59a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Enchant player",
+     "functions_in": {
+      "$set": [
+       2,
+       4
+      ]
+     },
+     "keyword": "Enchant",
+     "quality": {
+      "$": "PlayerFilter",
+      "scope": 2
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "At the beginning of enchanted player's upkeep, this Aura deals 1 damage to that player or a planeswalker that player controls."
+      }
+     ],
+     "text": "At the beginning of enchanted player's upkeep, this Aura deals 1 damage to that player or a planeswalker that player controls.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of enchanted player's upkeep, this Aura deals 1 damage to that player or a planeswalker that player controls.",
+     "reason": "not fully consumed",
+     "consumed": 17,
+     "remaining": [
+      "a",
+      "planeswalker",
+      "that",
+      "player",
+      "controls",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

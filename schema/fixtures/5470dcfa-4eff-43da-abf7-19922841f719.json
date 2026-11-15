@@ -1,0 +1,178 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5470dcfa-4eff-43da-abf7-19922841f719",
+ "name": "Kitchen Finks",
+ "card_hash": "622b7e2a5b6fd9cfce1c86d2d5e9cb30",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5470dcfa-4eff-43da-abf7-19922841f719",
+  "name": "Kitchen Finks",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Kitchen Finks",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 5,
+       "colors": 17,
+       "text": "{G/W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 5,
+       "colors": 17,
+       "text": "{G/W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Ouphe"
+     ]
+    },
+    "oracle_text": "When this creature enters, you gain 2 life.\nPersist (When this creature dies, if it had no -1/-1 counters on it, return it to the battlefield under its owner's control with a -1/-1 counter on it.)",
+    "power": "3",
+    "toughness": "2",
+    "colors": 17,
+    "keywords": [
+     "Persist"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 17,
+  "commander_legal": true,
+  "edhrec_rank": 14625,
+  "scryfall_uri": "https://scryfall.com/card/uma/216/kitchen-finks?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5470dcfa-4eff-43da-abf7-19922841f719",
+   "name": "Kitchen Finks",
+   "face": 0,
+   "face_name": "Kitchen Finks",
+   "card_hash": "622b7e2a5b6fd9cfce1c86d2d5e9cb30",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "When this creature enters, you gain 2 life.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "has_counter": "-1/-1"
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 0,
+         "value": {
+          "$": "Value"
+         }
+        },
+        "text": "if it had no -1/-1 counter on it"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 33,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "counter_type": "-1/-1",
+         "text": "return it with a -1/-1 counter on it"
+        }
+       ]
+      }
+     ],
+     "text": "Persist",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        3
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true,
+       "zones": {
+        "$set": []
+       }
+      },
+      "functions_in": {
+       "$set": [
+        2,
+        3
+       ]
+      },
+      "uses_last_known_information": true,
+      "text": "when this dies (Persist)"
+     },
+     "functions_in": {
+      "$set": [
+       2,
+       3
+      ]
+     },
+     "keyword": "Persist"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

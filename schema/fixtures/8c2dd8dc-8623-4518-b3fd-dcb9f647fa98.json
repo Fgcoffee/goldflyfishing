@@ -1,0 +1,148 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8c2dd8dc-8623-4518-b3fd-dcb9f647fa98",
+ "name": "Sly Instigator",
+ "card_hash": "a1ed4481a0eff2c74afe4bc4033ac1c3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8c2dd8dc-8623-4518-b3fd-dcb9f647fa98",
+  "name": "Sly Instigator",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sly Instigator",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "{U}, {T}: Until your next turn, target creature an opponent controls can't be blocked. Goad that creature. (Until your next turn, that creature attacks each combat if able and attacks a player other than you if able.)",
+    "power": "2",
+    "toughness": "4",
+    "colors": 2,
+    "keywords": [
+     "Goad"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 10801,
+  "scryfall_uri": "https://scryfall.com/card/clb/736/sly-instigator?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8c2dd8dc-8623-4518-b3fd-dcb9f647fa98",
+   "name": "Sly Instigator",
+   "face": 0,
+   "face_name": "Sly Instigator",
+   "card_hash": "a1ed4481a0eff2c74afe4bc4033ac1c3",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "duration": 3,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 150,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 2
+         },
+         "is_targeted": true,
+         "duration": 3,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 24,
+           "subject": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "controller": 2
+           },
+           "text": "can't be_blocked"
+          }
+         ],
+         "text": "can't"
+        }
+       ],
+       "text": "for a duration"
+      },
+      {
+       "$": "Effect",
+       "kind": 85,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "Goad"
+      }
+     ],
+     "text": "{U}, {T}: Until your next turn, target creature an opponent controls can't be blocked. Goad that creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

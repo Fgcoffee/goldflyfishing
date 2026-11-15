@@ -1,0 +1,127 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
+ "name": "Cyclonic Rift",
+ "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
+  "name": "Cyclonic Rift",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cyclonic Rift",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Return target nonland permanent you don't control to its owner's hand.\nOverload {6}{U} (You may cast this spell for its overload cost. If you do, change \"target\" in its text to \"each.\")",
+    "colors": 2,
+    "keywords": [
+     "Overload"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 55,
+  "scryfall_uri": "https://scryfall.com/card/rvr/40/cyclonic-rift?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
+   "name": "Cyclonic Rift",
+   "face": 0,
+   "face_name": "Cyclonic Rift",
+   "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": 16,
+        "controller": 2
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "Return target nonland permanent you don't control to its owner's hand."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Overload {6}{U}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Overload",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 6,
+            "text": "{6}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 2,
+            "text": "{U}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Overload",
+      "text": "Overload {6}{U}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer"
+ ]
+}

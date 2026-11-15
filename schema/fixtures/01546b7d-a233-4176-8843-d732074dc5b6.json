@@ -1,0 +1,102 @@
+{
+ "ir_version": 2,
+ "oracle_id": "01546b7d-a233-4176-8843-d732074dc5b6",
+ "name": "Doubling Season",
+ "card_hash": "039acc8bdf7fc28361362a19411765f5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "01546b7d-a233-4176-8843-d732074dc5b6",
+  "name": "Doubling Season",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Doubling Season",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "If an effect would create one or more tokens under your control, it creates twice that many of those tokens instead.\nIf an effect would put one or more counters on a permanent you control, it puts twice that many of those counters on that permanent instead.",
+    "colors": 16
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 190,
+  "scryfall_uri": "https://scryfall.com/card/fdn/216/doubling-season?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "01546b7d-a233-4176-8843-d732074dc5b6",
+   "name": "Doubling Season",
+   "face": 0,
+   "face_name": "Doubling Season",
+   "card_hash": "039acc8bdf7fc28361362a19411765f5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": 0,
+       "replacement_kind": 13,
+       "multiplier": 2,
+       "text": "replacement: change the amount"
+      }
+     ],
+     "text": "If an effect would create one or more tokens under your control, it creates twice that many of those tokens instead."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "targets": {
+        "$": "ObjectFilter",
+        "controller": 1
+       },
+       "duration": 0,
+       "replacement_kind": 7,
+       "multiplier": 2,
+       "keywords": [
+        "an effect"
+       ],
+       "text": "replacement: change the amount"
+      }
+     ],
+     "text": "If an effect would put one or more counters on a permanent you control, it puts twice that many of those counters on that permanent instead."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
