@@ -683,3 +683,12 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
   - the Docker image was built and run;
   - in headless Chromium, the user's four decks played 120 games in 82 s with no hangs (an earlier image: 300 in 226 s);
   - the rules session ran the user's decks for 1,000 games in Node: no crash, timeout or runaway.
+
+## Cut lab and Recs restored (2026-11-15): PR #42, shared branch @ de87b25, merged as 20cc89e
+
+- Contents: Cut lab and Recs (the port of PR #28); the sandbox on TS, slice 1.
+- Checks on 9217363:
+  - Python 3391 passed; Docker image built;
+  - in headless Chromium, the Cut lab ran a 105-card Kilo list end to end, and the Recs tab rendered.
+- On de87b25 the image rebuild hit Docker Hub's 429. The only code change since is a 7-line guard in recs.js, reviewed.
+- Recs' live EDHREC and Scryfall calls were not testable here.
