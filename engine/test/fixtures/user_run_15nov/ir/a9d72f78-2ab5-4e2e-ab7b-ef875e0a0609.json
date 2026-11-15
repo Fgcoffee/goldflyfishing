@@ -1,0 +1,243 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a9d72f78-2ab5-4e2e-ab7b-ef875e0a0609",
+ "name": "Lost Jitte",
+ "card_hash": "1b408b92648ed9c5d6317b4f3c6a4a60",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a9d72f78-2ab5-4e2e-ab7b-ef875e0a0609",
+  "name": "Lost Jitte",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lost Jitte",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Whenever equipped creature deals combat damage, put a charge counter on Lost Jitte.\nRemove a charge counter from Lost Jitte: Choose one —\n• Untap target land.\n• Target creature can't block this turn.\n• Put a +1/+1 counter on equipped creature.\nEquip {1}",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 4468,
+  "scryfall_uri": "https://scryfall.com/card/big/23/lost-jitte?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a9d72f78-2ab5-4e2e-ab7b-ef875e0a0609",
+   "name": "Lost Jitte",
+   "face": 0,
+   "face_name": "Lost Jitte",
+   "card_hash": "1b408b92648ed9c5d6317b4f3c6a4a60",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever equipped creature deals combat damage, put a charge counter on this."
+      }
+     ],
+     "text": "Whenever equipped creature deals combat damage, put a charge counter on this.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 71,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 16
+           },
+           "is_targeted": true,
+           "text": "tap/untap"
+          }
+         ],
+         "text": "Untap target land."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 150,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "is_targeted": true,
+           "duration": 1,
+           "restrictions": [
+            {
+             "$": "Restriction",
+             "act": 23,
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": 4
+             },
+             "text": "can't block"
+            }
+           ],
+           "text": "can't"
+          }
+         ],
+         "text": "Target creature can't block this turn."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 72,
+           "targets": {
+            "$": "ObjectFilter",
+            "has_attached": {
+             "$": "ObjectFilter",
+             "source_only": true
+            }
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "counter_type": "+1/+1",
+           "text": "add counters"
+          }
+         ],
+         "text": "Put a +1/+1 counter on equipped creature."
+        }
+       ],
+       "text": "Remove a charge counter from this: Choose one -"
+      }
+     ],
+     "text": "Remove a charge counter from this: Choose one -",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 32,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "counter_type": "charge",
+        "text": "remove counters"
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {1}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever equipped creature deals combat damage, put a charge counter on this.",
+     "reason": "unreadable trigger condition",
+     "remaining": [
+      "Whenever",
+      "equipped",
+      "creature",
+      "deals",
+      "combat",
+      "damage",
+      ",",
+      "put",
+      "a",
+      "charge",
+      "counter",
+      "on",
+      "this",
+      "."
+     ],
+     "rule": "trigger"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

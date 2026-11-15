@@ -1,0 +1,136 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4dc5726e-2f7e-4c2b-9616-c3301d212f78",
+ "name": "Thousand-Year Elixir",
+ "card_hash": "02b68d2f230563f749168032b506d734",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4dc5726e-2f7e-4c2b-9616-c3301d212f78",
+  "name": "Thousand-Year Elixir",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Thousand-Year Elixir",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "You may activate abilities of creatures you control as though those creatures had haste.\n{1}, {T}: Untap target creature."
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 882,
+  "scryfall_uri": "https://scryfall.com/card/c21/271/thousand-year-elixir?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4dc5726e-2f7e-4c2b-9616-c3301d212f78",
+   "name": "Thousand-Year Elixir",
+   "face": 0,
+   "face_name": "Thousand-Year Elixir",
+   "card_hash": "02b68d2f230563f749168032b506d734",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "You may activate abilities of creatures you control as though those creatures had haste."
+      }
+     ],
+     "text": "You may activate abilities of creatures you control as though those creatures had haste.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      }
+     ],
+     "text": "{1}, {T}: Untap target creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "You may activate abilities of creatures you control as though those creatures had haste.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "You",
+      "may",
+      "activate",
+      "abilities",
+      "of",
+      "creatures",
+      "you",
+      "control",
+      "as",
+      "though",
+      "those",
+      "creatures",
+      "had",
+      "haste",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

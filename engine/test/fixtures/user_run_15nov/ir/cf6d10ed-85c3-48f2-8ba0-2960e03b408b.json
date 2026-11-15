@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "cf6d10ed-85c3-48f2-8ba0-2960e03b408b",
+ "name": "Spectator Seating",
+ "card_hash": "cf28d66abedacd8d6d1a5a07d2cf48d7",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cf6d10ed-85c3-48f2-8ba0-2960e03b408b",
+  "name": "Spectator Seating",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Spectator Seating",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped unless you have two or more opponents.\n{T}: Add {R} or {W}.",
+    "produced_mana": [
+     "R",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 9,
+  "commander_legal": true,
+  "edhrec_rank": 167,
+  "scryfall_uri": "https://scryfall.com/card/msc/268/spectator-seating?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "cf6d10ed-85c3-48f2-8ba0-2960e03b408b",
+   "name": "Spectator Seating",
+   "face": 0,
+   "face_name": "Spectator Seating",
+   "card_hash": "cf28d66abedacd8d6d1a5a07d2cf48d7",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 17,
+          "players": {
+           "$": "PlayerFilter",
+           "scope": 3
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 2
+           }
+          },
+          "text": "you have N opponents"
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you have two or more opponents."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{R}"
+         ],
+         "colors": 8,
+         "text": "add {R}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": 1,
+         "text": "add {W}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {R} or {W}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,130 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a0753b28-e693-4f5b-a4e4-846e933058d3",
+ "name": "Roar of Resistance",
+ "card_hash": "a31d2ba8767e5ca68ce83b322c29eb16",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a0753b28-e693-4f5b-a4e4-846e933058d3",
+  "name": "Roar of Resistance",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Roar of Resistance",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Creature tokens you control have haste.\nWhenever one or more creatures attack, you may pay {1}{R}. If you do, creatures attacking your opponents and/or planeswalkers they control get +2/+0 until end of turn.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 6036,
+  "scryfall_uri": "https://scryfall.com/card/onc/15/roar-of-resistance?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a0753b28-e693-4f5b-a4e4-846e933058d3",
+   "name": "Roar of Resistance",
+   "face": 0,
+   "face_name": "Roar of Resistance",
+   "card_hash": "a31d2ba8767e5ca68ce83b322c29eb16",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1,
+        "is_token": true
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains haste"
+      }
+     ],
+     "text": "Creature tokens you control have haste."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever one or more creatures attack, you may pay {1}{R}. If you do, creatures attacking your opponents and/or planeswalkers they control get +2/+0 until end of turn."
+      }
+     ],
+     "text": "Whenever one or more creatures attack, you may pay {1}{R}. If you do, creatures attacking your opponents and/or planeswalkers they control get +2/+0 until end of turn.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever one or more creatures attack, you may pay {1}{R}. If you do, creatures attacking your opponents and/or planeswalkers they control get +2/+0 until end of turn.",
+     "reason": "not fully consumed",
+     "consumed": 17,
+     "remaining": [
+      "creatures",
+      "attacking",
+      "your",
+      "opponents",
+      "and",
+      "or",
+      "planeswalkers",
+      "they",
+      "control",
+      "get",
+      "+2/+0",
+      "until",
+      "end",
+      "of",
+      "turn",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

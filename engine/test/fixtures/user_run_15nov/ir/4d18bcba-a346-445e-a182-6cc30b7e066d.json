@@ -1,0 +1,104 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
+ "name": "Ashnod's Altar",
+ "card_hash": "58b3f67d4e90c3d00e40dd7cca4fc281",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
+  "name": "Ashnod's Altar",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ashnod's Altar",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "Sacrifice a creature: Add {C}{C}.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 134,
+  "scryfall_uri": "https://scryfall.com/card/cmm/368/ashnods-altar?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
+   "name": "Ashnod's Altar",
+   "face": 0,
+   "face_name": "Ashnod's Altar",
+   "card_hash": "58b3f67d4e90c3d00e40dd7cca4fc281",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}"
+      }
+     ],
+     "text": "Sacrifice a creature: Add {C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

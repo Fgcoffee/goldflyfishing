@@ -1,0 +1,162 @@
+{
+ "ir_version": 2,
+ "oracle_id": "03d32ace-dd99-48c6-bcae-9b915d041aef",
+ "name": "Freed from the Real",
+ "card_hash": "1535c1167f50bec6ecab755f29147e53",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "03d32ace-dd99-48c6-bcae-9b915d041aef",
+  "name": "Freed from the Real",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Freed from the Real",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8,
+     "subtypes": [
+      "Aura"
+     ]
+    },
+    "oracle_text": "Enchant creature\n{U}: Tap enchanted creature.\n{U}: Untap enchanted creature.",
+    "colors": 2,
+    "keywords": [
+     "Enchant"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1564,
+  "scryfall_uri": "https://scryfall.com/card/a25/58/freed-from-the-real?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "03d32ace-dd99-48c6-bcae-9b915d041aef",
+   "name": "Freed from the Real",
+   "face": 0,
+   "face_name": "Freed from the Real",
+   "card_hash": "1535c1167f50bec6ecab755f29147e53",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Enchant creature",
+     "functions_in": {
+      "$set": [
+       2,
+       4
+      ]
+     },
+     "keyword": "Enchant",
+     "quality": {
+      "$": "ObjectFilter",
+      "types_all": 4
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "text": "tap/untap"
+      }
+     ],
+     "text": "{U}: Tap enchanted creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "text": "tap/untap"
+      }
+     ],
+     "text": "{U}: Untap enchanted creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

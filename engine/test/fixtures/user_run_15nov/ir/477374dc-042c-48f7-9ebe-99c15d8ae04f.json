@@ -1,0 +1,126 @@
+{
+ "ir_version": 2,
+ "oracle_id": "477374dc-042c-48f7-9ebe-99c15d8ae04f",
+ "name": "All Will Be One",
+ "card_hash": "bb5fd1fd95dd55ce92d4ff7fc11b0b36",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "477374dc-042c-48f7-9ebe-99c15d8ae04f",
+  "name": "All Will Be One",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "All Will Be One",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever you put one or more counters on a permanent or player, this enchantment deals that much damage to target opponent, creature an opponent controls, or planeswalker an opponent controls.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1398,
+  "scryfall_uri": "https://scryfall.com/card/one/118/all-will-be-one?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "477374dc-042c-48f7-9ebe-99c15d8ae04f",
+   "name": "All Will Be One",
+   "face": 0,
+   "face_name": "All Will Be One",
+   "card_hash": "bb5fd1fd95dd55ce92d4ff7fc11b0b36",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever you put one or more counters on a permanent or player, this enchantment deals that much damage to target opponent, creature an opponent controls, or planeswalker an opponent controls."
+      }
+     ],
+     "text": "Whenever you put one or more counters on a permanent or player, this enchantment deals that much damage to target opponent, creature an opponent controls, or planeswalker an opponent controls.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever you put one or more counters on a permanent or player, this enchantment deals that much damage to target opponent, creature an opponent controls, or planeswalker an opponent controls.",
+     "reason": "unreadable trigger condition",
+     "remaining": [
+      "Whenever",
+      "you",
+      "put",
+      "one",
+      "or",
+      "more",
+      "counters",
+      "on",
+      "a",
+      "permanent",
+      "or",
+      "player",
+      ",",
+      "this",
+      "enchantment",
+      "deals",
+      "that",
+      "much",
+      "damage",
+      "to",
+      "target",
+      "opponent",
+      ",",
+      "creature",
+      "an",
+      "opponent",
+      "controls",
+      ",",
+      "or",
+      "planeswalker",
+      "an",
+      "opponent",
+      "controls",
+      "."
+     ],
+     "rule": "trigger"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

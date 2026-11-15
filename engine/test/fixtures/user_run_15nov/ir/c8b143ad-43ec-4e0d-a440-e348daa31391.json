@@ -1,0 +1,135 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+ "name": "Swiftfoot Boots",
+ "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+  "name": "Swiftfoot Boots",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Swiftfoot Boots",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature has hexproof and haste. (It can't be the target of spells or abilities your opponents control. It can attack and {T} no matter when it came under your control.)\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 12,
+  "scryfall_uri": "https://scryfall.com/card/mbc/77/swiftfoot-boots?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+   "name": "Swiftfoot Boots",
+   "face": 0,
+   "face_name": "Swiftfoot Boots",
+   "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "hexproof",
+         "keyword": "hexproof"
+        },
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains hexproof, haste"
+      }
+     ],
+     "text": "Equipped creature has hexproof and haste."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {1}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

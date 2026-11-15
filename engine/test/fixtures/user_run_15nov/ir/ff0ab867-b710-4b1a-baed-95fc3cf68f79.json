@@ -1,0 +1,172 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ff0ab867-b710-4b1a-baed-95fc3cf68f79",
+ "name": "Valakut Awakening // Valakut Stoneforge",
+ "card_hash": "c2fda8222fb26888bb04d0039140cd88",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ff0ab867-b710-4b1a-baed-95fc3cf68f79",
+  "name": "Valakut Awakening // Valakut Stoneforge",
+  "layout": 4,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Valakut Awakening",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Put any number of cards from your hand on the bottom of your library, then draw that many cards plus one.",
+    "colors": 8,
+    "produced_mana": [
+     "R"
+    ]
+   },
+   {
+    "$": "FaceDef",
+    "name": "Valakut Stoneforge",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped.\n{T}: Add {R}.",
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 517,
+  "scryfall_uri": "https://scryfall.com/card/znr/174/valakut-awakening-valakut-stoneforge?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ff0ab867-b710-4b1a-baed-95fc3cf68f79",
+   "name": "Valakut Awakening // Valakut Stoneforge",
+   "face": 0,
+   "face_name": "Valakut Awakening",
+   "card_hash": "c2fda8222fb26888bb04d0039140cd88",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Put any number of cards from your hand on the bottom of your library, then draw that many cards plus one."
+      }
+     ],
+     "text": "Put any number of cards from your hand on the bottom of your library, then draw that many cards plus one.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Put any number of cards from your hand on the bottom of your library, then draw that many cards plus one.",
+     "reason": "not fully consumed",
+     "consumed": 20,
+     "remaining": [
+      "plus",
+      "one",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  },
+  {
+   "ir_version": 2,
+   "oracle_id": "ff0ab867-b710-4b1a-baed-95fc3cf68f79",
+   "name": "Valakut Awakening // Valakut Stoneforge",
+   "face": 1,
+   "face_name": "Valakut Stoneforge",
+   "card_hash": "c2fda8222fb26888bb04d0039140cd88",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      }
+     ],
+     "text": "{T}: Add {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

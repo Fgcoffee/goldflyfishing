@@ -1,0 +1,108 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c803b788-4213-4fab-b841-7e5bbf66088e",
+ "name": "Jhoira, Weatherlight Captain",
+ "card_hash": "36c1554cbf35e4415482966bf8208511",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c803b788-4213-4fab-b841-7e5bbf66088e",
+  "name": "Jhoira, Weatherlight Captain",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jhoira, Weatherlight Captain",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Artificer"
+     ]
+    },
+    "oracle_text": "Whenever you cast a historic spell, draw a card. (Artifacts, legendaries, and Sagas are historic.)",
+    "power": "3",
+    "toughness": "3",
+    "colors": 10
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 1070,
+  "scryfall_uri": "https://scryfall.com/card/eoc/118/jhoira-weatherlight-captain?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c803b788-4213-4fab-b841-7e5bbf66088e",
+   "name": "Jhoira, Weatherlight Captain",
+   "face": 0,
+   "face_name": "Jhoira, Weatherlight Captain",
+   "card_hash": "36c1554cbf35e4415482966bf8208511",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever you cast a historic spell, draw a card."
+      }
+     ],
+     "text": "Whenever you cast a historic spell, draw a card.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever you cast a historic spell, draw a card.",
+     "reason": "not fully consumed",
+     "consumed": 3,
+     "remaining": [
+      "a",
+      "historic",
+      "spell",
+      ",",
+      "draw",
+      "a",
+      "card",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

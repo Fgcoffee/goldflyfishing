@@ -1,0 +1,84 @@
+{
+ "ir_version": 2,
+ "oracle_id": "02f16726-f2f6-4943-b71a-93f8e26251d3",
+ "name": "Ancient Den",
+ "card_hash": "a4656d24bf9aadfb48fb2bb072b85006",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "02f16726-f2f6-4943-b71a-93f8e26251d3",
+  "name": "Ancient Den",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ancient Den",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 17
+    },
+    "oracle_text": "{T}: Add {W}.",
+    "produced_mana": [
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 490,
+  "scryfall_uri": "https://scryfall.com/card/eoc/148/ancient-den?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "02f16726-f2f6-4943-b71a-93f8e26251d3",
+   "name": "Ancient Den",
+   "face": 0,
+   "face_name": "Ancient Den",
+   "card_hash": "a4656d24bf9aadfb48fb2bb072b85006",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{W}"
+       ],
+       "colors": 1,
+       "text": "add {W}"
+      }
+     ],
+     "text": "{T}: Add {W}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

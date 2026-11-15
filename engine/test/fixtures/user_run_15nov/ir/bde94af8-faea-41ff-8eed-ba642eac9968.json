@@ -1,0 +1,93 @@
+{
+ "ir_version": 2,
+ "oracle_id": "bde94af8-faea-41ff-8eed-ba642eac9968",
+ "name": "Phantasmal Image",
+ "card_hash": "06c099bd9ac05c861a4c6a9112074777",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bde94af8-faea-41ff-8eed-ba642eac9968",
+  "name": "Phantasmal Image",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Phantasmal Image",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Illusion"
+     ]
+    },
+    "oracle_text": "You may have this creature enter as a copy of any creature on the battlefield, except it's an Illusion in addition to its other types and it has \"When this creature becomes the target of a spell or ability, sacrifice it.\"",
+    "power": "0",
+    "toughness": "0",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1489,
+  "scryfall_uri": "https://scryfall.com/card/afc/89/phantasmal-image?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "bde94af8-faea-41ff-8eed-ba642eac9968",
+   "name": "Phantasmal Image",
+   "face": 0,
+   "face_name": "Phantasmal Image",
+   "card_hash": "06c099bd9ac05c861a4c6a9112074777",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "You may have this creature enter as a copy of any creature on the battlefield, except it's an Illusion in addition to its other types and it has \"When this creature becomes the target of a spell or ability, sacrifice it.\""
+      }
+     ],
+     "text": "You may have this creature enter as a copy of any creature on the battlefield, except it's an Illusion in addition to its other types and it has \"When this creature becomes the target of a spell or ability, sacrifice it.\"",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "You may have this creature enter as a copy of any creature on the battlefield, except it's an Illusion in addition to its other types and it has \"When this creature becomes the target of a spell or ability, sacrifice it.\"",
+     "reason": "not fully consumed",
+     "consumed": 45,
+     "remaining": [
+      "\""
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

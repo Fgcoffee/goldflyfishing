@@ -1,0 +1,147 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4d67e2a7-4aa7-44cc-853b-500d7aac046d",
+ "name": "Cursed Mirror",
+ "card_hash": "805dd84aa439bd5aca2cceba95d23b49",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4d67e2a7-4aa7-44cc-853b-500d7aac046d",
+  "name": "Cursed Mirror",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cursed Mirror",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}: Add {R}.\nAs this artifact enters, you may have it become a copy of any creature on the battlefield until end of turn, except it has haste.",
+    "colors": 8,
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 453,
+  "scryfall_uri": "https://scryfall.com/card/soc/242/cursed-mirror?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4d67e2a7-4aa7-44cc-853b-500d7aac046d",
+   "name": "Cursed Mirror",
+   "face": 0,
+   "face_name": "Cursed Mirror",
+   "card_hash": "805dd84aa439bd5aca2cceba95d23b49",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      }
+     ],
+     "text": "{T}: Add {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "As this artifact enters, you may have it become a copy of any creature on the battlefield until end of turn, except it has haste."
+      }
+     ],
+     "text": "As this artifact enters, you may have it become a copy of any creature on the battlefield until end of turn, except it has haste.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "As this artifact enters, you may have it become a copy of any creature on the battlefield until end of turn, except it has haste.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "you",
+      "may",
+      "have",
+      "it",
+      "become",
+      "a",
+      "copy",
+      "of",
+      "any",
+      "creature",
+      "on",
+      "the",
+      "battlefield",
+      "until",
+      "end",
+      "of",
+      "turn",
+      ",",
+      "except",
+      "it",
+      "has",
+      "haste",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

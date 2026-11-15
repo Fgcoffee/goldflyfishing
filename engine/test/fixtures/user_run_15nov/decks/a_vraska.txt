@@ -1,0 +1,91 @@
+1x Archaeomancer (j25) [Recursion]
+1x Arid Mesa (spg)
+1x Ashnod's Altar (cmm) [Ramp]
+1x Banishing Knack (eve) [Removal]
+1x Battle Hymn (avr) [Ramp]
+1x Brain Freeze (plst) [Mill]
+1x Capsize (tmp) [Removal]
+1x Clifftop Retreat (frc)
+1x Command Tower (pw25) *F*
+1x Counterspell (fdc) [Removal]
+1x Deflecting Swat (cmm) [Protection]
+1x Deserted Beach (fra)
+1x Displacer Kitten (clb) [Blink]
+1x Elsha of the Infinite (2x2) [Draw]
+1x Elspeth, Storm Slayer (tdm) [Tokens]
+1x Exalted Sunborn (eoe) [Tokens]
+1x Fabricate (hop) [Tutor]
+1x Fateful Discovery (hob) [Draw]
+1x Flooded Strand (mh3)
+1x Frantic Search (cmm) [Draw]
+1x Frostcliff Siege (tdm) [Draw]
+1x Geist of Saint Thalia (fra) [Ramp]
+1x Glacial Fortress (sld)
+1x Gleaming Splendor (hob) [Ramp]
+1x Goldspan Dragon (m3c) [Ramp]
+1x Hallowed Fountain (ecl)
+1x Harmonic Prodigy (soc) [Copy]
+1x Haze of Rage (tsr) [Pump]
+1x High Tide (dmr) [Ramp]
+1x Idyllic Tutor (thb) [Tutor]
+1x Impact Tremors (wot) *F* [Burn]
+7x Island (fra) 385
+1x Jeskai Ascendancy (2x2) [Draw]
+1x Jwari Disruption // Jwari Ruins (znr) [Removal]
+1x Kykar, Wind's Fury (cmm) [Tokens]
+1x Lotus Petal (plst) [Ramp]
+1x Magda, Brazen Outlaw (khm) [Tutor]
+1x Mondrak, Glory Dominus (one) [Tokens]
+4x Mountain (fra) 391
+1x Mox Opal (2xm) [Ramp]
+1x Mystic Gate (m3c)
+1x Organic Extinction (eoc) [Removal]
+1x Otawara, Soaring City (neo)
+1x Path to Exile (frc) [Removal]
+1x Phyrexian Altar (2x2) [Ramp]
+1x Plains (fra) 382
+1x Plateau (vma)
+1x Raugrin Triome (iko)
+1x Reckless Fireweaver (drc) [Burn]
+1x Reiterate (tsr) [Copy]
+1x Retraction Helix (plst) [Removal]
+1x Rhystic Study (wot) [Draw]
+1x Roar of Resistance (onc) [Anthem]
+1x Sacred Foundry (eoe)
+1x Sea of Clouds (clb)
+1x Seething Song (mrd) [Ramp]
+1x Sensei's Divining Top (2x2) [Draw]
+1x Sink into Stupor // Soporific Springs (mh3) [Removal]
+1x Skullclamp (cmd) [Draw]
+1x Smothering Tithe (cmm) [Ramp]
+1x Snap (woc) [Removal]
+1x Sorcerer Class (afr) [Ramp]
+1x Spectator Seating (cmm)
+1x Steam Vents (unf)
+1x Storm-Kiln Artist (soc) [Ramp]
+1x Stormcarved Coast (sos)
+1x Sulfur Falls (msc)
+1x Sundown Pass (sos)
+1x Swan Song (eoc) [Removal]
+1x Swords to Plowshares (frc) [Removal]
+1x The Reality Chip (neo) [Draw]
+1x Third Path Iconoclast (tdc) [Tokens]
+1x Thousand-Year Elixir (c21) [Untap]
+1x Tormod's Crypt (dmr) [Removal]
+1x Training Center (cmm)
+1x Trinket Mage (ddu) [Tutor]
+1x Tundra (vma)
+1x Underworld Breach (thb) [Recursion]
+1x Urza, Lord High Artificer (cmm) [Ramp]
+1x Urza's Saga (mh2)
+1x Valakut Awakening // Valakut Stoneforge (znr) [Draw]
+1x Veyran, Voice of Duality (sld) [Copy]
+1x View from Above (plst) [Evasion]
+1x Vraska, Soul of Stone (fra) [Commander{top}]
+1x Warleader's Call (mkm) [Anthem]
+1x Whir of Invention (aer) [Tutor]
+1x Whirlwind of Thought (iko) [Draw]
+1x Whispers of the Muse (tmp) [Draw]
+1x Witch Enchanter // Witch-Blessed Meadow (mh3) [Removal]
+1x Wizard's Staff (hob) [Copy]
+1x Xorn (afr) [Ramp]

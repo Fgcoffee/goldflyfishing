@@ -1,0 +1,54 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c7a15ca4-085f-4d92-8387-c3711c04c8fa",
+ "name": "Plateau",
+ "card_hash": "00470736ab270fe94a5ff10cbbeb9ec4",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c7a15ca4-085f-4d92-8387-c3711c04c8fa",
+  "name": "Plateau",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Plateau",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Mountain",
+      "Plains"
+     ]
+    },
+    "oracle_text": "({T}: Add {R} or {W}.)",
+    "produced_mana": [
+     "R",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 9,
+  "commander_legal": true,
+  "edhrec_rank": 448,
+  "scryfall_uri": "https://scryfall.com/card/vma/308/plateau?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c7a15ca4-085f-4d92-8387-c3711c04c8fa",
+   "name": "Plateau",
+   "face": 0,
+   "face_name": "Plateau",
+   "card_hash": "00470736ab270fe94a5ff10cbbeb9ec4",
+   "fully_read": true,
+   "abilities": [],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

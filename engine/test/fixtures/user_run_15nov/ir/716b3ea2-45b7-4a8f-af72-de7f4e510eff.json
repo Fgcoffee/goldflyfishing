@@ -1,0 +1,244 @@
+{
+ "ir_version": 2,
+ "oracle_id": "716b3ea2-45b7-4a8f-af72-de7f4e510eff",
+ "name": "Goldspan Dragon",
+ "card_hash": "fad82b6b3932de0de749259967f3b66e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "716b3ea2-45b7-4a8f-af72-de7f4e510eff",
+  "name": "Goldspan Dragon",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goldspan Dragon",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Dragon"
+     ]
+    },
+    "oracle_text": "Flying, haste\nWhenever this creature attacks or becomes the target of a spell, create a Treasure token.\nTreasures you control have \"{T}, Sacrifice this artifact: Add two mana of any one color.\"",
+    "power": "4",
+    "toughness": "4",
+    "colors": 8,
+    "keywords": [
+     "Flying",
+     "Treasure",
+     "Haste"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 371,
+  "scryfall_uri": "https://scryfall.com/card/soc/245/goldspan-dragon?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "716b3ea2-45b7-4a8f-af72-de7f4e510eff",
+   "name": "Goldspan Dragon",
+   "face": 0,
+   "face_name": "Goldspan Dragon",
+   "card_hash": "fad82b6b3932de0de749259967f3b66e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "haste",
+     "keyword": "haste"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever this creature attacks or becomes the target of a spell, create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "alternatives": [
+       {
+        "$": "TriggerCondition",
+        "event_kinds": {
+         "$set": [
+          101
+         ]
+        },
+        "subject": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "when this attacks"
+       },
+       {
+        "$": "TriggerCondition",
+        "event_kinds": {
+         "$set": [
+          27
+         ]
+        },
+        "subject": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "source": {
+         "$": "ObjectFilter",
+         "zones": {
+          "$set": [
+           4
+          ]
+         },
+         "is_ability": false,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "when this has something happen to it"
+       }
+      ],
+      "text": "when this attacks"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "subtypes_all": [
+         "Treasure"
+        ],
+        "controller": 1
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 1,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 120,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 2
+           },
+           "colors": 31,
+           "text": "add mana of any color"
+          }
+         ],
+         "text": "{T} , Sacrifice this artifact : Add two mana of any one color .",
+         "cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 1,
+            "text": "{T}"
+           },
+           {
+            "$": "CostComponent",
+            "kind": 10,
+            "amount": {
+             "$": "Value",
+             "constant": 1
+            },
+            "filter": {
+             "$": "ObjectFilter",
+             "source_only": true
+            },
+            "text": "sacrifice this"
+           }
+          ]
+         },
+         "is_mana_ability": true
+        }
+       ],
+       "text": "gains {T} , Sacrifice this artifact : Add two mana of any one color ."
+      }
+     ],
+     "text": "Treasures you control have \"{T}, Sacrifice this artifact: Add two mana of any one color.\""
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

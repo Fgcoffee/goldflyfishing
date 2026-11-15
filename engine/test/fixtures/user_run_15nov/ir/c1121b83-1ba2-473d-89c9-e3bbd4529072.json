@@ -1,0 +1,160 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c1121b83-1ba2-473d-89c9-e3bbd4529072",
+ "name": "Paradise Mantle",
+ "card_hash": "a65ac059bd4e3d30358f72b321d7d098",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c1121b83-1ba2-473d-89c9-e3bbd4529072",
+  "name": "Paradise Mantle",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Paradise Mantle",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature has \"{T}: Add one mana of any color.\"\nEquip {1}",
+    "keywords": [
+     "Equip"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1793,
+  "scryfall_uri": "https://scryfall.com/card/mma/211/paradise-mantle?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c1121b83-1ba2-473d-89c9-e3bbd4529072",
+   "name": "Paradise Mantle",
+   "face": 0,
+   "face_name": "Paradise Mantle",
+   "card_hash": "a65ac059bd4e3d30358f72b321d7d098",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 1,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 120,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "colors": 31,
+           "text": "add mana of any color"
+          }
+         ],
+         "text": "{T} : Add one mana of any color .",
+         "cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 1,
+            "text": "{T}"
+           }
+          ]
+         },
+         "is_mana_ability": true
+        }
+       ],
+       "text": "gains {T} : Add one mana of any color ."
+      }
+     ],
+     "text": "Equipped creature has \"{T}: Add one mana of any color.\""
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {1}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

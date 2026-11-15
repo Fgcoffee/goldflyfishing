@@ -1,0 +1,152 @@
+{
+ "ir_version": 2,
+ "oracle_id": "43febbcd-ecbe-4edb-ad90-7fc6dc381d05",
+ "name": "Exalted Sunborn",
+ "card_hash": "2ea21a89484755b887f9a65a50277cc7",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "43febbcd-ecbe-4edb-ad90-7fc6dc381d05",
+  "name": "Exalted Sunborn",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Exalted Sunborn",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Angel",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Flying, lifelink\nIf one or more tokens would be created under your control, twice that many of those tokens are created instead.\nWarp {1}{W} (You may cast this card from your hand for its warp cost. Exile this creature at the beginning of the next end step, then you may cast it from exile on a later turn.)",
+    "power": "4",
+    "toughness": "5",
+    "colors": 1,
+    "keywords": [
+     "Flying",
+     "Lifelink",
+     "Warp"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 1372,
+  "scryfall_uri": "https://scryfall.com/card/eoe/15/exalted-sunborn?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "43febbcd-ecbe-4edb-ad90-7fc6dc381d05",
+   "name": "Exalted Sunborn",
+   "face": 0,
+   "face_name": "Exalted Sunborn",
+   "card_hash": "2ea21a89484755b887f9a65a50277cc7",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "lifelink",
+     "keyword": "lifelink"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": 0,
+       "replacement_kind": 13,
+       "multiplier": 2,
+       "text": "replacement: change the amount"
+      }
+     ],
+     "text": "If one or more tokens would be created under your control, twice that many of those tokens are created instead."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Warp {1}{W}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Warp",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 1,
+            "text": "{1}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 1,
+            "text": "{W}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "from_zone": 1,
+      "keyword": "Warp",
+      "text": "Warp {1}{W}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

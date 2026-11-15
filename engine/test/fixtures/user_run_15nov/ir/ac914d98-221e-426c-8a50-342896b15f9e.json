@@ -1,0 +1,93 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ac914d98-221e-426c-8a50-342896b15f9e",
+ "name": "Snap",
+ "card_hash": "af14de5550743b7adbfffacb20908188",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ac914d98-221e-426c-8a50-342896b15f9e",
+  "name": "Snap",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Snap",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Return target creature to its owner's hand. Untap up to two lands.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 273,
+  "scryfall_uri": "https://scryfall.com/card/dmr/66/snap?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ac914d98-221e-426c-8a50-342896b15f9e",
+   "name": "Snap",
+   "face": 0,
+   "face_name": "Snap",
+   "card_hash": "af14de5550743b7adbfffacb20908188",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      },
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        },
+        "up_to": true
+       },
+       "text": "tap/untap"
+      }
+     ],
+     "text": "Return target creature to its owner's hand. Untap up to two lands."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

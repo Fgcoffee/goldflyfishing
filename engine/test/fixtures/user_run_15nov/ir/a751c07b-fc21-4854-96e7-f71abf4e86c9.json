@@ -1,0 +1,132 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a751c07b-fc21-4854-96e7-f71abf4e86c9",
+ "name": "Warleader's Call",
+ "card_hash": "77ea541c8d9273905ab96c88a369cda2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a751c07b-fc21-4854-96e7-f71abf4e86c9",
+  "name": "Warleader's Call",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Warleader's Call",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Creatures you control get +1/+1.\nWhenever a creature you control enters, this enchantment deals 1 damage to each opponent.",
+    "colors": 9
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 9,
+  "commander_legal": true,
+  "edhrec_rank": 910,
+  "scryfall_uri": "https://scryfall.com/card/mkm/242/warleaders-call?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a751c07b-fc21-4854-96e7-f71abf4e86c9",
+   "name": "Warleader's Call",
+   "face": 0,
+   "face_name": "Warleader's Call",
+   "card_hash": "77ea541c8d9273905ab96c88a369cda2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": 0,
+       "text": "gets +1/+1"
+      }
+     ],
+     "text": "Creatures you control get +1/+1."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "Whenever a creature you control enters, this enchantment deals 1 damage to each opponent.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

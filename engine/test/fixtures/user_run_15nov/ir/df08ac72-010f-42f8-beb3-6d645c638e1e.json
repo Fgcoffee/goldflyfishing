@@ -1,0 +1,168 @@
+{
+ "ir_version": 2,
+ "oracle_id": "df08ac72-010f-42f8-beb3-6d645c638e1e",
+ "name": "Uthros, Titanic Godcore",
+ "card_hash": "40c8b82d5e159820052e18620d81af8d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "df08ac72-010f-42f8-beb3-6d645c638e1e",
+  "name": "Uthros, Titanic Godcore",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Uthros, Titanic Godcore",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Planet"
+     ]
+    },
+    "oracle_text": "This land enters tapped.\n{T}: Add {U}.\nStation (Tap another creature you control: Put charge counters equal to its power on this Planet. Station only as a sorcery.)\n12+ | {U}, {T}: Add {U} for each artifact you control.",
+    "keywords": [
+     "Station"
+    ],
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1338,
+  "scryfall_uri": "https://scryfall.com/card/eoe/260/uthros-titanic-godcore?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "df08ac72-010f-42f8-beb3-6d645c638e1e",
+   "name": "Uthros, Titanic Godcore",
+   "face": 0,
+   "face_name": "Uthros, Titanic Godcore",
+   "card_hash": "40c8b82d5e159820052e18620d81af8d",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {U}"
+      }
+     ],
+     "text": "{T}: Add {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "kind": 21
+       },
+       "counter_type": "charge"
+      }
+     ],
+     "text": "Station",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 3,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "other_than_source": true,
+         "controller": 1,
+         "tapped": false
+        },
+        "text": "tap another untapped creature you control"
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Station"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "12+ | {U}, {T}: Add {U} for each artifact you control."
+      }
+     ],
+     "text": "12+ | {U}, {T}: Add {U} for each artifact you control.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "12+ | {U}, {T}: Add {U} for each artifact you control.",
+     "reason": "unreadable cost component at '12'",
+     "rule": "cost"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

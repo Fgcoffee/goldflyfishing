@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "83cf1169-5853-4332-b897-7b17d72d76ab",
+ "name": "Twinflame",
+ "card_hash": "1481ce88cd59c2f1e3c2e145230dcb33",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "83cf1169-5853-4332-b897-7b17d72d76ab",
+  "name": "Twinflame",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Twinflame",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Strive — This spell costs {2}{R} more to cast for each target beyond the first.\nChoose any number of target creatures you control. For each of them, create a token that's a copy of that creature, except it has haste. Exile those tokens at the beginning of the next end step.",
+    "colors": 8,
+    "keywords": [
+     "Strive"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1259,
+  "scryfall_uri": "https://scryfall.com/card/soc/258/twinflame?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "83cf1169-5853-4332-b897-7b17d72d76ab",
+   "name": "Twinflame",
+   "face": 0,
+   "face_name": "Twinflame",
+   "card_hash": "1481ce88cd59c2f1e3c2e145230dcb33",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "This spell costs {2}{R} more to cast for each target beyond the first."
+      }
+     ],
+     "text": "This spell costs {2}{R} more to cast for each target beyond the first.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Choose any number of target creatures you control. For each of them, create a token that's a copy of that creature, except it has haste. Exile those tokens at the beginning of the next end step."
+      }
+     ],
+     "text": "Choose any number of target creatures you control. For each of them, create a token that's a copy of that creature, except it has haste. Exile those tokens at the beginning of the next end step.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "This spell costs {2}{R} more to cast for each target beyond the first.",
+     "reason": "not fully consumed",
+     "consumed": 8,
+     "remaining": [
+      "for",
+      "each",
+      "target",
+      "beyond",
+      "the",
+      "first",
+      "."
+     ],
+     "rule": "plain"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "Choose any number of target creatures you control. For each of them, create a token that's a copy of that creature, except it has haste. Exile those tokens at the beginning of the next end step.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Choose",
+      "any",
+      "number",
+      "of",
+      "target",
+      "creatures",
+      "you",
+      "control",
+      ".",
+      "For",
+      "each",
+      "of",
+      "them",
+      ",",
+      "create",
+      "a",
+      "token",
+      "that's",
+      "a",
+      "copy",
+      "of",
+      "that",
+      "creature",
+      ",",
+      "except",
+      "it",
+      "has",
+      "haste",
+      ".",
+      "Exile",
+      "those",
+      "tokens",
+      "at",
+      "the",
+      "beginning",
+      "of",
+      "the",
+      "next",
+      "end",
+      "step",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

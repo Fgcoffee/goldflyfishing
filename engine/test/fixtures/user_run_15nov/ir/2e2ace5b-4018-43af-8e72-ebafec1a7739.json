@@ -1,0 +1,143 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2e2ace5b-4018-43af-8e72-ebafec1a7739",
+ "name": "Harmonic Prodigy",
+ "card_hash": "14a0cb527da09db634b170deeeeb8e42",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2e2ace5b-4018-43af-8e72-ebafec1a7739",
+  "name": "Harmonic Prodigy",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Harmonic Prodigy",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nIf a triggered ability of a Shaman or another Wizard you control triggers, that ability triggers an additional time.",
+    "power": "1",
+    "toughness": "3",
+    "colors": 8,
+    "keywords": [
+     "Prowess"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 655,
+  "scryfall_uri": "https://scryfall.com/card/soc/123/harmonic-prodigy?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2e2ace5b-4018-43af-8e72-ebafec1a7739",
+   "name": "Harmonic Prodigy",
+   "face": 0,
+   "face_name": "Harmonic Prodigy",
+   "card_hash": "14a0cb527da09db634b170deeeeb8e42",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": {
+        "$int": 1
+       }
+      }
+     ],
+     "text": "Prowess",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever you cast a noncreature spell"
+     },
+     "keyword": "Prowess"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 211,
+       "targets": {
+        "$": "ObjectFilter",
+        "subtypes_any": [
+         "Shaman",
+         "Wizard"
+        ],
+        "controller": 1,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "that ability triggers an additional time"
+      }
+     ],
+     "text": "If a triggered ability of a Shaman or another Wizard you control triggers, that ability triggers an additional time."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

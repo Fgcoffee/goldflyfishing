@@ -1,0 +1,112 @@
+{
+ "ir_version": 2,
+ "oracle_id": "bdeb440d-a714-40e8-9038-f651e6ae45fb",
+ "name": "Springleaf Drum",
+ "card_hash": "25c7959eaf44dd9c4f3661ad4970bc52",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bdeb440d-a714-40e8-9038-f651e6ae45fb",
+  "name": "Springleaf Drum",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Springleaf Drum",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}, Tap an untapped creature you control: Add one mana of any color.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 567,
+  "scryfall_uri": "https://scryfall.com/card/ecl/260/springleaf-drum?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "bdeb440d-a714-40e8-9038-f651e6ae45fb",
+   "name": "Springleaf Drum",
+   "face": 0,
+   "face_name": "Springleaf Drum",
+   "card_hash": "25c7959eaf44dd9c4f3661ad4970bc52",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}, Tap an untapped creature you control: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 3,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "controller": 1,
+         "tapped": false,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "tap another permanent"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

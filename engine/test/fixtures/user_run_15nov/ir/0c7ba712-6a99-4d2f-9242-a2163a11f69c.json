@@ -1,0 +1,142 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0c7ba712-6a99-4d2f-9242-a2163a11f69c",
+ "name": "Padeem, Consul of Innovation",
+ "card_hash": "b90d20dbdeb3b0027083c0c5b9b13ad2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0c7ba712-6a99-4d2f-9242-a2163a11f69c",
+  "name": "Padeem, Consul of Innovation",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Padeem, Consul of Innovation",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Vedalken",
+      "Artificer"
+     ]
+    },
+    "oracle_text": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)\nAt the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+    "power": "1",
+    "toughness": "4",
+    "colors": 2
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 906,
+  "scryfall_uri": "https://scryfall.com/card/cmm/109/padeem-consul-of-innovation?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0c7ba712-6a99-4d2f-9242-a2163a11f69c",
+   "name": "Padeem, Consul of Innovation",
+   "face": 0,
+   "face_name": "Padeem, Consul of Innovation",
+   "card_hash": "b90d20dbdeb3b0027083c0c5b9b13ad2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 1,
+        "controller": 1
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "hexproof",
+         "keyword": "hexproof"
+        }
+       ],
+       "text": "gains hexproof"
+      }
+     ],
+     "text": "Artifacts you control have hexproof."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "At the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card."
+      }
+     ],
+     "text": "At the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+     "reason": "not fully consumed",
+     "consumed": 7,
+     "remaining": [
+      "if",
+      "you",
+      "control",
+      "the",
+      "artifact",
+      "with",
+      "the",
+      "greatest",
+      "mana",
+      "value",
+      "or",
+      "tied",
+      "for",
+      "the",
+      "greatest",
+      "mana",
+      "value",
+      ",",
+      "draw",
+      "a",
+      "card",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

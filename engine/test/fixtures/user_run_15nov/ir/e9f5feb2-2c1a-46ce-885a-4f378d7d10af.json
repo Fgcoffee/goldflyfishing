@@ -1,0 +1,179 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
+ "name": "Mystic Gate",
+ "card_hash": "0243620937cb9b0097f9cb05060e40a8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
+  "name": "Mystic Gate",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mystic Gate",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.",
+    "produced_mana": [
+     "C",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 3,
+  "commander_legal": true,
+  "edhrec_rank": 870,
+  "scryfall_uri": "https://scryfall.com/card/cmm/1013/mystic-gate?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
+   "name": "Mystic Gate",
+   "face": 0,
+   "face_name": "Mystic Gate",
+   "card_hash": "0243620937cb9b0097f9cb05060e40a8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "mana_produced": [
+          "{W}",
+          "{W}"
+         ],
+         "colors": 1,
+         "text": "add {W}{W}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "mana_produced": [
+          "{W}",
+          "{U}"
+         ],
+         "colors": 3,
+         "text": "add {W}{U}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "mana_produced": [
+          "{U}",
+          "{U}"
+         ],
+         "colors": 2,
+         "text": "add {U}{U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 5,
+           "colors": 3,
+           "text": "{W/U}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

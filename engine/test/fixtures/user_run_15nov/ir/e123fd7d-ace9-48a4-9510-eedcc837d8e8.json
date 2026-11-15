@@ -1,0 +1,142 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e123fd7d-ace9-48a4-9510-eedcc837d8e8",
+ "name": "Iron Spider, Stark Upgrade",
+ "card_hash": "8cc43b76ed32de453c933edb4f1d6a72",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e123fd7d-ace9-48a4-9510-eedcc837d8e8",
+  "name": "Iron Spider, Stark Upgrade",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Iron Spider, Stark Upgrade",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 5,
+     "subtypes": [
+      "Spider",
+      "Hero"
+     ]
+    },
+    "oracle_text": "Vigilance\n{T}: Put a +1/+1 counter on each artifact creature and/or Vehicle you control.\n{2}, Remove two +1/+1 counters from among artifacts you control: Draw a card.",
+    "power": "2",
+    "toughness": "3",
+    "keywords": [
+     "Vigilance"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 3164,
+  "scryfall_uri": "https://scryfall.com/card/spm/166/iron-spider-stark-upgrade?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e123fd7d-ace9-48a4-9510-eedcc837d8e8",
+   "name": "Iron Spider, Stark Upgrade",
+   "face": 0,
+   "face_name": "Iron Spider, Stark Upgrade",
+   "card_hash": "8cc43b76ed32de453c933edb4f1d6a72",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Vigilance",
+     "keyword": "Vigilance"
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "controller": 1,
+        "any_of": [
+         {
+          "$": "ObjectFilter",
+          "types_all": 5,
+          "zones": {
+           "$set": []
+          }
+         },
+         {
+          "$": "ObjectFilter",
+          "subtypes_any": [
+           "Vehicle"
+          ],
+          "zones": {
+           "$set": []
+          }
+         }
+        ]
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "{T}: Put a +1/+1 counter on each artifact creature and/or Vehicle you control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "{2}, Remove two +1/+1 counters from among artifacts you control: Draw a card."
+      }
+     ],
+     "text": "{2}, Remove two +1/+1 counters from among artifacts you control: Draw a card.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "{2}, Remove two +1/+1 counters from among artifacts you control: Draw a card.",
+     "reason": "unreadable cost component at 'among'",
+     "rule": "cost"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

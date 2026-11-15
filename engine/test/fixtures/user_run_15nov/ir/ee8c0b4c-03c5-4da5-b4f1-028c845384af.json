@@ -1,0 +1,183 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ee8c0b4c-03c5-4da5-b4f1-028c845384af",
+ "name": "Dreamtide Whale",
+ "card_hash": "5f57ee99dc5d8be831ca2b91c9a57432",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ee8c0b4c-03c5-4da5-b4f1-028c845384af",
+  "name": "Dreamtide Whale",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dreamtide Whale",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Whale"
+     ]
+    },
+    "oracle_text": "Vanishing 2 (This creature enters with two time counters on it. At the beginning of your upkeep, remove a time counter from it. When the last is removed, sacrifice it.)\nWhenever a player casts their second spell each turn, proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+    "power": "7",
+    "toughness": "5",
+    "colors": 2,
+    "keywords": [
+     "Vanishing",
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1202,
+  "scryfall_uri": "https://scryfall.com/card/mh3/59/dreamtide-whale?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ee8c0b4c-03c5-4da5-b4f1-028c845384af",
+   "name": "Dreamtide Whale",
+   "face": 0,
+   "face_name": "Dreamtide Whale",
+   "card_hash": "5f57ee99dc5d8be831ca2b91c9a57432",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "counter_type": "time",
+       "text": "enters with 2 time counters"
+      }
+     ],
+     "text": "Vanishing 2",
+     "keyword": "Vanishing"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 73,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "time"
+      },
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "has_counter": "time"
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 0,
+         "value": {
+          "$": "Value"
+         }
+        }
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 31
+        }
+       ]
+      }
+     ],
+     "text": "Vanishing upkeep",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        127
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of your upkeep"
+     },
+     "keyword": "Vanishing"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 74,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "proliferate"
+      }
+     ],
+     "text": "Whenever a player casts their second spell each turn, proliferate.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": 2
+      },
+      "ordinal": 2,
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

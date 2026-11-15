@@ -1,0 +1,171 @@
+{
+ "ir_version": 2,
+ "oracle_id": "fbf9f8c5-849f-45d5-8129-5fc683c21a04",
+ "name": "Fury",
+ "card_hash": "89ad4372e53adf90f34f3992aaf6e2f9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fbf9f8c5-849f-45d5-8129-5fc683c21a04",
+  "name": "Fury",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Fury",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elemental",
+      "Incarnation"
+     ]
+    },
+    "oracle_text": "Double strike\nWhen this creature enters, it deals 4 damage divided as you choose among any number of target creatures and/or planeswalkers.\nEvoke—Exile a red card from your hand.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 8,
+    "keywords": [
+     "Evoke",
+     "Double strike"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 2385,
+  "scryfall_uri": "https://scryfall.com/card/ecc/50/fury?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "fbf9f8c5-849f-45d5-8129-5fc683c21a04",
+   "name": "Fury",
+   "face": 0,
+   "face_name": "Fury",
+   "card_hash": "89ad4372e53adf90f34f3992aaf6e2f9",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Double strike",
+     "keyword": "Double strike"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "When this creature enters, it deals 4 damage divided as you choose among any number of target creatures and/or planeswalkers."
+      }
+     ],
+     "text": "When this creature enters, it deals 4 damage divided as you choose among any number of target creatures and/or planeswalkers.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Evoke - Exile a red card from your hand",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Evoke",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 13,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "colors_any": 8,
+          "zones": {
+           "$set": [
+            1
+           ]
+          },
+          "owner": 1,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "text": "exile a card"
+        }
+       ]
+      },
+      "keyword": "Evoke",
+      "text": "Evoke - Exile a red card from your hand"
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this creature enters, it deals 4 damage divided as you choose among any number of target creatures and/or planeswalkers.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "it",
+      "deals",
+      "4",
+      "damage",
+      "divided",
+      "as",
+      "you",
+      "choose",
+      "among",
+      "any",
+      "number",
+      "of",
+      "target",
+      "creatures",
+      "and",
+      "or",
+      "planeswalkers",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

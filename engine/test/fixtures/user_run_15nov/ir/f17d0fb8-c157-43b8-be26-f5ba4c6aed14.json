@@ -1,0 +1,139 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f17d0fb8-c157-43b8-be26-f5ba4c6aed14",
+ "name": "Haze of Rage",
+ "card_hash": "9a35726b9ad8c598834df504a9ebb5a8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f17d0fb8-c157-43b8-be26-f5ba4c6aed14",
+  "name": "Haze of Rage",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Haze of Rage",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Buyback {2} (You may pay an additional {2} as you cast this spell. If you do, put this card into your hand as it resolves.)\nCreatures you control get +1/+0 until end of turn.\nStorm (When you cast this spell, copy it for each spell cast before it this turn.)",
+    "colors": 8,
+    "keywords": [
+     "Storm",
+     "Buyback"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 4476,
+  "scryfall_uri": "https://scryfall.com/card/tsr/169/haze-of-rage?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f17d0fb8-c157-43b8-be26-f5ba4c6aed14",
+   "name": "Haze of Rage",
+   "face": 0,
+   "face_name": "Haze of Rage",
+   "card_hash": "9a35726b9ad8c598834df504a9ebb5a8",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Buyback {2}",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Buyback",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 2,
+            "text": "{2}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Buyback",
+      "text": "Buyback {2}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": 1,
+       "text": "gets +1/+0"
+      }
+     ],
+     "text": "Creatures you control get +1/+0 until end of turn."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Storm"
+      }
+     ],
+     "text": "Storm",
+     "keyword": "Storm"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

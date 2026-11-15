@@ -1,0 +1,129 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f7156897-2b02-4ecd-868d-d4d59244e9ed",
+ "name": "Third Path Iconoclast",
+ "card_hash": "e607ffb31da3d9a21b097476871d65a0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f7156897-2b02-4ecd-868d-d4d59244e9ed",
+  "name": "Third Path Iconoclast",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Third Path Iconoclast",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Monk"
+     ]
+    },
+    "oracle_text": "Whenever you cast a noncreature spell, create a 1/1 colorless Soldier artifact creature token.",
+    "power": "2",
+    "toughness": "1",
+    "colors": 10
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 1362,
+  "scryfall_uri": "https://scryfall.com/card/tdc/307/third-path-iconoclast?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f7156897-2b02-4ecd-868d-d4d59244e9ed",
+   "name": "Third Path Iconoclast",
+   "face": 0,
+   "face_name": "Third Path Iconoclast",
+   "card_hash": "e607ffb31da3d9a21b097476871d65a0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Soldier",
+        "types": 5,
+        "subtypes": [
+         "Soldier"
+        ],
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever you cast a noncreature spell, create a 1/1 colorless Soldier artifact creature token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

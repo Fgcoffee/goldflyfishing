@@ -1,0 +1,134 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c7fa1dda-9312-4ec8-82cd-a1ba7bc33497",
+ "name": "Raugrin Triome",
+ "card_hash": "6b30f202e441c07cee0293c1dbb5d1c1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c7fa1dda-9312-4ec8-82cd-a1ba7bc33497",
+  "name": "Raugrin Triome",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Raugrin Triome",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Island",
+      "Mountain",
+      "Plains"
+     ]
+    },
+    "oracle_text": "({T}: Add {U}, {R}, or {W}.)\nThis land enters tapped.\nCycling {3} ({3}, Discard this card: Draw a card.)",
+    "keywords": [
+     "Cycling"
+    ],
+    "produced_mana": [
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 11,
+  "commander_legal": true,
+  "edhrec_rank": 488,
+  "scryfall_uri": "https://scryfall.com/card/iko/251/raugrin-triome?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c7fa1dda-9312-4ec8-82cd-a1ba7bc33497",
+   "name": "Raugrin Triome",
+   "face": 0,
+   "face_name": "Raugrin Triome",
+   "card_hash": "6b30f202e441c07cee0293c1dbb5d1c1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       }
+      }
+     ],
+     "text": "Cycling {3}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 3,
+           "text": "{3}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 11,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "discard this card"
+       }
+      ]
+     },
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Cycling"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

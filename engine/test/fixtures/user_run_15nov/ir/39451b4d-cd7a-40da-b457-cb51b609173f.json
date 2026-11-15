@@ -1,0 +1,84 @@
+{
+ "ir_version": 2,
+ "oracle_id": "39451b4d-cd7a-40da-b457-cb51b609173f",
+ "name": "Seat of the Synod",
+ "card_hash": "891538f0b3b84f2fddb8801db9c60558",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "39451b4d-cd7a-40da-b457-cb51b609173f",
+  "name": "Seat of the Synod",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Seat of the Synod",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 17
+    },
+    "oracle_text": "{T}: Add {U}.",
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 316,
+  "scryfall_uri": "https://scryfall.com/card/eoc/176/seat-of-the-synod?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "39451b4d-cd7a-40da-b457-cb51b609173f",
+   "name": "Seat of the Synod",
+   "face": 0,
+   "face_name": "Seat of the Synod",
+   "card_hash": "891538f0b3b84f2fddb8801db9c60558",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {U}"
+      }
+     ],
+     "text": "{T}: Add {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,142 @@
+{
+ "ir_version": 2,
+ "oracle_id": "83e78565-e61f-4bbc-b834-f47941f7e3ec",
+ "name": "Resourceful Defense",
+ "card_hash": "7b899ba9118b164364e4ab787dd15d6c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "83e78565-e61f-4bbc-b834-f47941f7e3ec",
+  "name": "Resourceful Defense",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Resourceful Defense",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever a permanent you control leaves the battlefield, if it had counters on it, put those counters on target permanent you control.\n{4}{W}: Move any number of counters from target permanent you control onto a second target permanent you control.",
+    "colors": 1
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 1593,
+  "scryfall_uri": "https://scryfall.com/card/eoc/67/resourceful-defense?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "83e78565-e61f-4bbc-b834-f47941f7e3ec",
+   "name": "Resourceful Defense",
+   "face": 0,
+   "face_name": "Resourceful Defense",
+   "card_hash": "7b899ba9118b164364e4ab787dd15d6c",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever a permanent you control leaves the battlefield, if it had counters on it, put those counters on target permanent you control."
+      }
+     ],
+     "text": "Whenever a permanent you control leaves the battlefield, if it had counters on it, put those counters on target permanent you control.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "{4}{W}: Move any number of counters from target permanent you control onto a second target permanent you control."
+      }
+     ],
+     "text": "{4}{W}: Move any number of counters from target permanent you control onto a second target permanent you control.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever a permanent you control leaves the battlefield, if it had counters on it, put those counters on target permanent you control.",
+     "reason": "not fully consumed",
+     "consumed": 9,
+     "remaining": [
+      "if",
+      "it",
+      "had",
+      "counters",
+      "on",
+      "it",
+      ",",
+      "put",
+      "those",
+      "counters",
+      "on",
+      "target",
+      "permanent",
+      "you",
+      "control",
+      "."
+     ],
+     "rule": "triggered"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "{4}{W}: Move any number of counters from target permanent you control onto a second target permanent you control.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Move",
+      "any",
+      "number",
+      "of",
+      "counters",
+      "from",
+      "target",
+      "permanent",
+      "you",
+      "control",
+      "onto",
+      "a",
+      "second",
+      "target",
+      "permanent",
+      "you",
+      "control",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

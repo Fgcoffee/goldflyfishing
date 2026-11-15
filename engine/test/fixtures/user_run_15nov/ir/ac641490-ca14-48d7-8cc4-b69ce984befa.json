@@ -1,0 +1,90 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
+ "name": "Preordain",
+ "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
+  "name": "Preordain",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Preordain",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Scry 2, then draw a card. (To scry 2, look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)",
+    "colors": 2,
+    "keywords": [
+     "Scry"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 218,
+  "scryfall_uri": "https://scryfall.com/card/tdc/161/preordain?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
+   "name": "Preordain",
+   "face": 0,
+   "face_name": "Preordain",
+   "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 26,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "scry/surveil"
+      },
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Scry 2, then draw a card."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

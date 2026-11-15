@@ -1,0 +1,101 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8dcb35e5-ae44-455f-86e3-4a77d496ff34",
+ "name": "Spark Double",
+ "card_hash": "80032a91e704370ae2243526a442ffd1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8dcb35e5-ae44-455f-86e3-4a77d496ff34",
+  "name": "Spark Double",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Spark Double",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Illusion"
+     ]
+    },
+    "oracle_text": "You may have this creature enter as a copy of a creature or planeswalker you control, except it enters with an additional +1/+1 counter on it if it's a creature, it enters with an additional loyalty counter on it if it's a planeswalker, and it isn't legendary.",
+    "power": "0",
+    "toughness": "0",
+    "colors": 2
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 396,
+  "scryfall_uri": "https://scryfall.com/card/rvr/62/spark-double?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8dcb35e5-ae44-455f-86e3-4a77d496ff34",
+   "name": "Spark Double",
+   "face": 0,
+   "face_name": "Spark Double",
+   "card_hash": "80032a91e704370ae2243526a442ffd1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 84,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_any": 36,
+          "controller": 1,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "enters as a copy"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may have this creature enter as a copy of a creature or planeswalker you control, except it enters with an additional +1/+1 counter on it if it's a creature, it enters with an additional loyalty counter on it if it's a planeswalker, and it isn't legendary."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

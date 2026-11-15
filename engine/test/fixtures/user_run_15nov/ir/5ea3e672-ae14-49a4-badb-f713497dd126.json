@@ -1,0 +1,176 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5ea3e672-ae14-49a4-badb-f713497dd126",
+ "name": "Crystalline Crawler",
+ "card_hash": "c3357c9a9b25df81c879289c8bce8dd9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5ea3e672-ae14-49a4-badb-f713497dd126",
+  "name": "Crystalline Crawler",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Crystalline Crawler",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Construct"
+     ]
+    },
+    "oracle_text": "Converge — This creature enters with a +1/+1 counter on it for each color of mana spent to cast it.\nRemove a +1/+1 counter from this creature: Add one mana of any color.\n{T}: Put a +1/+1 counter on this creature.",
+    "power": "1",
+    "toughness": "1",
+    "keywords": [
+     "Converge"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 2941,
+  "scryfall_uri": "https://scryfall.com/card/eoc/133/crystalline-crawler?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5ea3e672-ae14-49a4-badb-f713497dd126",
+   "name": "Crystalline Crawler",
+   "face": 0,
+   "face_name": "Crystalline Crawler",
+   "card_hash": "c3357c9a9b25df81c879289c8bce8dd9",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "This creature enters with a +1/+1 counter on it for each color of mana spent to cast it."
+      }
+     ],
+     "text": "This creature enters with a +1/+1 counter on it for each color of mana spent to cast it.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "Remove a +1/+1 counter from this creature: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 32,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "counter_type": "+1/+1",
+        "text": "remove counters"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "{T}: Put a +1/+1 counter on this creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "This creature enters with a +1/+1 counter on it for each color of mana spent to cast it.",
+     "reason": "not fully consumed",
+     "consumed": 9,
+     "remaining": [
+      "for",
+      "each",
+      "color",
+      "of",
+      "mana",
+      "spent",
+      "to",
+      "cast",
+      "it",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

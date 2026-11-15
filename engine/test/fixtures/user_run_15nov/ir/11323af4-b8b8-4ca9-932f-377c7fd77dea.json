@@ -1,0 +1,166 @@
+{
+ "ir_version": 2,
+ "oracle_id": "11323af4-b8b8-4ca9-932f-377c7fd77dea",
+ "name": "The Eternity Elevator",
+ "card_hash": "a2ff2ea326d21e39de5dc725fa039cb4",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "11323af4-b8b8-4ca9-932f-377c7fd77dea",
+  "name": "The Eternity Elevator",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "The Eternity Elevator",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 5,
+       "text": "{5}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1,
+     "subtypes": [
+      "Spacecraft"
+     ]
+    },
+    "oracle_text": "{T}: Add {C}{C}{C}.\nStation (Tap another creature you control: Put charge counters equal to its power on this Spacecraft. Station only as a sorcery.)\n20+ | {T}: Add X mana of any one color, where X is the number of charge counters on The Eternity Elevator.",
+    "keywords": [
+     "Station"
+    ],
+    "produced_mana": [
+     "B",
+     "C",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1647,
+  "scryfall_uri": "https://scryfall.com/card/eoe/241/the-eternity-elevator?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "11323af4-b8b8-4ca9-932f-377c7fd77dea",
+   "name": "The Eternity Elevator",
+   "face": 0,
+   "face_name": "The Eternity Elevator",
+   "card_hash": "a2ff2ea326d21e39de5dc725fa039cb4",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_produced": [
+        "{C}",
+        "{C}",
+        "{C}"
+       ],
+       "text": "add {C}{C}{C}"
+      }
+     ],
+     "text": "{T}: Add {C}{C}{C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "kind": 21
+       },
+       "counter_type": "charge"
+      }
+     ],
+     "text": "Station",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 3,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "other_than_source": true,
+         "controller": 1,
+         "tapped": false
+        },
+        "text": "tap another untapped creature you control"
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Station"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "20+ | {T}: Add X mana of any one color, where X is the number of charge counters on this."
+      }
+     ],
+     "text": "20+ | {T}: Add X mana of any one color, where X is the number of charge counters on this.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "20+ | {T}: Add X mana of any one color, where X is the number of charge counters on this.",
+     "reason": "unreadable cost component at '20'",
+     "rule": "cost"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

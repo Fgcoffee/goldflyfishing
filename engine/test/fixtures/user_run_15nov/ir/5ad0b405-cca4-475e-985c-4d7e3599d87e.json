@@ -1,0 +1,161 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5ad0b405-cca4-475e-985c-4d7e3599d87e",
+ "name": "Sundown Pass",
+ "card_hash": "ac89ad97c4db374646b8aae55a27ae5b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5ad0b405-cca4-475e-985c-4d7e3599d87e",
+  "name": "Sundown Pass",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sundown Pass",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped unless you control two or more other lands.\n{T}: Add {R} or {W}.",
+    "produced_mana": [
+     "R",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 9,
+  "commander_legal": true,
+  "edhrec_rank": 263,
+  "scryfall_uri": "https://scryfall.com/card/sos/264/sundown-pass?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5ad0b405-cca4-475e-985c-4d7e3599d87e",
+   "name": "Sundown Pass",
+   "face": 0,
+   "face_name": "Sundown Pass",
+   "card_hash": "ac89ad97c4db374646b8aae55a27ae5b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 5,
+          "filter": {
+           "$": "ObjectFilter",
+           "types_all": 16,
+           "other_than_source": true,
+           "controller": 1
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 2
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control two or more other lands."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{R}"
+         ],
+         "colors": 8,
+         "text": "add {R}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": 1,
+         "text": "add {W}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {R} or {W}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

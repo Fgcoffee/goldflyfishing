@@ -1,0 +1,85 @@
+{
+ "ir_version": 2,
+ "oracle_id": "27b047e3-0d41-45e2-98e9-9391d7923a1e",
+ "name": "Exotic Orchard",
+ "card_hash": "0f48d8d683f8ea8b9bf6ee401e2e07d9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "27b047e3-0d41-45e2-98e9-9391d7923a1e",
+  "name": "Exotic Orchard",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Exotic Orchard",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add one mana of any color that a land an opponent controls could produce.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 9,
+  "scryfall_uri": "https://scryfall.com/card/mbc/79/exotic-orchard?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "27b047e3-0d41-45e2-98e9-9391d7923a1e",
+   "name": "Exotic Orchard",
+   "face": 0,
+   "face_name": "Exotic Orchard",
+   "card_hash": "0f48d8d683f8ea8b9bf6ee401e2e07d9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color that a land an opponent controls could produce.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

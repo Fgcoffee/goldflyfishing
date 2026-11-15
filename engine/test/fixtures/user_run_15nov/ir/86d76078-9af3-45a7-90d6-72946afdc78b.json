@@ -1,0 +1,132 @@
+{
+ "ir_version": 2,
+ "oracle_id": "86d76078-9af3-45a7-90d6-72946afdc78b",
+ "name": "Goldlust Triad",
+ "card_hash": "e36cda77de985029be6de990cfa47c04",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "86d76078-9af3-45a7-90d6-72946afdc78b",
+  "name": "Goldlust Triad",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Goldlust Triad",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Dragon"
+     ]
+    },
+    "oracle_text": "Flying\nMyriad (Whenever this creature attacks, for each opponent other than defending player, you may create a token copy that's tapped and attacking that player or a planeswalker they control. Exile the tokens at end of combat.)\nWhenever this creature deals combat damage to a player, create a Treasure token.",
+    "power": "4",
+    "toughness": "3",
+    "colors": 8,
+    "keywords": [
+     "Myriad",
+     "Flying",
+     "Treasure"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1955,
+  "scryfall_uri": "https://scryfall.com/card/tdc/34/goldlust-triad?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "86d76078-9af3-45a7-90d6-72946afdc78b",
+   "name": "Goldlust Triad",
+   "face": 0,
+   "face_name": "Goldlust Triad",
+   "card_hash": "e36cda77de985029be6de990cfa47c04",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Myriad"
+      }
+     ],
+     "text": "Myriad",
+     "keyword": "Myriad"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever this creature deals combat damage to a player, create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "to_player": true,
+      "text": "when this deals combat damage to a player"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

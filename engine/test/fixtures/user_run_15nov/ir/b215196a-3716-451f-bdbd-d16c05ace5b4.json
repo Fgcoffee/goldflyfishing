@@ -1,0 +1,101 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b215196a-3716-451f-bdbd-d16c05ace5b4",
+ "name": "Flametongue Kavu",
+ "card_hash": "8ca8e4d4dcb711c64976d5e770fdd534",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b215196a-3716-451f-bdbd-d16c05ace5b4",
+  "name": "Flametongue Kavu",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Flametongue Kavu",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Kavu"
+     ]
+    },
+    "oracle_text": "When this creature enters, it deals 4 damage to target creature.",
+    "power": "4",
+    "toughness": "2",
+    "colors": 8
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 13028,
+  "scryfall_uri": "https://scryfall.com/card/dmr/120/flametongue-kavu?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b215196a-3716-451f-bdbd-d16c05ace5b4",
+   "name": "Flametongue Kavu",
+   "face": 0,
+   "face_name": "Flametongue Kavu",
+   "card_hash": "8ca8e4d4dcb711c64976d5e770fdd534",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "is_targeted": true,
+       "text": "deal damage"
+      }
+     ],
+     "text": "When this creature enters, it deals 4 damage to target creature.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

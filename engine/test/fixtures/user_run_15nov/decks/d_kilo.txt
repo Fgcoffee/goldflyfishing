@@ -1,0 +1,93 @@
+1x Academy Ruins (2xm)
+1x Adagia, Windswept Bastion (eoe)
+1x All Will Be One (one) [Finisher,Combo]
+1x An Offer You Can't Refuse (fdn) [Removal]
+1x Ancient Den (sld)
+1x Archway of Innovation (mh3)
+1x Astral Cornucopia (soc) [Ramp,Battery]
+1x Aura of Dominion (chk) [Combo,Tap Outlet,Untap]
+1x Buried Ruin (eoc)
+1x Clock of Omens (5dn) [Tap Outlet,Untap]
+1x Coalition Relic (m3c) [Ramp]
+1x Command Tower (sld)
+1x Coretapper (eoc) [Battery]
+1x Crystalline Crawler (eoc) [Combo,Ramp,Proliferate]
+1x Cyclonic Rift (rvr) [Removal]
+1x Darksteel Reactor (eoc) [Finisher]
+1x Deflecting Swat (sld) [Protection,Removal]
+1x Deserted Beach (mid)
+1x Dreamtide Whale (mh3) [Proliferate]
+1x Empowered Autogenerator (eoc) [Ramp,Proliferate]
+1x Enlightened Tutor (dmr) [Tutor]
+1x Esper Sentinel (h2r) [Draw]
+1x Everflowing Chalice (lcc) [Ramp,Battery]
+1x Exotic Orchard (ltc)
+1x Expansion Algorithm (soc) [Finisher,Proliferate]
+1x Fierce Guardianship (cmm) [Removal]
+1x Freed from the Real (plst) [Combo,Untap]
+1x Gemstone Array (5dn) [Combo,Ramp,Battery]
+1x Grand Abolisher (big) [Protection]
+1x Great Furnace (brc)
+1x Hallowed Fountain (ecl)
+1x Hawkeye's Bow (msh) [Finisher,Combo]
+1x Inexorable Tide (fic) [Proliferate]
+1x Insight Engine (eoc) [Draw]
+1x Inventors' Fair (eos)
+1x Iron Spider, Stark Upgrade (spm) [Battery,Draw]
+8x Island (eoe) 263
+1x Jhoira, Weatherlight Captain (sld) *F* [Draw]
+1x Karn's Bastion (pwar) *F*
+1x Kilo, Apogee Mind (eoc) [Commander{top}]
+1x Lost Jitte (big) [Combo,Ramp,Battery]
+1x Lux Cannon (eoc) [Removal,Battery]
+1x Mana Drain (cmr) [Removal,Ramp]
+1x Minamo, School at Water's Edge (ltc)
+1x Mountain (eoe) 265
+1x Moxite Refinery (eoc) [Finisher,Counter Movement]
+1x Mystic Forge (m3c) [Draw]
+1x Mystic Remora (dmr) [Draw]
+1x Nesting Grounds (eos)
+1x Nexus Mentality (soc) [Draw,Counter Movement]
+1x Padeem, Consul of Innovation (j25) [Draw,Protection]
+1x Paradise Mantle (plst) [Combo,Tap Outlet,Ramp]
+1x Path to Exile (pf20) [Removal]
+1x Patrolling Peacemaker (eoc) [Proliferate]
+1x Pemmin's Aura (scg) [Combo,Untap]
+1x Pentad Prism (eoc) [Combo,Ramp]
+1x Plains (eoe) 262
+1x Prairie Stream (ltc)
+1x Prologue to Phyresis (one) [Finisher,Draw]
+1x Radiant Summit (eoc)
+1x Relic of Legends (msc) [Combo,Tap Outlet,Ramp]
+1x Resourceful Defense (eoc) [Finisher,Counter Movement]
+1x Sacred Foundry (eoe)
+1x Sea of Clouds (clb)
+1x Seat of the Synod (brc)
+1x Silence (sld) [Protection]
+1x Sink into Stupor // Soporific Springs (mh3) [Removal]
+1x Spectator Seating (cmr)
+1x Spire of Industry (eoc)
+1x Springleaf Drum (ecl) [Tap Outlet,Ramp]
+1x Steam Vents (clu) *F*
+1x Sundown Pass (sos)
+1x Surge Conductor (eoc) [Proliferate]
+1x Swan Song (sld) *F* [Removal]
+1x Swords to Plowshares (ltc) [Removal]
+1x Teferi, Time Raveler (blc) [Protection]
+1x Tekuthal, Inquiry Dominus (eoc) [Proliferate]
+1x Tezzeret the Seeker (sld) [Untap,Tutor]
+1x Tezzeret, Cruel Captain (eoe) [Tutor]
+1x Tezzeret's Gambit (sta) [Draw,Proliferate]
+1x The Eternity Elevator (eoe) [Tap Outlet,Ramp]
+1x Training Center (cmr)
+1x Trinket Mage (ddu) [Tutor]
+1x Umbral Mantle (plst) [Combo,Untap]
+1x Unwinding Clock (c18) [Untap]
+1x Urza, Lord High Artificer (cmm) [Combo,Tap Outlet,Ramp,Draw]
+1x Urza's Saga (mh2)
+1x Uthros, Titanic Godcore (eoe)
+1x Voltaic Construct (dst) [Combo,Untap]
+1x Walking Ballista (mb2) [Finisher,Combo,Removal]
+1x Whir of Invention (plst) [Tutor]
+1x Witch Enchanter // Witch-Blessed Meadow (mh3) [Removal]
+1x Zirda, the Dawnwaker (mul) [Combo,Cost Reduction]

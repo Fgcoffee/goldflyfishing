@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a145ff8c-5812-4bcb-bd16-9839dc25121d",
+ "name": "Storm-Kiln Artist",
+ "card_hash": "f1ae3d5a48db27e46b909e4d5c474f63",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a145ff8c-5812-4bcb-bd16-9839dc25121d",
+  "name": "Storm-Kiln Artist",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Storm-Kiln Artist",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Dwarf",
+      "Shaman"
+     ]
+    },
+    "oracle_text": "This creature gets +1/+0 for each artifact you control.\nMagecraft — Whenever you cast or copy an instant or sorcery spell, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+    "power": "2",
+    "toughness": "2",
+    "colors": 8,
+    "keywords": [
+     "Treasure",
+     "Magecraft"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 201,
+  "scryfall_uri": "https://scryfall.com/card/soc/255/storm-kiln-artist?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a145ff8c-5812-4bcb-bd16-9839dc25121d",
+   "name": "Storm-Kiln Artist",
+   "face": 0,
+   "face_name": "Storm-Kiln Artist",
+   "card_hash": "f1ae3d5a48db27e46b909e4d5c474f63",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 1,
+         "controller": 1
+        }
+       },
+       "duration": 0,
+       "text": "gets +1/+0"
+      }
+     ],
+     "text": "This creature gets +1/+0 for each artifact you control."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever you cast or copy an instant or sorcery spell, create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20,
+        28
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_any": 192,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,160 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7fd7457a-388d-4cca-a7cf-86b4ea922037",
+ "name": "Pyrogoyf",
+ "card_hash": "7dcfb79b2fdd73ae4e29fcc598cd9fab",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7fd7457a-388d-4cca-a7cf-86b4ea922037",
+  "name": "Pyrogoyf",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Pyrogoyf",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Lhurgoyf"
+     ]
+    },
+    "oracle_text": "Pyrogoyf's power is equal to the number of card types among cards in all graveyards and its toughness is equal to that number plus 1.\nWhenever this creature or another Lhurgoyf creature you control enters, that creature deals damage equal to its power to any target.",
+    "power": "*",
+    "toughness": "1+*",
+    "colors": 8
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 6934,
+  "scryfall_uri": "https://scryfall.com/card/aa2/12/pyrogoyf?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7fd7457a-388d-4cca-a7cf-86b4ea922037",
+   "name": "Pyrogoyf",
+   "face": 0,
+   "face_name": "Pyrogoyf",
+   "card_hash": "7dcfb79b2fdd73ae4e29fcc598cd9fab",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "its power is equal to the number of card types among cards in all graveyards and its toughness is equal to that number plus 1."
+      }
+     ],
+     "text": "its power is equal to the number of card types among cards in all graveyards and its toughness is equal to that number plus 1.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 38,
+        "includes_players": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 3,
+        "filter": {
+         "$": "ObjectFilter",
+         "remembered": true
+        }
+       },
+       "is_targeted": true,
+       "damage_source": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "text": "deal damage to any target"
+      }
+     ],
+     "text": "Whenever this creature or another Lhurgoyf creature you control enters, that creature deals damage equal to its power to any target.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "subtypes_all": [
+        "Lhurgoyf"
+       ],
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "its power is equal to the number of card types among cards in all graveyards and its toughness is equal to that number plus 1.",
+     "reason": "not fully consumed",
+     "consumed": 9,
+     "remaining": [
+      "types",
+      "among",
+      "cards",
+      "in",
+      "all",
+      "graveyards",
+      "and",
+      "its",
+      "toughness",
+      "is",
+      "equal",
+      "to",
+      "that",
+      "number",
+      "plus",
+      "1",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

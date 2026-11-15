@@ -1,0 +1,146 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a5cbd257-c836-493e-bb1a-76242619dea2",
+ "name": "Big Score",
+ "card_hash": "a8ebada44f8bca65d3816b5139cfcf8d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a5cbd257-c836-493e-bb1a-76242619dea2",
+  "name": "Big Score",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Big Score",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "As an additional cost to cast this spell, discard a card.\nDraw two cards and create two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+    "colors": 8,
+    "keywords": [
+     "Treasure"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 138,
+  "scryfall_uri": "https://scryfall.com/card/msc/802/big-score?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a5cbd257-c836-493e-bb1a-76242619dea2",
+   "name": "Big Score",
+   "face": 0,
+   "face_name": "Big Score",
+   "card_hash": "a8ebada44f8bca65d3816b5139cfcf8d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, discard a card.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 11,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "filter": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": []
+          }
+         },
+         "text": "discard"
+        }
+       ]
+      },
+      "text": "as an additional cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Draw two cards and create two Treasure tokens."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

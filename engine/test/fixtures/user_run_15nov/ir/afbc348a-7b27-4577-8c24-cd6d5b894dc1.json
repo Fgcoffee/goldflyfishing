@@ -1,0 +1,98 @@
+{
+ "ir_version": 2,
+ "oracle_id": "afbc348a-7b27-4577-8c24-cd6d5b894dc1",
+ "name": "Expansion Algorithm",
+ "card_hash": "3cd9fd6e89c0f5311fa0a1e892087978",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "afbc348a-7b27-4577-8c24-cd6d5b894dc1",
+  "name": "Expansion Algorithm",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Expansion Algorithm",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Proliferate X times. (To proliferate, choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+    "colors": 2,
+    "keywords": [
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 6504,
+  "scryfall_uri": "https://scryfall.com/card/soc/19/expansion-algorithm?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "afbc348a-7b27-4577-8c24-cd6d5b894dc1",
+   "name": "Expansion Algorithm",
+   "face": 0,
+   "face_name": "Expansion Algorithm",
+   "card_hash": "3cd9fd6e89c0f5311fa0a1e892087978",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Proliferate X times."
+      }
+     ],
+     "text": "Proliferate X times.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Proliferate X times.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Proliferate",
+      "X",
+      "times",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

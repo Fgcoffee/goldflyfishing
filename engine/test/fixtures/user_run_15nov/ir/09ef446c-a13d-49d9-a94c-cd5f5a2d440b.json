@@ -1,0 +1,130 @@
+{
+ "ir_version": 2,
+ "oracle_id": "09ef446c-a13d-49d9-a94c-cd5f5a2d440b",
+ "name": "Displacer Kitten",
+ "card_hash": "d8ae6198e303abb90b57a32e149df10c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "09ef446c-a13d-49d9-a94c-cd5f5a2d440b",
+  "name": "Displacer Kitten",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Displacer Kitten",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Cat",
+      "Beast"
+     ]
+    },
+    "oracle_text": "Avoidance — Whenever you cast a noncreature spell, exile up to one target nonland permanent you control, then return that card to the battlefield under its owner's control.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 2,
+    "keywords": [
+     "Avoidance"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 550,
+  "scryfall_uri": "https://scryfall.com/card/clb/63/displacer-kitten?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "09ef446c-a13d-49d9-a94c-cd5f5a2d440b",
+   "name": "Displacer Kitten",
+   "face": 0,
+   "face_name": "Displacer Kitten",
+   "card_hash": "d8ae6198e303abb90b57a32e149df10c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": 16,
+        "controller": 1,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        },
+        "up_to": true
+       },
+       "is_targeted": true,
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "zone": 2,
+       "text": "return"
+      }
+     ],
+     "text": "Whenever you cast a noncreature spell, exile up to one target nonland permanent you control, then return that card to the battlefield under its owner's control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

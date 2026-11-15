@@ -1,0 +1,108 @@
+{
+ "ir_version": 2,
+ "oracle_id": "45181cb8-2090-4471-ba90-e5a8f04d525f",
+ "name": "Sacred Foundry",
+ "card_hash": "6da103bbf495174fcd88bc6e5cd47b32",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "45181cb8-2090-4471-ba90-e5a8f04d525f",
+  "name": "Sacred Foundry",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sacred Foundry",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Mountain",
+      "Plains"
+     ]
+    },
+    "oracle_text": "({T}: Add {R} or {W}.)\nAs this land enters, you may pay 2 life. If you don't, it enters tapped.",
+    "produced_mana": [
+     "R",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 9,
+  "commander_legal": true,
+  "edhrec_rank": 74,
+  "scryfall_uri": "https://scryfall.com/card/trk/295/sacred-foundry?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "45181cb8-2090-4471-ba90-e5a8f04d525f",
+   "name": "Sacred Foundry",
+   "face": 0,
+   "face_name": "Sacred Foundry",
+   "card_hash": "6da103bbf495174fcd88bc6e5cd47b32",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 4,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 52,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 2
+           },
+           "text": "pay life"
+          }
+         ],
+         "text": "may"
+        },
+        {
+         "$": "Effect",
+         "kind": 201,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 70,
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "duration": 0,
+           "text": "enters tapped"
+          }
+         ],
+         "text": "if you don't"
+        }
+       ],
+       "text": "as this enters"
+      }
+     ],
+     "text": "As this land enters, you may pay 2 life. If you don't, it enters tapped."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

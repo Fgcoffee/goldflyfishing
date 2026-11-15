@@ -1,0 +1,160 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2c49d24a-98a4-43c2-bb59-1ef13d4214c2",
+ "name": "Untimely Malfunction",
+ "card_hash": "e7226a1f999ecf056310bfa57fdc3284",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2c49d24a-98a4-43c2-bb59-1ef13d4214c2",
+  "name": "Untimely Malfunction",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Untimely Malfunction",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Choose one —\n• Destroy target artifact.\n• Change the target of target spell or ability with a single target.\n• One or two target creatures can't block this turn.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 265,
+  "scryfall_uri": "https://scryfall.com/card/dsk/161/untimely-malfunction?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2c49d24a-98a4-43c2-bb59-1ef13d4214c2",
+   "name": "Untimely Malfunction",
+   "face": 0,
+   "face_name": "Untimely Malfunction",
+   "card_hash": "e7226a1f999ecf056310bfa57fdc3284",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 29,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 1
+           },
+           "is_targeted": true,
+           "text": "destroy"
+          }
+         ],
+         "text": "Destroy target artifact."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 102,
+           "targets": {
+            "$": "ObjectFilter",
+            "zones": {
+             "$set": [
+              4
+             ]
+            }
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "is_targeted": true,
+           "text": "change targets"
+          }
+         ],
+         "text": "Change the target of target spell or ability with a single target."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 150,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "count": {
+             "$": "Value",
+             "constant": 2
+            },
+            "up_to": true
+           },
+           "duration": 1,
+           "restrictions": [
+            {
+             "$": "Restriction",
+             "act": 23,
+             "subject": {
+              "$": "ObjectFilter",
+              "types_all": 4,
+              "count": {
+               "$": "Value",
+               "constant": 2
+              },
+              "up_to": true
+             },
+             "text": "can't block"
+            }
+           ],
+           "text": "can't"
+          }
+         ],
+         "text": "One or two target creatures can't block this turn."
+        }
+       ],
+       "text": "Choose one -"
+      }
+     ],
+     "text": "Choose one -",
+     "functions_in": {
+      "$set": [
+       4
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

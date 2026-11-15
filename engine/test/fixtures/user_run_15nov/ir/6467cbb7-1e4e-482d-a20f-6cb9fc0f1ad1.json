@@ -1,0 +1,119 @@
+{
+ "ir_version": 2,
+ "oracle_id": "6467cbb7-1e4e-482d-a20f-6cb9fc0f1ad1",
+ "name": "Whirlwind of Thought",
+ "card_hash": "8c16a1b5abc20f3e261c9073fd4bf9af",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6467cbb7-1e4e-482d-a20f-6cb9fc0f1ad1",
+  "name": "Whirlwind of Thought",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Whirlwind of Thought",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever you cast a noncreature spell, draw a card.",
+    "colors": 11
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 11,
+  "commander_legal": true,
+  "edhrec_rank": 1621,
+  "scryfall_uri": "https://scryfall.com/card/msc/190/whirlwind-of-thought?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "6467cbb7-1e4e-482d-a20f-6cb9fc0f1ad1",
+   "name": "Whirlwind of Thought",
+   "face": 0,
+   "face_name": "Whirlwind of Thought",
+   "card_hash": "8c16a1b5abc20f3e261c9073fd4bf9af",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever you cast a noncreature spell, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,153 @@
+{
+ "ir_version": 2,
+ "oracle_id": "9e2adca5-f39c-4a09-bcce-8238ebac2c4a",
+ "name": "Cackling Counterpart",
+ "card_hash": "f1a048038d2c4cf45304cd3650ac5def",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9e2adca5-f39c-4a09-bcce-8238ebac2c4a",
+  "name": "Cackling Counterpart",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cackling Counterpart",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Create a token that's a copy of target creature you control.\nFlashback {5}{U}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "colors": 2,
+    "keywords": [
+     "Flashback"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 2884,
+  "scryfall_uri": "https://scryfall.com/card/inr/55/cackling-counterpart?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "9e2adca5-f39c-4a09-bcce-8238ebac2c4a",
+   "name": "Cackling Counterpart",
+   "face": 0,
+   "face_name": "Cackling Counterpart",
+   "card_hash": "f1a048038d2c4cf45304cd3650ac5def",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "token": {
+        "$": "TokenSpec",
+        "copy_of": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "controller": 1
+        }
+       },
+       "text": "create a token copy"
+      }
+     ],
+     "text": "Create a token that's a copy of target creature you control."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flashback {5}{U}{U}",
+     "functions_in": {
+      "$set": [
+       3
+      ]
+     },
+     "keyword": "Flashback",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 5,
+            "text": "{5}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 2,
+            "text": "{U}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 2,
+            "text": "{U}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "from_zone": 3,
+      "keyword": "Flashback",
+      "text": "Flashback {5}{U}{U}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

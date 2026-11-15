@@ -1,0 +1,117 @@
+{
+ "ir_version": 2,
+ "oracle_id": "92b91910-9b65-4421-8eef-a33793161089",
+ "name": "Molten Duplication",
+ "card_hash": "966a45e3afd42f0dd6ba24c1fe4b84c2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "92b91910-9b65-4421-8eef-a33793161089",
+  "name": "Molten Duplication",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Molten Duplication",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Create a token that's a copy of target artifact or creature you control, except it's an artifact in addition to its other types. It gains haste until end of turn. Sacrifice it at the beginning of the next end step.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1734,
+  "scryfall_uri": "https://scryfall.com/card/big/14/molten-duplication?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "92b91910-9b65-4421-8eef-a33793161089",
+   "name": "Molten Duplication",
+   "face": 0,
+   "face_name": "Molten Duplication",
+   "card_hash": "966a45e3afd42f0dd6ba24c1fe4b84c2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Create a token that's a copy of target artifact or creature you control, except it's an artifact in addition to its other types. It gains haste until end of turn. Sacrifice it at the beginning of the next end step."
+      }
+     ],
+     "text": "Create a token that's a copy of target artifact or creature you control, except it's an artifact in addition to its other types. It gains haste until end of turn. Sacrifice it at the beginning of the next end step.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Create a token that's a copy of target artifact or creature you control, except it's an artifact in addition to its other types. It gains haste until end of turn. Sacrifice it at the beginning of the next end step.",
+     "reason": "not fully consumed",
+     "consumed": 14,
+     "remaining": [
+      "except",
+      "it's",
+      "an",
+      "artifact",
+      "in",
+      "addition",
+      "to",
+      "its",
+      "other",
+      "types",
+      ".",
+      "It",
+      "gains",
+      "haste",
+      "until",
+      "end",
+      "of",
+      "turn",
+      ".",
+      "Sacrifice",
+      "it",
+      "at",
+      "the",
+      "beginning",
+      "of",
+      "the",
+      "next",
+      "end",
+      "step",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

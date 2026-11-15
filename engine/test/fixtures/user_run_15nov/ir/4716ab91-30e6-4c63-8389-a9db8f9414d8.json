@@ -1,0 +1,137 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4716ab91-30e6-4c63-8389-a9db8f9414d8",
+ "name": "Tekuthal, Inquiry Dominus",
+ "card_hash": "6221f1cec0d3190a09d9a2e8bc4cbb09",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4716ab91-30e6-4c63-8389-a9db8f9414d8",
+  "name": "Tekuthal, Inquiry Dominus",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tekuthal, Inquiry Dominus",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Phyrexian",
+      "Horror"
+     ]
+    },
+    "oracle_text": "Flying\nIf you would proliferate, proliferate twice instead.\n{1}{U/P}{U/P}, Remove three counters from among other artifacts, creatures, and planeswalkers you control: Put an indestructible counter on Tekuthal. ({U/P} can be paid with either {U} or 2 life.)",
+    "power": "3",
+    "toughness": "5",
+    "colors": 2,
+    "keywords": [
+     "Flying",
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1233,
+  "scryfall_uri": "https://scryfall.com/card/eoc/78/tekuthal-inquiry-dominus?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4716ab91-30e6-4c63-8389-a9db8f9414d8",
+   "name": "Tekuthal, Inquiry Dominus",
+   "face": 0,
+   "face_name": "Tekuthal, Inquiry Dominus",
+   "card_hash": "6221f1cec0d3190a09d9a2e8bc4cbb09",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "If you would proliferate, proliferate twice instead."
+      }
+     ],
+     "text": "If you would proliferate, proliferate twice instead.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "{1}{U/P}{U/P}, Remove three counters from among other artifacts, creatures, and planeswalkers you control: Put an indestructible counter on this."
+      }
+     ],
+     "text": "{1}{U/P}{U/P}, Remove three counters from among other artifacts, creatures, and planeswalkers you control: Put an indestructible counter on this.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "If you would proliferate, proliferate twice instead.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "If",
+      "you",
+      "would",
+      "proliferate",
+      ",",
+      "proliferate",
+      "twice",
+      "instead",
+      "."
+     ],
+     "rule": "plain"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "{1}{U/P}{U/P}, Remove three counters from among other artifacts, creatures, and planeswalkers you control: Put an indestructible counter on this.",
+     "reason": "unreadable cost component at 'Remove'",
+     "rule": "cost"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

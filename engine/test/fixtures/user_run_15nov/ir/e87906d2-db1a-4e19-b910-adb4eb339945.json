@@ -1,0 +1,248 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e87906d2-db1a-4e19-b910-adb4eb339945",
+ "name": "Urza, Lord High Artificer",
+ "card_hash": "d57b18dd17f558baadf26ddee869816f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e87906d2-db1a-4e19-b910-adb4eb339945",
+  "name": "Urza, Lord High Artificer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Urza, Lord High Artificer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Artificer"
+     ]
+    },
+    "oracle_text": "When Urza enters, create a 0/0 colorless Construct artifact creature token with \"This token gets +1/+1 for each artifact you control.\"\nTap an untapped artifact you control: Add {U}.\n{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost.",
+    "power": "1",
+    "toughness": "4",
+    "colors": 2,
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 806,
+  "scryfall_uri": "https://scryfall.com/card/cmm/130/urza-lord-high-artificer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e87906d2-db1a-4e19-b910-adb4eb339945",
+   "name": "Urza, Lord High Artificer",
+   "face": 0,
+   "face_name": "Urza, Lord High Artificer",
+   "card_hash": "d57b18dd17f558baadf26ddee869816f",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Construct",
+        "types": 5,
+        "subtypes": [
+         "Construct"
+        ],
+        "abilities": [
+         {
+          "$": "Ability",
+          "kind": 3,
+          "effects": [
+           {
+            "$": "Effect",
+            "kind": 140,
+            "targets": {
+             "$": "ObjectFilter",
+             "source_only": true
+            },
+            "amount": {
+             "$": "Value",
+             "kind": 2,
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": 1,
+              "controller": 1
+             }
+            },
+            "amount2": {
+             "$": "Value",
+             "kind": 2,
+             "filter": {
+              "$": "ObjectFilter",
+              "types_all": 1,
+              "controller": 1
+             }
+            },
+            "duration": 0,
+            "text": "gets +1/+1"
+           }
+          ],
+          "text": "This token gets +1/+1 for each artifact you control ."
+         }
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "When this enters, create a 0/0 colorless Construct artifact creature token with \"This token gets +1/+1 for each artifact you control.\"",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {U}"
+      }
+     ],
+     "text": "Tap an untapped artifact you control: Add {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 3,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 1,
+         "controller": 1,
+         "tapped": false,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "tap another permanent"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost."
+      }
+     ],
+     "text": "{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "{5}: Shuffle your library, then exile the top card. Until end of turn, you may play that card without paying its mana cost.",
+     "reason": "not fully consumed",
+     "consumed": 6,
+     "remaining": [
+      "the",
+      "top",
+      "card",
+      ".",
+      "Until",
+      "end",
+      "of",
+      "turn",
+      ",",
+      "you",
+      "may",
+      "play",
+      "that",
+      "card",
+      "without",
+      "paying",
+      "its",
+      "mana",
+      "cost",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

@@ -1,0 +1,105 @@
+{
+ "ir_version": 2,
+ "oracle_id": "32e5339e-9e4f-46f8-b305-f9d6d3ba8bb5",
+ "name": "Lotus Petal",
+ "card_hash": "1c3a116b17185d568fdef7c8c0c086bb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "32e5339e-9e4f-46f8-b305-f9d6d3ba8bb5",
+  "name": "Lotus Petal",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lotus Petal",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}, Sacrifice this artifact: Add one mana of any color.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 120,
+  "scryfall_uri": "https://scryfall.com/card/tpr/225/lotus-petal?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "32e5339e-9e4f-46f8-b305-f9d6d3ba8bb5",
+   "name": "Lotus Petal",
+   "face": 0,
+   "face_name": "Lotus Petal",
+   "card_hash": "1c3a116b17185d568fdef7c8c0c086bb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}, Sacrifice this artifact: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,121 @@
+{
+ "ir_version": 2,
+ "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
+ "name": "Ponder",
+ "card_hash": "948238ce80e94cffaed449b6114b9016",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
+  "name": "Ponder",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ponder",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Look at the top three cards of your library, then put them back in any order. You may shuffle.\nDraw a card.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 145,
+  "scryfall_uri": "https://scryfall.com/card/tdc/159/ponder?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
+   "name": "Ponder",
+   "face": 0,
+   "face_name": "Ponder",
+   "card_hash": "948238ce80e94cffaed449b6114b9016",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 10001,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "look at the top"
+      },
+      {
+       "$": "Effect",
+       "kind": 34,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "text": "put them back"
+      },
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 24,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "shuffle"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Look at the top three cards of your library, then put them back in any order. You may shuffle."
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw a card."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

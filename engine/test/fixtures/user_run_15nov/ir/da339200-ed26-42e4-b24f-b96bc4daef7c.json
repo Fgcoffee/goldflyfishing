@@ -1,0 +1,217 @@
+{
+ "ir_version": 2,
+ "oracle_id": "da339200-ed26-42e4-b24f-b96bc4daef7c",
+ "name": "Elsha of the Infinite",
+ "card_hash": "8f15fbf7ae3f5c6f99db8b58d9eff123",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "da339200-ed26-42e4-b24f-b96bc4daef7c",
+  "name": "Elsha of the Infinite",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Elsha of the Infinite",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Djinn",
+      "Monk"
+     ]
+    },
+    "oracle_text": "Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nYou may look at the top card of your library any time.\nYou may cast noncreature spells from the top of your library. If you cast a spell this way, you may cast it as though it had flash.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 11,
+    "keywords": [
+     "Prowess"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 11,
+  "commander_legal": true,
+  "edhrec_rank": 6783,
+  "scryfall_uri": "https://scryfall.com/card/2x2/208/elsha-of-the-infinite?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "da339200-ed26-42e4-b24f-b96bc4daef7c",
+   "name": "Elsha of the Infinite",
+   "face": 0,
+   "face_name": "Elsha of the Infinite",
+   "card_hash": "8f15fbf7ae3f5c6f99db8b58d9eff123",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": {
+        "$int": 1
+       }
+      }
+     ],
+     "text": "Prowess",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever you cast a noncreature spell"
+     },
+     "keyword": "Prowess"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 151,
+         "targets": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": [
+            0
+           ]
+          },
+          "from_top": true,
+          "count": 1
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": 0,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 102,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "may look at the top card of their library"
+          }
+         ],
+         "text": "the top card of your library is visible"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may look at the top card of your library any time."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "You may cast noncreature spells from the top of your library. If you cast a spell this way, you may cast it as though it had flash."
+      }
+     ],
+     "text": "You may cast noncreature spells from the top of your library. If you cast a spell this way, you may cast it as though it had flash.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "You may cast noncreature spells from the top of your library. If you cast a spell this way, you may cast it as though it had flash.",
+     "reason": "not fully consumed",
+     "consumed": 12,
+     "remaining": [
+      "If",
+      "you",
+      "cast",
+      "a",
+      "spell",
+      "this",
+      "way",
+      ",",
+      "you",
+      "may",
+      "cast",
+      "it",
+      "as",
+      "though",
+      "it",
+      "had",
+      "flash",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

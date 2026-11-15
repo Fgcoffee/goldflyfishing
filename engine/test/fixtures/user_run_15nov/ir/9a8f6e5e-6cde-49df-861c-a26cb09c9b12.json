@@ -1,0 +1,106 @@
+{
+ "ir_version": 2,
+ "oracle_id": "9a8f6e5e-6cde-49df-861c-a26cb09c9b12",
+ "name": "Muddle, the Ever-Changing",
+ "card_hash": "fad336369d76e9e281afb3d45f635d4b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9a8f6e5e-6cde-49df-861c-a26cb09c9b12",
+  "name": "Muddle, the Ever-Changing",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Muddle, the Ever-Changing",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Elemental",
+      "Otter",
+      "Shapeshifter"
+     ]
+    },
+    "oracle_text": "Whenever you cast an instant or sorcery spell, Muddle becomes a copy of up to one target nonlegendary creature you control until end of turn, except it has myriad. (Whenever it attacks, for each opponent other than defending player, you may create a token copy that's tapped and attacking that player or a planeswalker they control. Exile the tokens at end of combat.)",
+    "power": "3",
+    "toughness": "3",
+    "colors": 10
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 10572,
+  "scryfall_uri": "https://scryfall.com/card/soc/5/muddle-the-ever-changing?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "9a8f6e5e-6cde-49df-861c-a26cb09c9b12",
+   "name": "Muddle, the Ever-Changing",
+   "face": 0,
+   "face_name": "Muddle, the Ever-Changing",
+   "card_hash": "fad336369d76e9e281afb3d45f635d4b",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever you cast an instant or sorcery spell, this becomes a copy of up to one target nonlegendary creature you control until end of turn, except it has myriad."
+      }
+     ],
+     "text": "Whenever you cast an instant or sorcery spell, this becomes a copy of up to one target nonlegendary creature you control until end of turn, except it has myriad.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever you cast an instant or sorcery spell, this becomes a copy of up to one target nonlegendary creature you control until end of turn, except it has myriad.",
+     "reason": "not fully consumed",
+     "consumed": 27,
+     "remaining": [
+      "except",
+      "it",
+      "has",
+      "myriad",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

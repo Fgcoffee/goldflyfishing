@@ -1,0 +1,180 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f2ef8bda-373d-4387-900d-0f1b6ccf72e9",
+ "name": "Trumpeting Carnosaur",
+ "card_hash": "80e55a51ee096f52e56cd59e1e8de9d1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f2ef8bda-373d-4387-900d-0f1b6ccf72e9",
+  "name": "Trumpeting Carnosaur",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Trumpeting Carnosaur",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Dinosaur"
+     ]
+    },
+    "oracle_text": "Trample\nWhen this creature enters, discover 5.\n{2}{R}, Discard this card: It deals 3 damage to target creature or planeswalker.",
+    "power": "7",
+    "toughness": "6",
+    "colors": 8,
+    "keywords": [
+     "Discover",
+     "Trample"
+    ]
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1640,
+  "scryfall_uri": "https://scryfall.com/card/lci/171/trumpeting-carnosaur?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f2ef8bda-373d-4387-900d-0f1b6ccf72e9",
+   "name": "Trumpeting Carnosaur",
+   "face": 0,
+   "face_name": "Trumpeting Carnosaur",
+   "card_hash": "80e55a51ee096f52e56cd59e1e8de9d1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Trample",
+     "keyword": "Trample"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 222,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 5
+       },
+       "text": "discover"
+      }
+     ],
+     "text": "When this creature enters, discover 5.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 36
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "is_targeted": true,
+       "text": "deal damage"
+      }
+     ],
+     "text": "{2}{R}, Discard this card: It deals 3 damage to target creature or planeswalker.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 11,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "discard this"
+       }
+      ]
+     },
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

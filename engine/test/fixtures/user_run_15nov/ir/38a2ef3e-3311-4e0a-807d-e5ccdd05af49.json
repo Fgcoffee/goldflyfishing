@@ -1,0 +1,153 @@
+{
+ "ir_version": 2,
+ "oracle_id": "38a2ef3e-3311-4e0a-807d-e5ccdd05af49",
+ "name": "Nevermaker",
+ "card_hash": "56f9763e3a46eaa91707b7da6d0ff071",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "38a2ef3e-3311-4e0a-807d-e5ccdd05af49",
+  "name": "Nevermaker",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Nevermaker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elemental"
+     ]
+    },
+    "oracle_text": "Flying\nWhen this creature leaves the battlefield, put target nonland permanent on top of its owner's library.\nEvoke {3}{U} (You may cast this spell for its evoke cost. If you do, it's sacrificed when it enters.)",
+    "power": "2",
+    "toughness": "3",
+    "colors": 2,
+    "keywords": [
+     "Flying",
+     "Evoke"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 16866,
+  "scryfall_uri": "https://scryfall.com/card/mor/44/nevermaker?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "38a2ef3e-3311-4e0a-807d-e5ccdd05af49",
+   "name": "Nevermaker",
+   "face": 0,
+   "face_name": "Nevermaker",
+   "card_hash": "56f9763e3a46eaa91707b7da6d0ff071",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 34,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": 16
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "is_targeted": true,
+       "text": "put on library"
+      }
+     ],
+     "text": "When this creature leaves the battlefield, put target nonland permanent on top of its owner's library.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        2
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "uses_last_known_information": true,
+      "text": "when this leaves the battlefield"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Evoke {3}{U}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Evoke",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 3,
+            "text": "{3}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 2,
+            "text": "{U}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Evoke",
+      "text": "Evoke {3}{U}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

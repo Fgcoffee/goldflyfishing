@@ -1,0 +1,132 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ffc95093-24a2-4616-a44a-24788e8df9c8",
+ "name": "Trinket Mage",
+ "card_hash": "f5d149d476e1d433288f055747933600",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ffc95093-24a2-4616-a44a-24788e8df9c8",
+  "name": "Trinket Mage",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Trinket Mage",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "When this creature enters, you may search your library for an artifact card with mana value 1 or less, reveal that card, put it into your hand, then shuffle.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 2
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 2040,
+  "scryfall_uri": "https://scryfall.com/card/ddu/41/trinket-mage?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ffc95093-24a2-4616-a44a-24788e8df9c8",
+   "name": "Trinket Mage",
+   "face": 0,
+   "face_name": "Trinket Mage",
+   "card_hash": "f5d149d476e1d433288f055747933600",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 23,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 1,
+          "zones": {
+           "$set": []
+          },
+          "mana_value": {
+           "$": "NumericConstraint",
+           "comparison": 3,
+           "value": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": 1,
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this creature enters, you may search your library for an artifact card with mana value 1 or less, reveal that card, put it into your hand, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

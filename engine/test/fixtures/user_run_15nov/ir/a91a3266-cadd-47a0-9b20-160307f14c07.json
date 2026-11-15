@@ -1,0 +1,110 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a91a3266-cadd-47a0-9b20-160307f14c07",
+ "name": "Archaeomancer",
+ "card_hash": "f500871bb4dbabc5ca4a86a1d622ae0d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a91a3266-cadd-47a0-9b20-160307f14c07",
+  "name": "Archaeomancer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Archaeomancer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "When this creature enters, return target instant or sorcery card from your graveyard to your hand.",
+    "power": "1",
+    "toughness": "2",
+    "colors": 2
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 963,
+  "scryfall_uri": "https://scryfall.com/card/uma/45/archaeomancer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a91a3266-cadd-47a0-9b20-160307f14c07",
+   "name": "Archaeomancer",
+   "face": 0,
+   "face_name": "Archaeomancer",
+   "card_hash": "f500871bb4dbabc5ca4a86a1d622ae0d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 192,
+        "zones": {
+         "$set": [
+          3
+         ]
+        },
+        "owner": 1
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "When this creature enters, return target instant or sorcery card from your graveyard to your hand.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,106 @@
+{
+ "ir_version": 2,
+ "oracle_id": "636b44dc-f7e4-42d2-abf6-ae49432b6052",
+ "name": "Pym Particles",
+ "card_hash": "9a8a03aa9cf50f7bfd4580a1d4e35767",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "636b44dc-f7e4-42d2-abf6-ae49432b6052",
+  "name": "Pym Particles",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Pym Particles",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Target creature gains vigilance until end of turn and can't be blocked this turn.\nDraw a card.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 9133,
+  "scryfall_uri": "https://scryfall.com/card/msh/70/pym-particles?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "636b44dc-f7e4-42d2-abf6-ae49432b6052",
+   "name": "Pym Particles",
+   "face": 0,
+   "face_name": "Pym Particles",
+   "card_hash": "9a8a03aa9cf50f7bfd4580a1d4e35767",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Target creature gains vigilance until end of turn and can't be blocked this turn."
+      }
+     ],
+     "text": "Target creature gains vigilance until end of turn and can't be blocked this turn.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw a card."
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Target creature gains vigilance until end of turn and can't be blocked this turn.",
+     "reason": "not fully consumed",
+     "consumed": 9,
+     "remaining": [
+      "can't",
+      "be",
+      "blocked",
+      "this",
+      "turn",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

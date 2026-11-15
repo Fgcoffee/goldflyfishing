@@ -1,0 +1,113 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c5acf2a5-40f4-433d-a74d-1cb56c521464",
+ "name": "Arid Mesa",
+ "card_hash": "cc150ee28fa1333227a8b68936d40010",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c5acf2a5-40f4-433d-a74d-1cb56c521464",
+  "name": "Arid Mesa",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Arid Mesa",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Mountain or Plains card, put it onto the battlefield, then shuffle."
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 57,
+  "scryfall_uri": "https://scryfall.com/card/mh2/244/arid-mesa?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c5acf2a5-40f4-433d-a74d-1cb56c521464",
+   "name": "Arid Mesa",
+   "face": 0,
+   "face_name": "Arid Mesa",
+   "card_hash": "cc150ee28fa1333227a8b68936d40010",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "subtypes_any": [
+         "Mountain",
+         "Plains"
+        ],
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 2,
+       "text": "search library"
+      }
+     ],
+     "text": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Mountain or Plains card, put it onto the battlefield, then shuffle.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 30,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "pay life"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

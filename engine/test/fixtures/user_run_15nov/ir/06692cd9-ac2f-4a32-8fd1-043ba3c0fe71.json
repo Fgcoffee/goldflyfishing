@@ -1,0 +1,124 @@
+{
+ "ir_version": 2,
+ "oracle_id": "06692cd9-ac2f-4a32-8fd1-043ba3c0fe71",
+ "name": "Rapid Hybridization",
+ "card_hash": "06c0ecc24f4ba7dc00719cd3b5c7da94",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "06692cd9-ac2f-4a32-8fd1-043ba3c0fe71",
+  "name": "Rapid Hybridization",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rapid Hybridization",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Destroy target creature. It can't be regenerated. That creature's controller creates a 3/3 green Frog Lizard creature token.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 207,
+  "scryfall_uri": "https://scryfall.com/card/soc/198/rapid-hybridization?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "06692cd9-ac2f-4a32-8fd1-043ba3c0fe71",
+   "name": "Rapid Hybridization",
+   "face": 0,
+   "face_name": "Rapid Hybridization",
+   "card_hash": "06c0ecc24f4ba7dc00719cd3b5c7da94",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "duration": 0,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 64,
+         "subject": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "text": "can't be_regenerated"
+        }
+       ],
+       "text": "can't"
+      },
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 13003
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Frog",
+        "subtypes": [
+         "Frog",
+         "Lizard"
+        ],
+        "colors": 16,
+        "power": {
+         "$": "Value",
+         "constant": 3
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 3
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Destroy target creature. It can't be regenerated. That creature's controller creates a 3/3 green Frog Lizard creature token."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

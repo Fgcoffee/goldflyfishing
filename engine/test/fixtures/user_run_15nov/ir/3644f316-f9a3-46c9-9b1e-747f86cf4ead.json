@@ -1,0 +1,144 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3644f316-f9a3-46c9-9b1e-747f86cf4ead",
+ "name": "Buried Ruin",
+ "card_hash": "9af32d6de3336aed58de72b676338f1c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3644f316-f9a3-46c9-9b1e-747f86cf4ead",
+  "name": "Buried Ruin",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Buried Ruin",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 193,
+  "scryfall_uri": "https://scryfall.com/card/eoc/150/buried-ruin?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3644f316-f9a3-46c9-9b1e-747f86cf4ead",
+   "name": "Buried Ruin",
+   "face": 0,
+   "face_name": "Buried Ruin",
+   "card_hash": "9af32d6de3336aed58de72b676338f1c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 1,
+        "zones": {
+         "$set": [
+          3
+         ]
+        },
+        "owner": 1
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
