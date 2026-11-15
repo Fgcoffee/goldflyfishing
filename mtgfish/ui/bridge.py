@@ -676,6 +676,17 @@ class Bridge(QObject):
             return text  # Reported by validate_deck, which shows the reason.
         return deck.as_decklist()
 
+    @Slot(str, result=str)
+    @_guard
+    def resolve_decklists(self, decklists_json: str) -> str:
+        """Each deck reference as decklist text: an Archidekt URL fetched, a
+        pasted list unchanged. For a run played in the browser, which sends
+        decklist text to /api/ir/decks and can't fetch Archidekt itself."""
+        texts = json.loads(decklists_json)
+        if not isinstance(texts, list):
+            return _json({"error": "send a list of decklists"})
+        return _json({"decklists": [self._resolve_decklist(str(t)) for t in texts[:4]]})
+
     # -- the deck tab -------------------------------------------------------
 
     @Slot(str, result=str)

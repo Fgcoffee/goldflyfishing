@@ -71,12 +71,60 @@ const BrowserRuns = (() => {
     current = null;
   }
 
+  /* -- simulating in the browser (behind a flag) ---------------------------
+   *
+   * Off unless the page is opened with ?engine=browser, or the choice was
+   * saved (localStorage "goldfly.engine" = "browser"). The live site keeps
+   * the server engine until the auditor and the user give the go.
+   */
+  const ENGINE_KEY = "goldfly.engine";
+  let runner = null;
+
+  function enabled() {
+    const asked = new URLSearchParams(location.search).get("engine");
+    try {
+      if (asked === "browser" || asked === "server") localStorage.setItem(ENGINE_KEY, asked);
+      return localStorage.getItem(ENGINE_KEY) === "browser";
+    } catch (err) {
+      return asked === "browser";  // storage blocked: the URL alone decides
+    }
+  }
+
+  /* Play a simulation here. Resolves with the Results payload, as the
+   * server's run_finished would carry it; Results and Replay then use it. */
+  async function simulate(decklists, games, seed, hooks = {}) {
+    const module = await engine();
+    if (runner === null) runner = new module.BrowserRunner();
+    close();
+    const outcome = await runner.run(decklists, {
+      games,
+      seed,
+      onProgress: hooks.onProgress,
+      onStatus: hooks.onStatus,
+    });
+    if (outcome.stored !== null && !outcome.payload.error && !outcome.payload.cancelled) {
+      current = {
+        stored: outcome.stored,
+        report: outcome.payload,
+        replayer: new module.Replayer(outcome.stored),
+      };
+    }
+    return outcome;
+  }
+
+  function cancel() {
+    return runner !== null && runner.cancel();
+  }
+
   return {
     handles,
     call,
     list,
     open,
     close,
+    enabled,
+    simulate,
+    cancel,
     get current() { return current; },
   };
 })();

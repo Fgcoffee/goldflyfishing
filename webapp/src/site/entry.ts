@@ -16,6 +16,9 @@ import { reportPayload, unparsedCards } from "../results";
 import type { CrashedGame, GameRecord } from "@goldfly/engine/sim";
 import type { ReplayReply, ReplayRequest } from "./replay_protocol";
 
+/** Running a simulation in the browser, for the Simulate button (behind a flag). */
+export { BrowserRunner, type BrowserRunOptions, type BrowserRunOutcome } from "./run";
+
 /** Omit, per member of a union. */
 type WithoutId<T> = T extends unknown ? Omit<T, "id"> : never;
 

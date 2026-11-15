@@ -272,3 +272,13 @@ def test_the_fingerprint_ignores_tests_and_line_endings(tmp_path):
     assert fingerprint(tmp_path) == first
     (tmp_path / "sim" / "a.ts").write_bytes(b"export const a = 2;\n")
     assert fingerprint(tmp_path) != first
+
+
+def test_decklists_resolve_for_a_browser_run(make_client):
+    """The browser path sends decklist text to /api/ir/decks, so the server
+    turns references (Archidekt links) into text first; a pasted list passes
+    through unchanged."""
+    client = make_client()
+    reply = client.post("/api/call/resolve_decklists", json={"args": [json.dumps(["1 Sol Ring", "1 Island"])]})
+    assert reply.status_code == 200
+    assert reply.json() == {"decklists": ["1 Sol Ring", "1 Island"]}

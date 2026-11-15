@@ -141,7 +141,7 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
 - [ ] **Card reports from users** (see Reports): fix the reading, or answer the report.
 
 ### web
-- [ ] The switch-over (Phase 1, above): behind a flag first. The auditor and the user give the go for the live site.
+- [ ] The switch-over (Phase 1, above): behind a flag first. The auditor and the user give the go for the live site. *Behind the flag: done (switch-over commit; ?engine=browser). Live go pending.*
 - [ ] **Sandbox on the TS engine,** in the browser, so a sandbox game replays from its setup and can be reported.
 - [ ] Reports, below.
 
