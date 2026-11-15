@@ -440,6 +440,44 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Rules findings in TS: triage and fixes (ROADMAP "Now, in parallel")
+
+Tests: `engine/test/rules/audit_triage_real.test.ts` (real cards; 44
+fixtures added to `schema/fixtures.txt`) and `audit_findings.test.ts`
+(hand-written IR). Fixes are logged in AUDIT_LOG.md under "TS fixes".
+
+**Fixed now, in TS:** F28 overload (b28f152), F62 MOVE_ZONE to the library
+(3ceafeb), F64 VOTE (3ceafeb, marker out), karoo lands (c4232df: Coral
+Atoll-style "unless you return a land" could never be paid).
+
+**Already fine in TS** (fixed in Python before the port), each with its
+test:
+- F8 modular by LKI: "F8" (Arcbound Worker's counter reaches Ornithopter).
+- F15/F19 granted triggers: granted_triggers_real (Abnormal Endurance).
+- F22 granted undying/persist return once: granted_triggers_real (Mikaeus),
+  audit_triage_real "F22" (Rattleblaze Scarecrow).
+- F27 protection from a colour: "F27" (Bolt targets White Knight).
+- F29 "you may pay. If you do": pay_if_you_do_real.
+- F30 simultaneous deaths: "F30" (Damnation + Blood Artist + 4 Bears: 5
+  triggers).
+- F32 can't be regenerated: "F32" (Wrath of God vs Drudge Skeletons).
+- F35 Doubling Season and loyalty: "F35" (Liliana Vess enters with 10).
+- F36 Rest in Peace: pay_if_you_do_real.
+- F41/F52 cast triggers and intervening-if: "F41/F52".
+- F42 goad ends: "F42".
+- F51 N targets: target_counts_real (Wicked Pact, Ulamog).
+- F53/F53b player protection, hexproof: "F53/F53b".
+- F54 echo, cumulative upkeep: "F54" (unpaid: sacrificed; accepted: the
+  Mountains are tapped).
+- F55 Sly Instigator goads: "F55".
+- F56 Force of Will's alternative cost: alternative_costs_real.
+- F57 bestow needs a creature: "F57".
+- F60 Curse attached to nothing: "F60" (fixed as reported; note the Curse
+  is cast with no target and attaches to its caster, a separate gap).
+
+**Not triaged yet** (next batch): F2, F5, F6, F7, F11, F12, F13, F16, F20,
+F23, F24, F26, F39, F40, F45, F47, F48, F50.
+
 ## Bench: 200 games through `rulesEngine` (auditor's ask)
 
 The four bench decks from `schema/samples` (aggro, combo, control, stax),

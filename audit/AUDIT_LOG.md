@@ -630,3 +630,12 @@ Checks on e1cda56:
 - 40 bench games through `play()`: 0 crashes, every game decided.
 
 The image build first failed at the IR export: `bracket.py` read the repository's `cache/`, fixed in e1cda56. F63, the hybrid-cost crash, is open; the parser is fixing it.
+
+## TS fixes
+
+Rules fixes in the TypeScript engine (Python frozen). One line each: finding, commit, test.
+
+- F62 (MOVE_ZONE to the library): 3ceafeb, `engine/test/rules/audit_findings.test.ts` "F62: MOVE_ZONE to the library".
+- F64 (VOTE crash, guarded in the port): KNOWN marker removed in 3ceafeb, `audit_findings.test.ts` "F64: VOTE" (turn order from the next player, winner's child happens).
+- Karoo lands always sacrificed: c4232df, `engine/test/rules/audit_triage_real.test.ts` "karoo lands". Cause: a return-to-hand cost couldn't be paid during a resolution, so Coral Atoll's "sacrifice it unless you return an untapped Island" always sacrificed it. Simic Growth Chamber-style karoos were already right.
+- F28 (overload): b28f152, `audit_triage_real.test.ts` "F28: overload" and "F28 controls" (Cyclonic Rift overloaded returns the opponent's nonland permanents only; cast normally, only its target).
