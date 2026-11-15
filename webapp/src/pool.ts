@@ -41,6 +41,8 @@ export interface PoolOptions {
   readonly engineBuild?: string;
   /** Where to say what each worker is doing (timeouts, restarts), for debugging. */
   readonly log?: (message: string) => void;
+  /** After Stop, ms before a worker that hasn't answered is terminated. */
+  readonly stopGraceMs?: number;
 }
 
 export const DEFAULT_GAME_TIMEOUT_MS = 60_000;
@@ -56,7 +58,15 @@ export function defaultWorkers(): number {
 type SliceEnd =
   | { readonly kind: "finished" }
   | { readonly kind: "timeout" }
+  | { readonly kind: "stopped" }
   | { readonly kind: "died"; readonly message: string };
+
+/**
+ * After Stop, how long a worker has to finish its game and answer before
+ * it's terminated. A worker reads the cancel only between games, so one
+ * stuck in a game never would.
+ */
+export const STOP_GRACE_MS = 3_000;
 
 export class WorkerPool {
   private readonly clients: EngineClient[];
@@ -86,7 +96,9 @@ export class WorkerPool {
     const detail = options.engineBuild ? `engine build ${options.engineBuild}` : "";
     const ranges = splitRange(games, this.clients.length);
     const done = new Array<number>(ranges.length).fill(0);
-    const current: ((RunHandle & { client: EngineClient }) | undefined)[] = [];
+    const stopGraceMs = options.stopGraceMs ?? STOP_GRACE_MS;
+    /** Per worker: its run, and how to end its slice at once (after Stop). */
+    const current: ((RunHandle & { client: EngineClient; stopNow: () => void }) | undefined)[] = [];
     let cancelled = false;
 
     const report = (): void => onProgress?.(done.reduce((a, b) => a + b, 0), games);
@@ -125,14 +137,30 @@ export class WorkerPool {
             keep(game);
             arm();
           }, engine);
-          current[slot] = { ...handle, client };
+          current[slot] = {
+            ...handle,
+            client,
+            stopNow: () => {
+              resolve({ kind: "stopped" });
+              client.terminate();
+            },
+          };
           handle.result.then(
             () => resolve({ kind: "finished" }),
             (error: unknown) => resolve({ kind: "died", message: error instanceof Error ? error.message : String(error) }),
           );
         });
         clearTimeout(timer);
+        current[slot] = undefined;
         if (ended.kind === "finished") break;
+        if (ended.kind === "stopped") {
+          // Stop, and this worker didn't answer in time: it was mid-game.
+          const index = next;
+          log(`worker ${slot}: game ${index} (seed ${seedFor(setup.runSeed, index)}) stopped mid-game`);
+          keep({ crash: { index, seed: seedFor(setup.runSeed, index), error: "stopped mid-game", detail } });
+          this.clients[slot] = this.make();
+          break;
+        }
 
         // The game in flight didn't finish: record it, and carry on past it.
         const index = next;
@@ -161,8 +189,16 @@ export class WorkerPool {
     return {
       result,
       cancel: () => {
+        if (cancelled) return;
         cancelled = true;
-        current.forEach((handle) => handle?.client.cancel(handle.id));
+        current.forEach((handle, slot) => {
+          if (handle === undefined) return;
+          handle.client.cancel(handle.id);
+          // A worker stuck in a game never reads the cancel: end it.
+          setTimeout(() => {
+            if (current[slot] === handle) handle.stopNow();
+          }, stopGraceMs);
+        });
       },
     };
   }

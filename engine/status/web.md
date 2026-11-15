@@ -239,6 +239,36 @@ and the spot check (2cb63b4, 8ab95a8). Thanks.
     **Hanging seeds for rules:** game 44, seed 3140482264; game 182, seed
     3348571489 (tester decks as sent for F61, hero deck0, turn cap 25).
 
+- **Stop always stops:**
+  - Stop asks every worker to cancel. A worker that hasn't answered within
+    3 s (`STOP_GRACE_MS`, option `stopGraceMs`) is terminated, and its
+    in-flight game is recorded as "stopped mid-game" with its seed. The
+    partial run is shown and uploaded at once.
+  - Tests: Stop on a stuck worker returns in well under a second (not the
+    watchdog) and keeps games 0-2; Stop on a healthy run loses nothing.
+  - On the real site, Stop after 15 s of the user's 1000-game run returned
+    in 3.4 s, and the 68 finished games were shown and saved.
+- **The user's stalled run, reproduced with the watchdog in place:**
+  - Decks: Archidekt 27600141 (Vraska, Soul of Stone) in seats 1 and 2,
+    26926766 (Muddle, the Ever-Changing), 26074514 (Kilo, Apogee Mind).
+    Hero is seat 1, seed 0, 1000 games, turn cap 25.
+  - The run finished in 345 s: 984 games played, and **16 timed out at
+    60 s**. Each of those would have stalled the run before the fix.
+  - **Hanging games for rules (index/seed):** 157/1327311335,
+    182/3348571489, 283/3714628078, 297/760999552, 334/1429530324,
+    431/1817070371, 470/1443292003, 537/61554289, 560/313357306,
+    581/554205434, 598/945824208, 627/1647484985, 715/3917995477,
+    850/2035033741, 883/1698264385, 941/2569846678.
+  - Game 182 (seed 3348571489) also hung with the tester decks: Vraska's
+    deck is in both runs.
+- **"CSP blocks the use of eval" (Chrome/Opera Issues panel):** it comes from
+  `plotly.min.js`. Its bundled helpers (function-bind,
+  is-generator-function) try `Function("return function*() {}")` and the
+  like inside `try/catch` while loading, to feature-detect. The CSP blocks
+  it, the catch swallows it, and Chrome logs it. It's harmless. Our engine
+  bundles contain no `eval` or `new Function`. The only fix is a Plotly
+  build without those helpers; `unsafe-eval` is not worth it.
+
 ## Next
 
 1. **Sandbox on the TS engine,** so a sandbox game replays from its setup

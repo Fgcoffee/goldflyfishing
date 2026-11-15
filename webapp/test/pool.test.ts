@@ -107,6 +107,31 @@ describe("a run always finishes", () => {
     expect(made).toBeLessThanOrEqual(4);
   });
 
+  it("Stop ends a run whose worker is stuck mid-game, keeping what finished", async () => {
+    const pool = new WorkerPool(1, () => new EngineClient(new FlakyWorker({ silentFrom: 3 })));
+    const run = pool.run(setup, 10, undefined, "stub", { gameTimeoutMs: 60_000, stopGraceMs: 50 });
+    // Let games 0-2 finish and game 3 "hang", then press Stop.
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const started = Date.now();
+    run.cancel();
+    const result = await run.result;
+    expect(Date.now() - started).toBeLessThan(1000); // not the 60 s watchdog
+    expect(result.complete).toBe(false);
+    expect(result.records.map((r) => r.index)).toEqual([0, 1, 2]);
+    expect(result.crashed).toEqual([{ index: 3, seed: seedFor(11, 3), error: "stopped mid-game", detail: "" }]);
+  });
+
+  it("Stop on a healthy run lets each worker finish its game and answer", async () => {
+    const pool = new WorkerPool(2, () => new EngineClient(new FlakyWorker()));
+    const run = pool.run(setup, 20_000, undefined, "stub", { stopGraceMs: 5_000 });
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    run.cancel();
+    const result = await run.result;
+    expect(result.complete).toBe(false);
+    expect(result.crashed).toHaveLength(0);
+    expect(result.records.length).toBeGreaterThan(0);
+  });
+
   it("keeps the other workers' games when one hangs", async () => {
     let made = 0;
     const pool = new WorkerPool(3, () => new EngineClient(new FlakyWorker(made++ === 1 ? { silentFrom: 5 } : {})));
