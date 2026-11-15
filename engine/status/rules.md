@@ -440,6 +440,26 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## The user's decks: 1,000 games in Node (15 Nov)
+
+Fixture `engine/test/fixtures/user_run_15nov/` (Vraska x2, Muddle, Kilo;
+runSeed 0, maxRounds 25), engine at a4f3ccf, `playGame` with SimpleAgent,
+60 s watchdog per game:
+- **0 crashes, 0 timeouts, 0 runaways** (no TOKEN SWARM, no WORK BUDGET,
+  no action budget); every game decided: 954 LIFE, 37 DECKING, 9
+  COMMANDER_DAMAGE, 0 stalls.
+- Times: median 1.37 s, p99 6.7 s, **max 8.6 s**; nothing over 10 s, so
+  nothing to profile. Work: median 59,000 units, max 456,000 (under a
+  quarter of the budget). Widest board: 251 permanents.
+- The games that hung before F65 (169, 190, 271, 284, 307, 360, 386, 424,
+  435, 497, 581) and the web session's 16 (157, 182, 283, 297, 334, 431,
+  470, 537, 560, 581, 598, 627, 715, 850, 883, 941) all finish, in 0.6-2.8 s.
+- Loops found in 54 games: mostly the bot re-equipping the same equipment
+  ("stopped": Lost Jitte 20, Skullclamp 14, Paradise Mantle 14, Wizard's
+  Staff 13, Hawkeye's Bow 11, The Reality Chip 3), Pemmin's Aura untaps (5,
+  stopped), and real shortcuts: Aura of Dominion's tap-proliferate (3) and
+  Sensei's Divining Top with a cast-token trigger (1).
+
 ## Loop detection ported; no game runs for minutes (15 Nov)
 
 - **loops.ts** is a port of `mtgfish/rules/kernel/loops.py` (687ef75):
