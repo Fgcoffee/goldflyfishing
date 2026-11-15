@@ -226,6 +226,24 @@ describe("payment (CR 601.2h)", () => {
     expect(canPay(pool({ G: 27 }), cost("{2/W}".repeat(14)))).toBe(false);
   });
 
+  it("identical choice symbols are searched as one class: an unpayable 12-symbol tax fails at once", () => {
+    const started = Date.now();
+    for (let i = 0; i < 200; i++) {
+      expect(canPay(pool({ W: 1 }), cost("{W/P}".repeat(12)), { lifeAvailable: 9 })).toBe(false);
+      expect(canPay(pool({ G: 3 }), cost("{W/P}{U/P}".repeat(6)), { lifeAvailable: 25 })).toBe(true);
+    }
+    // 400 searches of up to 2^12 branches each took seconds; by class, milliseconds.
+    expect(Date.now() - started).toBeLessThan(2000);
+  });
+
+  it("which of two identical Phyrexian symbols takes life doesn't change the payment", () => {
+    const p = findPayment(pool({ W: 1 }), cost("{W/P}{U}{W/P}"), { lifeAvailable: 40 });
+    expect(p).toBeNull();
+    const q = findPayment(pool({ W: 1, U: 1 }), cost("{W/P}{U}{W/P}"), { lifeAvailable: 40 });
+    expect(q!.life).toBe(2);
+    expect(paymentTotalMana(q!)).toBe(2);
+  });
+
   it("monocolored hybrid prefers the cheaper colored half", () => {
     expect(paymentTotalMana(findPayment(pool({ R: 1, G: 3 }), cost("{2/R}"))!)).toBe(1);
   });
