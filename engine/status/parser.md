@@ -293,13 +293,56 @@ These were the last things your resolve.ts was skipping for me.
   - I added that to the card-reading fixes for after the port.
   - Until then those two cases stay in Python, as you said.
 
+## F63, the hybrid-cost crash: fixed (94e0913)
+
+- `findPayment` (mana/payment.ts) no longer throws past 12 Phyrexian or `{2/W}` symbols.
+  - The symbols past `MAX_SEARCHED_CHOICES` (12) are settled greedily first: mana of a kind the symbol accepts while one is spare, else 2 life (Phyrexian) or 2 generic (`{2/W}`).
+  - The first 12 are searched exactly as before, so a cost at or under the limit pays as it did.
+  - A payment that uses the fallback never pays life down to 0. That's a policy, not CR 119.4.
+  - If even that can't pay, the cost is unpayable, and `affordable()` drops attackers until it can.
+  - Marked `// KNOWN: F63 (Python raises here)`.
+- Tests: 3 in mana.test.ts, and `test/rules/f63_attack_tax.test.ts` on real cards (Norn's Annex added to the fixtures). 16 Bears and 2 Plains attack in full at 40 life, and 11 of them at 20.
+- **The three browser games that crashed** (bench seed 0, games 20, 30, 32): all three crash with the old payment code and finish with the fix (winners P2, P2 and P0, on life).
+- **Bench, 40 games, vitest:** aggro against combo/control/stax, seed 0, turn cap 25.
+  - 0 crashes.
+  - Aggro won 14/40 (35%); 1 stall (2.5%).
+  - Wins by seat: 14 / 1 / 16 / 8, plus 1 draw.
+  - Endings: LIFE 34, COMMANDER_DAMAGE 4, STALL_OUT 1, DECKING 1. 50.6 turns on average.
+  - For comparison: Python got 31.6% with 10.5% stalls (20 games), and the browser 35.1% with 2.7% stalls.
+
+## Results and replay screens read browser runs (done)
+
+- **Engine** (c59f85e): `sim/replay_view.ts` ports `sim/replay.py`, and `sim/board.ts` ports `sim/board.py` (the film).
+  - `replayGame(setup, index, seed)` plays a game again with the log and the film on.
+  - The replayed game is the run's game: its digest is tested equal.
+- **Payloads** (9257754): `sim/payload.ts` builds the JSON Python's Bridge sends, field for field.
+  - `resultsPayload` matches `_report_payload`, `replayPayload` matches `replay`, and `boardPayload` matches `replay_board` (short arrays with Python's bit flags).
+  - Parse status comes from the IR.
+  - `loops` is empty: game records don't carry the loops shortcut yet.
+- **Server** (c7f57dc): `GET /api/browser-runs/{id}` returns the run whole, with `setup` (decks and current IR). If a card has changed since the run, `setup` is null and `unverifiable` says which card. Owner only.
+- **Site bundle** (241a68c): `webapp/src/site`, built by `npm run build:site` into `mtgfish/ui/web/engine/` (generated, gitignored).
+  - The Results report is built from the records.
+  - Replays run in a Web Worker and flag a digest mismatch.
+  - The Dockerfile's node stage builds the bundle. Its steps pass from a clean copy, but the image itself hasn't been built: there's no Docker daemon here.
+- **Site** (65744e8): History lists browser runs.
+  - Open shows the run on the Results screen.
+  - While a browser run is open, `call()` in app.js sends `report`, `replay` and `replay_board` to `browser_runs.js`.
+  - Starting a simulation, or opening a server run, closes it.
+- **Checked in Chromium** against the local server: a 12-game browser run was uploaded, listed in History and opened.
+  - Results: 50% win rate, charts, inert cards.
+  - Game 2 replayed in about 1 s, with the turn list, the log, and boards showing attackers, blockers, damage and the commander.
+- **Still to do: card art in browser replays.** `board_cards` carries `art: ""`, so cards draw as placeholders.
+  - Python looks the art up in its card database, tokens by name.
+  - Proposal: the server adds image URLs per card name to `GET /api/browser-runs/{id}`, tokens included, by the same lookup `Bridge._board_cards` uses.
+
 ## Card-reading gaps found during the port (for after it)
 
 - Cauldron of Souls: "Choose any number of target creatures. Each of those creatures gains persist until end of turn." is unparsed (the "any number of target" phrasing).
 
 ## Next
 
-- The AI port and the webapp swap are both done.
+- Card art in browser replays (above).
+- Then switching the website to browser simulations: **waiting for the auditor's go**, as asked.
 - After that, the unticked items are:
   - the two bracket items, Phase 2, parked until the port is done;
   - the deferred rules fixes, "once games can be watched".
