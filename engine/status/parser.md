@@ -434,7 +434,7 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 **Cards that don't read yet:**
 - Cauldron of Souls and Cauldron Haze now read (320500d): "Choose ... target ... . Each of those creatures ..." becomes one targeted sentence. Board test: the Bears come back with a -1/-1 counter. This also resolves the card-reading gap logged above.
 - Tireless Provisioner and Ant-Man's Army read (de8b72e): "create a Food token or a Treasure token" is a choice of one.
-- Command Beacon reads (BEACON_COMMIT): "your commander" is the commander you own, and "from the command zone" after the destination says where it is. That also reads Jeweled Lotus, Skyfire Phoenix, Geode Golem, Road of Return and six more. Census: +11, 0 lost, 36 changed.
+- Command Beacon reads (fb9edb1): "your commander" is the commander you own, and "from the command zone" after the destination says where it is. That also reads Jeweled Lotus, Skyfire Phoenix, Geode Golem, Road of Return and six more. Census: +11, 0 lost, 36 changed.
   - Two engine faults showed up, both fixed in the same commit. **Rules session, please look:**
     - `replacement.ts` `commanderZoneReplacement`: a commander leaving the command zone for a hand was put back (CR 903.9b offered "instead" and the default took it). It now skips the choice when the commander is already in the command zone.
     - `pool.ts` `restrictionPermits`: a mana restriction to "your commander" paid for any spell, because only types were checked. `PaymentContext` now carries `commander`. Still unchecked: `of_chosen_type` (Pillar of Origins pays for any creature spell).
