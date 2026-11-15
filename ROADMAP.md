@@ -87,7 +87,7 @@ and games that don't replay from their seed are fixed now.
 - [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (b357de9, 958fee4)
 - [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (b357de9)
 - [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series, removal, runaways and loop draws: game records carry them (78cde2a) and the report aggregates them (rules)
-- [x] Results and replay screens read browser runs *(parser, 15 Nov: c59f85e replay view, 9257754 payloads, c7f57dc endpoint, 241a68c site bundle, 65744e8 History; card art in browser replays is still to do, see status/parser.md)*. Results payload done (results commit); replay screen next
+- [x] Results and replay screens read browser runs *(parser, 15 Nov: 43fe6e7 replay view, d565832 payloads, 7fa0361 endpoint, 07b9098 site bundle, 9897e43 History; card art in browser replays is still to do, see status/parser.md)*. Results payload: web's `reportPayload` (1a7917e), which the site bundle uses
 - [ ] Switch the website from server simulations to browser simulations
 - [x] **Every browser run is sent back to the server and stored.** (22e390e; uploads from another engine build refused with "reload": engine build gate commit) Required before the switch-over. Each run records:
   - the run seed (master seed), the game range, and each game's own seed and log digest;

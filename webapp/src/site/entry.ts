@@ -11,7 +11,8 @@
  * a browser run from a server run.
  */
 
-import { buildReport, inertCards, resultsPayload, type RunSetup } from "@goldfly/engine/sim";
+import { buildReport, type RunSetup } from "@goldfly/engine/sim";
+import { reportPayload, unparsedCards } from "../results";
 import type { CrashedGame, GameRecord } from "@goldfly/engine/sim";
 import type { ReplayReply, ReplayRequest } from "./replay_protocol";
 
@@ -33,10 +34,10 @@ export function resultsFor(stored: StoredRun): Record<string, unknown> {
   const seats = stored.setup?.decks.length ?? 4;
   const report = buildReport(stored.records, stored.crashed, { hero, seats });
   const heroDeck = stored.setup?.decks[hero];
-  const unparsedCards = stored.setup !== null && heroDeck !== undefined
-    ? inertCards(stored.setup.cards, [...heroDeck.commanders, ...heroDeck.cards.map((c) => c.oracle_id)])
+  const unparsed = stored.setup !== null && heroDeck !== undefined
+    ? unparsedCards(heroDeck, new Map(Object.entries(stored.setup.cards)))
     : [];
-  return resultsPayload(report, { unparsedCards });
+  return reportPayload(report, { unparsedCards: unparsed });
 }
 
 /** The seed a game of the run was played from, or null if the run doesn't hold that game. */

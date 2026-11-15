@@ -1,92 +1,16 @@
 /**
- * The JSON the website's Results and Replay screens read, built from a
- * browser run. The screens (mtgfish/ui/web/app.js) were written against
- * Python's `Bridge._report_payload` and `Bridge.replay`; these produce the
- * same shapes, field for field, so a browser run can be shown by the same
- * code as a server run.
+ * The JSON the website's Replay screen reads, built from a browser run's
+ * game played again. The screen (mtgfish/ui/web/app.js, board.js) was
+ * written against Python's `Bridge.replay` and `replay_board`; these produce
+ * the same shapes, field for field. (The Results payload is the web
+ * session's `webapp/src/results.ts` `reportPayload`.)
  *
- * What a browser run doesn't have is said rather than invented: `loops` is
- * empty because game records don't carry the loops shortcut yet, and card
- * art is left to the page (Python looks it up in its card database).
+ * Card art is left to the page: Python looks it up in its card database.
  */
 
 import type { CardDocument } from "../ir";
-import {
-  averageWinRound,
-  averageWinTurn,
-  impact,
-  margin,
-  reliable,
-  stallRate,
-  winRate,
-  type Report,
-} from "./report";
 import { DETAIL_LEVELS, KEY_KINDS, NOISE_KINDS, type ReplayView } from "./replay_view";
 import type { BoardCard, BoardSnapshot } from "./board";
-
-export interface ResultsExtras {
-  /** Cards none of whose abilities were read: `inertCards(setup.cards)`. */
-  readonly unparsedCards?: readonly string[];
-  /** Games whose replay gave a different digest (the page's replay check). */
-  readonly digestMismatches?: readonly number[];
-}
-
-/** Python `Bridge._report_payload`. */
-export function resultsPayload(report: Report, extras: ResultsExtras = {}): Record<string, unknown> {
-  const commanderLandedGames: Record<string, number[]> = {};
-  for (const [round, games] of Object.entries(report.commanderLandedGames)) commanderLandedGames[round] = games.slice(0, 20);
-  return {
-    games: report.games,
-    seats: report.seats,
-    win_rate: winRate(report),
-    stall_rate: stallRate(report),
-    wins: report.wins,
-    stalls: report.stalls,
-    average_win_round: averageWinRound(report),
-    average_win_turn: averageWinTurn(report),
-    win_reasons: { ...report.winReasons },
-    loss_reasons: { ...report.lossReasons },
-    commander_landed_games: commanderLandedGames,
-    commander_landed: { ...report.commanderLanded },
-    commander_never: report.commanderNever,
-    by_win_round: Object.fromEntries(Object.entries(report.byWinRound).map(([k, v]) => [k, v.slice()])),
-    runaways: { ...report.runaways },
-    // Game records don't carry the loops shortcut (CR 732.2a) yet.
-    loops: {},
-    crashed: report.crashed.map((c) => ({ ...c })),
-    loop_draws: report.loopDraws,
-    unparsed_cards: [...(extras.unparsedCards ?? [])],
-    digest_mismatches: [...(extras.digestMismatches ?? [])],
-    // Python's order: by name.
-    cards: [...report.cards]
-      .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-      .map((c) => ({
-        name: c.name,
-        impact: impact(c),
-        margin: margin(c),
-        drawn: c.drawn,
-        cast: c.cast,
-        average_cast_turn: c.averageCastRound,
-        reliable: reliable(c),
-      })),
-    removal: report.removal.slice(0, 30).map((t) => ({
-      victim: t.victim,
-      losses: t.losses,
-      by_source: { ...t.bySource },
-      by_method: { ...t.byMethod },
-    })),
-    series: report.series.map((s) => ({
-      metric: s.metric,
-      player: s.player,
-      turns: s.turns.slice(),
-      values: s.values.slice(),
-      samples: s.samples.slice(),
-      examples: s.examples.map((e) => e.slice()),
-      representative: s.representative.slice(),
-      representative_value: s.representativeValue.slice(),
-    })),
-  };
-}
 
 /** Every ability on every face of a card document. */
 function abilitiesOf(doc: CardDocument | undefined): readonly { unparsed?: boolean; text?: string }[] {
@@ -96,20 +20,6 @@ function abilitiesOf(doc: CardDocument | undefined): readonly { unparsed?: boole
 /** An ability the parser didn't read, or whose effects hold an unread node (Python's walk for `is_unparsed`). */
 function unreadAbility(a: { unparsed?: boolean }): boolean {
   return a.unparsed === true || JSON.stringify(a).includes('"unparsed":true');
-}
-
-/**
- * Cards none of whose abilities were read (the report's "inert cards"), by
- * name: of the whole run, or of one deck when `oracleIds` names its cards.
- */
-export function inertCards(cards: Readonly<Record<string, CardDocument>>, oracleIds?: Iterable<string>): string[] {
-  const ids = oracleIds === undefined ? Object.keys(cards) : [...new Set(oracleIds)];
-  const out: string[] = [];
-  for (const id of ids) {
-    const doc = cards[id];
-    if (doc !== undefined && parseStatus(doc).status === "blank") out.push(doc.name);
-  }
-  return out.sort();
 }
 
 /**

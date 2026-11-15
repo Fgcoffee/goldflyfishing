@@ -1,16 +1,15 @@
 /**
- * The Results and Replay screens' JSON, from a browser run: the same keys
- * Python's Bridge sends (mtgfish/ui/bridge.py), so app.js reads either.
+ * The Replay screen's JSON, from a browser run: the same keys Python's
+ * Bridge sends (mtgfish/ui/bridge.py), so app.js reads either.
  */
 
 import { describe, expect, it } from "vitest";
 import type { CardDocument } from "../ir";
 import { seedFor } from "../kernel/random";
 import { rulesEngine } from "../rules/play";
-import { boardPayload, inertCards, parseStatus, replayPayload, resultsPayload, TAPPED } from "./payload";
+import { boardPayload, parseStatus, replayPayload, TAPPED } from "./payload";
 import { replayGame } from "./replay_view";
-import { buildReport } from "./report";
-import { runGames, type DeckSpec, type RunSetup } from "./runner";
+import type { DeckSpec, RunSetup } from "./runner";
 
 const FILES = import.meta.glob("../../../schema/samples/*.json", { eager: true, import: "default" });
 const cards: Record<string, CardDocument> = {};
@@ -21,32 +20,11 @@ for (const [path, doc] of Object.entries(FILES)) {
 }
 const setup: RunSetup = { decks: ["aggro", "combo", "control", "stax"].map((k) => decks[k]!), cards, runSeed: 5, maxRounds: 4 };
 
-/** Python `Bridge._report_payload`'s keys. */
-const RESULTS_KEYS = [
-  "games", "seats", "win_rate", "stall_rate", "wins", "stalls", "average_win_round", "average_win_turn",
-  "win_reasons", "loss_reasons", "commander_landed_games", "commander_landed", "commander_never",
-  "by_win_round", "runaways", "loops", "crashed", "loop_draws", "unparsed_cards", "digest_mismatches",
-  "cards", "removal", "series",
-];
 /** Python `Bridge.replay`'s keys (plus `digest`, for the page's check). */
 const REPLAY_KEYS = [
   "game_index", "seed", "turns", "winner", "outcome", "final_board", "detail_levels", "key_kinds",
   "noise_kinds", "seats", "turns_taken", "frames", "board_cards", "board_frames", "digest",
 ];
-
-describe("resultsPayload", () => {
-  it("has Python's keys, and cards in Python's shape and order", async () => {
-    const run = await runGames(rulesEngine, setup, 0, 3);
-    const payload = resultsPayload(buildReport(run.records, run.crashed), { unparsedCards: inertCards(cards, setup.decks[0]!.cards.map((c) => c.oracle_id)) });
-    expect(Object.keys(payload).sort()).toEqual([...RESULTS_KEYS].sort());
-    expect(payload.games).toBe(3);
-    const rows = payload.cards as { name: string }[];
-    expect(rows.length).toBeGreaterThan(0);
-    expect(Object.keys(rows[0]!).sort()).toEqual(["average_cast_turn", "cast", "drawn", "impact", "margin", "name", "reliable"]);
-    expect(rows.map((r) => r.name)).toEqual(rows.map((r) => r.name).sort());
-    expect(JSON.parse(JSON.stringify(payload))).toEqual(payload);
-  }, 120_000);
-});
 
 describe("replayPayload and boardPayload", () => {
   const seed = seedFor(setup.runSeed, 0);

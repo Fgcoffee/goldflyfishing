@@ -293,7 +293,7 @@ These were the last things your resolve.ts was skipping for me.
   - I added that to the card-reading fixes for after the port.
   - Until then those two cases stay in Python, as you said.
 
-## F63, the hybrid-cost crash: fixed (94e0913)
+## F63, the hybrid-cost crash: fixed (20610f4)
 
 - `findPayment` (mana/payment.ts) no longer throws past 12 Phyrexian or `{2/W}` symbols.
   - The symbols past `MAX_SEARCHED_CHOICES` (12) are settled greedily first: mana of a kind the symbol accepts while one is spare, else 2 life (Phyrexian) or 2 generic (`{2/W}`).
@@ -312,19 +312,19 @@ These were the last things your resolve.ts was skipping for me.
 
 ## Results and replay screens read browser runs (done)
 
-- **Engine** (c59f85e): `sim/replay_view.ts` ports `sim/replay.py`, and `sim/board.ts` ports `sim/board.py` (the film).
+- **Engine** (43fe6e7): `sim/replay_view.ts` ports `sim/replay.py`, and `sim/board.ts` ports `sim/board.py` (the film).
   - `replayGame(setup, index, seed)` plays a game again with the log and the film on.
   - The replayed game is the run's game: its digest is tested equal.
-- **Payloads** (9257754): `sim/payload.ts` builds the JSON Python's Bridge sends, field for field.
-  - `resultsPayload` matches `_report_payload`, `replayPayload` matches `replay`, and `boardPayload` matches `replay_board` (short arrays with Python's bit flags).
+- **Payloads** (d565832): `sim/payload.ts` builds the Replay screen's JSON, field for field as Python's Bridge sends it.
+  - `replayPayload` matches `replay`, and `boardPayload` matches `replay_board` (short arrays with Python's bit flags).
   - Parse status comes from the IR.
-  - `loops` is empty: game records don't carry the loops shortcut yet.
-- **Server** (c7f57dc): `GET /api/browser-runs/{id}` returns the run whole, with `setup` (decks and current IR). If a card has changed since the run, `setup` is null and `unverifiable` says which card. Owner only.
-- **Site bundle** (241a68c): `webapp/src/site`, built by `npm run build:site` into `mtgfish/ui/web/engine/` (generated, gitignored).
+  - The Results payload is the web session's `webapp/src/results.ts` `reportPayload` (1a7917e). My duplicate `resultsPayload` is removed: it lacked their metric-name mapping, so per-turn charts missed `mana_available` and similar metrics.
+- **Server** (7fa0361): `GET /api/browser-runs/{id}` returns the run whole, with `setup` (decks and current IR). If a card has changed since the run, `setup` is null and `unverifiable` says which card. Owner only.
+- **Site bundle** (07b9098): `webapp/src/site`, built by `npm run build:site` into `mtgfish/ui/web/engine/` (generated, gitignored).
   - The Results report is built from the records.
   - Replays run in a Web Worker and flag a digest mismatch.
   - The Dockerfile's node stage builds the bundle. Its steps pass from a clean copy, but the image itself hasn't been built: there's no Docker daemon here.
-- **Site** (65744e8): History lists browser runs.
+- **Site** (9897e43): History lists browser runs.
   - Open shows the run on the Results screen.
   - While a browser run is open, `call()` in app.js sends `report`, `replay` and `replay_board` to `browser_runs.js`.
   - Starting a simulation, or opening a server run, closes it.
@@ -335,14 +335,27 @@ These were the last things your resolve.ts was skipping for me.
   - Python looks the art up in its card database, tokens by name.
   - Proposal: the server adds image URLs per card name to `GET /api/browser-runs/{id}`, tokens included, by the same lookup `Bridge._board_cards` uses.
 
+## For the web session (welcome back)
+
+- I did these while you were archived. I've now seen your 14 Nov plan, and the **replay screen for browser runs** (your Next 2) is done, as above.
+  - The frame format is Python's `ReplayFrame`. It needed nothing new from rules: the TS log already has turn, phase, step, player, kind, text, depth and active player.
+  - Yours to change as you like.
+- **One bundle, not two?** Mine is `mtgfish/ui/web/engine/goldfly-site.js`, from `webapp/src/site`, built by `npm run build:site`. It has the report from stored records and the replay worker.
+  - Your switch-over plan puts a runner bundle at `mtgfish/ui/web/browser/`.
+  - Folding your runner into `webapp/src/site/entry.ts` (or moving mine into yours) would give the site one engine bundle. Your call.
+  - The Dockerfile's node stage already builds it.
+- **The seam in app.js:** `call()` asks `BrowserRuns.handles(method)` first (`mtgfish/ui/web/browser_runs.js`). For your Run, setting the current browser run after a run finishes makes Replay work with no other change.
+- The site bundle uses your `reportPayload` and `unparsedCards`.
+- I'm leaving the website switch-over to you. Card art in browser replays is still to do; it's yours if you want it, or I'll take it.
+
 ## Card-reading gaps found during the port (for after it)
 
 - Cauldron of Souls: "Choose any number of target creatures. Each of those creatures gains persist until end of turn." is unparsed (the "any number of target" phrasing).
 
 ## Next
 
-- Card art in browser replays (above).
-- Then switching the website to browser simulations: **waiting for the auditor's go**, as asked.
+- Card art in browser replays (above), unless the web session takes it.
+- The website switch-over is the web session's again (their plan in status/web.md), and waits for the auditor's go.
 - After that, the unticked items are:
   - the two bracket items, Phase 2, parked until the port is done;
   - the deferred rules fixes, "once games can be watched".
