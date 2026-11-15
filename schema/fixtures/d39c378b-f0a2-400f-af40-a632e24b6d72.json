@@ -82,21 +82,48 @@
        "children": [
         {
          "$": "Effect",
-         "kind": 28,
-         "targets": {
-          "$": "ObjectFilter",
-          "types_any": 20,
-          "from_pile": true,
-          "zones": {
-           "$set": []
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 28,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4,
+            "from_pile": true,
+            "zones": {
+             "$set": []
+            },
+            "count": {
+             "$": "Value",
+             "constant": 1
+            },
+            "up_to": true
+           },
+           "zone": 1,
+           "text": "put into hand"
           },
-          "count": {
-           "$": "Value",
-           "constant": 1
+          {
+           "$": "Effect",
+           "kind": 28,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 16,
+            "from_pile": true,
+            "zones": {
+             "$set": []
+            },
+            "count": {
+             "$": "Value",
+             "constant": 1
+            },
+            "up_to": true
+           },
+           "zone": 1,
+           "text": "put into hand"
           }
-         },
-         "zone": 1,
-         "text": "put into hand"
+         ],
+         "text": "put one of each"
         }
        ],
        "text": "may"

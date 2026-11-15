@@ -7460,8 +7460,51 @@ def _pile_parts(stream: Stream, *, after_first: bool = False) -> list[Effect]:
     return parts
 
 
+def _pile_pair(stream: Stream) -> Effect | None:
+    """"a creature card and/or a land card from among them into your hand"
+    (Relentless Pursuit): up to one of each, not one card that is either.
+    Read as two moves to the same place, each up to one."""
+    mark = stream.mark()
+    # Only "a X and/or a Y": "any number of land and/or legendary cards" is
+    # one description with no limit (Kamahl's Druidic Vow).
+    if not stream.at("a", "an"):
+        return None
+    first = parse_object_filter(stream)
+    if first is None or first.from_pile or not stream.accept("and"):
+        stream.reset(mark)
+        return None
+    if not stream.accept("or"):
+        stream.reset(mark)
+        return None
+    second = parse_object_filter(stream)
+    if second is None or not second.from_pile:
+        stream.reset(mark)
+        return None
+    one = Value.of(1)
+    specs = (
+        replace(first, from_pile=True, zones=second.zones, count=one, up_to=True),
+        replace(second, count=one, up_to=True),
+    )
+    moves = []
+    for spec in specs:
+        look = stream.mark()
+        move = _pile_destination(stream, spec)
+        if move is None:
+            stream.reset(mark)
+            return None
+        moves.append(move)
+        if len(moves) == 1:
+            stream.reset(look)  # one destination, said once for both
+    return Effect(EffectKind.SEQUENCE, children=tuple(moves), text="put one of each")
+
+
 def _pile_part(stream: Stream, *, continuation: bool) -> Effect | None:
     mark = stream.mark()
+    if not continuation:
+        pair = _pile_pair(stream)
+        if pair is not None:
+            return pair
+        stream.reset(mark)
     spec = _pile_object(stream, continuation=continuation)
     if spec is None:
         stream.reset(mark)

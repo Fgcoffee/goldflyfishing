@@ -133,6 +133,17 @@ describe("fixed: the reading matches the card", () => {
 });
 
 describe("fixed after the triage", () => {
+  it("F49 Relentless Pursuit: a creature card AND/OR a land card - up to one of each", () => {
+    const moves = ofKind(ability("Relentless Pursuit", "and/or"), EK.MOVE_ZONE!).filter((e) => e.zone === Z.HAND);
+    expect(moves).toHaveLength(2);
+    for (const move of moves) {
+      const t = move.targets as { count?: { constant?: number }; up_to?: boolean; from_pile?: boolean };
+      expect([t.count?.constant, t.up_to, t.from_pile]).toEqual([1, true, true]);
+    }
+    const types = (m: Effect) => { const t = m.targets as { types_any?: number; types_all?: number }; return (t.types_all ?? 0) | (t.types_any ?? 0); };
+    expect(moves.map(types)).toEqual([4, 16]); // creature, land
+  });
+
   it("F49 Chandra, Spark Hunter's +2: you may choose one of two, then 'if you do, draw'", () => {
     const plus = ability("Chandra, Spark Hunter", "+2");
     const top = plus.effects as Effect[];
@@ -207,11 +218,7 @@ describe("open: the reading doesn't match the card", () => {
 
 
 
-  it.fails("F49 Relentless Pursuit: a creature card AND/OR a land card (up to two)", () => {
-    // KNOWN: F49 - read as one card that is a creature or a land.
-    const move = ofKind(ability("Relentless Pursuit", "and/or"), EK.MOVE_ZONE!).find((e) => e.zone === Z.HAND)!;
-    expect((move.targets as { count?: { constant?: number } }).count?.constant).toBe(2);
-  });
+
 
   it.fails("F3 Sudden Impact and F49 Viseling count only that player's hand", () => {
     // KNOWN: F3 - the hand count has no owner, so it counts every hand.

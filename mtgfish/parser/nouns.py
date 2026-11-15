@@ -893,7 +893,12 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         # "and", "or", and Scryfall's "and/or" all mean the same thing here:
         # an object matching any of the listed types qualifies. "Instant and
         # sorcery cards" is not asking for a card that is both.
-        if stream.at("and") and stream.peek(1).lower in ("a", "an"):
+        if stream.at("and") and (
+            stream.peek(1).lower in ("a", "an")
+            # Scryfall's "and/or" before a second determiner: "a creature
+            # card and/or a land card" is two noun phrases too.
+            or (stream.peek(1).lower == "or" and stream.peek(2).lower in ("a", "an"))
+        ):
             # "Sacrifices an artifact *and a* land": two objects, one of each,
             # not one object that may be either. A second determiner after
             # "and" starts a second noun phrase, which this filter cannot be;
