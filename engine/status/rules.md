@@ -438,8 +438,55 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Bench: 200 games through `rulesEngine` (auditor's ask)
+
+The four bench decks from `schema/samples` (aggro, combo, control, stax),
+runSeed 20261114, maxRounds 25, played in Node by `playGame` with
+SimpleAgent, games 0-199, with a 90 s per-game watchdog (an `opts.watch`
+that throws). Engine at ce0b202. To reproduce one game:
+`playGame(setup, index, seedFor(20261114, index))`.
+
+**Outcomes:** 124 LIFE, 44 COMMANDER_DAMAGE, 5 DECKING, 5 STALL_OUT (games
+39, 85, 94, 143, 198: the 100-turn cap, i.e. 25 rounds; no loop draw).
+No runaways and no loop draws. Median game 1.1 s, p90 2.4 s, slowest
+finished game 81 s. Median 50 turns.
+
+**Crashes: 10, all F63** (`RangeError: unreasonable number of hybrid
+symbols in a cost`, via findPayment <- canPayCost <- affordable, the attack
+costs). Games and seeds: 55 (114627385), 57 (253192874), 63 (3756024319),
+73 (3349215499), 103 (3740255445), 142 (4085659038), 144 (3216302316),
+149 (152809110), 157 (3415405777), 194 (766788920). The parser has it in
+mana/payment.ts. **No port-introduced crash** was found.
+
+**Slow games: 12 hit the 90 s watchdog**, every one a token swarm
+(Krenko, Mob Boss doubling its goblins): games 9 (1673232466), 27
+(1046943031), 33 (1135086036), 40 (3870538508), 47 (3942470300), 70
+(734201371), 77 (3471723094), 107 (3215577216), 155 (413110111), 173
+(4250891339), 184 (1731394866), 187 (3714759409). They had 800-5800
+permanents at turn 37-67. None is a loop: the game keeps advancing,
+every step costs more.
+- Profile of game 33 (60 s): 70% in `createTokens` -> `prohibited`
+  (CR 111.5, each new token is checked against prohibitions on entering)
+  -> `active` -> `collect` -> `characteristicsOf` -> `computeBoard`. Each
+  token bumps the epoch, so each one rebuilds the restriction list over
+  every permanent, and that recomputes the board: O(n^2) per swarm.
+  Python's `create_tokens`/`_active` do exactly the same, so this is
+  **inherited, not port-introduced** (Python is slower still).
+- Game 9's earlier cost, layer dependency ordering with Ogre Battledriver
+  on the board, was fixed exactly in ce0b202 (same digests, games 0-8).
+  The same O(n^2) on Python's side is what the docstring of
+  `_DependencyProbe` in cr613_layers.py describes.
+- An exact fix is possible but is a design call, so I have left it for
+  you: e.g. batch the CR 111.5 check per createTokens call when no
+  restriction on ENTER_BATTLEFIELD is in force (a token that enters can
+  itself add one, so the batch must re-check after a token with a static
+  RESTRICTION ability). Say if you want it; tokens.ts is the parser's.
+
 ## Questions for the auditor
 
+- **Bench (above):** 10 crashes, all F63; no port-introduced crash; 12
+  slow token-swarm games, inherited O(n^2) in createTokens' CR 111.5
+  check. Want the exact batching fix, from me or the parser?
 
 - Answered (auditor): the VOTE crash is F64; resolve.ts says `KNOWN: F64`
   now. paying.ts's note on a null payment context was also marked F61; it
