@@ -40,12 +40,34 @@ const BrowserRuns = (() => {
     let payload;
     try {
       if (method === "report") payload = current.report;
-      else if (method === "replay") payload = await current.replayer.replay(Number(args[0]) || 0);
+      else if (method === "replay") payload = await withPictures(await current.replayer.replay(Number(args[0]) || 0));
       else payload = await current.replayer.board(Number(args[0]) || 0);
     } catch (err) {
       payload = { error: String(err && err.message ? err.message : err) };
     }
     return JSON.stringify(payload);
+  }
+
+  /* The engine names the board's cards; their art, image and printed text
+   * live in the server's card database (bridge card_pictures, the lookup a
+   * server replay uses). Asked once per name and kept. A failure leaves the
+   * placeholders: the replay still works. */
+  const pictures = new Map();
+
+  async function withPictures(payload) {
+    const cards = payload && payload.board_cards;
+    if (!Array.isArray(cards)) return payload;
+    const missing = [...new Set(cards.map((c) => c.name).filter((n) => n && !pictures.has(n)))];
+    if (missing.length) {
+      try {
+        const reply = JSON.parse(await Backend.call("card_pictures", JSON.stringify(missing)));
+        for (const [name, picture] of Object.entries(reply.cards || {})) pictures.set(name, picture);
+      } catch (err) {
+        console.warn("[goldfly] card pictures:", err);
+      }
+    }
+    payload.board_cards = cards.map((c) => ({ ...c, ...(pictures.get(c.name) || {}) }));
+    return payload;
   }
 
   async function list() {

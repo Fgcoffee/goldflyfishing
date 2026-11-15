@@ -312,15 +312,44 @@ const Board = (() => {
     } else if (card.status === "partial") {
       info.appendChild(el("div", "reading fail",
         "Partly read. These abilities never fired: " + (card.unread || []).join("; ")));
-    } else if (card.token) {
+    } else if (card.token && !card.image) {
       info.appendChild(el("div", "dim", "A token - no printing, so no art."));
     } else {
       info.appendChild(el("div", "reading ok", "The parser read this card completely."));
     }
+    if (card.oracle_text) info.appendChild(el("div", "oracle", card.oracle_text));
+    const reading = el("div", "zoomreading");
+    info.appendChild(reading);
     const close = el("button", "ghost small", "Close");
     close.addEventListener("click", () => { host.hidden = true; });
     info.appendChild(close);
     host.appendChild(info);
+    if (!card.token || card.oracle_text) loadZoomReading(card.name, reading);
+  }
+
+  /* What the engine makes of each ability, as the Deck tab's card drawer
+   * shows it (bridge sandbox_inspect): the card's words beside the reading. */
+  let zoomed = "";
+  async function loadZoomReading(name, host) {
+    zoomed = name;
+    const info = await call("sandbox_inspect", name);
+    if (!info || info.error || !Array.isArray(info.faces) || zoomed !== name) return;
+    host.appendChild(el("h4", null, "What the engine makes of it"));
+    info.faces.forEach((face) => {
+      if (info.faces.length > 1) host.appendChild(el("h4", null, face.name));
+      face.abilities.forEach((ability) => {
+        const block = el("div", "reading " + (ability.unparsed ? "fail" : "ok"));
+        const said = el("div", "said");
+        said.appendChild(el("span", "label", "card says"));
+        said.appendChild(el("span", "text", ability.text || ability.kind));
+        block.appendChild(said);
+        const read = el("div", "read");
+        read.appendChild(el("span", "label", ability.unparsed ? "unread" : "engine will"));
+        read.appendChild(el("span", "text", ability.understood));
+        block.appendChild(read);
+        host.appendChild(block);
+      });
+    });
   }
 
   return { reset, show, showAtFrame, step, indexForFrame, drawInto,

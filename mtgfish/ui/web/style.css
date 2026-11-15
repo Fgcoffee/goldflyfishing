@@ -648,6 +648,12 @@ pre:empty { display: none; }
 .boardzoom .reading { font-size: 11px; padding: 6px; border-radius: 6px; }
 .boardzoom .reading.ok { background: var(--good-soft); color: var(--good); }
 .boardzoom .reading.fail { background: var(--bad-soft); color: var(--bad); }
+/* Printed text and the per-ability reading can run long: the panel scrolls. */
+.boardzoom .zoominfo { max-height: 70vh; overflow-y: auto; }
+.boardzoom .oracle { font-size: 12px; padding: 6px 8px; }
+.boardzoom h4 { margin: 4px 0 0; font-size: 12px; }
+.boardzoom .zoomreading .reading { border-left-width: 3px; margin: 4px 0; }
+.boardzoom .zoomreading .reading .read .text { color: inherit; }
 
 /* Where the board is, in the log. */
 .replay-log .line.at { background: var(--accent-soft); box-shadow: inset 2px 0 var(--accent); }

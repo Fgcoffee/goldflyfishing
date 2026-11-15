@@ -341,3 +341,17 @@ def test_a_deck_name_too_long_is_refused():
     run["deck_name"] = "x" * 201
     with pytest.raises(BadRun, match="deck_name"):
         validate(run)
+
+
+def test_a_browser_replay_gets_its_card_pictures_from_the_server(make_client):
+    """A browser replay names its board's cards; the server answers with each
+    one's art, image and printed text, as a server replay's board has them."""
+    client = make_client()
+    reply = client.post("/api/call/card_pictures",
+                        json={"args": [json.dumps(["Sol Ring", "Sol Ring", "No Such Card"])]})
+    assert reply.status_code == 200
+    cards = reply.json()["cards"]
+    assert set(cards) == {"Sol Ring", "No Such Card"}
+    assert "{C}{C}" in cards["Sol Ring"]["oracle_text"]
+    assert cards["Sol Ring"]["image"].startswith("https://")
+    assert cards["No Such Card"] == {"art": "", "image": "", "oracle_text": ""}

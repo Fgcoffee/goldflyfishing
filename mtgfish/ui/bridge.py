@@ -1239,15 +1239,13 @@ class Bridge(QObject):
         falls back to the placeholder, which is the honest answer for a token
         the engine invented.
         """
-        from .deckview import image_urls, parse_status
+        from .deckview import parse_status
 
         out = []
         for ref in film.cards:
             card = self.db.lookup(ref.name)
-            images = {"normal": "", "large": "", "art": "", "back": None}
             status = {"status": "ok", "unread": []}
             if card is not None:
-                images = image_urls(card, self.db.raw_card(card.oracle_id))
                 status = parse_status(card, self.sandbox.verdicts)
             out.append(
                 {
@@ -1255,13 +1253,44 @@ class Bridge(QObject):
                     "type_line": ref.type_line,
                     "mana_cost": ref.mana_cost,
                     "token": ref.token,
-                    "art": images["art"],
-                    "image": images["normal"],
+                    **self._card_picture(ref.name),
                     "status": status["status"],
                     "unread": status["unread"],
                 }
             )
         return out
+
+    def _card_picture(self, name: str) -> dict:
+        """A card's art crop, image and printed text, by name, tokens
+        included (Scryfall's dump has token faces too). Empty strings for a
+        name it doesn't know."""
+        from .deckview import image_urls
+
+        card = self.db.lookup(name)
+        if card is None:
+            return {"art": "", "image": "", "oracle_text": ""}
+        images = image_urls(card, self.db.raw_card(card.oracle_id))
+        return {
+            "art": images["art"],
+            "image": images["normal"],
+            "oracle_text": "\n//\n".join(f.oracle_text for f in card.faces if f.oracle_text),
+        }
+
+    #: Names one card_pictures call answers; a replay's board has far fewer.
+    MAX_PICTURES = 500
+
+    @Slot(str, result=str)
+    @_guard
+    def card_pictures(self, names_json: str) -> str:
+        """Art, image and printed text for each named card: what a replay
+        played in the browser needs to draw its board as a server replay
+        does (``_board_cards``). The browser engine names the cards; the
+        pictures live in this server's card database."""
+        names = json.loads(names_json)
+        if not isinstance(names, list):
+            return _json({"error": "send a list of card names"})
+        wanted = [str(n)[:200] for n in names[: self.MAX_PICTURES]]
+        return _json({"cards": {name: self._card_picture(name) for name in dict.fromkeys(wanted)}})
 
     @Slot(str, result=str)
     @_guard
