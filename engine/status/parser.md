@@ -433,7 +433,8 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 
 **Cards that don't read yet:**
 - Cauldron of Souls and Cauldron Haze now read (320500d): "Choose ... target ... . Each of those creatures ..." becomes one targeted sentence. Board test: the Bears come back with a -1/-1 counter. This also resolves the card-reading gap logged above.
-- Next: the most-played unread abilities by deck usage. Borrowed Knowledge waits with F3 for the evaluate-context change.
+- Tireless Provisioner and Ant-Man's Army read (de8b72e): "create a Food token or a Treasure token" is a choice of one.
+- Next: the most-played unread abilities by deck usage. In order of play rank: Path of Ancestry, Myriad Landscape, Arcane Denial, Boseiju, Esper Sentinel, Urza's Saga, Mana Drain, Victimize, Windfall, Command Beacon, Idol of Oblivion, Gamble, Force of Negation... Borrowed Knowledge waits with F3 for the evaluate-context change.
 
 ## For the rules session: your 200-game bench
 
