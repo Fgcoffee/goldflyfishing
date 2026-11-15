@@ -16,3 +16,5 @@ export { buildTurns, describeBoard, DETAIL_LEVELS, KEY_KINDS, NOISE_KINDS, repla
 export { boardPayload, parseStatus, replayPayload } from "./payload";
 /** A game's seed from the run seed and its index (Python `RunConfig.seed_for`). */
 export { seedFor } from "../kernel/random";
+/** A hand-driven board on the TS engine, replayable from its session (the website's Sandbox). */
+export { DEFAULT_BENCH, PLACEABLE, RULE_DESCRIPTIONS, RULE_NAMES, STRICT_BENCH, Sandbox, type BenchRules, type SandboxOp, type SandboxSession } from "./sandbox";
