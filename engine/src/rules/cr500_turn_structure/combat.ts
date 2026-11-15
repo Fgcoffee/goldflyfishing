@@ -337,7 +337,7 @@ function enforceAttackRequirements(
   const result = new Map<ObjectId, Defender>();
   for (const [attackerId, defender] of proposal) {
     const obj = game.objects.get(attackerId);
-    // KNOWN: F61 - Python indexes game.objects[attacker_id] and raises on an id that is not there.
+    // A guard: Python indexes game.objects[attacker_id] and would raise on an id that is not there.
     if (obj !== undefined && attackIsPermitted(game, obj, defender)) result.set(attackerId, defender);
   }
   for (const obj of candidates) {
