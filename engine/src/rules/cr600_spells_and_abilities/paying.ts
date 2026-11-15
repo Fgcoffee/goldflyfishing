@@ -281,7 +281,8 @@ function recordPaid(game: Game, context: GameObject, obj: GameObject): void {
 /** Pay one non-mana component, checking first (CR 118.3); throws CastError rather than paying part. */
 export function payComponent(game: Game, playerId: PlayerId, component: CostComponent, context: GameObject): void {
   const p = player(game, playerId);
-  const amount = componentAmount(game, component, playerId);
+  // A spell's own X (F37); an ability's X isn't on its source, so none there.
+  const amount = componentAmount(game, component, playerId, context.ability === null ? context.id : undefined);
   const kind = componentKind(component);
   const subject = () => game.objects.get(costSubjectId(context));
   if (kind === CostKind.UNPARSED) throw new CastError("cost could not be understood");

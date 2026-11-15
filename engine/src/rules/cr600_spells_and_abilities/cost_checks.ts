@@ -49,11 +49,16 @@ export function lifeChangeProhibited(game: Game, playerId: PlayerId, gain: boole
   return [Act.LIFE_TOTAL_CHANGE, gain ? Act.GAIN_LIFE : Act.LOSE_LIFE].some((act) => prohibited(game, act, { player: playerId }) !== null);
 }
 
-/** What a component charges for this player now (`required_amount` of the evaluated amount). */
-export function componentAmount(game: Game, component: CostComponent, playerId: PlayerId): number {
+/**
+ * What a component charges for this player now (`required_amount` of the
+ * evaluated amount). `source` is the object paying it: a spell's "pay X
+ * life" reads X from the spell (F37's engine half; CR 601.2b, 107.3a).
+ * Without one, X is 0, as Python evaluated it.
+ */
+export function componentAmount(game: Game, component: CostComponent, playerId: PlayerId, source?: ObjectId): number {
   const hooks = matchHooks();
   if (component.amount == null) return requiredAmount(component, 0);
-  const evaluated = hooks.evaluate(game, component.amount, { controller: playerId });
+  const evaluated = hooks.evaluate(game, component.amount, source === undefined ? { controller: playerId } : { source, controller: playerId });
   return requiredAmount(component, evaluated, hooks.wasUndeterminable());
 }
 
@@ -74,7 +79,8 @@ export function checkPayable(
 ): void {
   const spell = options.spell ?? null;
   const p = player(game, playerId);
-  const amount = componentAmount(game, component, playerId);
+  // A spell's own X (F37); an ability's X isn't on its source, so none there.
+  const amount = componentAmount(game, component, playerId, context.ability === null ? context.id : undefined);
   const kind = componentKind(component);
   const subject = (): GameObject | undefined => game.objects.get(costSubjectId(context));
 

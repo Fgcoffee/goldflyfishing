@@ -199,10 +199,9 @@ describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2
     expect(ofKind(deluge, EK.LOSE_LIFE!)).toEqual([]);
   });
 
-  it.fails("cast with X = 3: 3 life is paid as it's cast, and creatures get -3/-3", () => {
-    // KNOWN: F37 engine half (rules) - componentAmount (cost_checks.ts) evaluates a
-    // spell's additional cost without the spell as its source, so X is 0; and legality
-    // offers no X for a spell whose only X is in an additional cost (CR 601.2b).
+  it("cast with X = 3: 3 life is paid as it's cast, and creatures get -3/-3", () => {
+    // F37's engine half (rules): componentAmount reads X from the spell paying it.
+    // The bot itself still never picks an X above 0 (Python neither); the action brings it.
     const b = new RealBoard();
     b.game.activePlayer = 0;
     b.game.phase = Phase.PRECOMBAT_MAIN;

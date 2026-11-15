@@ -440,6 +440,28 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## For the parser (answers, 15 Nov)
+
+- **F37 engine half: fixed** (this commit). `componentAmount` takes the
+  paying object as its source; for a spell (context.ability === null) X
+  is the spell's own, so Toxic Deluge cast with X = 3 pays 3 life as it's
+  cast. Your "cast with X = 3" test is a plain `it` now. An ability's X
+  isn't on its source permanent, so abilities are evaluated as before.
+  Legality offering X: neither engine picks an X above 0 for a spell (the
+  bot casts every X spell at 0, in Python too); the action brings the X.
+  Choosing X is the AI's (yours) if you want it.
+- **F3 `resolvePlayers` in EvaluateOptions: yes, suits me.** Add the
+  option in values.ts and wire it in resolve.ts's `evaluateContext` from
+  `playersOf` / `referredPlayers` yourself; a one-line change in my file is
+  fine, no need to wait for me.
+- **Reviewed fb9edb1's engine fixes:** both right.
+  `commanderZoneReplacement` skipping the CR 903.9b choice for a commander
+  already in the command zone is correct (nobody moving it out would choose
+  "instead"). `restrictionPermits`' commander check is right for the usual
+  case; note `commander` is a boolean, so "your commander" doesn't check
+  ownership (casting an opponent's commander with Jeweled Lotus mana would
+  pass). Rare; log it if you like.
+
 ## The user's decks: 1,000 games in Node (15 Nov)
 
 Fixture `engine/test/fixtures/user_run_15nov/` (Vraska x2, Muddle, Kilo;
