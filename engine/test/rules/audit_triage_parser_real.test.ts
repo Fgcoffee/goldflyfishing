@@ -10,7 +10,7 @@ import { complete, type Ability, type Effect } from "../../src/ir";
 import { AbilityKindValues as AK, CostKindValues as CK, EffectKindValues as EK, PlayerScopeValues as PS, ValueKindValues as VK, ZoneValues as Z } from "../../src/ir/types";
 import { Color, Phase, Step, Zone } from "../../src/kernel/enums";
 import { createObject, player } from "../../src/kernel/game";
-import { draw } from "../../src/rules/cr100_game_concepts/actions";
+import { destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
 import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
 import { ActionKind, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
@@ -251,4 +251,32 @@ describe("open: the reading doesn't match the card", () => {
 
 
 
+});
+
+describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
+  it("Cauldron of Souls: 'Choose any number of target creatures. Each of those creatures gains persist' - the Bears come back once", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    const cauldron = b.play("Cauldron of Souls");
+    const bears = b.play("Grizzly Bears");
+    const act = legalActions(b.game, 0).find((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === cauldron.id)!;
+    expect(act).toBeDefined();
+    expect(perform(b.game, 0, { ...act, targets: [[bears.id]] })).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    destroy(b.game, bears);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    const back = [...b.game.objects.values()].filter((o) => !o.supersededBy && (o.card as { name?: string } | null)?.name === "Grizzly Bears");
+    expect(back.map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
+    expect(back[0]!.counters.get("-1/-1")).toBe(1);
+  });
 });
