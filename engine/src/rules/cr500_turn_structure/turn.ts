@@ -83,8 +83,8 @@ export function runGame(game: Game, options: TurnOptions = DEFAULT_TURN_OPTIONS,
     game.activePlayer = nextActivePlayer(game);
   }
   if (game.restartRequested) return restart(game, options, depth);
-  if (game.runaway.startsWith("TOKEN SWARM")) {
-    logRecord(game, `Game stopped as a runaway: ${game.runaway}. Too many permanents to simulate in reasonable time.`, { kind: "runaway" });
+  if (game.runaway.startsWith("TOKEN SWARM") || game.runaway.startsWith("WORK BUDGET")) {
+    logRecord(game, `Game stopped as a runaway: ${game.runaway}. Too much to simulate in reasonable time.`, { kind: "runaway" });
   } else if (game.runaway) {
     logRecord(
       game,
