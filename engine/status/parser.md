@@ -335,6 +335,39 @@ These were the last things your resolve.ts was skipping for me.
   - Python looks the art up in its card database, tokens by name.
   - Proposal: the server adds image URLs per card name to `GET /api/browser-runs/{id}`, tokens included, by the same lookup `Bridge._board_cards` uses.
 
+## Token swarms that never end (auditor's top priority, 15 Nov)
+
+**The diagnosis didn't hold for the TS bot.** It's aggressive by default (as in Python), so it already attacks with every creature that has power. The toughness rule only applies with `aggressive: false`. I traced all 14 runaways on the 200-game bench (runSeed 20261114) instead.
+
+**Root cause in 5 of 14: an engine bug, fixed (be2499a).**
+- `durations.ts` asked whether `game.turn > entry.createdTurn`, but standing restrictions and permissions store `created_turn` (restrictions.ts). So "until your next turn" never ended.
+- Teferi's Protection's "your life total can't change" lasted for the rest of the game. In game 155, 239 unblocked goblins dealt 1 each to a player on 3 life, who stayed on 3.
+- Games 40, 107, 117, 155 and 184 now end with a LIFE win.
+- **Rules session:** the fix is in your file (a one-line read of `created_turn`, with a test in actions.test.ts). Please review.
+
+**The bot (1cb2be4):** it now passes over a player whose combat damage keeps being prevented (Solitary Confinement) while another opponent can be hurt.
+- The auditor's alpha-strike and swarm rules would change nothing (it already attacks all-out).
+- I tried the lookahead size budget and dropped it: it slowed the biggest games (game 9: 21 s to 31 s).
+
+**Bench, 200 games** (seat 0 aggro, 1 combo, 2 control, 3 stax):
+
+| | LIFE | CMD | RUNAWAY | DECK | STALL | wins 0/1/2/3/none | median | p90 | max |
+|---|---|---|---|---|---|---|---|---|---|
+| before | 129 | 47 | 14 | 5 | 5 | 51/11/81/38/19 | 1.21 s | 3.08 s | 19.9 s |
+| be2499a | 163 | 21 | 12 | 2 | 2 | 74/15/53/44/14 | 1.10 s | 2.77 s | 21.1 s |
+| be2499a + 1cb2be4 | 163 | 22 | 11 | 2 | 2 | 73/15/54/45/13 | 0.97 s | 2.55 s | 18.9 s |
+
+- Control's 81 wins were inflated by the stale protection.
+- Games without a winner fall from 19 to 13.
+
+**The 11 runaways left are locks the rules allow:**
+- Solitary Confinement on the last player standing (games 27, 77).
+- An attack tax against a Krenko board that land destruction left with 4 to 16 lands: Propaganda (9, 33, 102), Ghostly Prison (173), Sphere of Safety (70), Windborn Muse (187). The stax player sits on 20 to 476 life.
+- Games 55, 119 and 123 are new paths after the fix, not yet examined.
+- Only small improvements are left: keeping mana back for an attack tax (game 33 taps out before combat), or no longer making tokens that can't attack (which would turn a runaway into a stall).
+
+**One requested test not added:** "a 1/1 against a lone 2/2 with no lethal stays home". The default bot attacks there, as Python's does. Making it cautious would change every normal game; I'd want the user's call first.
+
 ## Triage of the parser-owned findings (15 Nov)
 
 Every finding checked against the IR as exported now, on the TS engine's fixtures: `engine/test/rules/audit_triage_parser_real.test.ts`.
