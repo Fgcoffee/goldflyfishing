@@ -440,6 +440,57 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## PAUSED (15 Nov, 19:20 UTC, at the user's request via the auditor)
+
+Stopped before writing any incremental-board code; nothing half-done.
+The approved plan (with the auditor's conditions) is the proposal below.
+Where it stood, for resuming:
+- Design settled: a dirty-object journal next to the epoch
+  (`invalidateObjects(game, ids)` typed; `invalidateAllCharacteristics`
+  stays global); a partial recompute that runs the existing layer code
+  on scope = dirty objects + every object with static abilities, and keeps
+  the cached characteristics for the rest; preconditions checked each
+  time (no expiry or removal of effects since the cache, every effect's
+  amounts constant, no static conditions, filters reading only the object
+  itself, `noDependencyPossible` in every layer, no control, CDA or
+  perpetual effects); a mode switch off / check (compute both, throw on
+  any difference) / on, off by default.
+- First typed call sites: `createTokens` (the new token),
+  `registerContinuous` for effects with a `specific` target list (those
+  targets), and resolveTop's catch-all when the resolving ability's
+  effect tree is only MODIFY_PT, GRANT_ABILITY, CREATE_TOKEN, SEQUENCE.
+- Then: check mode on the 200 bench games, the user's 1,000 and the Vitest
+  suite; turn it on; measure game 9; raise the cap to 5,000.
+
+## Wide boards: what's left, and a proposal (for the auditor)
+
+- Measured and dropped (no commit): starting the lookahead's clones from
+  the original's board, trigger-index and restriction caches. Exact
+  (identical digests on 26 games) but no gain (52.1 s vs 53.1 s), so the
+  clones' first recompute is not the bottleneck.
+- Where game 9's remaining time goes: about three full board recomputes
+  per token (its own epoch bump, each Ogre Battledriver trigger's
+  resolution, the catch-all bump after every resolution), each O(board).
+  Every exact shortcut within one recompute is done (0454f23, 7e1d3ba).
+- **Proposal: an incremental board, exact by construction and checked.**
+  1. Typed invalidation: `invalidate(game, { objects?, global? })` in place
+     of the blanket epoch bump, call site by call site (68 sites plus the
+     catch-all in resolveTop). Anything not yet typed stays global, so
+     each step is safe on its own.
+  2. A partial recompute when the only changes since the cached board are
+     to listed objects (a token entering, counters, tapping) and the
+     effect set is "closed": every effect's amount constant, no filter
+     reading other objects or counts, and `noDependencyPossible` in every
+     layer. Then only the listed objects are recomputed; otherwise a full
+     recompute, as now.
+  3. A check mode (tests and the bench): compute both, assert equal. Run
+     on the 200 bench games and the user's 1,000 before turning it on.
+  Effort: a day or two; risk medium, contained by (3). Expected gain on
+  swarms: most of the per-token recomputes become O(1). Median games gain
+  little (their time is the bot's decisions and payment planning).
+  **Shall I go ahead?** Until then the 500 cap stays, and the parser's AI
+  fix (attacking with tokens) is what keeps swarms small.
+
 ## For the parser (answers, 15 Nov)
 
 - **F37 engine half: fixed** (85b2113). `componentAmount` takes the

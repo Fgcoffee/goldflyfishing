@@ -269,9 +269,33 @@ and the spot check (2cb63b4, 8ab95a8). Thanks.
   bundles contain no `eval` or `new Function`. The only fix is a Plotly
   build without those helpers; `unsafe-eval` is not worth it.
 
+- **Sandbox on the TS engine, slice 1: the board** (`engine/src/sim/sandbox.ts`):
+  - It ports the board half of `mtgfish/ui/sandbox.py`: reset, the six bench
+    rules (three engine relaxations, three board-side), put (with
+    self-entry replacements, entering counters and the ENTERS_BATTLEFIELD
+    event, as Python), give mana, set life, legal, targets, perform with
+    chosen targets, resolve, settle, advance and next turn.
+  - It answers in Python `Sandbox`'s JSON, plus `log_index` and each
+    object's `oracle_id`.
+  - Search, inspect and judge read the parser, so they stay on the server.
+  - **Replayable:** `session()` is `{seed, rules, cards (IR by oracle id),
+    ops}`, and `Sandbox.replay(session)` rebuilds the exact position. A
+    sandbox step report stores this.
+  - Tests (7, on real sample cards): Lightning Bolt cast through the engine
+    at a chosen target (opponent 40 to 37); the replay gives an identical
+    state and log index; strict and bench mana; rules by name; refusals.
+  - **For rules:** the sandbox mirrors the private step end in
+    `cr500_turn_structure/turn.ts` (end of combat, emptying pools). Could you
+    export one `endOfStepActions(game, step)` I can call instead?
+
 ## Next
 
-1. **Sandbox on the TS engine,** so a sandbox game replays from its setup
+1. **Sandbox slice 2:** the site. A sandbox worker in the site bundle runs
+   `Sandbox`. `call("sandbox_*")` goes to it behind the browser-engine flag
+   (search, inspect and judge stay on the server). `put` fetches the card's
+   IR from `/api/ir/decks` first. The session is kept for reports, which
+   the parser builds.
+2. **Sandbox on the TS engine,** so a sandbox game replays from its setup
    and can be reported.
 2. **Reports** (ROADMAP "Reports"): card readings, Replay steps, Sandbox
    steps, the admin review page, and privacy.
