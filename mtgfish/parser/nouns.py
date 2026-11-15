@@ -875,6 +875,12 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     # comma-only step is kept so it can be undone if no conjunction arrives.
     joined_once = False
     before_comma: tuple | None = None
+    # Each later alternative with its own qualifiers ("artifact cards and
+    # *red* creature cards"): pooled onto the whole phrase, "red" made the
+    # artifacts red too (F17, Tannuk). Kept per alternative instead, and
+    # used when any later alternative has a qualifier of its own.
+    alternatives: list[ObjectFilter] = []
+    late_qualified = False
 
     while True:
         look = stream.mark()
@@ -925,6 +931,7 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         # "noncreature artifact or *noncreature* enchantment". Reading only a
         # bare type word meant an alternative with any adjective at all ended
         # the list one item early.
+        before_qualifiers = spec
         spec = _qualifiers(stream, spec)
 
         # "noncreature artifact or *noncreature* enchantment" - the negation
@@ -941,6 +948,11 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
             stream.next()
             collected |= TYPE_WORDS[token.lower]
             matched = True
+            own = _qualifier_diff(before_qualifiers, spec)
+            late_qualified = late_qualified or bool(own)
+            alternatives.append(
+                ObjectFilter(types_all=TYPE_WORDS[token.lower], zones=frozenset(), **own)
+            )
             continue
         # "Elf or Goblin", "Zombies and Skeletons" - a disjunction of creature
         # types reads exactly like one of card types.
@@ -950,6 +962,11 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
                 stream.next()
                 subtypes.append(name)
                 matched = True
+                own = _qualifier_diff(before_qualifiers, spec)
+                late_qualified = late_qualified or bool(own)
+                alternatives.append(
+                    ObjectFilter(subtypes_any=(name,), zones=frozenset(), **own)
+                )
                 continue
         stream.reset(look)
         spec = spec_at_look
@@ -964,6 +981,34 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     if not matched:
         stream.reset(mark)
         return spec
+
+    if late_qualified and before_comma is None and (entry.types_all or entry.subtypes_all):
+        # One alternative per item, each with only its own qualifiers; what
+        # was read before the first item (and everything after the list -
+        # "cards in your hand") stays on the whole phrase.
+        # A qualifier said before the first item belongs to that item when
+        # the later ones carry their own: "*green* creatures and *white*
+        # creatures" is green creatures or white creatures, not green ones
+        # that are also white-or-creature.
+        leading = {
+            name: getattr(entry, name)
+            for name in _ALTERNATIVE_QUALIFIERS
+            if getattr(entry, name) != getattr(_PLAIN, name)
+        }
+        first = ObjectFilter(
+            types_all=entry.types_all,
+            subtypes_all=entry.subtypes_all,
+            zones=frozenset(),
+            **leading,
+        )
+        parent = replace(
+            entry,
+            types_all=CardType.NONE,
+            subtypes_all=(),
+            any_of=(first, *alternatives),
+            **{name: getattr(_PLAIN, name) for name in leading},
+        )
+        return parent
 
     # "artifact or Goblin spell", "noncreature or Otter spell", "another
     # creature or a Treasure": the alternatives are a card type and a
@@ -1033,6 +1078,36 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     if collected:
         spec = replace(spec, types_all=CardType.NONE, types_any=collected)
     return spec
+
+
+#: What describes one item of a list rather than the whole phrase: colours,
+#: supertypes, negated types, tapped, token, power... Counts, zones and who
+#: controls it stay on the phrase.
+_ALTERNATIVE_QUALIFIERS = (
+    "types_none", "supertypes_all", "supertypes_none", "subtypes_none",
+    "colors_any", "colors_all", "colors_none", "must_be_colorless",
+    "must_be_coloured", "must_be_multicolored", "must_be_monocolored",
+    "tapped", "attacking", "blocking", "blocked", "is_token", "power",
+    "toughness", "mana_value",
+)
+_PLAIN = ObjectFilter()
+
+
+def _qualifier_diff(before: ObjectFilter, after: ObjectFilter) -> dict:
+    """The fields a qualifier reader changed, as keyword arguments."""
+    from dataclasses import fields
+
+    from enum import Flag
+
+    out = {}
+    for f in fields(ObjectFilter):
+        old, new = getattr(before, f.name), getattr(after, f.name)
+        if new == old:
+            continue
+        # Flag masks accumulate ("green ... white" ORs into one colour mask):
+        # this alternative's own part is only the bits it added.
+        out[f.name] = (new & ~old) if isinstance(new, Flag) and isinstance(old, Flag) else new
+    return out
 
 
 def _ownership(stream: Stream, spec: ObjectFilter) -> ObjectFilter:

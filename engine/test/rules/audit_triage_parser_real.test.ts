@@ -133,6 +133,13 @@ describe("fixed: the reading matches the card", () => {
 });
 
 describe("fixed after the triage", () => {
+  it("F17 Tannuk: 'Artifact cards and red creature cards' - red is the creatures' only", () => {
+    const grant = ofKind(ability("Tannuk, Steadfast Second", "warp"), EK.GRANT_ABILITY!)[0]!;
+    const t = grant.targets as { colors_any?: number; any_of?: { types_all?: number; colors_any?: number }[] };
+    expect(t.colors_any ?? 0).toBe(0);
+    expect(t.any_of!.map((a) => [a.types_all ?? 0, a.colors_any ?? 0])).toEqual([[1, 0], [4, 8]]); // artifact; red creature
+  });
+
   it("F49 Relentless Pursuit: a creature card AND/OR a land card - up to one of each", () => {
     const moves = ofKind(ability("Relentless Pursuit", "and/or"), EK.MOVE_ZONE!).filter((e) => e.zone === Z.HAND);
     expect(moves).toHaveLength(2);
@@ -236,11 +243,7 @@ describe("open: the reading doesn't match the card", () => {
     expect(JSON.stringify(draw.amount)).toContain(`"scope":${PS.TARGET_OPPONENT}`);
   });
 
-  it.fails("F17 Tannuk: 'Artifact cards and red creature cards' - red applies to the creatures only", () => {
-    // KNOWN: F17 - the adjective is distributed over the list.
-    const grant = ofKind(ability("Tannuk, Steadfast Second", "warp"), EK.GRANT_ABILITY!)[0]!;
-    expect((grant.targets as { colors_any?: number }).colors_any ?? 0).toBe(0);
-  });
+
 
   it.fails("Turn to Frog becomes a BLUE Frog (new: the colour is lost)", () => {
     const frog = ability("Turn to Frog", "blue Frog");
