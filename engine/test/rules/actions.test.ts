@@ -6,6 +6,7 @@ import { createObject, player, type ContinuousEffect } from "../../src/kernel/ga
 import { BENCH } from "../../src/kernel/relaxations";
 import { discard, draw, mill, playerLoses, playerWins, shuffleLibrary } from "../../src/rules/cr100_game_concepts/actions";
 import { expireAtCleanup, expireAtEndOfCombat, expireAtStartOfTurn } from "../../src/rules/cr600_spells_and_abilities/durations";
+import { Act, registerStanding, registerStandingPermission } from "../../src/rules/cr500_turn_structure/restrictions";
 import { Board, CARDS } from "./board";
 
 function stock(board: Board, owner: number, count: number): void {
@@ -115,5 +116,26 @@ describe("durations (CR 611.2b)", () => {
     expect(game.continuousEffects).toEqual([endOfNext]);
     expireAtCleanup(game);
     expect(game.continuousEffects).toEqual([]);
+  });
+
+  it("a standing restriction 'until your next turn' ends then too (its turn is stored as created_turn)", () => {
+    // Teferi's Protection: "your life total can't change" until your next turn.
+    // It used to last for ever, so 200 goblins couldn't kill its controller.
+    const board = new Board();
+    const game = board.game;
+    game.turn = 3;
+    game.activePlayer = 0;
+    registerStanding(game, { $: "Restriction", act: Act.LIFE_TOTAL_CHANGE, controller: 0, duration: Duration.YOUR_NEXT_TURN, text: "life total can't change" } as never);
+    registerStandingPermission(game, { $: "Restriction", act: Act.CAST_SPELL, controller: 0, duration: Duration.YOUR_NEXT_TURN, text: "may cast" } as never);
+    game.turn = 4;
+    game.activePlayer = 1;
+    expireAtStartOfTurn(game);
+    expect(game.standingRestrictions).toHaveLength(1);
+    expect(game.standingPermissions).toHaveLength(1);
+    game.turn = 5;
+    game.activePlayer = 0;
+    expireAtStartOfTurn(game);
+    expect(game.standingRestrictions).toEqual([]);
+    expect(game.standingPermissions).toEqual([]);
   });
 });
