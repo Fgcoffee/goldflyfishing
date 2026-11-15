@@ -122,6 +122,8 @@ function recsOptions() {
   };
 }
 
+let recsTicket = 0;
+
 async function recsFind() {
   const host = document.getElementById("rc-cards");
   const notes = document.getElementById("rc-notes");
@@ -139,7 +141,12 @@ async function recsFind() {
   host.appendChild(el("div", "hint", options.mode === "edhrec" || options.months
     ? "Asking EDHREC and Scryfall..." : "Matching your deck's tags..."));
   setStatus("finding recommendations...");
+  // Opening the tab, switching mode and pressing Find can each start a look;
+  // only the latest one's reply is shown, or a slow older one would pile its
+  // notes on top and replace newer cards.
+  const ticket = ++recsTicket;
   const reply = await call("recommendations", JSON.stringify(options));
+  if (ticket !== recsTicket) return;
   button.disabled = false;
   if (reply.error) { host.textContent = ""; return; }
   Recs.reply = reply;
