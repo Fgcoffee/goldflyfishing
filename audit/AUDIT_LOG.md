@@ -639,3 +639,5 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
 - F64 (VOTE crash, guarded in the port): KNOWN marker removed in 3ceafeb, `audit_findings.test.ts` "F64: VOTE" (turn order from the next player, winner's child happens).
 - Karoo lands always sacrificed: c4232df, `engine/test/rules/audit_triage_real.test.ts` "karoo lands". Cause: a return-to-hand cost couldn't be paid during a resolution, so Coral Atoll's "sacrifice it unless you return an untapped Island" always sacrificed it. Simic Growth Chamber-style karoos were already right.
 - F28 (overload): b28f152, `audit_triage_real.test.ts` "F28: overload" and "F28 controls" (Cyclonic Rift overloaded returns the opponent's nonland permanents only; cast normally, only its target).
+- F28 follow-up (overload offered with nothing to target): see the next commit, `audit_triage_real.test.ts` "overload is offered with nothing to target".
+- Triage of every other rules-owned finding: all already fine in TS, tests listed in `engine/status/rules.md` ("Rules findings in TS").

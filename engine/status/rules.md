@@ -475,8 +475,31 @@ test:
 - F60 Curse attached to nothing: "F60" (fixed as reported; note the Curse
   is cast with no target and attaches to its caster, a separate gap).
 
-**Not triaged yet** (next batch): F2, F5, F6, F7, F11, F12, F13, F16, F20,
-F23, F24, F26, F39, F40, F45, F47, F48, F50.
+**Second batch, all already fine in TS** (audit_triage_real, "second
+batch"): F5 jump-start (mana and a discard, then exiled), F6/F7 aftermath
+(Dusk from hand only; Dawn from the graveyard, then exiled), F11 crew
+can't tap the Vehicle itself, F12 buyback offered (Capsize), F13
+Phyrexian life down to 0 (Gitaxian Probe at 2 life), F20/F23 copies
+retarget through `chooseNewTargets` (Twincast; SimpleAgent has it), F24
+replicate paid twice (Pyromatics), F26 granted conspire
+(commander_free_and_conspire_real), F39/F47/F48/F50 convoke and delve
+(Siege Wurm from lands + Bears and from 7 Bears; Stoke the Flames with
+green Bears refused; Treasure Cruise from 1 Island + 7 cards; Rosemane
+Centaur with Watchwolf first), F40 mana spent (Treasure Cruise, 3 Islands
++ 5 delved: 3), F45 emerge needs its colour.
+- F16: replicate copies may retarget (`paid_costs.ts` sets
+  MAY_CHOOSE_NEW_TARGETS); blitz's draw is a granted ability (`paid_costs.ts`);
+  warp is cast from hand only (the IR's builder sets the zone). By code
+  reading; no board test.
+- F2 (WARN, enlist then the total cost to attack as one): by code reading
+  (`combat.ts` declareAttackers: enlist first, then the locked-in total);
+  no board test (no enlist card in the fixtures).
+- Also fixed with F28: overload is offered with nothing to target (it has
+  no targets, CR 702.96b).
+
+Every rules-owned finding in AUDIT_LOG.md is now triaged. Open: none of
+the listed rules findings reproduces on the TS engine after the fixes
+above. (F38 was the Python Sandbox; F1 Sandbox.put; not engine findings.)
 
 ## Bench: 200 games through `rulesEngine` (auditor's ask)
 
