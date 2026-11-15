@@ -40,3 +40,6 @@ runs/
 # TypeScript engine
 engine/node_modules/
 engine/dist/
+
+# The engine bundle for the website (webapp: npm run build:site). Generated.
+mtgfish/ui/web/engine/
