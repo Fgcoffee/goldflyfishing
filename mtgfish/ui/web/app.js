@@ -1335,12 +1335,12 @@ function crashNotice(payload) {
   const box = el("div", "panel bad");
   const total = (payload.games || 0) + crashed.length;
   box.appendChild(el("strong", null,
-    `${crashed.length} of ${total} game${total === 1 ? "" : "s"} crashed and `
-    + `${crashed.length === 1 ? "was" : "were"} left out`));
+    `${crashed.length} of ${total} game${total === 1 ? "" : "s"} didn't finish and `
+    + `${crashed.length === 1 ? "was" : "were"} left out (seeds listed)`));
   box.appendChild(el("div", "hint",
-    "The simulator hit a bug in these games and could not finish them. Every number below "
-    + "comes from the other games. The seed replays a game exactly - include it if you "
-    + "report the problem."));
+    "The simulator crashed in these games, ran past the time limit for one game, or lost "
+    + "the worker playing it. Every number below comes from the other games. The seed "
+    + "replays a game exactly - include it if you report the problem."));
   crashed.slice(0, 10).forEach((crash) => {
     box.appendChild(el("div", null, `game ${crash.index} (seed ${crash.seed}): ${crash.error}`));
   });

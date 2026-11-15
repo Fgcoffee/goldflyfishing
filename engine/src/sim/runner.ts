@@ -40,9 +40,16 @@ export interface RunResult {
   readonly complete: boolean;
 }
 
+/** One finished game: its record, or how it crashed. */
+export type GameOutcome = { readonly record: GameRecord; readonly crash?: undefined } | { readonly crash: CrashedGame; readonly record?: undefined };
+
 export interface RunHooks {
-  /** After each game, crashed or not. */
-  onGame?(done: number, total: number): void;
+  /**
+   * After each game, crashed or not, with what it produced: the page keeps
+   * these as they come, so a worker that dies or hangs loses nothing it
+   * already finished.
+   */
+  onGame?(done: number, total: number, outcome: GameOutcome): void;
   /** Checked between games. */
   shouldStop?(): boolean;
   /** Called every `yieldEvery` games so a worker can read its messages. */
@@ -69,13 +76,18 @@ export async function runGames(
   for (let index = start; index < end; index += 1) {
     if (hooks.shouldStop?.()) return { records, crashed, complete: false };
     const seed = seedFor(setup.runSeed, index);
+    let outcome: GameOutcome;
     try {
-      records.push(engine.play(setup, index, seed));
+      const record = engine.play(setup, index, seed);
+      records.push(record);
+      outcome = { record };
     } catch (error) {
-      crashed.push(crashedGame(index, seed, error));
+      const crash = crashedGame(index, seed, error);
+      crashed.push(crash);
+      outcome = { crash };
     }
     const done = index - start + 1;
-    hooks.onGame?.(done, total);
+    hooks.onGame?.(done, total, outcome);
     if (hooks.pause !== undefined && done % yieldEvery === 0 && index + 1 < end) {
       await hooks.pause();
     }

@@ -10,7 +10,7 @@ import { ENGINE_VERSION } from "@goldfly/engine";
 import { ENGINES, runGames } from "@goldfly/engine/sim";
 import { isRequest, type Reply, type RunRequest } from "./protocol";
 
-/** How often a running worker reports progress and reads new messages. */
+/** How often a running worker stops to read new messages (a cancel). */
 const PROGRESS_EVERY = 5;
 
 /** Let queued messages (a cancel) run before the next game. */
@@ -51,11 +51,9 @@ export class WorkerHandler {
         shouldStop: () => flag.stop,
         yieldEvery: PROGRESS_EVERY,
         pause: yieldToMessages,
-        onGame: (done, total) => {
-          if (done % PROGRESS_EVERY === 0 || done === total) {
-            this.post({ type: "progress", id: request.id, done, total });
-          }
-        },
+        // Every game, with its outcome: the page's watchdog needs to know
+        // which game a worker is on, and keeps finished games itself.
+        onGame: (done, total, game) => this.post({ type: "progress", id: request.id, done, total, game }),
       });
       this.post({ type: "result", id: request.id, result });
     } catch (error) {

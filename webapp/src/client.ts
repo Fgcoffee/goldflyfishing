@@ -2,7 +2,7 @@
  * The page's side of a simulation worker: requests in, promises out.
  */
 
-import { DEFAULT_ENGINE, type RunResult, type RunSetup } from "@goldfly/engine/sim";
+import { DEFAULT_ENGINE, type GameOutcome, type RunResult, type RunSetup } from "@goldfly/engine/sim";
 import type { PongReply, Reply, Request, RunRequest } from "./worker/protocol";
 
 /** The part of `Worker` the client uses, so tests can pass a fake. */
@@ -10,6 +10,7 @@ export interface WorkerLike {
   postMessage(message: unknown): void;
   addEventListener(type: "message", listener: (event: MessageEvent<unknown>) => void): void;
   addEventListener(type: "error", listener: (event: ErrorEvent) => void): void;
+  addEventListener(type: "messageerror", listener: (event: MessageEvent<unknown>) => void): void;
   terminate(): void;
 }
 
@@ -23,7 +24,7 @@ export function startWorker(): WorkerLike {
 type Pending = {
   resolve: (reply: Reply) => void;
   reject: (error: Error) => void;
-  progress?: (done: number, total: number) => void;
+  progress?: (done: number, total: number, game?: GameOutcome) => void;
 };
 
 export interface RunHandle {
@@ -40,6 +41,8 @@ export class EngineClient {
   constructor(private readonly worker: WorkerLike = startWorker()) {
     worker.addEventListener("message", (event) => this.receive(event.data));
     worker.addEventListener("error", (event) => this.failAll(event.message || "worker failed"));
+    // A reply that couldn't be read is as fatal for the request as a crash.
+    worker.addEventListener("messageerror", () => this.failAll("a message from the worker couldn't be read"));
   }
 
   /** Round-trip a value through the worker; resolves with the engine version. */
@@ -54,7 +57,7 @@ export class EngineClient {
     setup: RunSetup,
     start: number,
     end: number,
-    onProgress?: (done: number, total: number) => void,
+    onProgress?: (done: number, total: number, game?: GameOutcome) => void,
     engine: RunRequest["engine"] = DEFAULT_ENGINE,
   ): RunHandle {
     const id = this.nextId++;
@@ -89,7 +92,7 @@ export class EngineClient {
     const waiting = this.pending.get(reply.id);
     if (waiting === undefined) return;
     if (reply.type === "progress") {
-      waiting.progress?.(reply.done, reply.total);
+      waiting.progress?.(reply.done, reply.total, reply.game);
       return;
     }
     this.pending.delete(reply.id);

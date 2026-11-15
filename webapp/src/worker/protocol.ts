@@ -13,7 +13,7 @@
  * Any request can instead get an `error` reply.
  */
 
-import { ENGINES, type EngineName, type RunResult, type RunSetup } from "@goldfly/engine/sim";
+import { ENGINES, type EngineName, type GameOutcome, type RunResult, type RunSetup } from "@goldfly/engine/sim";
 
 export interface PingRequest {
   readonly type: "ping";
@@ -50,11 +50,17 @@ export interface PongReply {
   readonly engineVersion: string;
 }
 
+/**
+ * Sent after every game, with what it produced. The page keeps each game as
+ * it arrives, so if this worker then hangs or dies, the games it finished
+ * aren't lost, and the page knows exactly which game it was on.
+ */
 export interface ProgressReply {
   readonly type: "progress";
   readonly id: number;
   readonly done: number;
   readonly total: number;
+  readonly game?: GameOutcome;
 }
 
 export interface ResultReply {

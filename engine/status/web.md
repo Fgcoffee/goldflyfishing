@@ -210,6 +210,35 @@ and the spot check (2cb63b4, 8ab95a8). Thanks.
   (`docker build .`) before pushing. The auditor fixed the node stage's
   COPY for `engine-build.mjs` (33c224f).
 
+- **Browser runs always finish** (the auditor's URGENT report: live runs
+  stalled at 709 of 1000):
+  - Workers now report every game as it ends, with its record or crash
+    (`ProgressReply.game`; `runGames`'s `onGame` gets the `GameOutcome`).
+    The page keeps them, so nothing finished is lost.
+  - `WorkerPool` has a per-game watchdog (`gameTimeoutMs`, default 60 s).
+    A worker silent for that long is terminated, the game it was on is
+    recorded as crashed ("timed out after 60 s", seed, engine build), and a
+    fresh worker plays the rest of its range.
+  - A worker that dies (`error`, or a reply that can't be read:
+    `messageerror`) is handled the same way: "worker died: <message>".
+  - After `maxRestarts` (3) fresh workers in a row finish nothing, the rest
+    of that range is recorded as "not played: the worker kept failing to
+    start", rather than restarting for ever.
+  - Setting: `?gameTimeout=N` seconds, remembered in localStorage
+    `goldfly.gameTimeout`. The console says what each worker did
+    (`[goldfly] worker 5: game 44 ... timed out`).
+  - Results: the crash panel now reads "N of M games didn't finish and were
+    left out (seeds listed)". Those games are in the upload's `crashed`.
+  - Tests (`webapp/test/pool.test.ts`):
+    - a game that never ends times out and the run completes;
+    - a worker that fails at load is replaced;
+    - workers that keep failing give up instead of looping;
+    - one hung worker doesn't cost the others their games.
+  - Checked on the real site with the tester decks, run seed 0, 200 games:
+    the run finished, with 198 games played and 2 timed out at 60 s.
+    **Hanging seeds for rules:** game 44, seed 3140482264; game 182, seed
+    3348571489 (tester decks as sent for F61, hero deck0, turn cap 25).
+
 ## Next
 
 1. **Sandbox on the TS engine,** so a sandbox game replays from its setup

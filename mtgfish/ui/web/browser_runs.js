@@ -90,6 +90,22 @@ const BrowserRuns = (() => {
     }
   }
 
+  /* Seconds one game may run before it's stopped and recorded as not
+   * finished: ?gameTimeout=N, remembered in localStorage
+   * "goldfly.gameTimeout". Default 60. */
+  const TIMEOUT_KEY = "goldfly.gameTimeout";
+
+  function gameTimeout() {
+    const asked = Number(new URLSearchParams(location.search).get("gameTimeout"));
+    try {
+      if (asked > 0) localStorage.setItem(TIMEOUT_KEY, String(asked));
+      const saved = Number(localStorage.getItem(TIMEOUT_KEY));
+      return saved > 0 ? saved : 60;
+    } catch (err) {
+      return asked > 0 ? asked : 60;
+    }
+  }
+
   /* Play a simulation here. Resolves with the Results payload, as the
    * server's run_finished would carry it; Results and Replay then use it. */
   async function simulate(decklists, games, seed, hooks = {}) {
@@ -99,6 +115,7 @@ const BrowserRuns = (() => {
     const outcome = await runner.run(decklists, {
       games,
       seed,
+      gameTimeoutSeconds: gameTimeout(),
       onProgress: hooks.onProgress,
       onStatus: hooks.onStatus,
     });
