@@ -145,8 +145,18 @@ export interface Game {
   /** Loop-detection state (rules/loops), cleared each turn. */
   exhaustedLoopSteps: Set<string>;
   continuingLoopSteps: Set<string>;
+  /** rules/loops' window over this priority window's steps (a `LoopWindow`), or null. */
+  loopWindow: unknown;
+  /** Each loop found this game, as "outcome: description" (Python `game.loops`). */
+  loops: string[];
   /** Caches over the standing restrictions and permissions. */
   restrictionsCache: unknown[] | null;
+  /**
+   * Work done so far, in objects whose characteristics were computed. Shared
+   * with every clone (the bot's lookahead), so it measures the whole game's
+   * cost, deterministically. The priority loop stops a game past its budget.
+   */
+  readonly work: { units: number };
   restrictionsEpoch: number;
   permissionsCache: unknown[] | null;
   permissionsEpoch: number;
@@ -235,7 +245,10 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     sourceDecks: [],
     exhaustedLoopSteps: new Set(),
     continuingLoopSteps: new Set(),
+    loopWindow: null,
+    loops: [],
     restrictionsCache: null,
+    work: { units: 0 },
     restrictionsEpoch: -1,
     permissionsCache: null,
     permissionsEpoch: -1,
@@ -263,6 +276,13 @@ function cloneRecords<T>(items: readonly T[]): T[] {
  * characteristics snapshots) are shared. Agents and the ability provider are
  * shared on purpose: they are the players and the card data, not the board.
  */
+/** A copy of a loop window (rules/loops `LoopWindow`), so a clone's steps don't land in the original's. */
+function cloneLoopWindow(window: unknown): unknown {
+  if (window === null || window === undefined) return null;
+  const w = window as { history: string[]; runs: number[]; snapshots: Map<number, unknown[]> };
+  return { history: w.history.slice(), runs: w.runs.slice(), snapshots: new Map([...w.snapshots].map(([k, v]) => [k, v.slice()])) };
+}
+
 export function cloneGame(game: Game): Game {
   const objects = new Map<ObjectId, GameObject>();
   for (const [id, obj] of game.objects) objects.set(id, cloneGameObject(obj));
@@ -311,6 +331,8 @@ export function cloneGame(game: Game): Game {
     extraSteps: game.extraSteps.slice(),
     sourceDecks: game.sourceDecks.slice(),
     exhaustedLoopSteps: new Set(game.exhaustedLoopSteps),
+    loopWindow: cloneLoopWindow(game.loopWindow),
+    loops: game.loops.slice(),
     continuingLoopSteps: new Set(game.continuingLoopSteps),
     restrictionsCache: null,
     restrictionsEpoch: -1,
