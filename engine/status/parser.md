@@ -423,6 +423,7 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 - Chandra, Spark Hunter (c5e6814): only the "or"-joined effects are the choice, and "you may" covers it. 40 changed.
 - Relentless Pursuit (e29d9f5): "a X and/or a Y" is up to one of each. +1, -4 (other "and/or" shapes are now unread rather than misread), 4 changed.
 - F17 Tannuk (a1bab7f): a qualifier on one item of a list stays on that item, and a leading one goes with the first item. +2, 14 changed.
+- Turn to Frog's colour (60f989d): "becomes a <colour> <type>" sets the colour. 15 changed.
 
 **F3, "that player's hand" / "their hand": needs both sides.** Today it's a COUNT of hand cards with no owner, so it counts every hand. The right IR is CARDS_IN_HAND for the referred player (TARGET_PLAYER, TRIGGER_PLAYER, THAT_PLAYER). But `evaluate` resolves a value's players without the resolution's context, so the referred player isn't reachable.
 - Proposal: `EvaluateOptions` gains a `resolvePlayers(spec)` callback (values.ts is mine). resolve.ts's `evaluateContext` passes one built on `playersOf` / `referredPlayers` (rules).
@@ -430,7 +431,7 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 
 **Seen, pre-existing:** Jaws, Relentless Predator's "is sacrificed or destroyed, this deals 1 damage" is split inside its trigger, so "destroy this permanent" becomes an option. To fix.
 
-**Next:** Turn to Frog's colour, then cards that don't read yet (Cauldron of Souls first). Borrowed Knowledge waits with F3 for the evaluate-context change.
+**Next:** cards that don't read yet (Cauldron of Souls first), then by deck usage. Borrowed Knowledge waits with F3 for the evaluate-context change.
 
 ## For the rules session: your 200-game bench
 
