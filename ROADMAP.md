@@ -114,7 +114,7 @@ parallel" below.**
 
 - [ ] *(parser)* **History shows browser runs properly:** the deck's name (not "Played in your browser") and its win rate, like a server run.
 - [ ] *(parser)* **Card art in Replay for browser runs.** Today `board_cards[].art` is empty (`engine/src/sim/payload.ts`). The server adds image URLs per card name, tokens included, to the browser-run response, by the same lookup as `Bridge._board_cards`.
-- [ ] *(web, new cloud session)* **Restore Cut lab and Recs** from PR #28 (`worktree-cut-lab-recs`), merged into the current code on the server engine as before. A browser-engine version can follow.
+- [x] *(web, new cloud session; 9217363, 137c3c7)* **Restore Cut lab and Recs** from PR #28 (`worktree-cut-lab-recs`), merged into the current code on the server engine as before. A browser-engine version can follow.
 - [ ] *(parser, after the two above)* **Reports,** as in the Reports section below, **plus a generic "Report a problem" button** on every page: free text, the page, the current run or deck if any, and an optional screenshot-free description. Stored with the others and shown on the admin review page.
 
 ## Now, in parallel (from 15 Nov)
