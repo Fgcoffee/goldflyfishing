@@ -431,7 +431,9 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 
 **Seen, pre-existing:** Jaws, Relentless Predator's "is sacrificed or destroyed, this deals 1 damage" is split inside its trigger, so "destroy this permanent" becomes an option. To fix.
 
-**Next:** cards that don't read yet (Cauldron of Souls first), then by deck usage. Borrowed Knowledge waits with F3 for the evaluate-context change.
+**Cards that don't read yet:**
+- Cauldron of Souls and Cauldron Haze now read (320500d): "Choose ... target ... . Each of those creatures ..." becomes one targeted sentence. Board test: the Bears come back with a -1/-1 counter. This also resolves the card-reading gap logged above.
+- Next: the most-played unread abilities by deck usage. Borrowed Knowledge waits with F3 for the evaluate-context change.
 
 ## For the rules session: your 200-game bench
 
@@ -471,7 +473,7 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 
 ## Card-reading gaps found during the port (for after it)
 
-- Cauldron of Souls: "Choose any number of target creatures. Each of those creatures gains persist until end of turn." is unparsed (the "any number of target" phrasing).
+- ~~Cauldron of Souls~~: reads since 320500d.
 
 ## Next
 
