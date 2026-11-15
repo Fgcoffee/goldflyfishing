@@ -12,7 +12,7 @@
  * Matching, values and conditions go through kernel/hooks.ts (rules/match/).
  */
 
-import type { Ability, Effect, Value } from "../../ir";
+import type { Ability, Effect, ObjectFilter, Value } from "../../ir";
 import { CardType, Color, Layer, Layout, Supertype, Zone } from "../../kernel/enums";
 import type { CardTypeLine, FaceDef } from "../../kernel/card";
 import { printedNumber } from "../../kernel/card";
@@ -538,6 +538,7 @@ export function orderEffects(game: Game, effects: readonly ContinuousEffect[], s
     (a, b) => (a.isCda ? 0 : 1) - (b.isCda ? 0 : 1) || a.timestamp - b.timestamp || a.source - b.source,
   );
   if (ordered.length < 2) return ordered;
+  if (noDependencyPossible(ordered)) return ordered;
   const count = ordered.length;
   const probe = new DependencyProbe(game, ordered, state, byId);
   const depends: Set<number>[] = ordered.map(() => new Set());
@@ -591,6 +592,51 @@ export function orderEffects(game: Game, effects: readonly ContinuousEffect[], s
 }
 
 /**
+ * Whether CR 613.8a can find no dependency among these effects, without the
+ * pairwise search. When every effect only changes P/T or only adds
+ * abilities, none can remove the ability behind another, and none changes
+ * a field any of their filters reads, so `dependsOn` would answer no for
+ * every pair. (An effect with no filter applies to its source by id, and
+ * reads nothing.) Any other kind of effect goes through the search.
+ */
+function noDependencyPossible(effects: readonly ContinuousEffect[]): boolean {
+  let changesPt = false;
+  let addsAbilities = false;
+  for (const ce of effects) {
+    const kind = kindOf(ce.effect as Effect);
+    if (kind === EK.MODIFY_PT || kind === EK.SET_PT || kind === EK.SWITCH_PT) changesPt = true;
+    else if (kind === EK.GRANT_ABILITY) addsAbilities = true;
+    else return false;
+  }
+  for (const ce of effects) {
+    const spec = (ce.effect as Effect).targets;
+    if (spec == null) continue;
+    const read = fieldsRead(spec);
+    if ((changesPt && read.pt) || (addsAbilities && read.abilities)) return false;
+  }
+  return true;
+}
+
+interface FieldsRead {
+  readonly abilities: boolean;
+  readonly pt: boolean;
+}
+
+const PT_FIELDS: ReadonlySet<string> = new Set(["power", "toughness", "basePowerAfterSetting", "baseToughnessAfterSetting"]);
+
+/** Which of the abilities and P/T fields an object filter can read of the object itself (match/matching.ts). */
+function fieldsRead(spec: ObjectFilter): FieldsRead {
+  let abilities = list(spec.has_keyword).length > 0 || list(spec.lacks_keyword).length > 0;
+  let pt = spec.power != null || spec.toughness != null || spec.base_power != null || spec.base_toughness != null;
+  for (const alt of list(spec.any_of) as ObjectFilter[]) {
+    const inner = fieldsRead(alt);
+    abilities ||= inner.abilities;
+    pt ||= inner.pt;
+  }
+  return { abilities, pt };
+}
+
+/**
  * The objects `affects` could say yes to, in id order (`ids` sorted): only
  * the named ones when the filter names objects (matching rejects every other
  * id first), only the source when there is no filter, otherwise `ids`
@@ -615,7 +661,6 @@ class DependencyProbe {
   private readonly ids: ObjectId[];
   private readonly footprints = new Map<number, Map<ObjectId, Characteristics>>();
   private readonly applies = new Map<string, boolean>();
-  private readonly ops = new Map<string, string>();
 
   constructor(
     private readonly game: Game,
@@ -678,15 +723,6 @@ class DependencyProbe {
     return known;
   }
 
-  private operationBefore(index: number, id: ObjectId): string {
-    const key = `${index}|${id}`;
-    let known = this.ops.get(key);
-    if (known === undefined) {
-      known = operation(this.game, this.byId.get(id) as GameObject, this.state.get(id) as Characteristics, this.effects[index] as ContinuousEffect);
-      this.ops.set(key, known);
-    }
-    return known;
-  }
 
   dependsOn(i: number, j: number): boolean {
     const a = this.effects[i] as ContinuousEffect;
@@ -694,17 +730,8 @@ class DependencyProbe {
     if (a === b || a.isCda !== b.isCda) return false;
     const footprint = this.footprint(j);
     if (a.fromStaticAbility && a.ability !== null) {
-      const sourceChars = this.state.get(a.source);
       const after = footprint.get(a.source);
-      if (
-        this.game.objects.has(a.source) &&
-        sourceChars !== undefined &&
-        irIncludes(sourceChars.abilities, a.ability) &&
-        after !== undefined &&
-        !irIncludes(after.abilities, a.ability)
-      ) {
-        return true;
-      }
+      if (after !== undefined && this.sourceHasAbility(i) && !irIncludes(after.abilities, a.ability)) return true;
     }
     const reach = this.reach(i);
     // An object A can never apply to: no change of B's makes it start (or
@@ -716,12 +743,61 @@ class DependencyProbe {
           ? [...reach].sort((x, y) => x - y).flatMap((id) => (footprint.has(id) ? [[id, footprint.get(id)!] as [ObjectId, Characteristics]] : []))
           : [...footprint].filter(([id]) => reach.has(id));
     for (const [id, afterB] of pairs) {
+      if (!this.couldChangeMatch(i, this.state.get(id) as Characteristics, afterB)) continue;
       const obj = this.byId.get(id) as GameObject;
-      const before = this.appliesBefore(i, id);
-      if (before !== affects(this.game, a, obj, afterB)) return true;
-      if (before && this.operationBefore(i, id) !== operation(this.game, obj, afterB, a)) return true;
+      if (this.appliesBefore(i, id) !== affects(this.game, a, obj, afterB)) return true;
+      // CR 613.8a's "what it does": `operation` reads the game, never the
+      // characteristics it is handed, and nothing changes while a layer is
+      // ordered, so before and after B it is always the same. Python's check
+      // here could never fire either; skipped as the dead comparison it is.
     }
     return false;
+  }
+
+  private readonly reads = new Map<number, FieldsRead>();
+
+  /**
+   * Whether B's change to an object could change A's filter's answer for it.
+   * Matching reads only that object's characteristics from the override
+   * (other objects come from the board), and abilities only for has/lacks
+   * keyword, P/T only for power and toughness bounds. So when B changed
+   * nothing but fields A's filter never reads, the answer is the same:
+   * skipped. Any other changed field (by reference) is checked in full.
+   */
+  private couldChangeMatch(index: number, before: Characteristics, after: Characteristics): boolean {
+    if (before === after) return false;
+    let read = this.reads.get(index);
+    if (read === undefined) {
+      const spec = ((this.effects[index] as ContinuousEffect).effect as Effect).targets;
+      read = spec == null ? { abilities: true, pt: true } : fieldsRead(spec);
+      this.reads.set(index, read);
+    }
+    for (const key of Object.keys(before) as (keyof Characteristics)[]) {
+      if (before[key] === after[key]) continue;
+      if (key === "abilities") {
+        if (read.abilities) return true;
+      } else if (PT_FIELDS.has(key)) {
+        if (read.pt) return true;
+      } else {
+        return true;
+      }
+    }
+    for (const key of Object.keys(after) as (keyof Characteristics)[]) if (!(key in before)) return true;
+    return false;
+  }
+
+  private readonly sourceAbility = new Map<number, boolean>();
+
+  /** Whether A's source has the static ability behind A before B applies. */
+  private sourceHasAbility(index: number): boolean {
+    let known = this.sourceAbility.get(index);
+    if (known === undefined) {
+      const a = this.effects[index] as ContinuousEffect;
+      const sourceChars = this.state.get(a.source);
+      known = this.game.objects.has(a.source) && sourceChars !== undefined && irIncludes(sourceChars.abilities, a.ability);
+      this.sourceAbility.set(index, known);
+    }
+    return known;
   }
 }
 
