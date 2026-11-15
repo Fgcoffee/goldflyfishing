@@ -78,14 +78,14 @@
      "effects": [
       {
        "$": "Effect",
-       "kind": 3,
+       "kind": 4,
        "players": {
         "$": "PlayerFilter"
        },
        "children": [
         {
          "$": "Effect",
-         "kind": 4,
+         "kind": 3,
          "players": {
           "$": "PlayerFilter"
          },
@@ -105,29 +105,10 @@
             "$": "PlayerFilter"
            },
            "text": "sacrifice"
-          }
-         ],
-         "text": "may"
-        },
-        {
-         "$": "Effect",
-         "kind": 21,
-         "players": {
-          "$": "PlayerFilter"
-         },
-         "amount": {
-          "$": "Value",
-          "constant": 1
-         },
-         "text": "discard"
-        },
-        {
-         "$": "Effect",
-         "kind": 219,
-         "children": [
+          },
           {
            "$": "Effect",
-           "kind": 20,
+           "kind": 21,
            "players": {
             "$": "PlayerFilter"
            },
@@ -135,13 +116,32 @@
             "$": "Value",
             "constant": 1
            },
-           "text": "draw"
+           "text": "discard"
           }
          ],
-         "text": "if you do"
+         "text": "one of several"
         }
        ],
-       "text": "one of several"
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": 219,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 20,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "draw"
+        }
+       ],
+       "text": "if you do"
       }
      ],
      "text": "+2: You may sacrifice an artifact or discard a card. If you do, draw a card.",

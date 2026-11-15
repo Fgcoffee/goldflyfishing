@@ -133,6 +133,15 @@ describe("fixed: the reading matches the card", () => {
 });
 
 describe("fixed after the triage", () => {
+  it("F49 Chandra, Spark Hunter's +2: you may choose one of two, then 'if you do, draw'", () => {
+    const plus = ability("Chandra, Spark Hunter", "+2");
+    const top = plus.effects as Effect[];
+    expect(top.map((e) => e.kind)).toEqual([EK.OPTIONAL, EK.REFLEXIVE_TRIGGER]);
+    const choice = top[0]!.children![0]!;
+    expect(choice.kind).toBe(EK.CHOOSE_MODE);
+    expect(choice.children!.map((e) => e.kind)).toEqual([EK.SACRIFICE, EK.DISCARD]);
+  });
+
   it("F49 Arcade Cabinet's 'each of up to four target creatures' are targets", () => {
     expect(ofKind(ability("Arcade Cabinet", "up to four target"), EK.ADD_COUNTERS!)[0]!.is_targeted).toBe(true);
   });
@@ -196,11 +205,6 @@ describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2
 
 describe("open: the reading doesn't match the card", () => {
 
-  it.fails("F49 Chandra, Spark Hunter's +2: 'If you do, draw a card' follows either choice, not a third mode", () => {
-    // KNOWN: F49 - the reflexive draw is the third child of the CHOOSE_MODE.
-    const plus = ability("Chandra, Spark Hunter", "+2");
-    expect(ofKind(plus, EK.CHOOSE_MODE!)[0]!.children!.length).toBe(2);
-  });
 
 
   it.fails("F49 Relentless Pursuit: a creature card AND/OR a land card (up to two)", () => {

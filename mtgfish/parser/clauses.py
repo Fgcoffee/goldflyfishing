@@ -159,13 +159,17 @@ def parse_effects(stream: Stream) -> list[Effect] | None:
         return None
 
     stream.reset(start)
-    chosen = _effect_run(stream, allow_or=True)
+    joins: list[str] = []
+    chosen = _effect_run(stream, allow_or=True, joins=joins)
     if chosen is None:
         stream.blocked = max(stream.blocked, stuck)
         stream.reset(stuck)
         return None
     if len(chosen) < 2:
         return chosen
+    grouped = _group_choices(chosen, joins)
+    if grouped is not None:
+        return grouped
     return [
         Effect(
             EffectKind.CHOOSE_MODE,
@@ -176,7 +180,62 @@ def parse_effects(stream: Stream) -> list[Effect] | None:
     ]
 
 
-def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
+def _group_choices(effects: list[Effect], joins: list[str]) -> list[Effect] | None:
+    """Only the effects joined by "or" are the choice; the rest follow it.
+
+    "You may sacrifice an artifact or discard a card. If you do, draw a card."
+    (Chandra, Spark Hunter): the choice is between the first two, and the
+    draw comes after whichever was done. Wrapping every effect of the
+    ability in the choice made the draw a third option. A comma list ending
+    in "or" is one choice ("sacrifice a creature, discard a card, or pay 4
+    life"). A leading "you may" covers the whole choice ("you may X or Y" -
+    neither is required), so an optional first option is hoisted over it.
+
+    ``joins[i]`` is how effect ``i`` was joined to the one before: "or",
+    "comma", or "seq". None - the caller keeps the old reading - when the
+    lists don't line up (a later pass merged or split effects), or when the
+    first effect itself came after an "or" (the sentence was split inside a
+    disjunction, and no grouping of its pieces is a reading).
+    """
+    if len(joins) != len(effects) or "or" not in joins or joins[0] == "or":
+        return None
+    groups: list[list[int]] = []
+    for i, joined in enumerate(joins):
+        if joined == "or" and groups:
+            groups[-1].append(i)
+        else:
+            groups.append([i])
+    # A comma list before the "or" belongs to the choice.
+    k = len(groups) - 1
+    while k > 0:
+        group = groups[k]
+        if len(group) > 1:
+            while k > 0 and joins[group[0]] == "comma" and len(groups[k - 1]) == 1:
+                group[:0] = groups.pop(k - 1)
+                k -= 1
+        k -= 1
+
+    out: list[Effect] = []
+    for group in groups:
+        run = [effects[i] for i in group]
+        if len(run) == 1:
+            out.append(run[0])
+            continue
+        first = run[0]
+        hoist = (
+            first.kind is EffectKind.OPTIONAL
+            and len(first.children) == 1
+            and not any(e.kind is EffectKind.OPTIONAL for e in run[1:])
+        )
+        options = (first.children[0], *run[1:]) if hoist else tuple(run)
+        choice = Effect(
+            EffectKind.CHOOSE_MODE, children=options, players=YOU, text="one of several"
+        )
+        out.append(replace(first, children=(choice,)) if hoist else choice)
+    return out
+
+
+def _effect_run(stream: Stream, *, allow_or: bool, joins: list[str] | None = None) -> list[Effect] | None:
     """The body of ``parse_effects``, with and without "or" as a separator."""
     effects: list[Effect] = []
     used_or = False
@@ -185,10 +244,13 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
         stream.skip_punct(",", ".", ";")
         if stream.done:
             break
+        gap_text = [token.text for token in stream.tokens[gap:stream.mark()]]
+        joined = "comma" if ("," in gap_text and "." not in gap_text) else "seq"
         if allow_or and stream.accept("or"):
             used_or = True
-        else:
-            stream.accept("then", "and")
+            joined = "or"
+        elif stream.accept("then", "and"):
+            joined = "seq"
         stream.skip_punct(",", ".", ";")
         if stream.done:
             break
@@ -216,6 +278,8 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
                 stream.blocked = max(stream.blocked, stuck)
                 return None
         effects.append(effect)
+        if joins is not None:
+            joins.append(joined)
 
         # Some clauses modify the effect just read rather than following it.
         # Read as siblings, "draw a card unless that player pays {1}" became
