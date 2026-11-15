@@ -27,6 +27,8 @@ export interface BrowserRunOptions {
   readonly onProgress?: (done: number, total: number) => void;
   /** Said while the cards load and the run uploads. */
   readonly onStatus?: (text: string) => void;
+  /** The hero deck's name, if it has one (an Archidekt deck's), for History. */
+  readonly deckName?: string;
 }
 
 export interface BrowserRunOutcome {
@@ -120,7 +122,10 @@ export class BrowserRunner {
     let uploadError: string | null = null;
     let reload = false;
     try {
-      runId = (await uploadRun(runUpload(manifest, setup, result, { start: 0, end }))).id;
+      runId = (await uploadRun(runUpload(manifest, setup, result, { start: 0, end }, 0, {
+        deckName: options.deckName ?? "",
+        heroDecklist: decklists[0] ?? "",
+      }))).id;
     } catch (err) {
       uploadError = err instanceof Error ? err.message : String(err);
       reload = err instanceof UploadRefused && err.reload;

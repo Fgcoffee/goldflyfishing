@@ -256,6 +256,13 @@ class BrowserRun(Base):
     #: A mismatched run is kept out of any shared statistics.
     spot_check: Mapped[str] = mapped_column(String(16), default="pending")
     spot_check_detail: Mapped[str | None] = mapped_column(Text, nullable=True)
+    #: What History calls the deck: the saved deck and version, the
+    #: Archidekt deck's name, or the commander. Null for runs stored before
+    #: it was kept; the listing fills it in.
+    label: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    #: The hero's wins over recorded games (crashed games left out), as the
+    #: report computes it. Null until filled, like ``label``.
+    win_rate: Mapped[float | None] = mapped_column(Float, nullable=True)
 
 
 Index("ix_browser_runs_created", BrowserRun.created_at)

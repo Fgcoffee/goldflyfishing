@@ -266,7 +266,7 @@ async function simulateInBrowser(decks, games, seed) {
     const outcome = await BrowserRuns.simulate(resolved.decklists, games, seed, {
       onProgress: (done, total) => setProgress(done, total),
       onStatus: (text) => setStatus(text),
-    });
+    }, (resolved.names || [])[0] || "");
     onRunFinished(outcome.payload);
     if (outcome.reload) {
       setStatus("results shown, but not saved: a newer engine is deployed - reload the page", true);

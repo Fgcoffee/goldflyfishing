@@ -7,7 +7,8 @@ and IR builds, the card snapshot, and the decks as resolved.
 
 =====================================  =====================================
 ``POST /api/browser-runs``             store one run (gzipped JSON body)
-``GET  /api/browser-runs``             your stored runs (signed in)
+``GET  /api/browser-runs``             your stored runs (signed in), each
+                                       with its deck label and win rate
 =====================================  =====================================
 
 A run must come from the engine build this server runs
@@ -53,6 +54,9 @@ MAX_GAMES = 100_000
 MAX_SEATS = 4
 MAX_DECK_ENTRIES = 250
 MAX_TEXT = 80
+MAX_LABEL = 200
+#: The hero's decklist as typed or fetched, used only to name the run.
+MAX_DECKLIST = 100_000
 #: Anonymous runs are linked to nobody; they are kept this long.
 ANONYMOUS_DAYS = 365
 
@@ -174,7 +178,11 @@ def validate(data) -> dict:
     if complete and len(seen) != end - start:
         raise BadRun("a complete run must hold every game in its range")
 
+    deck_name = data.get("deck_name", "")
+    hero_decklist = data.get("hero_decklist", "")
     return {
+        "deck_name": _text(deck_name, "deck_name", MAX_LABEL).strip(),
+        "hero_decklist": _text(hero_decklist, "hero_decklist", MAX_DECKLIST),
         "run_seed": run_seed,
         "game_start": start,
         "game_end": end,
@@ -206,7 +214,68 @@ def run_row(run: BrowserRun) -> dict:
         "ir_build": run.ir_build,
         "snapshot": run.snapshot,
         "spot_check": run.spot_check,
+        "label": run.label or "",
+        "win_rate": run.win_rate,
     }
+
+
+def hero_win_rate(records: list[dict], hero: int) -> float | None:
+    """Wins over recorded games, crashed ones left out: the report's
+    ``winRate`` (engine/src/sim/report.ts). None with no recorded game."""
+    if not records:
+        return None
+    return sum(1 for r in records if r.get("winner") == hero) / len(records)
+
+
+def run_label(db, user_id: str | None, deck_name: str, hero_decklist: str,
+              commanders: list[str], ir_store) -> str:
+    """What History calls the run, as a server run is named
+    (``library.record_run``): the saved deck and version holding this list,
+    else the Archidekt deck's own name, else the commander."""
+    from .library import commander_of, version_for_text
+    from .models import Deck
+
+    if user_id is not None and hero_decklist:
+        version = version_for_text(db, user_id, hero_decklist)
+        deck = db.get(Deck, version.deck_id) if version else None
+        if deck is not None and version is not None:
+            return f"{deck.name} v{version.number}"[:MAX_LABEL]
+    if deck_name:
+        return deck_name[:MAX_LABEL]
+    named = commander_of(hero_decklist) if hero_decklist else None
+    if named:
+        return named[:MAX_LABEL]
+    names = [card_name(ir_store, oracle_id) for oracle_id in commanders]
+    return (" + ".join(n for n in names if n) or "Unsaved deck")[:MAX_LABEL]
+
+
+def card_name(ir_store, oracle_id: str) -> str:
+    """A card's name from the IR export, or "" if it isn't there."""
+    path = ir_store.card_path(oracle_id)
+    if path is None:
+        return ""
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("name", "")
+    except (OSError, ValueError):
+        return ""
+
+
+def fill_listing(db, run: BrowserRun, ir_store) -> bool:
+    """Give a run stored before labels were kept its label and win rate,
+    from its decks and games. Returns whether anything changed."""
+    changed = False
+    if run.win_rate is None:
+        games = json.loads(gzip.decompress(run.payload))
+        rate = hero_win_rate(games["records"], run.hero)
+        if rate is not None:
+            run.win_rate = rate
+            changed = True
+    if not run.label:
+        decks = json.loads(run.decks)
+        hero = decks[run.hero] if 0 <= run.hero < len(decks) else {}
+        run.label = run_label(db, None, "", "", hero.get("commanders", []), ir_store)
+        changed = True
+    return changed
 
 
 def build_router(accounts, limiter: RateLimiter | None = None, ir_store=None) -> APIRouter:
@@ -275,6 +344,11 @@ def build_router(accounts, limiter: RateLimiter | None = None, ir_store=None) ->
                 decks=json.dumps(run["decks"], separators=(",", ":")),
                 payload=payload,
                 spot_check="pending",
+                label=run_label(
+                    db, user.id if user else None, run["deck_name"], run["hero_decklist"],
+                    run["decks"][run["hero"]]["commanders"], ir_store,
+                ),
+                win_rate=hero_win_rate(run["records"], run["hero"]),
             )
             db.add(row)
             db.commit()
@@ -322,10 +396,13 @@ def build_router(accounts, limiter: RateLimiter | None = None, ir_store=None) ->
             user = user_for_session(db, request.cookies.get(AUTH_COOKIE))
             if user is None:
                 return reply({"error": "log in to see your runs"}, 401)
-            rows = db.scalars(
+            rows = list(db.scalars(
                 select(BrowserRun).where(BrowserRun.user_id == user.id)
                 .order_by(BrowserRun.created_at.desc()).limit(200)
-            )
+            ))
+            # Runs stored before labels were kept get theirs now, once.
+            if any([fill_listing(db, r, ir_store) for r in rows]):
+                db.commit()
             return reply({"runs": [run_row(r) for r in rows]})
 
     return router

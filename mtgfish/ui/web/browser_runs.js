@@ -108,7 +108,7 @@ const BrowserRuns = (() => {
 
   /* Play a simulation here. Resolves with the Results payload, as the
    * server's run_finished would carry it; Results and Replay then use it. */
-  async function simulate(decklists, games, seed, hooks = {}) {
+  async function simulate(decklists, games, seed, hooks = {}, deckName = "") {
     const module = await engine();
     if (runner === null) runner = new module.BrowserRunner();
     close();
@@ -118,6 +118,7 @@ const BrowserRuns = (() => {
       gameTimeoutSeconds: gameTimeout(),
       onProgress: hooks.onProgress,
       onStatus: hooks.onStatus,
+      deckName,
     });
     if (outcome.stored !== null && !outcome.payload.error && !outcome.payload.cancelled) {
       current = {

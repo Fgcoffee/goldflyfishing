@@ -37,6 +37,17 @@ describe("run upload", () => {
       { oracle_id: "land", card_hash: "hash-land", count: 99 },
     ]);
     expect((body.records as unknown[]).length).toBe(5);
+    // Unnamed unless told: the server falls back to the commander.
+    expect(body).toMatchObject({ deck_name: "", hero_decklist: "" });
+  });
+
+  it("carries the deck's name and list so History can name the run", async () => {
+    const result = await runGames(stubEngine, setup, 0, 2);
+    const body = runUpload(manifest, setup, result, { start: 0, end: 2 }, 0, {
+      deckName: "Goblins!",
+      heroDecklist: "1 Island\n\n// Commander\n1 Krenko",
+    });
+    expect(body).toMatchObject({ deck_name: "Goblins!", hero_decklist: "1 Island\n\n// Commander\n1 Krenko" });
   });
 
   it("sends it gzipped as JSON and returns the server's answer", async () => {

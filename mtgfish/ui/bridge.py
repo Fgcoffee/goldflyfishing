@@ -989,6 +989,12 @@ class Bridge(QObject):
         page has no network access under the artifact CSP and no API key
         handling of its own.
         """
+        return self._resolve_named(text)[0]
+
+    def _resolve_named(self, text: str) -> tuple[str, str]:
+        """``_resolve_decklist``, with the deck's name when it has one: an
+        Archidekt deck's own name, else "" (History falls back to the
+        commander, as for a server run)."""
         from ..data.decks.archidekt import (
             ArchidektError,
             fetch_archidekt,
@@ -997,12 +1003,12 @@ class Bridge(QObject):
 
         stripped = text.strip()
         if not is_archidekt_url(stripped):
-            return text
+            return text, ""
         try:
             deck = fetch_archidekt(stripped, self.db, token=self._archidekt_token())
         except ArchidektError:
-            return text  # Reported by validate_deck, which shows the reason.
-        return deck.as_decklist()
+            return text, ""  # Reported by validate_deck, which shows the reason.
+        return deck.as_decklist(), deck.name or ""
 
     @Slot(str, result=str)
     @_guard
@@ -1013,7 +1019,11 @@ class Bridge(QObject):
         texts = json.loads(decklists_json)
         if not isinstance(texts, list):
             return _json({"error": "send a list of decklists"})
-        return _json({"decklists": [self._resolve_decklist(str(t)) for t in texts[:4]]})
+        resolved = [self._resolve_named(str(t)) for t in texts[:4]]
+        return _json({
+            "decklists": [text for text, _ in resolved],
+            "names": [name for _, name in resolved],
+        })
 
     # -- the deck tab -------------------------------------------------------
 

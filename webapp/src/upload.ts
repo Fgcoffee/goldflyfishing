@@ -30,8 +30,13 @@ export function runUpload(
   result: RunResult,
   range: { readonly start: number; readonly end: number },
   hero = 0,
+  naming: { readonly deckName?: string; readonly heroDecklist?: string } = {},
 ): Record<string, unknown> {
   return {
+    // What History calls the run: the server names it as it names its own
+    // runs (a saved deck's version, the Archidekt name, the commander).
+    deck_name: (naming.deckName ?? "").slice(0, 200),
+    hero_decklist: (naming.heroDecklist ?? "").slice(0, 100_000),
     run_seed: setup.runSeed,
     game_start: range.start,
     game_end: range.end,

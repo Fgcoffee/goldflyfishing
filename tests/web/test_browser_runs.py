@@ -281,4 +281,63 @@ def test_decklists_resolve_for_a_browser_run(make_client):
     client = make_client()
     reply = client.post("/api/call/resolve_decklists", json={"args": [json.dumps(["1 Sol Ring", "1 Island"])]})
     assert reply.status_code == 200
-    assert reply.json() == {"decklists": ["1 Sol Ring", "1 Island"]}
+    # A pasted list has no name of its own; History names it by its commander.
+    assert reply.json() == {"decklists": ["1 Sol Ring", "1 Island"], "names": ["", ""]}
+
+
+# -- History: what a browser run is called, and its win rate ------------------
+
+
+def test_history_names_a_run_by_its_archidekt_deck_and_scores_it(make_client):
+    client = signed_up(make_client, "named@example.com")
+    run = a_run(games=4, crash_at=1)
+    run["records"][0]["winner"] = 2
+    run["deck_name"] = "Mono-Green Stompy"
+    upload(client, run)
+    listed = client.get("/api/browser-runs").json()["runs"][0]
+    assert listed["label"] == "Mono-Green Stompy"
+    # Wins over recorded games, the crashed one left out, as the report counts.
+    assert listed["win_rate"] == pytest.approx(2 / 3)
+
+
+def test_history_falls_back_to_the_commander_of_the_pasted_list(make_client):
+    client = signed_up(make_client, "pasted@example.com")
+    run = a_run()
+    run["hero_decklist"] = "1 Sol Ring\n\n// Commander\n1 Atraxa, Praetors' Voice"
+    upload(client, run)
+    assert client.get("/api/browser-runs").json()["runs"][0]["label"] == "Atraxa, Praetors' Voice"
+
+
+def test_history_names_a_saved_deck_by_its_version(make_client):
+    from .test_library import DECK
+
+    client = signed_up(make_client, "saved@example.com")
+    post(client, "/api/decks", {"name": "My Atraxa", "decklist": DECK})
+    run = a_run()
+    run["hero_decklist"] = DECK
+    run["deck_name"] = "ignored when the list is a saved deck"
+    upload(client, run)
+    assert client.get("/api/browser-runs").json()["runs"][0]["label"] == "My Atraxa v1"
+
+
+def test_runs_stored_before_labels_get_them_when_listed(make_client):
+    from mtgfish.web.models import BrowserRun
+
+    client = signed_up(make_client, "older@example.com")
+    run_id = upload(client, a_run()).json()["id"]
+    with client.accounts.db.session() as db:
+        row = db.get(BrowserRun, run_id)
+        row.label, row.win_rate = None, None
+        db.commit()
+    listed = client.get("/api/browser-runs").json()["runs"][0]
+    # Its commander "c0" isn't in any IR export, so nothing better to call it.
+    assert listed["label"] == "Unsaved deck" and listed["win_rate"] == 1.0
+    with client.accounts.db.session() as db:
+        assert db.get(BrowserRun, run_id).win_rate == 1.0  # kept, not recomputed each time
+
+
+def test_a_deck_name_too_long_is_refused():
+    run = a_run()
+    run["deck_name"] = "x" * 201
+    with pytest.raises(BadRun, match="deck_name"):
+        validate(run)
