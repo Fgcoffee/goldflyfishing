@@ -440,6 +440,41 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Speed on wide boards (auditor's top priority, 15 Nov)
+
+Three exact optimizations (0454f23, 7e1d3ba, 5df22d0). **All 200 bench
+games give identical digests** before (1d6b8df) and after (5df22d0).
+- Finished games: median 1.15 s -> 0.98 s (-15%); total 304 s -> 243 s.
+- All 200 games: 478 s -> 309 s (-35%).
+- Swarm games (stopped at the 500 cap): game 9 79 s -> 19 s; 70 19 s ->
+  6.9 s; 107 13.7 s -> 5.4 s; 184 10.4 s -> 2.8 s; 187 12.0 s -> 4.9 s.
+- What changed:
+  - layers: an effect is applied only to the objects its filter names; the
+    CR 613.8 dependency search pairs only effects that can meet, walks the
+    smaller side, skips objects where B changed nothing A's filter reads,
+    and is skipped outright when every effect in a layer only changes P/T
+    or only adds abilities and no filter there reads those fields;
+    `dependsOn`'s "what it does" comparison was dead (it reads the game,
+    never the characteristics handed to it) and is gone;
+  - casting: each permanent's cost-changing and stack-granting statics are
+    read once per epoch, not once per card in hand per listing; granted
+    keywords are one object per word, so grants compare by reference.
+- **Not reached: game 9 under 5 s.** What's left is the number of full
+  board recomputes: about three per token (the token's own epoch bump,
+  each Ogre Battledriver trigger's two effects, the catch-all bump after
+  every resolution), each O(board). An incremental board needs every
+  mutation to say what it changed (68 invalidation sites plus the
+  catch-all in resolveTop, which tapping, counters and other live fields
+  rely on). That's a redesign; I'd rather agree the plan first.
+- **Median-game hotspots now:** the bot's `decide` is ~48% (legalActions
+  27%, of which payment planning in `affordable` ~9%; the lookahead
+  `project` 21%), board recomputes ~33%, trigger collection ~14%.
+- **The cap stays at 500 for now.** Swarm cost grows with the square of
+  the board, so a game run to 5,000 permanents would take many minutes at
+  today's speed. Raise it once the parser's AI fix (attacking with
+  tokens) keeps swarms small; then I'll rerun the bench and report how
+  often the cap is hit.
+
 ## Token swarms: the cap (1d6b8df) and the bench after it
 
 **200-game bench** (same decks, runSeed 20261114, maxRounds 25, Node,
