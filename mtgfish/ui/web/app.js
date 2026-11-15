@@ -1348,23 +1348,55 @@ function crashNotice(payload) {
   return box;
 }
 
+/* Runaways come in two kinds, which mean opposite things:
+ *   "TOKEN SWARM <card>" - the board passed the 500-permanent cap with no way
+ *     for anyone to win (often a legal lock: attack taxes after land
+ *     destruction, Solitary Confinement). Stopped to keep the run fast; not
+ *     a card bug.
+ *   anything else ("CAST x", "ACTIVATE x", "RESOLVE x", "PRIORITY LOOP") - an
+ *     action repeated until the engine cut the game off: almost always a card
+ *     read wrong, such as a cost the engine could not charge.
+ * Each kind gets its own wording. */
+const RUNAWAY_KINDS = [
+  {
+    matches: (name) => name.startsWith("TOKEN SWARM"),
+    className: "panel",
+    title: (n) => `${n} game${n === 1 ? "" : "s"} stopped at 500 permanents`,
+    hint: "The board grew past 500 permanents with no way to win, so the game "
+      + "was stopped. This is usually a legal lock (an attack tax after land "
+      + "destruction, Solitary Confinement and the like), not a card bug. These "
+      + "games count as having no winner.",
+    label: (name) => name.replace(/^TOKEN SWARM\s*/, "") || "tokens",
+  },
+  {
+    matches: () => true,
+    className: "panel bad",
+    title: (n) => `${n} game${n === 1 ? "" : "s"} stopped as runaway loops`,
+    hint: "An ability repeated until the engine cut the game off. That is a bug in "
+      + "how the card was read - almost always a cost the engine could not "
+      + "charge - not a fact about the deck. Treat the numbers below with "
+      + "suspicion until it is fixed.",
+    label: (name) => name,
+  },
+];
+
 function runawayNotice(payload) {
   const runaways = payload.runaways || {};
   const names = Object.keys(runaways);
   if (!names.length) return null;
-  const total = names.reduce((sum, name) => sum + runaways[name], 0);
-  const box = el("div", "panel bad");
-  box.appendChild(el("strong", null,
-    total + " game" + (total === 1 ? "" : "s") + " were stopped as runaways"));
-  box.appendChild(el("div", "hint",
-    "An ability repeated until the engine cut the game off. That is a bug in "
-    + "how the card was read - almost always a cost the engine could not "
-    + "charge - not a fact about the deck. These games are excluded from "
-    + "nothing, so treat the numbers below with suspicion until it is fixed."));
-  names.forEach((name) => {
-    box.appendChild(el("div", null, runaways[name] + " x  " + name));
-  });
-  return box;
+  const host = document.createElement("div");
+  for (const kind of RUNAWAY_KINDS) {
+    const mine = names.filter((name) => kind.matches(name));
+    names.splice(0, names.length, ...names.filter((name) => !mine.includes(name)));
+    if (!mine.length) continue;
+    const total = mine.reduce((sum, name) => sum + runaways[name], 0);
+    const box = el("div", kind.className);
+    box.appendChild(el("strong", null, kind.title(total)));
+    box.appendChild(el("div", "hint", kind.hint));
+    mine.forEach((name) => box.appendChild(el("div", null, `${runaways[name]} x  ${kind.label(name)}`)));
+    host.appendChild(box);
+  }
+  return host;
 }
 
 function drawLabResults(payload) {
