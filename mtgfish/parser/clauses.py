@@ -2463,7 +2463,12 @@ def _create_token(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
     amount = parse_value(stream) or Value.of(1)
+    return _token_effect(stream, maker, amount)
 
+
+def _token_effect(stream: Stream, maker, amount: Value) -> Effect | None:
+    """The token part of a create: "1/1 white Soldier creature token with
+    flying", read after the count."""
     token = stream.peek()
     power = toughness = None
     if token.kind is TokenKind.PT:
@@ -2495,9 +2500,31 @@ def _create_token(stream: Stream) -> Effect | None:
     # one construct disagreed.
     _copy_exceptions(stream)
 
+    if not spec.subtypes_all and len(spec.subtypes_any) >= 2 and power is None:
+        # "create a Food token or a Treasure token" (Tireless Provisioner):
+        # the noun list joins the two, and a token can't be both - it is a
+        # choice of one, each made as its own token.
+        options = []
+        for name in spec.subtypes_any:
+            one = replace(spec, subtypes_all=(name,), subtypes_any=())
+            types = _token_types(one)
+            if types is None or types & CardType.CREATURE:
+                return None
+            options.append(_token(one, types, None, None, keywords, abilities, maker, amount))
+        return Effect(
+            EffectKind.CHOOSE_MODE,
+            children=tuple(options),
+            players=maker or YOU,
+            text="create one of these tokens",
+        )
     types = _token_types(spec)
     if types is None:
         return None
+    return _token(spec, types, power, toughness, keywords, abilities, maker, amount)
+
+
+def _token(spec, types, power, toughness, keywords, abilities, maker, amount) -> Effect | None:
+    """The CREATE_TOKEN effect for one token description."""
     if types & CardType.CREATURE and power is None:
         # A creature token whose power and toughness the sentence never gave.
         # Defaulted to 0/0 it is created and then dies to state-based actions

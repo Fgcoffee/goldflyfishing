@@ -254,6 +254,26 @@ describe("open: the reading doesn't match the card", () => {
 });
 
 describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
+  it("Tireless Provisioner: a land enters, and one token is made - a Food or a Treasure", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    b.play("Tireless Provisioner");
+    const forest = b.hand("Forest");
+    const land = legalActions(b.game, 0).find((a) => a.kind === ActionKind.PLAY_LAND && a.source === forest.id)!;
+    expect(perform(b.game, 0, land)).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    const tokens = b.game.battlefield
+      .map((id) => characteristicsOf(b.game, b.game.objects.get(id)!))
+      .filter((c) => c.typeLine.subtypes.some((t) => t === "Food" || t === "Treasure"));
+    expect(tokens).toHaveLength(1);
+  });
+
   it("Cauldron of Souls: 'Choose any number of target creatures. Each of those creatures gains persist' - the Bears come back once", () => {
     const b = new RealBoard();
     b.game.activePlayer = 0;
