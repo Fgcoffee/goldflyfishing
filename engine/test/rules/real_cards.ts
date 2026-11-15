@@ -61,6 +61,11 @@ export class RealBoard {
     this.game.epoch += 1;
     return obj;
   }
+  graveyard(name: string, owner = 0): GameObject {
+    const obj = createObject(this.game, realCard(name), owner, Zone.GRAVEYARD);
+    this.game.epoch += 1;
+    return obj;
+  }
   chars(obj: GameObject): Characteristics {
     return characteristicsOf(this.game, obj);
   }

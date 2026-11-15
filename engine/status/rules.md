@@ -371,6 +371,8 @@ test_cr601_additional_cost_record, test_cr601_target_counts,
 test_cr608_pay_if_you_do (and Rest in Peace), test_cr118_alternative_costs,
 test_cr601_granted_cast_abilities. 809 engine tests green.
 **The item is ticked.** Still open, all small:
+- (Done: each_opponents_cards_real.test.ts and target_counts_real's Ulamog,
+  the Ceaseless Hunger case, on the parser's d59284f fixtures.)
 - test_cr608_each_opponents_cards uses Soul-Guide Lantern, which I didn't
   ask for (I named Rest in Peace by mistake; it went to another file).
 - test_cr601_target_counts's Ulamog case is Ulamog, the Ceaseless Hunger;
@@ -451,7 +453,22 @@ that throws). Engine at ce0b202. To reproduce one game:
 No runaways and no loop draws. Median game 1.1 s, p90 2.4 s, slowest
 finished game 81 s. Median 50 turns.
 
-**Crashes: 10, all F63** (`RangeError: unreasonable number of hybrid
+**Rerun after the parser's F63 fix (20610f4):** 9 of the 10 now finish
+(55, 57, 73, 103, 142, 144, 149, 157, 194). **Game 63 (seed 3756024319)
+now hangs instead**: turn 52-54, only ~50 permanents, still going at
+90 s. Profile: 92% in declareAttackers -> attackCosts -> `affordable` ->
+canPayCost -> planPayment -> canProduceFor -> search -> pays ->
+`findPayment` -> `branches`. An unpayable attack tax of 12+ Phyrexian
+symbols makes each `findPayment` walk all 2^12 branches before it fails,
+the mana planner's search calls it for each candidate, and `affordable`
+asks again after dropping each attacker. Python raised here, so this
+hang is new with the fix. **For the parser** (mana/payment.ts is
+yours): a cheap necessary check before the branch loop would end it,
+e.g. fail at once if the pool's total plus what life can cover is less
+than the cost's minimum, or prune branches whose life already exceeds
+the budget in bulk. I've left payment.ts alone.
+
+**Crashes (before the fix): 10, all F63** (`RangeError: unreasonable number of hybrid
 symbols in a cost`, via findPayment <- canPayCost <- affordable, the attack
 costs). Games and seeds: 55 (114627385), 57 (253192874), 63 (3756024319),
 73 (3349215499), 103 (3740255445), 142 (4085659038), 144 (3216302316),
@@ -484,6 +501,8 @@ every step costs more.
 
 ## Questions for the auditor
 
+- **Bench (above):** F63's fix turns game 63 (seed 3756024319) into a
+  hang in findPayment's branch search: for the parser, see above.
 - **Bench (above):** 10 crashes, all F63; no port-introduced crash; 12
   slow token-swarm games, inherited O(n^2) in createTokens' CR 111.5
   check. Want the exact batching fix, from me or the parser?

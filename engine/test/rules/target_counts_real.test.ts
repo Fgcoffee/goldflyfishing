@@ -1,9 +1,8 @@
 // Ported from tests/rules/test_cr601_target_counts.py, on real cards
 // (schema/fixtures): "two target creatures" takes exactly two (CR 601.2c,
-// 115.1d). Python uses Hill Giant; Wretched Gryff stands in. Python's last
-// case is Ulamog, the Ceaseless Hunger (its cast trigger exiles two); the
-// fixture is Ulamog, the Infinite Gyre (asked for by mistake), whose cast
-// trigger destroys one target permanent - adapted to that.
+// 115.1d). Python uses Hill Giant; Wretched Gryff stands in. The last case
+// is Python's Ulamog, the Ceaseless Hunger (its cast trigger exiles two);
+// Ulamog, the Infinite Gyre's one-target cast trigger is kept as well.
 import "../../src/rules/match";
 import "../../src/rules/cr600_spells_and_abilities/replacement";
 import { describe, expect, it } from "vitest";
@@ -79,5 +78,19 @@ describe("two targets (CR 601.2c, 115.1d)", () => {
     resolveAll(b);
     expect(live(b.game, "Grizzly Bears").map((o) => o.zone)).toEqual([Zone.GRAVEYARD]);
     expect(live(b.game, "Ulamog, the Infinite Gyre").map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
+  });
+
+  it("Ulamog, the Ceaseless Hunger's cast trigger exiles two", () => {
+    const b = board();
+    b.play("Grizzly Bears", 1);
+    b.play("Wretched Gryff", 1);
+    const ulamog = b.hand("Ulamog, the Ceaseless Hunger");
+    addMana(player(b.game, 0).manaPool, manaKind(Color.NONE), 10);
+    const actions = offers(b, ulamog);
+    expect(actions).toHaveLength(1);
+    expect(perform(b.game, 0, actions[0]!)).toBe(true);
+    resolveAll(b);
+    expect(live(b.game, "Grizzly Bears").map((o) => o.zone)).toEqual([Zone.EXILE]);
+    expect(live(b.game, "Wretched Gryff").map((o) => o.zone)).toEqual([Zone.EXILE]);
   });
 });
