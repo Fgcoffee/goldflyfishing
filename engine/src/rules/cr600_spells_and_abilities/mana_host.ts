@@ -59,7 +59,7 @@ export function paymentContextOf(obj: GameObject | null): PaymentContext | null 
   const card = obj.card as CardDef | null;
   const face = card?.faces[obj.faceIndex];
   if (face === undefined) return {};
-  return { types: face.type_line.types, subtypes: face.type_line.subtypes };
+  return { types: face.type_line.types, subtypes: face.type_line.subtypes, commander: obj.isCommander };
 }
 
 export const MANA_HOST: ManaPlanHost<Game> = {

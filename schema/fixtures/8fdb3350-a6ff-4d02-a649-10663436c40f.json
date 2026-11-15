@@ -1,0 +1,139 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8fdb3350-a6ff-4d02-a649-10663436c40f",
+ "name": "Skyfire Phoenix",
+ "card_hash": "396cdad2e4279ad383d16a2bb89ab2d5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8fdb3350-a6ff-4d02-a649-10663436c40f",
+  "name": "Skyfire Phoenix",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Skyfire Phoenix",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Phoenix"
+     ]
+    },
+    "oracle_text": "Flying, haste\nWhen you cast your commander, return this card from your graveyard to the battlefield.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 8,
+    "keywords": [
+     "Flying",
+     "Haste"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 12680,
+  "scryfall_uri": "https://scryfall.com/card/c19/28/skyfire-phoenix?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8fdb3350-a6ff-4d02-a649-10663436c40f",
+   "name": "Skyfire Phoenix",
+   "face": 0,
+   "face_name": "Skyfire Phoenix",
+   "card_hash": "396cdad2e4279ad383d16a2bb89ab2d5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "haste",
+     "keyword": "haste"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "zones": {
+         "$set": [
+          3
+         ]
+        }
+       },
+       "zone": 2,
+       "from_zone": 3,
+       "text": "return from a zone"
+      }
+     ],
+     "text": "When you cast your commander, return this card from your graveyard to the battlefield.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "owner": 1,
+       "is_commander": true
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "functions_in": {
+       "$set": [
+        3
+       ]
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

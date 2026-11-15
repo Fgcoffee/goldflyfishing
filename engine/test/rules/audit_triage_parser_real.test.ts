@@ -299,4 +299,66 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(back.map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
     expect(back[0]!.counters.get("-1/-1")).toBe(1);
   });
+
+  /** A Grizzly Bears that is player 0's commander, in the command zone (CR 903.3, 903.6). */
+  const commanderBears = (b: RealBoard) => {
+    const bears = createObject(b.game, realCard("Grizzly Bears"), 0, Zone.COMMAND);
+    bears.isCommander = true;
+    b.game.epoch += 1;
+    return bears;
+  };
+  const mainPhase = (b: RealBoard) => {
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+  };
+  const resolveAll = (b: RealBoard) => {
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+  };
+
+  it("Command Beacon: 'Put your commander into your hand from the command zone'", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    const beacon = b.play("Command Beacon");
+    const bears = commanderBears(b);
+    const act = legalActions(b.game, 0).find((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === beacon.id)!;
+    expect(act).toBeDefined();
+    expect(perform(b.game, 0, act)).toBe(true);
+    resolveAll(b);
+    const now = [...b.game.objects.values()].filter((o) => !o.supersededBy && o.isCommander);
+    expect(now.map((o) => o.zone)).toEqual([Zone.HAND]);
+    expect(player(b.game, 0).hand).toContain(now[0]!.id);
+    expect(bears.zone).toBe(Zone.COMMAND); // the old object; the card moved on as a new one
+  });
+
+  it("Jeweled Lotus: 'Spend this mana only to cast your commander' - pays for the commander, not for the same card in hand", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    b.play("Jeweled Lotus");
+    const inHand = b.hand("Grizzly Bears");
+    const casts = (id: number) => legalActions(b.game, 0).some((a) => a.kind === ActionKind.CAST_SPELL && a.source === id);
+    expect(casts(inHand.id)).toBe(false);
+    const commander = commanderBears(b);
+    expect(casts(commander.id)).toBe(true);
+  });
+
+  it("Skyfire Phoenix: 'When you cast your commander, return this card from your graveyard to the battlefield'", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    b.play("Forest");
+    b.play("Forest");
+    const phoenix = b.graveyard("Skyfire Phoenix");
+    const commander = commanderBears(b);
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === commander.id)!;
+    expect(cast).toBeDefined();
+    expect(perform(b.game, 0, cast)).toBe(true);
+    resolveAll(b);
+    const back = [...b.game.objects.values()].filter((o) => !o.supersededBy && (o.card as { name?: string } | null)?.name === "Skyfire Phoenix");
+    expect(back.map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
+    expect(phoenix).toBeDefined();
+  });
 });

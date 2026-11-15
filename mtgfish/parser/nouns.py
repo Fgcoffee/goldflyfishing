@@ -158,6 +158,24 @@ def singular(word: str) -> str | None:
     return None
 
 
+def _your_commander(stream: Stream) -> ObjectFilter | None:
+    """"your commander", "your commanders" (CR 903.3): the commander you own.
+    A zone said after it ("from the command zone") says where to look; with
+    none, it is the battlefield, as for any other noun. "your commander's
+    power" and "your commander card" go to the ordinary grammar."""
+    mark = stream.mark()
+    if not stream.accept("your"):
+        return None
+    if not stream.accept("commander", "commanders"):
+        stream.reset(mark)
+        return None
+    if stream.peek().lower in ("card", "cards", "creature", "creatures", "spell", "spells"):
+        stream.reset(mark)
+        return None
+    spec = ObjectFilter(is_commander=True, owner=ControllerRelation.YOU)
+    return _zone(stream, spec)
+
+
 def parse_object_filter(stream: Stream) -> ObjectFilter | None:
     """Read a noun phrase. Returns ``None`` and rewinds if it is not one."""
     special = _self_or_attached(stream)
@@ -170,6 +188,10 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
 
     mark = stream.mark()
     spec = ObjectFilter()
+
+    commander = _your_commander(stream)
+    if commander is not None:
+        return commander
 
     spec, _targeted, count, up_to = _quantifier(stream, spec)
     spec = _qualifiers(stream, spec)
@@ -2692,6 +2714,10 @@ def parse_zone(stream: Stream) -> Zone | None:
     token = stream.peek()
     if token.lower in ZONE_WORDS:
         stream.next()
-        return ZONE_WORDS[token.lower]
+        zone = ZONE_WORDS[token.lower]
+        if zone is Zone.COMMAND:
+            # "the command zone": the zone's name is two words (CR 408.1).
+            stream.accept("zone")
+        return zone
     stream.reset(mark)
     return None

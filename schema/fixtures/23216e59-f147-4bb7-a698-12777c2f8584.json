@@ -1,0 +1,119 @@
+{
+ "ir_version": 2,
+ "oracle_id": "23216e59-f147-4bb7-a698-12777c2f8584",
+ "name": "Jeweled Lotus",
+ "card_hash": "a2c57ea6f0c27e8f663d4a3bd1004427",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "23216e59-f147-4bb7-a698-12777c2f8584",
+  "name": "Jeweled Lotus",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jeweled Lotus",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}, Sacrifice this artifact: Add three mana of any one color. Spend this mana only to cast your commander.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": false,
+  "edhrec_rank": 16360,
+  "scryfall_uri": "https://scryfall.com/card/cmm/396/jeweled-lotus?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "23216e59-f147-4bb7-a698-12777c2f8584",
+   "name": "Jeweled Lotus",
+   "face": 0,
+   "face_name": "Jeweled Lotus",
+   "card_hash": "a2c57ea6f0c27e8f663d4a3bd1004427",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_restriction": {
+        "$": "SpendOnlyOn",
+        "key": "all object you own commander in stack",
+        "filter": {
+         "$": "ObjectFilter",
+         "zones": {
+          "$set": [
+           4
+          ]
+         },
+         "owner": 1,
+         "is_commander": true
+        }
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}, Sacrifice this artifact: Add three mana of any one color. Spend this mana only to cast your commander.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "sacrifice this"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

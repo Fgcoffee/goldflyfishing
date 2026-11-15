@@ -749,6 +749,9 @@ export function commanderZoneReplacement(game: Game, e: GameEvent): GameEvent {
   const obj = game.objects.get(e.objectId);
   if (obj === undefined || !obj.isCommander) return e;
   if (e.toZone === null || !REPLACED_COMMANDER_ZONES.has(e.toZone)) return e;
+  // Leaving the command zone on purpose (Command Beacon): "instead" would be
+  // staying where it is, which no owner choosing the move would take.
+  if (obj.zone === Zone.COMMAND) return e;
   if (!wantsCommandZone(game, obj, e.toZone)) return e;
   logRecord(game, `${characteristicsOf(game, obj).name} goes to the command zone instead`, { kind: "commander", player: obj.owner });
   emit(game, event(EventKind.COMMANDER_MOVED_TO_COMMAND_ZONE, { objectId: obj.id, player: obj.owner, fromZone: e.fromZone }));

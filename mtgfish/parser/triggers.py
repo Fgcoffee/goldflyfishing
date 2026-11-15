@@ -1356,6 +1356,13 @@ def _player_event(stream: Stream, players: PlayerFilter) -> TriggerCondition | N
         spec = parse_object_filter(stream) or ObjectFilter(
             zones=frozenset({Zone.STACK})
         )
+        if spec.is_commander and spec.zones == frozenset({Zone.BATTLEFIELD}):
+            # "When you cast your commander" (Skyfire Phoenix): what is cast
+            # is a spell, on the stack (CR 601.2a), not the permanent the
+            # bare noun would otherwise mean.
+            from dataclasses import replace
+
+            spec = replace(spec, zones=frozenset({Zone.STACK}))
         if ordinal:
             _each_turn_tail(stream)
         return TriggerCondition(

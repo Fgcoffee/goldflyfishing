@@ -131,3 +131,6 @@ Exquisite Blood
 Zulaport Cutthroat
 Cauldron of Souls
 Tireless Provisioner
+Command Beacon
+Jeweled Lotus
+Skyfire Phoenix

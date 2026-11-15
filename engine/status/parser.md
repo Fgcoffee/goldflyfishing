@@ -434,7 +434,12 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 **Cards that don't read yet:**
 - Cauldron of Souls and Cauldron Haze now read (320500d): "Choose ... target ... . Each of those creatures ..." becomes one targeted sentence. Board test: the Bears come back with a -1/-1 counter. This also resolves the card-reading gap logged above.
 - Tireless Provisioner and Ant-Man's Army read (de8b72e): "create a Food token or a Treasure token" is a choice of one.
-- Next: the most-played unread abilities by deck usage. In order of play rank: Path of Ancestry, Myriad Landscape, Arcane Denial, Boseiju, Esper Sentinel, Urza's Saga, Mana Drain, Victimize, Windfall, Command Beacon, Idol of Oblivion, Gamble, Force of Negation... Borrowed Knowledge waits with F3 for the evaluate-context change.
+- Command Beacon reads (BEACON_COMMIT): "your commander" is the commander you own, and "from the command zone" after the destination says where it is. That also reads Jeweled Lotus, Skyfire Phoenix, Geode Golem, Road of Return and six more. Census: +11, 0 lost, 36 changed.
+  - Two engine faults showed up, both fixed in the same commit. **Rules session, please look:**
+    - `replacement.ts` `commanderZoneReplacement`: a commander leaving the command zone for a hand was put back (CR 903.9b offered "instead" and the default took it). It now skips the choice when the commander is already in the command zone.
+    - `pool.ts` `restrictionPermits`: a mana restriction to "your commander" paid for any spell, because only types were checked. `PaymentContext` now carries `commander`. Still unchecked: `of_chosen_type` (Pillar of Origins pays for any creature spell).
+  - Graveyard triggers were dead: a triggered ability that returns "this card from your graveyard" worked only on the battlefield. Bloodghast, Squee, Punishing Fire, Akoum Firebird and about 30 more never fired. Now such a trigger works in the graveyard (CR 113.6m), except Aura triggers on what they enchant, which look back from the battlefield. Those are the 36 changed readings.
+- Next: the most-played unread abilities by deck usage. In order of play rank: Path of Ancestry, Myriad Landscape, Arcane Denial, Boseiju, Esper Sentinel, Urza's Saga, Mana Drain, Victimize, Windfall, Idol of Oblivion, Gamble, Force of Negation... Borrowed Knowledge waits with F3 for the evaluate-context change.
 
 ## For the rules session: your 200-game bench
 

@@ -8702,12 +8702,17 @@ def _spend_only(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
     stream.accept("to")
-    stream.accept("cast", "play", "activate")
+    cast = stream.accept("cast")
+    stream.accept("play", "activate")
 
     spec = parse_object_filter(stream)
     if spec is None:
         stream.reset(mark)
         return None
+    if cast and spec.is_commander and spec.zones == frozenset({Zone.BATTLEFIELD}):
+        # "Spend this mana only to cast your commander" (Jeweled Lotus): a
+        # spell being cast, not the permanent the bare noun would mean.
+        spec = replace(spec, zones=frozenset({Zone.STACK}))
     # "...of the chosen type" (Cavern of Souls). The type was chosen as the
     # permanent entered; the engine holds it, so the phrase narrows the
     # restriction without adding to it here.
@@ -9352,6 +9357,15 @@ def _put_into_hand(stream: Stream) -> Effect | None:
     zone = parse_zone(stream)
     if zone is None:
         return None
+    look = stream.mark()
+    if stream.accept("from"):
+        # "Put your commander into your hand from the command zone" (Command
+        # Beacon): where it comes from, said after where it goes.
+        source = parse_zone(stream)
+        if source is None:
+            stream.reset(look)
+        else:
+            targets = replace(targets, zones=frozenset({source}))
     return Effect(
         EffectKind.MOVE_ZONE,
         targets=targets,
