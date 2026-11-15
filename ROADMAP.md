@@ -128,6 +128,12 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
   - F64 (VOTE, guarded);
   - karoo lands always sacrificed.
 - [ ] **Token swarms:** 12 of 200 bench games hit the 90 s watchdog, with 800-5,800 permanents (Krenko, Mob Boss). Make each step cheaper, or end the game as a runaway the way Python's observer does, so no browser game runs for minutes.
+- [ ] **Wide boards fast, so the swarm cap is only a safety net** (15 Nov, top priority):
+  - one board recompute per token batch, not per token;
+  - trigger watchers cached per characteristics epoch;
+  - continuous effects not recomputed in full for each one.
+  - Same digests before and after. Target: bench game 9 (seed 1673232466) to turn 52 in under 5 s.
+  - Then profile a median game and fix the top three hotspots. Then raise the cap from 500 to 5,000.
 - [ ] **Interaction reports from users** (see Reports): replay to the reported step, then fix or log.
 
 ### parser
@@ -138,6 +144,11 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
   - F59 Soul-Guide Lantern.
 - [ ] **Fix the open card-reading findings,** BLOCK first. Re-export the IR and refresh the samples.
 - [ ] **Cards that don't read yet:** "Choose any number of target creatures" (Cauldron of Souls), then the most-played unread abilities by deck usage.
+- [ ] **The AI attacks with its swarms** (15 Nov, top priority after F37). Today a 1/1 token never attacks while the opponent has any creature, so token armies grow until the cap stops the game with no winner (14 of 200 bench games).
+  - A lethal check (alpha strike) and a swarm rule.
+  - A size budget for the lookahead on huge boards.
+  - Check on the 200-game bench: swarm runaways near 0, and win rates in normal games not reckless.
+- After that, **no more polish on the hand-written AI**; it will be replaced (Phase 3). Only fixes that make results wrong.
 - [ ] **Card reports from users** (see Reports): fix the reading, or answer the report.
 
 ### web
@@ -178,6 +189,25 @@ Owner: web (screens, storage, review page). The parser acts on card reports, rul
 
 ---
 
+## New cards: users ask for a card data refresh
+
+- [ ] *(web)* **"New cards are out" button** for signed-in users.
+  - A user can ask at most once every 2 months.
+  - It is shown when Scryfall lists a set newer than our card snapshot.
+  - Requests appear on the admin review page, with the count and the newest set.
+- [ ] *(web)* **Detect new sets automatically too,** from Scryfall's set list once a day, so we don't rely on users noticing.
+- [ ] *(parser)* **A one-command refresh**, reporting what it changed:
+  - new Scryfall data and card database;
+  - IR export;
+  - a census of what changed;
+  - new keywords (the keyword registry test names them);
+  - the coverage numbers.
+- [ ] *(rules)* **Check the new Comprehensive Rules**, released by WotC with each set.
+  - The citation baseline test already flags any rule we cite whose wording changed.
+  - Review each one, update the code, re-record the baseline.
+
+---
+
 ## Phase 2: after the TypeScript conversion
 
 Started once the switch-over is done, apart from the reports above.
@@ -202,3 +232,15 @@ Started once the switch-over is done, apart from the reports above.
   Show the bracket with the reasons that drove it. Card classification: parser. Screen: web.
   - [x] Card classification: each card document's `bracket` tags and `mtgfish.ir.bracket.estimate` (a073ae9). Combos wait on a combo list.
 - [ ] **Actual bracket** from simulations, once a deck has been played enough for a reliable win turn. It comes from win turn and win rate against reference decks, with a confidence level and the number of games it's based on. Shown next to the estimate, flagged when they disagree. Stats: web. Reference decks and sanity checks: auditor.
+
+## Phase 3: a learned AI that knows how to play each deck
+
+The user's plan (15 Nov). It starts when about 95% of played cards are fully read and the rules are complete; the measure is weighted by play rate, see `play_rate_report`.
+- **Deck profile** (the "political score"): a vector computed from the deck's cards, so one card's difference moves it a little.
+- **A grid of profile nodes,** each with learned weights for card genres (ramp, draw, removal, threats and so on) and for attacking and targeting. The weights come from self-play over many decks.
+- **A user's deck** gets weights interpolated from the nearest nodes. Decks far from every node are saved and trained on at the next monthly run.
+
+Groundwork, which can be done earlier because it costs little and changes no behaviour:
+- [ ] *(parser)* **Card genre tags** from the IR (ramp, draw, removal, wipe, counter, tutor, threat, protection), next to the bracket tags.
+- [ ] *(parser)* **The AI reads its priorities from a weight list.** Today's values become the default weights, so games are unchanged.
+- [ ] *(web)* **Model weights are part of the engine build fingerprint,** so replays and the spot check stay exact. Inference stays in plain TS maths, never GPU, so every browser gets the same digest.
