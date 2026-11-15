@@ -118,8 +118,8 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
 - Tick an item with the commit, and record the fix in `audit/AUDIT_LOG.md` (the auditor checks it).
 
 ### rules
-- [ ] **Triage** every rules-owned finding in `audit/AUDIT_LOG.md` on the TS engine: a test that shows whether it still happens. List them, open or already fixed, in `engine/status/rules.md`.
-- [ ] **Fix the open rules findings,** BLOCK first. For example:
+- [x] **Triage** every rules-owned finding in `audit/AUDIT_LOG.md` on the TS engine: a test that shows whether it still happens. List them, open or already fixed, in `engine/status/rules.md`. (d31cae2, 071192b, list in status/rules.md)
+- [x] **Fix the open rules findings,** BLOCK first (F28 b28f152 + 071192b, F62 and F64 3ceafeb, karoo c4232df; F54, F56 and F60 were already fine in TS). For example:
   - F28 overload;
   - F54;
   - F56;
