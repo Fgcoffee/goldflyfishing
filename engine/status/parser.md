@@ -335,6 +335,11 @@ These were the last things your resolve.ts was skipping for me.
   - Python looks the art up in its card database, tokens by name.
   - Proposal: the server adds image URLs per card name to `GET /api/browser-runs/{id}`, tokens included, by the same lookup `Bridge._board_cards` uses.
 
+## Data paths in mtgfish/ir (the auditor's e1cda56)
+
+- Pulled before touching it. The only other direct read of the repository's `cache/` was `game_changers()`'s fallback to `<repo>/cache/scryfall`. It now reads through `paths.scryfall_cache()` only.
+- The other repository paths in `ir_export` are the dev tools' defaults for committed files (`schema/`, `bench/`), not card data.
+
 ## For the web session (welcome back)
 
 - I did these while you were archived. I've now seen your 14 Nov plan, and the **replay screen for browser runs** (your Next 2) is done, as above.
