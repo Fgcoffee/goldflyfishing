@@ -17,7 +17,7 @@ import { checkStateBasedActions } from "../cr700_additional_rules/sba";
 import { installMatch } from "../match";
 import { ir, numSet } from "../ir_read";
 import { moveObject } from "../zones";
-import { buildTokenCard, copyTokenCard, createEmblem, createTokens, tokenName } from "./tokens";
+import { buildTokenCard, copyTokenCard, createEmblem, createTokens, MAX_PERMANENTS, tokenName } from "./tokens";
 
 const SOLDIER: TokenSpec = {
   $: "TokenSpec",
@@ -190,3 +190,21 @@ describe("emblems (CR 114)", () => {
     }
   });
 });
+
+describe("a token swarm stops the game as a runaway (not a rule; the bench's slow games)", () => {
+  it("no token past MAX_PERMANENTS; the game is over, named for the maker", () => {
+    const krenko = board.play("Grizzly Bears");
+    const created = createTokens(board.game, SOLDIER, 0, MAX_PERMANENTS + 50, { source: krenko.id });
+    expect(board.game.battlefield.length).toBe(MAX_PERMANENTS);
+    expect(created.length).toBe(MAX_PERMANENTS - 1);
+    expect(board.game.gameOver).toBe(true);
+    expect(board.game.runaway).toBe("TOKEN SWARM Grizzly Bears");
+  });
+
+  it("a board under the cap is untouched", () => {
+    createTokens(board.game, SOLDIER, 0, 20);
+    expect(board.game.gameOver).toBe(false);
+    expect(board.game.runaway).toBe("");
+  });
+});
+

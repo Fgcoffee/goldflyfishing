@@ -83,7 +83,9 @@ export function runGame(game: Game, options: TurnOptions = DEFAULT_TURN_OPTIONS,
     game.activePlayer = nextActivePlayer(game);
   }
   if (game.restartRequested) return restart(game, options, depth);
-  if (game.runaway) {
+  if (game.runaway.startsWith("TOKEN SWARM")) {
+    logRecord(game, `Game stopped as a runaway: ${game.runaway}. Too many permanents to simulate in reasonable time.`, { kind: "runaway" });
+  } else if (game.runaway) {
     logRecord(
       game,
       `Game stopped as a runaway: ${game.runaway}. This is a bug in a card, not a property of the deck - the ability had no cost the engine could charge.`,
