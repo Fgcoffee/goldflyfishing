@@ -189,22 +189,21 @@ Owner: web (screens, storage, review page). The parser acts on card reports, rul
 
 ---
 
-## New cards: users ask for a card data refresh
+## New cards: pulled automatically, and users can flag them
 
-- [ ] *(web)* **"New cards are out" button** for signed-in users.
-  - A user can ask at most once every 2 months.
-  - It is shown when Scryfall lists a set newer than our card snapshot.
-  - Requests appear on the admin review page, with the count and the newest set.
-- [ ] *(web)* **Detect new sets automatically too,** from Scryfall's set list once a day, so we don't rely on users noticing.
-- [ ] *(parser)* **A one-command refresh**, reporting what it changed:
-  - new Scryfall data and card database;
-  - IR export;
-  - a census of what changed;
+- [ ] *(parser)* **Automatic pull.** A daily check of Scryfall. When new cards appear, the update is prepared on its own:
+  - new card data and card database;
+  - the IR export;
+  - which new cards read fully and which don't;
   - new keywords (the keyword registry test names them);
-  - the coverage numbers.
-- [ ] *(rules)* **Check the new Comprehensive Rules**, released by WotC with each set.
-  - The citation baseline test already flags any rule we cite whose wording changed.
-  - Review each one, update the code, re-record the baseline.
+  - the changes in the Comprehensive Rules.
+
+  It lands as an update ready to deploy (a commit or pull request with its tests run), never straight onto the live site untested.
+- [ ] *(web)* **Alert us at once** when new cards are found: on the admin page, and as a message to a private Discord channel or by email (the owner picks which in a server setting).
+- [ ] *(web)* **"New cards are out" button** for signed-in users, to tell us something new is out, or a card is missing, so we check, update and parse it as soon as possible.
+  - It runs the check straight away and alerts us.
+  - A user can press it at most once every 2 months.
+- [ ] *(rules)* **Review the new Comprehensive Rules** with each set. The citation baseline test flags every rule we cite whose wording changed; review each, update the code, re-record the baseline.
 
 ---
 
@@ -243,4 +242,12 @@ The user's plan (15 Nov). It starts when about 95% of played cards are fully rea
 Groundwork, which can be done earlier because it costs little and changes no behaviour:
 - [ ] *(parser)* **Card genre tags** from the IR (ramp, draw, removal, wipe, counter, tutor, threat, protection), next to the bracket tags.
 - [ ] *(parser)* **The AI reads its priorities from a weight list.** Today's values become the default weights, so games are unchanged.
+- [ ] *(parser, AI)* **The "hover" preview records more.** The lookahead already plays one action out on a private copy (the spell, everything it triggers, nobody responding, draws counted but not seen) and summarises what changed. Add:
+  - power, toughness and keyword changes (Craterhoof: +X/+X and trample);
+  - damage dealt to players and creatures;
+  - counters, mana and tokens with their stats;
+  - the combat damage the board could deal afterwards.
+
+  So "deal damage this turn" and "draw a card this turn" can both be scored (Lightning Bolt with Archmage of Runes).
+- [ ] *(rules)* **Cheaper previews:** copy only what changes (copy-on-write, or an undo log) instead of the whole game for every option.
 - [ ] *(web)* **Model weights are part of the engine build fingerprint,** so replays and the spot check stay exact. Inference stays in plain TS maths, never GPU, so every browser gets the same digest.
