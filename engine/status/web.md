@@ -201,6 +201,15 @@ and the spot check (2cb63b4, 8ab95a8). Thanks.
     - the run was stored, and Replay of game 3 matched its digest;
     - `?engine=server` and the plain URL stay on the server engine.
 
+- **Runaway banner per kind** (8c6e2ae, the auditor's request): on Results,
+  `TOKEN SWARM` runaways (the 500-permanent cap, often a legal lock) get a
+  neutral panel, "stopped at 500 permanents ... not a card bug".
+  Repeated-action loops (`CAST`/`ACTIVATE`/`RESOLVE`/`PRIORITY LOOP`) keep
+  the card-bug warning. Checked on the page with a mixed payload.
+- Noted: when a build step reads a new file, build the image
+  (`docker build .`) before pushing. The auditor fixed the node stage's
+  COPY for `engine-build.mjs` (33c224f).
+
 ## Next
 
 1. **Sandbox on the TS engine,** so a sandbox game replays from its setup
