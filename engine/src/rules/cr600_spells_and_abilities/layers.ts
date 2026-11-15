@@ -412,7 +412,7 @@ function applyLayer(
   for (const ce of orderEffects(game, effects, state, byId)) {
     if (!stillExists(state, ce)) continue;
     const records = grants !== null && kindOf(ce.effect as Effect) === EK.GRANT_ABILITY;
-    for (const id of ordered) {
+    for (const id of candidateIds(ce, ordered, byId)) {
       const obj = byId.get(id) as GameObject;
       const before = state.get(id) as Characteristics;
       if (!affects(game, ce, obj, before)) continue;
@@ -541,8 +541,32 @@ export function orderEffects(game: Game, effects: readonly ContinuousEffect[], s
   const count = ordered.length;
   const probe = new DependencyProbe(game, ordered, state, byId);
   const depends: Set<number>[] = ordered.map(() => new Set());
+  // Which effects change each object: an effect A whose reach is known can
+  // depend only on those (dependsOn looks at nothing else), unless A comes
+  // from a static ability, whose source losing it counts too.
+  const changers = new Map<ObjectId, number[]>();
+  for (let j = 0; j < count; j += 1) {
+    for (const id of probe.footprint(j).keys()) {
+      const list = changers.get(id);
+      if (list === undefined) changers.set(id, [j]);
+      else list.push(j);
+    }
+  }
   for (let i = 0; i < count; i += 1) {
-    for (let j = 0; j < count; j += 1) if (i !== j && probe.dependsOn(i, j)) depends[i]?.add(j);
+    const a = ordered[i] as ContinuousEffect;
+    const reach = a.fromStaticAbility && a.ability !== null ? null : probe.reachOf(i);
+    if (reach === null) {
+      for (let j = 0; j < count; j += 1) if (i !== j && probe.dependsOn(i, j)) depends[i]?.add(j);
+      continue;
+    }
+    const tried = new Set<number>();
+    for (const id of reach) {
+      for (const j of changers.get(id) ?? []) {
+        if (j === i || tried.has(j)) continue;
+        tried.add(j);
+        if (probe.dependsOn(i, j)) depends[i]?.add(j);
+      }
+    }
   }
   if (depends.every((d) => d.size === 0)) return ordered;
   const remaining = new Set(ordered.map((_, i) => i));
@@ -564,6 +588,22 @@ export function orderEffects(game: Game, effects: readonly ContinuousEffect[], s
     remaining.delete(chosen);
   }
   return out;
+}
+
+/**
+ * The objects `affects` could say yes to, in id order (`ids` sorted): only
+ * the named ones when the filter names objects (matching rejects every other
+ * id first), only the source when there is no filter, otherwise `ids`
+ * itself. Same answers as testing every object, and the only cheap way
+ * through a swarm of tokens each given its own "+2/+0 until end of turn".
+ */
+function candidateIds(effect: ContinuousEffect, ids: readonly ObjectId[], byId: ReadonlyMap<ObjectId, GameObject>): readonly ObjectId[] {
+  const spec = (effect.effect as Effect).targets;
+  if (spec === undefined || spec === null) return byId.has(effect.source) ? [effect.source] : [];
+  const named = list(spec.specific);
+  if (named.length === 0) return ids;
+  if (named.length === 1) return byId.has(named[0] as ObjectId) ? [named[0] as ObjectId] : [];
+  return [...new Set(named as ObjectId[])].filter((id) => byId.has(id)).sort((a, b) => a - b);
 }
 
 /**
@@ -609,15 +649,15 @@ class DependencyProbe {
    * until end of turn" made this pairwise search the whole game's cost.
    */
   private candidates(effect: ContinuousEffect): readonly ObjectId[] {
-    const spec = (effect.effect as Effect).targets;
-    if (spec === undefined || spec === null) return this.byId.has(effect.source) ? [effect.source] : [];
-    const named = list(spec.specific);
-    if (named.length === 0) return this.ids;
-    const wanted = new Set(named);
-    return this.ids.filter((id) => wanted.has(id));
+    return candidateIds(effect, this.ids, this.byId);
   }
 
   private readonly reaches = new Map<number, ReadonlySet<ObjectId> | null>();
+
+  /** `reach`, for orderEffects. */
+  reachOf(index: number): ReadonlySet<ObjectId> | null {
+    return this.reach(index);
+  }
 
   /** `candidates` as a set, or null for "any object". */
   private reach(index: number): ReadonlySet<ObjectId> | null {
@@ -667,9 +707,15 @@ class DependencyProbe {
       }
     }
     const reach = this.reach(i);
-    for (const [id, afterB] of footprint) {
-      // An object A can never apply to: no change of B's makes it start (or stop).
-      if (reach !== null && !reach.has(id)) continue;
+    // An object A can never apply to: no change of B's makes it start (or
+    // stop). Walk whichever of the two is smaller; the answer is the same.
+    const pairs: Iterable<[ObjectId, Characteristics]> =
+      reach === null
+        ? footprint
+        : reach.size < footprint.size
+          ? [...reach].sort((x, y) => x - y).flatMap((id) => (footprint.has(id) ? [[id, footprint.get(id)!] as [ObjectId, Characteristics]] : []))
+          : [...footprint].filter(([id]) => reach.has(id));
+    for (const [id, afterB] of pairs) {
       const obj = this.byId.get(id) as GameObject;
       const before = this.appliesBefore(i, id);
       if (before !== affects(this.game, a, obj, afterB)) return true;

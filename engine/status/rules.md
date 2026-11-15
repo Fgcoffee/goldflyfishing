@@ -463,6 +463,16 @@ SimpleAgent, 90 s watchdog), engine at 1d6b8df:
     and `win_reasons` through; `runawayGames` isn't in the payload yet, and
     main.ts's note only mentions stalls. Worth a line such as "N games
     stopped as runaways (Krenko, Mob Boss)".
+- **Cheaper steps on wide boards (layers, this commit), exact:** an
+  effect is applied only to the objects its filter names (as the
+  dependency probe already did), the dependency search pairs an effect
+  only with effects that change what it can reach, and each pair walks the
+  smaller side. Same digests on 26 games (0-23, 102, 117, and game 9's
+  b30cd7d31ff179bb). Those 26 games: 104 s -> 84 s in all; game 9 67 s ->
+  41 s. What's left in game 9 is board recomputation itself (each token
+  invalidates the board; broad effects such as anthems are matched against
+  every object each time), which needs an incremental board, a larger
+  design change.
 - Next (the auditor's (c), after the open findings): make a step cheaper
   on wide boards, then raise the cap. Leads: the parser's profile (per-token
   trigger collection recomputes the board; the bot's lookahead clones the
