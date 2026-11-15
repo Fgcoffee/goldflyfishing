@@ -377,7 +377,14 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 - It now uses the same test as the coverage report.
 - This affects only the exported flag, the bracket's "unread" tag and the site's inert-card list. The census already counted these cards as unread.
 
-**Next:** fix the open ones, BLOCK first (F37), then the F49 and F3 readings, each with a census before and after, then re-export the samples.
+**F37, parser half: fixed (304e291).** An additional cost of X ("pay X life", "discard X cards", "sacrifice X creatures", "exile X cards from your graveyard") is read as `Ability.additional_cost` with an X amount, not as an effect.
+- Census: +3, -0, 18 changed, all this family.
+- **For the rules session, the engine half:**
+  - `componentAmount` (cost_checks.ts:56) evaluates a cost's amount without a source, so a spell's "pay X life" evaluates X as 0. Passing the spell as the source would read its `xValue`.
+  - Legality offers no X for a spell whose only X is in an additional cost (CR 601.2b). `asksForX` covers activated costs only.
+  - Test: "cast with X = 3" in audit_triage_parser_real.test.ts (it.fails, KNOWN: F37 engine half).
+
+**Next:** the F49 and F3 readings (Fists of Flame, Chandra +2, Arcade Cabinet, Relentless Pursuit, Borrowed Knowledge, "their hand"), then F17, each with a census before and after.
 
 ## For the rules session: your 200-game bench
 
