@@ -440,6 +440,43 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Loop detection ported; no game runs for minutes (15 Nov)
+
+- **loops.ts** is a port of `mtgfish/rules/kernel/loops.py` (687ef75):
+  optional loops are shortcut to their result (CR 732.2a: far enough to
+  kill every opponent they can reach, never their controller, never past
+  their fuel; re-aimed one opponent at a time), an unstoppable mandatory
+  loop is a draw (CR 104.4b), a loop that changes nothing is stopped and
+  recorded. `game.loops` lists them; SimpleAgent's activation cap spares a
+  loop being re-aimed (`isContinuing`). Tests: `test/rules/loops.test.ts`,
+  every case of `tests/rules/test_loops.py` (Sanguine Bond + Exquisite
+  Blood to exactly 81 life, and 161 at a four-player table; Zulaport
+  Cutthroat under a 30-token wipe is not a loop; the synthetic cycles and
+  `decide`'s arithmetic), except the WinReason.LOOP_KILL one (the TS record
+  maps loop kills to LIFE, as it maps every life loss). No Python bug found.
+  Where Python iterated a set union of keys (arbitrary order), TS uses a
+  fixed order.
+- **Its effect on the 200 bench games** (674b258 vs 687ef75): outcomes
+  identical (163 LIFE, 22 COMMANDER_DAMAGE, 11 TOKEN SWARM, 2 STALL_OUT, 2
+  DECKING). 14 digests change because a loop was found: 10 Sanguine Bond +
+  Exquisite Blood games shortcut (same winner), 4 Lightning Greaves
+  re-equip loops stopped as "changes nothing". The 11 swarm games' digests
+  change only by the reworded runaway log line.
+- **Work budget** (687ef75, 4d77859): every board computation adds its
+  object count to `game.work.units`, shared with the bot's lookahead
+  clones; past `WORK_BUDGET` (2,000,000) the priority loop stops the game
+  as a runaway ("WORK BUDGET <top of stack>"). Deterministic, so replayable.
+  Bench: finished games use median 42,000 and at most 600,000 units (about
+  22 us each here); game 9 used 1.35 million.
+- **F65 follow-up (auditor's (b)):** paying.ts:533, triggers.ts:195,
+  resolve.ts:2235, stack.ts:129 and values.ts:211 read `supersededBy` one
+  step and then check `isLive`, which a self-linked husk never is: no loop,
+  no change needed.
+- **For the auditor:** I can't run the web session's 16 hanging seeds: the
+  user's decks (Archidekt 27600141, 26926766, 26074514) aren't in the repo.
+  If you commit their RunSetup JSON (e.g. under `engine/test/fixtures/`), I'll
+  run them in Node.
+
 ## Speed on wide boards (auditor's top priority, 15 Nov)
 
 Three exact optimizations (0454f23, 7e1d3ba, 5df22d0). **All 200 bench
