@@ -153,7 +153,7 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
   - F59 Soul-Guide Lantern.
 - [ ] **Fix the open card-reading findings,** BLOCK first. Re-export the IR and refresh the samples.
 - [ ] **Cards that don't read yet:** "Choose any number of target creatures" (Cauldron of Souls), then the most-played unread abilities by deck usage.
-- [ ] **The AI attacks with its swarms** (15 Nov, top priority after F37). Today a 1/1 token never attacks while the opponent has any creature, so token armies grow until the cap stops the game with no winner (14 of 200 bench games).
+- [x] **The AI attacks with its swarms** (15 Nov, top priority after F37). (be2499a, 1cb2be4: the bot already attacked all-out; 5 of the 14 runaways were an engine bug, standing restrictions that never expired, and the bot now passes over a player whose damage is always prevented. Runaways 14 -> 11 on the 200-game bench, all locks the rules allow. No lookahead size budget: capping it changes which actions the bot picks, so it waits for a call from the user or auditor; see engine/status/parser.md.) Today a 1/1 token never attacks while the opponent has any creature, so token armies grow until the cap stops the game with no winner (14 of 200 bench games).
   - A lethal check (alpha strike) and a swarm rule.
   - A size budget for the lookahead on huge boards.
   - Check on the 200-game bench: swarm runaways near 0, and win rates in normal games not reckless.
