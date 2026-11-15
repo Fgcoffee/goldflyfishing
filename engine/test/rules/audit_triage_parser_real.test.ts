@@ -53,7 +53,7 @@ describe("fixed: the reading matches the card", () => {
   it("F33 Turn to Frog lasts until end of turn, on the one target", () => {
     const frog = ability("Turn to Frog", "Until end of turn");
     const leaves = effects(frog).filter((e) => e.kind !== EK.SEQUENCE);
-    expect(leaves.map((e) => e.duration)).toEqual([1, 1, 1]);
+    expect(leaves.map((e) => e.duration)).toEqual([1, 1, 1, 1]); // abilities, Frog, blue, 1/1
     expect(leaves.slice(1).every((e) => e.same_target === true)).toBe(true);
   });
 
@@ -133,6 +133,11 @@ describe("fixed: the reading matches the card", () => {
 });
 
 describe("fixed after the triage", () => {
+  it("Turn to Frog becomes a BLUE Frog: the colour is set until end of turn (CR 105.3)", () => {
+    const [colour] = ofKind(ability("Turn to Frog", "blue Frog"), EK.SET_COLOR!);
+    expect([colour!.colors, colour!.duration, colour!.same_target]).toEqual([2, 1, true]);
+  });
+
   it("F17 Tannuk: 'Artifact cards and red creature cards' - red is the creatures' only", () => {
     const grant = ofKind(ability("Tannuk, Steadfast Second", "warp"), EK.GRANT_ABILITY!)[0]!;
     const t = grant.targets as { colors_any?: number; any_of?: { types_all?: number; colors_any?: number }[] };
@@ -245,8 +250,5 @@ describe("open: the reading doesn't match the card", () => {
 
 
 
-  it.fails("Turn to Frog becomes a BLUE Frog (new: the colour is lost)", () => {
-    const frog = ability("Turn to Frog", "blue Frog");
-    expect(ofKind(frog, EK.SET_COLOR!).length + effects(frog).filter((e) => (e.colors ?? 0) !== 0).length).toBeGreaterThan(0);
-  });
+
 });

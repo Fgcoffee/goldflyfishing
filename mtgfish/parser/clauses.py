@@ -5888,6 +5888,21 @@ def _becomes_type(stream: Stream) -> Effect | None:
             text="becomes",
         )
     ]
+    # "becomes a *blue* Frog", "is a *green* Elk creature": the colour words
+    # set its colour (CR 105.3, layer 5). They were read into the filter and
+    # dropped, so Turn to Frog's Frog kept its own colours.
+    colours = spec.colors_any | spec.colors_all
+    if colours:
+        effects.append(
+            Effect(
+                EffectKind.SET_COLOR,
+                targets=targets,
+                colors=colours,
+                duration=Duration.PERMANENT,
+                is_targeted=targeted,
+                text="becomes " + colours.name.lower().replace("|", " and "),
+            )
+        )
     if stream.accept_phrase("with base power and toughness"):
         token = stream.peek()
         if token.kind is not TokenKind.PT:
