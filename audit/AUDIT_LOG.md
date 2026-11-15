@@ -647,3 +647,14 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
 - Token swarms, the bot (not a rules fix): 1cb2be4, `engine/src/ai/ai.test.ts` (futile target passed over; a 30-token swarm attacks all-out). Runaways 14 -> 11 on the 200-game bench; the rest are Solitary Confinement and attack-tax locks.
 - F49 Fists of Flame ("+1/+0 for each card you've drawn this turn" was a flat +1): 9464b38, `audit_triage_parser_real.test.ts` "F49 Fists of Flame ... on the board". Census: 0 gained, 0 lost, 3 changed, all the same bug (also Algorithmic Ferocity, Haldir).
 - **Auditor check (15 Nov, on 0f7f7a9):** engine 875 tests and typecheck green; audit_findings and audit_triage_real 46/46. I read the F28 tests (Cyclonic Rift overloaded: the opponent's nonland permanents to hand; mine and their lands stay; cast normally, only its target) and the karoo tests (Coral Atoll stays by returning an untapped Island; with none, it's sacrificed). Both assert the rule. Accepted.
+
+## Browser engine behind a flag (2026-11-15): PR #40, shared branch @ 33c224f, merged as 75d856b
+
+- The site plays in the browser only with `?engine=browser`; everyone else is unchanged.
+- Checks:
+  - Python 3364 passed;
+  - the Docker image was built and run locally;
+  - in headless Chromium with the flag, 40 bench games ran in 35 s, Results drew and the upload returned 201;
+  - the bundle's engine build equals the server's.
+- The image build first failed: the Dockerfile didn't copy `webapp/engine-build.mjs`, fixed in 33c224f.
+- Open: the runaway banner's wording for token swarms (web); card art in browser replays; the sandbox on TS.
