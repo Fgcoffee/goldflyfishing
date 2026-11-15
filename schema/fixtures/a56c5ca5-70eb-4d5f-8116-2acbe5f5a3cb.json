@@ -1,0 +1,253 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a56c5ca5-70eb-4d5f-8116-2acbe5f5a3cb",
+ "name": "Jaya Ballard",
+ "card_hash": "fd1225ab825f682296edbd042a917fa2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a56c5ca5-70eb-4d5f-8116-2acbe5f5a3cb",
+  "name": "Jaya Ballard",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Jaya Ballard",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Jaya"
+     ]
+    },
+    "oracle_text": "+1: Add {R}{R}{R}. Spend this mana only to cast instant or sorcery spells.\n+1: Discard up to three cards, then draw that many cards.\n−8: You get an emblem with \"You may cast instant and sorcery spells from your graveyard. If a spell cast this way would be put into your graveyard, exile it instead.\"",
+    "loyalty": "5",
+    "colors": 8,
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 9176,
+  "scryfall_uri": "https://scryfall.com/card/c21/175/jaya-ballard?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a56c5ca5-70eb-4d5f-8116-2acbe5f5a3cb",
+   "name": "Jaya Ballard",
+   "face": 0,
+   "face_name": "Jaya Ballard",
+   "card_hash": "fd1225ab825f682296edbd042a917fa2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "mana_restriction": {
+        "$": "SpendOnlyOn",
+        "key": "all instant or sorcery that is a spell in stack",
+        "filter": {
+         "$": "ObjectFilter",
+         "types_any": 192,
+         "zones": {
+          "$set": [
+           4
+          ]
+         },
+         "is_ability": false
+        }
+       },
+       "mana_produced": [
+        "{R}",
+        "{R}",
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}{R}{R}"
+      }
+     ],
+     "text": "+1: Add {R}{R}{R}. Spend this mana only to cast instant or sorcery spells.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 21,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 3
+        },
+        "up_to": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "Discard"
+      },
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 25
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "+1: Discard up to three cards, then draw that many cards.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "-8: You get an emblem with \"You may cast instant and sorcery spells from your graveyard. If a spell cast this way would be put into your graveyard, exile it instead.\""
+      }
+     ],
+     "text": "-8: You get an emblem with \"You may cast instant and sorcery spells from your graveyard. If a spell cast this way would be put into your graveyard, exile it instead.\"",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "-8: You get an emblem with \"You may cast instant and sorcery spells from your graveyard. If a spell cast this way would be put into your graveyard, exile it instead.\"",
+     "reason": "not fully consumed",
+     "remaining": [
+      "You",
+      "get",
+      "an",
+      "emblem",
+      "with",
+      "\"",
+      "You",
+      "may",
+      "cast",
+      "instant",
+      "and",
+      "sorcery",
+      "spells",
+      "from",
+      "your",
+      "graveyard",
+      ".",
+      "If",
+      "a",
+      "spell",
+      "cast",
+      "this",
+      "way",
+      "would",
+      "be",
+      "put",
+      "into",
+      "your",
+      "graveyard",
+      ",",
+      "exile",
+      "it",
+      "instead",
+      ".",
+      "\""
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

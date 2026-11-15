@@ -1,0 +1,122 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d39c378b-f0a2-400f-af40-a632e24b6d72",
+ "name": "Relentless Pursuit",
+ "card_hash": "89a7852a592267d038671149fdc270ec",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d39c378b-f0a2-400f-af40-a632e24b6d72",
+  "name": "Relentless Pursuit",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Relentless Pursuit",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Reveal the top four cards of your library. You may put a creature card and/or a land card from among them into your hand. Put the rest into your graveyard.",
+    "colors": 16
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 19580,
+  "scryfall_uri": "https://scryfall.com/card/thb/195/relentless-pursuit?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d39c378b-f0a2-400f-af40-a632e24b6d72",
+   "name": "Relentless Pursuit",
+   "face": 0,
+   "face_name": "Relentless Pursuit",
+   "card_hash": "89a7852a592267d038671149fdc270ec",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 10001,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "keywords": [
+        "reveal"
+       ],
+       "text": "reveal the top"
+      },
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 28,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_any": 20,
+          "from_pile": true,
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "zone": 1,
+         "text": "put into hand"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": 28,
+       "targets": {
+        "$": "ObjectFilter",
+        "from_pile": true
+       },
+       "zone": 3,
+       "text": "put into graveyard"
+      }
+     ],
+     "text": "Reveal the top four cards of your library. You may put a creature card and/or a land card from among them into your hand. Put the rest into your graveyard."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

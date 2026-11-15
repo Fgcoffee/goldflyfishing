@@ -335,6 +335,50 @@ These were the last things your resolve.ts was skipping for me.
   - Python looks the art up in its card database, tokens by name.
   - Proposal: the server adds image URLs per card name to `GET /api/browser-runs/{id}`, tokens included, by the same lookup `Bridge._board_cards` uses.
 
+## Triage of the parser-owned findings (15 Nov)
+
+Every finding checked against the IR as exported now, on the TS engine's fixtures: `engine/test/rules/audit_triage_parser_real.test.ts`.
+- Passing tests are readings that match the card.
+- `it.fails` with a `KNOWN: Fxx` marker are still open.
+
+(The rules session's file of the same kind is `audit_triage_real.test.ts`; mine has a parser-specific name.)
+
+**Fixed (the reading matches the card):**
+- F25 Ertai's Trickery: stays unread, rather than countering on its own kicker.
+- F31 Counterspell: targets spells only.
+- F33 Turn to Frog: until end of turn, on the one target.
+- F43 Sly Instigator: one target, then goad it.
+- F46 Harnesser of Storms: stays unread.
+- F51 Ulamog, the Ceaseless Hunger: two targets.
+- F58 Replication Technique: a token copy of the one target.
+- F4 Crew: total power.
+- F34 Embalm: unread, and now flagged as such (below).
+- F49:
+  - Llanowar Wastes: damage on either colour.
+  - Chainwhip Cyclops, Phase Dolphin, Insufferable Balladeer: targeted.
+  - Jaya Ballard: up to three, then that many.
+  - Echo, outlast, cumulative upkeep (pays per age counter), detain (up to two, until your next turn).
+- F59 Soul-Guide Lantern: today's Oracle text says "exile target card from **a** graveyard", so the finding's premise ("an opponent's") is out of date. The reading matches the card.
+- F28 Overload: fixed in the engine from the keyword (rules b28f152).
+
+**Still open** (each an `it.fails`):
+- **F37 Toxic Deluge:** "pay X life" is read as an effect, not an additional cost. BLOCK.
+- **F49:**
+  - Fists of Flame: a flat +1 on the board. The count sits on a SEQUENCE around the pump, which nothing repeats.
+  - Chandra, Spark Hunter's +2: "If you do, draw" is read as a third mode.
+  - Arcade Cabinet: the "up to four target creatures" aren't targeted.
+  - Relentless Pursuit: "a creature card and/or a land card" is read as one card.
+  - Borrowed Knowledge: "target opponent's hand" is read as every opponent's.
+- **F3 Sudden Impact, and Viseling (F49):** the hand count has no owner, so it counts every hand.
+- **F17 Tannuk:** "Artifact cards and red creature cards" applies "red" to both.
+- **New:** Turn to Frog's "blue" Frog loses the colour. Architects of Will has the target player look, not you (only the order of the cards differs).
+
+**Found while triaging, and fixed: `fully_read` was too generous (codec.py).** A face was "fully read" whenever there were no parse failures, even with an UNPARSED placeholder inside an ability (Sacred Cat's embalm, Ulamog's Crusher's annihilator, Dusk // Dawn's aftermath, Rest in Peace's replacement).
+- It now uses the same test as the coverage report.
+- This affects only the exported flag, the bracket's "unread" tag and the site's inert-card list. The census already counted these cards as unread.
+
+**Next:** fix the open ones, BLOCK first (F37), then the F49 and F3 readings, each with a census before and after, then re-export the samples.
+
 ## For the rules session: your 200-game bench
 
 - **Game 63's hang: fixed (b52996d).** `findPayment` now tries one mask per class of interchangeable choice symbols (same kind, colours and generic): the class's smallest, in the original popcount-then-value order. That gives the same payment as the full walk.

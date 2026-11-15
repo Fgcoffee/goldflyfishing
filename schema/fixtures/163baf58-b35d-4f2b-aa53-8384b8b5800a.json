@@ -1,0 +1,165 @@
+{
+ "ir_version": 2,
+ "oracle_id": "163baf58-b35d-4f2b-aa53-8384b8b5800a",
+ "name": "Replication Technique",
+ "card_hash": "968f7c1bfc7a870704d63d7adb33febe",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "163baf58-b35d-4f2b-aa53-8384b8b5800a",
+  "name": "Replication Technique",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Replication Technique",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Demonstrate (When you cast this spell, you may copy it. If you do, choose an opponent to also copy it. Players may choose new targets for their copies.)\nCreate a token that's a copy of target permanent you control.",
+    "colors": 2,
+    "keywords": [
+     "Demonstrate"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 4299,
+  "scryfall_uri": "https://scryfall.com/card/soc/200/replication-technique?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "163baf58-b35d-4f2b-aa53-8384b8b5800a",
+   "name": "Replication Technique",
+   "face": 0,
+   "face_name": "Replication Technique",
+   "card_hash": "968f7c1bfc7a870704d63d7adb33febe",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 101,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "keywords": [
+          "may choose new targets"
+         ],
+         "text": "copy it"
+        },
+        {
+         "$": "Effect",
+         "kind": 101,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "players": {
+          "$": "PlayerFilter",
+          "scope": 1
+         },
+         "keywords": [
+          "may choose new targets"
+         ],
+         "text": "the chosen opponent copies it"
+        }
+       ],
+       "text": "you may copy it; if you do, an opponent you choose copies it"
+      }
+     ],
+     "text": "Demonstrate",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "functions_in": {
+       "$set": [
+        4
+       ]
+      },
+      "text": "when you cast this spell"
+     },
+     "functions_in": {
+      "$set": [
+       4
+      ]
+     },
+     "keyword": "Demonstrate"
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "targets": {
+        "$": "ObjectFilter",
+        "controller": 1
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "token": {
+        "$": "TokenSpec",
+        "copy_of": {
+         "$": "ObjectFilter",
+         "controller": 1
+        }
+       },
+       "text": "create a token copy"
+      }
+     ],
+     "text": "Create a token that's a copy of target permanent you control."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

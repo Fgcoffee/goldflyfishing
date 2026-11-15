@@ -1,0 +1,153 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ace64875-ca4b-45c7-8b46-29ef2f2629dd",
+ "name": "Lyev Decree",
+ "card_hash": "77521c8be96d5c61216b6eafe85fc488",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ace64875-ca4b-45c7-8b46-29ef2f2629dd",
+  "name": "Lyev Decree",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Lyev Decree",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Detain up to two target creatures your opponents control. (Until your next turn, those creatures can't attack or block and their activated abilities can't be activated.)",
+    "colors": 1,
+    "keywords": [
+     "Detain"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 25468,
+  "scryfall_uri": "https://scryfall.com/card/dgm/3/lyev-decree?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ace64875-ca4b-45c7-8b46-29ef2f2629dd",
+   "name": "Lyev Decree",
+   "face": 0,
+   "face_name": "Lyev Decree",
+   "card_hash": "77521c8be96d5c61216b6eafe85fc488",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 2,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        },
+        "up_to": true
+       },
+       "is_targeted": true,
+       "duration": {
+        "$int": 3
+       },
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 20,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 2,
+          "count": {
+           "$": "Value",
+           "constant": 2
+          },
+          "up_to": true
+         },
+         "text": "detain"
+        },
+        {
+         "$": "Restriction",
+         "act": 23,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 2,
+          "count": {
+           "$": "Value",
+           "constant": 2
+          },
+          "up_to": true
+         },
+         "text": "detain"
+        },
+        {
+         "$": "Restriction",
+         "act": 2,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 2,
+          "count": {
+           "$": "Value",
+           "constant": 2
+          },
+          "up_to": true
+         },
+         "text": "detain"
+        },
+        {
+         "$": "Restriction",
+         "act": 3,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 2,
+          "count": {
+           "$": "Value",
+           "constant": 2
+          },
+          "up_to": true
+         },
+         "text": "detain"
+        }
+       ],
+       "text": "Detain"
+      }
+     ],
+     "text": "Detain up to two target creatures your opponents control."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

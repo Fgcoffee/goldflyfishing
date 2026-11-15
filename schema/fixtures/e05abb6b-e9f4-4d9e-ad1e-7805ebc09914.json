@@ -1,0 +1,142 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e05abb6b-e9f4-4d9e-ad1e-7805ebc09914",
+ "name": "Fists of Flame",
+ "card_hash": "27655a7719ec6f1a63f9d9c58b96a5d9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e05abb6b-e9f4-4d9e-ad1e-7805ebc09914",
+  "name": "Fists of Flame",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Fists of Flame",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Draw a card. Until end of turn, target creature gains trample and gets +1/+0 for each card you've drawn this turn. (A creature with trample can deal excess combat damage to the player or planeswalker it's attacking.)",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1864,
+  "scryfall_uri": "https://scryfall.com/card/tle/166/fists-of-flame?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e05abb6b-e9f4-4d9e-ad1e-7805ebc09914",
+   "name": "Fists of Flame",
+   "face": 0,
+   "face_name": "Fists of Flame",
+   "card_hash": "27655a7719ec6f1a63f9d9c58b96a5d9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": 0,
+       "duration": 1,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "amount": {
+          "$": "Value",
+          "kind": 26,
+          "players": {
+           "$": "PlayerFilter"
+          },
+          "event_kinds": [
+           80
+          ]
+         },
+         "duration": 1,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 143,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "is_targeted": true,
+           "duration": 1,
+           "granted_abilities": [
+            {
+             "$": "Ability",
+             "kind": 3,
+             "text": "trample",
+             "keyword": "trample"
+            }
+           ],
+           "text": "gains trample"
+          },
+          {
+           "$": "Effect",
+           "kind": 140,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "is_targeted": true,
+           "same_target": true,
+           "duration": 1,
+           "text": "gets +1/+0"
+          }
+         ],
+         "text": "gains abilities and changes power"
+        }
+       ],
+       "text": "for a duration"
+      }
+     ],
+     "text": "Draw a card. Until end of turn, target creature gains trample and gets +1/+0 for each card you've drawn this turn."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

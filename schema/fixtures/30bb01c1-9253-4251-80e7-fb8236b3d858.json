@@ -1,0 +1,270 @@
+{
+ "ir_version": 2,
+ "oracle_id": "30bb01c1-9253-4251-80e7-fb8236b3d858",
+ "name": "Chandra, Spark Hunter",
+ "card_hash": "3c8fb4a9a3b22e9656ad18fb0e2bcedb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "30bb01c1-9253-4251-80e7-fb8236b3d858",
+  "name": "Chandra, Spark Hunter",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Chandra, Spark Hunter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Chandra"
+     ]
+    },
+    "oracle_text": "At the beginning of combat on your turn, choose up to one target Vehicle you control. Until end of turn, it becomes an artifact creature and gains haste.\n+2: You may sacrifice an artifact or discard a card. If you do, draw a card.\n0: Create a 3/2 colorless Vehicle artifact token with crew 1.\n−7: You get an emblem with \"Whenever an artifact you control enters, this emblem deals 3 damage to any target.\"",
+    "loyalty": "4",
+    "colors": 8
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 6488,
+  "scryfall_uri": "https://scryfall.com/card/dft/116/chandra-spark-hunter?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "30bb01c1-9253-4251-80e7-fb8236b3d858",
+   "name": "Chandra, Spark Hunter",
+   "face": 0,
+   "face_name": "Chandra, Spark Hunter",
+   "card_hash": "3c8fb4a9a3b22e9656ad18fb0e2bcedb",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "At the beginning of combat on your turn, choose up to one target Vehicle you control. Until end of turn, it becomes an artifact creature and gains haste."
+      }
+     ],
+     "text": "At the beginning of combat on your turn, choose up to one target Vehicle you control. Until end of turn, it becomes an artifact creature and gains haste.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 4,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 31,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 1,
+            "count": {
+             "$": "Value",
+             "constant": 1
+            }
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "sacrifice"
+          }
+         ],
+         "text": "may"
+        },
+        {
+         "$": "Effect",
+         "kind": 21,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "discard"
+        },
+        {
+         "$": "Effect",
+         "kind": 219,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 20,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "text": "draw"
+          }
+         ],
+         "text": "if you do"
+        }
+       ],
+       "text": "one of several"
+      }
+     ],
+     "text": "+2: You may sacrifice an artifact or discard a card. If you do, draw a card.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": 2
+        },
+        "text": "+2"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "0: Create a 3/2 colorless Vehicle artifact token with crew 1."
+      }
+     ],
+     "text": "0: Create a 3/2 colorless Vehicle artifact token with crew 1.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "-7: You get an emblem with \"Whenever an artifact you control enters, this emblem deals 3 damage to any target.\""
+      }
+     ],
+     "text": "-7: You get an emblem with \"Whenever an artifact you control enters, this emblem deals 3 damage to any target.\"",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of combat on your turn, choose up to one target Vehicle you control. Until end of turn, it becomes an artifact creature and gains haste.",
+     "reason": "not fully consumed",
+     "consumed": 13,
+     "remaining": [
+      "target",
+      "Vehicle",
+      "you",
+      "control",
+      ".",
+      "Until",
+      "end",
+      "of",
+      "turn",
+      ",",
+      "it",
+      "becomes",
+      "an",
+      "artifact",
+      "creature",
+      "and",
+      "gains",
+      "haste",
+      "."
+     ],
+     "rule": "triggered"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "0: Create a 3/2 colorless Vehicle artifact token with crew 1.",
+     "reason": "not fully consumed",
+     "consumed": 9,
+     "remaining": [
+      "1",
+      "."
+     ],
+     "rule": "activated"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "-7: You get an emblem with \"Whenever an artifact you control enters, this emblem deals 3 damage to any target.\"",
+     "reason": "not fully consumed",
+     "remaining": [
+      "You",
+      "get",
+      "an",
+      "emblem",
+      "with",
+      "\"",
+      "Whenever",
+      "an",
+      "artifact",
+      "you",
+      "control",
+      "enters",
+      ",",
+      "this",
+      "emblem",
+      "deals",
+      "3",
+      "damage",
+      "to",
+      "any",
+      "target",
+      ".",
+      "\""
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

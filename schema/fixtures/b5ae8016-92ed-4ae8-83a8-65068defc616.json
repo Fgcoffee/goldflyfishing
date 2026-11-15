@@ -1,0 +1,171 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b5ae8016-92ed-4ae8-83a8-65068defc616",
+ "name": "Tannuk, Steadfast Second",
+ "card_hash": "e77432a3289af45cc7de0b8484231c4f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b5ae8016-92ed-4ae8-83a8-65068defc616",
+  "name": "Tannuk, Steadfast Second",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tannuk, Steadfast Second",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Kavu",
+      "Pilot"
+     ]
+    },
+    "oracle_text": "Other creatures you control have haste.\nArtifact cards and red creature cards in your hand have warp {2}{R}. (You may cast a card from your hand for its warp cost. Exile that permanent at the beginning of the next end step, then you may cast it from exile on a later turn.)",
+    "power": "3",
+    "toughness": "5",
+    "colors": 8
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 4653,
+  "scryfall_uri": "https://scryfall.com/card/eoe/162/tannuk-steadfast-second?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b5ae8016-92ed-4ae8-83a8-65068defc616",
+   "name": "Tannuk, Steadfast Second",
+   "face": 0,
+   "face_name": "Tannuk, Steadfast Second",
+   "card_hash": "e77432a3289af45cc7de0b8484231c4f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "other_than_source": true,
+        "controller": 1
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains haste"
+      }
+     ],
+     "text": "Other creatures you control have haste."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 5,
+        "colors_any": 8,
+        "zones": {
+         "$set": [
+          1
+         ]
+        },
+        "owner": 1
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "warp",
+         "functions_in": {
+          "$set": [
+           1
+          ]
+         },
+         "keyword": "warp",
+         "alternative_cost": {
+          "$": "AlternativeCost",
+          "cost": {
+           "$": "Cost",
+           "components": [
+            {
+             "$": "CostComponent",
+             "kind": 0,
+             "mana": {
+              "$": "ManaCost",
+              "symbols": [
+               {
+                "$": "ManaSymbol",
+                "kind": 0,
+                "generic": 2,
+                "text": "{2}"
+               },
+               {
+                "$": "ManaSymbol",
+                "kind": 2,
+                "colors": 8,
+                "text": "{R}"
+               }
+              ]
+             }
+            }
+           ]
+          },
+          "from_zone": 1,
+          "keyword": "warp",
+          "text": "warp"
+         }
+        }
+       ],
+       "text": "gains warp"
+      }
+     ],
+     "text": "Artifact cards and red creature cards in your hand have warp {2}{R}."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

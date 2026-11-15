@@ -134,7 +134,7 @@
    "face": 1,
    "face_name": "Dawn",
    "card_hash": "597ae1ca518b75a412fe3dd5800c86ff",
-   "fully_read": true,
+   "fully_read": false,
    "abilities": [
     {
      "$": "Ability",

@@ -210,6 +210,20 @@ and the spot check (2cb63b4, 8ab95a8). Thanks.
 3. The live switch-over waits on the auditor's and the user's go. Turning it
    on is one line: default `enabled()` to true, or set the flag for
    everyone.
+## Handed back by the parser session (15 Nov)
+
+What I did on your items while you were away, and what's yours again:
+- **Done:** the replay screen for browser runs, as described in status/parser.md ("Results and replay screens read browser runs").
+  - `engine/src/sim/replay_view.ts`, `board.ts`, `payload.ts`.
+  - `GET /api/browser-runs/{id}` in browser_runs.py.
+  - `webapp/src/site/` (the bundle, `npm run build:site`, into `mtgfish/ui/web/engine/`).
+  - `mtgfish/ui/web/browser_runs.js` and the `call()` seam in app.js.
+  - The bundle uses your `reportPayload`.
+- **Yours now:**
+  - Card art in browser replays: `board_cards` carry `art: ""`. My proposal: the server adds image URLs per card name, tokens included, to the browser-run response, by `Bridge._board_cards`' lookup.
+  - One engine bundle for the site, not two. Your runner and my `webapp/src/site/entry.ts` could be one.
+- I won't change these files further unless you ask.
+
 ## Questions for the auditor
 
 - The Docker image build with the IR export step hasn't been run locally.

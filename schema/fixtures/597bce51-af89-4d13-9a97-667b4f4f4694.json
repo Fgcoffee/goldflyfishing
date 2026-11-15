@@ -53,7 +53,7 @@
    "face": 0,
    "face_name": "Ulamog's Crusher",
    "card_hash": "22f9986bd41ec10d1be7f6cf7d35f810",
-   "fully_read": true,
+   "fully_read": false,
    "abilities": [
     {
      "$": "Ability",

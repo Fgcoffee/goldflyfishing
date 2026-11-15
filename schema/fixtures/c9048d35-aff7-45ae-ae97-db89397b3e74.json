@@ -1,0 +1,203 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c9048d35-aff7-45ae-ae97-db89397b3e74",
+ "name": "Avalanche Riders",
+ "card_hash": "bb56a0c45173e804445f411de39d6153",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c9048d35-aff7-45ae-ae97-db89397b3e74",
+  "name": "Avalanche Riders",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Avalanche Riders",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Nomad"
+     ]
+    },
+    "oracle_text": "Haste\nEcho {3}{R} (At the beginning of your upkeep, if this came under your control since the beginning of your last upkeep, sacrifice it unless you pay its echo cost.)\nWhen this creature enters, destroy target land.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 8,
+    "keywords": [
+     "Haste",
+     "Echo"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 20779,
+  "scryfall_uri": "https://scryfall.com/card/tsb/55/avalanche-riders?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c9048d35-aff7-45ae-ae97-db89397b3e74",
+   "name": "Avalanche Riders",
+   "face": 0,
+   "face_name": "Avalanche Riders",
+   "card_hash": "bb56a0c45173e804445f411de39d6153",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 200,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "pay_cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 0,
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": 0,
+               "generic": 3,
+               "text": "{3}"
+              },
+              {
+               "$": "ManaSymbol",
+               "kind": 2,
+               "colors": 8,
+               "text": "{R}"
+              }
+             ]
+            }
+           }
+          ]
+         },
+         "text": "pay the echo cost"
+        }
+       ],
+       "text": "you may pay the echo cost"
+      },
+      {
+       "$": "Effect",
+       "kind": 201,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 31,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "sacrifice it"
+        }
+       ],
+       "text": "if you don't, sacrifice it"
+      }
+     ],
+     "text": "Echo {3}{R}",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        127
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": 5,
+       "filter": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "arrived_since_last_turn": true
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": 5,
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "it came under your control since your last upkeep"
+      },
+      "text": "at the beginning of your upkeep"
+     },
+     "keyword": "Echo"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "When this creature enters, destroy target land.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,114 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b70b739b-b147-4abe-8e48-26e7ea02a9f6",
+ "name": "Phase Dolphin",
+ "card_hash": "fe52b701be99e0056a3a3ec27392062c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b70b739b-b147-4abe-8e48-26e7ea02a9f6",
+  "name": "Phase Dolphin",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Phase Dolphin",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elemental",
+      "Whale"
+     ]
+    },
+    "oracle_text": "Whenever this creature attacks, another target attacking creature can't be blocked this turn.",
+    "power": "1",
+    "toughness": "4",
+    "colors": 2
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 21283,
+  "scryfall_uri": "https://scryfall.com/card/iko/62/phase-dolphin?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b70b739b-b147-4abe-8e48-26e7ea02a9f6",
+   "name": "Phase Dolphin",
+   "face": 0,
+   "face_name": "Phase Dolphin",
+   "card_hash": "fe52b701be99e0056a3a3ec27392062c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "other_than_source": true,
+        "attacking": true
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 24,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "other_than_source": true,
+          "attacking": true
+         },
+         "text": "can't be_blocked"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Whenever this creature attacks, another target attacking creature can't be blocked this turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        101
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this attacks"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

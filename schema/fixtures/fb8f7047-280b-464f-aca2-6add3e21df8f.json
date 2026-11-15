@@ -1,0 +1,128 @@
+{
+ "ir_version": 2,
+ "oracle_id": "fb8f7047-280b-464f-aca2-6add3e21df8f",
+ "name": "Harnesser of Storms",
+ "card_hash": "162f8229b9d47253cff332b119498420",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fb8f7047-280b-464f-aca2-6add3e21df8f",
+  "name": "Harnesser of Storms",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Harnesser of Storms",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Otter",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Whenever you cast a noncreature or Otter spell, you may exile the top card of your library. Until end of turn, you may play that card. This ability triggers only once each turn.",
+    "power": "1",
+    "toughness": "4",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 8219,
+  "scryfall_uri": "https://scryfall.com/card/blb/137/harnesser-of-storms?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "fb8f7047-280b-464f-aca2-6add3e21df8f",
+   "name": "Harnesser of Storms",
+   "face": 0,
+   "face_name": "Harnesser of Storms",
+   "card_hash": "162f8229b9d47253cff332b119498420",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever you cast a noncreature or Otter spell, you may exile the top card of your library. Until end of turn, you may play that card. This ability triggers only once each turn."
+      }
+     ],
+     "text": "Whenever you cast a noncreature or Otter spell, you may exile the top card of your library. Until end of turn, you may play that card. This ability triggers only once each turn.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever you cast a noncreature or Otter spell, you may exile the top card of your library. Until end of turn, you may play that card. This ability triggers only once each turn.",
+     "reason": "not fully consumed",
+     "consumed": 3,
+     "remaining": [
+      "a",
+      "noncreature",
+      "or",
+      "Otter",
+      "spell",
+      ",",
+      "you",
+      "may",
+      "exile",
+      "the",
+      "top",
+      "card",
+      "of",
+      "your",
+      "library",
+      ".",
+      "Until",
+      "end",
+      "of",
+      "turn",
+      ",",
+      "you",
+      "may",
+      "play",
+      "that",
+      "card",
+      ".",
+      "This",
+      "ability",
+      "triggers",
+      "only",
+      "once",
+      "each",
+      "turn",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

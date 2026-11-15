@@ -1,0 +1,156 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a8e55287-f0df-46f2-a41d-27bea90216cc",
+ "name": "Arcade Cabinet",
+ "card_hash": "a9b0acc76a71a2899b8ddbaf79ad02f0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a8e55287-f0df-46f2-a41d-27bea90216cc",
+  "name": "Arcade Cabinet",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Arcade Cabinet",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "When this artifact enters, put a +1/+1 counter on each of up to four target creatures.\n{2}, {T}, Sacrifice a token: Double the number of each kind of counter on target creature.",
+    "keywords": [
+     "Double"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 7333,
+  "scryfall_uri": "https://scryfall.com/card/tmc/36/arcade-cabinet?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a8e55287-f0df-46f2-a41d-27bea90216cc",
+   "name": "Arcade Cabinet",
+   "face": 0,
+   "face_name": "Arcade Cabinet",
+   "card_hash": "a9b0acc76a71a2899b8ddbaf79ad02f0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "count": {
+         "$": "Value",
+         "constant": 4
+        },
+        "up_to": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      }
+     ],
+     "text": "When this artifact enters, put a +1/+1 counter on each of up to four target creatures.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 88,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "double counters"
+      }
+     ],
+     "text": "{2}, {T}, Sacrifice a token: Double the number of each kind of counter on target creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "is_token": true,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

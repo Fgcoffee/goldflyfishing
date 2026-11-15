@@ -1,0 +1,129 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e6acafdf-e3ad-4ac2-bb26-cec37c7ca115",
+ "name": "Insufferable Balladeer",
+ "card_hash": "4fd807c454fc9fc33860bfe6f1cca387",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e6acafdf-e3ad-4ac2-bb26-cec37c7ca115",
+  "name": "Insufferable Balladeer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Insufferable Balladeer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Dwarf",
+      "Bard"
+     ]
+    },
+    "oracle_text": "Vicious Mockery — When this creature enters, target creature an opponent controls can't block this turn. Goad it. (Until your next turn, that creature attacks each combat if able and attacks a player other than you if able.)",
+    "power": "2",
+    "toughness": "1",
+    "colors": 8,
+    "keywords": [
+     "Goad",
+     "Vicious Mockery"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 13440,
+  "scryfall_uri": "https://scryfall.com/card/clb/184/insufferable-balladeer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e6acafdf-e3ad-4ac2-bb26-cec37c7ca115",
+   "name": "Insufferable Balladeer",
+   "face": 0,
+   "face_name": "Insufferable Balladeer",
+   "card_hash": "4fd807c454fc9fc33860bfe6f1cca387",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 2
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 23,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 2
+         },
+         "text": "can't block"
+        }
+       ],
+       "text": "can't"
+      },
+      {
+       "$": "Effect",
+       "kind": 85,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "Goad"
+      }
+     ],
+     "text": "When this creature enters, target creature an opponent controls can't block this turn. Goad it.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
