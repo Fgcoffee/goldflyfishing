@@ -134,3 +134,6 @@ Tireless Provisioner
 Command Beacon
 Jeweled Lotus
 Skyfire Phoenix
+Hymn to Tourach
+Icy Prison
+Swamp

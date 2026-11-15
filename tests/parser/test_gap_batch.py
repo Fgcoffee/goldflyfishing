@@ -323,3 +323,23 @@ def test_your_commander_from_the_command_zone(card_db):
     assert move.kind is EffectKind.MOVE_ZONE and move.zone is Zone.HAND
     assert move.targets.is_commander and move.targets.owner is ControllerRelation.YOU
     assert move.targets.zones == frozenset({Zone.COMMAND})
+
+
+def test_discarding_at_random_is_not_the_players_choice(card_db):
+    from mtgfish.parser.compile import parse_card
+
+    effect = parse_card(card_db.lookup("Hymn to Tourach")).faces[0].abilities[0].effects[0]
+    assert effect.kind is EffectKind.DISCARD and effect.amount.constant == 2
+    assert "at random" in effect.keywords
+    plain = parse_effects(Stream.of("Target player discards two cards."))[0]
+    assert "at random" not in plain.keywords
+
+
+def test_unless_any_player_pays_is_left_unread(card_db):
+    """The first player who pays stops it; the IR can only ask each player in
+    turn, so the card stays unread rather than misread."""
+    from mtgfish.parser.compile import parse_card
+
+    assert not parse_card(card_db.lookup("Icy Prison")).fully_parsed
+    # A condition about "a player" still reads.
+    assert parse_card(card_db.lookup("Abandoned Campground")).fully_parsed

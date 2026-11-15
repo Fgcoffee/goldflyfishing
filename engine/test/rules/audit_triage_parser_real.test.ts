@@ -10,6 +10,7 @@ import { complete, type Ability, type Effect } from "../../src/ir";
 import { AbilityKindValues as AK, CostKindValues as CK, EffectKindValues as EK, PlayerScopeValues as PS, ValueKindValues as VK, ZoneValues as Z } from "../../src/ir/types";
 import { Color, Phase, Step, Zone } from "../../src/kernel/enums";
 import { createObject, player } from "../../src/kernel/game";
+import { playerTarget } from "../../src/kernel/ids";
 import { destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
 import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
 import { ActionKind, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
@@ -360,4 +361,23 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(back.map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
     expect(phoenix).toBeDefined();
   });
+
+  it("Hymn to Tourach: 'discards two cards at random' - the game picks, not the player", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    for (let i = 0; i < 2; i += 1) b.play("Swamp");
+    const hymn = b.hand("Hymn to Tourach");
+    for (let i = 0; i < 5; i += 1) b.hand("Grizzly Bears", 1);
+    // An agent that would always pick: random discards must not ask it.
+    let asked = 0;
+    b.game.agents.set(1, { chooseDiscard: (game: typeof b.game, pid: number) => { asked += 1; return player(game, pid).hand[0]!; } });
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === hymn.id)!;
+    expect(cast).toBeDefined();
+    expect(perform(b.game, 0, { ...cast, targets: [[playerTarget(1)]] })).toBe(true);
+    resolveAll(b);
+    expect(player(b.game, 1).hand).toHaveLength(3);
+    expect(player(b.game, 1).graveyard).toHaveLength(2);
+    expect(asked).toBe(0);
+  });
 });
+

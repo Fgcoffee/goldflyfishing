@@ -318,7 +318,10 @@ def _effect_body(effect: Effect) -> str:
     objects = _objects(effect)
 
     if kind in _PLAYER_VERBS:
-        return f"{who} {_PLAYER_VERBS[kind].replace('{n}', amount)}"
+        said = f"{who} {_PLAYER_VERBS[kind].replace('{n}', amount)}"
+        # "discards two cards at random": not their choice, and the reading
+        # has to say so or the difference is invisible.
+        return said + (" at random" if "at random" in effect.keywords else "")
     if kind in _OBJECT_VERBS:
         return _object_verb(effect, objects)
 

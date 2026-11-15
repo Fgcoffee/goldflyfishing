@@ -504,6 +504,16 @@ def _unless_tail(stream: Stream, effect: Effect) -> Effect | None:
     mark = stream.mark()
     if not stream.accept("unless"):
         return None
+    if (stream.at_phrase("any player") or stream.at_phrase("a player")) and stream.peek(2).lower in (
+        "pay", "pays",
+    ):
+        # "unless any player pays {3}" (Icy Prison): the first player who
+        # pays stops it. The IR can only ask each player in turn, which
+        # charges every willing player and runs the effect once per refusal.
+        # Left unread rather than read as that. ("unless a player has 13 or
+        # less life" is a condition, read below.)
+        stream.reset(mark)
+        return None
 
     payer, _ = parse_player_filter(stream)
     if payer is not None:
@@ -1088,12 +1098,16 @@ def _discard(stream: Stream) -> Effect | None:
         return None
     amount = parse_value(stream) or Value.of(1)
     stream.accept("card", "cards")
+    # "discards two cards at random" (Hymn to Tourach, Gamble): not the
+    # player's choice.
+    at_random = stream.accept_phrase("at random")
     amount = _scaled(stream, amount)
     return Effect(
         EffectKind.DISCARD,
         players=players or YOU,
         amount=amount,
         is_targeted=targeted,
+        keywords=("at random",) if at_random else (),
         text="discard",
     )
 

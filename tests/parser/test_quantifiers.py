@@ -127,9 +127,6 @@ def test_tutor_to_top_is_the_library_after_the_shuffle():
 @pytest.mark.parametrize(
     "text",
     [
-        # The discard is an effect of its own, and random discard is not read.
-        "Search your library for a card, put that card into your hand, discard a card "
-        "at random, then shuffle.",
         # Put on top and then shuffled is not on top.
         "Search your library for a card, put that card on top of your library, then shuffle.",
     ],
@@ -138,6 +135,19 @@ def test_search_riders_are_not_swallowed(text):
     stream = Stream.of(text)
     effects = parse_effects(stream)
     assert not (effects and stream.done)
+
+
+def test_a_discard_after_a_search_is_an_effect_of_its_own():
+    """Gamble: the discard is its own effect, at random, not part of the search."""
+    stream = Stream.of(
+        "Search your library for a card, put that card into your hand, discard a card "
+        "at random, then shuffle."
+    )
+    effects = parse_effects(stream)
+    assert effects and stream.done
+    flat = [e for effect in effects for e in effect.walk()]
+    discards = [e for e in flat if e.kind is EffectKind.DISCARD]
+    assert len(discards) == 1 and "at random" in discards[0].keywords
 
 
 def test_search_any_number_of_has_no_fixed_count():

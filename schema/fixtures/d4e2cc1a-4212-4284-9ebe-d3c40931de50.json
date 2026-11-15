@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d4e2cc1a-4212-4284-9ebe-d3c40931de50",
+ "name": "Icy Prison",
+ "card_hash": "aad654b6f36154e05254400236617c89",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d4e2cc1a-4212-4284-9ebe-d3c40931de50",
+  "name": "Icy Prison",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Icy Prison",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "When this enchantment enters, exile target creature.\nAt the beginning of your upkeep, sacrifice this enchantment unless any player pays {3}.\nWhen this enchantment leaves the battlefield, return the exiled card to the battlefield under its owner's control.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 28232,
+  "scryfall_uri": "https://scryfall.com/card/me2/50/icy-prison?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d4e2cc1a-4212-4284-9ebe-d3c40931de50",
+   "name": "Icy Prison",
+   "face": 0,
+   "face_name": "Icy Prison",
+   "card_hash": "aad654b6f36154e05254400236617c89",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "text": "exile"
+      }
+     ],
+     "text": "When this enchantment enters, exile target creature.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "At the beginning of your upkeep, sacrifice this enchantment unless any player pays {3}."
+      }
+     ],
+     "text": "At the beginning of your upkeep, sacrifice this enchantment unless any player pays {3}.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true,
+        "zones": {
+         "$set": [
+          5
+         ]
+        }
+       },
+       "zone": 2,
+       "text": "return"
+      }
+     ],
+     "text": "When this enchantment leaves the battlefield, return the exiled card to the battlefield under its owner's control.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        2
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "uses_last_known_information": true,
+      "text": "when this leaves the battlefield"
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of your upkeep, sacrifice this enchantment unless any player pays {3}.",
+     "reason": "not fully consumed",
+     "consumed": 10,
+     "remaining": [
+      "unless",
+      "any",
+      "player",
+      "pays",
+      "{3}",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

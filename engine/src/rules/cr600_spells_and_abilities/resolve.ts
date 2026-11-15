@@ -1082,6 +1082,8 @@ function revealIfSaid(resolution: Resolution, effect: Effect, objects: readonly 
 registerExecutor(ir("EffectKind.DISCARD"), (resolution, effect) => {
   const game = resolution.game;
   const count = amountOf(resolution, effect);
+  // "discards two cards at random" (Hymn to Tourach): the game picks, not the player.
+  const atRandom = list(effect.keywords).includes("at random");
   const discarded: ObjectId[] = [];
   for (const pid of playersOf(resolution, effect)) {
     const p = player(game, pid);
@@ -1089,7 +1091,9 @@ registerExecutor(ir("EffectKind.DISCARD"), (resolution, effect) => {
     for (let i = 0; i < count; i += 1) {
       if (p.hand.length === 0) break;
       const last = p.hand[p.hand.length - 1]!;
-      const choice = agent?.chooseDiscard !== undefined ? agent.chooseDiscard(game, pid) : last;
+      const choice = atRandom
+        ? p.hand[randrange(game.rng, p.hand.length)]!
+        : agent?.chooseDiscard !== undefined ? agent.chooseDiscard(game, pid) : last;
       const obj = game.objects.get(choice) ?? game.objects.get(last)!;
       discarded.push(obj.id);
       discard(game, obj, { source: resolution.source });
