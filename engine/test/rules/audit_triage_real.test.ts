@@ -86,6 +86,15 @@ describe("F28 controls", () => {
     resolveAll(b);
     expect([...zones(b.game, "Grizzly Bears"), ...zones(b.game, "Forest"), ...zones(b.game, "Hill Giant")]).toEqual([Zone.HAND, Zone.BATTLEFIELD, Zone.BATTLEFIELD]);
   });
+  it("overload is offered with nothing to target (CR 702.96b: no targets)", () => {
+    const b = board();
+    const rift = b.hand("Cyclonic Rift");
+    pool(b, 0, Color.BLUE, 1);
+    pool(b, 0, Color.NONE, 6);
+    const offers = casts(b, 0, rift);
+    expect(offers.filter((a) => a.alternativeCost >= 0)).toHaveLength(1);
+    expect(offers.filter((a) => a.alternativeCost < 0)).toHaveLength(0);
+  });
   it("cast normally, it returns only its target", () => {
     const b = board();
     const bears = b.play("Grizzly Bears", 1);
@@ -344,5 +353,186 @@ describe("F8: modular moves its counters by last-known information (CR 702.43a)"
     destroy(b.game, worker);
     resolveAll(b);
     expect(thopter.counters.get("+1/+1") ?? 0).toBe(1);
+  });
+});
+
+// -- second batch ------------------------------------------------------------------------
+
+describe("F5: jump-start costs its mana and a discard (CR 702.133a)", () => {
+  it("Radical Idea isn't offered from the graveyard with no mana and an empty hand", () => {
+    const b = board();
+    const idea = b.graveyard("Radical Idea");
+    expect(casts(b, 0, idea)).toHaveLength(0);
+  });
+  it("with {1}{U} and a card to discard it is cast, and the card is discarded", () => {
+    const b = board();
+    for (let i = 0; i < 2; i += 1) createObject(b.game, realCard("Island"), 0, Zone.LIBRARY);
+    const idea = b.graveyard("Radical Idea");
+    b.hand("Grizzly Bears");
+    pool(b, 0, Color.BLUE, 1);
+    pool(b, 0, Color.NONE, 1);
+    const offers = casts(b, 0, idea);
+    expect(offers.length).toBeGreaterThan(0);
+    expect(perform(b.game, 0, offers[0]!)).toBe(true);
+    expect(zones(b.game, "Grizzly Bears")).toEqual([Zone.GRAVEYARD]);
+    resolveAll(b);
+    expect(zones(b.game, "Radical Idea")).toEqual([Zone.EXILE]);
+  });
+});
+
+describe("F6/F7: aftermath (CR 702.127a)", () => {
+  it("Dusk // Dawn: only Dusk from hand", () => {
+    const b = board();
+    const card = b.hand("Dusk // Dawn");
+    pool(b, 0, Color.WHITE, 5);
+    expect([...new Set(casts(b, 0, card).map((a) => a.faceIndex))]).toEqual([0]);
+  });
+  it("Dawn from the graveyard, then exiled", () => {
+    const b = board();
+    const card = b.graveyard("Dusk // Dawn");
+    pool(b, 0, Color.WHITE, 5);
+    const offers = casts(b, 0, card);
+    expect([...new Set(offers.map((a) => a.faceIndex))]).toEqual([1]);
+    expect(perform(b.game, 0, offers[0]!)).toBe(true);
+    resolveAll(b);
+    expect(zones(b.game, "Dusk // Dawn")).toEqual([Zone.EXILE]);
+  });
+});
+
+describe("F11: crew taps other creatures (CR 702.122a)", () => {
+  it("a crewed Cultivator's Caravan can't crew itself", () => {
+    const b = board();
+    const caravan = b.play("Cultivator's Caravan");
+    b.play("Hill Giant");
+    const crew = () => legalActions(b.game, 0).filter((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === caravan.id && String(b.chars(caravan).abilities[a.abilityIndex]?.text ?? "").toLowerCase().startsWith("crew"));
+    expect(crew().length).toBeGreaterThan(0);
+    expect(perform(b.game, 0, crew()[0]!)).toBe(true);
+    resolveAll(b);
+    expect(crew()).toHaveLength(0); // the Giant is tapped, and the Caravan can't tap itself
+  });
+});
+
+describe("F12: buyback is offered (CR 702.27a)", () => {
+  it("Capsize offers the buyback payment", () => {
+    const b = board();
+    b.play("Grizzly Bears", 1);
+    const capsize = b.hand("Capsize");
+    pool(b, 0, Color.BLUE, 2);
+    pool(b, 0, Color.NONE, 4);
+    expect(casts(b, 0, capsize).some((a) => a.additionalCosts.length > 0)).toBe(true);
+  });
+});
+
+describe("F13: Phyrexian life down to 0 (CR 119.4)", () => {
+  it("Gitaxian Probe can be paid with 2 life at 2 life", () => {
+    const b = board();
+    player(b.game, 0).life = 2;
+    const probe = b.hand("Gitaxian Probe");
+    expect(casts(b, 0, probe).length).toBeGreaterThan(0);
+  });
+});
+
+describe("F20/F23: copies and new targets (CR 707.10c)", () => {
+  it("Twincast's copy may take a new target", () => {
+    const b = board();
+    const bears = b.play("Grizzly Bears", 0);
+    const giant = b.play("Hill Giant", 0);
+    const bolt = b.hand("Lightning Bolt", 1);
+    pool(b, 1, Color.RED, 1);
+    expect(perform(b.game, 1, { ...casts(b, 1, bolt)[0]!, targets: [[bears.id]] })).toBe(true);
+    b.game.agents.set(0, Object.assign(new PassingAgent(), {
+      chooseOptional: () => true,
+      chooseNewTargets: () => [[giant.id]],
+    }));
+    const twin = b.hand("Twincast");
+    pool(b, 0, Color.BLUE, 2);
+    const offer = casts(b, 0, twin)[0]!;
+    expect(perform(b.game, 0, offer)).toBe(true);
+    resolveAll(b);
+    expect(zones(b.game, "Hill Giant")).toEqual([Zone.GRAVEYARD]);
+  });
+});
+
+describe("F24: replicate any number of times", () => {
+  it("Pyromatics is offered with two replicate payments", () => {
+    const b = board();
+    const pyro = b.hand("Pyromatics");
+    pool(b, 0, Color.RED, 6);
+    expect(casts(b, 0, pyro).some((a) => a.additionalCosts.length >= 2)).toBe(true);
+  });
+});
+
+describe("F39/F47/F48/F50: convoke and delve", () => {
+  it("Siege Wurm with 4 Forests and 3 Bears", () => {
+    const b = board();
+    for (let i = 0; i < 4; i += 1) b.play("Forest");
+    for (let i = 0; i < 3; i += 1) b.play("Grizzly Bears");
+    const wurm = b.hand("Siege Wurm");
+    const offers = casts(b, 0, wurm);
+    expect(offers.length).toBeGreaterThan(0);
+    expect(perform(b.game, 0, offers[0]!)).toBe(true);
+    resolveAll(b);
+    expect(zones(b.game, "Siege Wurm")).toEqual([Zone.BATTLEFIELD]);
+  });
+  it("Siege Wurm paid by 7 Bears alone (F47)", () => {
+    const b = board();
+    for (let i = 0; i < 7; i += 1) b.play("Grizzly Bears");
+    const wurm = b.hand("Siege Wurm");
+    const offers = casts(b, 0, wurm);
+    expect(offers.length).toBeGreaterThan(0);
+    expect(perform(b.game, 0, offers[0]!)).toBe(true);
+  });
+  it("Stoke the Flames with 4 green Bears is not offered (F48)", () => {
+    const b = board();
+    for (let i = 0; i < 4; i += 1) b.play("Grizzly Bears");
+    expect(casts(b, 0, b.hand("Stoke the Flames"))).toHaveLength(0);
+  });
+  it("Treasure Cruise with 1 Island and 7 graveyard cards (F39)", () => {
+    const b = board();
+    b.play("Island");
+    for (let i = 0; i < 7; i += 1) b.graveyard("Grizzly Bears");
+    for (let i = 0; i < 3; i += 1) createObject(b.game, realCard("Island"), 0, Zone.LIBRARY);
+    const cruise = b.hand("Treasure Cruise");
+    const offers = casts(b, 0, cruise);
+    expect(offers.length).toBeGreaterThan(0);
+    expect(perform(b.game, 0, offers[0]!)).toBe(true);
+    resolveAll(b);
+    expect(player(b.game, 0).hand).toHaveLength(3);
+  });
+  it("Rosemane Centaur with 3 Islands, Watchwolf and Bears, Watchwolf first (F50)", () => {
+    const b = board();
+    for (let i = 0; i < 3; i += 1) b.play("Island");
+    b.play("Watchwolf");
+    b.play("Grizzly Bears");
+    const centaur = b.hand("Rosemane Centaur");
+    expect(casts(b, 0, centaur).length).toBeGreaterThan(0);
+  });
+});
+
+describe("F40: mana spent is what was paid (CR 601.2h)", () => {
+  it("Treasure Cruise with 3 Islands and 5 delved: 3 mana spent", () => {
+    const b = board();
+    for (let i = 0; i < 3; i += 1) b.play("Island");
+    for (let i = 0; i < 5; i += 1) b.graveyard("Grizzly Bears");
+    for (let i = 0; i < 3; i += 1) createObject(b.game, realCard("Island"), 0, Zone.LIBRARY);
+    const cruise = b.hand("Treasure Cruise");
+    expect(perform(b.game, 0, casts(b, 0, cruise)[0]!)).toBe(true);
+    const spell = live(b.game, "Treasure Cruise")[0]!;
+    expect(spell.manaSpent).toBe(3);
+  });
+});
+
+describe("F45: emerge needs its coloured part (CR 702.119a)", () => {
+  it("Mountain + Ulamog's Crusher: Wretched Gryff's emerge isn't offered", () => {
+    const b = board();
+    b.play("Mountain");
+    b.play("Ulamog's Crusher");
+    expect(casts(b, 0, b.hand("Wretched Gryff")).filter((a) => a.alternativeCost >= 0)).toHaveLength(0);
+  });
+  it("Island + Ulamog's Crusher: it is", () => {
+    const b = board();
+    b.play("Island");
+    b.play("Ulamog's Crusher");
+    expect(casts(b, 0, b.hand("Wretched Gryff")).filter((a) => a.alternativeCost >= 0).length).toBeGreaterThan(0);
   });
 });
