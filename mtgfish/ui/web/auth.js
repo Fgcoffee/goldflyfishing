@@ -187,6 +187,7 @@ function acctFill() {
 function acctOpen() {
   acctFill();
   document.getElementById("dlg-account").showModal();
+  if (typeof Reports !== "undefined") Reports.drawMine(document.getElementById("acct-reports"));
 }
 
 /* --------------------------------------------------------- landing hashes */

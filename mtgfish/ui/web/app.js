@@ -858,6 +858,11 @@ function renderCard(info) {
   });
 
   host.appendChild(reviewControls(info));
+  if (typeof Reports !== "undefined") {
+    const flag = el("button", "ghost small", "Report this reading");
+    flag.addEventListener("click", () => Reports.card({ name: info.name, oracle_id: info.oracle_id || "" }, host.innerText));
+    host.appendChild(flag);
+  }
 }
 
 function reviewControls(info) {

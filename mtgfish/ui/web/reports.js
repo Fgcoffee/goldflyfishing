@@ -100,7 +100,7 @@ const Reports = (() => {
     pending = null;
     dialog().close();
     setStatus(result.data.signed_in
-      ? "report sent - thank you. You can follow it in your account's data."
+      ? "report sent - thank you. Its status shows in your account (click your name)."
       : "report sent - thank you.");
   }
 
@@ -170,8 +170,9 @@ const Reports = (() => {
     const msg = document.getElementById("rep-msg");
     let response;
     try {
-      response = await fetch(`/api/admin/reports?status=${encodeURIComponent(review.status)}`,
-        { credentials: "same-origin" });
+      const kind = document.getElementById("rep-kind").value;
+      response = await fetch(`/api/admin/reports?status=${encodeURIComponent(review.status)}`
+        + `&kind=${encodeURIComponent(kind)}`, { credentials: "same-origin" });
     } catch (err) {
       msg.textContent = "couldn't reach the server";
       return;
@@ -273,15 +274,43 @@ const Reports = (() => {
     return typeof libDate === "function" ? libDate(iso) : iso;
   }
 
+  /* -- your reports, in the account dialog ------------------------------------ */
+
+  async function drawMine(host) {
+    if (!host) return;
+    host.textContent = "";
+    let data = {};
+    try {
+      const response = await fetch("/api/reports/mine", { credentials: "same-origin" });
+      if (!response.ok) return;
+      data = await response.json();
+    } catch (err) {
+      return;
+    }
+    const reports = data.reports || [];
+    if (!reports.length) return;
+    host.appendChild(el("div", "stack-label", "Your reports"));
+    const list = el("ul", "rep-mine");
+    reports.slice(0, 20).forEach((report) => {
+      const what = report.kind === "card" ? report.card_name
+        : report.kind === "step" ? `game ${report.game_index}, step ${report.log_index}` : "a problem";
+      const item = el("li", null, `${what}: ${STATUS_LABELS[report.status] || report.status}`);
+      item.title = report.text + (report.note ? `\n\nOur note: ${report.note}` : "");
+      list.appendChild(item);
+    });
+    host.appendChild(list);
+  }
+
   /* -- wiring --------------------------------------------------------------- */
 
   document.getElementById("rep-form").addEventListener("submit", submit);
   document.getElementById("btn-report").addEventListener("click", problem);
   document.getElementById("rep-refresh").addEventListener("click", loadReview);
+  document.getElementById("rep-kind").addEventListener("change", loadReview);
   document.addEventListener("tabchange", (event) => { if (event.detail === "reports") loadReview(); });
   document.addEventListener("authchange", () => {
     document.querySelector('nav button[data-tab="reports"]').hidden = !Auth.admin;
   });
 
-  return { problem, card, step, loadReview };
+  return { problem, card, step, loadReview, drawMine };
 })();
