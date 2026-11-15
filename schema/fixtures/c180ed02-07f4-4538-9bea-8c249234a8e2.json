@@ -1,0 +1,107 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c180ed02-07f4-4538-9bea-8c249234a8e2",
+ "name": "Drudge Skeletons",
+ "card_hash": "07976fb0170946b25e4ca0e075e24bcc",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c180ed02-07f4-4538-9bea-8c249234a8e2",
+  "name": "Drudge Skeletons",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Drudge Skeletons",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Skeleton"
+     ]
+    },
+    "oracle_text": "{B}: Regenerate this creature. (The next time this creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+    "power": "1",
+    "toughness": "1",
+    "colors": 4,
+    "keywords": [
+     "Heal",
+     "Regenerate"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 18336,
+  "scryfall_uri": "https://scryfall.com/card/gvl/36/drudge-skeletons?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c180ed02-07f4-4538-9bea-8c249234a8e2",
+   "name": "Drudge Skeletons",
+   "face": 0,
+   "face_name": "Drudge Skeletons",
+   "card_hash": "07976fb0170946b25e4ca0e075e24bcc",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 83,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "text": "regenerate"
+      }
+     ],
+     "text": "{B}: Regenerate this creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 4,
+           "text": "{B}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

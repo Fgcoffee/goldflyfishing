@@ -1,0 +1,84 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d85ea576-a794-44bf-b405-1f1c49477409",
+ "name": "Sacred Cat",
+ "card_hash": "3eabad5ca02157316dad9be0bc83b2d2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d85ea576-a794-44bf-b405-1f1c49477409",
+  "name": "Sacred Cat",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sacred Cat",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Cat"
+     ]
+    },
+    "oracle_text": "Lifelink\nEmbalm {W} ({W}, Exile this card from your graveyard: Create a token that's a copy of it, except it's a white Zombie Cat with no mana cost. Embalm only as a sorcery.)",
+    "power": "1",
+    "toughness": "1",
+    "colors": 1,
+    "keywords": [
+     "Lifelink",
+     "Embalm"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 8264,
+  "scryfall_uri": "https://scryfall.com/card/akh/27/sacred-cat?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d85ea576-a794-44bf-b405-1f1c49477409",
+   "name": "Sacred Cat",
+   "face": 0,
+   "face_name": "Sacred Cat",
+   "card_hash": "3eabad5ca02157316dad9be0bc83b2d2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Lifelink",
+     "keyword": "Lifelink"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Embalm {W}"
+      }
+     ],
+     "text": "Embalm {W}",
+     "keyword": "Embalm"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

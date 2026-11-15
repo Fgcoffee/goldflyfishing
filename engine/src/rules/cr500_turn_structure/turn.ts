@@ -83,7 +83,9 @@ export function runGame(game: Game, options: TurnOptions = DEFAULT_TURN_OPTIONS,
     game.activePlayer = nextActivePlayer(game);
   }
   if (game.restartRequested) return restart(game, options, depth);
-  if (game.runaway) {
+  if (game.runaway.startsWith("TOKEN SWARM")) {
+    logRecord(game, `Game stopped as a runaway: ${game.runaway}. Too many permanents to simulate in reasonable time.`, { kind: "runaway" });
+  } else if (game.runaway) {
     logRecord(
       game,
       `Game stopped as a runaway: ${game.runaway}. This is a bug in a card, not a property of the deck - the ability had no cost the engine could charge.`,
@@ -251,7 +253,7 @@ function emptyManaPools(game: Game, step: Step | null = null): void {
 }
 
 /** CR 703.1, 703.3: what a step does as it begins, before priority. */
-function turnBasedActions(game: Game, step: Step, options: TurnOptions): void {
+export function turnBasedActions(game: Game, step: Step, options: TurnOptions): void {
   if (step === Step.UNTAP) {
     untapStep(game);
   } else if (step === Step.MAIN && game.phase === Phase.PRECOMBAT_MAIN) {

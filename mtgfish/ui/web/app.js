@@ -40,7 +40,9 @@ Backend.ready.then(() => {
 }).catch((err) => setStatus(`could not connect: ${err.message}`, true));
 
 async function call(method, ...args) {
-  const raw = await Backend.call(method, ...args);
+  // A browser run opened from History answers its own report and replays.
+  const browser = typeof BrowserRuns !== "undefined" && BrowserRuns.handles(method);
+  const raw = browser ? await BrowserRuns.call(method, ...args) : await Backend.call(method, ...args);
   let parsed;
   try {
     parsed = JSON.parse(raw);
@@ -85,6 +87,11 @@ document.getElementById("stoprun").addEventListener("click", async () => {
   const button = document.getElementById("stoprun");
   button.disabled = true;
   setStatus("stopping the run...");
+  if (browserRunning) {
+    // Workers stop after their current game; simulateInBrowser shows what finished.
+    BrowserRuns.cancel();
+    return;
+  }
   const reply = await call("cancel_run");
   if (!reply.cancelled) {
     showStop(false);
@@ -228,6 +235,11 @@ document.getElementById("run").addEventListener("click", async () => {
   button.disabled = true;
   setStatus(`simulating ${games} games...`);
 
+  if (typeof BrowserRuns !== "undefined" && BrowserRuns.enabled()) {
+    await simulateInBrowser(decks, games, seed);
+    return;
+  }
+  if (typeof BrowserRuns !== "undefined") BrowserRuns.close();
   const started = await call("start_run", JSON.stringify(decks), games, seed);
   if (started.error) {
     button.disabled = false;
@@ -237,6 +249,38 @@ document.getElementById("run").addEventListener("click", async () => {
   }
   // Everything else happens in onRunFinished, when the worker reports back.
 });
+
+/* The same run, played in this browser by the TypeScript engine (behind the
+ * browser-engine flag; see browser_runs.js). The server only resolves
+ * Archidekt links, serves the cards and stores the run. */
+let browserRunning = false;
+
+async function simulateInBrowser(decks, games, seed) {
+  browserRunning = true;
+  const stop = document.getElementById("stoprun");
+  stop.hidden = false;
+  stop.disabled = false;
+  try {
+    const resolved = await call("resolve_decklists", JSON.stringify(decks));
+    if (resolved.error) { onRunFinished({ error: resolved.error }); return; }
+    const outcome = await BrowserRuns.simulate(resolved.decklists, games, seed, {
+      onProgress: (done, total) => setProgress(done, total),
+      onStatus: (text) => setStatus(text),
+    });
+    onRunFinished(outcome.payload);
+    if (outcome.reload) {
+      setStatus("results shown, but not saved: a newer engine is deployed - reload the page", true);
+    } else if (outcome.uploadError) {
+      setStatus(`results shown, but not saved: ${outcome.uploadError}`, true);
+    } else if (outcome.payload.partial) {
+      setStatus("run stopped - showing the games that finished (saved)");
+    }
+  } catch (err) {
+    onRunFinished({ error: `the browser engine failed: ${err && err.message ? err.message : err}` });
+  } finally {
+    browserRunning = false;
+  }
+}
 
 function onRunFinished(payload) {
   const button = document.getElementById("run");

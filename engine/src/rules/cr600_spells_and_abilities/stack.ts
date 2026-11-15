@@ -26,7 +26,7 @@ import { moveObject } from "../zones";
 import { withAnnouncedX } from "./casting";
 import { characteristicsOf } from "./layers";
 import { execute, newResolution, type Resolution } from "./resolve";
-import { auraTargetEffect, targetedNodes } from "./targeting";
+import { asOverloaded, auraTargetEffect, isOverloaded, spellEffects, targetedNodes } from "./targeting";
 import { checkInterveningIf, subjectOf } from "./triggers";
 import type { Characteristics } from "../cr200_parts_of_a_card/characteristics";
 
@@ -189,8 +189,9 @@ function resolveSpell(game: Game, obj: GameObject): void {
 
 /** CR 608.2c-m: an instant or sorcery follows its instructions, then leaves the stack. */
 function resolveNonpermanent(game: Game, obj: GameObject, chars: Characteristics, resolution: Resolution): void {
+  const overloaded = isOverloaded(obj); // CR 702.96b
   for (const ability of chars.abilities as readonly Ability[]) {
-    if (num(ability.kind) === SPELL) execute(resolution, list(ability.effects));
+    if (num(ability.kind) === SPELL) execute(resolution, overloaded ? asOverloaded(list(ability.effects)) : list(ability.effects));
   }
   recordResolution(game, obj, chars);
   emit(game, event(EventKind.SPELL_RESOLVED, { objectId: obj.id, player: obj.controller }));
@@ -264,7 +265,7 @@ export function allTargetsIllegal(game: Game, obj: GameObject): boolean {
   if (obj.targets.length === 0) return false;
   const effects: readonly Effect[] = obj.ability !== null
     ? list(obj.ability.effects)
-    : (characteristicsOf(game, obj).abilities as readonly Ability[]).filter((a) => num(a.kind) === SPELL).flatMap((a) => [...list(a.effects)]);
+    : spellEffects(game, obj);
   // CR 700.2c: only the chosen modes' slots exist.
   const nodes = targetedNodes(effects, obj.chosenModes.length > 0 ? obj.chosenModes : null);
   if (nodes.length === 0) return false;

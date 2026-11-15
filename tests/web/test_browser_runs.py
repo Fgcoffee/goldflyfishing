@@ -134,6 +134,37 @@ def test_listing_needs_a_sign_in(make_client):
     assert make_client().get("/api/browser-runs").status_code == 401
 
 
+def test_your_run_opens_whole_for_the_results_and_replay_screens(make_client):
+    client = signed_up(make_client, "open@example.com")
+    run_id = upload(client, a_run(games=3, crash_at=1)).json()["id"]
+    body = client.get(f"/api/browser-runs/{run_id}").json()
+    assert body["run"]["id"] == run_id and body["run"]["max_rounds"] == 25
+    assert [r["index"] for r in body["records"]] == [0, 2]
+    assert body["crashed"][0]["index"] == 1
+    # Card "a" isn't in any IR export, so its games can't be replayed: said, not hidden.
+    assert body["setup"] is None and "not in this server's IR export" in body["unverifiable"]
+
+
+def test_a_run_opens_with_its_setup_when_the_cards_still_match(make_client, monkeypatch, tmp_path):
+    from mtgfish.web import browser_runs
+
+    monkeypatch.setattr(browser_runs, "exported_cards", lambda store, decks: {"a": {"card_hash": "h"}})
+    client = signed_up(make_client, "setup@example.com")
+    run_id = upload(client, a_run()).json()["id"]
+    setup = client.get(f"/api/browser-runs/{run_id}").json()["setup"]
+    assert setup["runSeed"] == 7 and setup["maxRounds"] == 25 and setup["cards"] == {"a": {"card_hash": "h"}}
+    assert setup["decks"][0] == {"commanders": ["c0"], "cards": [{"oracle_id": "a", "count": 99}]}
+
+
+def test_only_your_own_runs_open(make_client):
+    owner = signed_up(make_client, "owner@example.com")
+    run_id = upload(owner, a_run()).json()["id"]
+    assert signed_up(make_client, "other@example.com").get(f"/api/browser-runs/{run_id}").status_code == 404
+    assert make_client().get(f"/api/browser-runs/{run_id}").status_code == 401
+    anonymous = upload(make_client(), a_run()).json()["id"]
+    assert owner.get(f"/api/browser-runs/{anonymous}").status_code == 404
+
+
 def test_the_export_includes_browser_runs(make_client):
     client = signed_up(make_client, "export@example.com")
     upload(client, a_run(games=2))
@@ -241,3 +272,13 @@ def test_the_fingerprint_ignores_tests_and_line_endings(tmp_path):
     assert fingerprint(tmp_path) == first
     (tmp_path / "sim" / "a.ts").write_bytes(b"export const a = 2;\n")
     assert fingerprint(tmp_path) != first
+
+
+def test_decklists_resolve_for_a_browser_run(make_client):
+    """The browser path sends decklist text to /api/ir/decks, so the server
+    turns references (Archidekt links) into text first; a pasted list passes
+    through unchanged."""
+    client = make_client()
+    reply = client.post("/api/call/resolve_decklists", json={"args": [json.dumps(["1 Sol Ring", "1 Island"])]})
+    assert reply.status_code == 200
+    assert reply.json() == {"decklists": ["1 Sol Ring", "1 Island"]}

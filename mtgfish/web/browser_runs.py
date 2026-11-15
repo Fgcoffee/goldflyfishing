@@ -209,8 +209,13 @@ def run_row(run: BrowserRun) -> dict:
     }
 
 
-def build_router(accounts, limiter: RateLimiter | None = None) -> APIRouter:
+def build_router(accounts, limiter: RateLimiter | None = None, ir_store=None) -> APIRouter:
     router = APIRouter(prefix="/api")
+    if ir_store is None:
+        from .ir import IrStore
+
+        # Only card_path is used, which reads the export directory.
+        ir_store = IrStore()
     database = accounts.db
     limiter = limiter or RateLimiter(LIMITS)
 
@@ -277,6 +282,39 @@ def build_router(accounts, limiter: RateLimiter | None = None) -> APIRouter:
                      row.id, row.games, row.crashed, len(payload))
             return reply({"id": row.id, "games": row.games, "crashed": row.crashed,
                           "spot_check": row.spot_check, "signed_in": user is not None}, 201)
+
+    @router.get("/browser-runs/{run_id}")
+    def open_run(run_id: str, request: Request):
+        """One of your runs, whole, for the Results and Replay screens.
+
+        ``setup`` is what the browser engine needs to replay any game: the
+        decks and each card's IR as exported now. When a card has changed
+        since the run, the games can't be replayed as they were played, so
+        ``setup`` is null and ``unverifiable`` says which card; the results
+        themselves still stand.
+        """
+        with database.session() as db:
+            user = user_for_session(db, request.cookies.get(AUTH_COOKIE))
+            if user is None:
+                return reply({"error": "log in to see your runs"}, 401)
+            run = db.scalars(
+                select(BrowserRun).where(BrowserRun.id == run_id, BrowserRun.user_id == user.id)
+            ).one_or_none()
+            if run is None:
+                return reply({"error": "no such run"}, 404)
+            games = json.loads(gzip.decompress(run.payload))
+            setup, unverifiable = None, ""
+            try:
+                setup = run_setup(run, exported_cards(ir_store, json.loads(run.decks)))
+            except Unverifiable as exc:
+                unverifiable = str(exc)
+            return reply({
+                "run": run_row(run),
+                "records": games["records"],
+                "crashed": games["crashed"],
+                "setup": setup,
+                "unverifiable": unverifiable,
+            })
 
     @router.get("/browser-runs")
     def mine(request: Request):
@@ -399,6 +437,19 @@ def exported_cards(ir_store, decks: list[dict]) -> dict:
     return cards
 
 
+def run_setup(run: BrowserRun, cards: dict) -> dict:
+    """The engine's RunSetup for a stored run (engine/src/sim/runner.ts)."""
+    decks = json.loads(run.decks)
+    return {
+        "decks": [{"commanders": deck.get("commanders", []),
+                   "cards": [{"oracle_id": e["oracle_id"], "count": e["count"]}
+                             for e in deck.get("cards", [])]} for deck in decks],
+        "cards": cards,
+        "runSeed": run.run_seed,
+        "maxRounds": run.max_rounds,
+    }
+
+
 def sample(run_id: str, games: list[dict], count: int = SAMPLE_GAMES) -> list[dict]:
     """A deterministic sample of a run's games (the same each time it's checked)."""
     import random
@@ -424,14 +475,7 @@ def check_run(run: BrowserRun, ir_store, replayer=node_replayer) -> tuple[str, s
     expected |= {g["index"]: ("error", None) for g in games["crashed"]}
     chosen = sample(run.id, games["records"] + games["crashed"])
     request = {
-        "setup": {
-            "decks": [{"commanders": deck.get("commanders", []),
-                       "cards": [{"oracle_id": e["oracle_id"], "count": e["count"]}
-                                 for e in deck.get("cards", [])]} for deck in decks],
-            "cards": cards,
-            "runSeed": run.run_seed,
-            "maxRounds": run.max_rounds,
-        },
+        "setup": run_setup(run, cards),
         "games": [{"index": g["index"], "seed": g["seed"]} for g in chosen],
     }
     try:

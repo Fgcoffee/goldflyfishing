@@ -174,23 +174,56 @@ and the spot check (2cb63b4, 8ab95a8). Thanks.
   unchanged. `unparsedCards(deck, cards)` lists the hero's partly read
   cards from the IR. `loops` is `{}` until `rules/loops.ts` records them.
 
+- **Switch-over, behind a flag (off on the live site):**
+  - `webapp/src/site/run.ts` `BrowserRunner` loads the decks' IR, plays the
+    games on the worker pool (`DEFAULT_ENGINE`, the real rules engine),
+    uploads the run, and returns the Results payload plus a stored run for
+    Replay. A cancelled run returns what finished (marked `partial`) and
+    still uploads it.
+  - It is exported from the site bundle.
+  - `browser_runs.js` `enabled()` / `simulate()` / `cancel()`:
+    - the flag is `?engine=browser`, remembered in localStorage
+      `goldfly.engine`; `?engine=server` turns it back off;
+    - a finished run becomes the open run, so Replay works at once.
+  - `app.js`: Simulate uses it when the flag is on, Stop cancels it, and
+    the result goes through the usual `onRunFinished`. If the upload fails
+    or is refused, the results are still shown with a note (and the note
+    says to reload when a newer engine is deployed).
+  - A new bridge slot, `resolve_decklists`, turns Archidekt links into
+    text first, since the browser sends decklist text to `/api/ir/decks`.
+  - Fix: `vite.site.config.ts` now bakes in `__ENGINE_BUILD__`. Without it
+    the site bundle said "dev" and the server refused every upload from the
+    site as another engine build.
+  - Checked on the real site (local server, fresh v2 export, throwaway
+    database) with the four tester decks:
+    - 24 games on the real engine in 9.7 s, 0 crashed;
+    - Results drawn, with 28 per-turn series and 92 cards;
+    - the run was stored, and Replay of game 3 matched its digest;
+    - `?engine=server` and the plain URL stay on the server engine.
+
 ## Next
 
-1. **Switch the website to browser simulations.** Plan:
-   - Build a library bundle of the browser runner from `webapp/` into
-     `mtgfish/ui/web/browser/`, so the live site's static files serve it
-     with no new host.
-   - It exports one call: decklists, games, seed and turn cap in; progress
-     out; the Results payload plus the stored run's id back. It does the
-     IR load, the worker pool, the upload and the payload.
-   - `app.js`'s Run uses it when the browser engine is on, and feeds
-     `onRunFinished` the payload, so Results, charts and History draw it as
-     they draw a server run.
-   - It goes behind a flag (`?engine=browser`, then a setting) first, so
-     both paths can be compared before the server path is removed.
-2. **Replay screen for browser runs:** play one game again in a worker from
-   its seed, and return the log frames the replay screen shows. That needs
-   a frame format from the engine log; I'll agree it with rules.
+1. **Sandbox on the TS engine,** so a sandbox game replays from its setup
+   and can be reported.
+2. **Reports** (ROADMAP "Reports"): card readings, Replay steps, Sandbox
+   steps, the admin review page, and privacy.
+3. The live switch-over waits on the auditor's and the user's go. Turning it
+   on is one line: default `enabled()` to true, or set the flag for
+   everyone.
+## Handed back by the parser session (15 Nov)
+
+What I did on your items while you were away, and what's yours again:
+- **Done:** the replay screen for browser runs, as described in status/parser.md ("Results and replay screens read browser runs").
+  - `engine/src/sim/replay_view.ts`, `board.ts`, `payload.ts`.
+  - `GET /api/browser-runs/{id}` in browser_runs.py.
+  - `webapp/src/site/` (the bundle, `npm run build:site`, into `mtgfish/ui/web/engine/`).
+  - `mtgfish/ui/web/browser_runs.js` and the `call()` seam in app.js.
+  - The bundle uses your `reportPayload`.
+- **Yours now:**
+  - Card art in browser replays: `board_cards` carry `art: ""`. My proposal: the server adds image URLs per card name, tokens included, to the browser-run response, by `Bridge._board_cards`' lookup.
+  - One engine bundle for the site, not two. Your runner and my `webapp/src/site/entry.ts` could be one.
+- I won't change these files further unless you ask.
+
 ## Questions for the auditor
 
 - The Docker image build with the IR export step hasn't been run locally.

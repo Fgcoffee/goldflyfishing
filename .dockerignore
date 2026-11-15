@@ -20,3 +20,5 @@ cache/*
 !cache/scryfall
 !cache/pool.json
 !cache/comprehensive_rules.txt
+# Built in the image (webapp: npm run build:site); a local copy may be stale.
+mtgfish/ui/web/engine

@@ -16,7 +16,9 @@ import { NO_PLAYER, type PlayerId } from "../../kernel/ids";
 /** Anything with a duration: effects, restrictions, permissions, replacements. */
 interface Timed {
   readonly duration: number;
-  readonly createdTurn: number;
+  readonly createdTurn?: number;
+  /** Standing restrictions and permissions are IR records: snake_case (restrictions.ts). */
+  readonly created_turn?: number;
   readonly controller?: PlayerId;
   readonly used?: boolean;
 }
@@ -26,7 +28,12 @@ function controllersLaterTurn(game: Game, entry: Timed): boolean {
   let controller = entry.controller ?? NO_PLAYER;
   if (controller === NO_PLAYER) controller = game.activePlayer;
   if (player(game, controller).hasLost) return true;
-  return game.activePlayer === controller && game.turn > entry.createdTurn;
+  // Effects say createdTurn, standing restrictions and permissions created_turn.
+  // Reading only the first left `game.turn > undefined` false for ever: a
+  // restriction "until your next turn" (Teferi's Protection's "your life total
+  // can't change") never ended, and that player could never lose.
+  const created = entry.createdTurn ?? entry.created_turn ?? 0;
+  return game.activePlayer === controller && game.turn > created;
 }
 
 function isOver(game: Game, entry: Timed, moment: Duration): boolean {

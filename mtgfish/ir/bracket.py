@@ -196,18 +196,12 @@ def game_changers(path=None) -> frozenset[str]:
     import gzip
     import json
 
-    from ..paths import data_root
+    from ..paths import scryfall_cache
 
     if path is None:
-        dumps = sorted((data_root() / "scryfall").glob("oracle_cards-*.jsonl.gz"))
-        if not dumps:
-            from pathlib import Path
-
-            dumps = sorted(
-                (Path(__file__).resolve().parents[2] / "cache" / "scryfall").glob(
-                    "oracle_cards-*.jsonl.gz"
-                )
-            )
+        # Through mtgfish.paths only: the server image keeps the dumps under
+        # MTGFISH_DATA_DIR, not in the repository's cache/.
+        dumps = sorted(scryfall_cache().glob("oracle_cards-*.jsonl.gz"))
         if not dumps:
             return frozenset()
         path = dumps[-1]

@@ -171,6 +171,26 @@ function replacedCount(game: Game, controller: PlayerId, count: number, source: 
  * which may be fewer than asked for (CR 111.5, 101.3). `card` is what a
  * token copy is built from (CR 707.2), in place of the spec's own.
  */
+/**
+ * Not a rule: a cap on the battlefield's size, past which a game is stopped
+ * as a runaway. Token doublers (Krenko, Mob Boss) grow a board
+ * exponentially, and every token recomputes the board, so a swarm of
+ * thousands ran for minutes in the browser (the bench's slow games had
+ * 800-5,800 permanents). No real game gets near it. Deterministic, so a
+ * stopped game still replays.
+ */
+export const MAX_PERMANENTS = 500;
+
+/** Stops the game as a runaway named for the card making the tokens (Python's observer reports runaways). */
+function stopTokenSwarm(game: Game, source: ObjectId, token: string): void {
+  if (game.gameOver) return;
+  const maker = game.objects.get(source);
+  const makerName = (maker?.card as { name?: string } | null | undefined)?.name ?? token;
+  game.runaway = `TOKEN SWARM ${makerName}`;
+  logRecord(game, `${game.battlefield.length} permanents on the battlefield; stopping. Tokens made by ${makerName}`, { kind: "runaway" });
+  game.gameOver = true;
+}
+
 export function createTokens(
   game: Game,
   spec: TokenSpec,
@@ -190,6 +210,10 @@ export function createTokens(
   const name = (card as { name?: string }).name ?? "Token";
   const created: GameObject[] = [];
   for (let i = 0; i < count; i++) {
+    if (game.battlefield.length >= MAX_PERMANENTS) {
+      stopTokenSwarm(game, source, name);
+      break;
+    }
     const obj = createObject(game, card, controller, Zone.BATTLEFIELD, { kind: ObjectKind.TOKEN });
     obj.tapped = flag(spec.enters_tapped);
     obj.enteredBattlefieldTurn = game.turn;

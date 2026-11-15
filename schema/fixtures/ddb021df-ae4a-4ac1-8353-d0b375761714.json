@@ -1,0 +1,91 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ddb021df-ae4a-4ac1-8353-d0b375761714",
+ "name": "White Knight",
+ "card_hash": "2c28d402b379a9a762c4e4b388ee9f60",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ddb021df-ae4a-4ac1-8353-d0b375761714",
+  "name": "White Knight",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "White Knight",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Knight"
+     ]
+    },
+    "oracle_text": "First strike (This creature deals combat damage before creatures without first strike.)\nProtection from black (This creature can't be blocked, targeted, dealt damage, or enchanted by anything black.)",
+    "power": "2",
+    "toughness": "2",
+    "colors": 1,
+    "keywords": [
+     "First strike",
+     "Protection"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 18214,
+  "scryfall_uri": "https://scryfall.com/card/ddg/9/white-knight?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ddb021df-ae4a-4ac1-8353-d0b375761714",
+   "name": "White Knight",
+   "face": 0,
+   "face_name": "White Knight",
+   "card_hash": "2c28d402b379a9a762c4e4b388ee9f60",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "First strike",
+     "keyword": "First strike"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Protection from black",
+     "keyword": "Protection",
+     "quality": {
+      "$": "ObjectFilter",
+      "colors_any": 4,
+      "zones": {
+       "$set": []
+      }
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

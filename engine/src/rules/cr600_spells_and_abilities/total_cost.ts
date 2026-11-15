@@ -11,7 +11,7 @@ import { Zone } from "../../kernel/enums";
 import { permanents, player, type Game } from "../../kernel/game";
 import type { GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
-import type { PlayerId } from "../../kernel/ids";
+import type { ObjectId, PlayerId } from "../../kernel/ids";
 import type { Action } from "../cr100_game_concepts/priority";
 import { commanderTax } from "../cr100_game_concepts/player";
 import {
@@ -179,15 +179,53 @@ function staticConditionHolds(game: Game, ability: Ability, obj: GameObject): bo
  * `chars` with the abilities the card will have as a spell (CR 601.2a-b):
  * grants aimed at spells on the stack, read with the zone dropped.
  */
+/** A permanent's static abilities' effects that bear on casting: grants that reach the stack, and cost changes. */
+interface CastingStatics {
+  readonly grants: readonly (readonly [Ability, Effect])[];
+  readonly costs: readonly (readonly [Ability, Effect])[];
+}
+
+const NO_STATICS: CastingStatics = { grants: [], costs: [] };
+const castingStaticsCache = new WeakMap<Game, { epoch: number; byObject: Map<ObjectId, CastingStatics> }>();
+
+/**
+ * `castingStatics` per object, kept for one characteristics epoch, as
+ * `characteristicsOf` itself is: every card in hand is checked against every
+ * permanent each time the legal actions are listed, and almost no permanent
+ * has such an ability. Same answers, in the same order, as scanning.
+ */
+function castingStatics(game: Game, obj: GameObject): CastingStatics {
+  let cache = castingStaticsCache.get(game);
+  if (cache === undefined || cache.epoch !== game.epoch) {
+    cache = { epoch: game.epoch, byObject: new Map() };
+    castingStaticsCache.set(game, cache);
+  }
+  let found = cache.byObject.get(obj.id);
+  if (found === undefined) {
+    const grants: (readonly [Ability, Effect])[] = [];
+    const costs: (readonly [Ability, Effect])[] = [];
+    for (const ability of characteristicsOf(game, obj).abilities as readonly Ability[]) {
+      if (num(ability.kind) !== STATIC || flag(ability.unparsed)) continue;
+      for (const effect of list(ability.effects)) {
+        const kind = num(effect.kind);
+        if (kind === MODIFY_COST) costs.push([ability, effect]);
+        else if (kind === GRANT_ABILITY && effect.targets != null && numSet(effect.targets.zones, [Zone.BATTLEFIELD]).has(Zone.STACK)) {
+          grants.push([ability, effect]);
+        }
+      }
+    }
+    found = grants.length === 0 && costs.length === 0 ? NO_STATICS : { grants, costs };
+    cache.byObject.set(obj.id, found);
+  }
+  return found;
+}
+
 export function asItWouldBeCast(game: Game, card: GameObject, chars: Characteristics): Characteristics {
   if (card.zone === Zone.STACK) return chars;
   const granted: Ability[] = [];
   for (const obj of permanents(game)) {
-    for (const ability of characteristicsOf(game, obj).abilities as readonly Ability[]) {
-      if (num(ability.kind) !== STATIC || flag(ability.unparsed)) continue;
-      for (const effect of list(ability.effects)) {
-        if (num(effect.kind) !== GRANT_ABILITY || effect.targets == null) continue;
-        if (!numSet(effect.targets.zones, [Zone.BATTLEFIELD]).has(Zone.STACK)) continue;
+    for (const [ability, effect] of castingStatics(game, obj).grants) {
+      {
         if (!matchesBeingCast(game, card, effect, obj)) continue;
         if (!staticConditionHolds(game, ability, obj)) continue;
         granted.push(...list(effect.granted_abilities));
@@ -206,10 +244,9 @@ export function asItWouldBeCast(game: Game, card: GameObject, chars: Characteris
 function costDeltas(game: Game, spell: GameObject, _playerId: PlayerId): number[] {
   const out: number[] = [];
   for (const obj of [...permanents(game), spell]) {
-    for (const ability of characteristicsOf(game, obj).abilities as readonly Ability[]) {
-      if (num(ability.kind) !== STATIC || flag(ability.unparsed)) continue;
-      for (const effect of list(ability.effects)) {
-        if (num(effect.kind) !== MODIFY_COST || !matchesBeingCast(game, spell, effect, obj)) continue;
+    for (const [, effect] of castingStatics(game, obj).costs) {
+      {
+        if (!matchesBeingCast(game, spell, effect, obj)) continue;
         const amount = effect.amount == null ? 0 : matchHooks().evaluate(game, effect.amount, { source: obj.id, controller: obj.controller });
         if (amount) out.push(amount);
       }

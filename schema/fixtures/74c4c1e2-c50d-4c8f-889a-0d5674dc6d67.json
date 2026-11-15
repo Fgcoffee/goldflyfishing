@@ -1,0 +1,134 @@
+{
+ "ir_version": 2,
+ "oracle_id": "74c4c1e2-c50d-4c8f-889a-0d5674dc6d67",
+ "name": "Turn to Frog",
+ "card_hash": "2f6498541af7429d525961cb0d146037",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "74c4c1e2-c50d-4c8f-889a-0d5674dc6d67",
+  "name": "Turn to Frog",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Turn to Frog",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Until end of turn, target creature loses all abilities and becomes a blue Frog with base power and toughness 1/1.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 8935,
+  "scryfall_uri": "https://scryfall.com/card/clu/103/turn-to-frog?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "74c4c1e2-c50d-4c8f-889a-0d5674dc6d67",
+   "name": "Turn to Frog",
+   "face": 0,
+   "face_name": "Turn to Frog",
+   "card_hash": "2f6498541af7429d525961cb0d146037",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "duration": 1,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "duration": 1,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 144,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "is_targeted": true,
+           "duration": 1,
+           "keywords": [
+            "*"
+           ],
+           "text": "loses all abilities"
+          },
+          {
+           "$": "Effect",
+           "kind": 146,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "is_targeted": true,
+           "same_target": true,
+           "duration": 1,
+           "keywords": [
+            "Frog"
+           ],
+           "text": "becomes"
+          },
+          {
+           "$": "Effect",
+           "kind": 141,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "amount2": {
+            "$": "Value",
+            "constant": 1
+           },
+           "is_targeted": true,
+           "same_target": true,
+           "duration": 1,
+           "text": "base 1/1"
+          }
+         ],
+         "text": "becomes"
+        }
+       ],
+       "text": "for a duration"
+      }
+     ],
+     "text": "Until end of turn, target creature loses all abilities and becomes a blue Frog with base power and toughness 1/1."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

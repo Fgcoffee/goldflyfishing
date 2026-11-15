@@ -373,6 +373,20 @@ def exact(a: Any, b: Any, kind: Any = ANY) -> bool:
 # ---------------------------------------------------------------------------
 
 
+def _unread(ability) -> bool:
+    """An ability the parser kept but couldn't read: flagged, or holding an
+    unread node (an UNPARSED effect, as embalm's placeholder is). The same
+    test as ``deckview.parse_status``, so a face is fully read exactly when
+    the coverage report says so."""
+    if getattr(ability, "unparsed", False):
+        return True
+    for effect in getattr(ability, "effects", None) or ():
+        walk = getattr(effect, "walk", None)
+        if walk is not None and any(getattr(node, "is_unparsed", False) for node in walk()):
+            return True
+    return False
+
+
 def encode_face(card, face_index: int, abilities, failures, card_hash: str) -> dict:
     """One card face's parse as a JSON document."""
     face = card.faces[face_index] if card.faces else None
@@ -383,7 +397,7 @@ def encode_face(card, face_index: int, abilities, failures, card_hash: str) -> d
         "face": face_index,
         "face_name": face.name if face is not None else card.name,
         "card_hash": card_hash,
-        "fully_read": not failures,
+        "fully_read": not failures and not any(_unread(ability) for ability in abilities),
         "abilities": [encode(ability, "Ability") for ability in abilities],
         "failures": [encode(failure, "ParseFailure") for failure in failures],
     }

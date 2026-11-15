@@ -293,13 +293,176 @@ These were the last things your resolve.ts was skipping for me.
   - I added that to the card-reading fixes for after the port.
   - Until then those two cases stay in Python, as you said.
 
+## F63, the hybrid-cost crash: fixed (20610f4)
+
+- `findPayment` (mana/payment.ts) no longer throws past 12 Phyrexian or `{2/W}` symbols.
+  - The symbols past `MAX_SEARCHED_CHOICES` (12) are settled greedily first: mana of a kind the symbol accepts while one is spare, else 2 life (Phyrexian) or 2 generic (`{2/W}`).
+  - The first 12 are searched exactly as before, so a cost at or under the limit pays as it did.
+  - A payment that uses the fallback never pays life down to 0. That's a policy, not CR 119.4.
+  - If even that can't pay, the cost is unpayable, and `affordable()` drops attackers until it can.
+  - Marked `// KNOWN: F63 (Python raises here)`.
+- Tests: 3 in mana.test.ts, and `test/rules/f63_attack_tax.test.ts` on real cards (Norn's Annex added to the fixtures). 16 Bears and 2 Plains attack in full at 40 life, and 11 of them at 20.
+- **The three browser games that crashed** (bench seed 0, games 20, 30, 32): all three crash with the old payment code and finish with the fix (winners P2, P2 and P0, on life).
+- **Bench, 40 games, vitest:** aggro against combo/control/stax, seed 0, turn cap 25.
+  - 0 crashes.
+  - Aggro won 14/40 (35%); 1 stall (2.5%).
+  - Wins by seat: 14 / 1 / 16 / 8, plus 1 draw.
+  - Endings: LIFE 34, COMMANDER_DAMAGE 4, STALL_OUT 1, DECKING 1. 50.6 turns on average.
+  - For comparison: Python got 31.6% with 10.5% stalls (20 games), and the browser 35.1% with 2.7% stalls.
+
+## Results and replay screens read browser runs (done)
+
+- **Engine** (43fe6e7): `sim/replay_view.ts` ports `sim/replay.py`, and `sim/board.ts` ports `sim/board.py` (the film).
+  - `replayGame(setup, index, seed)` plays a game again with the log and the film on.
+  - The replayed game is the run's game: its digest is tested equal.
+- **Payloads** (d565832): `sim/payload.ts` builds the Replay screen's JSON, field for field as Python's Bridge sends it.
+  - `replayPayload` matches `replay`, and `boardPayload` matches `replay_board` (short arrays with Python's bit flags).
+  - Parse status comes from the IR.
+  - The Results payload is the web session's `webapp/src/results.ts` `reportPayload` (1a7917e). My duplicate `resultsPayload` is removed: it lacked their metric-name mapping, so per-turn charts missed `mana_available` and similar metrics.
+- **Server** (7fa0361): `GET /api/browser-runs/{id}` returns the run whole, with `setup` (decks and current IR). If a card has changed since the run, `setup` is null and `unverifiable` says which card. Owner only.
+- **Site bundle** (07b9098): `webapp/src/site`, built by `npm run build:site` into `mtgfish/ui/web/engine/` (generated, gitignored).
+  - The Results report is built from the records.
+  - Replays run in a Web Worker and flag a digest mismatch.
+  - The Dockerfile's node stage builds the bundle. Its steps pass from a clean copy, but the image itself hasn't been built: there's no Docker daemon here.
+- **Site** (9897e43): History lists browser runs.
+  - Open shows the run on the Results screen.
+  - While a browser run is open, `call()` in app.js sends `report`, `replay` and `replay_board` to `browser_runs.js`.
+  - Starting a simulation, or opening a server run, closes it.
+- **Checked in Chromium** against the local server: a 12-game browser run was uploaded, listed in History and opened.
+  - Results: 50% win rate, charts, inert cards.
+  - Game 2 replayed in about 1 s, with the turn list, the log, and boards showing attackers, blockers, damage and the commander.
+- **Still to do: card art in browser replays.** `board_cards` carries `art: ""`, so cards draw as placeholders.
+  - Python looks the art up in its card database, tokens by name.
+  - Proposal: the server adds image URLs per card name to `GET /api/browser-runs/{id}`, tokens included, by the same lookup `Bridge._board_cards` uses.
+
+## Token swarms that never end (auditor's top priority, 15 Nov)
+
+**The diagnosis didn't hold for the TS bot.** It's aggressive by default (as in Python), so it already attacks with every creature that has power. The toughness rule only applies with `aggressive: false`. I traced all 14 runaways on the 200-game bench (runSeed 20261114) instead.
+
+**Root cause in 5 of 14: an engine bug, fixed (be2499a).**
+- `durations.ts` asked whether `game.turn > entry.createdTurn`, but standing restrictions and permissions store `created_turn` (restrictions.ts). So "until your next turn" never ended.
+- Teferi's Protection's "your life total can't change" lasted for the rest of the game. In game 155, 239 unblocked goblins dealt 1 each to a player on 3 life, who stayed on 3.
+- Games 40, 107, 117, 155 and 184 now end with a LIFE win.
+- **Rules session:** the fix is in your file (a one-line read of `created_turn`, with a test in actions.test.ts). Please review.
+
+**The bot (1cb2be4):** it now passes over a player whose combat damage keeps being prevented (Solitary Confinement) while another opponent can be hurt.
+- The auditor's alpha-strike and swarm rules would change nothing (it already attacks all-out).
+- I tried the lookahead size budget and dropped it: it slowed the biggest games (game 9: 21 s to 31 s).
+
+**Bench, 200 games** (seat 0 aggro, 1 combo, 2 control, 3 stax):
+
+| | LIFE | CMD | RUNAWAY | DECK | STALL | wins 0/1/2/3/none | median | p90 | max |
+|---|---|---|---|---|---|---|---|---|---|
+| before | 129 | 47 | 14 | 5 | 5 | 51/11/81/38/19 | 1.21 s | 3.08 s | 19.9 s |
+| be2499a | 163 | 21 | 12 | 2 | 2 | 74/15/53/44/14 | 1.10 s | 2.77 s | 21.1 s |
+| be2499a + 1cb2be4 | 163 | 22 | 11 | 2 | 2 | 73/15/54/45/13 | 0.97 s | 2.55 s | 18.9 s |
+
+- Control's 81 wins were inflated by the stale protection.
+- Games without a winner fall from 19 to 13.
+
+**The 11 runaways left are locks the rules allow:**
+- Solitary Confinement on the last player standing (games 27, 77).
+- An attack tax against a Krenko board that land destruction left with 4 to 16 lands: Propaganda (9, 33, 102), Ghostly Prison (173), Sphere of Safety (70), Windborn Muse (187). The stax player sits on 20 to 476 life.
+- Games 55, 119 and 123 are new paths after the fix, not yet examined.
+- Only small improvements are left: keeping mana back for an attack tax (game 33 taps out before combat), or no longer making tokens that can't attack (which would turn a runaway into a stall).
+
+**One requested test not added:** "a 1/1 against a lone 2/2 with no lethal stays home". The default bot attacks there, as Python's does. Making it cautious would change every normal game; I'd want the user's call first.
+
+## Triage of the parser-owned findings (15 Nov)
+
+Every finding checked against the IR as exported now, on the TS engine's fixtures: `engine/test/rules/audit_triage_parser_real.test.ts`.
+- Passing tests are readings that match the card.
+- `it.fails` with a `KNOWN: Fxx` marker are still open.
+
+(The rules session's file of the same kind is `audit_triage_real.test.ts`; mine has a parser-specific name.)
+
+**Fixed (the reading matches the card):**
+- F25 Ertai's Trickery: stays unread, rather than countering on its own kicker.
+- F31 Counterspell: targets spells only.
+- F33 Turn to Frog: until end of turn, on the one target.
+- F43 Sly Instigator: one target, then goad it.
+- F46 Harnesser of Storms: stays unread.
+- F51 Ulamog, the Ceaseless Hunger: two targets.
+- F58 Replication Technique: a token copy of the one target.
+- F4 Crew: total power.
+- F34 Embalm: unread, and now flagged as such (below).
+- F49:
+  - Llanowar Wastes: damage on either colour.
+  - Chainwhip Cyclops, Phase Dolphin, Insufferable Balladeer: targeted.
+  - Jaya Ballard: up to three, then that many.
+  - Echo, outlast, cumulative upkeep (pays per age counter), detain (up to two, until your next turn).
+- F59 Soul-Guide Lantern: today's Oracle text says "exile target card from **a** graveyard", so the finding's premise ("an opponent's") is out of date. The reading matches the card.
+- F28 Overload: fixed in the engine from the keyword (rules b28f152).
+
+**Still open** (each an `it.fails`):
+- **F37 Toxic Deluge:** "pay X life" is read as an effect, not an additional cost. BLOCK.
+- **F49:**
+  - Fists of Flame: a flat +1 on the board. The count sits on a SEQUENCE around the pump, which nothing repeats.
+  - Chandra, Spark Hunter's +2: "If you do, draw" is read as a third mode.
+  - Arcade Cabinet: the "up to four target creatures" aren't targeted.
+  - Relentless Pursuit: "a creature card and/or a land card" is read as one card.
+  - Borrowed Knowledge: "target opponent's hand" is read as every opponent's.
+- **F3 Sudden Impact, and Viseling (F49):** the hand count has no owner, so it counts every hand.
+- **F17 Tannuk:** "Artifact cards and red creature cards" applies "red" to both.
+- **New:** Turn to Frog's "blue" Frog loses the colour. Architects of Will has the target player look, not you (only the order of the cards differs).
+
+**Found while triaging, and fixed: `fully_read` was too generous (codec.py).** A face was "fully read" whenever there were no parse failures, even with an UNPARSED placeholder inside an ability (Sacred Cat's embalm, Ulamog's Crusher's annihilator, Dusk // Dawn's aftermath, Rest in Peace's replacement).
+- It now uses the same test as the coverage report.
+- This affects only the exported flag, the bracket's "unread" tag and the site's inert-card list. The census already counted these cards as unread.
+
+**F37, parser half: fixed (304e291).** An additional cost of X ("pay X life", "discard X cards", "sacrifice X creatures", "exile X cards from your graveyard") is read as `Ability.additional_cost` with an X amount, not as an effect.
+- Census: +3, -0, 18 changed, all this family.
+- **For the rules session, the engine half:**
+  - `componentAmount` (cost_checks.ts:56) evaluates a cost's amount without a source, so a spell's "pay X life" evaluates X as 0. Passing the spell as the source would read its `xValue`.
+  - Legality offers no X for a spell whose only X is in an additional cost (CR 601.2b). `asksForX` covers activated costs only.
+  - Test: "cast with X = 3" in audit_triage_parser_real.test.ts (it.fails, KNOWN: F37 engine half).
+
+**Next:** the F49 and F3 readings (Fists of Flame, Chandra +2, Arcade Cabinet, Relentless Pursuit, Borrowed Knowledge, "their hand"), then F17, each with a census before and after.
+
+## For the rules session: your 200-game bench
+
+- **Game 63's hang: fixed (b52996d).** `findPayment` now tries one mask per class of interchangeable choice symbols (same kind, colours and generic): the class's smallest, in the original popcount-then-value order. That gives the same payment as the full walk.
+  - Fifteen `{W/P}` are 16 branches, not 4096.
+  - A necessary check runs first: with too little mana and life in total, it returns null without searching.
+  - Checked against the previous `findPayment` on 20,000 random costs and pools (9,694 of them payable): identical results.
+  - Game 63 now finishes in 3.4 s (commander damage, turn 54); games 55 and 57 take about 1 s.
+- **Token swarms: I tried the CR 111.5 batching, measured it, and left it out.**
+  - Batching was exact: same digests on 16 bench games.
+  - But it gained nothing. With your ce0b202 in, games 33 and 9 reach the same turn in 45 s with or without it (turn 40 with about 3,600 permanents; turn 51).
+  - `prohibited` no longer shows in the profile.
+- **Where game 33's time goes now** (45 s CPU profile, inclusive):
+  - About 60% is `createTokens` -> `emit` -> `collectTriggers` -> `watchers` -> `characteristicsOf` -> `computeBoard`. Each token's TOKEN_CREATED and ENTERS_BATTLEFIELD events collect triggers after an invalidation, so each one recomputes the whole board.
+  - About 45% is the bot's lookahead (`chooseAction` -> `project`), which clones and plays out on the same huge board. (The two overlap.)
+  - The trigger path is in emit/triggers, which is yours, and Python has the same shape.
+  - One exact option: in `watchers`, cache the list of permanents with triggered abilities per characteristics epoch, and have `createTokens` invalidate once per batch rather than once per token. But the per-token invalidation is there for CR 111.5's per-token check, so that's a design call.
+  - Lookahead on big boards is the AI's, which is mine now. Capping it would change which actions the bot picks (and the digests), so I haven't touched it. Say if you want a size cap.
+
+## Data paths in mtgfish/ir (the auditor's e1cda56)
+
+- Pulled before touching it. The only other direct read of the repository's `cache/` was `game_changers()`'s fallback to `<repo>/cache/scryfall`. It now reads through `paths.scryfall_cache()` only.
+- The other repository paths in `ir_export` are the dev tools' defaults for committed files (`schema/`, `bench/`), not card data.
+
+## For the web session (welcome back)
+
+- I did these while you were archived. I've now seen your 14 Nov plan, and the **replay screen for browser runs** (your Next 2) is done, as above.
+  - The frame format is Python's `ReplayFrame`. It needed nothing new from rules: the TS log already has turn, phase, step, player, kind, text, depth and active player.
+  - Yours to change as you like.
+- **One bundle, not two?** Mine is `mtgfish/ui/web/engine/goldfly-site.js`, from `webapp/src/site`, built by `npm run build:site`. It has the report from stored records and the replay worker.
+  - Your switch-over plan puts a runner bundle at `mtgfish/ui/web/browser/`.
+  - Folding your runner into `webapp/src/site/entry.ts` (or moving mine into yours) would give the site one engine bundle. Your call.
+  - The Dockerfile's node stage already builds it.
+- **The seam in app.js:** `call()` asks `BrowserRuns.handles(method)` first (`mtgfish/ui/web/browser_runs.js`). For your Run, setting the current browser run after a run finishes makes Replay work with no other change.
+- The site bundle uses your `reportPayload` and `unparsedCards`.
+- I'm leaving the website switch-over to you. Card art in browser replays is still to do; it's yours if you want it, or I'll take it.
+
 ## Card-reading gaps found during the port (for after it)
 
 - Cauldron of Souls: "Choose any number of target creatures. Each of those creatures gains persist until end of turn." is unparsed (the "any number of target" phrasing).
 
 ## Next
 
-- The AI port and the webapp swap are both done.
+- Card art in browser replays (above), unless the web session takes it.
+- The website switch-over is the web session's again (their plan in status/web.md), and waits for the auditor's go.
 - After that, the unticked items are:
   - the two bracket items, Phase 2, parked until the port is done;
   - the deferred rules fixes, "once games can be watched".

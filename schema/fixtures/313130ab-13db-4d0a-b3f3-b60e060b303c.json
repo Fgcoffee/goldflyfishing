@@ -1,0 +1,212 @@
+{
+ "ir_version": 2,
+ "oracle_id": "313130ab-13db-4d0a-b3f3-b60e060b303c",
+ "name": "Rattleblaze Scarecrow",
+ "card_hash": "ed9f860dfca912a415e5e73942e6f7be",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "313130ab-13db-4d0a-b3f3-b60e060b303c",
+  "name": "Rattleblaze Scarecrow",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rattleblaze Scarecrow",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 6,
+       "text": "{6}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Scarecrow"
+     ]
+    },
+    "oracle_text": "This creature has persist as long as you control a black creature. (When this creature dies, if it had no -1/-1 counters on it, return it to the battlefield under its owner's control with a -1/-1 counter on it.)\nThis creature has haste as long as you control a red creature.",
+    "power": "5",
+    "toughness": "3"
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 16825,
+  "scryfall_uri": "https://scryfall.com/card/shm/259/rattleblaze-scarecrow?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "313130ab-13db-4d0a-b3f3-b60e060b303c",
+   "name": "Rattleblaze Scarecrow",
+   "face": 0,
+   "face_name": "Rattleblaze Scarecrow",
+   "card_hash": "ed9f860dfca912a415e5e73942e6f7be",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 2,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 1,
+           "condition": {
+            "$": "Condition",
+            "kind": 2,
+            "filter": {
+             "$": "ObjectFilter",
+             "source_only": true,
+             "has_counter": "-1/-1"
+            },
+            "constraint": {
+             "$": "NumericConstraint",
+             "comparison": 0,
+             "value": {
+              "$": "Value"
+             }
+            },
+            "text": "if it had no -1/-1 counter on it"
+           },
+           "children": [
+            {
+             "$": "Effect",
+             "kind": 33,
+             "amount": {
+              "$": "Value",
+              "constant": 1
+             },
+             "counter_type": "-1/-1",
+             "text": "return it with a -1/-1 counter on it"
+            }
+           ]
+          }
+         ],
+         "text": "persist",
+         "trigger": {
+          "$": "TriggerCondition",
+          "event_kinds": {
+           "$set": [
+            3
+           ]
+          },
+          "subject": {
+           "$": "ObjectFilter",
+           "source_only": true,
+           "zones": {
+            "$set": []
+           }
+          },
+          "functions_in": {
+           "$set": [
+            2,
+            3
+           ]
+          },
+          "uses_last_known_information": true,
+          "text": "when this dies (persist)"
+         },
+         "functions_in": {
+          "$set": [
+           2,
+           3
+          ]
+         },
+         "keyword": "persist"
+        }
+       ],
+       "text": "gains persist"
+      }
+     ],
+     "text": "This creature has persist as long as you control a black creature.",
+     "static_condition": {
+      "$": "Condition",
+      "kind": 5,
+      "filter": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "colors_any": 4,
+       "controller": 1
+      },
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": 5,
+       "value": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "you control ..."
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "haste",
+         "keyword": "haste"
+        }
+       ],
+       "text": "gains haste"
+      }
+     ],
+     "text": "This creature has haste as long as you control a red creature.",
+     "static_condition": {
+      "$": "Condition",
+      "kind": 5,
+      "filter": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "colors_any": 8,
+       "controller": 1
+      },
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": 5,
+       "value": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "you control ..."
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

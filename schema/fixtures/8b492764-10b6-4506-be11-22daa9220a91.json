@@ -1,0 +1,134 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8b492764-10b6-4506-be11-22daa9220a91",
+ "name": "Young Wolf",
+ "card_hash": "43aceb071fbd021f1151b570b21e1dc8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8b492764-10b6-4506-be11-22daa9220a91",
+  "name": "Young Wolf",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Young Wolf",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Wolf"
+     ]
+    },
+    "oracle_text": "Undying (When this creature dies, if it had no +1/+1 counters on it, return it to the battlefield under its owner's control with a +1/+1 counter on it.)",
+    "power": "1",
+    "toughness": "1",
+    "colors": 16,
+    "keywords": [
+     "Undying"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 7033,
+  "scryfall_uri": "https://scryfall.com/card/inr/227/young-wolf?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8b492764-10b6-4506-be11-22daa9220a91",
+   "name": "Young Wolf",
+   "face": 0,
+   "face_name": "Young Wolf",
+   "card_hash": "43aceb071fbd021f1151b570b21e1dc8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true,
+         "has_counter": "+1/+1"
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 0,
+         "value": {
+          "$": "Value"
+         }
+        },
+        "text": "if it had no +1/+1 counter on it"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 33,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "counter_type": "+1/+1",
+         "text": "return it with a +1/+1 counter on it"
+        }
+       ]
+      }
+     ],
+     "text": "Undying",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        3
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true,
+       "zones": {
+        "$set": []
+       }
+      },
+      "functions_in": {
+       "$set": [
+        2,
+        3
+       ]
+      },
+      "uses_last_known_information": true,
+      "text": "when this dies (Undying)"
+     },
+     "functions_in": {
+      "$set": [
+       2,
+       3
+      ]
+     },
+     "keyword": "Undying"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

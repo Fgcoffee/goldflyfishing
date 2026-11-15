@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "aedcd2fb-813a-4915-b7b9-ac7479863462",
+ "name": "Boon Satyr",
+ "card_hash": "f438e2bfaffbb469ea78b428aeba4f2e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "aedcd2fb-813a-4915-b7b9-ac7479863462",
+  "name": "Boon Satyr",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Boon Satyr",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 12,
+     "subtypes": [
+      "Satyr"
+     ]
+    },
+    "oracle_text": "Flash\nBestow {3}{G}{G} (If you cast this card for its bestow cost, it's an Aura spell with enchant creature. It becomes a creature again if it's not attached.)\nEnchanted creature gets +4/+2.",
+    "power": "4",
+    "toughness": "2",
+    "colors": 16,
+    "keywords": [
+     "Bestow",
+     "Flash"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 16775,
+  "scryfall_uri": "https://scryfall.com/card/c18/132/boon-satyr?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "aedcd2fb-813a-4915-b7b9-ac7479863462",
+   "name": "Boon Satyr",
+   "face": 0,
+   "face_name": "Boon Satyr",
+   "card_hash": "f438e2bfaffbb469ea78b428aeba4f2e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flash",
+     "keyword": "Flash"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Bestow {3}{G}{G}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Bestow",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 3,
+            "text": "{3}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 16,
+            "text": "{G}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 16,
+            "text": "{G}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Bestow",
+      "text": "Bestow {3}{G}{G}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 4
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 2
+       },
+       "duration": 0,
+       "text": "gets +4/+2"
+      }
+     ],
+     "text": "Enchanted creature gets +4/+2."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

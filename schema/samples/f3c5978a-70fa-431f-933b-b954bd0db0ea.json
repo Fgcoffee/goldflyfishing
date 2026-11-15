@@ -51,7 +51,7 @@
    "face": 0,
    "face_name": "Mox Diamond",
    "card_hash": "68a855a3fdc689dd3841b893581edcaf",
-   "fully_read": true,
+   "fully_read": false,
    "abilities": [
     {
      "$": "Ability",

@@ -1,0 +1,157 @@
+{
+ "ir_version": 2,
+ "oracle_id": "32116127-cf96-4a1b-8896-a1ebc087b597",
+ "name": "Llanowar Wastes",
+ "card_hash": "178b6bb69f88d45409e6748c08c108e6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "32116127-cf96-4a1b-8896-a1ebc087b597",
+  "name": "Llanowar Wastes",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Llanowar Wastes",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}: Add {B} or {G}. This land deals 1 damage to you.",
+    "produced_mana": [
+     "B",
+     "C",
+     "G"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 20,
+  "commander_legal": true,
+  "edhrec_rank": 137,
+  "scryfall_uri": "https://scryfall.com/card/soc/383/llanowar-wastes?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "32116127-cf96-4a1b-8896-a1ebc087b597",
+   "name": "Llanowar Wastes",
+   "face": 0,
+   "face_name": "Llanowar Wastes",
+   "card_hash": "178b6bb69f88d45409e6748c08c108e6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{B}"
+         ],
+         "colors": 4,
+         "text": "add {B}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{G}"
+         ],
+         "colors": 16,
+         "text": "add {G}"
+        }
+       ],
+       "text": "add one of several"
+      },
+      {
+       "$": "Effect",
+       "kind": 50,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "{T}: Add {B} or {G}. This land deals 1 damage to you.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

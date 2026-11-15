@@ -344,7 +344,7 @@ class Observer {
    * winner won, inferred from how the last player lost.
    */
   private winReason(game: Game, winner: number | null): WinReason {
-    if (winner === null) return game.loopDraw ? "DRAW" : "STALL_OUT";
+    if (winner === null) return game.loopDraw ? "DRAW" : game.runaway ? "RUNAWAY" : "STALL_OUT";
     const last = this.eliminations[this.eliminations.length - 1];
     if (last === undefined) return "ALTERNATE"; // Python LAST_STANDING
     const loser = playerOf(game, last.player);

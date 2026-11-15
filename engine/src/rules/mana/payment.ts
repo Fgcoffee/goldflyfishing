@@ -40,21 +40,55 @@ export interface PaymentOptions {
   readonly context?: PaymentContext | null;
 }
 
-/** Choice assignments, fewest alternatives first: one mana before two, mana before life. */
-function* branches(n: number): Generator<number[]> {
+/**
+ * Choice assignments, fewest alternatives first: one mana before two, mana
+ * before life (Python `_iter_branches`: every mask of n bits, by popcount,
+ * then by value).
+ *
+ * Identical choice symbols are interchangeable - which of two {W/P} is paid
+ * with life makes no difference to the payment - so only one mask per class
+ * is tried: the class's smallest, alternatives on its earliest symbols.
+ * Every mask in a class succeeds or fails together, and the smallest comes
+ * first in the full order, so the first success is the same payment the full
+ * walk finds. Fifteen {W/P} are 16 branches, not 2^12. `keys` says which
+ * choice points are the same symbol.
+ */
+function* branches(keys: readonly string[]): Generator<number[]> {
+  const n = keys.length;
   if (n === 0) {
     yield [];
     return;
   }
-  const masks = Array.from({ length: 1 << n }, (_, m) => m);
-  const popcount = (m: number) => {
-    let c = 0;
-    for (let v = m; v; v &= v - 1) c++;
-    return c;
+  // The choice points of each distinct symbol, in order.
+  const groups = new Map<string, number[]>();
+  keys.forEach((k, i) => groups.set(k, [...(groups.get(k) ?? []), i]));
+  const members = [...groups.values()];
+  // Every count vector: how many of each group take the alternative.
+  let vectors: number[][] = [[]];
+  for (const g of members) {
+    const next: number[][] = [];
+    for (const v of vectors) for (let c = 0; c <= g.length; c++) next.push([...v, c]);
+    vectors = next;
+  }
+  const masks = vectors.map((counts) => {
+    const bits = new Array<number>(n).fill(0);
+    counts.forEach((c, gi) => {
+      for (let j = 0; j < c; j++) bits[members[gi]![j]!] = 1;
+    });
+    return bits;
+  });
+  const popcount = (b: readonly number[]) => b.reduce((t, x) => t + x, 0);
+  // By value as a binary number, bit i worth 2^i: compare from the top bit down.
+  const byValue = (a: readonly number[], b: readonly number[]) => {
+    for (let i = n - 1; i >= 0; i--) if (a[i] !== b[i]) return a[i]! - b[i]!;
+    return 0;
   };
-  masks.sort((a, b) => popcount(a) - popcount(b) || a - b);
-  for (const mask of masks) yield Array.from({ length: n }, (_, i) => (mask >> i) & 1);
+  masks.sort((a, b) => popcount(a) - popcount(b) || byValue(a, b));
+  yield* masks;
 }
+
+/** What makes two choice symbols interchangeable. */
+const symbolKey = (s: ManaSymbol): string => `${s.kind}|${s.colors}|${s.generic}`;
 
 /** One unit of mana to each symbol, by backtracking, most-constrained symbol first. */
 function assignSpecific(symbols: ManaSymbol[], kinds: ManaKind[], counts: number[], spend: number[]): boolean {
@@ -83,6 +117,61 @@ function assignSpecific(symbols: ManaSymbol[], kinds: ManaKind[], counts: number
   return recurse(0);
 }
 
+/** Choice symbols (Phyrexian, {2/W}) searched exhaustively: 2^12 branches at most. */
+export const MAX_SEARCHED_CHOICES = 12;
+
+interface SettledChoices {
+  /** Indexes into the specific symbols that take their alternative (life, or the generic half). */
+  readonly alternative: Set<number>;
+  readonly life: number;
+  readonly extraGeneric: number;
+}
+
+/**
+ * The greedy half of F63: each choice symbol past the searched ones is paid
+ * with mana if a unit that symbol accepts is still spare (reserved in order,
+ * so two of them don't count the same unit), else with its alternative: 2
+ * life for a Phyrexian symbol, 2 generic for {2/W}. A payment that uses
+ * this fallback never pays life down to 0, a policy rather than a rule
+ * (CR 119.4 would allow it), so a long cost never kills its payer. Null when
+ * even that can't be paid.
+ */
+function settleExtraChoices(
+  specific: readonly ManaSymbol[],
+  extras: readonly number[],
+  kinds: readonly ManaKind[],
+  counts: readonly number[],
+  lifeAvailable: number,
+): SettledChoices | null {
+  const alternative = new Set<number>();
+  let life = 0;
+  let extraGeneric = 0;
+  if (extras.length === 0) return { alternative, life, extraGeneric };
+  const spare = counts.slice();
+  // Mana the other colored symbols need comes first.
+  specific.forEach((sym, idx) => {
+    if (isChoice(sym)) return;
+    const ki = kinds.findIndex((k, i) => (spare[i] as number) > 0 && accepts(sym, k));
+    if (ki >= 0) spare[ki] = (spare[ki] as number) - 1;
+  });
+  for (const idx of extras) {
+    const sym = specific[idx] as ManaSymbol;
+    const ki = kinds.findIndex((k, i) => (spare[i] as number) > 0 && accepts(sym, k));
+    if (ki >= 0) {
+      spare[ki] = (spare[ki] as number) - 1;
+      continue;
+    }
+    alternative.add(idx);
+    if (sym.kind === ManaSymbolKind.PHYREXIAN) {
+      life += lifeCost(sym);
+      if (life >= lifeAvailable) return null;
+    } else {
+      extraGeneric += sym.generic;
+    }
+  }
+  return { alternative, life, extraGeneric };
+}
+
 /**
  * A legal payment for `cost` from `pool`, or null. Prefers mana over life
  * for Phyrexian symbols and the colored half of {2/W}; choosing *well* is
@@ -108,15 +197,46 @@ export function findPayment(pool: ManaPool, cost: ManaCost, options: PaymentOpti
   specific.forEach((s, i) => {
     if (isChoice(s)) choicePoints.push(i);
   });
-  if (choicePoints.length > 12) throw new RangeError(`unreasonable number of hybrid symbols in a cost`);
+  // KNOWN: F63 (Python raises here). Past MAX_SEARCHED_CHOICES the search
+  // would be 2^n branches, so the choice symbols beyond it are settled
+  // greedily first and the search covers the rest; a cost at or under the
+  // limit is searched exactly as before.
+  const extras = choicePoints.splice(MAX_SEARCHED_CHOICES);
+  const fixed = settleExtraChoices(specific, extras, kinds, counts, lifeAvailable);
+  if (fixed === null) return null;
+  // With the fallback in play a payment that pays life keeps 1; otherwise CR 119.4 alone.
+  const tooMuchLife = (life: number) => life > lifeAvailable || (extras.length > 0 && life > 0 && life >= lifeAvailable);
 
-  for (const branch of branches(choicePoints.length)) {
+  // A necessary condition, checked before any search: each searched choice
+  // symbol takes at least one mana or its alternative, so with too little
+  // mana and life in total no branch can pay. (Pruning only: what passes is
+  // still searched exactly.)
+  {
+    const fixedLife = fixed.life;
+    const total = counts.reduce((t, c) => t + c, 0);
+    let manaFloor = genericNeeded + fixed.extraGeneric;
+    let phyrexian = 0;
+    specific.forEach((sym, idx) => {
+      if (fixed.alternative.has(idx)) return;
+      if (sym.kind === ManaSymbolKind.PHYREXIAN && choicePoints.includes(idx)) phyrexian += 1;
+      else if (choicePoints.includes(idx)) manaFloor += 1; // {2/W}: one mana at the least
+      else manaFloor += 1;
+    });
+    const spare = total - manaFloor;
+    if (spare < 0) return null;
+    // Phyrexian symbols the spare mana can't cover need 2 life each.
+    const lifeNeeded = fixedLife + 2 * Math.max(0, phyrexian - spare);
+    if (tooMuchLife(lifeNeeded)) return null;
+  }
+
+  for (const branch of branches(choicePoints.map((i) => symbolKey(specific[i] as ManaSymbol)))) {
     const spend = kinds.map(() => 0);
-    let life = 0;
-    let extraGeneric = 0;
+    let life = fixed.life;
+    let extraGeneric = fixed.extraGeneric;
     const mustMatch: ManaSymbol[] = [];
 
     specific.forEach((sym, idx) => {
+      if (fixed.alternative.has(idx)) return;
       const point = choicePoints.indexOf(idx);
       // Branch bit 1 takes the alternative: life for Phyrexian, the generic half of {2/W}.
       if (point >= 0 && branch[point]) {
@@ -127,7 +247,7 @@ export function findPayment(pool: ManaPool, cost: ManaCost, options: PaymentOpti
       mustMatch.push(sym);
     });
 
-    if (life > lifeAvailable) continue;
+    if (tooMuchLife(life)) continue;
     if (!assignSpecific(mustMatch, kinds, counts, spend)) continue;
 
     let need = genericNeeded + extraGeneric;

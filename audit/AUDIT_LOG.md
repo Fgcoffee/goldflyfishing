@@ -617,3 +617,32 @@ Also checked: PR #28 (deck-optimisation session, not merged by me) leaves parser
 | F64 | **BLOCK** (crash) | rules | Every VOTE effect raises TypeError in Python: `_do_vote` calls `game.apnap_order(game.next_player(...))`, but `apnap_order` takes no argument. The TS port guards it with the evident intent (turn order from the next player). | Reported by the rules session from the port (status file, 14 Nov). |
 
 Also deferred: karoo lands are always sacrificed.
+
+## Port milestones 2-4 (2026-11-14): PR #39, shared branch @ e1cda56, merged as 2ae64d6
+
+Checks on e1cda56:
+- Python: 3360 passed.
+- Engine: 809 tests. Webapp: 29 tests. Typecheck green on both.
+- The Docker image was built and run locally:
+  - the IR export wrote 38,800 cards in 89 s;
+  - `/healthz` and `/api/ir` are fine;
+  - the Node replay CLI runs.
+- 40 bench games through `play()`: 0 crashes, every game decided.
+
+The image build first failed at the IR export: `bracket.py` read the repository's `cache/`, fixed in e1cda56. F63, the hybrid-cost crash, is open; the parser is fixing it.
+
+## TS fixes
+
+Rules fixes in the TypeScript engine (Python frozen). One line each: finding, commit, test.
+
+- F62 (MOVE_ZONE to the library): 3ceafeb, `engine/test/rules/audit_findings.test.ts` "F62: MOVE_ZONE to the library".
+- F64 (VOTE crash, guarded in the port): KNOWN marker removed in 3ceafeb, `audit_findings.test.ts` "F64: VOTE" (turn order from the next player, winner's child happens).
+- Karoo lands always sacrificed: c4232df, `engine/test/rules/audit_triage_real.test.ts` "karoo lands". Cause: a return-to-hand cost couldn't be paid during a resolution, so Coral Atoll's "sacrifice it unless you return an untapped Island" always sacrificed it. Simic Growth Chamber-style karoos were already right.
+- F28 (overload): b28f152, `audit_triage_real.test.ts` "F28: overload" and "F28 controls" (Cyclonic Rift overloaded returns the opponent's nonland permanents only; cast normally, only its target).
+- F28 follow-up (overload offered with nothing to target): 071192b, `audit_triage_real.test.ts` "overload is offered with nothing to target".
+- Triage of every other rules-owned finding: all already fine in TS, tests listed in `engine/status/rules.md` ("Rules findings in TS").
+- F37 (Toxic Deluge, parser half): 304e291, `engine/test/rules/audit_triage_parser_real.test.ts` "F37 Toxic Deluge: ... is read as the spell's additional cost". The 18 cards with an X additional cost now read it as a casting cost (census: +3, -0, 18 changed, all this family). Engine half open for rules: the X isn't offered or evaluated for a spell's additional cost ("cast with X = 3", it.fails, KNOWN: F37 engine half).
+- Parser triage: c99699c, `audit_triage_parser_real.test.ts` (fixed and open findings listed in engine/status/parser.md). Also `fully_read` now counts unread placeholders (codec.py, same commit).
+- Standing "until your next turn" restrictions never expired (new; found tracing the token-swarm runaways): be2499a, `engine/test/rules/actions.test.ts` "a standing restriction 'until your next turn' ends then too". Teferi's Protection's "life total can't change" lasted for ever; 5 of the 14 runaways (games 40, 107, 117, 155, 184) now end with a LIFE win. Bench in engine/status/parser.md.
+- Token swarms, the bot (not a rules fix): 1cb2be4, `engine/src/ai/ai.test.ts` (futile target passed over; a 30-token swarm attacks all-out). Runaways 14 -> 11 on the 200-game bench; the rest are Solitary Confinement and attack-tax locks.
+- **Auditor check (15 Nov, on 0f7f7a9):** engine 875 tests and typecheck green; audit_findings and audit_triage_real 46/46. I read the F28 tests (Cyclonic Rift overloaded: the opponent's nonland permanents to hand; mine and their lands stay; cast normally, only its target) and the karoo tests (Coral Atoll stays by returning an untapped Island; with none, it's sacrificed). Both assert the rule. Accepted.

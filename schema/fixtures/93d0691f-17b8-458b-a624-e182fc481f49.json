@@ -1,0 +1,78 @@
+{
+ "ir_version": 2,
+ "oracle_id": "93d0691f-17b8-458b-a624-e182fc481f49",
+ "name": "Ertai's Trickery",
+ "card_hash": "c1314ebe33c31f359bec6b23bea56682",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "93d0691f-17b8-458b-a624-e182fc481f49",
+  "name": "Ertai's Trickery",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ertai's Trickery",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Counter target spell if it was kicked.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 31232,
+  "scryfall_uri": "https://scryfall.com/card/pls/24/ertais-trickery?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "93d0691f-17b8-458b-a624-e182fc481f49",
+   "name": "Ertai's Trickery",
+   "face": 0,
+   "face_name": "Ertai's Trickery",
+   "card_hash": "c1314ebe33c31f359bec6b23bea56682",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Counter target spell if it was kicked."
+      }
+     ],
+     "text": "Counter target spell if it was kicked.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Counter target spell if it was kicked.",
+     "reason": "'it was kicked' names another spell; this card has no such cost",
+     "rule": "condition"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

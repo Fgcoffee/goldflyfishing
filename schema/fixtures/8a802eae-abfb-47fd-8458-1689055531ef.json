@@ -1,0 +1,115 @@
+{
+ "ir_version": 2,
+ "oracle_id": "8a802eae-abfb-47fd-8458-1689055531ef",
+ "name": "Siege Wurm",
+ "card_hash": "f5dad3e3721d9efee4b71e16a20f5aa6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "8a802eae-abfb-47fd-8458-1689055531ef",
+  "name": "Siege Wurm",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Siege Wurm",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 5,
+       "text": "{5}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Wurm"
+     ]
+    },
+    "oracle_text": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nTrample",
+    "power": "5",
+    "toughness": "5",
+    "colors": 16,
+    "keywords": [
+     "Trample",
+     "Convoke"
+    ]
+   }
+  ],
+  "mana_value": 7,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 19314,
+  "scryfall_uri": "https://scryfall.com/card/rvr/155/siege-wurm?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "8a802eae-abfb-47fd-8458-1689055531ef",
+   "name": "Siege Wurm",
+   "face": 0,
+   "face_name": "Siege Wurm",
+   "card_hash": "f5dad3e3721d9efee4b71e16a20f5aa6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 151,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "keywords": [
+        "Convoke"
+       ],
+       "text": "Convoke: tap to help pay"
+      }
+     ],
+     "text": "Convoke",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Convoke",
+     "quality": {
+      "$": "ObjectFilter",
+      "types_all": 4,
+      "controller": 1
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Trample",
+     "keyword": "Trample"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

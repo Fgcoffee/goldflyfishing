@@ -160,6 +160,7 @@ function castable(game: Game, playerId: PlayerId, sorcerySpeed: boolean): Action
 
 /** CR 601.2c as this alternative cost makes the spell: bestowed, it needs a creature (CR 702.103b). */
 function targetsAvailableCastAs(game: Game, obj: GameObject, playerId: PlayerId, alternative: AlternativeCost): boolean {
+  if (str(alternative.keyword).toLowerCase() === "overload") return true; // CR 702.96b: "each", so no targets
   if (!targetsAvailable(game, obj, playerId)) return false;
   if (str(alternative.keyword).toLowerCase() !== "bestow") return true;
   const enchantCreature = {

@@ -10,13 +10,20 @@
 
 # The TS engine's Node replay CLI, for the spot check of browser runs
 # (mtgfish/web/browser_runs.py): bundled from the same engine/src the server
-# fingerprints, so it replays exactly the build the page ran.
+# fingerprints, so it replays exactly the build the page ran. And the engine
+# bundle for the site's Results and Replay screens (webapp/src/site), built
+# into mtgfish/ui/web/engine/ for the server to serve beside the page.
 FROM node:22-slim AS engine
-WORKDIR /engine
-COPY engine/package.json engine/package-lock.json ./
-RUN npm ci --no-audit --no-fund
-COPY engine/src ./src
-RUN npm run build:replay
+WORKDIR /build
+COPY engine/package.json engine/package-lock.json ./engine/
+RUN cd engine && npm ci --no-audit --no-fund
+COPY webapp/package.json webapp/package-lock.json ./webapp/
+RUN cd webapp && npm ci --no-audit --no-fund
+COPY engine/src ./engine/src
+RUN cd engine && npm run build:replay
+COPY webapp/src ./webapp/src
+COPY webapp/vite.site.config.ts webapp/engine-build.mjs ./webapp/
+RUN cd webapp && npm run build:site && test -s ../mtgfish/ui/web/engine/goldfly-site.js
 
 FROM python:3.12-slim
 
@@ -45,8 +52,9 @@ COPY --chown=app engine/src ./engine/src
 RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 \
  && rm -rf /var/lib/apt/lists/*
 COPY --from=engine /usr/local/bin/node /usr/local/bin/node
-COPY --from=engine --chown=app /engine/dist ./engine/dist
+COPY --from=engine --chown=app /build/engine/dist ./engine/dist
 RUN node --version && test -s engine/dist/replay.cjs
+COPY --from=engine --chown=app /build/mtgfish/ui/web/engine ./mtgfish/ui/web/engine
 COPY --chown=app cache/scryfall ./data/scryfall
 COPY --chown=app cache/pool.json cache/comprehensive_rules.txt ./data/
 

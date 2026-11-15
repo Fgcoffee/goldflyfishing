@@ -1,0 +1,199 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
+ "name": "Liliana Vess",
+ "card_hash": "5f700aaf1bf1a239f8a099d1a3d65134",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
+  "name": "Liliana Vess",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Liliana Vess",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Liliana"
+     ]
+    },
+    "oracle_text": "+1: Target player discards a card.\n−2: Search your library for a card, then shuffle and put that card on top.\n−8: Put all creature cards from all graveyards onto the battlefield under your control.",
+    "loyalty": "5",
+    "colors": 4
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 4818,
+  "scryfall_uri": "https://scryfall.com/card/m15/103/liliana-vess?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
+   "name": "Liliana Vess",
+   "face": 0,
+   "face_name": "Liliana Vess",
+   "card_hash": "5f700aaf1bf1a239f8a099d1a3d65134",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 21,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "text": "discard"
+      }
+     ],
+     "text": "+1: Target player discards a card.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 0,
+       "text": "search library"
+      }
+     ],
+     "text": "-2: Search your library for a card, then shuffle and put that card on top.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": -2
+        },
+        "text": "-2"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "zones": {
+         "$set": [
+          3
+         ]
+        }
+       },
+       "zone": 2,
+       "text": "put onto the battlefield"
+      }
+     ],
+     "text": "-8: Put all creature cards from all graveyards onto the battlefield under your control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": -8
+        },
+        "text": "-8"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

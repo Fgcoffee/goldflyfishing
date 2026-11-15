@@ -1,0 +1,91 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f8c9cb9f-3a37-4004-9cde-f51ca5579e1a",
+ "name": "Soltari Priest",
+ "card_hash": "b4e827177a205281b7c0ed23482f14f8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f8c9cb9f-3a37-4004-9cde-f51ca5579e1a",
+  "name": "Soltari Priest",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Soltari Priest",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Soltari",
+      "Cleric"
+     ]
+    },
+    "oracle_text": "Protection from red\nShadow (This creature can block or be blocked by only creatures with shadow.)",
+    "power": "2",
+    "toughness": "1",
+    "colors": 1,
+    "keywords": [
+     "Shadow",
+     "Protection"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 21576,
+  "scryfall_uri": "https://scryfall.com/card/tpr/32/soltari-priest?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f8c9cb9f-3a37-4004-9cde-f51ca5579e1a",
+   "name": "Soltari Priest",
+   "face": 0,
+   "face_name": "Soltari Priest",
+   "card_hash": "b4e827177a205281b7c0ed23482f14f8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Protection from red",
+     "keyword": "Protection",
+     "quality": {
+      "$": "ObjectFilter",
+      "colors_any": 8,
+      "zones": {
+       "$set": []
+      }
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Shadow",
+     "keyword": "Shadow"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

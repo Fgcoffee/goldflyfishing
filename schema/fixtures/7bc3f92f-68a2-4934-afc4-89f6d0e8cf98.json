@@ -1,0 +1,187 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7bc3f92f-68a2-4934-afc4-89f6d0e8cf98",
+ "name": "Dusk // Dawn",
+ "card_hash": "597ae1ca518b75a412fe3dd5800c86ff",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7bc3f92f-68a2-4934-afc4-89f6d0e8cf98",
+  "name": "Dusk // Dawn",
+  "layout": 1,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Dusk",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Destroy all creatures with power 3 or greater.",
+    "colors": 1,
+    "keywords": [
+     "Aftermath"
+    ]
+   },
+   {
+    "$": "FaceDef",
+    "name": "Dawn",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Aftermath (Cast this spell only from your graveyard. Then exile it.)\nReturn all creature cards with power 2 or less from your graveyard to your hand.",
+    "colors": 1,
+    "keywords": [
+     "Aftermath"
+    ]
+   }
+  ],
+  "mana_value": 9,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 944,
+  "scryfall_uri": "https://scryfall.com/card/mkc/61/dusk-dawn?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7bc3f92f-68a2-4934-afc4-89f6d0e8cf98",
+   "name": "Dusk // Dawn",
+   "face": 0,
+   "face_name": "Dusk",
+   "card_hash": "597ae1ca518b75a412fe3dd5800c86ff",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "power": {
+         "$": "NumericConstraint",
+         "comparison": 5,
+         "value": {
+          "$": "Value",
+          "constant": 3
+         }
+        }
+       },
+       "text": "destroy"
+      }
+     ],
+     "text": "Destroy all creatures with power 3 or greater."
+    }
+   ],
+   "failures": []
+  },
+  {
+   "ir_version": 2,
+   "oracle_id": "7bc3f92f-68a2-4934-afc4-89f6d0e8cf98",
+   "name": "Dusk // Dawn",
+   "face": 1,
+   "face_name": "Dawn",
+   "card_hash": "597ae1ca518b75a412fe3dd5800c86ff",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Aftermath"
+      }
+     ],
+     "text": "Aftermath",
+     "keyword": "Aftermath"
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "zones": {
+         "$set": [
+          3
+         ]
+        },
+        "owner": 1,
+        "power": {
+         "$": "NumericConstraint",
+         "comparison": 3,
+         "value": {
+          "$": "Value",
+          "constant": 2
+         }
+        }
+       },
+       "text": "return to hand"
+      }
+     ],
+     "text": "Return all creature cards with power 2 or less from your graveyard to your hand."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

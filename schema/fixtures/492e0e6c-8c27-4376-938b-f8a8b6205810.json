@@ -1,0 +1,136 @@
+{
+ "ir_version": 2,
+ "oracle_id": "492e0e6c-8c27-4376-938b-f8a8b6205810",
+ "name": "Leyline of Sanctity",
+ "card_hash": "eb2bab3f9811b29e5812923a02dbf916",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "492e0e6c-8c27-4376-938b-f8a8b6205810",
+  "name": "Leyline of Sanctity",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Leyline of Sanctity",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "If this card is in your opening hand, you may begin the game with it on the battlefield.\nYou have hexproof. (You can't be the target of spells or abilities your opponents control.)",
+    "colors": 1
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 7512,
+  "scryfall_uri": "https://scryfall.com/card/m20/26/leyline-of-sanctity?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "492e0e6c-8c27-4376-938b-f8a8b6205810",
+   "name": "Leyline of Sanctity",
+   "face": 0,
+   "face_name": "Leyline of Sanctity",
+   "card_hash": "eb2bab3f9811b29e5812923a02dbf916",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "If this card is in your opening hand, you may begin the game with it on the battlefield."
+      }
+     ],
+     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "hexproof",
+         "keyword": "hexproof"
+        }
+       ],
+       "text": "a player gains hexproof"
+      }
+     ],
+     "text": "You have hexproof."
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "If",
+      "this",
+      "card",
+      "is",
+      "in",
+      "your",
+      "opening",
+      "hand",
+      ",",
+      "you",
+      "may",
+      "begin",
+      "the",
+      "game",
+      "with",
+      "it",
+      "on",
+      "the",
+      "battlefield",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

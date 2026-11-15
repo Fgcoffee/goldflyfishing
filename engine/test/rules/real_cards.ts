@@ -32,6 +32,13 @@ export function realCard(name: string): CardDef {
   return card;
 }
 
+/** A fixture card's whole document (faces with fully_read and failures), by name. */
+export function realDocument(name: string): CardDocument {
+  const doc = BY_NAME.get(name);
+  if (doc === undefined) throw new Error(`${name} isn't in schema/fixtures.txt`);
+  return doc;
+}
+
 /** Abilities from the fixtures' IR, as play() provides them. */
 export const REAL_ABILITIES: AbilityProvider = {
   abilitiesFor(card: unknown, faceIndex: number): readonly Ability[] {
@@ -58,6 +65,11 @@ export class RealBoard {
   }
   hand(name: string, owner = 0): GameObject {
     const obj = createObject(this.game, realCard(name), owner, Zone.HAND);
+    this.game.epoch += 1;
+    return obj;
+  }
+  graveyard(name: string, owner = 0): GameObject {
+    const obj = createObject(this.game, realCard(name), owner, Zone.GRAVEYARD);
     this.game.epoch += 1;
     return obj;
   }

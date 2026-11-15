@@ -1,0 +1,129 @@
+{
+ "ir_version": 2,
+ "oracle_id": "6d9af084-cd5d-4242-b0f0-24a36d0a75d4",
+ "name": "Arcbound Worker",
+ "card_hash": "c2af107ddfc320e6422ad5bb9c64242b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6d9af084-cd5d-4242-b0f0-24a36d0a75d4",
+  "name": "Arcbound Worker",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Arcbound Worker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Construct"
+     ]
+    },
+    "oracle_text": "Modular 1 (This creature enters with a +1/+1 counter on it. When it dies, you may put its +1/+1 counters on target artifact creature.)",
+    "power": "0",
+    "toughness": "0",
+    "keywords": [
+     "Modular"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 7855,
+  "scryfall_uri": "https://scryfall.com/card/mma/201/arcbound-worker?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "6d9af084-cd5d-4242-b0f0-24a36d0a75d4",
+   "name": "Arcbound Worker",
+   "face": 0,
+   "face_name": "Arcbound Worker",
+   "card_hash": "c2af107ddfc320e6422ad5bb9c64242b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "enters with 1 +1/+1 counters"
+      }
+     ],
+     "text": "Modular 1",
+     "keyword": "Modular"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 72,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 5,
+          "other_than_source": true
+         },
+         "amount": {
+          "$": "Value",
+          "kind": 10,
+          "counter_type": "+1/+1"
+         },
+         "is_targeted": true,
+         "counter_type": "+1/+1"
+        }
+       ],
+       "text": "you may move its +1/+1 counters to target artifact creature"
+      }
+     ],
+     "text": "Modular 1",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        3
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true,
+       "zones": {
+        "$set": []
+       }
+      },
+      "uses_last_known_information": true,
+      "text": "when this dies (Modular)"
+     },
+     "keyword": "Modular"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

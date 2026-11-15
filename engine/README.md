@@ -50,8 +50,8 @@ auditor, so two agents don't edit them at once.
   the web session switches the app over.
 
 ### The Python code is frozen
-- No features, refactors or bug fixes, until the user says otherwise.
-- Bug resolution is paused, F61 included.
+- No features, refactors or bug fixes in Python; it is retired at the switch-over.
+- From 15 Nov, Magic rules fixes are made in the TS engine (`ROADMAP.md`, "Now, in parallel"), each with a test.
 - Edits from the user's collaborator may still land in the Python logic while
   the port runs. The auditor tracks them and tells the owner of the matching TS
   module, so they're carried over.

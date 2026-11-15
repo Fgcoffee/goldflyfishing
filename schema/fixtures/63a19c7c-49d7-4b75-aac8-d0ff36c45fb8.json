@@ -1,0 +1,228 @@
+{
+ "ir_version": 2,
+ "oracle_id": "63a19c7c-49d7-4b75-aac8-d0ff36c45fb8",
+ "name": "Sowing Mycospawn",
+ "card_hash": "ba4b85468b8cfc6ca858a794efc3ecc2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "63a19c7c-49d7-4b75-aac8-d0ff36c45fb8",
+  "name": "Sowing Mycospawn",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sowing Mycospawn",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Eldrazi",
+      "Fungus"
+     ]
+    },
+    "oracle_text": "Devoid (This card has no color.)\nKicker {1}{C} (You may pay an additional {1}{C} as you cast this spell.)\nWhen you cast this spell, search your library for a land card, put it onto the battlefield, then shuffle.\nWhen you cast this spell, if it was kicked, exile target land.",
+    "power": "3",
+    "toughness": "3",
+    "keywords": [
+     "Devoid",
+     "Kicker"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 2094,
+  "scryfall_uri": "https://scryfall.com/card/mh3/170/sowing-mycospawn?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "63a19c7c-49d7-4b75-aac8-d0ff36c45fb8",
+   "name": "Sowing Mycospawn",
+   "face": 0,
+   "face_name": "Sowing Mycospawn",
+   "card_hash": "ba4b85468b8cfc6ca858a794efc3ecc2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 145,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "text": "is colorless"
+      }
+     ],
+     "text": "Devoid",
+     "functions_in": {
+      "$set": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ]
+     },
+     "keyword": "Devoid",
+     "is_characteristic_defining": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Kicker {1}{C}",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Kicker",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 1,
+            "text": "{1}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 3,
+            "text": "{C}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Kicker",
+      "text": "Kicker {1}{C}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16,
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 2,
+       "text": "search library"
+      }
+     ],
+     "text": "When you cast this spell, search your library for a land card, put it onto the battlefield, then shuffle.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 16
+       },
+       "is_targeted": true,
+       "text": "exile"
+      }
+     ],
+     "text": "When you cast this spell, if it was kicked, exile target land.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "intervening_if": {
+       "$": "Condition",
+       "kind": 14,
+       "text": "it was kicked"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

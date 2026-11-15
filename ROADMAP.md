@@ -26,9 +26,9 @@ The paths each owns are in [`engine/README.md`](engine/README.md).
 
 ## Phase 1: the TypeScript port (current)
 
-Python is frozen. Magic rules bugs are ported as they are, marked
-`// KNOWN: Fxx`, and fixed after the port. Only crashes, broken builds or tests,
-and games that don't replay from their seed are fixed now.
+Python is frozen. Magic rules bugs were ported as they are, marked
+`// KNOWN: Fxx`. **From 15 Nov they are fixed in the TS engine; see "Now, in
+parallel" below.**
 
 ### rules
 - [x] Kernel foundations: enums, ids, seeded PRNG with `seedFor`, log digest (d7a1822)
@@ -45,7 +45,7 @@ and games that don't replay from their seed are fixed now.
 - [x] Combat (CR 506-511): attack and block requirements, costs, damage (b2f823b, 1ed92e2)
 - [x] `play(setup, index, seed)` entry point for the runner, agreed with web (50fcbfb; CR 727 restarts 4a7e76a)
 - [x] Engine build fingerprint (version plus commit, stamped at build), recorded in every game record. `play` runs unchanged in Node, so the server can replay uploaded games (the fingerprint is web's content hash of engine/src, stamped by Vite and stored with every uploaded run; `play` runs in Node in play.test.ts, see status/rules.md)
-- [x] Each module's Python board tests ported as Vitest tests (each module's own commit, then the files listed in status/rules.md on hand-written IR and the parser's real-card fixtures; open: test_cr608_each_opponents_cards waits on one fixture, and two granted-keyword cases need Python's keyword builder)
+- [x] Each module's Python board tests ported as Vitest tests (each module's own commit, then the files listed in status/rules.md on hand-written IR and the parser's real-card fixtures; the last two fixtures' cases ported in each_opponents_cards_real and target_counts_real; open: two granted-keyword cases need Python's keyword builder (Cauldron of Souls doesn't parse yet))
 
 ### parser
 - [x] IR v1: JSON schema, codec, exporter; every face round-trips (70c670b)
@@ -87,7 +87,7 @@ and games that don't replay from their seed are fixed now.
 - [x] `/api/ir/decks` uses `IRStore`. Live-parsed cards aren't cached as immutable; cache keys include the build fingerprint (b357de9, 958fee4)
 - [x] End-to-end harness page: decklist in, IR fetched, stub games in workers, results table out (b357de9)
 - [x] Report and stats port (`stats.py` summarize) in TS. Partial (a3e0cd6, 22e390e): outcomes, commander histogram, card impact. Per-turn series, removal, runaways and loop draws: game records carry them (78cde2a) and the report aggregates them (rules)
-- [ ] Results and replay screens read browser runs. Results payload done (results commit); replay screen next
+- [x] Results and replay screens read browser runs *(parser, 15 Nov: 43fe6e7 replay view, d565832 payloads, 7fa0361 endpoint, 07b9098 site bundle, 9897e43 History; card art in browser replays is still to do, see status/parser.md)*. Results payload: web's `reportPayload` (1a7917e), which the site bundle uses
 - [ ] Switch the website from server simulations to browser simulations
 - [x] **Every browser run is sent back to the server and stored.** (22e390e; uploads from another engine build refused with "reload": engine build gate commit) Required before the switch-over. Each run records:
   - the run seed (master seed), the game range, and each game's own seed and log digest;
@@ -110,9 +110,106 @@ and games that don't replay from their seed are fixed now.
 
 ---
 
+## Now, in parallel (from 15 Nov)
+
+The engine is ported (milestones 1-4), so rules fixes start now in the TypeScript engine, alongside the web work.
+- Python stays frozen. It is retired at the switch-over, so fixes go into TS only.
+- Each fix comes with a Vitest test that reproduces the finding. When it's fixed, its `// KNOWN: Fxx` comment comes out.
+- Tick an item with the commit, and record the fix in `audit/AUDIT_LOG.md` (the auditor checks it).
+
+### rules
+- [x] **Triage** every rules-owned finding in `audit/AUDIT_LOG.md` on the TS engine: a test that shows whether it still happens. List them, open or already fixed, in `engine/status/rules.md`. (d31cae2, 071192b, list in status/rules.md)
+- [x] **Fix the open rules findings,** BLOCK first (F28 b28f152 + 071192b, F62 and F64 3ceafeb, karoo c4232df; F54, F56 and F60 were already fine in TS). For example:
+  - F28 overload;
+  - F54;
+  - F56;
+  - F60;
+  - F62 (MOVE_ZONE to the library);
+  - F64 (VOTE, guarded);
+  - karoo lands always sacrificed.
+- [ ] **Token swarms:** 12 of 200 bench games hit the 90 s watchdog, with 800-5,800 permanents (Krenko, Mob Boss). Make each step cheaper, or end the game as a runaway the way Python's observer does, so no browser game runs for minutes.
+- [ ] **Wide boards fast, so the swarm cap is only a safety net** (15 Nov, top priority):
+  - one board recompute per token batch, not per token;
+  - trigger watchers cached per characteristics epoch;
+  - continuous effects not recomputed in full for each one.
+  - Same digests before and after. Target: bench game 9 (seed 1673232466) to turn 52 in under 5 s.
+  - Then profile a median game and fix the top three hotspots. Then raise the cap from 500 to 5,000.
+- [ ] **Interaction reports from users** (see Reports): replay to the reported step, then fix or log.
+
+### parser
+- [x] **Triage** the parser-owned findings the same way (c99699c: audit_triage_parser_real.test.ts; open ones listed in status/parser.md). For example:
+  - F37 Toxic Deluge;
+  - F49 spot-check cards;
+  - F58;
+  - F59 Soul-Guide Lantern.
+- [ ] **Fix the open card-reading findings,** BLOCK first. Re-export the IR and refresh the samples.
+- [ ] **Cards that don't read yet:** "Choose any number of target creatures" (Cauldron of Souls), then the most-played unread abilities by deck usage.
+- [ ] **The AI attacks with its swarms** (15 Nov, top priority after F37). Today a 1/1 token never attacks while the opponent has any creature, so token armies grow until the cap stops the game with no winner (14 of 200 bench games).
+  - A lethal check (alpha strike) and a swarm rule.
+  - A size budget for the lookahead on huge boards.
+  - Check on the 200-game bench: swarm runaways near 0, and win rates in normal games not reckless.
+- After that, **no more polish on the hand-written AI**; it will be replaced (Phase 3). Only fixes that make results wrong.
+- [ ] **Card reports from users** (see Reports): fix the reading, or answer the report.
+
+### web
+- [ ] The switch-over (Phase 1, above): behind a flag first. The auditor and the user give the go for the live site. *Behind the flag: done (switch-over commit; ?engine=browser). Live go pending.*
+- [ ] **Sandbox on the TS engine,** in the browser, so a sandbox game replays from its setup and can be reported.
+- [ ] Reports, below.
+
+## Reports: users tell us where a card or an interaction is wrong
+
+Owner: web (screens, storage, review page). The parser acts on card reports, rules on interaction reports, and the auditor checks the fixes.
+
+- [ ] **Report a card,** wherever a card is shown (decklists, Results, card impact, Replay, Sandbox).
+  - Clicking a card opens its reading (the card drawer that exists today). Add "Report this reading": what's wrong (a missing, wrong or extra ability, or other), and what it should do, in the user's words.
+  - Stored with:
+    - the oracle id and name;
+    - the IR card hash and IR build;
+    - the reading the user saw;
+    - their text;
+    - the page it came from;
+    - the account, if signed in.
+- [ ] **Report a step in a game (Replay).** Replay shows the game step by step, as log and board, and any step can be reported: "this went wrong here", and what should have happened.
+  - Stored with:
+    - the run id, game index and seed;
+    - the engine and IR builds;
+    - the decks;
+    - the step's index in the game log.
+  - So we can replay the game to exactly that point.
+- [ ] **Report a step in Sandbox:** the same, stored with the sandbox's setup, its seed and every action taken, so the position is rebuilt exactly.
+- [ ] **Review page for us,** for admin accounts only (named in a server setting).
+  - Every report, newest first, filtered by card, kind and status: new, confirmed, fixed, not a bug, duplicate.
+  - Opens the replay or sandbox at the reported step, and the card's reading.
+  - A confirmed report gets an F number in `audit/AUDIT_LOG.md` or a test. When it's fixed, the engine or IR build that fixed it is recorded.
+  - Reporters see their reports' status on their account page.
+- [ ] **Reports and privacy:**
+  - Reports are rate-limited and need no account; anonymous reports carry no link to a person.
+  - Signed-in reports are in the account export and deleted with the account.
+  - The privacy page says so.
+
+---
+
+## New cards: pulled automatically, and users can flag them
+
+- [ ] *(parser)* **Automatic pull.** A daily check of Scryfall. When new cards appear, the update is prepared on its own:
+  - new card data and card database;
+  - the IR export;
+  - which new cards read fully and which don't;
+  - new keywords (the keyword registry test names them);
+  - the changes in the Comprehensive Rules.
+
+  It lands as an update ready to deploy (a commit or pull request with its tests run), never straight onto the live site untested.
+- [ ] *(web)* **Alert us at once** when new cards are found: on the admin page, and as a message to a private Discord channel or by email (the owner picks which in a server setting).
+- [ ] *(web)* **"New cards are out" button** for signed-in users, to tell us something new is out, or a card is missing, so we check, update and parse it as soon as possible.
+  - It runs the check straight away and alerts us.
+  - A user can press it at most once every 2 months.
+- [ ] *(rules)* **Review the new Comprehensive Rules** with each set. The citation baseline test flags every rule we cite whose wording changed; review each, update the code, re-record the baseline.
+
+---
+
 ## Phase 2: after the TypeScript conversion
 
-Not started until Phase 1 is finished.
+Started once the switch-over is done, apart from the reports above.
 
 ### web
 - [ ] **Restore the Cut lab and Recs tabs** on the TS engine. They were taken off the live Render page for now.
@@ -135,10 +232,22 @@ Not started until Phase 1 is finished.
   - [x] Card classification: each card document's `bracket` tags and `mtgfish.ir.bracket.estimate` (a073ae9). Combos wait on a combo list.
 - [ ] **Actual bracket** from simulations, once a deck has been played enough for a reliable win turn. It comes from win turn and win rate against reference decks, with a confidence level and the number of games it's based on. Shown next to the estimate, flagged when they disagree. Stats: web. Reference decks and sanity checks: auditor.
 
-### rules and parser (deferred rules fixes)
-- [ ] Fix the Magic rules findings deferred during the port, once games can be watched. All are logged in `audit/AUDIT_LOG.md`, e.g.:
-  - F28 overload;
-  - F37 Toxic Deluge;
-  - F49 spot-check cards;
-  - karoo lands always sacrificed;
-  - the F61 reproduction.
+## Phase 3: a learned AI that knows how to play each deck
+
+The user's plan (15 Nov). It starts when about 95% of played cards are fully read and the rules are complete; the measure is weighted by play rate, see `play_rate_report`.
+- **Deck profile** (the "political score"): a vector computed from the deck's cards, so one card's difference moves it a little.
+- **A grid of profile nodes,** each with learned weights for card genres (ramp, draw, removal, threats and so on) and for attacking and targeting. The weights come from self-play over many decks.
+- **A user's deck** gets weights interpolated from the nearest nodes. Decks far from every node are saved and trained on at the next monthly run.
+
+Groundwork, which can be done earlier because it costs little and changes no behaviour:
+- [ ] *(parser)* **Card genre tags** from the IR (ramp, draw, removal, wipe, counter, tutor, threat, protection), next to the bracket tags.
+- [ ] *(parser)* **The AI reads its priorities from a weight list.** Today's values become the default weights, so games are unchanged.
+- [ ] *(parser, AI)* **The "hover" preview records more.** The lookahead already plays one action out on a private copy (the spell, everything it triggers, nobody responding, draws counted but not seen) and summarises what changed. Add:
+  - power, toughness and keyword changes (Craterhoof: +X/+X and trample);
+  - damage dealt to players and creatures;
+  - counters, mana and tokens with their stats;
+  - the combat damage the board could deal afterwards.
+
+  So "deal damage this turn" and "draw a card this turn" can both be scored (Lightning Bolt with Archmage of Runes).
+- [ ] *(rules)* **Cheaper previews:** copy only what changes (copy-on-write, or an undo log) instead of the whole game for every option.
+- [ ] *(web)* **Model weights are part of the engine build fingerprint,** so replays and the spot check stay exact. Inference stays in plain TS maths, never GPU, so every browser gets the same digest.

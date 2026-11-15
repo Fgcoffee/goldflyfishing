@@ -1068,9 +1068,10 @@ registerExecutor(ir("EffectKind.RETURN_TO_HAND"), (resolution, effect) => {
 });
 
 registerExecutor(ir("EffectKind.MOVE_ZONE"), (resolution, effect) => {
-  // KNOWN: F62 - Python's `effect.zone or Zone.GRAVEYARD` sends a LIBRARY
-  // destination (0) to the graveyard; ported as is.
-  const destination = effect.zone == null ? Zone.GRAVEYARD : num(effect.zone) || Zone.GRAVEYARD;
+  // F62 (fixed in TS): the library is Zone 0, so Python's
+  // `effect.zone or Zone.GRAVEYARD` sent it to the graveyard. Only a missing
+  // destination means the graveyard.
+  const destination = effect.zone == null ? Zone.GRAVEYARD : num(effect.zone);
   const objects = objectsOf(resolution, effect);
   revealIfSaid(resolution, effect, objects); // CR 701.20
   for (const obj of objects) moveObject(resolution.game, obj, destination as Zone, { toPlayer: obj.owner });
@@ -2479,9 +2480,9 @@ registerExecutor(ir("EffectKind.UNTAP_STEP_SKIP"), (resolution) => {
 /**
  * CR 701.34: each player votes, starting with the player after the
  * controller in turn order; the tally is kept; the winner's child happens.
- * KNOWN: F64 - Python calls `game.apnap_order(next_player(...))`, but
- * apnap_order takes no argument, so every vote crashes there; guarded here
- * with the evident intent, turn order from the next player.
+ * F64 (fixed in TS): Python calls `game.apnap_order(next_player(...))`, but
+ * apnap_order takes no argument, so every vote crashed there. Here the vote
+ * runs in turn order from the next player, the evident intent.
  */
 registerExecutor(ir("EffectKind.VOTE"), (resolution, effect) => {
   const game = resolution.game;

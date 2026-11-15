@@ -371,6 +371,8 @@ test_cr601_additional_cost_record, test_cr601_target_counts,
 test_cr608_pay_if_you_do (and Rest in Peace), test_cr118_alternative_costs,
 test_cr601_granted_cast_abilities. 809 engine tests green.
 **The item is ticked.** Still open, all small:
+- (Done: each_opponents_cards_real.test.ts and target_counts_real's Ulamog,
+  the Ceaseless Hunger case, on the parser's d59284f fixtures.)
 - test_cr608_each_opponents_cards uses Soul-Guide Lantern, which I didn't
   ask for (I named Rest in Peace by mistake; it went to another file).
 - test_cr601_target_counts's Ulamog case is Ulamog, the Ceaseless Hunger;
@@ -438,8 +440,206 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Speed on wide boards (auditor's top priority, 15 Nov)
+
+Three exact optimizations (0454f23, 7e1d3ba, 5df22d0). **All 200 bench
+games give identical digests** before (1d6b8df) and after (5df22d0).
+- Finished games: median 1.15 s -> 0.98 s (-15%); total 304 s -> 243 s.
+- All 200 games: 478 s -> 309 s (-35%).
+- Swarm games (stopped at the 500 cap): game 9 79 s -> 19 s; 70 19 s ->
+  6.9 s; 107 13.7 s -> 5.4 s; 184 10.4 s -> 2.8 s; 187 12.0 s -> 4.9 s.
+- What changed:
+  - layers: an effect is applied only to the objects its filter names; the
+    CR 613.8 dependency search pairs only effects that can meet, walks the
+    smaller side, skips objects where B changed nothing A's filter reads,
+    and is skipped outright when every effect in a layer only changes P/T
+    or only adds abilities and no filter there reads those fields;
+    `dependsOn`'s "what it does" comparison was dead (it reads the game,
+    never the characteristics handed to it) and is gone;
+  - casting: each permanent's cost-changing and stack-granting statics are
+    read once per epoch, not once per card in hand per listing; granted
+    keywords are one object per word, so grants compare by reference.
+- **Not reached: game 9 under 5 s.** What's left is the number of full
+  board recomputes: about three per token (the token's own epoch bump,
+  each Ogre Battledriver trigger's two effects, the catch-all bump after
+  every resolution), each O(board). An incremental board needs every
+  mutation to say what it changed (68 invalidation sites plus the
+  catch-all in resolveTop, which tapping, counters and other live fields
+  rely on). That's a redesign; I'd rather agree the plan first.
+- **Median-game hotspots now:** the bot's `decide` is ~48% (legalActions
+  27%, of which payment planning in `affordable` ~9%; the lookahead
+  `project` 21%), board recomputes ~33%, trigger collection ~14%.
+- **The cap stays at 500 for now.** Swarm cost grows with the square of
+  the board, so a game run to 5,000 permanents would take many minutes at
+  today's speed. Raise it once the parser's AI fix (attacking with
+  tokens) keeps swarms small; then I'll rerun the bench and report how
+  often the cap is hit.
+
+## Token swarms: the cap (1d6b8df) and the bench after it
+
+**200-game bench** (same decks, runSeed 20261114, maxRounds 25, Node,
+SimpleAgent, 90 s watchdog), engine at 1d6b8df:
+- **0 crashes** (F63 and game 63's hang are fixed on the parser's side).
+- Endings: 129 LIFE, 47 COMMANDER_DAMAGE, 5 DECKING, 5 STALL_OUT (the
+  100-turn cap), **14 TOKEN SWARM runaways (7%)**, all Krenko, Mob Boss:
+  games 9, 27, 33, 40, 47, 70, 77, 102, 107, 117, 155, 173, 184, 187. No
+  game hit the watchdog.
+- Finished games: median 1.15 s, p90 3.0 s, slowest 11.6 s. The widest
+  finished game peaked at 422 permanents (p99 388, median 55), so the cap
+  of 500 stops only the swarms.
+- Game 9 (seed 1673232466) still takes 79 s to reach the cap: Ogre
+  Battledriver's continuous effects make each step costly on a wide board.
+  Games 70 (19 s) and 107 (14 s) are the next slowest.
+- **Runaways are their own line** (this commit): the record's win reason
+  is `RUNAWAY` (new; Python had none), and `buildReport` counts them in
+  `runawayGames` and `winReasons.RUNAWAY`, never in `stalls` (Python
+  counted them as stalls). `report.runaways` still names what was stopped.
+  - **For the web session:** `webapp/src/results.ts` passes `stalls`
+    and `win_reasons` through; `runawayGames` isn't in the payload yet, and
+    main.ts's note only mentions stalls. Worth a line such as "N games
+    stopped as runaways (Krenko, Mob Boss)".
+- **Cheaper steps on wide boards (layers, this commit), exact:** an
+  effect is applied only to the objects its filter names (as the
+  dependency probe already did), the dependency search pairs an effect
+  only with effects that change what it can reach, and each pair walks the
+  smaller side. Same digests on 26 games (0-23, 102, 117, and game 9's
+  b30cd7d31ff179bb). Those 26 games: 104 s -> 84 s in all; game 9 67 s ->
+  41 s. What's left in game 9 is board recomputation itself (each token
+  invalidates the board; broad effects such as anthems are matched against
+  every object each time), which needs an incremental board, a larger
+  design change.
+- Next (the auditor's (c), after the open findings): make a step cheaper
+  on wide boards, then raise the cap. Leads: the parser's profile (per-token
+  trigger collection recomputes the board; the bot's lookahead clones the
+  big board).
+
+## Rules findings in TS: triage and fixes (ROADMAP "Now, in parallel")
+
+Tests: `engine/test/rules/audit_triage_real.test.ts` (real cards; 44
+fixtures added to `schema/fixtures.txt`) and `audit_findings.test.ts`
+(hand-written IR). Fixes are logged in AUDIT_LOG.md under "TS fixes".
+
+**Fixed now, in TS:** F28 overload (b28f152), F62 MOVE_ZONE to the library
+(3ceafeb), F64 VOTE (3ceafeb, marker out), karoo lands (c4232df: Coral
+Atoll-style "unless you return a land" could never be paid).
+
+**Already fine in TS** (fixed in Python before the port), each with its
+test:
+- F8 modular by LKI: "F8" (Arcbound Worker's counter reaches Ornithopter).
+- F15/F19 granted triggers: granted_triggers_real (Abnormal Endurance).
+- F22 granted undying/persist return once: granted_triggers_real (Mikaeus),
+  audit_triage_real "F22" (Rattleblaze Scarecrow).
+- F27 protection from a colour: "F27" (Bolt targets White Knight).
+- F29 "you may pay. If you do": pay_if_you_do_real.
+- F30 simultaneous deaths: "F30" (Damnation + Blood Artist + 4 Bears: 5
+  triggers).
+- F32 can't be regenerated: "F32" (Wrath of God vs Drudge Skeletons).
+- F35 Doubling Season and loyalty: "F35" (Liliana Vess enters with 10).
+- F36 Rest in Peace: pay_if_you_do_real.
+- F41/F52 cast triggers and intervening-if: "F41/F52".
+- F42 goad ends: "F42".
+- F51 N targets: target_counts_real (Wicked Pact, Ulamog).
+- F53/F53b player protection, hexproof: "F53/F53b".
+- F54 echo, cumulative upkeep: "F54" (unpaid: sacrificed; accepted: the
+  Mountains are tapped).
+- F55 Sly Instigator goads: "F55".
+- F56 Force of Will's alternative cost: alternative_costs_real.
+- F57 bestow needs a creature: "F57".
+- F60 Curse attached to nothing: "F60" (fixed as reported; note the Curse
+  is cast with no target and attaches to its caster, a separate gap).
+
+**Second batch, all already fine in TS** (audit_triage_real, "second
+batch"): F5 jump-start (mana and a discard, then exiled), F6/F7 aftermath
+(Dusk from hand only; Dawn from the graveyard, then exiled), F11 crew
+can't tap the Vehicle itself, F12 buyback offered (Capsize), F13
+Phyrexian life down to 0 (Gitaxian Probe at 2 life), F20/F23 copies
+retarget through `chooseNewTargets` (Twincast; SimpleAgent has it), F24
+replicate paid twice (Pyromatics), F26 granted conspire
+(commander_free_and_conspire_real), F39/F47/F48/F50 convoke and delve
+(Siege Wurm from lands + Bears and from 7 Bears; Stoke the Flames with
+green Bears refused; Treasure Cruise from 1 Island + 7 cards; Rosemane
+Centaur with Watchwolf first), F40 mana spent (Treasure Cruise, 3 Islands
++ 5 delved: 3), F45 emerge needs its colour.
+- F16: replicate copies may retarget (`paid_costs.ts` sets
+  MAY_CHOOSE_NEW_TARGETS); blitz's draw is a granted ability (`paid_costs.ts`);
+  warp is cast from hand only (the IR's builder sets the zone). By code
+  reading; no board test.
+- F2 (WARN, enlist then the total cost to attack as one): by code reading
+  (`combat.ts` declareAttackers: enlist first, then the locked-in total);
+  no board test (no enlist card in the fixtures).
+- Also fixed with F28: overload is offered with nothing to target (it has
+  no targets, CR 702.96b).
+
+Every rules-owned finding in AUDIT_LOG.md is now triaged. Open: none of
+the listed rules findings reproduces on the TS engine after the fixes
+above. (F38 was the Python Sandbox; F1 Sandbox.put; not engine findings.)
+
+## Bench: 200 games through `rulesEngine` (auditor's ask)
+
+The four bench decks from `schema/samples` (aggro, combo, control, stax),
+runSeed 20261114, maxRounds 25, played in Node by `playGame` with
+SimpleAgent, games 0-199, with a 90 s per-game watchdog (an `opts.watch`
+that throws). Engine at ce0b202. To reproduce one game:
+`playGame(setup, index, seedFor(20261114, index))`.
+
+**Outcomes:** 124 LIFE, 44 COMMANDER_DAMAGE, 5 DECKING, 5 STALL_OUT (games
+39, 85, 94, 143, 198: the 100-turn cap, i.e. 25 rounds; no loop draw).
+No runaways and no loop draws. Median game 1.1 s, p90 2.4 s, slowest
+finished game 81 s. Median 50 turns.
+
+**Rerun after the parser's F63 fix (20610f4):** 9 of the 10 now finish
+(55, 57, 73, 103, 142, 144, 149, 157, 194). **Game 63 (seed 3756024319)
+now hangs instead**: turn 52-54, only ~50 permanents, still going at
+90 s. Profile: 92% in declareAttackers -> attackCosts -> `affordable` ->
+canPayCost -> planPayment -> canProduceFor -> search -> pays ->
+`findPayment` -> `branches`. An unpayable attack tax of 12+ Phyrexian
+symbols makes each `findPayment` walk all 2^12 branches before it fails,
+the mana planner's search calls it for each candidate, and `affordable`
+asks again after dropping each attacker. Python raised here, so this
+hang is new with the fix. **For the parser** (mana/payment.ts is
+yours): a cheap necessary check before the branch loop would end it,
+e.g. fail at once if the pool's total plus what life can cover is less
+than the cost's minimum, or prune branches whose life already exceeds
+the budget in bulk. I've left payment.ts alone.
+
+**Crashes (before the fix): 10, all F63** (`RangeError: unreasonable number of hybrid
+symbols in a cost`, via findPayment <- canPayCost <- affordable, the attack
+costs). Games and seeds: 55 (114627385), 57 (253192874), 63 (3756024319),
+73 (3349215499), 103 (3740255445), 142 (4085659038), 144 (3216302316),
+149 (152809110), 157 (3415405777), 194 (766788920). The parser has it in
+mana/payment.ts. **No port-introduced crash** was found.
+
+**Slow games: 12 hit the 90 s watchdog**, every one a token swarm
+(Krenko, Mob Boss doubling its goblins): games 9 (1673232466), 27
+(1046943031), 33 (1135086036), 40 (3870538508), 47 (3942470300), 70
+(734201371), 77 (3471723094), 107 (3215577216), 155 (413110111), 173
+(4250891339), 184 (1731394866), 187 (3714759409). They had 800-5800
+permanents at turn 37-67. None is a loop: the game keeps advancing,
+every step costs more.
+- Profile of game 33 (60 s): 70% in `createTokens` -> `prohibited`
+  (CR 111.5, each new token is checked against prohibitions on entering)
+  -> `active` -> `collect` -> `characteristicsOf` -> `computeBoard`. Each
+  token bumps the epoch, so each one rebuilds the restriction list over
+  every permanent, and that recomputes the board: O(n^2) per swarm.
+  Python's `create_tokens`/`_active` do exactly the same, so this is
+  **inherited, not port-introduced** (Python is slower still).
+- Game 9's earlier cost, layer dependency ordering with Ogre Battledriver
+  on the board, was fixed exactly in ce0b202 (same digests, games 0-8).
+  The same O(n^2) on Python's side is what the docstring of
+  `_DependencyProbe` in cr613_layers.py describes.
+- An exact fix is possible but is a design call, so I have left it for
+  you: e.g. batch the CR 111.5 check per createTokens call when no
+  restriction on ENTER_BATTLEFIELD is in force (a token that enters can
+  itself add one, so the batch must re-check after a token with a static
+  RESTRICTION ability). Say if you want it; tokens.ts is the parser's.
+
 ## Questions for the auditor
 
+- **Bench (above):** F63's fix turns game 63 (seed 3756024319) into a
+  hang in findPayment's branch search: for the parser, see above.
+- **Bench (above):** 10 crashes, all F63; no port-introduced crash; 12
+  slow token-swarm games, inherited O(n^2) in createTokens' CR 111.5
+  check. Want the exact batching fix, from me or the parser?
 
 - Answered (auditor): the VOTE crash is F64; resolve.ts says `KNOWN: F64`
   now. paying.ts's note on a null payment context was also marked F61; it

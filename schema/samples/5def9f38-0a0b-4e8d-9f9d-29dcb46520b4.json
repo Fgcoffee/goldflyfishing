@@ -52,7 +52,7 @@
    "face": 0,
    "face_name": "Esper Sentinel",
    "card_hash": "a958a77276a81c92bd0595185d387ec6",
-   "fully_read": true,
+   "fully_read": false,
    "abilities": [
     {
      "$": "Ability",

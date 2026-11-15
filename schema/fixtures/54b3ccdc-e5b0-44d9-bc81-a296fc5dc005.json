@@ -1,0 +1,116 @@
+{
+ "ir_version": 2,
+ "oracle_id": "54b3ccdc-e5b0-44d9-bc81-a296fc5dc005",
+ "name": "Rosemane Centaur",
+ "card_hash": "cbd43451c91f973e7eafcb19cfb4bc57",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "54b3ccdc-e5b0-44d9-bc81-a296fc5dc005",
+  "name": "Rosemane Centaur",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rosemane Centaur",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Centaur",
+      "Soldier"
+     ]
+    },
+    "oracle_text": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nVigilance",
+    "power": "4",
+    "toughness": "4",
+    "colors": 17,
+    "keywords": [
+     "Vigilance",
+     "Convoke"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 17,
+  "commander_legal": true,
+  "edhrec_rank": 29516,
+  "scryfall_uri": "https://scryfall.com/card/grn/197/rosemane-centaur?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "54b3ccdc-e5b0-44d9-bc81-a296fc5dc005",
+   "name": "Rosemane Centaur",
+   "face": 0,
+   "face_name": "Rosemane Centaur",
+   "card_hash": "cbd43451c91f973e7eafcb19cfb4bc57",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 151,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "keywords": [
+        "Convoke"
+       ],
+       "text": "Convoke: tap to help pay"
+      }
+     ],
+     "text": "Convoke",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Convoke",
+     "quality": {
+      "$": "ObjectFilter",
+      "types_all": 4,
+      "controller": 1
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Vigilance",
+     "keyword": "Vigilance"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

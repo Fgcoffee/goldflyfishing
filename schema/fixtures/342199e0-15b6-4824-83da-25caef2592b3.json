@@ -1,0 +1,66 @@
+{
+ "ir_version": 2,
+ "oracle_id": "342199e0-15b6-4824-83da-25caef2592b3",
+ "name": "Hill Giant",
+ "card_hash": "3e44a243ceba240cad0f4427a2b65c17",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "342199e0-15b6-4824-83da-25caef2592b3",
+  "name": "Hill Giant",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hill Giant",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Giant"
+     ]
+    },
+    "oracle_text": "",
+    "power": "3",
+    "toughness": "3",
+    "colors": 8
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 28918,
+  "scryfall_uri": "https://scryfall.com/card/10e/212/hill-giant?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "342199e0-15b6-4824-83da-25caef2592b3",
+   "name": "Hill Giant",
+   "face": 0,
+   "face_name": "Hill Giant",
+   "card_hash": "3e44a243ceba240cad0f4427a2b65c17",
+   "fully_read": true,
+   "abilities": [],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

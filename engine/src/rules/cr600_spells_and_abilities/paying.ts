@@ -398,9 +398,14 @@ function scaledMana(game: Game, playerId: PlayerId, cost: Cost): ManaCost {
   return increasedBy(mana, manaValue(mana) * (times - 1));
 }
 
-/** Non-mana components a player can be charged with no activation behind them. */
+/**
+ * Non-mana components a player can be charged with no activation behind them.
+ * Returning a permanent to hand is one since the karoo fix: Python left it
+ * out, so "sacrifice it unless you return an untapped Island" (Coral Atoll)
+ * could never be paid and the land was always sacrificed.
+ */
 export const PLAYER_PAYABLE_KINDS: ReadonlySet<number> = new Set([
-  CostKind.MANA, CostKind.PAY_LIFE, CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM, CostKind.SACRIFICE,
+  CostKind.MANA, CostKind.PAY_LIFE, CostKind.DISCARD, CostKind.DISCARD_AT_RANDOM, CostKind.SACRIFICE, CostKind.RETURN_TO_HAND,
 ]);
 
 function playerAmount(game: Game, playerId: PlayerId, component: CostComponent, source: ObjectId): number {
@@ -429,7 +434,7 @@ export function canPayCost(game: Game, playerId: PlayerId, cost: Cost, options: 
       if (p.life <= amount) return false;
     } else if (kind === CostKind.DISCARD || kind === CostKind.DISCARD_AT_RANDOM) {
       if (discardCandidates(game, playerId, component).length < amount) return false;
-    } else if (kind === CostKind.SACRIFICE) {
+    } else if (kind === CostKind.SACRIFICE || kind === CostKind.RETURN_TO_HAND) {
       if (component.filter == null || costPermanents(game, playerId, component, source).length < amount) return false;
     }
   }
@@ -482,7 +487,7 @@ export function payCost(game: Game, playerId: PlayerId, cost: Cost, options: { s
         candidates.splice(candidates.indexOf(obj), 1);
         discard(game, obj, { source }); // a real discard (CR 701.8)
       }
-    } else if (kind === CostKind.SACRIFICE && component.filter != null) {
+    } else if ((kind === CostKind.SACRIFICE || kind === CostKind.RETURN_TO_HAND) && component.filter != null) {
       const candidates = costPermanents(game, playerId, component, source);
       const agent = agentFor(game, playerId) as CostPermanentChooser | null;
       let picked = agent?.chooseCostPermanents?.(game, playerId, candidates, amount) ?? null;
@@ -491,7 +496,10 @@ export function payCost(game: Game, playerId: PlayerId, cost: Cost, options: { s
           .sort((a, b) => charsManaValue(chars(game, a)) - charsManaValue(chars(game, b)) || a.id - b.id)
           .slice(0, amount);
       }
-      for (const obj of picked) sacrifice(game, obj, { source });
+      for (const obj of picked) {
+        if (kind === CostKind.SACRIFICE) sacrifice(game, obj, { source });
+        else bounce(game, obj, { source });
+      }
     }
   }
   return true;

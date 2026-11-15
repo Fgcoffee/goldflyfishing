@@ -78,7 +78,10 @@ export interface Report {
   readonly hero: number;
   readonly seats: number;
   readonly wins: number;
+  /** Games that hit the turn cap with no winner; runaways are not among them. */
   readonly stalls: number;
+  /** Games the engine stopped with no winner (runaways, see below), apart from stall-outs. */
+  readonly runawayGames: number;
   /** CR 104.4b: draws on a mandatory loop, apart from stall-outs. */
   readonly loopDraws: number;
   /** Games the action budget stopped, by what was looping (a card bug, not the deck). */
@@ -169,6 +172,7 @@ export function buildReport(
 
   let wins = 0;
   let stalls = 0;
+  let runawayGames = 0;
   let loopDraws = 0;
   const runaways: Record<string, number> = {};
   const winRounds: number[] = [];
@@ -186,6 +190,10 @@ export function buildReport(
     if (record.winner === null && record.loopDraw) {
       loopDraws += 1;
       bump(winReasons, "DRAW"); // Python LOOP_DRAW
+    } else if (record.winner === null && record.runaway) {
+      // Not a stall: the engine stopped it (Python counted these as stalls).
+      runawayGames += 1;
+      bump(winReasons, "RUNAWAY");
     } else if (record.winner === null) {
       stalls += 1;
       bump(winReasons, "STALL_OUT");
@@ -216,6 +224,7 @@ export function buildReport(
     seats,
     wins,
     stalls,
+    runawayGames,
     loopDraws,
     runaways,
     winRounds,

@@ -1,0 +1,92 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5a0cd4dd-2212-4408-819e-0cb7c150418b",
+ "name": "True Believer",
+ "card_hash": "ab2f1f5c55666592ba3ffcd6b660b698",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5a0cd4dd-2212-4408-819e-0cb7c150418b",
+  "name": "True Believer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "True Believer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Cleric"
+     ]
+    },
+    "oracle_text": "You have shroud. (You can't be the target of spells or abilities.)",
+    "power": "2",
+    "toughness": "2",
+    "colors": 1
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 21471,
+  "scryfall_uri": "https://scryfall.com/card/10e/53/true-believer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5a0cd4dd-2212-4408-819e-0cb7c150418b",
+   "name": "True Believer",
+   "face": 0,
+   "face_name": "True Believer",
+   "card_hash": "ab2f1f5c55666592ba3ffcd6b660b698",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "shroud",
+         "keyword": "shroud"
+        }
+       ],
+       "text": "a player gains shroud"
+      }
+     ],
+     "text": "You have shroud."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

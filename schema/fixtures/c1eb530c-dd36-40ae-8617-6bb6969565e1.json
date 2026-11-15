@@ -1,0 +1,139 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
+ "name": "Cultivator's Caravan",
+ "card_hash": "3ff1d6ca4a1a2dbed3fc7af5e97fd7b0",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
+  "name": "Cultivator's Caravan",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cultivator's Caravan",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Vehicle"
+     ]
+    },
+    "oracle_text": "{T}: Add one mana of any color.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+    "power": "5",
+    "toughness": "5",
+    "keywords": [
+     "Crew"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 2918,
+  "scryfall_uri": "https://scryfall.com/card/fdn/670/cultivators-caravan?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
+   "name": "Cultivator's Caravan",
+   "face": 0,
+   "face_name": "Cultivator's Caravan",
+   "card_hash": "3ff1d6ca4a1a2dbed3fc7af5e97fd7b0",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 146,
+       "duration": {
+        "$int": 1
+       },
+       "types": 4,
+       "text": "becomes an artifact creature until end of turn"
+      }
+     ],
+     "text": "Crew 3",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 3,
+        "amount": {
+         "$": "Value",
+         "constant": 3
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "other_than_source": true,
+         "controller": 1
+        },
+        "total_power": true,
+        "text": "tap other untapped creatures you control with total power 3 or greater (crew)"
+       }
+      ]
+     },
+     "keyword": "Crew"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
