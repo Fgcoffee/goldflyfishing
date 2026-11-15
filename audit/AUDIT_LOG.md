@@ -692,3 +692,14 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
   - in headless Chromium, the Cut lab ran a 105-card Kilo list end to end, and the Recs tab rendered.
 - On de87b25 the image rebuild hit Docker Hub's 429. The only code change since is a 7-line guard in recs.js, reviewed.
 - Recs' live EDHREC and Scryfall calls were not testable here.
+
+## The user's urgent list done (2026-11-15): PR #43, shared branch @ 71c36ea, merged as 4faff6c
+
+- Contents:
+  - History names browser runs with their win rate;
+  - Replay card art and the card window (text and reading);
+  - reports: card, step, a generic one on every page, the reporter's status, and the admin review page (`MTGFISH_ADMIN_EMAILS` / `MTGFISH_ADMIN_DISCORD_IDS`).
+- Checks:
+  - Python 3415 passed; engine 943; webapp 44;
+  - Docker image built (base images from mirror.gcr.io, because of Docker Hub 429s);
+  - in headless Chromium: a browser run uploaded; Replay loaded and requested art; "Report this reading" present; step and generic reports stored (201).
