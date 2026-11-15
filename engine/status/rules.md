@@ -440,6 +440,28 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## PAUSED (15 Nov, 19:20 UTC, at the user's request via the auditor)
+
+Stopped before writing any incremental-board code; nothing half-done.
+The approved plan (with the auditor's conditions) is the proposal below.
+Where it stood, for resuming:
+- Design settled: a dirty-object journal next to the epoch
+  (`invalidateObjects(game, ids)` typed; `invalidateAllCharacteristics`
+  stays global); a partial recompute that runs the existing layer code
+  on scope = dirty objects + every object with static abilities, and keeps
+  the cached characteristics for the rest; preconditions checked each
+  time (no expiry or removal of effects since the cache, every effect's
+  amounts constant, no static conditions, filters reading only the object
+  itself, `noDependencyPossible` in every layer, no control, CDA or
+  perpetual effects); a mode switch off / check (compute both, throw on
+  any difference) / on, off by default.
+- First typed call sites: `createTokens` (the new token),
+  `registerContinuous` for effects with a `specific` target list (those
+  targets), and resolveTop's catch-all when the resolving ability's
+  effect tree is only MODIFY_PT, GRANT_ABILITY, CREATE_TOKEN, SEQUENCE.
+- Then: check mode on the 200 bench games, the user's 1,000 and the Vitest
+  suite; turn it on; measure game 9; raise the cap to 5,000.
+
 ## Wide boards: what's left, and a proposal (for the auditor)
 
 - Measured and dropped (no commit): starting the lookahead's clones from
