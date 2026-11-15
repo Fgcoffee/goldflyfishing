@@ -131,7 +131,7 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
 - [ ] **Interaction reports from users** (see Reports): replay to the reported step, then fix or log.
 
 ### parser
-- [ ] **Triage** the parser-owned findings the same way. For example:
+- [x] **Triage** the parser-owned findings the same way (c99699c: audit_triage_parser_real.test.ts; open ones listed in status/parser.md). For example:
   - F37 Toxic Deluge;
   - F49 spot-check cards;
   - F58;
