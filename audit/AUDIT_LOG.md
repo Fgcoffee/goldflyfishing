@@ -668,3 +668,18 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
 - The image build first failed: the Dockerfile didn't copy `webapp/engine-build.mjs`, fixed in 33c224f.
 - Open: the runaway banner's wording for token swarms (web); card art in browser replays; the sandbox on TS.
 - F37 engine half (a spell's "pay X life" read X as 0): 85b2113, `audit_triage_parser_real.test.ts` "cast with X = 3" (now a plain test).
+
+## Live-test fixes (2026-11-15): PR #41, shared branch @ 45be114, merged as f9ceda4
+
+- Contents:
+  - F65 (hang);
+  - browser runs always finish, and Stop works;
+  - Archidekt import keeps "Tokens"-labelled cards;
+  - pasted Archidekt exports read [Commander];
+  - loop detection; the work budget;
+  - card-reading fixes.
+- Checks:
+  - Python 3372 passed; engine 936; webapp 43;
+  - the Docker image was built and run;
+  - in headless Chromium, the user's four decks played 120 games in 82 s with no hangs (an earlier image: 300 in 226 s);
+  - the rules session ran the user's decks for 1,000 games in Node: no crash, timeout or runaway.
