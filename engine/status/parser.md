@@ -417,7 +417,18 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
   - Legality offers no X for a spell whose only X is in an additional cost (CR 601.2b). `asksForX` covers activated costs only.
   - Test: "cast with X = 3" in audit_triage_parser_real.test.ts (it.fails, KNOWN: F37 engine half).
 
-**Next:** the F49 and F3 readings (Fists of Flame, Chandra +2, Arcade Cabinet, Relentless Pursuit, Borrowed Knowledge, "their hand"), then F17, each with a census before and after.
+**F49 fixes since** (each with a census against the one before: 0 gained, 0 lost; every changed reading is the same bug corrected):
+- Fists of Flame (0f485f7): "+1/+0 for each card drawn" scales the pump. 3 changed.
+- Arcade Cabinet (38fe845): "each of up to N target" is targeted. 32 changed.
+- Chandra, Spark Hunter (c5e6814): only the "or"-joined effects are the choice, and "you may" covers it. 40 changed.
+
+**F3, "that player's hand" / "their hand": needs both sides.** Today it's a COUNT of hand cards with no owner, so it counts every hand. The right IR is CARDS_IN_HAND for the referred player (TARGET_PLAYER, TRIGGER_PLAYER, THAT_PLAYER). But `evaluate` resolves a value's players without the resolution's context, so the referred player isn't reachable.
+- Proposal: `EvaluateOptions` gains a `resolvePlayers(spec)` callback (values.ts is mine). resolve.ts's `evaluateContext` passes one built on `playersOf` / `referredPlayers` (rules).
+- The parser then emits CARDS_IN_HAND for the referred player. **Rules session: does that suit you?**
+
+**Seen, pre-existing:** Jaws, Relentless Predator's "is sacrificed or destroyed, this deals 1 damage" is split inside its trigger, so "destroy this permanent" becomes an option. To fix.
+
+**Next:** Relentless Pursuit ("and/or"), Borrowed Knowledge ("target opponent's hand"), F17 Tannuk, Turn to Frog's colour, then cards that don't read yet.
 
 ## For the rules session: your 200-game bench
 
