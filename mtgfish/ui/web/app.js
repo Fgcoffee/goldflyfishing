@@ -40,7 +40,9 @@ Backend.ready.then(() => {
 }).catch((err) => setStatus(`could not connect: ${err.message}`, true));
 
 async function call(method, ...args) {
-  const raw = await Backend.call(method, ...args);
+  // A browser run opened from History answers its own report and replays.
+  const browser = typeof BrowserRuns !== "undefined" && BrowserRuns.handles(method);
+  const raw = browser ? await BrowserRuns.call(method, ...args) : await Backend.call(method, ...args);
   let parsed;
   try {
     parsed = JSON.parse(raw);
@@ -228,6 +230,7 @@ document.getElementById("run").addEventListener("click", async () => {
   button.disabled = true;
   setStatus(`simulating ${games} games...`);
 
+  if (typeof BrowserRuns !== "undefined") BrowserRuns.close();
   const started = await call("start_run", JSON.stringify(decks), games, seed);
   if (started.error) {
     button.disabled = false;

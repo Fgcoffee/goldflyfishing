@@ -139,9 +139,22 @@ async function libDeleteDeck(deck) {
 
 async function libLoadRuns() {
   if (!Auth.user) { libSignedOut("lib-runs", "history"); return; }
-  const reply = await libGet("/api/runs");
+  const [reply, browser] = await Promise.all([
+    libGet("/api/runs"),
+    libGet("/api/browser-runs"),
+  ]);
   if (!reply.ok) { libSay("lib-runmsg", reply.data.error, true); return; }
-  Library.runs = reply.data.runs;
+  // Runs played in the browser are listed with the server's, newest first.
+  // Their report is built from the stored games when opened, so the table
+  // shows no win rate for them until then.
+  const played = browser.ok ? (browser.data.runs || []).map((run) => ({
+    ...run,
+    browser: true,
+    label: run.complete ? "Played in your browser" : "Played in your browser (stopped early)",
+    win_rate: null,
+  })) : [];
+  Library.runs = [...reply.data.runs, ...played]
+    .sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0));
   Library.picked = new Set([...Library.picked].filter((id) => Library.runs.some((r) => r.id === id)));
   libDrawRuns();
 }
@@ -170,7 +183,8 @@ function libDrawRuns() {
       if (box.checked) Library.picked.add(run.id); else Library.picked.delete(run.id);
       document.getElementById("lib-compare").disabled = Library.picked.size !== 2;
     });
-    pick.appendChild(box);
+    // Comparing reads server runs' saved reports; a browser run has none yet.
+    if (!run.browser) pick.appendChild(box);
     tr.appendChild(pick);
     tr.appendChild(el("td", "dim", libDate(run.created_at)));
     tr.appendChild(el("td", "strong", run.label));
@@ -183,9 +197,11 @@ function libDrawRuns() {
       button.addEventListener("click", fn);
       actions.appendChild(button);
     };
-    add("Open", () => libOpenRun(run), "primary");
-    add("Re-run", () => libRerun(run));
-    add("Delete", () => libDeleteRun(run), "ghost danger");
+    add("Open", () => (run.browser ? libOpenBrowserRun(run) : libOpenRun(run)), "primary");
+    if (!run.browser) {
+      add("Re-run", () => libRerun(run));
+      add("Delete", () => libDeleteRun(run), "ghost danger");
+    }
     tr.appendChild(actions);
     table.appendChild(tr);
   });
@@ -196,8 +212,28 @@ function libDrawRuns() {
 async function libOpenRun(run) {
   const result = await authPost(`/api/runs/${run.id}/open`);
   if (!result.ok) { libSay("lib-runmsg", result.data.error, true); return; }
+  BrowserRuns.close();
   report = result.data.report;
   setStatus(`showing a past run: ${run.label}`);
+  showTab("results");
+}
+
+/* A run played in the browser: its report from the stored games, its
+ * replays from the engine that played them (browser_runs.js). */
+async function libOpenBrowserRun(run) {
+  libSay("lib-runmsg", "Opening the run...");
+  let opened;
+  try {
+    opened = await BrowserRuns.open(run.id);
+  } catch (err) {
+    libSay("lib-runmsg", err.message, true);
+    return;
+  }
+  libSay("lib-runmsg", opened.stored.unverifiable
+    ? `Results only: its games can't be replayed (${opened.stored.unverifiable}).` : "");
+  report = opened.report;
+  document.getElementById("replayindex").value = run.game_start;
+  setStatus(`showing a run played in your browser (${run.games} games, seed ${run.run_seed})`);
   showTab("results");
 }
 
