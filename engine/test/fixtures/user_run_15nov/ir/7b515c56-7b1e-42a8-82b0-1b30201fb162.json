@@ -1,0 +1,203 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7b515c56-7b1e-42a8-82b0-1b30201fb162",
+ "name": "Zirda, the Dawnwaker",
+ "card_hash": "fca19fee37dbc58b9578740e68c2275a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7b515c56-7b1e-42a8-82b0-1b30201fb162",
+  "name": "Zirda, the Dawnwaker",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Zirda, the Dawnwaker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 5,
+       "colors": 9,
+       "text": "{R/W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 5,
+       "colors": 9,
+       "text": "{R/W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Elemental",
+      "Fox"
+     ]
+    },
+    "oracle_text": "Companion — Each permanent card in your starting deck has an activated ability. (If this card is your chosen companion, you may put it into your hand from outside the game for {3} as a sorcery.)\nAbilities you activate that aren't mana abilities cost {2} less to activate. This effect can't reduce the mana in that cost to less than one mana.\n{1}, {T}: Target creature can't block this turn.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 9,
+    "keywords": [
+     "Companion"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 9,
+  "commander_legal": true,
+  "edhrec_rank": 3309,
+  "scryfall_uri": "https://scryfall.com/card/iko/233/zirda-the-dawnwaker?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7b515c56-7b1e-42a8-82b0-1b30201fb162",
+   "name": "Zirda, the Dawnwaker",
+   "face": 0,
+   "face_name": "Zirda, the Dawnwaker",
+   "card_hash": "fca19fee37dbc58b9578740e68c2275a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Companion - Each permanent card in your starting deck has an activated ability"
+      }
+     ],
+     "text": "Companion - Each permanent card in your starting deck has an activated ability",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Abilities you activate that aren't mana abilities cost {2} less to activate. This effect can't reduce the mana in that cost to less than one mana."
+      }
+     ],
+     "text": "Abilities you activate that aren't mana abilities cost {2} less to activate. This effect can't reduce the mana in that cost to less than one mana.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 23,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "text": "can't block"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "{1}, {T}: Target creature can't block this turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Companion - Each permanent card in your starting deck has an activated ability",
+     "reason": "a keyword argument that cannot be read whole",
+     "rule": "keyword"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "Abilities you activate that aren't mana abilities cost {2} less to activate. This effect can't reduce the mana in that cost to less than one mana.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Abilities",
+      "you",
+      "activate",
+      "that",
+      "aren't",
+      "mana",
+      "abilities",
+      "cost",
+      "{2}",
+      "less",
+      "to",
+      "activate",
+      ".",
+      "This",
+      "effect",
+      "can't",
+      "reduce",
+      "the",
+      "mana",
+      "in",
+      "that",
+      "cost",
+      "to",
+      "less",
+      "than",
+      "one",
+      "mana",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

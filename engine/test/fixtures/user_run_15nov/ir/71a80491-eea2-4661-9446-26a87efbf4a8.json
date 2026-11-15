@@ -1,0 +1,205 @@
+{
+ "ir_version": 2,
+ "oracle_id": "71a80491-eea2-4661-9446-26a87efbf4a8",
+ "name": "Kykar, Wind's Fury",
+ "card_hash": "9351c5cafbe88e6bd93792cb7f35f8b2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "71a80491-eea2-4661-9446-26a87efbf4a8",
+  "name": "Kykar, Wind's Fury",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Kykar, Wind's Fury",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Bird",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Flying\nWhenever you cast a noncreature spell, create a 1/1 white Spirit creature token with flying.\nSacrifice a Spirit: Add {R}.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 11,
+    "keywords": [
+     "Flying"
+    ],
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 11,
+  "commander_legal": true,
+  "edhrec_rank": 2995,
+  "scryfall_uri": "https://scryfall.com/card/cmm/343/kykar-winds-fury?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "71a80491-eea2-4661-9446-26a87efbf4a8",
+   "name": "Kykar, Wind's Fury",
+   "face": 0,
+   "face_name": "Kykar, Wind's Fury",
+   "card_hash": "9351c5cafbe88e6bd93792cb7f35f8b2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Spirit",
+        "subtypes": [
+         "Spirit"
+        ],
+        "colors": 1,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        },
+        "keywords": [
+         "flying"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever you cast a noncreature spell, create a 1/1 white Spirit creature token with flying.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      }
+     ],
+     "text": "Sacrifice a Spirit: Add {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Spirit"
+         ],
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

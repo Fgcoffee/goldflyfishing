@@ -1,0 +1,108 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
+ "name": "Hallowed Fountain",
+ "card_hash": "470d3ca968f6e8a99b2b050381e0cd6d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
+  "name": "Hallowed Fountain",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hallowed Fountain",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Plains",
+      "Island"
+     ]
+    },
+    "oracle_text": "({T}: Add {W} or {U}.)\nAs this land enters, you may pay 2 life. If you don't, it enters tapped.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 3,
+  "commander_legal": true,
+  "edhrec_rank": 63,
+  "scryfall_uri": "https://scryfall.com/card/trk/286/hallowed-fountain?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
+   "name": "Hallowed Fountain",
+   "face": 0,
+   "face_name": "Hallowed Fountain",
+   "card_hash": "470d3ca968f6e8a99b2b050381e0cd6d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 4,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 52,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 2
+           },
+           "text": "pay life"
+          }
+         ],
+         "text": "may"
+        },
+        {
+         "$": "Effect",
+         "kind": 201,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 70,
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "duration": 0,
+           "text": "enters tapped"
+          }
+         ],
+         "text": "if you don't"
+        }
+       ],
+       "text": "as this enters"
+      }
+     ],
+     "text": "As this land enters, you may pay 2 life. If you don't, it enters tapped."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

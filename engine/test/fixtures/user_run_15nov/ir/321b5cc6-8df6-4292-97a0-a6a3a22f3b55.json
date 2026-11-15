@@ -1,0 +1,113 @@
+{
+ "ir_version": 2,
+ "oracle_id": "321b5cc6-8df6-4292-97a0-a6a3a22f3b55",
+ "name": "Twinflame Tyrant",
+ "card_hash": "c179d89eaf1ccb1136e8aab3d12c7ffb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "321b5cc6-8df6-4292-97a0-a6a3a22f3b55",
+  "name": "Twinflame Tyrant",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Twinflame Tyrant",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Dragon"
+     ]
+    },
+    "oracle_text": "Flying\nIf a source you control would deal damage to an opponent or a permanent an opponent controls, it deals double that damage instead.",
+    "power": "3",
+    "toughness": "5",
+    "colors": 8,
+    "keywords": [
+     "Flying",
+     "Double"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 791,
+  "scryfall_uri": "https://scryfall.com/card/fdn/97/twinflame-tyrant?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "321b5cc6-8df6-4292-97a0-a6a3a22f3b55",
+   "name": "Twinflame Tyrant",
+   "face": 0,
+   "face_name": "Twinflame Tyrant",
+   "card_hash": "c179d89eaf1ccb1136e8aab3d12c7ffb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "targets": {
+        "$": "ObjectFilter",
+        "controller": 2
+       },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 1
+       },
+       "duration": 0,
+       "replacement_kind": 5,
+       "multiplier": 2,
+       "damage_source": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "controller": 1
+       },
+       "text": "replacement: change the amount"
+      }
+     ],
+     "text": "If a source you control would deal damage to an opponent or a permanent an opponent controls, it deals double that damage instead."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

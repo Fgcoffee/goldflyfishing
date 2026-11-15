@@ -1,0 +1,219 @@
+{
+ "ir_version": 2,
+ "oracle_id": "cad63b31-667b-4518-bc49-be4ffb82bc63",
+ "name": "Vraska, Soul of Stone",
+ "card_hash": "9ba6ba02ee75c9f084523b98d9fd9561",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "cad63b31-667b-4518-bc49-be4ffb82bc63",
+  "name": "Vraska, Soul of Stone",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vraska, Soul of Stone",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Gorgon",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Artifact creatures you control have vigilance.\nWhenever you cast a noncreature spell, create a 1/1 colorless Sculpture Treasure artifact creature token with \"{T}, Sacrifice this token: Add one mana of any color.\"",
+    "power": "3",
+    "toughness": "3",
+    "colors": 11,
+    "keywords": [
+     "Treasure"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 11,
+  "commander_legal": false,
+  "edhrec_rank": 26099,
+  "scryfall_uri": "https://scryfall.com/card/fra/277/vraska-soul-of-stone?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "cad63b31-667b-4518-bc49-be4ffb82bc63",
+   "name": "Vraska, Soul of Stone",
+   "face": 0,
+   "face_name": "Vraska, Soul of Stone",
+   "card_hash": "9ba6ba02ee75c9f084523b98d9fd9561",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 5,
+        "controller": 1
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "vigilance",
+         "keyword": "vigilance"
+        }
+       ],
+       "text": "gains vigilance"
+      }
+     ],
+     "text": "Artifact creatures you control have vigilance."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Sculpture",
+        "types": 5,
+        "subtypes": [
+         "Sculpture",
+         "Treasure"
+        ],
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        },
+        "abilities": [
+         {
+          "$": "Ability",
+          "kind": 1,
+          "effects": [
+           {
+            "$": "Effect",
+            "kind": 120,
+            "players": {
+             "$": "PlayerFilter"
+            },
+            "amount": {
+             "$": "Value",
+             "constant": 1
+            },
+            "colors": 31,
+            "text": "add mana of any color"
+           }
+          ],
+          "text": "{T} , Sacrifice this token : Add one mana of any color .",
+          "cost": {
+           "$": "Cost",
+           "components": [
+            {
+             "$": "CostComponent",
+             "kind": 1,
+             "text": "{T}"
+            },
+            {
+             "$": "CostComponent",
+             "kind": 10,
+             "amount": {
+              "$": "Value",
+              "constant": 1
+             },
+             "filter": {
+              "$": "ObjectFilter",
+              "source_only": true
+             },
+             "text": "sacrifice this"
+            }
+           ]
+          },
+          "is_mana_ability": true
+         }
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever you cast a noncreature spell, create a 1/1 colorless Sculpture Treasure artifact creature token with \"{T}, Sacrifice this token: Add one mana of any color.\"",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_none": 4,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,106 @@
+{
+ "ir_version": 2,
+ "oracle_id": "180e1a7e-890d-477c-80a5-da8a5f2857b3",
+ "name": "Reckless Fireweaver",
+ "card_hash": "5c9cc1d0ffcc2ad0537ea3f990dd01ae",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "180e1a7e-890d-477c-80a5-da8a5f2857b3",
+  "name": "Reckless Fireweaver",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Reckless Fireweaver",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Artificer"
+     ]
+    },
+    "oracle_text": "Whenever an artifact you control enters, this creature deals 1 damage to each opponent.",
+    "power": "1",
+    "toughness": "3",
+    "colors": 8
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 686,
+  "scryfall_uri": "https://scryfall.com/card/kld/126/reckless-fireweaver?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "180e1a7e-890d-477c-80a5-da8a5f2857b3",
+   "name": "Reckless Fireweaver",
+   "face": 0,
+   "face_name": "Reckless Fireweaver",
+   "card_hash": "5c9cc1d0ffcc2ad0537ea3f990dd01ae",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "Whenever an artifact you control enters, this creature deals 1 damage to each opponent.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 1,
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -286,3 +286,40 @@ def test_restricted_mana_cannot_pay_for_the_wrong_spell(card_db, tmp_path):
     assert not any("Lightning Bolt" in text for text in offered), (
         "restricted mana must not make a noncreature spell look castable"
     )
+
+
+@pytest.mark.parametrize(
+    "name, in_graveyard",
+    [
+        # CR 113.6m: the effect moves this card out of the graveyard.
+        ("Bloodghast", True),
+        ("Skyfire Phoenix", True),
+        # About what it enchants: triggers on the battlefield, looking back.
+        ("Screams from Within", False),
+        ("Genju of the Realm", False),
+    ],
+)
+def test_a_trigger_that_returns_this_card_from_the_graveyard_works_there(card_db, name, in_graveyard):
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.enums import Zone
+
+    triggers = [
+        a.trigger
+        for face in parse_card(card_db.lookup(name)).faces
+        for a in face.abilities
+        if a.trigger is not None and "graveyard" in a.text
+    ]
+    assert triggers, name
+    assert all((t.functions_in == frozenset({Zone.GRAVEYARD})) is in_graveyard for t in triggers)
+
+
+def test_your_commander_from_the_command_zone(card_db):
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.enums import Zone
+    from mtgfish.rules.kernel.query import ControllerRelation
+
+    face = parse_card(card_db.lookup("Command Beacon")).faces[0]
+    move = face.abilities[-1].effects[0]
+    assert move.kind is EffectKind.MOVE_ZONE and move.zone is Zone.HAND
+    assert move.targets.is_commander and move.targets.owner is ControllerRelation.YOU
+    assert move.targets.zones == frozenset({Zone.COMMAND})

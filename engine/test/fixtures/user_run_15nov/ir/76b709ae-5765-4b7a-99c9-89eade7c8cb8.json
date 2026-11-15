@@ -1,0 +1,137 @@
+{
+ "ir_version": 2,
+ "oracle_id": "76b709ae-5765-4b7a-99c9-89eade7c8cb8",
+ "name": "Quasiduplicate",
+ "card_hash": "c0c2869df19e737452a1f9e1662c8c07",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "76b709ae-5765-4b7a-99c9-89eade7c8cb8",
+  "name": "Quasiduplicate",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Quasiduplicate",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Create a token that's a copy of target creature you control.\nJump-start (You may cast this card from your graveyard by discarding a card in addition to paying its other costs. Then exile this card.)",
+    "colors": 2,
+    "keywords": [
+     "Jump",
+     "Jump-start"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 3350,
+  "scryfall_uri": "https://scryfall.com/card/rvr/55/quasiduplicate?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "76b709ae-5765-4b7a-99c9-89eade7c8cb8",
+   "name": "Quasiduplicate",
+   "face": 0,
+   "face_name": "Quasiduplicate",
+   "card_hash": "c0c2869df19e737452a1f9e1662c8c07",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "is_targeted": true,
+       "token": {
+        "$": "TokenSpec",
+        "copy_of": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "controller": 1
+        }
+       },
+       "text": "create a token copy"
+      }
+     ],
+     "text": "Create a token that's a copy of target creature you control."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Jump-start",
+     "functions_in": {
+      "$set": [
+       3
+      ]
+     },
+     "keyword": "Jump-start",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 11,
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "text": "discard a card"
+        }
+       ]
+      },
+      "from_zone": 3,
+      "pays_mana_cost": true,
+      "keyword": "Jump-start",
+      "text": "Jump-start"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

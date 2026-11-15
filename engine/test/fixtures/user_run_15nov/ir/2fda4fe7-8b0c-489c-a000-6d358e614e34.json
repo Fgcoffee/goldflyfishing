@@ -1,0 +1,109 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2fda4fe7-8b0c-489c-a000-6d358e614e34",
+ "name": "Izzet Signet",
+ "card_hash": "910885ece8647e5701cf95a3cce5a3d9",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2fda4fe7-8b0c-489c-a000-6d358e614e34",
+  "name": "Izzet Signet",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Izzet Signet",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{1}, {T}: Add {U}{R}.",
+    "produced_mana": [
+     "R",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 172,
+  "scryfall_uri": "https://scryfall.com/card/tdc/320/izzet-signet?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2fda4fe7-8b0c-489c-a000-6d358e614e34",
+   "name": "Izzet Signet",
+   "face": 0,
+   "face_name": "Izzet Signet",
+   "card_hash": "910885ece8647e5701cf95a3cce5a3d9",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{U}",
+        "{R}"
+       ],
+       "colors": 10,
+       "text": "add {U}{R}"
+      }
+     ],
+     "text": "{1}, {T}: Add {U}{R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

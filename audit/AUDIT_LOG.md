@@ -615,6 +615,7 @@ Also checked: PR #28 (deck-optimisation session, not merged by me) leaves parser
 | F62 | WARN | rules | A MOVE_ZONE effect to the library goes to the graveyard instead. `_do_move_zone` reads `effect.zone or Zone.GRAVEYARD`, and the library is Zone 0, which is falsy. Ported as is, marked `// KNOWN: F62` in `resolve.ts`. | Reported by the rules session from the port (status file, 13 Nov). |
 | F63 | **BLOCK** (crash) | parser | An attack cost of one `{W/P}` per attacker (Norn's Annex-style) against a wide board crashes the game: "unreasonable number of hybrid symbols in a cost" (TS `payment.ts:111`; Python `cr106_mana.py:684`). Fixed now in TS, since crashes are in scope during the port; Python stays frozen. | Bench decks: 3 of 40 TS games in the browser, 1 of 20 Python games. |
 | F64 | **BLOCK** (crash) | rules | Every VOTE effect raises TypeError in Python: `_do_vote` calls `game.apnap_order(game.next_player(...))`, but `apnap_order` takes no argument. The TS port guards it with the evident intent (turn order from the next player). | Reported by the rules session from the port (status file, 14 Nov). |
+| F65 | **BLOCK** (hang) | rules + parser | A husk that ceased to exist points `supersededBy` at itself (a token after CR 704.5d whose death trigger is pending, sba.ts; a completed dungeon, dungeons.ts). Three `while (obj.supersededBy)` loops in resolve.ts then never end, and the game hangs in a tight loop with no events. Python has the same self-link and loops. Fixed by the auditor: `latestObject` in kernel/gameobject.ts stops at a self-link or a cycle. | The user's live browser runs: Vraska, Soul of Stone x2, Muddle, Kilo; seed 0; 1,000 games. About 16 games hang (16 on the site, the web session's count; 11 in my first 700). Stack sampled under the inspector: `objectsOf` in resolve.ts. |
 
 Also deferred: karoo lands are always sacrificed.
 
@@ -635,6 +636,7 @@ The image build first failed at the IR export: `bracket.py` read the repository'
 
 Rules fixes in the TypeScript engine (Python frozen). One line each: finding, commit, test.
 
+- F65 (hang on a self-superseded husk): auditor fix, `engine/test/fixtures/f65_latest_object.test.ts`. On the user's decks, the 11 games that hung (169, 190, 271, 284, 307, 360, 386, 424, 435, 497, 581) all finish in 1-4 s, and games 0-79 have identical digests before and after.
 - F62 (MOVE_ZONE to the library): 3ceafeb, `engine/test/rules/audit_findings.test.ts` "F62: MOVE_ZONE to the library".
 - F64 (VOTE crash, guarded in the port): KNOWN marker removed in 3ceafeb, `audit_findings.test.ts` "F64: VOTE" (turn order from the next player, winner's child happens).
 - Karoo lands always sacrificed: c4232df, `engine/test/rules/audit_triage_real.test.ts` "karoo lands". Cause: a return-to-hand cost couldn't be paid during a resolution, so Coral Atoll's "sacrifice it unless you return an untapped Island" always sacrificed it. Simic Growth Chamber-style karoos were already right.
@@ -645,4 +647,24 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
 - Parser triage: c99699c, `audit_triage_parser_real.test.ts` (fixed and open findings listed in engine/status/parser.md). Also `fully_read` now counts unread placeholders (codec.py, same commit).
 - Standing "until your next turn" restrictions never expired (new; found tracing the token-swarm runaways): be2499a, `engine/test/rules/actions.test.ts` "a standing restriction 'until your next turn' ends then too". Teferi's Protection's "life total can't change" lasted for ever; 5 of the 14 runaways (games 40, 107, 117, 155, 184) now end with a LIFE win. Bench in engine/status/parser.md.
 - Token swarms, the bot (not a rules fix): 1cb2be4, `engine/src/ai/ai.test.ts` (futile target passed over; a 30-token swarm attacks all-out). Runaways 14 -> 11 on the 200-game bench; the rest are Solitary Confinement and attack-tax locks.
+- F49 Fists of Flame ("+1/+0 for each card you've drawn this turn" was a flat +1): 9464b38, `audit_triage_parser_real.test.ts` "F49 Fists of Flame ... on the board". Census: 0 gained, 0 lost, 3 changed, all the same bug (also Algorithmic Ferocity, Haldir).
+- F49 Arcade Cabinet ("each of up to four target creatures" untargeted): 2791acf, `audit_triage_parser_real.test.ts` "F49 Arcade Cabinet's ... are targets". Census: 0 gained, 0 lost, 32 changed, all "each of [up to] N target" now targeted.
+- F49 Chandra, Spark Hunter's +2 ("If you do, draw" read as a third mode): c5e6814, `audit_triage_parser_real.test.ts` "F49 Chandra ... you may choose one of two". Census: 0 gained, 0 lost, 40 changed, all "you may X or Y" (now optional over the whole choice) and "or ... If/When you do" (now after the choice).
+- F49 Relentless Pursuit ("a creature card and/or a land card" read as one card): 96ef202, `audit_triage_parser_real.test.ts` "F49 Relentless Pursuit ... up to one of each". Census: +1 (Eivor), -4 (other "and/or" shapes, now unread instead of misread), 4 changed.
+- F17 Tannuk ("artifact cards and red creature cards": red applied to both): a1bab7f, `audit_triage_parser_real.test.ts` "F17 Tannuk ... red is the creatures' only". Census: +2, -0, 14 changed, all a qualifier now kept on its own list item.
+- Turn to Frog's colour (new in the parser triage: "becomes a blue Frog" kept its colours): 60f989d, `audit_triage_parser_real.test.ts` "Turn to Frog becomes a BLUE Frog". Census: 0/0, 15 changed, all "becomes a <colour> <type>".
+- Command Beacon ("put your commander into your hand from the command zone" didn't read): fb9edb1, `audit_triage_parser_real.test.ts` "Command Beacon". Two engine faults came with it: the CR 903.9b option sent a commander leaving the command zone straight back (replacement.ts), and "spend this mana only to cast your commander" let the mana pay for anything (pool.ts never checked is_commander). Jeweled Lotus and Skyfire Phoenix have board tests too. Census: +11, -0, 36 changed.
+- Graveyard triggers never fired (found with Skyfire Phoenix): "return this card from your graveyard" in a triggered ability left the trigger working on the battlefield, so Bloodghast, Squee, Punishing Fire and 30 more did nothing (CR 113.6m). Same commit; `test_gap_batch.py` "returns this card from the graveyard", and the Phoenix board test. The 36 changed readings are these; Aura triggers ("when enchanted creature dies") stay on the battlefield.
 - **Auditor check (15 Nov, on 0f7f7a9):** engine 875 tests and typecheck green; audit_findings and audit_triage_real 46/46. I read the F28 tests (Cyclonic Rift overloaded: the opponent's nonland permanents to hand; mine and their lands stay; cast normally, only its target) and the karoo tests (Coral Atoll stays by returning an untapped Island; with none, it's sacrificed). Both assert the rule. Accepted.
+
+## Browser engine behind a flag (2026-11-15): PR #40, shared branch @ 33c224f, merged as 75d856b
+
+- The site plays in the browser only with `?engine=browser`; everyone else is unchanged.
+- Checks:
+  - Python 3364 passed;
+  - the Docker image was built and run locally;
+  - in headless Chromium with the flag, 40 bench games ran in 35 s, Results drew and the upload returned 201;
+  - the bundle's engine build equals the server's.
+- The image build first failed: the Dockerfile didn't copy `webapp/engine-build.mjs`, fixed in 33c224f.
+- Open: the runaway banner's wording for token swarms (web); card art in browser replays; the sandbox on TS.
+- F37 engine half (a spell's "pay X life" read X as 0): 85b2113, `audit_triage_parser_real.test.ts` "cast with X = 3" (now a plain test).

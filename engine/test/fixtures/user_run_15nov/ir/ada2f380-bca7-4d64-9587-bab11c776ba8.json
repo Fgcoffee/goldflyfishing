@@ -1,0 +1,256 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ada2f380-bca7-4d64-9587-bab11c776ba8",
+ "name": "Pemmin's Aura",
+ "card_hash": "51b83a8277e2f6cc15f751e3189ba71c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ada2f380-bca7-4d64-9587-bab11c776ba8",
+  "name": "Pemmin's Aura",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Pemmin's Aura",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8,
+     "subtypes": [
+      "Aura"
+     ]
+    },
+    "oracle_text": "Enchant creature\n{U}: Untap enchanted creature.\n{U}: Enchanted creature gains flying until end of turn.\n{U}: Enchanted creature gains shroud until end of turn. (It can't be the target of spells or abilities.)\n{1}: Enchanted creature gets +1/-1 or -1/+1 until end of turn.",
+    "colors": 2,
+    "keywords": [
+     "Enchant"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 2655,
+  "scryfall_uri": "https://scryfall.com/card/scg/45/pemmins-aura?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ada2f380-bca7-4d64-9587-bab11c776ba8",
+   "name": "Pemmin's Aura",
+   "face": 0,
+   "face_name": "Pemmin's Aura",
+   "card_hash": "51b83a8277e2f6cc15f751e3189ba71c",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Enchant creature",
+     "functions_in": {
+      "$set": [
+       2,
+       4
+      ]
+     },
+     "keyword": "Enchant",
+     "quality": {
+      "$": "ObjectFilter",
+      "types_all": 4
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "text": "tap/untap"
+      }
+     ],
+     "text": "{U}: Untap enchanted creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": 1,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "flying",
+         "keyword": "flying"
+        }
+       ],
+       "text": "gains flying"
+      }
+     ],
+     "text": "{U}: Enchanted creature gains flying until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": 1,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "shroud",
+         "keyword": "shroud"
+        }
+       ],
+       "text": "gains shroud"
+      }
+     ],
+     "text": "{U}: Enchanted creature gains shroud until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "{1}: Enchanted creature gets +1/-1 or -1/+1 until end of turn."
+      }
+     ],
+     "text": "{1}: Enchanted creature gets +1/-1 or -1/+1 until end of turn.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "{1}: Enchanted creature gets +1/-1 or -1/+1 until end of turn.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "-1/+1",
+      "until",
+      "end",
+      "of",
+      "turn",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

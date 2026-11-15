@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "672e190d-8ea0-4a2e-b74f-5d35304631e4",
+ "name": "Sea of Clouds",
+ "card_hash": "914a620626ccc389532b65340042cd79",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "672e190d-8ea0-4a2e-b74f-5d35304631e4",
+  "name": "Sea of Clouds",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sea of Clouds",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped unless you have two or more opponents.\n{T}: Add {W} or {U}.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 3,
+  "commander_legal": true,
+  "edhrec_rank": 164,
+  "scryfall_uri": "https://scryfall.com/card/clb/360/sea-of-clouds?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "672e190d-8ea0-4a2e-b74f-5d35304631e4",
+   "name": "Sea of Clouds",
+   "face": 0,
+   "face_name": "Sea of Clouds",
+   "card_hash": "914a620626ccc389532b65340042cd79",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 17,
+          "players": {
+           "$": "PlayerFilter",
+           "scope": 3
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 2
+           }
+          },
+          "text": "you have N opponents"
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you have two or more opponents."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": 1,
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": 2,
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

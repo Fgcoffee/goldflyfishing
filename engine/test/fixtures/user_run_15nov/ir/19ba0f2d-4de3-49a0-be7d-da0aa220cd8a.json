@@ -1,0 +1,293 @@
+{
+ "ir_version": 2,
+ "oracle_id": "19ba0f2d-4de3-49a0-be7d-da0aa220cd8a",
+ "name": "Sorcerer Class",
+ "card_hash": "4a0f0fa5efd30dd75590f6489f477fca",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "19ba0f2d-4de3-49a0-be7d-da0aa220cd8a",
+  "name": "Sorcerer Class",
+  "layout": 7,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sorcerer Class",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8,
+     "subtypes": [
+      "Class"
+     ]
+    },
+    "oracle_text": "(Gain the next level as a sorcery to add its ability.)\nWhen this Class enters, draw two cards, then discard two cards.\n{U}{R}: Level 2\nCreatures you control have \"{T}: Add {U} or {R}. Spend this mana only to cast an instant or sorcery spell or to gain a Class level.\"\n{3}{U}{R}: Level 3\nWhenever you cast an instant or sorcery spell, that spell deals damage to each opponent equal to the number of instant and sorcery spells you've cast this turn.",
+    "colors": 10,
+    "produced_mana": [
+     "R",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 3807,
+  "scryfall_uri": "https://scryfall.com/card/afr/233/sorcerer-class?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "19ba0f2d-4de3-49a0-be7d-da0aa220cd8a",
+   "name": "Sorcerer Class",
+   "face": 0,
+   "face_name": "Sorcerer Class",
+   "card_hash": "4a0f0fa5efd30dd75590f6489f477fca",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": 21,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "discard"
+      }
+     ],
+     "text": "When this Class enters, draw two cards, then discard two cards.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 210,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "level 2"
+      }
+     ],
+     "text": "{U}{R}: Level 2",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Creatures you control have \"{T}: Add {U} or {R}. Spend this mana only to cast an instant or sorcery spell or to gain a Class level.\""
+      }
+     ],
+     "text": "Creatures you control have \"{T}: Add {U} or {R}. Spend this mana only to cast an instant or sorcery spell or to gain a Class level.\"",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 210,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 3
+       },
+       "text": "level 3"
+      }
+     ],
+     "text": "{3}{U}{R}: Level 3",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 3,
+           "text": "{3}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever you cast an instant or sorcery spell, that spell deals damage to each opponent equal to the number of instant and sorcery spells you've cast this turn."
+      }
+     ],
+     "text": "Whenever you cast an instant or sorcery spell, that spell deals damage to each opponent equal to the number of instant and sorcery spells you've cast this turn.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Creatures you control have \"{T}: Add {U} or {R}. Spend this mana only to cast an instant or sorcery spell or to gain a Class level.\"",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Creatures",
+      "you",
+      "control",
+      "have",
+      "\"",
+      "{T}",
+      ":",
+      "Add",
+      "{U}",
+      "or",
+      "{R}",
+      ".",
+      "Spend",
+      "this",
+      "mana",
+      "only",
+      "to",
+      "cast",
+      "an",
+      "instant",
+      "or",
+      "sorcery",
+      "spell",
+      "or",
+      "to",
+      "gain",
+      "a",
+      "Class",
+      "level",
+      ".",
+      "\""
+     ],
+     "rule": "plain"
+    },
+    {
+     "$": "ParseFailure",
+     "text": "Whenever you cast an instant or sorcery spell, that spell deals damage to each opponent equal to the number of instant and sorcery spells you've cast this turn.",
+     "reason": "not fully consumed",
+     "consumed": 25,
+     "remaining": [
+      "you've",
+      "cast",
+      "this",
+      "turn",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

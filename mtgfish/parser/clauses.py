@@ -159,13 +159,17 @@ def parse_effects(stream: Stream) -> list[Effect] | None:
         return None
 
     stream.reset(start)
-    chosen = _effect_run(stream, allow_or=True)
+    joins: list[str] = []
+    chosen = _effect_run(stream, allow_or=True, joins=joins)
     if chosen is None:
         stream.blocked = max(stream.blocked, stuck)
         stream.reset(stuck)
         return None
     if len(chosen) < 2:
         return chosen
+    grouped = _group_choices(chosen, joins)
+    if grouped is not None:
+        return grouped
     return [
         Effect(
             EffectKind.CHOOSE_MODE,
@@ -176,7 +180,62 @@ def parse_effects(stream: Stream) -> list[Effect] | None:
     ]
 
 
-def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
+def _group_choices(effects: list[Effect], joins: list[str]) -> list[Effect] | None:
+    """Only the effects joined by "or" are the choice; the rest follow it.
+
+    "You may sacrifice an artifact or discard a card. If you do, draw a card."
+    (Chandra, Spark Hunter): the choice is between the first two, and the
+    draw comes after whichever was done. Wrapping every effect of the
+    ability in the choice made the draw a third option. A comma list ending
+    in "or" is one choice ("sacrifice a creature, discard a card, or pay 4
+    life"). A leading "you may" covers the whole choice ("you may X or Y" -
+    neither is required), so an optional first option is hoisted over it.
+
+    ``joins[i]`` is how effect ``i`` was joined to the one before: "or",
+    "comma", or "seq". None - the caller keeps the old reading - when the
+    lists don't line up (a later pass merged or split effects), or when the
+    first effect itself came after an "or" (the sentence was split inside a
+    disjunction, and no grouping of its pieces is a reading).
+    """
+    if len(joins) != len(effects) or "or" not in joins or joins[0] == "or":
+        return None
+    groups: list[list[int]] = []
+    for i, joined in enumerate(joins):
+        if joined == "or" and groups:
+            groups[-1].append(i)
+        else:
+            groups.append([i])
+    # A comma list before the "or" belongs to the choice.
+    k = len(groups) - 1
+    while k > 0:
+        group = groups[k]
+        if len(group) > 1:
+            while k > 0 and joins[group[0]] == "comma" and len(groups[k - 1]) == 1:
+                group[:0] = groups.pop(k - 1)
+                k -= 1
+        k -= 1
+
+    out: list[Effect] = []
+    for group in groups:
+        run = [effects[i] for i in group]
+        if len(run) == 1:
+            out.append(run[0])
+            continue
+        first = run[0]
+        hoist = (
+            first.kind is EffectKind.OPTIONAL
+            and len(first.children) == 1
+            and not any(e.kind is EffectKind.OPTIONAL for e in run[1:])
+        )
+        options = (first.children[0], *run[1:]) if hoist else tuple(run)
+        choice = Effect(
+            EffectKind.CHOOSE_MODE, children=options, players=YOU, text="one of several"
+        )
+        out.append(replace(first, children=(choice,)) if hoist else choice)
+    return out
+
+
+def _effect_run(stream: Stream, *, allow_or: bool, joins: list[str] | None = None) -> list[Effect] | None:
     """The body of ``parse_effects``, with and without "or" as a separator."""
     effects: list[Effect] = []
     used_or = False
@@ -185,10 +244,13 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
         stream.skip_punct(",", ".", ";")
         if stream.done:
             break
+        gap_text = [token.text for token in stream.tokens[gap:stream.mark()]]
+        joined = "comma" if ("," in gap_text and "." not in gap_text) else "seq"
         if allow_or and stream.accept("or"):
             used_or = True
-        else:
-            stream.accept("then", "and")
+            joined = "or"
+        elif stream.accept("then", "and"):
+            joined = "seq"
         stream.skip_punct(",", ".", ";")
         if stream.done:
             break
@@ -216,6 +278,8 @@ def _effect_run(stream: Stream, *, allow_or: bool) -> list[Effect] | None:
                 stream.blocked = max(stream.blocked, stuck)
                 return None
         effects.append(effect)
+        if joins is not None:
+            joins.append(joined)
 
         # Some clauses modify the effect just read rather than following it.
         # Read as siblings, "draw a card unless that player pays {1}" became
@@ -2136,14 +2200,33 @@ def _trailing_pump(stream: Stream, targets, targeted):
         return None
     stream.next()
     left, _, right = token.text.partition("/")
+    power, toughness = _pt_value(left), _pt_value(right)
+    # "gains trample and gets +1/+0 for each card you've drawn this turn"
+    # (Fists of Flame): the count scales the pump it follows, not the whole
+    # grant - read here, or the trailing chain hangs it on the sequence,
+    # where nothing repeats it and the pump stays a flat +1.
+    from .nouns import parse_for_each
+
+    multiplier = parse_for_each(stream)
+    if multiplier is not None:
+        power, toughness = _times(power, multiplier), _times(toughness, multiplier)
     return Effect(
         EffectKind.MODIFY_PT,
         targets=targets,
-        amount=_pt_value(left),
-        amount2=_pt_value(right),
+        amount=power,
+        amount2=toughness,
         is_targeted=targeted,
         text=f"gets {token.text}",
     )
+
+
+def _times(amount: Value, multiplier: Value) -> Value:
+    """``amount`` "for each" ``multiplier``: 0 stays 0, 1 becomes the count."""
+    if amount.is_constant and amount.constant == 0:
+        return amount
+    if amount.is_constant and amount.constant == 1:
+        return multiplier
+    return Value(kind=ValueKind.PRODUCT, operands=(amount, multiplier))
 
 
 # ---------------------------------------------------------------------------
@@ -2380,7 +2463,12 @@ def _create_token(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
     amount = parse_value(stream) or Value.of(1)
+    return _token_effect(stream, maker, amount)
 
+
+def _token_effect(stream: Stream, maker, amount: Value) -> Effect | None:
+    """The token part of a create: "1/1 white Soldier creature token with
+    flying", read after the count."""
     token = stream.peek()
     power = toughness = None
     if token.kind is TokenKind.PT:
@@ -2412,9 +2500,31 @@ def _create_token(stream: Stream) -> Effect | None:
     # one construct disagreed.
     _copy_exceptions(stream)
 
+    if not spec.subtypes_all and len(spec.subtypes_any) >= 2 and power is None:
+        # "create a Food token or a Treasure token" (Tireless Provisioner):
+        # the noun list joins the two, and a token can't be both - it is a
+        # choice of one, each made as its own token.
+        options = []
+        for name in spec.subtypes_any:
+            one = replace(spec, subtypes_all=(name,), subtypes_any=())
+            types = _token_types(one)
+            if types is None or types & CardType.CREATURE:
+                return None
+            options.append(_token(one, types, None, None, keywords, abilities, maker, amount))
+        return Effect(
+            EffectKind.CHOOSE_MODE,
+            children=tuple(options),
+            players=maker or YOU,
+            text="create one of these tokens",
+        )
     types = _token_types(spec)
     if types is None:
         return None
+    return _token(spec, types, power, toughness, keywords, abilities, maker, amount)
+
+
+def _token(spec, types, power, toughness, keywords, abilities, maker, amount) -> Effect | None:
+    """The CREATE_TOKEN effect for one token description."""
     if types & CardType.CREATURE and power is None:
         # A creature token whose power and toughness the sentence never gave.
         # Defaulted to 0/0 it is created and then dies to state-based actions
@@ -5805,6 +5915,21 @@ def _becomes_type(stream: Stream) -> Effect | None:
             text="becomes",
         )
     ]
+    # "becomes a *blue* Frog", "is a *green* Elk creature": the colour words
+    # set its colour (CR 105.3, layer 5). They were read into the filter and
+    # dropped, so Turn to Frog's Frog kept its own colours.
+    colours = spec.colors_any | spec.colors_all
+    if colours:
+        effects.append(
+            Effect(
+                EffectKind.SET_COLOR,
+                targets=targets,
+                colors=colours,
+                duration=Duration.PERMANENT,
+                is_targeted=targeted,
+                text="becomes " + colours.name.lower().replace("|", " and "),
+            )
+        )
     if stream.accept_phrase("with base power and toughness"):
         token = stream.peek()
         if token.kind is not TokenKind.PT:
@@ -7377,8 +7502,51 @@ def _pile_parts(stream: Stream, *, after_first: bool = False) -> list[Effect]:
     return parts
 
 
+def _pile_pair(stream: Stream) -> Effect | None:
+    """"a creature card and/or a land card from among them into your hand"
+    (Relentless Pursuit): up to one of each, not one card that is either.
+    Read as two moves to the same place, each up to one."""
+    mark = stream.mark()
+    # Only "a X and/or a Y": "any number of land and/or legendary cards" is
+    # one description with no limit (Kamahl's Druidic Vow).
+    if not stream.at("a", "an"):
+        return None
+    first = parse_object_filter(stream)
+    if first is None or first.from_pile or not stream.accept("and"):
+        stream.reset(mark)
+        return None
+    if not stream.accept("or"):
+        stream.reset(mark)
+        return None
+    second = parse_object_filter(stream)
+    if second is None or not second.from_pile:
+        stream.reset(mark)
+        return None
+    one = Value.of(1)
+    specs = (
+        replace(first, from_pile=True, zones=second.zones, count=one, up_to=True),
+        replace(second, count=one, up_to=True),
+    )
+    moves = []
+    for spec in specs:
+        look = stream.mark()
+        move = _pile_destination(stream, spec)
+        if move is None:
+            stream.reset(mark)
+            return None
+        moves.append(move)
+        if len(moves) == 1:
+            stream.reset(look)  # one destination, said once for both
+    return Effect(EffectKind.SEQUENCE, children=tuple(moves), text="put one of each")
+
+
 def _pile_part(stream: Stream, *, continuation: bool) -> Effect | None:
     mark = stream.mark()
+    if not continuation:
+        pair = _pile_pair(stream)
+        if pair is not None:
+            return pair
+        stream.reset(mark)
     spec = _pile_object(stream, continuation=continuation)
     if spec is None:
         stream.reset(mark)
@@ -8534,12 +8702,17 @@ def _spend_only(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
     stream.accept("to")
-    stream.accept("cast", "play", "activate")
+    cast = stream.accept("cast")
+    stream.accept("play", "activate")
 
     spec = parse_object_filter(stream)
     if spec is None:
         stream.reset(mark)
         return None
+    if cast and spec.is_commander and spec.zones == frozenset({Zone.BATTLEFIELD}):
+        # "Spend this mana only to cast your commander" (Jeweled Lotus): a
+        # spell being cast, not the permanent the bare noun would mean.
+        spec = replace(spec, zones=frozenset({Zone.STACK}))
     # "...of the chosen type" (Cavern of Souls). The type was chosen as the
     # permanent entered; the engine holds it, so the phrase narrows the
     # restriction without adding to it here.
@@ -9184,6 +9357,15 @@ def _put_into_hand(stream: Stream) -> Effect | None:
     zone = parse_zone(stream)
     if zone is None:
         return None
+    look = stream.mark()
+    if stream.accept("from"):
+        # "Put your commander into your hand from the command zone" (Command
+        # Beacon): where it comes from, said after where it goes.
+        source = parse_zone(stream)
+        if source is None:
+            stream.reset(look)
+        else:
+            targets = replace(targets, zones=frozenset({source}))
     return Effect(
         EffectKind.MOVE_ZONE,
         targets=targets,

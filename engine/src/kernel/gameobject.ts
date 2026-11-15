@@ -224,6 +224,26 @@ export function isLive(obj: GameObject): boolean {
   return obj.supersededBy === NO_OBJECT;
 }
 
+/**
+ * The object an id now stands for (CR 400.7): follows `supersededBy` to the
+ * newest object.
+ *
+ * A husk that ceased to exist points at itself: a token after CR 704.5d whose
+ * own death trigger is still pending (sba.ts), or a completed dungeon
+ * (dungeons.ts). Following that link would never end. Python's
+ * `while obj.superseded_by` loops have the same hang (F65), so it yields
+ * undefined: the object is gone, and no later instruction can find it. A
+ * chain longer than the number of objects is a cycle and is treated the same.
+ */
+export function latestObject(objects: ReadonlyMap<ObjectId, GameObject>, id: ObjectId): GameObject | undefined {
+  let obj = objects.get(id);
+  for (let hops = 0; obj !== undefined && obj.supersededBy !== NO_OBJECT; hops += 1) {
+    if (obj.supersededBy === obj.id || hops > objects.size) return undefined; // F65
+    obj = objects.get(obj.supersededBy);
+  }
+  return obj;
+}
+
 /** CR 110.1: a permanent is an object on the battlefield. */
 export function isPermanent(obj: GameObject): boolean {
   return isLive(obj) && obj.zone === Zone.BATTLEFIELD;

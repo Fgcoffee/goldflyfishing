@@ -1,0 +1,141 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0be907b2-54f9-4c8c-b6af-7c0093892e42",
+ "name": "Curiosity Crafter",
+ "card_hash": "c3ef05b44b0ba7d2206c9d407c3a5f9b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0be907b2-54f9-4c8c-b6af-7c0093892e42",
+  "name": "Curiosity Crafter",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Curiosity Crafter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Bird",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Flying\nYou have no maximum hand size.\nWhenever a creature token you control deals combat damage to a player, draw a card.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 2,
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1702,
+  "scryfall_uri": "https://scryfall.com/card/soc/191/curiosity-crafter?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0be907b2-54f9-4c8c-b6af-7c0093892e42",
+   "name": "Curiosity Crafter",
+   "face": 0,
+   "face_name": "Curiosity Crafter",
+   "card_hash": "c3ef05b44b0ba7d2206c9d407c3a5f9b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 151,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 100,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "skip the cleanup discard"
+        }
+       ],
+       "text": "no maximum hand size"
+      }
+     ],
+     "text": "You have no maximum hand size."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever a creature token you control deals combat damage to a player, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "controller": 1,
+       "is_token": true,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "to_player": true,
+      "text": "whenever something deals combat damage to a player"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

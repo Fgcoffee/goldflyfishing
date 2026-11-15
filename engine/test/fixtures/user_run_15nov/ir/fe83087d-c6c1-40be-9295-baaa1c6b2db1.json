@@ -1,0 +1,164 @@
+{
+ "ir_version": 2,
+ "oracle_id": "fe83087d-c6c1-40be-9295-baaa1c6b2db1",
+ "name": "Mondrak, Glory Dominus",
+ "card_hash": "1f8290e2b125106fc3ba36f46015b40e",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fe83087d-c6c1-40be-9295-baaa1c6b2db1",
+  "name": "Mondrak, Glory Dominus",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mondrak, Glory Dominus",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Phyrexian",
+      "Horror"
+     ]
+    },
+    "oracle_text": "If one or more tokens would be created under your control, twice that many of those tokens are created instead.\n{1}{W/P}{W/P}, Sacrifice two other artifacts and/or creatures: Put an indestructible counter on Mondrak. ({W/P} can be paid with either {W} or 2 life.)",
+    "power": "4",
+    "toughness": "4",
+    "colors": 1
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 428,
+  "scryfall_uri": "https://scryfall.com/card/one/23/mondrak-glory-dominus?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "fe83087d-c6c1-40be-9295-baaa1c6b2db1",
+   "name": "Mondrak, Glory Dominus",
+   "face": 0,
+   "face_name": "Mondrak, Glory Dominus",
+   "card_hash": "1f8290e2b125106fc3ba36f46015b40e",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": 0,
+       "replacement_kind": 13,
+       "multiplier": 2,
+       "text": "replacement: change the amount"
+      }
+     ],
+     "text": "If one or more tokens would be created under your control, twice that many of those tokens are created instead."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "indestructible",
+       "text": "add counters"
+      }
+     ],
+     "text": "{1}{W/P}{W/P}, Sacrifice two other artifacts and/or creatures: Put an indestructible counter on this.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 7,
+           "colors": 1,
+           "text": "{W/P}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 7,
+           "colors": 1,
+           "text": "{W/P}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 2
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_any": 5,
+         "other_than_source": true,
+         "count": {
+          "$": "Value",
+          "constant": 2
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

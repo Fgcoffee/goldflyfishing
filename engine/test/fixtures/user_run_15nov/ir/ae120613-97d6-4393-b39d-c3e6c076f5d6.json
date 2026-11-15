@@ -1,0 +1,137 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ae120613-97d6-4393-b39d-c3e6c076f5d6",
+ "name": "Deflecting Swat",
+ "card_hash": "89a17b2a7225bfe53816da93389d2e0b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ae120613-97d6-4393-b39d-c3e6c076f5d6",
+  "name": "Deflecting Swat",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Deflecting Swat",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "If you control a commander, you may cast this spell without paying its mana cost.\nYou may choose new targets for target spell or ability.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 75,
+  "scryfall_uri": "https://scryfall.com/card/cmm/214/deflecting-swat?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ae120613-97d6-4393-b39d-c3e6c076f5d6",
+   "name": "Deflecting Swat",
+   "face": 0,
+   "face_name": "Deflecting Swat",
+   "card_hash": "89a17b2a7225bfe53816da93389d2e0b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "If you control a commander, you may cast this spell without paying its mana cost.",
+     "functions_in": {
+      "$set": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ]
+     },
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost"
+      },
+      "condition": {
+       "$": "Condition",
+       "kind": 5,
+       "filter": {
+        "$": "ObjectFilter",
+        "controller": 1,
+        "is_commander": true
+       },
+       "constraint": {
+        "$": "NumericConstraint",
+        "comparison": 5,
+        "value": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "you control ..."
+      },
+      "text": "cast without paying its mana cost"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 102,
+         "targets": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": [
+            4
+           ]
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "is_targeted": true,
+         "text": "change targets"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may choose new targets for target spell or ability."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,115 @@
+{
+ "ir_version": 2,
+ "oracle_id": "6058fab1-9878-42b7-93be-b0a5aa99bd6d",
+ "name": "Vesuvan Duplimancy",
+ "card_hash": "744d744d016b33b430e23dab0328b581",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "6058fab1-9878-42b7-93be-b0a5aa99bd6d",
+  "name": "Vesuvan Duplimancy",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Vesuvan Duplimancy",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever you cast a spell that targets only a single artifact or creature you control, create a token that's a copy of that artifact or creature, except it's not legendary.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 3966,
+  "scryfall_uri": "https://scryfall.com/card/dmu/73/vesuvan-duplimancy?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "6058fab1-9878-42b7-93be-b0a5aa99bd6d",
+   "name": "Vesuvan Duplimancy",
+   "face": 0,
+   "face_name": "Vesuvan Duplimancy",
+   "card_hash": "744d744d016b33b430e23dab0328b581",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever you cast a spell that targets only a single artifact or creature you control, create a token that's a copy of that artifact or creature, except it's not legendary."
+      }
+     ],
+     "text": "Whenever you cast a spell that targets only a single artifact or creature you control, create a token that's a copy of that artifact or creature, except it's not legendary.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever you cast a spell that targets only a single artifact or creature you control, create a token that's a copy of that artifact or creature, except it's not legendary.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "that",
+      "targets",
+      "only",
+      "a",
+      "single",
+      "artifact",
+      "or",
+      "creature",
+      "you",
+      "control",
+      ",",
+      "create",
+      "a",
+      "token",
+      "that's",
+      "a",
+      "copy",
+      "of",
+      "that",
+      "artifact",
+      "or",
+      "creature",
+      ",",
+      "except",
+      "it's",
+      "not",
+      "legendary",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

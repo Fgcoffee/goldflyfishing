@@ -1,0 +1,117 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
+ "name": "Blasphemous Act",
+ "card_hash": "6ca07b967f1b6acb5198b9a49173d5a1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
+  "name": "Blasphemous Act",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Blasphemous Act",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 8,
+       "text": "{8}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "This spell costs {1} less to cast for each creature on the battlefield.\nBlasphemous Act deals 13 damage to each creature.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 9,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 22,
+  "scryfall_uri": "https://scryfall.com/card/msc/163/blasphemous-act?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
+   "name": "Blasphemous Act",
+   "face": 0,
+   "face_name": "Blasphemous Act",
+   "card_hash": "6ca07b967f1b6acb5198b9a49173d5a1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 152,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 12,
+        "operands": [
+         {
+          "$": "Value",
+          "constant": -1
+         },
+         {
+          "$": "Value",
+          "kind": 2,
+          "filter": {
+           "$": "ObjectFilter",
+           "types_all": 4
+          }
+         }
+        ]
+       },
+       "duration": 0,
+       "text": "this ability costs less"
+      }
+     ],
+     "text": "This spell costs {1} less to cast for each creature on the battlefield."
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 13
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "this deals 13 damage to each creature."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,148 @@
+{
+ "ir_version": 2,
+ "oracle_id": "bc483bab-14fb-498d-9310-9c070766c7ae",
+ "name": "Darksteel Reactor",
+ "card_hash": "e9d367f883c54c4819f2521f5ac11896",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bc483bab-14fb-498d-9310-9c070766c7ae",
+  "name": "Darksteel Reactor",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Darksteel Reactor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "Indestructible (Effects that say \"destroy\" don't destroy this artifact.)\nAt the beginning of your upkeep, you may put a charge counter on this artifact.\nWhen this artifact has twenty or more charge counters on it, you win the game.",
+    "keywords": [
+     "Indestructible"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 3707,
+  "scryfall_uri": "https://scryfall.com/card/eoc/134/darksteel-reactor?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "bc483bab-14fb-498d-9310-9c070766c7ae",
+   "name": "Darksteel Reactor",
+   "face": 0,
+   "face_name": "Darksteel Reactor",
+   "card_hash": "e9d367f883c54c4819f2521f5ac11896",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Indestructible",
+     "keyword": "Indestructible"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 72,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "counter_type": "charge",
+         "text": "add counters"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "At the beginning of your upkeep, you may put a charge counter on this artifact.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        127
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "at the beginning of upkeep"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "When this artifact has twenty or more charge counters on it, you win the game."
+      }
+     ],
+     "text": "When this artifact has twenty or more charge counters on it, you win the game.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this artifact has twenty or more charge counters on it, you win the game.",
+     "reason": "unreadable trigger condition",
+     "remaining": [
+      "When",
+      "this",
+      "artifact",
+      "has",
+      "twenty",
+      "or",
+      "more",
+      "charge",
+      "counters",
+      "on",
+      "it",
+      ",",
+      "you",
+      "win",
+      "the",
+      "game",
+      "."
+     ],
+     "rule": "trigger"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

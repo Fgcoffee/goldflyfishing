@@ -1,0 +1,111 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2707f9f4-2b80-47ac-af0a-99fc53af94bf",
+ "name": "Retraction Helix",
+ "card_hash": "d246d0df9197fa1bb9bf80953ce30069",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2707f9f4-2b80-47ac-af0a-99fc53af94bf",
+  "name": "Retraction Helix",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Retraction Helix",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Until end of turn, target creature gains \"{T}: Return target nonland permanent to its owner's hand.\"",
+    "colors": 2
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 4173,
+  "scryfall_uri": "https://scryfall.com/card/a25/71/retraction-helix?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2707f9f4-2b80-47ac-af0a-99fc53af94bf",
+   "name": "Retraction Helix",
+   "face": 0,
+   "face_name": "Retraction Helix",
+   "card_hash": "d246d0df9197fa1bb9bf80953ce30069",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "duration": 1,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 143,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "is_targeted": true,
+         "duration": 1,
+         "granted_abilities": [
+          {
+           "$": "Ability",
+           "kind": 1,
+           "effects": [
+            {
+             "$": "Effect",
+             "kind": 32,
+             "targets": {
+              "$": "ObjectFilter",
+              "types_none": 16
+             },
+             "is_targeted": true,
+             "text": "return to hand"
+            }
+           ],
+           "text": "{T} : Return target nonland permanent to its owner's hand .",
+           "cost": {
+            "$": "Cost",
+            "components": [
+             {
+              "$": "CostComponent",
+              "kind": 1,
+              "text": "{T}"
+             }
+            ]
+           }
+          }
+         ],
+         "text": "gains {T} : Return target nonland permanent to its owner's hand ."
+        }
+       ],
+       "text": "for a duration"
+      }
+     ],
+     "text": "Until end of turn, target creature gains \"{T}: Return target nonland permanent to its owner's hand.\""
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -103,14 +103,29 @@
        "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 5,
-        "colors_any": 8,
         "zones": {
          "$set": [
           1
          ]
         },
-        "owner": 1
+        "owner": 1,
+        "any_of": [
+         {
+          "$": "ObjectFilter",
+          "types_all": 1,
+          "zones": {
+           "$set": []
+          }
+         },
+         {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "colors_any": 8,
+          "zones": {
+           "$set": []
+          }
+         }
+        ]
        },
        "duration": 0,
        "granted_abilities": [

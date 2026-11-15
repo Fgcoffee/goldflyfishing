@@ -1,0 +1,137 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c34c17c7-3827-49a2-be25-67f44fdfe150",
+ "name": "Strike It Rich",
+ "card_hash": "a1a0a50ed40da0acae4b9e55b4d825bd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c34c17c7-3827-49a2-be25-67f44fdfe150",
+  "name": "Strike It Rich",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Strike It Rich",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nFlashback {2}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "colors": 8,
+    "keywords": [
+     "Treasure",
+     "Flashback"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1011,
+  "scryfall_uri": "https://scryfall.com/card/mh2/143/strike-it-rich?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c34c17c7-3827-49a2-be25-67f44fdfe150",
+   "name": "Strike It Rich",
+   "face": 0,
+   "face_name": "Strike It Rich",
+   "card_hash": "a1a0a50ed40da0acae4b9e55b4d825bd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Create a Treasure token."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flashback {2}{R}",
+     "functions_in": {
+      "$set": [
+       3
+      ]
+     },
+     "keyword": "Flashback",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 2,
+            "text": "{2}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 8,
+            "text": "{R}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "from_zone": 3,
+      "keyword": "Flashback",
+      "text": "Flashback {2}{R}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

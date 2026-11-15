@@ -1,0 +1,183 @@
+{
+ "ir_version": 2,
+ "oracle_id": "d57a6b19-bd06-4b07-8ee1-0b45612ba9e4",
+ "name": "Veyran, Voice of Duality",
+ "card_hash": "9ac9d0590c82cc4fb7cb7d42b2f4c475",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "d57a6b19-bd06-4b07-8ee1-0b45612ba9e4",
+  "name": "Veyran, Voice of Duality",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Veyran, Voice of Duality",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Efreet",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "Magecraft — Whenever you cast or copy an instant or sorcery spell, Veyran gets +1/+1 until end of turn.\nIf you casting or copying an instant or sorcery spell causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time.",
+    "power": "2",
+    "toughness": "2",
+    "colors": 10,
+    "keywords": [
+     "Magecraft"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 761,
+  "scryfall_uri": "https://scryfall.com/card/soc/337/veyran-voice-of-duality?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "d57a6b19-bd06-4b07-8ee1-0b45612ba9e4",
+   "name": "Veyran, Voice of Duality",
+   "face": 0,
+   "face_name": "Veyran, Voice of Duality",
+   "card_hash": "9ac9d0590c82cc4fb7cb7d42b2f4c475",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": 1,
+       "text": "gets +1/+1"
+      }
+     ],
+     "text": "Whenever you cast or copy an instant or sorcery spell, this gets +1/+1 until end of turn.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20,
+        28
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_any": 192,
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "If you casting or copying an instant or sorcery spell causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time."
+      }
+     ],
+     "text": "If you casting or copying an instant or sorcery spell causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "If you casting or copying an instant or sorcery spell causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "If",
+      "you",
+      "casting",
+      "or",
+      "copying",
+      "an",
+      "instant",
+      "or",
+      "sorcery",
+      "spell",
+      "causes",
+      "a",
+      "triggered",
+      "ability",
+      "of",
+      "a",
+      "permanent",
+      "you",
+      "control",
+      "to",
+      "trigger",
+      ",",
+      "that",
+      "ability",
+      "triggers",
+      "an",
+      "additional",
+      "time",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

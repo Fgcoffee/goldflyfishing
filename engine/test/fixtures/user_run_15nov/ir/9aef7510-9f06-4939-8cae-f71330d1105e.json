@@ -1,0 +1,89 @@
+{
+ "ir_version": 2,
+ "oracle_id": "9aef7510-9f06-4939-8cae-f71330d1105e",
+ "name": "Turbulent Springs",
+ "card_hash": "9752cca3d6e7267d40b540c5a467ff32",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9aef7510-9f06-4939-8cae-f71330d1105e",
+  "name": "Turbulent Springs",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Turbulent Springs",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Island",
+      "Mountain"
+     ]
+    },
+    "oracle_text": "({T}: Add {U} or {R}.)\nThis land enters tapped unless your opponents control eight or more lands.",
+    "produced_mana": [
+     "R",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 3717,
+  "scryfall_uri": "https://scryfall.com/card/soc/57/turbulent-springs?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "9aef7510-9f06-4939-8cae-f71330d1105e",
+   "name": "Turbulent Springs",
+   "face": 0,
+   "face_name": "Turbulent Springs",
+   "card_hash": "9752cca3d6e7267d40b540c5a467ff32",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "This land enters tapped unless your opponents control eight or more lands."
+      }
+     ],
+     "text": "This land enters tapped unless your opponents control eight or more lands.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "This land enters tapped unless your opponents control eight or more lands.",
+     "reason": "not fully consumed",
+     "consumed": 4,
+     "remaining": [
+      "unless",
+      "your",
+      "opponents",
+      "control",
+      "eight",
+      "or",
+      "more",
+      "lands",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

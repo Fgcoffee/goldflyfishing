@@ -1,0 +1,150 @@
+{
+ "ir_version": 2,
+ "oracle_id": "55a519b4-61cb-448a-875b-4d6dbe00580f",
+ "name": "Spire of Industry",
+ "card_hash": "fdc64d2407f780025c1ef5c58ec46734",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "55a519b4-61cb-448a-875b-4d6dbe00580f",
+  "name": "Spire of Industry",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Spire of Industry",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}, Pay 1 life: Add one mana of any color. Activate only if you control an artifact.",
+    "produced_mana": [
+     "B",
+     "C",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 394,
+  "scryfall_uri": "https://scryfall.com/card/eoc/183/spire-of-industry?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "55a519b4-61cb-448a-875b-4d6dbe00580f",
+   "name": "Spire of Industry",
+   "face": 0,
+   "face_name": "Spire of Industry",
+   "card_hash": "fdc64d2407f780025c1ef5c58ec46734",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      },
+      {
+       "$": "Effect",
+       "text": "activate only ..."
+      }
+     ],
+     "text": "{T}, Pay 1 life: Add one mana of any color. Activate only if you control an artifact.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 30,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "pay life"
+       }
+      ]
+     },
+     "is_mana_ability": true,
+     "activation_condition": {
+      "$": "Condition",
+      "kind": 5,
+      "filter": {
+       "$": "ObjectFilter",
+       "types_all": 1,
+       "controller": 1
+      },
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": 5,
+       "value": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "you control ..."
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

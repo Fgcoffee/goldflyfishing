@@ -1,0 +1,241 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4aeafdf3-7828-4114-8c74-3bd46357caec",
+ "name": "Tezzeret the Seeker",
+ "card_hash": "539da6959506f0ecbd94b2171f388497",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4aeafdf3-7828-4114-8c74-3bd46357caec",
+  "name": "Tezzeret the Seeker",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tezzeret the Seeker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Tezzeret"
+     ]
+    },
+    "oracle_text": "+1: Untap up to two target artifacts.\n−X: Search your library for an artifact card with mana value X or less, put it onto the battlefield, then shuffle.\n−5: Artifacts you control become artifact creatures with base power and toughness 5/5 until end of turn.",
+    "loyalty": "4",
+    "colors": 2
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1733,
+  "scryfall_uri": "https://scryfall.com/card/mm2/62/tezzeret-the-seeker?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4aeafdf3-7828-4114-8c74-3bd46357caec",
+   "name": "Tezzeret the Seeker",
+   "face": 0,
+   "face_name": "Tezzeret the Seeker",
+   "card_hash": "539da6959506f0ecbd94b2171f388497",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 1,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        },
+        "up_to": true
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      }
+     ],
+     "text": "+1: Untap up to two target artifacts.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 1,
+        "zones": {
+         "$set": []
+        },
+        "mana_value": {
+         "$": "NumericConstraint",
+         "comparison": 3,
+         "value": {
+          "$": "Value",
+          "kind": 1
+         }
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 2,
+       "text": "search library"
+      }
+     ],
+     "text": "-X: Search your library for an artifact card with mana value X or less, put it onto the battlefield, then shuffle.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "kind": 13,
+         "operands": [
+          {
+           "$": "Value"
+          },
+          {
+           "$": "Value",
+           "kind": 1
+          }
+         ]
+        },
+        "text": "-X"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 146,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 1,
+          "controller": 1
+         },
+         "duration": 1,
+         "types": 5,
+         "text": "becomes"
+        },
+        {
+         "$": "Effect",
+         "kind": 141,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 1,
+          "controller": 1
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 5
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 5
+         },
+         "duration": 1,
+         "text": "base 5/5"
+        }
+       ],
+       "text": "becomes"
+      }
+     ],
+     "text": "-5: Artifacts you control become artifact creatures with base power and toughness 5/5 until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": -5
+        },
+        "text": "-5"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

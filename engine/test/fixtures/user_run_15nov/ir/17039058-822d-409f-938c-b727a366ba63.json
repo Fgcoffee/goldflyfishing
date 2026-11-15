@@ -1,0 +1,108 @@
+{
+ "ir_version": 2,
+ "oracle_id": "17039058-822d-409f-938c-b727a366ba63",
+ "name": "Steam Vents",
+ "card_hash": "999785d32580dc1df565fa33414a260d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "17039058-822d-409f-938c-b727a366ba63",
+  "name": "Steam Vents",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Steam Vents",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Island",
+      "Mountain"
+     ]
+    },
+    "oracle_text": "({T}: Add {U} or {R}.)\nAs this land enters, you may pay 2 life. If you don't, it enters tapped.",
+    "produced_mana": [
+     "R",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 64,
+  "scryfall_uri": "https://scryfall.com/card/trk/298/steam-vents?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "17039058-822d-409f-938c-b727a366ba63",
+   "name": "Steam Vents",
+   "face": 0,
+   "face_name": "Steam Vents",
+   "card_hash": "999785d32580dc1df565fa33414a260d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 4,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 52,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 2
+           },
+           "text": "pay life"
+          }
+         ],
+         "text": "may"
+        },
+        {
+         "$": "Effect",
+         "kind": 201,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 70,
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "duration": 0,
+           "text": "enters tapped"
+          }
+         ],
+         "text": "if you don't"
+        }
+       ],
+       "text": "as this enters"
+      }
+     ],
+     "text": "As this land enters, you may pay 2 life. If you don't, it enters tapped."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

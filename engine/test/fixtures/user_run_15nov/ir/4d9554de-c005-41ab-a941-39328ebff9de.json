@@ -1,0 +1,139 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4d9554de-c005-41ab-a941-39328ebff9de",
+ "name": "Relic of Legends",
+ "card_hash": "ad3589cb7c869b05ba4acd32721176d2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4d9554de-c005-41ab-a941-39328ebff9de",
+  "name": "Relic of Legends",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Relic of Legends",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}: Add one mana of any color.\nTap an untapped legendary creature you control: Add one mana of any color.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 536,
+  "scryfall_uri": "https://scryfall.com/card/msc/209/relic-of-legends?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4d9554de-c005-41ab-a941-39328ebff9de",
+   "name": "Relic of Legends",
+   "face": 0,
+   "face_name": "Relic of Legends",
+   "card_hash": "ad3589cb7c869b05ba4acd32721176d2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "{T}: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      }
+     ],
+     "text": "Tap an untapped legendary creature you control: Add one mana of any color.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 3,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "supertypes_all": 2,
+         "controller": 1,
+         "tapped": false,
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "tap another permanent"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

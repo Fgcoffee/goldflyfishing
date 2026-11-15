@@ -1,0 +1,93 @@
+{
+ "ir_version": 2,
+ "oracle_id": "9913da11-07f0-494a-8c47-11629dcb5be2",
+ "name": "You Come to a River",
+ "card_hash": "45c3e9f6b484ff618882e9031fe61d13",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9913da11-07f0-494a-8c47-11629dcb5be2",
+  "name": "You Come to a River",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "You Come to a River",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Choose one —\n• Fight the Current — Return target nonland permanent to its owner's hand.\n• Find a Crossing — Target creature gets +1/+0 until end of turn and can't be blocked this turn.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 8098,
+  "scryfall_uri": "https://scryfall.com/card/afr/83/you-come-to-a-river?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "9913da11-07f0-494a-8c47-11629dcb5be2",
+   "name": "You Come to a River",
+   "face": 0,
+   "face_name": "You Come to a River",
+   "card_hash": "45c3e9f6b484ff618882e9031fe61d13",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Choose one -"
+      }
+     ],
+     "text": "Choose one -",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Target creature gets +1/+0 until end of turn and can't be blocked this turn.",
+     "reason": "unreadable mode",
+     "consumed": 9,
+     "remaining": [
+      "can't",
+      "be",
+      "blocked",
+      "this",
+      "turn",
+      "."
+     ],
+     "rule": "modal"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

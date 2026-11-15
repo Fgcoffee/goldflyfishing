@@ -1,0 +1,135 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4c7f3fbf-6b68-492f-893d-853c73cfa463",
+ "name": "Distortion Strike",
+ "card_hash": "8299042eb716763c23e7e0a15f97ec1b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4c7f3fbf-6b68-492f-893d-853c73cfa463",
+  "name": "Distortion Strike",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Distortion Strike",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Target creature gets +1/+0 until end of turn and can't be blocked this turn.\nRebound (If you cast this spell from your hand, exile it as it resolves. At the beginning of your next upkeep, you may cast this card from exile without paying its mana cost.)",
+    "colors": 2,
+    "keywords": [
+     "Rebound"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 6066,
+  "scryfall_uri": "https://scryfall.com/card/ima/52/distortion-strike?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4c7f3fbf-6b68-492f-893d-853c73cfa463",
+   "name": "Distortion Strike",
+   "face": 0,
+   "face_name": "Distortion Strike",
+   "card_hash": "8299042eb716763c23e7e0a15f97ec1b",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Target creature gets +1/+0 until end of turn and can't be blocked this turn."
+      }
+     ],
+     "text": "Target creature gets +1/+0 until end of turn and can't be blocked this turn.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "text": "exile it instead of putting it into your graveyard"
+      },
+      {
+       "$": "Effect",
+       "kind": 213,
+       "trigger": {
+        "$": "TriggerCondition",
+        "event_kinds": {
+         "$set": [
+          127
+         ]
+        },
+        "players": {
+         "$": "PlayerFilter"
+        },
+        "text": "at the beginning of your next upkeep"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 103,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "you may cast it from exile for free"
+        }
+       ],
+       "text": "at the beginning of your next upkeep, cast it for free"
+      }
+     ],
+     "text": "Rebound",
+     "keyword": "Rebound"
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Target creature gets +1/+0 until end of turn and can't be blocked this turn.",
+     "reason": "not fully consumed",
+     "consumed": 9,
+     "remaining": [
+      "can't",
+      "be",
+      "blocked",
+      "this",
+      "turn",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

@@ -99,6 +99,19 @@
           },
           {
            "$": "Effect",
+           "kind": 145,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_all": 4
+           },
+           "is_targeted": true,
+           "same_target": true,
+           "duration": 1,
+           "colors": 2,
+           "text": "becomes blue"
+          },
+          {
+           "$": "Effect",
            "kind": 141,
            "targets": {
             "$": "ObjectFilter",

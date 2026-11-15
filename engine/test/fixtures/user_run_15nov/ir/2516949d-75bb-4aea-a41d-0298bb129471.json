@@ -1,0 +1,135 @@
+{
+ "ir_version": 2,
+ "oracle_id": "2516949d-75bb-4aea-a41d-0298bb129471",
+ "name": "Slip Through Space",
+ "card_hash": "a77fd31b4e114f21e53b9ca8c4779637",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "2516949d-75bb-4aea-a41d-0298bb129471",
+  "name": "Slip Through Space",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Slip Through Space",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Devoid (This card has no color.)\nTarget creature can't be blocked this turn.\nDraw a card.",
+    "keywords": [
+     "Devoid"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 2235,
+  "scryfall_uri": "https://scryfall.com/card/ogw/47/slip-through-space?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "2516949d-75bb-4aea-a41d-0298bb129471",
+   "name": "Slip Through Space",
+   "face": 0,
+   "face_name": "Slip Through Space",
+   "card_hash": "a77fd31b4e114f21e53b9ca8c4779637",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 145,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "text": "is colorless"
+      }
+     ],
+     "text": "Devoid",
+     "functions_in": {
+      "$set": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ]
+     },
+     "keyword": "Devoid",
+     "is_characteristic_defining": true
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 24,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "text": "can't be_blocked"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Target creature can't be blocked this turn."
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw a card."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

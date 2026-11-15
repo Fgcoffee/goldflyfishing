@@ -21,13 +21,10 @@ import { charsManaValue, hasType, isCreature, type Characteristics } from "../ru
 import { canBlock, lethalDamage, type Combat, type CombatAgent, type Defender, type Recipient } from "../rules/cr500_turn_structure/combat";
 import { characteristicsOf, printedCharacteristics } from "../rules/cr600_spells_and_abilities/layers";
 import { project, type Projection } from "./lookahead";
+import { isContinuing, LOOP_REPETITIONS } from "../rules/loops";
 
-/**
- * Python `kernel.loops.LOOP_REPETITIONS`. PORT: loops.ts is still the rules
- * session's placeholder; `isContinuing` (a loop being re-aimed) is false
- * until it lands.
- */
-export const LOOP_REPETITIONS = 8;
+/** Python `kernel.loops.LOOP_REPETITIONS` (rules/loops.ts). */
+export { LOOP_REPETITIONS } from "../rules/loops";
 
 const TRIGGERED = ir("AbilityKind.TRIGGERED");
 const charsOf = (game: Game, obj: GameObject): Characteristics => characteristicsOf(game, obj);
@@ -176,7 +173,9 @@ export class SimpleAgent implements Agent, CombatAgent {
   private repeatedTooOften(game: Game, act: Action): boolean {
     const obj = game.objects.get(act.source);
     if (obj === undefined) return false;
-    // PORT: Python spares a loop being re-aimed (loops.is_continuing).
+    // A loop that has just killed a player is being re-aimed at the next;
+    // stopping it here would leave that shortcut half-finished.
+    if (isContinuing(game, obj.controller, act)) return false;
     return (obj.activationsThisTurn.get(act.abilityIndex) ?? 0) >= SimpleAgent.MAX_ACTIVATIONS_PER_TURN;
   }
 

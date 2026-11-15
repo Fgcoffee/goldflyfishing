@@ -1,0 +1,163 @@
+{
+ "ir_version": 2,
+ "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+ "name": "Glacial Fortress",
+ "card_hash": "7e931b1f972e38ba8e9cb7fbd3362006",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+  "name": "Glacial Fortress",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Glacial Fortress",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped unless you control a Plains or an Island.\n{T}: Add {W} or {U}.",
+    "produced_mana": [
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 3,
+  "commander_legal": true,
+  "edhrec_rank": 95,
+  "scryfall_uri": "https://scryfall.com/card/msc/248/glacial-fortress?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+   "name": "Glacial Fortress",
+   "face": 0,
+   "face_name": "Glacial Fortress",
+   "card_hash": "7e931b1f972e38ba8e9cb7fbd3362006",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 5,
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_any": [
+            "Plains",
+            "Island"
+           ],
+           "controller": 1
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 1
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control a Plains or an Island."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{W}"
+         ],
+         "colors": 1,
+         "text": "add {W}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": 2,
+         "text": "add {U}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {W} or {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

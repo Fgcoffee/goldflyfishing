@@ -201,6 +201,74 @@ and the spot check (2cb63b4, 8ab95a8). Thanks.
     - the run was stored, and Replay of game 3 matched its digest;
     - `?engine=server` and the plain URL stay on the server engine.
 
+- **Runaway banner per kind** (8c6e2ae, the auditor's request): on Results,
+  `TOKEN SWARM` runaways (the 500-permanent cap, often a legal lock) get a
+  neutral panel, "stopped at 500 permanents ... not a card bug".
+  Repeated-action loops (`CAST`/`ACTIVATE`/`RESOLVE`/`PRIORITY LOOP`) keep
+  the card-bug warning. Checked on the page with a mixed payload.
+- Noted: when a build step reads a new file, build the image
+  (`docker build .`) before pushing. The auditor fixed the node stage's
+  COPY for `engine-build.mjs` (33c224f).
+
+- **Browser runs always finish** (the auditor's URGENT report: live runs
+  stalled at 709 of 1000):
+  - Workers now report every game as it ends, with its record or crash
+    (`ProgressReply.game`; `runGames`'s `onGame` gets the `GameOutcome`).
+    The page keeps them, so nothing finished is lost.
+  - `WorkerPool` has a per-game watchdog (`gameTimeoutMs`, default 60 s).
+    A worker silent for that long is terminated, the game it was on is
+    recorded as crashed ("timed out after 60 s", seed, engine build), and a
+    fresh worker plays the rest of its range.
+  - A worker that dies (`error`, or a reply that can't be read:
+    `messageerror`) is handled the same way: "worker died: <message>".
+  - After `maxRestarts` (3) fresh workers in a row finish nothing, the rest
+    of that range is recorded as "not played: the worker kept failing to
+    start", rather than restarting for ever.
+  - Setting: `?gameTimeout=N` seconds, remembered in localStorage
+    `goldfly.gameTimeout`. The console says what each worker did
+    (`[goldfly] worker 5: game 44 ... timed out`).
+  - Results: the crash panel now reads "N of M games didn't finish and were
+    left out (seeds listed)". Those games are in the upload's `crashed`.
+  - Tests (`webapp/test/pool.test.ts`):
+    - a game that never ends times out and the run completes;
+    - a worker that fails at load is replaced;
+    - workers that keep failing give up instead of looping;
+    - one hung worker doesn't cost the others their games.
+  - Checked on the real site with the tester decks, run seed 0, 200 games:
+    the run finished, with 198 games played and 2 timed out at 60 s.
+    **Hanging seeds for rules:** game 44, seed 3140482264; game 182, seed
+    3348571489 (tester decks as sent for F61, hero deck0, turn cap 25).
+
+- **Stop always stops:**
+  - Stop asks every worker to cancel. A worker that hasn't answered within
+    3 s (`STOP_GRACE_MS`, option `stopGraceMs`) is terminated, and its
+    in-flight game is recorded as "stopped mid-game" with its seed. The
+    partial run is shown and uploaded at once.
+  - Tests: Stop on a stuck worker returns in well under a second (not the
+    watchdog) and keeps games 0-2; Stop on a healthy run loses nothing.
+  - On the real site, Stop after 15 s of the user's 1000-game run returned
+    in 3.4 s, and the 68 finished games were shown and saved.
+- **The user's stalled run, reproduced with the watchdog in place:**
+  - Decks: Archidekt 27600141 (Vraska, Soul of Stone) in seats 1 and 2,
+    26926766 (Muddle, the Ever-Changing), 26074514 (Kilo, Apogee Mind).
+    Hero is seat 1, seed 0, 1000 games, turn cap 25.
+  - The run finished in 345 s: 984 games played, and **16 timed out at
+    60 s**. Each of those would have stalled the run before the fix.
+  - **Hanging games for rules (index/seed):** 157/1327311335,
+    182/3348571489, 283/3714628078, 297/760999552, 334/1429530324,
+    431/1817070371, 470/1443292003, 537/61554289, 560/313357306,
+    581/554205434, 598/945824208, 627/1647484985, 715/3917995477,
+    850/2035033741, 883/1698264385, 941/2569846678.
+  - Game 182 (seed 3348571489) also hung with the tester decks: Vraska's
+    deck is in both runs.
+- **"CSP blocks the use of eval" (Chrome/Opera Issues panel):** it comes from
+  `plotly.min.js`. Its bundled helpers (function-bind,
+  is-generator-function) try `Function("return function*() {}")` and the
+  like inside `try/catch` while loading, to feature-detect. The CSP blocks
+  it, the catch swallows it, and Chrome logs it. It's harmless. Our engine
+  bundles contain no `eval` or `new Function`. The only fix is a Plotly
+  build without those helpers; `unsafe-eval` is not worth it.
+
 ## Next
 
 1. **Sandbox on the TS engine,** so a sandbox game replays from its setup

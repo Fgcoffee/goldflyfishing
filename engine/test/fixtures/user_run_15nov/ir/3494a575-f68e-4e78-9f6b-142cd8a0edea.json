@@ -1,0 +1,145 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3494a575-f68e-4e78-9f6b-142cd8a0edea",
+ "name": "Combustible Gearhulk",
+ "card_hash": "c075ebd8a909ffc2651a387596cf652d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3494a575-f68e-4e78-9f6b-142cd8a0edea",
+  "name": "Combustible Gearhulk",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Combustible Gearhulk",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Construct"
+     ]
+    },
+    "oracle_text": "First strike\nWhen this creature enters, target opponent may have you draw three cards. If the player doesn't, you mill three cards, then this creature deals damage to that player equal to the total mana value of those cards.",
+    "power": "6",
+    "toughness": "6",
+    "colors": 8,
+    "keywords": [
+     "First strike",
+     "Mill"
+    ]
+   }
+  ],
+  "mana_value": 6,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1026,
+  "scryfall_uri": "https://scryfall.com/card/dsc/163/combustible-gearhulk?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3494a575-f68e-4e78-9f6b-142cd8a0edea",
+   "name": "Combustible Gearhulk",
+   "face": 0,
+   "face_name": "Combustible Gearhulk",
+   "card_hash": "c075ebd8a909ffc2651a387596cf652d",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "First strike",
+     "keyword": "First strike"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "When this creature enters, target opponent may have you draw three cards. If the player doesn't, you mill three cards, then this creature deals damage to that player equal to the total mana value of those cards."
+      }
+     ],
+     "text": "When this creature enters, target opponent may have you draw three cards. If the player doesn't, you mill three cards, then this creature deals damage to that player equal to the total mana value of those cards.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "When this creature enters, target opponent may have you draw three cards. If the player doesn't, you mill three cards, then this creature deals damage to that player equal to the total mana value of those cards.",
+     "reason": "not fully consumed",
+     "consumed": 5,
+     "remaining": [
+      "target",
+      "opponent",
+      "may",
+      "have",
+      "you",
+      "draw",
+      "three",
+      "cards",
+      ".",
+      "If",
+      "the",
+      "player",
+      "doesn't",
+      ",",
+      "you",
+      "mill",
+      "three",
+      "cards",
+      ",",
+      "then",
+      "this",
+      "creature",
+      "deals",
+      "damage",
+      "to",
+      "that",
+      "player",
+      "equal",
+      "to",
+      "the",
+      "total",
+      "mana",
+      "value",
+      "of",
+      "those",
+      "cards",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

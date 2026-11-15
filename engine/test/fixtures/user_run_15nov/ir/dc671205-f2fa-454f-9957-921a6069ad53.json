@@ -1,0 +1,104 @@
+{
+ "ir_version": 2,
+ "oracle_id": "dc671205-f2fa-454f-9957-921a6069ad53",
+ "name": "High Tide",
+ "card_hash": "5e91114d2dcdc6e6bb155db67a3e2ddc",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "dc671205-f2fa-454f-9957-921a6069ad53",
+  "name": "High Tide",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "High Tide",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Until end of turn, whenever a player taps an Island for mana, that player adds an additional {U}.",
+    "colors": 2,
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 801,
+  "scryfall_uri": "https://scryfall.com/card/dmr/54/high-tide?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "dc671205-f2fa-454f-9957-921a6069ad53",
+   "name": "High Tide",
+   "face": 0,
+   "face_name": "High Tide",
+   "card_hash": "5e91114d2dcdc6e6bb155db67a3e2ddc",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Until end of turn, whenever a player taps an Island for mana, that player adds an additional {U}."
+      }
+     ],
+     "text": "Until end of turn, whenever a player taps an Island for mana, that player adds an additional {U}.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Until end of turn, whenever a player taps an Island for mana, that player adds an additional {U}.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Until",
+      "end",
+      "of",
+      "turn",
+      ",",
+      "whenever",
+      "a",
+      "player",
+      "taps",
+      "an",
+      "Island",
+      "for",
+      "mana",
+      ",",
+      "that",
+      "player",
+      "adds",
+      "an",
+      "additional",
+      "{U}",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

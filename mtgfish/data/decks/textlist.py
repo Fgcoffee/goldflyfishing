@@ -10,6 +10,7 @@ formats this needs to swallow:
     1 Sol Ring (LTC) 302               Moxfield / Arena
     1 Sol Ring (LTC) 302 *F*           Arena foil marker
     1x Sol Ring (m3c) 236 [Ramp]       Archidekt with categories
+    1x Kykar (cmm) [Commander{top}]    Archidekt: the Commander tag marks the commander
     SB: 1 Sol Ring                     old-style sideboard prefix
 
 plus section headers (``Commander``, ``Deck``, ``Sideboard``, ``// Commander``,
@@ -95,6 +96,31 @@ def clean_card_name(name: str) -> str:
     return name.strip()
 
 
+_TAG_RE = re.compile(r"\[([^\]]*)\]")
+
+#: Archidekt's export puts each card's categories in brackets after it, e.g.
+#: "1x Vraska, Soul of Stone (fra) [Commander{top}]". Only these tags move a
+#: card out of the main deck; every other tag ("Ramp", "Tokens") is a label.
+_TAG_SECTIONS = {
+    "commander": "commander",
+    "sideboard": "sideboard",
+    "maybeboard": "ignore",
+    "considering": "ignore",
+}
+
+
+def _tag_section(text: str) -> str | None:
+    """The section an Archidekt category tag puts a line in, if any."""
+    found = _TAG_RE.findall(text)
+    if not found:
+        return None
+    for tag in found[-1].split(","):
+        word = re.sub(r"\{[^}]*\}", "", tag).strip().lower()
+        if word in _TAG_SECTIONS:
+            return _TAG_SECTIONS[word]
+    return None
+
+
 def _match_header(line: str) -> str | None:
     """Return the section a header line introduces, or None if it isn't one."""
     text = line.strip()
@@ -141,10 +167,13 @@ def parse_lines(text: str) -> list[ParsedLine]:
         if not match:
             continue
         quantity = int(match.group("qty") or 1)
+        tagged = _tag_section(match.group("name"))
+        if tagged == "ignore":
+            continue
         name = clean_card_name(match.group("name"))
         if not name:
             continue
-        out.append(ParsedLine(quantity, name, line_section or section, raw.strip()))
+        out.append(ParsedLine(quantity, name, line_section or tagged or section, raw.strip()))
 
     return out
 

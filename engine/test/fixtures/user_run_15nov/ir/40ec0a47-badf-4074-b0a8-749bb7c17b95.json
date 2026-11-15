@@ -1,0 +1,112 @@
+{
+ "ir_version": 2,
+ "oracle_id": "40ec0a47-badf-4074-b0a8-749bb7c17b95",
+ "name": "Inexorable Tide",
+ "card_hash": "7ead58f5721860fa1d684348671d5685",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "40ec0a47-badf-4074-b0a8-749bb7c17b95",
+  "name": "Inexorable Tide",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Inexorable Tide",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever you cast a spell, proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+    "colors": 2,
+    "keywords": [
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1033,
+  "scryfall_uri": "https://scryfall.com/card/mm2/49/inexorable-tide?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "40ec0a47-badf-4074-b0a8-749bb7c17b95",
+   "name": "Inexorable Tide",
+   "face": 0,
+   "face_name": "Inexorable Tide",
+   "card_hash": "7ead58f5721860fa1d684348671d5685",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 74,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "proliferate"
+      }
+     ],
+     "text": "Whenever you cast a spell, proliferate.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

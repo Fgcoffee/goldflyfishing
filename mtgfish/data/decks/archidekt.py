@@ -31,7 +31,12 @@ HEADERS = {
 #: Category names that mean "not actually in the deck". Archidekt also flags
 #: this per-category with ``includedInDeck``, which we honour first; these are
 #: the fallback for decks that predate that flag.
-_EXCLUDED_CATEGORIES = {"maybeboard", "sideboard", "considering", "tokens", "token"}
+#: Categories left out by name even when the payload doesn't say. "Tokens" is
+#: not among them: people use it as a label for their token makers (Kykar,
+#: Elspeth), and a pile of actual tokens is excluded by its own
+#: includedInDeck flag. Excluding it by name dropped five real cards from a
+#: user's 100-card deck (15 Nov).
+_EXCLUDED_CATEGORIES = {"maybeboard", "sideboard", "considering"}
 
 COMMANDER_CATEGORY = "commander"
 

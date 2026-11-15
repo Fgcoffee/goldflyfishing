@@ -10,7 +10,7 @@ import { complete, type Ability, type Effect } from "../../src/ir";
 import { AbilityKindValues as AK, CostKindValues as CK, EffectKindValues as EK, PlayerScopeValues as PS, ValueKindValues as VK, ZoneValues as Z } from "../../src/ir/types";
 import { Color, Phase, Step, Zone } from "../../src/kernel/enums";
 import { createObject, player } from "../../src/kernel/game";
-import { draw } from "../../src/rules/cr100_game_concepts/actions";
+import { destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
 import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
 import { ActionKind, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
@@ -53,7 +53,7 @@ describe("fixed: the reading matches the card", () => {
   it("F33 Turn to Frog lasts until end of turn, on the one target", () => {
     const frog = ability("Turn to Frog", "Until end of turn");
     const leaves = effects(frog).filter((e) => e.kind !== EK.SEQUENCE);
-    expect(leaves.map((e) => e.duration)).toEqual([1, 1, 1]);
+    expect(leaves.map((e) => e.duration)).toEqual([1, 1, 1, 1]); // abilities, Frog, blue, 1/1
     expect(leaves.slice(1).every((e) => e.same_target === true)).toBe(true);
   });
 
@@ -132,6 +132,64 @@ describe("fixed: the reading matches the card", () => {
 
 });
 
+describe("fixed after the triage", () => {
+  it("Turn to Frog becomes a BLUE Frog: the colour is set until end of turn (CR 105.3)", () => {
+    const [colour] = ofKind(ability("Turn to Frog", "blue Frog"), EK.SET_COLOR!);
+    expect([colour!.colors, colour!.duration, colour!.same_target]).toEqual([2, 1, true]);
+  });
+
+  it("F17 Tannuk: 'Artifact cards and red creature cards' - red is the creatures' only", () => {
+    const grant = ofKind(ability("Tannuk, Steadfast Second", "warp"), EK.GRANT_ABILITY!)[0]!;
+    const t = grant.targets as { colors_any?: number; any_of?: { types_all?: number; colors_any?: number }[] };
+    expect(t.colors_any ?? 0).toBe(0);
+    expect(t.any_of!.map((a) => [a.types_all ?? 0, a.colors_any ?? 0])).toEqual([[1, 0], [4, 8]]); // artifact; red creature
+  });
+
+  it("F49 Relentless Pursuit: a creature card AND/OR a land card - up to one of each", () => {
+    const moves = ofKind(ability("Relentless Pursuit", "and/or"), EK.MOVE_ZONE!).filter((e) => e.zone === Z.HAND);
+    expect(moves).toHaveLength(2);
+    for (const move of moves) {
+      const t = move.targets as { count?: { constant?: number }; up_to?: boolean; from_pile?: boolean };
+      expect([t.count?.constant, t.up_to, t.from_pile]).toEqual([1, true, true]);
+    }
+    const types = (m: Effect) => { const t = m.targets as { types_any?: number; types_all?: number }; return (t.types_all ?? 0) | (t.types_any ?? 0); };
+    expect(moves.map(types)).toEqual([4, 16]); // creature, land
+  });
+
+  it("F49 Chandra, Spark Hunter's +2: you may choose one of two, then 'if you do, draw'", () => {
+    const plus = ability("Chandra, Spark Hunter", "+2");
+    const top = plus.effects as Effect[];
+    expect(top.map((e) => e.kind)).toEqual([EK.OPTIONAL, EK.REFLEXIVE_TRIGGER]);
+    const choice = top[0]!.children![0]!;
+    expect(choice.kind).toBe(EK.CHOOSE_MODE);
+    expect(choice.children!.map((e) => e.kind)).toEqual([EK.SACRIFICE, EK.DISCARD]);
+  });
+
+  it("F49 Arcade Cabinet's 'each of up to four target creatures' are targets", () => {
+    expect(ofKind(ability("Arcade Cabinet", "up to four target"), EK.ADD_COUNTERS!)[0]!.is_targeted).toBe(true);
+  });
+
+  it("F49 Fists of Flame: +1/+0 for each card drawn this turn, on the board", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    for (let i = 0; i < 5; i++) createObject(b.game, realCard("Forest"), 0, Zone.LIBRARY);
+    const bears = b.play("Grizzly Bears", 0);
+    draw(b.game, 0, 2);
+    const fists = b.hand("Fists of Flame");
+    addMana(player(b.game, 0).manaPool, manaKind(Color.RED), 2);
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === fists.id)!;
+    expect(perform(b.game, 0, cast)).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    // Two drawn before, one by Fists itself: +3/+0.
+    expect(characteristicsOf(b.game, bears).power).toBe(5);
+  });});
+
 describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2h)", () => {
   it("is read as the spell's additional cost, with X the spell's own", () => {
     const deluge = ability("Toxic Deluge", "pay X life");
@@ -141,10 +199,9 @@ describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2
     expect(ofKind(deluge, EK.LOSE_LIFE!)).toEqual([]);
   });
 
-  it.fails("cast with X = 3: 3 life is paid as it's cast, and creatures get -3/-3", () => {
-    // KNOWN: F37 engine half (rules) - componentAmount (cost_checks.ts) evaluates a
-    // spell's additional cost without the spell as its source, so X is 0; and legality
-    // offers no X for a spell whose only X is in an additional cost (CR 601.2b).
+  it("cast with X = 3: 3 life is paid as it's cast, and creatures get -3/-3", () => {
+    // F37's engine half (rules): componentAmount reads X from the spell paying it.
+    // The bot itself still never picks an X above 0 (Python neither); the action brings it.
     const b = new RealBoard();
     b.game.activePlayer = 0;
     b.game.phase = Phase.PRECOMBAT_MAIN;
@@ -169,43 +226,10 @@ describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2
 });
 
 describe("open: the reading doesn't match the card", () => {
-  it.fails("F49 Fists of Flame: +1/+0 for each card drawn this turn, on the board", () => {
-    // KNOWN: F49 - the count sits on a SEQUENCE around the pump, which nothing repeats: a flat +1.
-    const b = new RealBoard();
-    b.game.activePlayer = 0;
-    b.game.phase = Phase.PRECOMBAT_MAIN;
-    b.game.step = Step.MAIN;
-    for (let i = 0; i < 5; i++) createObject(b.game, realCard("Forest"), 0, Zone.LIBRARY);
-    const bears = b.play("Grizzly Bears", 0);
-    draw(b.game, 0, 2);
-    const fists = b.hand("Fists of Flame");
-    addMana(player(b.game, 0).manaPool, manaKind(Color.RED), 2);
-    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === fists.id)!;
-    expect(perform(b.game, 0, cast)).toBe(true);
-    settle(b.game);
-    while (b.game.stack.length > 0) {
-      resolveTop(b.game);
-      settle(b.game);
-    }
-    // Two drawn before, one by Fists itself: +3/+0.
-    expect(characteristicsOf(b.game, bears).power).toBe(5);
-  });
-  it.fails("F49 Chandra, Spark Hunter's +2: 'If you do, draw a card' follows either choice, not a third mode", () => {
-    // KNOWN: F49 - the reflexive draw is the third child of the CHOOSE_MODE.
-    const plus = ability("Chandra, Spark Hunter", "+2");
-    expect(ofKind(plus, EK.CHOOSE_MODE!)[0]!.children!.length).toBe(2);
-  });
 
-  it.fails("F49 Arcade Cabinet's 'up to four target creatures' are targets", () => {
-    // KNOWN: F49 - count 4, up to, but not targeted (hexproof and ward don't apply).
-    expect(ofKind(ability("Arcade Cabinet", "up to four target"), EK.ADD_COUNTERS!)[0]!.is_targeted).toBe(true);
-  });
 
-  it.fails("F49 Relentless Pursuit: a creature card AND/OR a land card (up to two)", () => {
-    // KNOWN: F49 - read as one card that is a creature or a land.
-    const move = ofKind(ability("Relentless Pursuit", "and/or"), EK.MOVE_ZONE!).find((e) => e.zone === Z.HAND)!;
-    expect((move.targets as { count?: { constant?: number } }).count?.constant).toBe(2);
-  });
+
+
 
   it.fails("F3 Sudden Impact and F49 Viseling count only that player's hand", () => {
     // KNOWN: F3 - the hand count has no owner, so it counts every hand.
@@ -223,14 +247,117 @@ describe("open: the reading doesn't match the card", () => {
     expect(JSON.stringify(draw.amount)).toContain(`"scope":${PS.TARGET_OPPONENT}`);
   });
 
-  it.fails("F17 Tannuk: 'Artifact cards and red creature cards' - red applies to the creatures only", () => {
-    // KNOWN: F17 - the adjective is distributed over the list.
-    const grant = ofKind(ability("Tannuk, Steadfast Second", "warp"), EK.GRANT_ABILITY!)[0]!;
-    expect((grant.targets as { colors_any?: number }).colors_any ?? 0).toBe(0);
+
+
+
+});
+
+describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
+  it("Tireless Provisioner: a land enters, and one token is made - a Food or a Treasure", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    b.play("Tireless Provisioner");
+    const forest = b.hand("Forest");
+    const land = legalActions(b.game, 0).find((a) => a.kind === ActionKind.PLAY_LAND && a.source === forest.id)!;
+    expect(perform(b.game, 0, land)).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    const tokens = b.game.battlefield
+      .map((id) => characteristicsOf(b.game, b.game.objects.get(id)!))
+      .filter((c) => c.typeLine.subtypes.some((t) => t === "Food" || t === "Treasure"));
+    expect(tokens).toHaveLength(1);
   });
 
-  it.fails("Turn to Frog becomes a BLUE Frog (new: the colour is lost)", () => {
-    const frog = ability("Turn to Frog", "blue Frog");
-    expect(ofKind(frog, EK.SET_COLOR!).length + effects(frog).filter((e) => (e.colors ?? 0) !== 0).length).toBeGreaterThan(0);
+  it("Cauldron of Souls: 'Choose any number of target creatures. Each of those creatures gains persist' - the Bears come back once", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    const cauldron = b.play("Cauldron of Souls");
+    const bears = b.play("Grizzly Bears");
+    const act = legalActions(b.game, 0).find((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === cauldron.id)!;
+    expect(act).toBeDefined();
+    expect(perform(b.game, 0, { ...act, targets: [[bears.id]] })).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    destroy(b.game, bears);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    const back = [...b.game.objects.values()].filter((o) => !o.supersededBy && (o.card as { name?: string } | null)?.name === "Grizzly Bears");
+    expect(back.map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
+    expect(back[0]!.counters.get("-1/-1")).toBe(1);
+  });
+
+  /** A Grizzly Bears that is player 0's commander, in the command zone (CR 903.3, 903.6). */
+  const commanderBears = (b: RealBoard) => {
+    const bears = createObject(b.game, realCard("Grizzly Bears"), 0, Zone.COMMAND);
+    bears.isCommander = true;
+    b.game.epoch += 1;
+    return bears;
+  };
+  const mainPhase = (b: RealBoard) => {
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+  };
+  const resolveAll = (b: RealBoard) => {
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+  };
+
+  it("Command Beacon: 'Put your commander into your hand from the command zone'", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    const beacon = b.play("Command Beacon");
+    const bears = commanderBears(b);
+    const act = legalActions(b.game, 0).find((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === beacon.id)!;
+    expect(act).toBeDefined();
+    expect(perform(b.game, 0, act)).toBe(true);
+    resolveAll(b);
+    const now = [...b.game.objects.values()].filter((o) => !o.supersededBy && o.isCommander);
+    expect(now.map((o) => o.zone)).toEqual([Zone.HAND]);
+    expect(player(b.game, 0).hand).toContain(now[0]!.id);
+    expect(bears.zone).toBe(Zone.COMMAND); // the old object; the card moved on as a new one
+  });
+
+  it("Jeweled Lotus: 'Spend this mana only to cast your commander' - pays for the commander, not for the same card in hand", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    b.play("Jeweled Lotus");
+    const inHand = b.hand("Grizzly Bears");
+    const casts = (id: number) => legalActions(b.game, 0).some((a) => a.kind === ActionKind.CAST_SPELL && a.source === id);
+    expect(casts(inHand.id)).toBe(false);
+    const commander = commanderBears(b);
+    expect(casts(commander.id)).toBe(true);
+  });
+
+  it("Skyfire Phoenix: 'When you cast your commander, return this card from your graveyard to the battlefield'", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    b.play("Forest");
+    b.play("Forest");
+    const phoenix = b.graveyard("Skyfire Phoenix");
+    const commander = commanderBears(b);
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === commander.id)!;
+    expect(cast).toBeDefined();
+    expect(perform(b.game, 0, cast)).toBe(true);
+    resolveAll(b);
+    const back = [...b.game.objects.values()].filter((o) => !o.supersededBy && (o.card as { name?: string } | null)?.name === "Skyfire Phoenix");
+    expect(back.map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
+    expect(phoenix).toBeDefined();
   });
 });

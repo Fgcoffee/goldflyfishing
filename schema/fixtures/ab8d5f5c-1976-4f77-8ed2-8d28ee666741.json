@@ -1,0 +1,155 @@
+{
+ "ir_version": 2,
+ "oracle_id": "ab8d5f5c-1976-4f77-8ed2-8d28ee666741",
+ "name": "Tireless Provisioner",
+ "card_hash": "397f00238ee6a7124f04e1803eb44d47",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "ab8d5f5c-1976-4f77-8ed2-8d28ee666741",
+  "name": "Tireless Provisioner",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tireless Provisioner",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elf",
+      "Scout"
+     ]
+    },
+    "oracle_text": "Landfall — Whenever a land you control enters, create a Food token or a Treasure token. (Food is an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\" Treasure is an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+    "power": "3",
+    "toughness": "2",
+    "colors": 16,
+    "keywords": [
+     "Treasure",
+     "Food",
+     "Landfall"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 184,
+  "scryfall_uri": "https://scryfall.com/card/moc/313/tireless-provisioner?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "ab8d5f5c-1976-4f77-8ed2-8d28ee666741",
+   "name": "Tireless Provisioner",
+   "face": 0,
+   "face_name": "Tireless Provisioner",
+   "card_hash": "397f00238ee6a7124f04e1803eb44d47",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 35,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "token": {
+          "$": "TokenSpec",
+          "name": "Food",
+          "types": 1,
+          "subtypes": [
+           "Food"
+          ]
+         },
+         "text": "create token"
+        },
+        {
+         "$": "Effect",
+         "kind": 35,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "token": {
+          "$": "TokenSpec",
+          "name": "Treasure",
+          "types": 1,
+          "subtypes": [
+           "Treasure"
+          ]
+         },
+         "text": "create token"
+        }
+       ],
+       "text": "create one of these tokens"
+      }
+     ],
+     "text": "Whenever a land you control enters, create a Food token or a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 16,
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

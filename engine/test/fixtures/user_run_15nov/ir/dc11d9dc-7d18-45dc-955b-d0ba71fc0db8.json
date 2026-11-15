@@ -1,0 +1,99 @@
+{
+ "ir_version": 2,
+ "oracle_id": "dc11d9dc-7d18-45dc-955b-d0ba71fc0db8",
+ "name": "Surge Conductor",
+ "card_hash": "b2339cde0f13d578d01411f71da13ff3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "dc11d9dc-7d18-45dc-955b-d0ba71fc0db8",
+  "name": "Surge Conductor",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Surge Conductor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Robot"
+     ]
+    },
+    "oracle_text": "Whenever another nontoken artifact you control enters, proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+    "power": "3",
+    "toughness": "2",
+    "keywords": [
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 2705,
+  "scryfall_uri": "https://scryfall.com/card/eoc/19/surge-conductor?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "dc11d9dc-7d18-45dc-955b-d0ba71fc0db8",
+   "name": "Surge Conductor",
+   "face": 0,
+   "face_name": "Surge Conductor",
+   "card_hash": "b2339cde0f13d578d01411f71da13ff3",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 74,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "proliferate"
+      }
+     ],
+     "text": "Whenever another nontoken artifact you control enters, proliferate.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 1,
+       "other_than_source": true,
+       "controller": 1,
+       "is_token": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

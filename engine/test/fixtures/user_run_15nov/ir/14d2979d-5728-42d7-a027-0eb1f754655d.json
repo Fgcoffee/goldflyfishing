@@ -1,0 +1,165 @@
+{
+ "ir_version": 2,
+ "oracle_id": "14d2979d-5728-42d7-a027-0eb1f754655d",
+ "name": "Talisman of Creativity",
+ "card_hash": "b4d14e5a0c9a2062f653f5e9ea937c91",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "14d2979d-5728-42d7-a027-0eb1f754655d",
+  "name": "Talisman of Creativity",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Talisman of Creativity",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}: Add {C}.\n{T}: Add {U} or {R}. This artifact deals 1 damage to you.",
+    "produced_mana": [
+     "C",
+     "R",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 126,
+  "scryfall_uri": "https://scryfall.com/card/msc/218/talisman-of-creativity?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "14d2979d-5728-42d7-a027-0eb1f754655d",
+   "name": "Talisman of Creativity",
+   "face": 0,
+   "face_name": "Talisman of Creativity",
+   "card_hash": "b4d14e5a0c9a2062f653f5e9ea937c91",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": 2,
+         "text": "add {U}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{R}"
+         ],
+         "colors": 8,
+         "text": "add {R}"
+        }
+       ],
+       "text": "add one of several"
+      },
+      {
+       "$": "Effect",
+       "kind": 50,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "{T}: Add {U} or {R}. This artifact deals 1 damage to you.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

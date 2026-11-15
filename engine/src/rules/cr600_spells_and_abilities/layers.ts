@@ -115,6 +115,7 @@ export function board(game: Game): Board {
   if (game.boardInProgress !== null) return game.boardInProgress;
   if (game.boardCache !== null && game.boardEpoch === game.epoch) return game.boardCache;
   const computed = computeBoard(game);
+  game.work.units += computed.size;
   game.boardCache = computed;
   game.boardEpoch = game.epoch;
   return computed;

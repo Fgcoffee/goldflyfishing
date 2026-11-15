@@ -1,0 +1,122 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3a128587-c751-4b27-b608-d4e47646b80e",
+ "name": "View from Above",
+ "card_hash": "b39e5924a3747e918995f84fcd225d60",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3a128587-c751-4b27-b608-d4e47646b80e",
+  "name": "View from Above",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "View from Above",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Target creature gains flying until end of turn. If you control a white permanent, return View from Above to its owner's hand.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 15553,
+  "scryfall_uri": "https://scryfall.com/card/con/38/view-from-above?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3a128587-c751-4b27-b608-d4e47646b80e",
+   "name": "View from Above",
+   "face": 0,
+   "face_name": "View from Above",
+   "card_hash": "b39e5924a3747e918995f84fcd225d60",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "flying",
+         "keyword": "flying"
+        }
+       ],
+       "text": "gains flying"
+      },
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 5,
+        "filter": {
+         "$": "ObjectFilter",
+         "colors_any": 1,
+         "controller": 1
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 5,
+         "value": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "you control ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 32,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "text": "return to hand"
+        }
+       ],
+       "text": "if"
+      }
+     ],
+     "text": "Target creature gains flying until end of turn. If you control a white permanent, return this to its owner's hand."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

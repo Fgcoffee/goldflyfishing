@@ -1,0 +1,104 @@
+{
+ "ir_version": 2,
+ "oracle_id": "11d8fab8-93af-4291-80bd-cf9436e99f4b",
+ "name": "Xorn",
+ "card_hash": "3db220218a8ca9c74fb1e50e684964e2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "11d8fab8-93af-4291-80bd-cf9436e99f4b",
+  "name": "Xorn",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Xorn",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elemental"
+     ]
+    },
+    "oracle_text": "If you would create one or more Treasure tokens, instead create those tokens plus an additional Treasure token.",
+    "power": "3",
+    "toughness": "2",
+    "colors": 8,
+    "keywords": [
+     "Treasure"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 905,
+  "scryfall_uri": "https://scryfall.com/card/afr/167/xorn?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "11d8fab8-93af-4291-80bd-cf9436e99f4b",
+   "name": "Xorn",
+   "face": 0,
+   "face_name": "Xorn",
+   "card_hash": "3db220218a8ca9c74fb1e50e684964e2",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "If you would create one or more Treasure tokens, instead create those tokens plus an additional Treasure token."
+      }
+     ],
+     "text": "If you would create one or more Treasure tokens, instead create those tokens plus an additional Treasure token.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "If you would create one or more Treasure tokens, instead create those tokens plus an additional Treasure token.",
+     "reason": "not fully consumed",
+     "consumed": 11,
+     "remaining": [
+      "create",
+      "those",
+      "tokens",
+      "plus",
+      "an",
+      "additional",
+      "Treasure",
+      "token",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

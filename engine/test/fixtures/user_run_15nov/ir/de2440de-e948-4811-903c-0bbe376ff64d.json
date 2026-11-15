@@ -1,0 +1,118 @@
+{
+ "ir_version": 2,
+ "oracle_id": "de2440de-e948-4811-903c-0bbe376ff64d",
+ "name": "Mox Opal",
+ "card_hash": "a0b8ca6c7dcb325d7a8201d887d6bb5c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "de2440de-e948-4811-903c-0bbe376ff64d",
+  "name": "Mox Opal",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mox Opal",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1
+    },
+    "oracle_text": "Metalcraft — {T}: Add one mana of any color. Activate only if you control three or more artifacts.",
+    "keywords": [
+     "Metalcraft"
+    ],
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 242,
+  "scryfall_uri": "https://scryfall.com/card/2xm/275/mox-opal?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "de2440de-e948-4811-903c-0bbe376ff64d",
+   "name": "Mox Opal",
+   "face": 0,
+   "face_name": "Mox Opal",
+   "card_hash": "a0b8ca6c7dcb325d7a8201d887d6bb5c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "colors": 31,
+       "text": "add mana of any color"
+      },
+      {
+       "$": "Effect",
+       "text": "activate only ..."
+      }
+     ],
+     "text": "{T}: Add one mana of any color. Activate only if you control three or more artifacts.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true,
+     "activation_condition": {
+      "$": "Condition",
+      "kind": 5,
+      "filter": {
+       "$": "ObjectFilter",
+       "types_all": 1,
+       "controller": 1
+      },
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": 5,
+       "value": {
+        "$": "Value",
+        "constant": 3
+       }
+      },
+      "text": "you control ..."
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

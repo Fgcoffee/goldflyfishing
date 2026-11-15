@@ -1,0 +1,211 @@
+{
+ "ir_version": 2,
+ "oracle_id": "751f22bc-bcea-4213-a37b-b5f72448a4c4",
+ "name": "The Reality Chip",
+ "card_hash": "dac43246729f605fa3944d5f83e7a86a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "751f22bc-bcea-4213-a37b-b5f72448a4c4",
+  "name": "The Reality Chip",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "The Reality Chip",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 5,
+     "subtypes": [
+      "Equipment",
+      "Jellyfish"
+     ]
+    },
+    "oracle_text": "You may look at the top card of your library any time.\nAs long as The Reality Chip is attached to a creature, you may play lands and cast spells from the top of your library.\nReconfigure {2}{U} ({2}{U}: Attach to target creature you control; or unattach from a creature. Reconfigure only as a sorcery. While attached, this isn't a creature.)",
+    "power": "0",
+    "toughness": "4",
+    "colors": 2,
+    "keywords": [
+     "Reconfigure"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1061,
+  "scryfall_uri": "https://scryfall.com/card/neo/74/the-reality-chip?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "751f22bc-bcea-4213-a37b-b5f72448a4c4",
+   "name": "The Reality Chip",
+   "face": 0,
+   "face_name": "The Reality Chip",
+   "card_hash": "dac43246729f605fa3944d5f83e7a86a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 151,
+         "targets": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": [
+            0
+           ]
+          },
+          "from_top": true,
+          "count": 1
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": 0,
+         "restrictions": [
+          {
+           "$": "Restriction",
+           "act": 102,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "text": "may look at the top card of their library"
+          }
+         ],
+         "text": "the top card of your library is visible"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may look at the top card of your library any time."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "As long as this is attached to a creature, you may play lands and cast spells from the top of your library."
+      }
+     ],
+     "text": "As long as this is attached to a creature, you may play lands and cast spells from the top of your library.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true
+      }
+     ],
+     "text": "Reconfigure {2}{U}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Reconfigure"
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "As long as this is attached to a creature, you may play lands and cast spells from the top of your library.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "As",
+      "long",
+      "as",
+      "this",
+      "is",
+      "attached",
+      "to",
+      "a",
+      "creature",
+      ",",
+      "you",
+      "may",
+      "play",
+      "lands",
+      "and",
+      "cast",
+      "spells",
+      "from",
+      "the",
+      "top",
+      "of",
+      "your",
+      "library",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

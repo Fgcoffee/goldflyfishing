@@ -663,11 +663,43 @@ def _triggered(line: Line, result: ParsedFace) -> list[Ability]:
         build=lambda body: Ability(
             AbilityKind.TRIGGERED,
             effects=tuple(body),
-            trigger=trigger,
+            trigger=_trigger_zones(trigger, body),
             text=line.text,
         ),
     )
     return [ability]
+
+
+def _trigger_zones(trigger, effects):
+    """CR 113.6m: a triggered ability whose effect moves this card out of the
+    graveyard works in the graveyard. "Whenever a land you control enters,
+    you may return this card from your graveyard to the battlefield"
+    (Bloodghast), "When you cast your commander, return this card from your
+    graveyard" (Skyfire Phoenix): left at the battlefield, the card in the
+    graveyard never heard the event, and a card on the battlefield had no
+    graveyard card to return.
+
+    Not when the trigger is about this card itself ("When this creature dies,
+    return it from your graveyard") or what it enchants: that one triggers on
+    the battlefield and looks back in time (CR 603.10a)."""
+    if trigger.functions_in != BATTLEFIELD_ONLY:
+        return trigger
+    subject = trigger.subject
+    if subject is not None and (
+        subject.source_only
+        or (subject.has_attached is not None and subject.has_attached.source_only)
+    ):
+        # "When enchanted creature dies, return this card from your
+        # graveyard" (Screams from Within, Genju of the Realm): the Aura
+        # goes to the graveyard with it, and the trigger looks back too.
+        return trigger
+    from ..rules.cr100_game_concepts.cr118_costs import Cost
+
+    if _zones_paid_from(Cost(), effects) != GRAVEYARD_ONLY:
+        return trigger
+    from dataclasses import replace as _replace
+
+    return _replace(trigger, functions_in=GRAVEYARD_ONLY)
 
 
 def _activated(line: Line, result: ParsedFace) -> list[Ability]:

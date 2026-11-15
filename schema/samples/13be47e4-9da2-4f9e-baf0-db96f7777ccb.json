@@ -79,9 +79,24 @@
        "kind": 153,
        "targets": {
         "$": "ObjectFilter",
-        "types_any": 20,
-        "supertypes_none": 1,
-        "controller": 2
+        "controller": 2,
+        "any_of": [
+         {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "zones": {
+           "$set": []
+          }
+         },
+         {
+          "$": "ObjectFilter",
+          "types_all": 16,
+          "supertypes_none": 1,
+          "zones": {
+           "$set": []
+          }
+         }
+        ]
        },
        "text": "those permanents enter tapped"
       }

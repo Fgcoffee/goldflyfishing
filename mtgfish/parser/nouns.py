@@ -158,6 +158,24 @@ def singular(word: str) -> str | None:
     return None
 
 
+def _your_commander(stream: Stream) -> ObjectFilter | None:
+    """"your commander", "your commanders" (CR 903.3): the commander you own.
+    A zone said after it ("from the command zone") says where to look; with
+    none, it is the battlefield, as for any other noun. "your commander's
+    power" and "your commander card" go to the ordinary grammar."""
+    mark = stream.mark()
+    if not stream.accept("your"):
+        return None
+    if not stream.accept("commander", "commanders"):
+        stream.reset(mark)
+        return None
+    if stream.peek().lower in ("card", "cards", "creature", "creatures", "spell", "spells"):
+        stream.reset(mark)
+        return None
+    spec = ObjectFilter(is_commander=True, owner=ControllerRelation.YOU)
+    return _zone(stream, spec)
+
+
 def parse_object_filter(stream: Stream) -> ObjectFilter | None:
     """Read a noun phrase. Returns ``None`` and rewinds if it is not one."""
     special = _self_or_attached(stream)
@@ -170,6 +188,10 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
 
     mark = stream.mark()
     spec = ObjectFilter()
+
+    commander = _your_commander(stream)
+    if commander is not None:
+        return commander
 
     spec, _targeted, count, up_to = _quantifier(stream, spec)
     spec = _qualifiers(stream, spec)
@@ -490,14 +512,16 @@ def _peek_targeted(stream: Stream) -> bool:
     mark = stream.mark()
     found = False
     # "up to one other target creature" - target is never deeper than this.
-    for _ in range(5):
+    # "each of up to four target creatures" (Arcade Cabinet) is one word
+    # deeper, and "of" has to be skipped too, or the target is lost.
+    for _ in range(6):
         token = stream.peek()
         if token.kind is TokenKind.END:
             break
         if token.lower == "target":
             found = True
             break
-        if token.lower in ("up", "to", "another", "other", "each", "all", "any") or (
+        if token.lower in ("up", "to", "another", "other", "each", "of", "all", "any") or (
             token.kind is TokenKind.NUMBER
         ):
             stream.next()
@@ -873,6 +897,12 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     # comma-only step is kept so it can be undone if no conjunction arrives.
     joined_once = False
     before_comma: tuple | None = None
+    # Each later alternative with its own qualifiers ("artifact cards and
+    # *red* creature cards"): pooled onto the whole phrase, "red" made the
+    # artifacts red too (F17, Tannuk). Kept per alternative instead, and
+    # used when any later alternative has a qualifier of its own.
+    alternatives: list[ObjectFilter] = []
+    late_qualified = False
 
     while True:
         look = stream.mark()
@@ -891,7 +921,12 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         # "and", "or", and Scryfall's "and/or" all mean the same thing here:
         # an object matching any of the listed types qualifies. "Instant and
         # sorcery cards" is not asking for a card that is both.
-        if stream.at("and") and stream.peek(1).lower in ("a", "an"):
+        if stream.at("and") and (
+            stream.peek(1).lower in ("a", "an")
+            # Scryfall's "and/or" before a second determiner: "a creature
+            # card and/or a land card" is two noun phrases too.
+            or (stream.peek(1).lower == "or" and stream.peek(2).lower in ("a", "an"))
+        ):
             # "Sacrifices an artifact *and a* land": two objects, one of each,
             # not one object that may be either. A second determiner after
             # "and" starts a second noun phrase, which this filter cannot be;
@@ -918,6 +953,7 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
         # "noncreature artifact or *noncreature* enchantment". Reading only a
         # bare type word meant an alternative with any adjective at all ended
         # the list one item early.
+        before_qualifiers = spec
         spec = _qualifiers(stream, spec)
 
         # "noncreature artifact or *noncreature* enchantment" - the negation
@@ -934,6 +970,11 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
             stream.next()
             collected |= TYPE_WORDS[token.lower]
             matched = True
+            own = _qualifier_diff(before_qualifiers, spec)
+            late_qualified = late_qualified or bool(own)
+            alternatives.append(
+                ObjectFilter(types_all=TYPE_WORDS[token.lower], zones=frozenset(), **own)
+            )
             continue
         # "Elf or Goblin", "Zombies and Skeletons" - a disjunction of creature
         # types reads exactly like one of card types.
@@ -943,6 +984,11 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
                 stream.next()
                 subtypes.append(name)
                 matched = True
+                own = _qualifier_diff(before_qualifiers, spec)
+                late_qualified = late_qualified or bool(own)
+                alternatives.append(
+                    ObjectFilter(subtypes_any=(name,), zones=frozenset(), **own)
+                )
                 continue
         stream.reset(look)
         spec = spec_at_look
@@ -957,6 +1003,34 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     if not matched:
         stream.reset(mark)
         return spec
+
+    if late_qualified and before_comma is None and (entry.types_all or entry.subtypes_all):
+        # One alternative per item, each with only its own qualifiers; what
+        # was read before the first item (and everything after the list -
+        # "cards in your hand") stays on the whole phrase.
+        # A qualifier said before the first item belongs to that item when
+        # the later ones carry their own: "*green* creatures and *white*
+        # creatures" is green creatures or white creatures, not green ones
+        # that are also white-or-creature.
+        leading = {
+            name: getattr(entry, name)
+            for name in _ALTERNATIVE_QUALIFIERS
+            if getattr(entry, name) != getattr(_PLAIN, name)
+        }
+        first = ObjectFilter(
+            types_all=entry.types_all,
+            subtypes_all=entry.subtypes_all,
+            zones=frozenset(),
+            **leading,
+        )
+        parent = replace(
+            entry,
+            types_all=CardType.NONE,
+            subtypes_all=(),
+            any_of=(first, *alternatives),
+            **{name: getattr(_PLAIN, name) for name in leading},
+        )
+        return parent
 
     # "artifact or Goblin spell", "noncreature or Otter spell", "another
     # creature or a Treasure": the alternatives are a card type and a
@@ -1026,6 +1100,36 @@ def _alternatives(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
     if collected:
         spec = replace(spec, types_all=CardType.NONE, types_any=collected)
     return spec
+
+
+#: What describes one item of a list rather than the whole phrase: colours,
+#: supertypes, negated types, tapped, token, power... Counts, zones and who
+#: controls it stay on the phrase.
+_ALTERNATIVE_QUALIFIERS = (
+    "types_none", "supertypes_all", "supertypes_none", "subtypes_none",
+    "colors_any", "colors_all", "colors_none", "must_be_colorless",
+    "must_be_coloured", "must_be_multicolored", "must_be_monocolored",
+    "tapped", "attacking", "blocking", "blocked", "is_token", "power",
+    "toughness", "mana_value",
+)
+_PLAIN = ObjectFilter()
+
+
+def _qualifier_diff(before: ObjectFilter, after: ObjectFilter) -> dict:
+    """The fields a qualifier reader changed, as keyword arguments."""
+    from dataclasses import fields
+
+    from enum import Flag
+
+    out = {}
+    for f in fields(ObjectFilter):
+        old, new = getattr(before, f.name), getattr(after, f.name)
+        if new == old:
+            continue
+        # Flag masks accumulate ("green ... white" ORs into one colour mask):
+        # this alternative's own part is only the bits it added.
+        out[f.name] = (new & ~old) if isinstance(new, Flag) and isinstance(old, Flag) else new
+    return out
 
 
 def _ownership(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
@@ -2610,6 +2714,10 @@ def parse_zone(stream: Stream) -> Zone | None:
     token = stream.peek()
     if token.lower in ZONE_WORDS:
         stream.next()
-        return ZONE_WORDS[token.lower]
+        zone = ZONE_WORDS[token.lower]
+        if zone is Zone.COMMAND:
+            # "the command zone": the zone's name is two words (CR 408.1).
+            stream.accept("zone")
+        return zone
     stream.reset(mark)
     return None

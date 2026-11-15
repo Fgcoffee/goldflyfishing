@@ -1,0 +1,218 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3d268e48-3004-4384-bf52-e63243fb5e02",
+ "name": "Magda, Brazen Outlaw",
+ "card_hash": "46d6a9feec85a86b83d62907b3d26670",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3d268e48-3004-4384-bf52-e63243fb5e02",
+  "name": "Magda, Brazen Outlaw",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Magda, Brazen Outlaw",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Dwarf",
+      "Berserker"
+     ]
+    },
+    "oracle_text": "Other Dwarves you control get +1/+0.\nWhenever a Dwarf you control becomes tapped, create a Treasure token.\nSacrifice five Treasures: Search your library for an artifact or Dragon card, put that card onto the battlefield, then shuffle.",
+    "power": "2",
+    "toughness": "1",
+    "colors": 8,
+    "keywords": [
+     "Treasure"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1230,
+  "scryfall_uri": "https://scryfall.com/card/khm/142/magda-brazen-outlaw?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3d268e48-3004-4384-bf52-e63243fb5e02",
+   "name": "Magda, Brazen Outlaw",
+   "face": 0,
+   "face_name": "Magda, Brazen Outlaw",
+   "card_hash": "46d6a9feec85a86b83d62907b3d26670",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "subtypes_all": [
+         "Dwarf"
+        ],
+        "other_than_source": true,
+        "controller": 1
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "duration": 0,
+       "text": "gets +1/+0"
+      }
+     ],
+     "text": "Other Dwarves you control get +1/+0."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever a Dwarf you control becomes tapped, create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        40
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "subtypes_all": [
+        "Dwarf"
+       ],
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something becomes tapped"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": []
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        },
+        "any_of": [
+         {
+          "$": "ObjectFilter",
+          "types_all": 1,
+          "zones": {
+           "$set": []
+          }
+         },
+         {
+          "$": "ObjectFilter",
+          "subtypes_any": [
+           "Dragon"
+          ],
+          "zones": {
+           "$set": []
+          }
+         }
+        ]
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 2,
+       "text": "search library"
+      }
+     ],
+     "text": "Sacrifice five Treasures: Search your library for an artifact or Dragon card, put that card onto the battlefield, then shuffle.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 5
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Treasure"
+         ],
+         "count": {
+          "$": "Value",
+          "constant": 5
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "tutor"
+ ]
+}

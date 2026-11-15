@@ -1,0 +1,125 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c174dcbb-03a0-439c-b3d8-ed61bd46dc67",
+ "name": "Artful Dodge",
+ "card_hash": "1532c610ab079523c7727b31b2883c6f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c174dcbb-03a0-439c-b3d8-ed61bd46dc67",
+  "name": "Artful Dodge",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Artful Dodge",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Target creature can't be blocked this turn.\nFlashback {U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "colors": 2,
+    "keywords": [
+     "Flashback"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 4007,
+  "scryfall_uri": "https://scryfall.com/card/dka/27/artful-dodge?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c174dcbb-03a0-439c-b3d8-ed61bd46dc67",
+   "name": "Artful Dodge",
+   "face": 0,
+   "face_name": "Artful Dodge",
+   "card_hash": "1532c610ab079523c7727b31b2883c6f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 24,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "text": "can't be_blocked"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Target creature can't be blocked this turn."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flashback {U}",
+     "functions_in": {
+      "$set": [
+       3
+      ]
+     },
+     "keyword": "Flashback",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 2,
+            "text": "{U}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "from_zone": 3,
+      "keyword": "Flashback",
+      "text": "Flashback {U}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

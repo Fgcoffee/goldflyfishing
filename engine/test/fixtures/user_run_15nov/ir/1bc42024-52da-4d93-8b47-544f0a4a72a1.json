@@ -1,0 +1,131 @@
+{
+ "ir_version": 2,
+ "oracle_id": "1bc42024-52da-4d93-8b47-544f0a4a72a1",
+ "name": "Astral Cornucopia",
+ "card_hash": "2be7194ebb2b3a44508c040cbea76359",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "1bc42024-52da-4d93-8b47-544f0a4a72a1",
+  "name": "Astral Cornucopia",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Astral Cornucopia",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 1,
+       "text": "{X}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "This artifact enters with X charge counters on it.\n{T}: Choose a color. Add one mana of that color for each charge counter on this artifact.",
+    "produced_mana": [
+     "B",
+     "G",
+     "R",
+     "U",
+     "W"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1317,
+  "scryfall_uri": "https://scryfall.com/card/soc/342/astral-cornucopia?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "1bc42024-52da-4d93-8b47-544f0a4a72a1",
+   "name": "Astral Cornucopia",
+   "face": 0,
+   "face_name": "Astral Cornucopia",
+   "card_hash": "2be7194ebb2b3a44508c040cbea76359",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "kind": 1
+       },
+       "counter_type": "charge",
+       "text": "enters with counters"
+      }
+     ],
+     "text": "This artifact enters with X charge counters on it."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 214,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "keywords": [
+        "color"
+       ],
+       "text": "choose a color"
+      },
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 10,
+        "counter_type": "charge"
+       },
+       "colors_chosen": true,
+       "text": "add mana of the chosen colour"
+      }
+     ],
+     "text": "{T}: Choose a color. Add one mana of that color for each charge counter on this artifact.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

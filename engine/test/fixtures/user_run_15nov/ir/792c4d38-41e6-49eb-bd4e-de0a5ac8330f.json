@@ -1,0 +1,128 @@
+{
+ "ir_version": 2,
+ "oracle_id": "792c4d38-41e6-49eb-bd4e-de0a5ac8330f",
+ "name": "Redoubled Stormsinger",
+ "card_hash": "6756f4cdcc527a63f8160837f223d8f6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "792c4d38-41e6-49eb-bd4e-de0a5ac8330f",
+  "name": "Redoubled Stormsinger",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Redoubled Stormsinger",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Orc",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "First strike\nWhenever this creature attacks, for each creature token you control that entered this turn, create a tapped and attacking token that's a copy of that token. At the beginning of the next end step, sacrifice those tokens.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 8,
+    "keywords": [
+     "First strike"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 3255,
+  "scryfall_uri": "https://scryfall.com/card/soc/251/redoubled-stormsinger?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "792c4d38-41e6-49eb-bd4e-de0a5ac8330f",
+   "name": "Redoubled Stormsinger",
+   "face": 0,
+   "face_name": "Redoubled Stormsinger",
+   "card_hash": "6756f4cdcc527a63f8160837f223d8f6",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "First strike",
+     "keyword": "First strike"
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever this creature attacks, for each creature token you control that entered this turn, create a tapped and attacking token that's a copy of that token. At the beginning of the next end step, sacrifice those tokens."
+      }
+     ],
+     "text": "Whenever this creature attacks, for each creature token you control that entered this turn, create a tapped and attacking token that's a copy of that token. At the beginning of the next end step, sacrifice those tokens.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever this creature attacks, for each creature token you control that entered this turn, create a tapped and attacking token that's a copy of that token. At the beginning of the next end step, sacrifice those tokens.",
+     "reason": "not fully consumed",
+     "consumed": 16,
+     "remaining": [
+      "create",
+      "a",
+      "tapped",
+      "and",
+      "attacking",
+      "token",
+      "that's",
+      "a",
+      "copy",
+      "of",
+      "that",
+      "token",
+      ".",
+      "At",
+      "the",
+      "beginning",
+      "of",
+      "the",
+      "next",
+      "end",
+      "step",
+      ",",
+      "sacrifice",
+      "those",
+      "tokens",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

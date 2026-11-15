@@ -1,0 +1,101 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3f661b58-e8ca-412c-bdac-af151162de12",
+ "name": "Prologue to Phyresis",
+ "card_hash": "6a29d25ade7526effbf05657b044df69",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3f661b58-e8ca-412c-bdac-af151162de12",
+  "name": "Prologue to Phyresis",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Prologue to Phyresis",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Each opponent gets a poison counter.\nDraw a card.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 2650,
+  "scryfall_uri": "https://scryfall.com/card/one/65/prologue-to-phyresis?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3f661b58-e8ca-412c-bdac-af151162de12",
+   "name": "Prologue to Phyresis",
+   "face": 0,
+   "face_name": "Prologue to Phyresis",
+   "card_hash": "6a29d25ade7526effbf05657b044df69",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 57,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 3
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "poison counters"
+      }
+     ],
+     "text": "Each opponent gets a poison counter."
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw a card."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

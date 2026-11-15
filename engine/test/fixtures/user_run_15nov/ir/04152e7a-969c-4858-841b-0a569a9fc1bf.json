@@ -1,0 +1,183 @@
+{
+ "ir_version": 2,
+ "oracle_id": "04152e7a-969c-4858-841b-0a569a9fc1bf",
+ "name": "Professional Face-Breaker",
+ "card_hash": "3feae57d66c2d2cf1d36d5498d3c43fb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "04152e7a-969c-4858-841b-0a569a9fc1bf",
+  "name": "Professional Face-Breaker",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Professional Face-Breaker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Warrior"
+     ]
+    },
+    "oracle_text": "Menace\nWhenever one or more creatures you control deal combat damage to a player, create a Treasure token.\nSacrifice a Treasure: Exile the top card of your library. You may play that card this turn.",
+    "power": "2",
+    "toughness": "3",
+    "colors": 8,
+    "keywords": [
+     "Treasure",
+     "Menace"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 208,
+  "scryfall_uri": "https://scryfall.com/card/snc/116/professional-face-breaker?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "04152e7a-969c-4858-841b-0a569a9fc1bf",
+   "name": "Professional Face-Breaker",
+   "face": 0,
+   "face_name": "Professional Face-Breaker",
+   "card_hash": "3feae57d66c2d2cf1d36d5498d3c43fb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Menace",
+     "keyword": "Menace"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever one or more creatures you control deal combat damage to a player, create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "controller": 1
+      },
+      "batched": true,
+      "to_player": true,
+      "text": "whenever something deals combat damage to a player"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          0
+         ]
+        },
+        "from_top": 1,
+        "owner": 1,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": 104,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "text": "you may play it"
+      }
+     ],
+     "text": "Sacrifice a Treasure: Exile the top card of your library. You may play that card this turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 10,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "subtypes_all": [
+          "Treasure"
+         ],
+         "count": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "text": "sacrifice"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

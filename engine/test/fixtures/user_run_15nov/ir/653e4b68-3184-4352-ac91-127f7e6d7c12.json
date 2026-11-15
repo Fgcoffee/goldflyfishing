@@ -1,0 +1,154 @@
+{
+ "ir_version": 2,
+ "oracle_id": "653e4b68-3184-4352-ac91-127f7e6d7c12",
+ "name": "Port Razer",
+ "card_hash": "e3d7902673830899f58f8a6506d16b93",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "653e4b68-3184-4352-ac91-127f7e6d7c12",
+  "name": "Port Razer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Port Razer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Orc",
+      "Pirate"
+     ]
+    },
+    "oracle_text": "Whenever this creature deals combat damage to a player, untap each creature you control. After this phase, there is an additional combat phase.\nThis creature can't attack a player it has already attacked this turn.",
+    "power": "4",
+    "toughness": "4",
+    "colors": 8
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1933,
+  "scryfall_uri": "https://scryfall.com/card/lcc/230/port-razer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "653e4b68-3184-4352-ac91-127f7e6d7c12",
+   "name": "Port Razer",
+   "face": 0,
+   "face_name": "Port Razer",
+   "card_hash": "e3d7902673830899f58f8a6506d16b93",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "text": "tap/untap"
+      },
+      {
+       "$": "Effect",
+       "kind": 171,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "an additional phase"
+      }
+     ],
+     "text": "Whenever this creature deals combat damage to a player, untap each creature you control. After this phase, there is an additional combat phase.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "to_player": true,
+      "text": "when this deals combat damage to a player"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "This creature can't attack a player it has already attacked this turn."
+      }
+     ],
+     "text": "This creature can't attack a player it has already attacked this turn.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "This creature can't attack a player it has already attacked this turn.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "This",
+      "creature",
+      "can't",
+      "attack",
+      "a",
+      "player",
+      "it",
+      "has",
+      "already",
+      "attacked",
+      "this",
+      "turn",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

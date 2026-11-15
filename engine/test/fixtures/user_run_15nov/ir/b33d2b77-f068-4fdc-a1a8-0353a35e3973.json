@@ -1,0 +1,93 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b33d2b77-f068-4fdc-a1a8-0353a35e3973",
+ "name": "Tezzeret's Gambit",
+ "card_hash": "2a7bd2bdc063f68168ff51ab43002497",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b33d2b77-f068-4fdc-a1a8-0353a35e3973",
+  "name": "Tezzeret's Gambit",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tezzeret's Gambit",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 7,
+       "colors": 2,
+       "text": "{U/P}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "({U/P} can be paid with either {U} or 2 life.)\nDraw two cards, then proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+    "colors": 2,
+    "keywords": [
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 949,
+  "scryfall_uri": "https://scryfall.com/card/eoc/47/tezzerets-gambit?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b33d2b77-f068-4fdc-a1a8-0353a35e3973",
+   "name": "Tezzeret's Gambit",
+   "face": 0,
+   "face_name": "Tezzeret's Gambit",
+   "card_hash": "2a7bd2bdc063f68168ff51ab43002497",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      },
+      {
+       "$": "Effect",
+       "kind": 74,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "proliferate"
+      }
+     ],
+     "text": "Draw two cards, then proliferate."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,141 @@
+{
+ "ir_version": 2,
+ "oracle_id": "a3da7d5b-2c2b-45fe-b9c5-413b8c8fc0a2",
+ "name": "Academy Ruins",
+ "card_hash": "0ffccadbb92be4ffcd816de1cf90cbc5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "a3da7d5b-2c2b-45fe-b9c5-413b8c8fc0a2",
+  "name": "Academy Ruins",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Academy Ruins",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {C}.\n{1}{U}, {T}: Put target artifact card from your graveyard on top of your library.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 462,
+  "scryfall_uri": "https://scryfall.com/card/2xm/309/academy-ruins?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "a3da7d5b-2c2b-45fe-b9c5-413b8c8fc0a2",
+   "name": "Academy Ruins",
+   "face": 0,
+   "face_name": "Academy Ruins",
+   "card_hash": "0ffccadbb92be4ffcd816de1cf90cbc5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 34,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 1,
+        "zones": {
+         "$set": [
+          3
+         ]
+        },
+        "owner": 1
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "is_targeted": true,
+       "text": "put on library"
+      }
+     ],
+     "text": "{1}{U}, {T}: Put target artifact card from your graveyard on top of your library.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

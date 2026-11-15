@@ -1,0 +1,155 @@
+{
+ "ir_version": 2,
+ "oracle_id": "5811d905-cae5-4f92-a78e-abb43f8864a7",
+ "name": "Cauldron of Souls",
+ "card_hash": "afb432f63061667781099334799f384d",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "5811d905-cae5-4f92-a78e-abb43f8864a7",
+  "name": "Cauldron of Souls",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Cauldron of Souls",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 5,
+       "text": "{5}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}: Choose any number of target creatures. Each of those creatures gains persist until end of turn. (When it dies, if it had no -1/-1 counters on it, return it to the battlefield under its owner's control with a -1/-1 counter on it.)"
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 4345,
+  "scryfall_uri": "https://scryfall.com/card/cm2/180/cauldron-of-souls?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "5811d905-cae5-4f92-a78e-abb43f8864a7",
+   "name": "Cauldron of Souls",
+   "face": 0,
+   "face_name": "Cauldron of Souls",
+   "card_hash": "afb432f63061667781099334799f384d",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "up_to": true
+       },
+       "duration": 1,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 2,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 1,
+           "condition": {
+            "$": "Condition",
+            "kind": 2,
+            "filter": {
+             "$": "ObjectFilter",
+             "source_only": true,
+             "has_counter": "-1/-1"
+            },
+            "constraint": {
+             "$": "NumericConstraint",
+             "comparison": 0,
+             "value": {
+              "$": "Value"
+             }
+            },
+            "text": "if it had no -1/-1 counter on it"
+           },
+           "children": [
+            {
+             "$": "Effect",
+             "kind": 33,
+             "amount": {
+              "$": "Value",
+              "constant": 1
+             },
+             "counter_type": "-1/-1",
+             "text": "return it with a -1/-1 counter on it"
+            }
+           ]
+          }
+         ],
+         "text": "persist",
+         "trigger": {
+          "$": "TriggerCondition",
+          "event_kinds": {
+           "$set": [
+            3
+           ]
+          },
+          "subject": {
+           "$": "ObjectFilter",
+           "source_only": true,
+           "zones": {
+            "$set": []
+           }
+          },
+          "functions_in": {
+           "$set": [
+            2,
+            3
+           ]
+          },
+          "uses_last_known_information": true,
+          "text": "when this dies (persist)"
+         },
+         "functions_in": {
+          "$set": [
+           2,
+           3
+          ]
+         },
+         "keyword": "persist"
+        }
+       ],
+       "text": "gains persist"
+      }
+     ],
+     "text": "{T}: any number of target creatures gains persist until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

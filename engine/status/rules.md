@@ -440,6 +440,85 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## For the parser (answers, 15 Nov)
+
+- **F37 engine half: fixed** (85b2113). `componentAmount` takes the
+  paying object as its source; for a spell (context.ability === null) X
+  is the spell's own, so Toxic Deluge cast with X = 3 pays 3 life as it's
+  cast. Your "cast with X = 3" test is a plain `it` now. An ability's X
+  isn't on its source permanent, so abilities are evaluated as before.
+  Legality offering X: neither engine picks an X above 0 for a spell (the
+  bot casts every X spell at 0, in Python too); the action brings the X.
+  Choosing X is the AI's (yours) if you want it.
+- **F3 `resolvePlayers` in EvaluateOptions: yes, suits me.** Add the
+  option in values.ts and wire it in resolve.ts's `evaluateContext` from
+  `playersOf` / `referredPlayers` yourself; a one-line change in my file is
+  fine, no need to wait for me.
+- **Reviewed fb9edb1's engine fixes:** both right.
+  `commanderZoneReplacement` skipping the CR 903.9b choice for a commander
+  already in the command zone is correct (nobody moving it out would choose
+  "instead"). `restrictionPermits`' commander check is right for the usual
+  case; note `commander` is a boolean, so "your commander" doesn't check
+  ownership (casting an opponent's commander with Jeweled Lotus mana would
+  pass). Rare; log it if you like.
+
+## The user's decks: 1,000 games in Node (15 Nov)
+
+Fixture `engine/test/fixtures/user_run_15nov/` (Vraska x2, Muddle, Kilo;
+runSeed 0, maxRounds 25), engine at a4f3ccf, `playGame` with SimpleAgent,
+60 s watchdog per game:
+- **0 crashes, 0 timeouts, 0 runaways** (no TOKEN SWARM, no WORK BUDGET,
+  no action budget); every game decided: 954 LIFE, 37 DECKING, 9
+  COMMANDER_DAMAGE, 0 stalls.
+- Times: median 1.37 s, p99 6.7 s, **max 8.6 s**; nothing over 10 s, so
+  nothing to profile. Work: median 59,000 units, max 456,000 (under a
+  quarter of the budget). Widest board: 251 permanents.
+- The games that hung before F65 (169, 190, 271, 284, 307, 360, 386, 424,
+  435, 497, 581) and the web session's 16 (157, 182, 283, 297, 334, 431,
+  470, 537, 560, 581, 598, 627, 715, 850, 883, 941) all finish, in 0.6-2.8 s.
+- Loops found in 54 games: mostly the bot re-equipping the same equipment
+  ("stopped": Lost Jitte 20, Skullclamp 14, Paradise Mantle 14, Wizard's
+  Staff 13, Hawkeye's Bow 11, The Reality Chip 3), Pemmin's Aura untaps (5,
+  stopped), and real shortcuts: Aura of Dominion's tap-proliferate (3) and
+  Sensei's Divining Top with a cast-token trigger (1).
+
+## Loop detection ported; no game runs for minutes (15 Nov)
+
+- **loops.ts** is a port of `mtgfish/rules/kernel/loops.py` (687ef75):
+  optional loops are shortcut to their result (CR 732.2a: far enough to
+  kill every opponent they can reach, never their controller, never past
+  their fuel; re-aimed one opponent at a time), an unstoppable mandatory
+  loop is a draw (CR 104.4b), a loop that changes nothing is stopped and
+  recorded. `game.loops` lists them; SimpleAgent's activation cap spares a
+  loop being re-aimed (`isContinuing`). Tests: `test/rules/loops.test.ts`,
+  every case of `tests/rules/test_loops.py` (Sanguine Bond + Exquisite
+  Blood to exactly 81 life, and 161 at a four-player table; Zulaport
+  Cutthroat under a 30-token wipe is not a loop; the synthetic cycles and
+  `decide`'s arithmetic), except the WinReason.LOOP_KILL one (the TS record
+  maps loop kills to LIFE, as it maps every life loss). No Python bug found.
+  Where Python iterated a set union of keys (arbitrary order), TS uses a
+  fixed order.
+- **Its effect on the 200 bench games** (674b258 vs 687ef75): outcomes
+  identical (163 LIFE, 22 COMMANDER_DAMAGE, 11 TOKEN SWARM, 2 STALL_OUT, 2
+  DECKING). 14 digests change because a loop was found: 10 Sanguine Bond +
+  Exquisite Blood games shortcut (same winner), 4 Lightning Greaves
+  re-equip loops stopped as "changes nothing". The 11 swarm games' digests
+  change only by the reworded runaway log line.
+- **Work budget** (687ef75, 4d77859): every board computation adds its
+  object count to `game.work.units`, shared with the bot's lookahead
+  clones; past `WORK_BUDGET` (2,000,000) the priority loop stops the game
+  as a runaway ("WORK BUDGET <top of stack>"). Deterministic, so replayable.
+  Bench: finished games use median 42,000 and at most 600,000 units (about
+  22 us each here); game 9 used 1.35 million.
+- **F65 follow-up (auditor's (b)):** paying.ts:533, triggers.ts:195,
+  resolve.ts:2235, stack.ts:129 and values.ts:211 read `supersededBy` one
+  step and then check `isLive`, which a self-linked husk never is: no loop,
+  no change needed.
+- **For the auditor:** I can't run the web session's 16 hanging seeds: the
+  user's decks (Archidekt 27600141, 26926766, 26074514) aren't in the repo.
+  If you commit their RunSetup JSON (e.g. under `engine/test/fixtures/`), I'll
+  run them in Node.
+
 ## Speed on wide boards (auditor's top priority, 15 Nov)
 
 Three exact optimizations (0454f23, 7e1d3ba, 5df22d0). **All 200 bench

@@ -12,14 +12,16 @@
 
 import { buildReport, DEFAULT_ENGINE, type RunResult, type RunSetup } from "@goldfly/engine/sim";
 import { IrClient, type DeckManifest } from "../ir";
-import { WorkerPool, defaultWorkers } from "../pool";
+import { DEFAULT_GAME_TIMEOUT_MS, WorkerPool, defaultWorkers } from "../pool";
 import { reportPayload, unparsedCards } from "../results";
-import { UploadRefused, runUpload, uploadRun } from "../upload";
+import { ENGINE_BUILD, UploadRefused, runUpload, uploadRun } from "../upload";
 import type { StoredRun } from "./entry";
 
 export interface BrowserRunOptions {
   readonly games: number;
   readonly seed: number;
+  /** A game still running after this long is stopped and recorded. Default 60. */
+  readonly gameTimeoutSeconds?: number;
   /** Turn cap per player; the server's default is 25. */
   readonly maxRounds?: number;
   readonly onProgress?: (done: number, total: number) => void;
@@ -89,7 +91,14 @@ export class BrowserRunner {
     };
 
     this.pool ??= new WorkerPool(defaultWorkers());
-    const running = this.pool.run(setup, games, options.onProgress, DEFAULT_ENGINE);
+    // A game that runs past the watchdog, or a worker that dies, is recorded
+    // as crashed with its seed and a fresh worker carries on: the run always
+    // finishes (see pool.ts).
+    const running = this.pool.run(setup, games, options.onProgress, DEFAULT_ENGINE, {
+      gameTimeoutMs: (options.gameTimeoutSeconds ?? DEFAULT_GAME_TIMEOUT_MS / 1000) * 1000,
+      engineBuild: ENGINE_BUILD,
+      log: (message) => console.warn(`[goldfly] ${message}`),
+    });
     this.cancelRun = running.cancel;
     let result: RunResult;
     try {

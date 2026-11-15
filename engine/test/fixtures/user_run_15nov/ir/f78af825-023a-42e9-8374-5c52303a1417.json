@@ -1,0 +1,240 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f78af825-023a-42e9-8374-5c52303a1417",
+ "name": "Elspeth, Storm Slayer",
+ "card_hash": "a8d93a71140329c50d517edc31f13b29",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f78af825-023a-42e9-8374-5c52303a1417",
+  "name": "Elspeth, Storm Slayer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Elspeth, Storm Slayer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Elspeth"
+     ]
+    },
+    "oracle_text": "If one or more tokens would be created under your control, twice that many of those tokens are created instead.\n+1: Create a 1/1 white Soldier creature token.\n0: Put a +1/+1 counter on each creature you control. Those creatures gain flying until your next turn.\n−3: Destroy target creature an opponent controls with mana value 3 or greater.",
+    "loyalty": "5",
+    "colors": 1
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 713,
+  "scryfall_uri": "https://scryfall.com/card/tdm/11/elspeth-storm-slayer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f78af825-023a-42e9-8374-5c52303a1417",
+   "name": "Elspeth, Storm Slayer",
+   "face": 0,
+   "face_name": "Elspeth, Storm Slayer",
+   "card_hash": "a8d93a71140329c50d517edc31f13b29",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 153,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "duration": 0,
+       "replacement_kind": 13,
+       "multiplier": 2,
+       "text": "replacement: change the amount"
+      }
+     ],
+     "text": "If one or more tokens would be created under your control, twice that many of those tokens are created instead."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Soldier",
+        "subtypes": [
+         "Soldier"
+        ],
+        "colors": 1,
+        "power": {
+         "$": "Value",
+         "constant": 1
+        },
+        "toughness": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "+1: Create a 1/1 white Soldier creature token.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "text": "+1"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      },
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "remembered": true
+       },
+       "duration": 3,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "flying",
+         "keyword": "flying"
+        }
+       ],
+       "text": "gains flying"
+      }
+     ],
+     "text": "0: Put a +1/+1 counter on each creature you control. Those creatures gain flying until your next turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "text": "+0"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 2,
+        "mana_value": {
+         "$": "NumericConstraint",
+         "comparison": 5,
+         "value": {
+          "$": "Value",
+          "constant": 3
+         }
+        }
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      }
+     ],
+     "text": "-3: Destroy target creature an opponent controls with mana value 3 or greater.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": -3
+        },
+        "text": "-3"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,170 @@
+{
+ "ir_version": 2,
+ "oracle_id": "fb220f46-f8b8-4804-baa4-e7d50b4871f7",
+ "name": "Aether Channeler",
+ "card_hash": "d6f9f2305be4789124f67736e1017ed8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fb220f46-f8b8-4804-baa4-e7d50b4871f7",
+  "name": "Aether Channeler",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Aether Channeler",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "When this creature enters, choose one —\n• Create a 1/1 white Bird creature token with flying.\n• Return another target nonland permanent to its owner's hand.\n• Draw a card.",
+    "power": "2",
+    "toughness": "1",
+    "colors": 2
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1548,
+  "scryfall_uri": "https://scryfall.com/card/dmu/42/aether-channeler?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "fb220f46-f8b8-4804-baa4-e7d50b4871f7",
+   "name": "Aether Channeler",
+   "face": 0,
+   "face_name": "Aether Channeler",
+   "card_hash": "d6f9f2305be4789124f67736e1017ed8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 35,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "token": {
+            "$": "TokenSpec",
+            "name": "Bird",
+            "subtypes": [
+             "Bird"
+            ],
+            "colors": 1,
+            "power": {
+             "$": "Value",
+             "constant": 1
+            },
+            "toughness": {
+             "$": "Value",
+             "constant": 1
+            },
+            "keywords": [
+             "flying"
+            ]
+           },
+           "text": "create token"
+          }
+         ],
+         "text": "Create a 1/1 white Bird creature token with flying."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 32,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_none": 16,
+            "other_than_source": true
+           },
+           "is_targeted": true,
+           "text": "return to hand"
+          }
+         ],
+         "text": "Return another target nonland permanent to its owner's hand."
+        },
+        {
+         "$": "Effect",
+         "kind": 0,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 20,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "text": "draw"
+          }
+         ],
+         "text": "Draw a card."
+        }
+       ],
+       "text": "When this creature enters, choose one -"
+      }
+     ],
+     "text": "When this creature enters, choose one -",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

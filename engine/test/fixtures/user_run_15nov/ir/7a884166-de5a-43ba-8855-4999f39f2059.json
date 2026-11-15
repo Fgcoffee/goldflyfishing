@@ -1,0 +1,114 @@
+{
+ "ir_version": 2,
+ "oracle_id": "7a884166-de5a-43ba-8855-4999f39f2059",
+ "name": "Kilo, Apogee Mind",
+ "card_hash": "7772ac9892cb6c09400b3b365ac56222",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "7a884166-de5a-43ba-8855-4999f39f2059",
+  "name": "Kilo, Apogee Mind",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Kilo, Apogee Mind",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 5,
+     "subtypes": [
+      "Robot",
+      "Artificer"
+     ]
+    },
+    "oracle_text": "Haste\nWhenever Kilo becomes tapped, proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+    "power": "3",
+    "toughness": "3",
+    "colors": 11,
+    "keywords": [
+     "Haste",
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 11,
+  "commander_legal": true,
+  "edhrec_rank": 3191,
+  "scryfall_uri": "https://scryfall.com/card/eoc/3/kilo-apogee-mind?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "7a884166-de5a-43ba-8855-4999f39f2059",
+   "name": "Kilo, Apogee Mind",
+   "face": 0,
+   "face_name": "Kilo, Apogee Mind",
+   "card_hash": "7772ac9892cb6c09400b3b365ac56222",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Haste",
+     "keyword": "Haste"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 74,
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "proliferate"
+      }
+     ],
+     "text": "Whenever this becomes tapped, proliferate.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        40
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this becomes tapped"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

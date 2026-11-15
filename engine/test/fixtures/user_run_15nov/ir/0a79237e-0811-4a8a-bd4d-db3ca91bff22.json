@@ -1,0 +1,168 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0a79237e-0811-4a8a-bd4d-db3ca91bff22",
+ "name": "Everflowing Chalice",
+ "card_hash": "6ad35e104f7e0fea597d507dc4f6679c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0a79237e-0811-4a8a-bd4d-db3ca91bff22",
+  "name": "Everflowing Chalice",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Everflowing Chalice",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "text": "{0}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "Multikicker {2} (You may pay an additional {2} any number of times as you cast this spell.)\nThis artifact enters with a charge counter on it for each time it was kicked.\n{T}: Add {C} for each charge counter on this artifact.",
+    "keywords": [
+     "Multikicker"
+    ],
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 254,
+  "scryfall_uri": "https://scryfall.com/card/eoc/137/everflowing-chalice?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0a79237e-0811-4a8a-bd4d-db3ca91bff22",
+   "name": "Everflowing Chalice",
+   "face": 0,
+   "face_name": "Everflowing Chalice",
+   "card_hash": "6ad35e104f7e0fea597d507dc4f6679c",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Multikicker {2}",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Multikicker",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 2,
+            "text": "{2}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Multikicker",
+      "text": "Multikicker {2}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "This artifact enters with a charge counter on it for each time it was kicked."
+      }
+     ],
+     "text": "This artifact enters with a charge counter on it for each time it was kicked.",
+     "unparsed": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "kind": 10,
+        "counter_type": "charge"
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      }
+     ],
+     "text": "{T}: Add {C} for each charge counter on this artifact.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "This artifact enters with a charge counter on it for each time it was kicked.",
+     "reason": "not fully consumed",
+     "consumed": 9,
+     "remaining": [
+      "for",
+      "each",
+      "time",
+      "it",
+      "was",
+      "kicked",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

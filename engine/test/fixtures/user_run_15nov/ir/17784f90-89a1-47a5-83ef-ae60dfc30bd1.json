@@ -1,0 +1,127 @@
+{
+ "ir_version": 2,
+ "oracle_id": "17784f90-89a1-47a5-83ef-ae60dfc30bd1",
+ "name": "Minamo, School at Water's Edge",
+ "card_hash": "3a351d98323cc74371477d5c1fadda63",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "17784f90-89a1-47a5-83ef-ae60dfc30bd1",
+  "name": "Minamo, School at Water's Edge",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Minamo, School at Water's Edge",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {U}.\n{U}, {T}: Untap target legendary permanent.",
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 604,
+  "scryfall_uri": "https://scryfall.com/card/chk/279/minamo-school-at-waters-edge?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "17784f90-89a1-47a5-83ef-ae60dfc30bd1",
+   "name": "Minamo, School at Water's Edge",
+   "face": 0,
+   "face_name": "Minamo, School at Water's Edge",
+   "card_hash": "3a351d98323cc74371477d5c1fadda63",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {U}"
+      }
+     ],
+     "text": "{T}: Add {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "supertypes_all": 2
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      }
+     ],
+     "text": "{U}, {T}: Untap target legendary permanent.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

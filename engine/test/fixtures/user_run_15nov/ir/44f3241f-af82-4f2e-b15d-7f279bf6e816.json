@@ -1,0 +1,172 @@
+{
+ "ir_version": 2,
+ "oracle_id": "44f3241f-af82-4f2e-b15d-7f279bf6e816",
+ "name": "Umbral Mantle",
+ "card_hash": "7f14cd51a111a2821c9fd33f3363f477",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "44f3241f-af82-4f2e-b15d-7f279bf6e816",
+  "name": "Umbral Mantle",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Umbral Mantle",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature has \"{3}, {Q}: This creature gets +2/+2 until end of turn.\" ({Q} is the untap symbol.)\nEquip {0}",
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 2292,
+  "scryfall_uri": "https://scryfall.com/card/shm/267/umbral-mantle?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "44f3241f-af82-4f2e-b15d-7f279bf6e816",
+   "name": "Umbral Mantle",
+   "face": 0,
+   "face_name": "Umbral Mantle",
+   "card_hash": "7f14cd51a111a2821c9fd33f3363f477",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 1,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 140,
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 2
+           },
+           "amount2": {
+            "$": "Value",
+            "constant": 2
+           },
+           "duration": 1,
+           "text": "gets +2/+2"
+          }
+         ],
+         "text": "{3} , {Q} : This creature gets +2/+2 until end of turn .",
+         "cost": {
+          "$": "Cost",
+          "components": [
+           {
+            "$": "CostComponent",
+            "kind": 0,
+            "mana": {
+             "$": "ManaCost",
+             "symbols": [
+              {
+               "$": "ManaSymbol",
+               "kind": 0,
+               "generic": 3,
+               "text": "{3}"
+              }
+             ]
+            }
+           },
+           {
+            "$": "CostComponent",
+            "kind": 2,
+            "text": "{Q}"
+           }
+          ]
+         }
+        }
+       ],
+       "text": "gains {3} , {Q} : This creature gets +2/+2 until end of turn ."
+      }
+     ],
+     "text": "Equipped creature has \"{3}, {Q}: This creature gets +2/+2 until end of turn.\""
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {0}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "text": "{0}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -128,6 +128,8 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
   - F64 (VOTE, guarded);
   - karoo lands always sacrificed.
 - [ ] **Token swarms:** 12 of 200 bench games hit the 90 s watchdog, with 800-5,800 permanents (Krenko, Mob Boss). Make each step cheaper, or end the game as a runaway the way Python's observer does, so no browser game runs for minutes.
+- [x] **Port the loop detection** (687ef75; tests in test/rules/loops.test.ts) (`kernel/loops.py` to `engine/src/rules/loops.ts`, still a placeholder; found 15 Nov). It covers CR 732.2a optional loops run to their result, and CR 104.4b mandatory loops that are a draw. Without it, infinite combos never win and mandatory loops end as runaways. Port its tests too.
+- [x] **No game can run for minutes.** (687ef75, 4d77859: a deterministic work budget per game, lookahead included; F65 by the auditor, 674b258) Bound each priority round's cost, or cap the action budget by time as well as rounds. Found from the user's live test: browser runs stop advancing on their decks.
 - [ ] **Wide boards fast, so the swarm cap is only a safety net** (15 Nov, top priority):
   - one board recompute per token batch, not per token;
   - trigger watchers cached per characteristics epoch;
@@ -153,6 +155,10 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
 
 ### web
 - [ ] The switch-over (Phase 1, above): behind a flag first. The auditor and the user give the go for the live site. *Behind the flag: done (switch-over commit; ?engine=browser). Live go pending.*
+- [ ] **A browser run always finishes** (urgent, 15 Nov: the user's live runs hang).
+  - A per-game watchdog: a worker that reports nothing for 60 s is replaced, and its game recorded as timed out, with its seed.
+  - A worker that dies is respawned, and its game recorded the same way.
+  - Results lists the games that didn't finish.
 - [ ] **Sandbox on the TS engine,** in the browser, so a sandbox game replays from its setup and can be reported.
 - [ ] Reports, below.
 

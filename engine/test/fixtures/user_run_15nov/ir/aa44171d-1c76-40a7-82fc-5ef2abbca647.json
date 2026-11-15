@@ -1,0 +1,121 @@
+{
+ "ir_version": 2,
+ "oracle_id": "aa44171d-1c76-40a7-82fc-5ef2abbca647",
+ "name": "Patrolling Peacemaker",
+ "card_hash": "feb8ebc6cc3169f02c036e9df5526a13",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "aa44171d-1c76-40a7-82fc-5ef2abbca647",
+  "name": "Patrolling Peacemaker",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Patrolling Peacemaker",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Robot",
+      "Soldier"
+     ]
+    },
+    "oracle_text": "This creature enters with two +1/+1 counters on it.\nWhenever an opponent commits a crime, proliferate. (They commit a crime if they target an opponent, anything an opponent controls, and/or cards in an opponent's graveyard. To proliferate, you choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+    "power": "0",
+    "toughness": "0",
+    "colors": 1,
+    "keywords": [
+     "Proliferate"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 2121,
+  "scryfall_uri": "https://scryfall.com/card/eoc/5/patrolling-peacemaker?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "aa44171d-1c76-40a7-82fc-5ef2abbca647",
+   "name": "Patrolling Peacemaker",
+   "face": 0,
+   "face_name": "Patrolling Peacemaker",
+   "card_hash": "feb8ebc6cc3169f02c036e9df5526a13",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "counter_type": "+1/+1",
+       "text": "enters with counters"
+      }
+     ],
+     "text": "This creature enters with two +1/+1 counters on it."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Whenever an opponent commits a crime, proliferate."
+      }
+     ],
+     "text": "Whenever an opponent commits a crime, proliferate.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Whenever an opponent commits a crime, proliferate.",
+     "reason": "unreadable trigger condition",
+     "remaining": [
+      "Whenever",
+      "an",
+      "opponent",
+      "commits",
+      "a",
+      "crime",
+      ",",
+      "proliferate",
+      "."
+     ],
+     "rule": "trigger"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

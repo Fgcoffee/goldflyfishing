@@ -1,0 +1,284 @@
+{
+ "ir_version": 2,
+ "oracle_id": "0eb11b2d-a397-48da-a0f3-9f0f83f42282",
+ "name": "Tezzeret, Cruel Captain",
+ "card_hash": "a248b64d1f3da0b2e95b94c0b4b57917",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "0eb11b2d-a397-48da-a0f3-9f0f83f42282",
+  "name": "Tezzeret, Cruel Captain",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Tezzeret, Cruel Captain",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 32,
+     "subtypes": [
+      "Tezzeret"
+     ]
+    },
+    "oracle_text": "Whenever an artifact you control enters, put a loyalty counter on Tezzeret.\n0: Untap target artifact or creature. If it's an artifact creature, put a +1/+1 counter on it.\n−3: Search your library for an artifact card with mana value 1 or less, reveal it, put it into your hand, then shuffle.\n−7: You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
+    "loyalty": "4"
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 1238,
+  "scryfall_uri": "https://scryfall.com/card/eoe/2/tezzeret-cruel-captain?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "0eb11b2d-a397-48da-a0f3-9f0f83f42282",
+   "name": "Tezzeret, Cruel Captain",
+   "face": 0,
+   "face_name": "Tezzeret, Cruel Captain",
+   "card_hash": "a248b64d1f3da0b2e95b94c0b4b57917",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "loyalty",
+       "text": "add counters"
+      }
+     ],
+     "text": "Whenever an artifact you control enters, put a loyalty counter on this.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 1,
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 5
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      },
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 18,
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 5,
+         "remembered": true,
+         "zones": {
+          "$set": []
+         }
+        },
+        "text": "it is ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 72,
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "counter_type": "+1/+1",
+         "text": "add counters"
+        }
+       ],
+       "text": "if"
+      }
+     ],
+     "text": "0: Untap target artifact or creature. If it's an artifact creature, put a +1/+1 counter on it.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "text": "+0"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 23,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 1,
+        "zones": {
+         "$set": []
+        },
+        "mana_value": {
+         "$": "NumericConstraint",
+         "comparison": 3,
+         "value": {
+          "$": "Value",
+          "constant": 1
+         }
+        },
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "zone": 1,
+       "text": "search library"
+      }
+     ],
+     "text": "-3: Search your library for an artifact card with mana value 1 or less, reveal it, put it into your hand, then shuffle.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 34,
+        "amount": {
+         "$": "Value",
+         "constant": -3
+        },
+        "text": "-3"
+       }
+      ]
+     },
+     "timing": 0,
+     "is_loyalty_ability": true,
+     "once_each_turn": true
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "-7: You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\""
+      }
+     ],
+     "text": "-7: You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "-7: You get an emblem with \"At the beginning of combat on your turn, put three +1/+1 counters on target artifact you control. If it's not a creature, it becomes a 0/0 Robot artifact creature.\"",
+     "reason": "not fully consumed",
+     "remaining": [
+      "You",
+      "get",
+      "an",
+      "emblem",
+      "with",
+      "\"",
+      "At",
+      "the",
+      "beginning",
+      "of",
+      "combat",
+      "on",
+      "your",
+      "turn",
+      ",",
+      "put",
+      "three",
+      "+1/+1",
+      "counters",
+      "on",
+      "target",
+      "artifact",
+      "you",
+      "control",
+      ".",
+      "If",
+      "it's",
+      "not",
+      "a",
+      "creature",
+      ",",
+      "it",
+      "becomes",
+      "a",
+      "0/0",
+      "Robot",
+      "artifact",
+      "creature",
+      ".",
+      "\""
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "tutor",
+  "unread"
+ ]
+}

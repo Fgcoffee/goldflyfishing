@@ -1,0 +1,98 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f5677831-6ca9-4c7b-b02d-f44079c3f663",
+ "name": "Voltaic Construct",
+ "card_hash": "08891eae575512421f82006ac5ce22a3",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f5677831-6ca9-4c7b-b02d-f44079c3f663",
+  "name": "Voltaic Construct",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Voltaic Construct",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 5,
+     "subtypes": [
+      "Golem",
+      "Construct"
+     ]
+    },
+    "oracle_text": "{2}: Untap target artifact creature.",
+    "power": "2",
+    "toughness": "2"
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 8345,
+  "scryfall_uri": "https://scryfall.com/card/dst/156/voltaic-construct?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f5677831-6ca9-4c7b-b02d-f44079c3f663",
+   "name": "Voltaic Construct",
+   "face": 0,
+   "face_name": "Voltaic Construct",
+   "card_hash": "08891eae575512421f82006ac5ce22a3",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 5
+       },
+       "is_targeted": true,
+       "text": "tap/untap"
+      }
+     ],
+     "text": "{2}: Untap target artifact creature.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 2,
+           "text": "{2}"
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

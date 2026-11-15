@@ -1,0 +1,97 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4b977117-741c-4157-8fcf-719e475a8a4c",
+ "name": "Battle Hymn",
+ "card_hash": "45414f483c3dc04b7e35352383bd84ee",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4b977117-741c-4157-8fcf-719e475a8a4c",
+  "name": "Battle Hymn",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Battle Hymn",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Add {R} for each creature you control.",
+    "colors": 8,
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1660,
+  "scryfall_uri": "https://scryfall.com/card/avr/128/battle-hymn?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4b977117-741c-4157-8fcf-719e475a8a4c",
+   "name": "Battle Hymn",
+   "face": 0,
+   "face_name": "Battle Hymn",
+   "card_hash": "45414f483c3dc04b7e35352383bd84ee",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "amount2": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "controller": 1
+        }
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      }
+     ],
+     "text": "Add {R} for each creature you control."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

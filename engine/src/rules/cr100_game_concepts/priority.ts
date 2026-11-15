@@ -143,6 +143,10 @@ export function runPriority(game: Game): void {
   beginWindow(game);
   for (let round = 0; round < MAX_PRIORITY_ROUNDS; round += 1) {
     if (game.gameOver) return;
+    if (game.work.units > WORK_BUDGET) {
+      stopForWork(game);
+      return;
+    }
     settle(game);
     if (game.gameOver) return;
     order = apnapOrder(game);
@@ -189,12 +193,30 @@ export function runPriority(game: Game): void {
   game.gameOver = true;
 }
 
+/**
+ * Not a rule: a cap on one game's total work, in objects whose
+ * characteristics were computed (`game.work`, the bot's lookahead included).
+ * Deterministic, unlike a clock, so a stopped game still replays. The 200
+ * bench games use at most 600,000 (median 42,000, about 22 us each on the
+ * cloud box); a mandatory loop on a growing board, each round slower than
+ * the last, would otherwise hold a browser worker for minutes.
+ */
+export const WORK_BUDGET = 2_000_000;
+
+function stopForWork(game: Game): void {
+  const topId = game.stack[game.stack.length - 1];
+  const name = topId === undefined ? "" : cardName(game, topId);
+  game.runaway = `WORK BUDGET ${name || "no stack"}`;
+  logRecord(game, `Work budget spent (${game.work.units} units); stopping. Top of stack: ${name || "empty"}`, { kind: "runaway" });
+  game.gameOver = true;
+}
+
 function cardName(game: Game, id: ObjectId): string {
   const card = game.objects.get(id)?.card as { name?: string } | null | undefined;
   return card?.name ?? "";
 }
 
-function actionKindName(kind: ActionKind): string {
+export function actionKindName(kind: ActionKind): string {
   return Object.entries(ActionKind).find(([, v]) => v === kind)?.[0] ?? String(kind);
 }
 

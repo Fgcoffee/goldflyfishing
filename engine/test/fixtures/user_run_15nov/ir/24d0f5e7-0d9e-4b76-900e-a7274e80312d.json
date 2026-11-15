@@ -1,0 +1,151 @@
+{
+ "ir_version": 2,
+ "oracle_id": "24d0f5e7-0d9e-4b76-900e-a7274e80312d",
+ "name": "Mulldrifter",
+ "card_hash": "5cf8ceacdce0655f7aee3ddf4bf3a00c",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "24d0f5e7-0d9e-4b76-900e-a7274e80312d",
+  "name": "Mulldrifter",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mulldrifter",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Elemental"
+     ]
+    },
+    "oracle_text": "Flying\nWhen this creature enters, draw two cards.\nEvoke {2}{U} (You may cast this spell for its evoke cost. If you do, it's sacrificed when it enters.)",
+    "power": "2",
+    "toughness": "2",
+    "colors": 2,
+    "keywords": [
+     "Flying",
+     "Evoke"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 595,
+  "scryfall_uri": "https://scryfall.com/card/ecc/67/mulldrifter?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "24d0f5e7-0d9e-4b76-900e-a7274e80312d",
+   "name": "Mulldrifter",
+   "face": 0,
+   "face_name": "Mulldrifter",
+   "card_hash": "5cf8ceacdce0655f7aee3ddf4bf3a00c",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "When this creature enters, draw two cards.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "text": "when this enters"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Evoke {2}{U}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Evoke",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 2,
+            "text": "{2}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 2,
+            "text": "{U}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Evoke",
+      "text": "Evoke {2}{U}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

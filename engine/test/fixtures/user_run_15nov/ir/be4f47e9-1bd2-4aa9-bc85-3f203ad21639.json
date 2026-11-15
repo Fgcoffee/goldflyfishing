@@ -1,0 +1,120 @@
+{
+ "ir_version": 2,
+ "oracle_id": "be4f47e9-1bd2-4aa9-bc85-3f203ad21639",
+ "name": "Rionya, Fire Dancer",
+ "card_hash": "9e708f4c88ddf4d9b6f60ea215f4a7f7",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "be4f47e9-1bd2-4aa9-bc85-3f203ad21639",
+  "name": "Rionya, Fire Dancer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Rionya, Fire Dancer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Wizard"
+     ]
+    },
+    "oracle_text": "At the beginning of combat on your turn, create X tokens that are copies of another target creature you control, where X is one plus the number of instant and sorcery spells you've cast this turn. They gain haste. Exile them at the beginning of the next end step.",
+    "power": "3",
+    "toughness": "4",
+    "colors": 8
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 2848,
+  "scryfall_uri": "https://scryfall.com/card/soc/252/rionya-fire-dancer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "be4f47e9-1bd2-4aa9-bc85-3f203ad21639",
+   "name": "Rionya, Fire Dancer",
+   "face": 0,
+   "face_name": "Rionya, Fire Dancer",
+   "card_hash": "9e708f4c88ddf4d9b6f60ea215f4a7f7",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "At the beginning of combat on your turn, create X tokens that are copies of another target creature you control, where X is one plus the number of instant and sorcery spells you've cast this turn. They gain haste. Exile them at the beginning of the next end step."
+      }
+     ],
+     "text": "At the beginning of combat on your turn, create X tokens that are copies of another target creature you control, where X is one plus the number of instant and sorcery spells you've cast this turn. They gain haste. Exile them at the beginning of the next end step.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "At the beginning of combat on your turn, create X tokens that are copies of another target creature you control, where X is one plus the number of instant and sorcery spells you've cast this turn. They gain haste. Exile them at the beginning of the next end step.",
+     "reason": "not fully consumed",
+     "consumed": 34,
+     "remaining": [
+      "you've",
+      "cast",
+      "this",
+      "turn",
+      ".",
+      "They",
+      "gain",
+      "haste",
+      ".",
+      "Exile",
+      "them",
+      "at",
+      "the",
+      "beginning",
+      "of",
+      "the",
+      "next",
+      "end",
+      "step",
+      "."
+     ],
+     "rule": "triggered"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

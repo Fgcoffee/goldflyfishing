@@ -1,0 +1,104 @@
+{
+ "ir_version": 2,
+ "oracle_id": "67554654-e751-4679-9e92-f3588525ae4f",
+ "name": "Enter the Enigma",
+ "card_hash": "1da5a9e1c1720a9693a7a38bf72135b2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "67554654-e751-4679-9e92-f3588525ae4f",
+  "name": "Enter the Enigma",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Enter the Enigma",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Target creature can't be blocked this turn.\nDraw a card.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1275,
+  "scryfall_uri": "https://scryfall.com/card/dsk/52/enter-the-enigma?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "67554654-e751-4679-9e92-f3588525ae4f",
+   "name": "Enter the Enigma",
+   "face": 0,
+   "face_name": "Enter the Enigma",
+   "card_hash": "1da5a9e1c1720a9693a7a38bf72135b2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 150,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "restrictions": [
+        {
+         "$": "Restriction",
+         "act": 24,
+         "subject": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "text": "can't be_blocked"
+        }
+       ],
+       "text": "can't"
+      }
+     ],
+     "text": "Target creature can't be blocked this turn."
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Draw a card."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

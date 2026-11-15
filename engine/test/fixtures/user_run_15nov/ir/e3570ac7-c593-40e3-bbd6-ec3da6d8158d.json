@@ -1,0 +1,159 @@
+{
+ "ir_version": 2,
+ "oracle_id": "e3570ac7-c593-40e3-bbd6-ec3da6d8158d",
+ "name": "Training Center",
+ "card_hash": "748e03f2b0487cb1f702b69b7d1e6a74",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "e3570ac7-c593-40e3-bbd6-ec3da6d8158d",
+  "name": "Training Center",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Training Center",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped unless you have two or more opponents.\n{T}: Add {U} or {R}.",
+    "produced_mana": [
+     "R",
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 10,
+  "commander_legal": true,
+  "edhrec_rank": 154,
+  "scryfall_uri": "https://scryfall.com/card/cmm/434/training-center?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "e3570ac7-c593-40e3-bbd6-ec3da6d8158d",
+   "name": "Training Center",
+   "face": 0,
+   "face_name": "Training Center",
+   "card_hash": "748e03f2b0487cb1f702b69b7d1e6a74",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 17,
+          "players": {
+           "$": "PlayerFilter",
+           "scope": 3
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 2
+           }
+          },
+          "text": "you have N opponents"
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you have two or more opponents."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 3,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{U}"
+         ],
+         "colors": 2,
+         "text": "add {U}"
+        },
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "mana_produced": [
+          "{R}"
+         ],
+         "colors": 8,
+         "text": "add {R}"
+        }
+       ],
+       "text": "add one of several"
+      }
+     ],
+     "text": "{T}: Add {U} or {R}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -1,0 +1,211 @@
+{
+ "ir_version": 2,
+ "oracle_id": "bcc6eece-75ea-494c-b33a-d4477d504e0b",
+ "name": "Sink into Stupor // Soporific Springs",
+ "card_hash": "b20604752eb9ef14a4c4efc9e894051b",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bcc6eece-75ea-494c-b33a-d4477d504e0b",
+  "name": "Sink into Stupor // Soporific Springs",
+  "layout": 4,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sink into Stupor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Return target spell or nonland permanent an opponent controls to its owner's hand.",
+    "colors": 2,
+    "produced_mana": [
+     "U"
+    ]
+   },
+   {
+    "$": "FaceDef",
+    "name": "Soporific Springs",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "As this land enters, you may pay 3 life. If you don't, it enters tapped.\n{T}: Add {U}.",
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 168,
+  "scryfall_uri": "https://scryfall.com/card/mh3/241/sink-into-stupor-soporific-springs?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "bcc6eece-75ea-494c-b33a-d4477d504e0b",
+   "name": "Sink into Stupor // Soporific Springs",
+   "face": 0,
+   "face_name": "Sink into Stupor",
+   "card_hash": "b20604752eb9ef14a4c4efc9e894051b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 32,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_none": 16,
+        "zones": {
+         "$set": [
+          2,
+          4
+         ]
+        },
+        "controller": 2,
+        "is_ability": false
+       },
+       "is_targeted": true,
+       "text": "return to hand"
+      }
+     ],
+     "text": "Return target spell or nonland permanent an opponent controls to its owner's hand."
+    }
+   ],
+   "failures": []
+  },
+  {
+   "ir_version": 2,
+   "oracle_id": "bcc6eece-75ea-494c-b33a-d4477d504e0b",
+   "name": "Sink into Stupor // Soporific Springs",
+   "face": 1,
+   "face_name": "Soporific Springs",
+   "card_hash": "b20604752eb9ef14a4c4efc9e894051b",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 4,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 52,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 3
+           },
+           "text": "pay life"
+          }
+         ],
+         "text": "may"
+        },
+        {
+         "$": "Effect",
+         "kind": 201,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 70,
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "duration": 0,
+           "text": "enters tapped"
+          }
+         ],
+         "text": "if you don't"
+        }
+       ],
+       "text": "as this enters"
+      }
+     ],
+     "text": "As this land enters, you may pay 3 life. If you don't, it enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {U}"
+      }
+     ],
+     "text": "{T}: Add {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

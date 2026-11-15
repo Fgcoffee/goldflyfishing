@@ -1,0 +1,138 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c01aeaa5-1d3b-4493-9575-30175dcd780d",
+ "name": "Gleaming Splendor",
+ "card_hash": "a1a96c2391b323a0a65d1dba566a2e55",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c01aeaa5-1d3b-4493-9575-30175dcd780d",
+  "name": "Gleaming Splendor",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Gleaming Splendor",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever an opponent draws their second card each turn, you create a Treasure token.\n{2}{W}: Two target players each draw a card.",
+    "colors": 1,
+    "keywords": [
+     "Treasure"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 1,
+  "commander_legal": true,
+  "edhrec_rank": 3096,
+  "scryfall_uri": "https://scryfall.com/card/hob/15/gleaming-splendor?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c01aeaa5-1d3b-4493-9575-30175dcd780d",
+   "name": "Gleaming Splendor",
+   "face": 0,
+   "face_name": "Gleaming Splendor",
+   "card_hash": "a1a96c2391b323a0a65d1dba566a2e55",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      }
+     ],
+     "text": "Whenever an opponent draws their second card each turn, you create a Treasure token.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        80
+       ]
+      },
+      "players": {
+       "$": "PlayerFilter",
+       "scope": 1
+      },
+      "ordinal": 2,
+      "text": "whenever a player draws"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "{2}{W}: Two target players each draw a card."
+      }
+     ],
+     "text": "{2}{W}: Two target players each draw a card.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "{2}{W}: Two target players each draw a card.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Two",
+      "target",
+      "players",
+      "each",
+      "draw",
+      "a",
+      "card",
+      "."
+     ],
+     "rule": "activated"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

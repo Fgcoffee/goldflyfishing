@@ -27,6 +27,8 @@ export interface ManaRestriction {
 export interface PaymentContext {
   readonly types?: number;
   readonly subtypes?: readonly string[];
+  /** The spell is a commander (CR 903.3), for "spend this mana only to cast your commander". */
+  readonly commander?: boolean;
 }
 
 /** An IR string field's text, whether plain or wrapped as `{ $str }` (IR v1). */
@@ -50,6 +52,8 @@ export function restrictionPermits(restriction: ManaRestriction, context: Paymen
   if (filter === null) return false;
   if (context === null) return true;
   if (context.types === undefined) return true; // not a spell being cast
+  // Jeweled Lotus: only a commander. A context that doesn't say is not one.
+  if (filter.is_commander === true && context.commander !== true) return false;
   const wanted = filterTypes(filter.types_all) | filterTypes(filter.types_any);
   if (wanted && (context.types & wanted) === 0) return false;
   const subtypes = [...(filter.subtypes_all ?? []), ...(filter.subtypes_any ?? [])].map(irText);

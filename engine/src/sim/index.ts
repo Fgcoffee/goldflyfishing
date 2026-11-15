@@ -1,6 +1,6 @@
 /** Running games: records, the range runner, and the stub engine. */
 export type { CardCast, CrashedGame, Elimination, GameRecord, WinReason } from "./records";
-export type { DeckSpec, GameEngine, RunHooks, RunResult, RunSetup } from "./runner";
+export type { DeckSpec, GameEngine, GameOutcome, RunHooks, RunResult, RunSetup } from "./runner";
 export { crashedGame, mergeResults, runGames, splitRange } from "./runner";
 export { stubEngine } from "./stub";
 export { DEFAULT_ENGINE, ENGINES, type EngineName } from "./engines";
@@ -14,3 +14,5 @@ export { summarize } from "./summary";
 export { atFrame, BoardRecorder, type BoardCard, type BoardCardRef, type BoardFilm, type BoardSeat, type BoardSnapshot, type BoardStackItem } from "./board";
 export { buildTurns, describeBoard, DETAIL_LEVELS, KEY_KINDS, NOISE_KINDS, replayGame, shownAt, type DetailLevel, type ReplayFrame, type ReplaySeat, type ReplayTurn, type ReplayView } from "./replay_view";
 export { boardPayload, parseStatus, replayPayload } from "./payload";
+/** A game's seed from the run seed and its index (Python `RunConfig.seed_for`). */
+export { seedFor } from "../kernel/random";

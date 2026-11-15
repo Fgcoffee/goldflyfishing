@@ -1,0 +1,248 @@
+{
+ "ir_version": 2,
+ "oracle_id": "30c3c700-46f4-4a77-8c45-5c7e3a21bd62",
+ "name": "Wizard's Staff",
+ "card_hash": "3b3fa179a086bc9e3d3b5c50c73c0cb2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "30c3c700-46f4-4a77-8c45-5c7e3a21bd62",
+  "name": "Wizard's Staff",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Wizard's Staff",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 1,
+       "text": "{1}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1,
+     "subtypes": [
+      "Equipment"
+     ]
+    },
+    "oracle_text": "Equipped creature has prowess. (Whenever its controller casts a noncreature spell, that creature gets +1/+1 until end of turn.)\nIf a triggered ability of equipped creature triggers, that ability triggers an additional time.\nEquip Wizard {1}\nEquip {3}",
+    "colors": 2,
+    "keywords": [
+     "Equip"
+    ]
+   }
+  ],
+  "mana_value": 2,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 5203,
+  "scryfall_uri": "https://scryfall.com/card/hob/59/wizards-staff?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "30c3c700-46f4-4a77-8c45-5c7e3a21bd62",
+   "name": "Wizard's Staff",
+   "face": 0,
+   "face_name": "Wizard's Staff",
+   "card_hash": "3b3fa179a086bc9e3d3b5c50c73c0cb2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 2,
+         "effects": [
+          {
+           "$": "Effect",
+           "kind": 140,
+           "amount": {
+            "$": "Value",
+            "constant": 1
+           },
+           "amount2": {
+            "$": "Value",
+            "constant": 1
+           },
+           "duration": {
+            "$int": 1
+           }
+          }
+         ],
+         "text": "prowess",
+         "trigger": {
+          "$": "TriggerCondition",
+          "event_kinds": {
+           "$set": [
+            20
+           ]
+          },
+          "subject": {
+           "$": "ObjectFilter",
+           "types_none": 4,
+           "zones": {
+            "$set": [
+             4
+            ]
+           }
+          },
+          "players": {
+           "$": "PlayerFilter"
+          },
+          "text": "whenever you cast a noncreature spell"
+         },
+         "keyword": "prowess"
+        }
+       ],
+       "text": "gains prowess"
+      }
+     ],
+     "text": "Equipped creature has prowess."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 211,
+       "targets": {
+        "$": "ObjectFilter",
+        "has_attached": {
+         "$": "ObjectFilter",
+         "source_only": true
+        }
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "that ability triggers an additional time"
+      }
+     ],
+     "text": "If a triggered ability of equipped creature triggers, that ability triggers an additional time."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1,
+        "any_of": [
+         {
+          "$": "ObjectFilter",
+          "subtypes_all": [
+           "Wizard"
+          ],
+          "zones": {
+           "$set": []
+          }
+         }
+        ]
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip Wizard {1}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 75,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "is_targeted": true,
+       "text": "attach to target creature you control"
+      }
+     ],
+     "text": "Equip {3}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 3,
+           "text": "{3}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0,
+     "keyword": "Equip"
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -32,9 +32,9 @@ class FakeWorker implements WorkerLike {
     setTimeout(() => void this.handler.receive(copy), 0);
   }
 
-  addEventListener(type: "message" | "error", listener: (event: never) => void): void {
+  addEventListener(type: string, listener: (event: never) => void): void {
     if (type === "message") this.onMessage = listener as (event: MessageEvent<unknown>) => void;
-    else this.onError = listener as (event: ErrorEvent) => void;
+    else if (type === "error") this.onError = listener as (event: ErrorEvent) => void;
   }
 
   fail(message: string): void {
@@ -91,7 +91,8 @@ describe("worker message handling", () => {
   it("runs a slice, reporting progress, then the result", async () => {
     const out = await replies({ type: "run", id: 9, setup, start: 0, end: 12, engine: "stub" });
     const progress = out.filter((r) => r.type === "progress").map((r) => (r as { done: number }).done);
-    expect(progress).toEqual([5, 10, 12]);
+    // Every game, so the page knows which game a worker is on.
+    expect(progress).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     const last = out.at(-1);
     expect(last?.type).toBe("result");
     expect(last?.type === "result" && last.result).toEqual(await runGames(stubEngine, setup, 0, 12));

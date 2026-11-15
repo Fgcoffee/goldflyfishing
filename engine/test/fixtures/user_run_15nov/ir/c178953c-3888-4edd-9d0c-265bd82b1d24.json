@@ -1,0 +1,184 @@
+{
+ "ir_version": 2,
+ "oracle_id": "c178953c-3888-4edd-9d0c-265bd82b1d24",
+ "name": "Glasspool Mimic // Glasspool Shore",
+ "card_hash": "8154b0a545bcd7c72c31b9c2afdbc729",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "c178953c-3888-4edd-9d0c-265bd82b1d24",
+  "name": "Glasspool Mimic // Glasspool Shore",
+  "layout": 4,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Glasspool Mimic",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Shapeshifter",
+      "Rogue"
+     ]
+    },
+    "oracle_text": "You may have this creature enter as a copy of a creature you control, except it's a Shapeshifter Rogue in addition to its other types.",
+    "power": "0",
+    "toughness": "0",
+    "colors": 2,
+    "produced_mana": [
+     "U"
+    ]
+   },
+   {
+    "$": "FaceDef",
+    "name": "Glasspool Shore",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "This land enters tapped.\n{T}: Add {U}.",
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 1161,
+  "scryfall_uri": "https://scryfall.com/card/znr/60/glasspool-mimic-glasspool-shore?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "c178953c-3888-4edd-9d0c-265bd82b1d24",
+   "name": "Glasspool Mimic // Glasspool Shore",
+   "face": 0,
+   "face_name": "Glasspool Mimic",
+   "card_hash": "8154b0a545bcd7c72c31b9c2afdbc729",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 84,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 1,
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "text": "enters as a copy"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "You may have this creature enter as a copy of a creature you control, except it's a Shapeshifter Rogue in addition to its other types."
+    }
+   ],
+   "failures": []
+  },
+  {
+   "ir_version": 2,
+   "oracle_id": "c178953c-3888-4edd-9d0c-265bd82b1d24",
+   "name": "Glasspool Mimic // Glasspool Shore",
+   "face": 1,
+   "face_name": "Glasspool Shore",
+   "card_hash": "8154b0a545bcd7c72c31b9c2afdbc729",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "This land enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {U}"
+      }
+     ],
+     "text": "{T}: Add {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

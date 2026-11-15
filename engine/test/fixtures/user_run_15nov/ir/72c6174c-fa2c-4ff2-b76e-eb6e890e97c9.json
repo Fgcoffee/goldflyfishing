@@ -1,0 +1,105 @@
+{
+ "ir_version": 2,
+ "oracle_id": "72c6174c-fa2c-4ff2-b76e-eb6e890e97c9",
+ "name": "Fateful Discovery",
+ "card_hash": "e4e333f5d472577197136970beddba74",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "72c6174c-fa2c-4ff2-b76e-eb6e890e97c9",
+  "name": "Fateful Discovery",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Fateful Discovery",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "Whenever an artifact you control enters, draw a card.",
+    "colors": 2
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 11472,
+  "scryfall_uri": "https://scryfall.com/card/hob/40/fateful-discovery?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "72c6174c-fa2c-4ff2-b76e-eb6e890e97c9",
+   "name": "Fateful Discovery",
+   "face": 0,
+   "face_name": "Fateful Discovery",
+   "card_hash": "e4e333f5d472577197136970beddba74",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever an artifact you control enters, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 1,
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

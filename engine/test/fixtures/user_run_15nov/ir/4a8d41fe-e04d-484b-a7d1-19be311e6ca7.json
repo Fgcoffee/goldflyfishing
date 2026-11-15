@@ -1,0 +1,224 @@
+{
+ "ir_version": 2,
+ "oracle_id": "4a8d41fe-e04d-484b-a7d1-19be311e6ca7",
+ "name": "Sea Gate Restoration // Sea Gate, Reborn",
+ "card_hash": "4cf334b13cc71da41737db7e2c165d9a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "4a8d41fe-e04d-484b-a7d1-19be311e6ca7",
+  "name": "Sea Gate Restoration // Sea Gate, Reborn",
+  "layout": 4,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Sea Gate Restoration",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Draw cards equal to the number of cards in your hand plus one. You have no maximum hand size for the rest of the game.",
+    "colors": 2,
+    "produced_mana": [
+     "U"
+    ]
+   },
+   {
+    "$": "FaceDef",
+    "name": "Sea Gate, Reborn",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16
+    },
+    "oracle_text": "As this land enters, you may pay 3 life. If you don't, it enters tapped.\n{T}: Add {U}.",
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 7,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 660,
+  "scryfall_uri": "https://scryfall.com/card/znr/76/sea-gate-restoration-sea-gate-reborn?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "4a8d41fe-e04d-484b-a7d1-19be311e6ca7",
+   "name": "Sea Gate Restoration // Sea Gate, Reborn",
+   "face": 0,
+   "face_name": "Sea Gate Restoration",
+   "card_hash": "4cf334b13cc71da41737db7e2c165d9a",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Draw cards equal to the number of cards in your hand plus one. You have no maximum hand size for the rest of the game."
+      }
+     ],
+     "text": "Draw cards equal to the number of cards in your hand plus one. You have no maximum hand size for the rest of the game.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Draw cards equal to the number of cards in your hand plus one. You have no maximum hand size for the rest of the game.",
+     "reason": "not fully consumed",
+     "consumed": 20,
+     "remaining": [
+      "for",
+      "the",
+      "rest",
+      "of",
+      "the",
+      "game",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  },
+  {
+   "ir_version": 2,
+   "oracle_id": "4a8d41fe-e04d-484b-a7d1-19be311e6ca7",
+   "name": "Sea Gate Restoration // Sea Gate, Reborn",
+   "face": 1,
+   "face_name": "Sea Gate, Reborn",
+   "card_hash": "4cf334b13cc71da41737db7e2c165d9a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 4,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 52,
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "amount": {
+            "$": "Value",
+            "constant": 3
+           },
+           "text": "pay life"
+          }
+         ],
+         "text": "may"
+        },
+        {
+         "$": "Effect",
+         "kind": 201,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 70,
+           "targets": {
+            "$": "ObjectFilter",
+            "source_only": true
+           },
+           "duration": 0,
+           "text": "enters tapped"
+          }
+         ],
+         "text": "if you don't"
+        }
+       ],
+       "text": "as this enters"
+      }
+     ],
+     "text": "As this land enters, you may pay 3 life. If you don't, it enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{U}"
+       ],
+       "colors": 2,
+       "text": "add {U}"
+      }
+     ],
+     "text": "{T}: Add {U}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

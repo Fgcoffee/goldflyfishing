@@ -1,0 +1,183 @@
+{
+ "ir_version": 2,
+ "oracle_id": "9d2460c3-8eeb-4f35-b6f6-748c478664c7",
+ "name": "Enduring Curiosity",
+ "card_hash": "0b99325247c40e2fd7d3c680958fa4e6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "9d2460c3-8eeb-4f35-b6f6-748c478664c7",
+  "name": "Enduring Curiosity",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Enduring Curiosity",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 12,
+     "subtypes": [
+      "Cat",
+      "Glimmer"
+     ]
+    },
+    "oracle_text": "Flash\nWhenever a creature you control deals combat damage to a player, draw a card.\nWhen Enduring Curiosity dies, if it was a creature, return it to the battlefield under its owner's control. It's an enchantment. (It's not a creature.)",
+    "power": "4",
+    "toughness": "3",
+    "colors": 2,
+    "keywords": [
+     "Flash"
+    ]
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 812,
+  "scryfall_uri": "https://scryfall.com/card/dsk/51/enduring-curiosity?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "9d2460c3-8eeb-4f35-b6f6-748c478664c7",
+   "name": "Enduring Curiosity",
+   "face": 0,
+   "face_name": "Enduring Curiosity",
+   "card_hash": "0b99325247c40e2fd7d3c680958fa4e6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flash",
+     "keyword": "Flash"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever a creature you control deals combat damage to a player, draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "controller": 1,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "to_player": true,
+      "text": "whenever something deals combat damage to a player"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 18,
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "remembered": true,
+         "zones": {
+          "$set": []
+         }
+        },
+        "text": "it is ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 33,
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "zone": 2,
+         "text": "return"
+        },
+        {
+         "$": "Effect",
+         "kind": 146,
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "duration": 0,
+         "types": 8,
+         "text": "it's an ... now"
+        }
+       ],
+       "text": "if"
+      }
+     ],
+     "text": "When this dies, if it was a creature, return it to the battlefield under its owner's control. It's an enchantment.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        3
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "uses_last_known_information": true,
+      "text": "when this dies"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

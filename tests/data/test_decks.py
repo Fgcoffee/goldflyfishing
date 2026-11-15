@@ -336,3 +336,51 @@ def test_loader_reads_a_file(card_db, tmp_path):
 def test_loader_treats_plain_text_as_a_decklist(card_db):
     deck = load_deck("// Commander\n1 Kenrith, the Returned King\n1 Sol Ring\n", card_db)
     assert deck.commanders
+
+
+# ---------------------------------------------------------------------------
+# A "Tokens" label is not a pile of tokens (15 Nov: five real cards dropped)
+# ---------------------------------------------------------------------------
+
+
+def test_archidekt_tokens_label_is_part_of_the_deck(card_db):
+    kenrith = card_db.lookup("Kenrith, the Returned King")
+    sol_ring = card_db.lookup("Sol Ring")
+    signet = card_db.lookup("Arcane Signet")
+    payload = {
+        "name": "d",
+        "categories": [{"name": "Tokens", "includedInDeck": True}],
+        "cards": [
+            _archidekt_card(kenrith.name, kenrith.oracle_id, 1, ["Commander"]),
+            _archidekt_card(sol_ring.name, sol_ring.oracle_id, 1, ["Tokens"]),
+            _archidekt_card(signet.name, signet.oracle_id, 1, ["Ramp", "Tokens"]),
+        ],
+    }
+    deck = parse_archidekt_payload(payload, card_db)
+    assert sorted(e.card.name for e in deck.entries) == ["Arcane Signet", "Sol Ring"]
+
+
+def test_archidekt_tokens_category_marked_out_of_the_deck_stays_out(card_db):
+    kenrith = card_db.lookup("Kenrith, the Returned King")
+    sol_ring = card_db.lookup("Sol Ring")
+    payload = {
+        "name": "d",
+        "categories": [{"name": "Tokens", "includedInDeck": False}],
+        "cards": [
+            _archidekt_card(kenrith.name, kenrith.oracle_id, 1, ["Commander"]),
+            _archidekt_card(sol_ring.name, sol_ring.oracle_id, 1, ["Tokens"]),
+        ],
+    }
+    assert parse_archidekt_payload(payload, card_db).entries == ()
+
+
+def test_pasted_archidekt_export_reads_its_category_tags(card_db):
+    text = (
+        "1x Sol Ring (cmm) [Tokens]\n"
+        "1x Arcane Signet (frc) [Ramp,Copy Target]\n"
+        "1x Kenrith, the Returned King (eld) [Commander{top}]\n"
+        "1x Black Lotus (lea) [Maybeboard]\n"
+    )
+    deck = parse_decklist(text, card_db)
+    assert [c.name for c in deck.commanders] == ["Kenrith, the Returned King"]
+    assert sorted(e.card.name for e in deck.entries) == ["Arcane Signet", "Sol Ring"]

@@ -84,7 +84,21 @@ def normalize(
     )
 
     lines = [_strip_ability_word(line.strip()) for line in text.split("\n")]
+    lines = [_CHOOSE_THEN_REFER.sub(r"\g<chosen> ", line) for line in lines]
     return "\n".join(line for line in lines if line)
+
+
+#: "Choose any number of target creatures. Each of those creatures gains
+#: persist until end of turn." (Cauldron of Souls): choosing the targets is
+#: announcing them (CR 601.2c), and the next sentence is what happens to
+#: them - the same as "Any number of target creatures gain persist ...".
+#: Only when the second sentence's subject is plainly the chosen objects;
+#: "it"/"its" may mean something else and is left alone.
+_CHOOSE_THEN_REFER = re.compile(
+    r"\bChoose (?P<chosen>(?:up to \w+ |any number of |one |two |three )?(?:other )?"
+    r"target [^.]*?)\. (?:Each of those|Those|That) "
+    r"(?:creatures?|permanents?|artifacts?|lands?|enchantments?) (?=[a-z])"
+)
 
 
 def _strip_ability_word(line: str) -> str:
