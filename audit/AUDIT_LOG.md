@@ -615,6 +615,7 @@ Also checked: PR #28 (deck-optimisation session, not merged by me) leaves parser
 | F62 | WARN | rules | A MOVE_ZONE effect to the library goes to the graveyard instead. `_do_move_zone` reads `effect.zone or Zone.GRAVEYARD`, and the library is Zone 0, which is falsy. Ported as is, marked `// KNOWN: F62` in `resolve.ts`. | Reported by the rules session from the port (status file, 13 Nov). |
 | F63 | **BLOCK** (crash) | parser | An attack cost of one `{W/P}` per attacker (Norn's Annex-style) against a wide board crashes the game: "unreasonable number of hybrid symbols in a cost" (TS `payment.ts:111`; Python `cr106_mana.py:684`). Fixed now in TS, since crashes are in scope during the port; Python stays frozen. | Bench decks: 3 of 40 TS games in the browser, 1 of 20 Python games. |
 | F64 | **BLOCK** (crash) | rules | Every VOTE effect raises TypeError in Python: `_do_vote` calls `game.apnap_order(game.next_player(...))`, but `apnap_order` takes no argument. The TS port guards it with the evident intent (turn order from the next player). | Reported by the rules session from the port (status file, 14 Nov). |
+| F65 | **BLOCK** (hang) | rules + parser | A husk that ceased to exist points `supersededBy` at itself (a token after CR 704.5d whose death trigger is pending, sba.ts; a completed dungeon, dungeons.ts). Three `while (obj.supersededBy)` loops in resolve.ts then never end, and the game hangs in a tight loop with no events. Python has the same self-link and loops. Fixed by the auditor: `latestObject` in kernel/gameobject.ts stops at a self-link or a cycle. | The user's live browser runs: Vraska, Soul of Stone x2, Muddle, Kilo; seed 0; 1,000 games. About 16 games hang (16 on the site, the web session's count; 11 in my first 700). Stack sampled under the inspector: `objectsOf` in resolve.ts. |
 
 Also deferred: karoo lands are always sacrificed.
 
@@ -635,6 +636,7 @@ The image build first failed at the IR export: `bracket.py` read the repository'
 
 Rules fixes in the TypeScript engine (Python frozen). One line each: finding, commit, test.
 
+- F65 (hang on a self-superseded husk): auditor fix, `engine/test/fixtures/f65_latest_object.test.ts`. On the user's decks, the 11 games that hung (169, 190, 271, 284, 307, 360, 386, 424, 435, 497, 581) all finish in 1-4 s, and games 0-79 have identical digests before and after.
 - F62 (MOVE_ZONE to the library): 3ceafeb, `engine/test/rules/audit_findings.test.ts` "F62: MOVE_ZONE to the library".
 - F64 (VOTE crash, guarded in the port): KNOWN marker removed in 3ceafeb, `audit_findings.test.ts` "F64: VOTE" (turn order from the next player, winner's child happens).
 - Karoo lands always sacrificed: c4232df, `engine/test/rules/audit_triage_real.test.ts` "karoo lands". Cause: a return-to-hand cost couldn't be paid during a resolution, so Coral Atoll's "sacrifice it unless you return an untapped Island" always sacrificed it. Simic Growth Chamber-style karoos were already right.

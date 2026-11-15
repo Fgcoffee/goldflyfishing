@@ -58,7 +58,7 @@ import {
 } from "../../kernel/game";
 import { becomePrepared } from "../cr700_additional_rules/preparation";
 import { takeInitiative } from "../cr700_additional_rules/designations";
-import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, ObjectKind, objectText, type GameObject } from "../../kernel/gameobject";
+import { addCounters as putObjectCounters, counterCount, isLive, isPermanent, latestObject, ObjectKind, objectText, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { allocateTimestamp, isPlayerTarget, NO_OBJECT, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { charsManaValue, hasKeyword, hasSupertype, isCreature, isLand } from "../cr200_parts_of_a_card/characteristics";
@@ -330,9 +330,8 @@ export function objectsOf(resolution: Resolution, effect: Effect, chosen: readon
   if (spec != null && flag(spec.remembered)) {
     const found: GameObject[] = [];
     for (const id of resolution.remembered) {
-      let obj = game.objects.get(id);
       // CR 400.7: follow the object to what it became.
-      while (obj !== undefined && obj.supersededBy) obj = game.objects.get(obj.supersededBy);
+      const obj = latestObject(game.objects, id);
       if (obj !== undefined) found.push(obj);
     }
     return found;
@@ -809,8 +808,7 @@ registerExecutor(ir("EffectKind.MILL"), (resolution, effect) => {
     mill(game, pid, count, { source: resolution.source });
     // The milled cards, as the objects they became, are the pile "from among them".
     for (const id of top) {
-      let obj = game.objects.get(id);
-      while (obj !== undefined && obj.supersededBy) obj = game.objects.get(obj.supersededBy);
+      const obj = latestObject(game.objects, id);
       if (obj !== undefined && obj.zone === Zone.GRAVEYARD) milled.push(obj.id);
     }
   }
@@ -890,8 +888,7 @@ function currentIncarnations(resolution: Resolution): ObjectId[] {
   const game = resolution.game;
   const out: ObjectId[] = [];
   for (const id of resolution.remembered) {
-    let obj = game.objects.get(id);
-    while (obj !== undefined && obj.supersededBy) obj = game.objects.get(obj.supersededBy);
+    const obj = latestObject(game.objects, id);
     if (obj !== undefined) out.push(obj.id);
   }
   return out;
