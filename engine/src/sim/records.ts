@@ -16,7 +16,9 @@ export type WinReason =
   | "ALTERNATE"
   | "CONCEDE"
   | "STALL_OUT"
-  | "DRAW";
+  | "DRAW"
+  /** Stopped by the engine (a looping card, or a token swarm past the cap), so no winner. Not in Python. */
+  | "RUNAWAY";
 
 export interface Elimination {
   readonly player: number;

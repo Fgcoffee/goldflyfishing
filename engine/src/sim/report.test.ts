@@ -141,7 +141,7 @@ describe("removal, series, runaways and loop draws", () => {
     expect(report.series.map((s) => s.metric)).toEqual([...METRICS].sort());
   });
 
-  it("runaways are counted by what looped; a loop draw is not a stall-out", () => {
+  it("runaways are counted by what looped, apart from stall-outs; a loop draw is not a stall-out", () => {
     next = 0;
     const report = buildReport([
       game({ winner: null, runaway: "Card X's ability" }),
@@ -150,7 +150,8 @@ describe("removal, series, runaways and loop draws", () => {
     ]);
     expect(report.runaways).toEqual({ "Card X's ability": 1 });
     expect(report.loopDraws).toBe(1);
-    expect(report.stalls).toBe(2);
-    expect(report.winReasons).toEqual({ DRAW: 1, STALL_OUT: 2 });
+    expect(report.runawayGames).toBe(1);
+    expect(report.stalls).toBe(1);
+    expect(report.winReasons).toEqual({ DRAW: 1, RUNAWAY: 1, STALL_OUT: 1 });
   });
 });

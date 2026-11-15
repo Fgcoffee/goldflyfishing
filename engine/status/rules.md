@@ -440,6 +440,34 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Token swarms: the cap (1d6b8df) and the bench after it
+
+**200-game bench** (same decks, runSeed 20261114, maxRounds 25, Node,
+SimpleAgent, 90 s watchdog), engine at 1d6b8df:
+- **0 crashes** (F63 and game 63's hang are fixed on the parser's side).
+- Endings: 129 LIFE, 47 COMMANDER_DAMAGE, 5 DECKING, 5 STALL_OUT (the
+  100-turn cap), **14 TOKEN SWARM runaways (7%)**, all Krenko, Mob Boss:
+  games 9, 27, 33, 40, 47, 70, 77, 102, 107, 117, 155, 173, 184, 187. No
+  game hit the watchdog.
+- Finished games: median 1.15 s, p90 3.0 s, slowest 11.6 s. The widest
+  finished game peaked at 422 permanents (p99 388, median 55), so the cap
+  of 500 stops only the swarms.
+- Game 9 (seed 1673232466) still takes 79 s to reach the cap: Ogre
+  Battledriver's continuous effects make each step costly on a wide board.
+  Games 70 (19 s) and 107 (14 s) are the next slowest.
+- **Runaways are their own line** (this commit): the record's win reason
+  is `RUNAWAY` (new; Python had none), and `buildReport` counts them in
+  `runawayGames` and `winReasons.RUNAWAY`, never in `stalls` (Python
+  counted them as stalls). `report.runaways` still names what was stopped.
+  - **For the web session:** `webapp/src/results.ts` passes `stalls`
+    and `win_reasons` through; `runawayGames` isn't in the payload yet, and
+    main.ts's note only mentions stalls. Worth a line such as "N games
+    stopped as runaways (Krenko, Mob Boss)".
+- Next (the auditor's (c), after the open findings): make a step cheaper
+  on wide boards, then raise the cap. Leads: the parser's profile (per-token
+  trigger collection recomputes the board; the bot's lookahead clones the
+  big board).
+
 ## Rules findings in TS: triage and fixes (ROADMAP "Now, in parallel")
 
 Tests: `engine/test/rules/audit_triage_real.test.ts` (real cards; 44
