@@ -112,10 +112,10 @@ parallel" below.**
 
 ## Urgent, from the user's live test (15 Nov): get these live
 
-- [ ] *(parser)* **History shows browser runs properly:** the deck's name (not "Played in your browser") and its win rate, like a server run.
-- [ ] *(parser)* **Card art in Replay for browser runs.** Today `board_cards[].art` is empty (`engine/src/sim/payload.ts`). The server adds image URLs per card name, tokens included, to the browser-run response, by the same lookup as `Bridge._board_cards`.
+- [x] *(parser)* **History shows browser runs properly:** the deck's name (not "Played in your browser") and its win rate, like a server run. (cf771e8: named as a server run is, by saved deck version, Archidekt name or commander; runs stored before get both when listed)
+- [x] *(parser)* **Card art in Replay for browser runs.** (ef2db75: bridge `card_pictures`; the Replay card window also shows the printed text and the per-ability reading, for every run) Today `board_cards[].art` is empty (`engine/src/sim/payload.ts`). The server adds image URLs per card name, tokens included, to the browser-run response, by the same lookup as `Bridge._board_cards`.
 - [x] *(web, new cloud session; 9217363, 137c3c7)* **Restore Cut lab and Recs** from PR #28 (`worktree-cut-lab-recs`), merged into the current code on the server engine as before. A browser-engine version can follow.
-- [ ] *(parser, after the two above)* **Reports,** as in the Reports section below, **plus a generic "Report a problem" button** on every page: free text, the page, the current run or deck if any, and an optional screenshot-free description. Stored with the others and shown on the admin review page.
+- [x] *(parser, after the two above)* **Reports,** as in the Reports section below, **plus a generic "Report a problem" button** (ad96101, 2f60213; what's left is listed under Reports) on every page: free text, the page, the current run or deck if any, and an optional screenshot-free description. Stored with the others and shown on the admin review page.
 
 ## Now, in parallel (from 15 Nov)
 
@@ -173,7 +173,7 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
 
 Owner: web (screens, storage, review page). The parser acts on card reports, rules on interaction reports, and the auditor checks the fixes.
 
-- [ ] **Report a card,** wherever a card is shown (decklists, Results, card impact, Replay, Sandbox).
+- [x] **Report a card,** wherever a card is shown (decklists, Results, card impact, Replay, Sandbox). (ad96101, 2f60213: the Deck drawer, Replay's card window and the Sandbox card panel. **Not yet:** Results' card-impact chart, which has no card window.)
   - Clicking a card opens its reading (the card drawer that exists today). Add "Report this reading": what's wrong (a missing, wrong or extra ability, or other), and what it should do, in the user's words.
   - Stored with:
     - the oracle id and name;
@@ -182,7 +182,7 @@ Owner: web (screens, storage, review page). The parser acts on card reports, rul
     - their text;
     - the page it came from;
     - the account, if signed in.
-- [ ] **Report a step in a game (Replay).** Replay shows the game step by step, as log and board, and any step can be reported: "this went wrong here", and what should have happened.
+- [x] **Report a step in a game (Replay).** (ad96101: the highlighted log line, else the board's position) Replay shows the game step by step, as log and board, and any step can be reported: "this went wrong here", and what should have happened.
   - Stored with:
     - the run id, game index and seed;
     - the engine and IR builds;
@@ -190,12 +190,12 @@ Owner: web (screens, storage, review page). The parser acts on card reports, rul
     - the step's index in the game log.
   - So we can replay the game to exactly that point.
 - [ ] **Report a step in Sandbox:** the same, stored with the sandbox's setup, its seed and every action taken, so the position is rebuilt exactly.
-- [ ] **Review page for us,** for admin accounts only (named in a server setting).
+- [ ] **Review page for us,** for admin accounts only (named in a server setting). (ad96101, 2f60213: the Reports tab, `MTGFISH_ADMIN_EMAILS` / `MTGFISH_ADMIN_DISCORD_IDS`; filter by status and kind; status and note; reporters see the status in their account window. **Not yet:** opening the replay at the reported step, and filtering by card.)
   - Every report, newest first, filtered by card, kind and status: new, confirmed, fixed, not a bug, duplicate.
   - Opens the replay or sandbox at the reported step, and the card's reading.
   - A confirmed report gets an F number in `audit/AUDIT_LOG.md` or a test. When it's fixed, the engine or IR build that fixed it is recorded.
   - Reporters see their reports' status on their account page.
-- [ ] **Reports and privacy:**
+- [x] **Reports and privacy:** (ad96101: 5 a minute and 60 a day per address; anonymous ones purged after 12 months; export, deletion and the Privacy Policy updated)
   - Reports are rate-limited and need no account; anonymous reports carry no link to a person.
   - Signed-in reports are in the account export and deleted with the account.
   - The privacy page says so.

@@ -24,7 +24,15 @@ type WithoutId<T> = T extends unknown ? Omit<T, "id"> : never;
 
 /** What GET /api/browser-runs/{id} answers. */
 export interface StoredRun {
-  readonly run: { readonly id: string; readonly hero: number; readonly game_start: number; readonly game_end: number };
+  readonly run: {
+    readonly id: string;
+    readonly hero: number;
+    readonly game_start: number;
+    readonly game_end: number;
+    /** What a report from this run names (the server's run row has both). */
+    readonly engine_build?: string;
+    readonly ir_build?: string;
+  };
   readonly records: readonly GameRecord[];
   readonly crashed: readonly CrashedGame[];
   readonly setup: RunSetup | null;

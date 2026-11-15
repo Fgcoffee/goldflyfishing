@@ -38,6 +38,17 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
   - Rules session: it matches `kernel/card.ts` field for field, plus three fields you don't have: `edhrec_rank`, `scryfall_uri` and `attraction_lights` (CR 717.1, Attractions). Add them to `CardDef` or ignore them.
   - Until IR v2 lands, its enums (layout, colors, types) are v1 strings like the rest; read them with `enumValue`.
 
+## The user's urgent list (15 Nov): History, Replay art, reports
+
+Asked for by the user through the auditor (ROADMAP 6cb515a), ahead of card readings. Each was checked in headless Chromium against a local server with `?engine=browser`, as well as by tests.
+
+- **History** (cf771e8). A browser run is named as a server run is: the saved deck and version holding the hero's list, else the Archidekt deck's own name (`resolve_decklists` now returns `names`), else the commander. Its win rate is the hero's wins over recorded games, as the report computes it. Both are stored at upload (migration 0005); runs stored earlier get them the first time they're listed.
+- **Replay art and the card window** (ef2db75). A new bridge call, `card_pictures`, gives each card's art, image and printed text by name (tokens included), the lookup `_board_cards` uses. Browser replays fill their board from it. The Replay card window, for every run, now shows the printed text and the per-ability reading (`sandbox_inspect`, as the Deck drawer does).
+- **Reports** (ad96101, 2f60213). "Report a problem" in the top bar on every page; "Report this reading" in Replay's card window, the Deck drawer and the Sandbox card panel; "Report this step" in Replay. A Reports tab for admins (`MTGFISH_ADMIN_EMAILS` with a verified email, or `MTGFISH_ADMIN_DISCORD_IDS`): filter by status and kind, set the status and a note. Reporters see the status in their account window. Anonymous allowed; rate limited; export, deletion, 12-month purge of anonymous ones, and the Privacy Policy. Migration 0006.
+  - **Deploy:** set `MTGFISH_ADMIN_EMAILS` on the server, or nobody sees the Reports tab.
+  - **Not yet:** opening the replay at a reported step from the review page (an admin can't open someone else's browser run today), filtering by card, a report button on Results' card-impact chart, and Sandbox step reports (they wait for the sandbox on TS).
+  - The Privacy Policy changed (reports are new data). I didn't bump `TERMS_VERSION`, which would ask everyone to accept again: the user's call.
+
 ## IR v2 (numeric enums): landed
 
 - Re-landed (this push) after the rules session's `799bcf0`. Enums are numbers, the same numbers as Python and `kernel/enums.ts`, printed card included. Field names are snake_case, a plain int in an enum-typed field is `{"$int": n}`, and `$str` is gone.

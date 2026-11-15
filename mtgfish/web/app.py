@@ -246,6 +246,10 @@ def create_app(settings: Settings | None = None, *, accounts=None) -> FastAPI:
 
     # Runs played in the browser, sent back and stored.
     app.include_router(browser_runs_router(state.accounts))
+    from .reports import build_router as reports_router
+
+    # Reports: a card read wrongly, a game step, or anything else.
+    app.include_router(reports_router(state.accounts))
     from .ir import build_router as ir_router
 
     # Card IR for the browser engine (the TypeScript port). Before the static

@@ -256,6 +256,60 @@ class BrowserRun(Base):
     #: A mismatched run is kept out of any shared statistics.
     spot_check: Mapped[str] = mapped_column(String(16), default="pending")
     spot_check_detail: Mapped[str | None] = mapped_column(Text, nullable=True)
+    #: What History calls the deck: the saved deck and version, the
+    #: Archidekt deck's name, or the commander. Null for runs stored before
+    #: it was kept; the listing fills it in.
+    label: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    #: The hero's wins over recorded games (crashed games left out), as the
+    #: report computes it. Null until filled, like ``label``.
+    win_rate: Mapped[float | None] = mapped_column(Float, nullable=True)
 
 
 Index("ix_browser_runs_created", BrowserRun.created_at)
+
+
+class Report(Base):
+    """Someone telling us something is wrong: a card's reading ("card"), a
+    step of a game ("step"), or anything else on the site ("problem").
+    Stored with what is needed to act on it; see ``mtgfish.web.reports``."""
+
+    __tablename__ = "reports"
+    #: The review list reads by status, newest first.
+    __table_args__ = (Index("ix_reports_status", "status", "created_at"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    #: Null for a report sent without signing in: linked to nobody.
+    user_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=now)
+    #: When an admin last changed its status or note.
+    updated_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    kind: Mapped[str] = mapped_column(String(16))
+    #: For a card: "missing", "wrong", "extra" or "other".
+    problem: Mapped[str] = mapped_column(String(20), default="")
+    #: The person's own words.
+    text: Mapped[str] = mapped_column(Text)
+    #: The page (tab) it was sent from.
+    page: Mapped[str] = mapped_column(String(200), default="")
+    oracle_id: Mapped[str] = mapped_column(String(64), default="")
+    card_name: Mapped[str] = mapped_column(String(200), default="")
+    card_hash: Mapped[str] = mapped_column(String(64), default="")
+    ir_build: Mapped[str] = mapped_column(String(80), default="")
+    engine_build: Mapped[str] = mapped_column(String(80), default="")
+    #: The reading the person saw, as shown to them.
+    reading: Mapped[str] = mapped_column(Text, default="")
+    #: "browser" or "server", with the run's id; empty when there is no run.
+    run_kind: Mapped[str] = mapped_column(String(20), default="")
+    run_id: Mapped[str] = mapped_column(String(64), default="")
+    game_index: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    seed: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    #: The step's index in the game log.
+    log_index: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    #: Anything else the page knew (the decks, the run's settings), as JSON text.
+    context: Mapped[str] = mapped_column(Text, default="")
+    #: "new", "confirmed", "fixed", "not_a_bug" or "duplicate".
+    status: Mapped[str] = mapped_column(String(16), default="new")
+    #: An admin's note.
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+

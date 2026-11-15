@@ -344,10 +344,13 @@ def purge_expired(db: Session) -> dict:
         db.delete(user)
     from ..browser_runs import purge_anonymous
 
+    from ..reports import purge_anonymous as purge_anonymous_reports
+
     anonymous_runs = purge_anonymous(db, moment)
+    anonymous_reports = purge_anonymous_reports(db, moment)
     db.commit()
     return {"sessions": sessions or 0, "tokens": tokens or 0, "unverified_users": len(stale),
-            "anonymous_runs": anonymous_runs}
+            "anonymous_runs": anonymous_runs, "anonymous_reports": anonymous_reports}
 
 
 def export_data(db: Session, user: User) -> dict:
@@ -403,4 +406,7 @@ def export_data(db: Session, user: User) -> dict:
     from ..browser_runs import export_runs
 
     out["browser_runs"] = export_runs(db, user.id)
+    from ..reports import export_reports
+
+    out["reports"] = export_reports(db, user.id)
     return out

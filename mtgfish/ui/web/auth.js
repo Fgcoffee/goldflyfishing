@@ -9,6 +9,8 @@
 
 const Auth = {
   user: null,
+  /* May review reports (the server checks again on every call). */
+  admin: false,
   csrf: "",
   available: false,
   mode: "login",
@@ -46,6 +48,7 @@ async function authRefresh() {
   const data = await response.json().catch(() => ({}));
   Auth.csrf = data.csrf || Auth.csrf;
   Auth.user = data.user || null;
+  Auth.admin = Boolean(data.admin);
   Auth.emailEnabled = !data.email || data.email.enabled !== false;
   authShowUser();
   document.dispatchEvent(new CustomEvent("authchange", { detail: Auth.user }));
@@ -184,6 +187,7 @@ function acctFill() {
 function acctOpen() {
   acctFill();
   document.getElementById("dlg-account").showModal();
+  if (typeof Reports !== "undefined") Reports.drawMine(document.getElementById("acct-reports"));
 }
 
 /* --------------------------------------------------------- landing hashes */

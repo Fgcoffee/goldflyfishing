@@ -144,14 +144,12 @@ async function libLoadRuns() {
     libGet("/api/browser-runs"),
   ]);
   if (!reply.ok) { libSay("lib-runmsg", reply.data.error, true); return; }
-  // Runs played in the browser are listed with the server's, newest first.
-  // Their report is built from the stored games when opened, so the table
-  // shows no win rate for them until then.
+  // Runs played in the browser are listed with the server's, newest first,
+  // named and scored by the server as its own runs are.
   const played = browser.ok ? (browser.data.runs || []).map((run) => ({
     ...run,
     browser: true,
-    label: run.complete ? "Played in your browser" : "Played in your browser (stopped early)",
-    win_rate: null,
+    label: (run.label || "Unsaved deck") + (run.complete ? "" : " (stopped early)"),
   })) : [];
   Library.runs = [...reply.data.runs, ...played]
     .sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0));
@@ -214,6 +212,7 @@ async function libOpenRun(run) {
   if (!result.ok) { libSay("lib-runmsg", result.data.error, true); return; }
   BrowserRuns.close();
   report = result.data.report;
+  Library.openRunId = run.id; // what a report from this run names
   setStatus(`showing a past run: ${run.label}`);
   showTab("results");
 }

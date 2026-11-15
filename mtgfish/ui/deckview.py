@@ -130,6 +130,7 @@ def card_row(card: CardDef, raw: dict | None, quantity: int, verdicts=None) -> d
     front = card.front
     return {
         "name": card.name,
+        "oracle_id": card.oracle_id,
         "quantity": quantity,
         "mana_cost": " // ".join(str(f.mana_cost) for f in card.castable_faces if f.has_mana_cost)
         or str(front.mana_cost),

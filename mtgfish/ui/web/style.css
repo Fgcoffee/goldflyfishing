@@ -648,6 +648,12 @@ pre:empty { display: none; }
 .boardzoom .reading { font-size: 11px; padding: 6px; border-radius: 6px; }
 .boardzoom .reading.ok { background: var(--good-soft); color: var(--good); }
 .boardzoom .reading.fail { background: var(--bad-soft); color: var(--bad); }
+/* Printed text and the per-ability reading can run long: the panel scrolls. */
+.boardzoom .zoominfo { max-height: 70vh; overflow-y: auto; }
+.boardzoom .oracle { font-size: 12px; padding: 6px 8px; }
+.boardzoom h4 { margin: 4px 0 0; font-size: 12px; }
+.boardzoom .zoomreading .reading { border-left-width: 3px; margin: 4px 0; }
+.boardzoom .zoomreading .reading .read .text { color: inherit; }
 
 /* Where the board is, in the log. */
 .replay-log .line.at { background: var(--accent-soft); box-shadow: inset 2px 0 var(--accent); }
@@ -1024,3 +1030,19 @@ details.panel summary { cursor: pointer; font-weight: 600; }
   .cl-adv { grid-template-columns: 1fr; }
   .budget-row { grid-template-columns: 1fr; gap: 4px; }
 }
+
+
+/* Reports: the review list (admins) */
+.rep-item { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 10px 0;
+  background: var(--panel); display: flex; flex-direction: column; gap: 6px; }
+.rep-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.rep-text { white-space: pre-wrap; }
+.rep-details { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
+.rep-field .label { color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; margin-right: 6px; }
+.rep-pre { white-space: pre-wrap; font-size: 12px; max-height: 240px; overflow: auto; }
+.rep-item input[type=text] { flex: 1; min-width: 160px; }
+#dlg-report textarea { min-height: 110px; font-family: inherit; }
+#dlg-report select { width: 100%; }
+.rep-mine { margin: 4px 0 0; padding-left: 18px; font-size: 12px; color: var(--dim); max-height: 140px; overflow: auto; }
+#rep-kind { width: auto; }
+
