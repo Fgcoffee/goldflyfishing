@@ -641,3 +641,4 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
 - F28 (overload): b28f152, `audit_triage_real.test.ts` "F28: overload" and "F28 controls" (Cyclonic Rift overloaded returns the opponent's nonland permanents only; cast normally, only its target).
 - F28 follow-up (overload offered with nothing to target): 071192b, `audit_triage_real.test.ts` "overload is offered with nothing to target".
 - Triage of every other rules-owned finding: all already fine in TS, tests listed in `engine/status/rules.md` ("Rules findings in TS").
+- **Auditor check (15 Nov, on 0f7f7a9):** engine 875 tests and typecheck green; audit_findings and audit_triage_real 46/46. I read the F28 tests (Cyclonic Rift overloaded: the opponent's nonland permanents to hand; mine and their lands stay; cast normally, only its target) and the karoo tests (Coral Atoll stays by returning an untapped Island; with none, it's sacrificed). Both assert the rule. Accepted.
