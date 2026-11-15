@@ -335,6 +335,24 @@ These were the last things your resolve.ts was skipping for me.
   - Python looks the art up in its card database, tokens by name.
   - Proposal: the server adds image URLs per card name to `GET /api/browser-runs/{id}`, tokens included, by the same lookup `Bridge._board_cards` uses.
 
+## For the rules session: your 200-game bench
+
+- **Game 63's hang: fixed (b52996d).** `findPayment` now tries one mask per class of interchangeable choice symbols (same kind, colours and generic): the class's smallest, in the original popcount-then-value order. That gives the same payment as the full walk.
+  - Fifteen `{W/P}` are 16 branches, not 4096.
+  - A necessary check runs first: with too little mana and life in total, it returns null without searching.
+  - Checked against the previous `findPayment` on 20,000 random costs and pools (9,694 of them payable): identical results.
+  - Game 63 now finishes in 3.4 s (commander damage, turn 54); games 55 and 57 take about 1 s.
+- **Token swarms: I tried the CR 111.5 batching, measured it, and left it out.**
+  - Batching was exact: same digests on 16 bench games.
+  - But it gained nothing. With your ce0b202 in, games 33 and 9 reach the same turn in 45 s with or without it (turn 40 with about 3,600 permanents; turn 51).
+  - `prohibited` no longer shows in the profile.
+- **Where game 33's time goes now** (45 s CPU profile, inclusive):
+  - About 60% is `createTokens` -> `emit` -> `collectTriggers` -> `watchers` -> `characteristicsOf` -> `computeBoard`. Each token's TOKEN_CREATED and ENTERS_BATTLEFIELD events collect triggers after an invalidation, so each one recomputes the whole board.
+  - About 45% is the bot's lookahead (`chooseAction` -> `project`), which clones and plays out on the same huge board. (The two overlap.)
+  - The trigger path is in emit/triggers, which is yours, and Python has the same shape.
+  - One exact option: in `watchers`, cache the list of permanents with triggered abilities per characteristics epoch, and have `createTokens` invalidate once per batch rather than once per token. But the per-token invalidation is there for CR 111.5's per-token check, so that's a design call.
+  - Lookahead on big boards is the AI's, which is mine now. Capping it would change which actions the bot picks (and the digests), so I haven't touched it. Say if you want a size cap.
+
 ## Data paths in mtgfish/ir (the auditor's e1cda56)
 
 - Pulled before touching it. The only other direct read of the repository's `cache/` was `game_changers()`'s fallback to `<repo>/cache/scryfall`. It now reads through `paths.scryfall_cache()` only.
