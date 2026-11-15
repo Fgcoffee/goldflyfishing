@@ -26,9 +26,9 @@ The paths each owns are in [`engine/README.md`](engine/README.md).
 
 ## Phase 1: the TypeScript port (current)
 
-Python is frozen. Magic rules bugs are ported as they are, marked
-`// KNOWN: Fxx`, and fixed after the port. Only crashes, broken builds or tests,
-and games that don't replay from their seed are fixed now.
+Python is frozen. Magic rules bugs were ported as they are, marked
+`// KNOWN: Fxx`. **From 15 Nov they are fixed in the TS engine; see "Now, in
+parallel" below.**
 
 ### rules
 - [x] Kernel foundations: enums, ids, seeded PRNG with `seedFor`, log digest (d7a1822)
@@ -110,9 +110,77 @@ and games that don't replay from their seed are fixed now.
 
 ---
 
+## Now, in parallel (from 15 Nov)
+
+The engine is ported (milestones 1-4), so rules fixes start now in the TypeScript engine, alongside the web work.
+- Python stays frozen. It is retired at the switch-over, so fixes go into TS only.
+- Each fix comes with a Vitest test that reproduces the finding. When it's fixed, its `// KNOWN: Fxx` comment comes out.
+- Tick an item with the commit, and record the fix in `audit/AUDIT_LOG.md` (the auditor checks it).
+
+### rules
+- [ ] **Triage** every rules-owned finding in `audit/AUDIT_LOG.md` on the TS engine: a test that shows whether it still happens. List them, open or already fixed, in `engine/status/rules.md`.
+- [ ] **Fix the open rules findings,** BLOCK first. For example:
+  - F28 overload;
+  - F54;
+  - F56;
+  - F60;
+  - F62 (MOVE_ZONE to the library);
+  - F64 (VOTE, guarded);
+  - karoo lands always sacrificed.
+- [ ] **Token swarms:** 12 of 200 bench games hit the 90 s watchdog, with 800-5,800 permanents (Krenko, Mob Boss). Make each step cheaper, or end the game as a runaway the way Python's observer does, so no browser game runs for minutes.
+- [ ] **Interaction reports from users** (see Reports): replay to the reported step, then fix or log.
+
+### parser
+- [ ] **Triage** the parser-owned findings the same way. For example:
+  - F37 Toxic Deluge;
+  - F49 spot-check cards;
+  - F58;
+  - F59 Soul-Guide Lantern.
+- [ ] **Fix the open card-reading findings,** BLOCK first. Re-export the IR and refresh the samples.
+- [ ] **Cards that don't read yet:** "Choose any number of target creatures" (Cauldron of Souls), then the most-played unread abilities by deck usage.
+- [ ] **Card reports from users** (see Reports): fix the reading, or answer the report.
+
+### web
+- [ ] The switch-over (Phase 1, above): behind a flag first. The auditor and the user give the go for the live site.
+- [ ] **Sandbox on the TS engine,** in the browser, so a sandbox game replays from its setup and can be reported.
+- [ ] Reports, below.
+
+## Reports: users tell us where a card or an interaction is wrong
+
+Owner: web (screens, storage, review page). The parser acts on card reports, rules on interaction reports, and the auditor checks the fixes.
+
+- [ ] **Report a card,** wherever a card is shown (decklists, Results, card impact, Replay, Sandbox).
+  - Clicking a card opens its reading (the card drawer that exists today). Add "Report this reading": what's wrong (a missing, wrong or extra ability, or other), and what it should do, in the user's words.
+  - Stored with:
+    - the oracle id and name;
+    - the IR card hash and IR build;
+    - the reading the user saw;
+    - their text;
+    - the page it came from;
+    - the account, if signed in.
+- [ ] **Report a step in a game (Replay).** Replay shows the game step by step, as log and board, and any step can be reported: "this went wrong here", and what should have happened.
+  - Stored with:
+    - the run id, game index and seed;
+    - the engine and IR builds;
+    - the decks;
+    - the step's index in the game log.
+  - So we can replay the game to exactly that point.
+- [ ] **Report a step in Sandbox:** the same, stored with the sandbox's setup, its seed and every action taken, so the position is rebuilt exactly.
+- [ ] **Review page for us,** for admin accounts only (named in a server setting).
+  - Every report, newest first, filtered by card, kind and status: new, confirmed, fixed, not a bug, duplicate.
+  - Opens the replay or sandbox at the reported step, and the card's reading.
+  - A confirmed report gets an F number in `audit/AUDIT_LOG.md` or a test. When it's fixed, the engine or IR build that fixed it is recorded.
+  - Reporters see their reports' status on their account page.
+- [ ] **Reports and privacy:**
+  - Reports are rate-limited and need no account; anonymous reports carry no link to a person.
+  - Signed-in reports are in the account export and deleted with the account.
+  - The privacy page says so.
+
+---
+
 ## Phase 2: after the TypeScript conversion
 
-Not started until Phase 1 is finished.
+Started once the switch-over is done, apart from the reports above.
 
 ### web
 - [ ] **Restore the Cut lab and Recs tabs** on the TS engine. They were taken off the live Render page for now.
@@ -134,11 +202,3 @@ Not started until Phase 1 is finished.
   Show the bracket with the reasons that drove it. Card classification: parser. Screen: web.
   - [x] Card classification: each card document's `bracket` tags and `mtgfish.ir.bracket.estimate` (a073ae9). Combos wait on a combo list.
 - [ ] **Actual bracket** from simulations, once a deck has been played enough for a reliable win turn. It comes from win turn and win rate against reference decks, with a confidence level and the number of games it's based on. Shown next to the estimate, flagged when they disagree. Stats: web. Reference decks and sanity checks: auditor.
-
-### rules and parser (deferred rules fixes)
-- [ ] Fix the Magic rules findings deferred during the port, once games can be watched. All are logged in `audit/AUDIT_LOG.md`, e.g.:
-  - F28 overload;
-  - F37 Toxic Deluge;
-  - F49 spot-check cards;
-  - karoo lands always sacrificed;
-  - the F61 reproduction.
