@@ -2136,14 +2136,33 @@ def _trailing_pump(stream: Stream, targets, targeted):
         return None
     stream.next()
     left, _, right = token.text.partition("/")
+    power, toughness = _pt_value(left), _pt_value(right)
+    # "gains trample and gets +1/+0 for each card you've drawn this turn"
+    # (Fists of Flame): the count scales the pump it follows, not the whole
+    # grant - read here, or the trailing chain hangs it on the sequence,
+    # where nothing repeats it and the pump stays a flat +1.
+    from .nouns import parse_for_each
+
+    multiplier = parse_for_each(stream)
+    if multiplier is not None:
+        power, toughness = _times(power, multiplier), _times(toughness, multiplier)
     return Effect(
         EffectKind.MODIFY_PT,
         targets=targets,
-        amount=_pt_value(left),
-        amount2=_pt_value(right),
+        amount=power,
+        amount2=toughness,
         is_targeted=targeted,
         text=f"gets {token.text}",
     )
+
+
+def _times(amount: Value, multiplier: Value) -> Value:
+    """``amount`` "for each" ``multiplier``: 0 stays 0, 1 becomes the count."""
+    if amount.is_constant and amount.constant == 0:
+        return amount
+    if amount.is_constant and amount.constant == 1:
+        return multiplier
+    return Value(kind=ValueKind.PRODUCT, operands=(amount, multiplier))
 
 
 # ---------------------------------------------------------------------------

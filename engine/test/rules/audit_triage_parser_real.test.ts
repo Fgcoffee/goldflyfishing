@@ -132,6 +132,28 @@ describe("fixed: the reading matches the card", () => {
 
 });
 
+describe("fixed after the triage", () => {
+  it("F49 Fists of Flame: +1/+0 for each card drawn this turn, on the board", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    for (let i = 0; i < 5; i++) createObject(b.game, realCard("Forest"), 0, Zone.LIBRARY);
+    const bears = b.play("Grizzly Bears", 0);
+    draw(b.game, 0, 2);
+    const fists = b.hand("Fists of Flame");
+    addMana(player(b.game, 0).manaPool, manaKind(Color.RED), 2);
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === fists.id)!;
+    expect(perform(b.game, 0, cast)).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    // Two drawn before, one by Fists itself: +3/+0.
+    expect(characteristicsOf(b.game, bears).power).toBe(5);
+  });});
+
 describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2h)", () => {
   it("is read as the spell's additional cost, with X the spell's own", () => {
     const deluge = ability("Toxic Deluge", "pay X life");
@@ -169,27 +191,7 @@ describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2
 });
 
 describe("open: the reading doesn't match the card", () => {
-  it.fails("F49 Fists of Flame: +1/+0 for each card drawn this turn, on the board", () => {
-    // KNOWN: F49 - the count sits on a SEQUENCE around the pump, which nothing repeats: a flat +1.
-    const b = new RealBoard();
-    b.game.activePlayer = 0;
-    b.game.phase = Phase.PRECOMBAT_MAIN;
-    b.game.step = Step.MAIN;
-    for (let i = 0; i < 5; i++) createObject(b.game, realCard("Forest"), 0, Zone.LIBRARY);
-    const bears = b.play("Grizzly Bears", 0);
-    draw(b.game, 0, 2);
-    const fists = b.hand("Fists of Flame");
-    addMana(player(b.game, 0).manaPool, manaKind(Color.RED), 2);
-    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === fists.id)!;
-    expect(perform(b.game, 0, cast)).toBe(true);
-    settle(b.game);
-    while (b.game.stack.length > 0) {
-      resolveTop(b.game);
-      settle(b.game);
-    }
-    // Two drawn before, one by Fists itself: +3/+0.
-    expect(characteristicsOf(b.game, bears).power).toBe(5);
-  });
+
   it.fails("F49 Chandra, Spark Hunter's +2: 'If you do, draw a card' follows either choice, not a third mode", () => {
     // KNOWN: F49 - the reflexive draw is the third child of the CHOOSE_MODE.
     const plus = ability("Chandra, Spark Hunter", "+2");

@@ -78,16 +78,6 @@
         {
          "$": "Effect",
          "kind": 0,
-         "amount": {
-          "$": "Value",
-          "kind": 26,
-          "players": {
-           "$": "PlayerFilter"
-          },
-          "event_kinds": [
-           80
-          ]
-         },
          "duration": 1,
          "children": [
           {
@@ -118,7 +108,13 @@
            },
            "amount": {
             "$": "Value",
-            "constant": 1
+            "kind": 26,
+            "players": {
+             "$": "PlayerFilter"
+            },
+            "event_kinds": [
+             80
+            ]
            },
            "is_targeted": true,
            "same_target": true,
