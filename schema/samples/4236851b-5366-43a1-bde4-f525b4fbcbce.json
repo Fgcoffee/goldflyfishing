@@ -49,7 +49,7 @@
    "face": 0,
    "face_name": "Bloodchief's Thirst",
    "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
-   "fully_read": true,
+   "fully_read": false,
    "abilities": [
     {
      "$": "Ability",

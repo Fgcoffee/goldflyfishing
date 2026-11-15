@@ -132,6 +132,42 @@ describe("fixed: the reading matches the card", () => {
 
 });
 
+describe("F37 Toxic Deluge: 'pay X life' is an additional cost (CR 601.2b, 601.2h)", () => {
+  it("is read as the spell's additional cost, with X the spell's own", () => {
+    const deluge = ability("Toxic Deluge", "pay X life");
+    const pay = (deluge.additional_cost?.cost?.components ?? [])[0]!;
+    expect(pay.kind).toBe(CK.PAY_LIFE);
+    expect(pay.amount?.kind).toBe(VK.X);
+    expect(ofKind(deluge, EK.LOSE_LIFE!)).toEqual([]);
+  });
+
+  it.fails("cast with X = 3: 3 life is paid as it's cast, and creatures get -3/-3", () => {
+    // KNOWN: F37 engine half (rules) - componentAmount (cost_checks.ts) evaluates a
+    // spell's additional cost without the spell as its source, so X is 0; and legality
+    // offers no X for a spell whose only X is in an additional cost (CR 601.2b).
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    const giant = b.play("Grizzly Bears", 1);
+    const deluge = b.hand("Toxic Deluge");
+    addMana(player(b.game, 0).manaPool, manaKind(Color.BLACK), 1);
+    addMana(player(b.game, 0).manaPool, manaKind(Color.NONE), 2);
+    const life = player(b.game, 0).life;
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === deluge.id)!;
+    expect(cast).toBeDefined();
+    expect(perform(b.game, 0, { ...cast, xValue: 3 })).toBe(true);
+    // Paid while casting, before anything resolves.
+    expect(player(b.game, 0).life).toBe(life - 3);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    expect(giant.zone === Zone.BATTLEFIELD && !giant.supersededBy).toBe(false);
+  });
+});
+
 describe("open: the reading doesn't match the card", () => {
   it.fails("F49 Fists of Flame: +1/+0 for each card drawn this turn, on the board", () => {
     // KNOWN: F49 - the count sits on a SEQUENCE around the pump, which nothing repeats: a flat +1.
@@ -154,12 +190,6 @@ describe("open: the reading doesn't match the card", () => {
     // Two drawn before, one by Fists itself: +3/+0.
     expect(characteristicsOf(b.game, bears).power).toBe(5);
   });
-  it.fails("F37 Toxic Deluge: 'pay X life' is an additional cost, not an effect", () => {
-    // KNOWN: F37 - read as a PAY/LOSE life effect at resolution.
-    const deluge = ability("Toxic Deluge", "pay X life");
-    expect(deluge.kind).not.toBe(AK.SPELL);
-  });
-
   it.fails("F49 Chandra, Spark Hunter's +2: 'If you do, draw a card' follows either choice, not a third mode", () => {
     // KNOWN: F49 - the reflexive draw is the third child of the CHOOSE_MODE.
     const plus = ability("Chandra, Spark Hunter", "+2");

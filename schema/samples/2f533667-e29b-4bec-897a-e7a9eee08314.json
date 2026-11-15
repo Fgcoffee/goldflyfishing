@@ -68,7 +68,7 @@
    "face": 0,
    "face_name": "Hullbreacher",
    "card_hash": "53edca53ed858347b31856d0c174fd31",
-   "fully_read": true,
+   "fully_read": false,
    "abilities": [
     {
      "$": "Ability",

@@ -56,29 +56,32 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
-     "effects": [
-      {
-       "$": "Effect",
-       "kind": 0,
-       "children": [
+     "kind": 3,
+     "text": "As an additional cost to cast this spell, pay X life.",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
         {
-         "$": "Effect",
-         "kind": 52,
-         "players": {
-          "$": "PlayerFilter"
-         },
+         "$": "CostComponent",
+         "kind": 30,
          "amount": {
           "$": "Value",
           "kind": 1
          },
          "text": "pay life"
         }
-       ],
-       "text": "as an additional cost"
-      }
-     ],
-     "text": "As an additional cost to cast this spell, pay X life."
+       ]
+      },
+      "text": "as an additional cost"
+     }
     },
     {
      "$": "Ability",

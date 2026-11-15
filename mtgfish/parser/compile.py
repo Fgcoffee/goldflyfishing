@@ -1344,8 +1344,8 @@ def _additional_cost_line(text: str):
     A mandatory additional cost (CR 118.8), read with the cost grammar so it
     is charged exactly as an activated ability's cost is. ``None`` for
     anything else - an optional one ("you may sacrifice"), a choice between
-    two ("sacrifice a creature or pay 3 life"), one whose amount depends on
-    X - which the clause grammar goes on to read as before.
+    two ("sacrifice a creature or pay 3 life") - which the clause grammar
+    goes on to read as before. An amount of X is the spell's announced X.
     """
     from ..rules.cr100_game_concepts.cr118_costs import AdditionalCost, CostKind
     from .costs import parse_cost
@@ -1366,8 +1366,13 @@ def _additional_cost_line(text: str):
     if not stream.done or not words:
         return None
     cost, _reason = parse_cost(" ".join(words))
-    if cost is None or _mentions_x(cost.components):
+    if cost is None:
         return None
+    # "Pay X life", "discard X cards", "sacrifice X creatures": X is the
+    # spell's own, announced as it is cast (CR 601.2b, 107.3a) and then
+    # paid here (601.2h). Read as the cost it is; offering the X is the
+    # engine's job. (It used to stay with the clause grammar, which read it
+    # as an effect on resolution - F37, Toxic Deluge.)
     if any(
         component.kind in (CostKind.MANA, CostKind.TAP_SELF, CostKind.UNTAP_SELF)
         or getattr(component.filter, "source_only", False)
