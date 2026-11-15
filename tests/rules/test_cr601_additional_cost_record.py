@@ -151,10 +151,15 @@ def test_eldritch_evolution_bounds_the_search_by_the_sacrificed_mana_value(card_
     assert ValueKind.COST_PAID.name in text and "of_affected=True" not in text
 
 
-def test_an_x_additional_cost_is_left_to_the_resolution(card_db):
-    """Toxic Deluge's "pay X life" names the spell's X, which a cost's
-    amount is not evaluated with; it is not lifted onto the cast."""
+def test_an_x_additional_cost_is_read_as_the_cost(card_db):
+    """Toxic Deluge's "pay X life" is an additional cost whose amount is the
+    spell's announced X (CR 601.2b, 601.2h; F37). The reading is the TS
+    engine's to play; this frozen engine evaluates a cost's X as 0, as it
+    did the old effect reading, so its play doesn't change."""
     from mtgfish.parser import parse_card
+    from mtgfish.rules.kernel.query import ValueKind
 
     parsed = parse_card(card_db.lookup("Toxic Deluge"))
-    assert all(a.additional_cost is None for a in parsed.faces[0].abilities)
+    costs = [a.additional_cost for a in parsed.faces[0].abilities if a.additional_cost is not None]
+    assert len(costs) == 1
+    assert costs[0].cost.components[0].amount.kind is ValueKind.X
