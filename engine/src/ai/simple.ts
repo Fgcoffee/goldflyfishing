@@ -44,6 +44,16 @@ export class SimpleAgent implements Agent, CombatAgent {
   private failedWindow = "";
   /** `${turn}|${card name}` -> times chosen for casting this turn. */
   private casts = new Map<string, number>();
+  /**
+   * The last attack on each opponent: their life then, and how many of our
+   * attackers outnumbered their untapped creatures (so some had to connect).
+   */
+  private lastAttack = new Map<PlayerId, { life: number; surplus: number }>();
+  /** Opponent -> the turn until which attacking them looks futile (their damage is prevented). */
+  private futile = new Map<PlayerId, number>();
+
+  /** Turns a futile target is passed over before it's tried again. */
+  static readonly FUTILE_TURNS = 12;
 
   /** How many times in one turn the bot casts the same card (a recursion loop cast one card 214 times). */
   static readonly MAX_CASTS_PER_TURN = 8;
@@ -67,6 +77,8 @@ export class SimpleAgent implements Agent, CombatAgent {
     copy.failed = new Set(this.failed);
     copy.failedWindow = this.failedWindow;
     copy.casts = new Map(this.casts);
+    copy.lastAttack = new Map(this.lastAttack);
+    copy.futile = new Map(this.futile);
     return copy;
   }
 
@@ -239,7 +251,11 @@ export class SimpleAgent implements Agent, CombatAgent {
     const opps = opponents(game, playerId);
     const out = new Map<ObjectId, Defender>();
     if (opps.length === 0) return out;
-    const target = this.threatTarget(game, playerId, opps);
+    this.noteFutileTargets(game, opps);
+    // A player whose damage keeps being prevented (Solitary Confinement, a
+    // fog every turn) is passed over while someone else can be hurt.
+    const open = opps.filter((o) => (this.futile.get(o) ?? -1) < game.turn);
+    const target = this.threatTarget(game, playerId, open.length > 0 ? open : opps);
     const blockers = opps.flatMap((o) => permanents(game, o)).filter((b) => isCreature(charsOf(game, b)) && !b.tapped);
     const bestBlocker = Math.max(0, ...blockers.map((b) => charsOf(game, b).power ?? 0));
     for (const obj of [...candidates].sort((a, b) => a.id - b.id)) {
@@ -248,7 +264,23 @@ export class SimpleAgent implements Agent, CombatAgent {
       if (!this.aggressive && (chars.toughness ?? 0) <= bestBlocker) continue;
       out.set(obj.id, target);
     }
+    const theirBlockers = permanents(game, target).filter((b) => isCreature(charsOf(game, b)) && !b.tapped).length;
+    if (out.size > 0) this.lastAttack.set(target, { life: player(game, target).life, surplus: out.size - theirBlockers });
     return out;
+  }
+
+  /**
+   * An attack that outnumbered the defender's untapped creatures had to land
+   * some damage; if their life didn't go down since, attacking them is
+   * futile for a while (CR 615: their damage is being prevented).
+   */
+  private noteFutileTargets(game: Game, opps: readonly PlayerId[]): void {
+    for (const o of opps) {
+      const last = this.lastAttack.get(o);
+      if (last === undefined) continue;
+      this.lastAttack.delete(o);
+      if (last.surplus > 0 && player(game, o).life >= last.life) this.futile.set(o, game.turn + SimpleAgent.FUTILE_TURNS);
+    }
   }
 
   /** CR 702.154a: enlist the strongest creature staying home, if it has power to lend. */

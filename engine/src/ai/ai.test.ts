@@ -160,6 +160,33 @@ describe("targets (test_player_targets.py)", () => {
 });
 
 describe("combat", () => {
+  it("a swarm of 30 tokens against 3 blockers attacks all-out", () => {
+    const goblins = Array.from({ length: 30 }, () => board.play("Llanowar Elves", 0));
+    for (let i = 0; i < 3; i++) board.play("Grizzly Bears", 1);
+    const attacks = new SimpleAgent().declareAttackers(board.game, 0, goblins);
+    expect(attacks.size).toBe(30);
+  });
+
+  it("passes over a player whose damage keeps being prevented, while another can be hurt", () => {
+    board.game.players.push(newPlayer(2));
+    board.game.turnOrder = [0, 1, 2];
+    board.game.players[1]!.life = 10; // the weakest: the first target
+    board.game.players[2]!.life = 30;
+    const swarm = Array.from({ length: 5 }, () => board.play("Grizzly Bears", 0));
+    const bot = new SimpleAgent();
+    expect(new Set(bot.declareAttackers(board.game, 0, swarm).values())).toEqual(new Set([1]));
+    // Five attackers against no blockers, and player 1's life didn't move (Solitary Confinement).
+    board.game.turn += 3;
+    expect(new Set(bot.declareAttackers(board.game, 0, swarm).values())).toEqual(new Set([2]));
+    // Damage that lands keeps the target.
+    board.game.players[2]!.life = 20;
+    board.game.turn += 3;
+    expect(new Set(bot.declareAttackers(board.game, 0, swarm).values())).toEqual(new Set([2]));
+    // After a while the futile target is tried again.
+    board.game.turn += SimpleAgent.FUTILE_TURNS;
+    expect(new Set(bot.declareAttackers(board.game, 0, swarm).values())).toEqual(new Set([1]));
+  });
+
   it("attacks the opponent closest to losing with everything that has power", () => {
     const bears = board.play("Grizzly Bears", 0);
     board.game.players.push(newPlayer(2));
