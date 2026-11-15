@@ -1030,3 +1030,17 @@ details.panel summary { cursor: pointer; font-weight: 600; }
   .cl-adv { grid-template-columns: 1fr; }
   .budget-row { grid-template-columns: 1fr; gap: 4px; }
 }
+
+
+/* Reports: the review list (admins) */
+.rep-item { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 10px 0;
+  background: var(--panel); display: flex; flex-direction: column; gap: 6px; }
+.rep-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.rep-text { white-space: pre-wrap; }
+.rep-details { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
+.rep-field .label { color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; margin-right: 6px; }
+.rep-pre { white-space: pre-wrap; font-size: 12px; max-height: 240px; overflow: auto; }
+.rep-item input[type=text] { flex: 1; min-width: 160px; }
+#dlg-report textarea { min-height: 110px; font-family: inherit; }
+#dlg-report select { width: 100%; }
+

@@ -320,9 +320,16 @@ const Board = (() => {
     if (card.oracle_text) info.appendChild(el("div", "oracle", card.oracle_text));
     const reading = el("div", "zoomreading");
     info.appendChild(reading);
+    const buttons = el("div", "row compact");
+    if (typeof Reports !== "undefined") {
+      const flag = el("button", "ghost small", "Report this reading");
+      flag.addEventListener("click", () => Reports.card(card, info.innerText));
+      buttons.appendChild(flag);
+    }
     const close = el("button", "ghost small", "Close");
     close.addEventListener("click", () => { host.hidden = true; });
-    info.appendChild(close);
+    buttons.appendChild(close);
+    info.appendChild(buttons);
     host.appendChild(info);
     if (!card.token || card.oracle_text) loadZoomReading(card.name, reading);
   }

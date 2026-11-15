@@ -292,6 +292,7 @@ function onRunFinished(payload) {
   if (payload.error) { setStatus(payload.error, true); return; }
 
   report = payload;
+  if (typeof Library !== "undefined") Library.openRunId = null; // a new run, not one from History
   setStatus("run complete");
   document.querySelector('nav button[data-tab="results"]').click();
   if (typeof drawResults === "function") drawResults();
@@ -585,6 +586,20 @@ document.getElementById("boardscrub").addEventListener("input", (event) => {
 });
 document.getElementById("boardscrub").addEventListener("change", (event) => {
   followLogTo(Board.frames[Number(event.target.value)]);
+});
+/* "Report this step": the highlighted log line if there is one, else the
+ * board's current position. */
+document.getElementById("reportstep").addEventListener("click", () => {
+  if (!replayView || typeof Reports === "undefined") return;
+  const at = document.querySelector("#replaylog .line.at[data-frame]");
+  const frame = at ? Number(at.dataset.frame) : Board.frames[Board.current];
+  const entry = (replayView.frames || [])[frame];
+  Reports.step({
+    game_index: replayView.game_index,
+    seed: replayView.seed,
+    log_index: Number.isFinite(frame) ? frame : 0,
+    text: entry ? `turn ${entry.turn} - ${entry.text}` : "",
+  });
 });
 document.getElementById("boardprev").addEventListener("click", () => Board.step(-1));
 document.getElementById("boardnext").addEventListener("click", () => Board.step(1));

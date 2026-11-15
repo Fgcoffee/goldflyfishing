@@ -136,7 +136,7 @@ export class BrowserRunner {
       unparsedCards: unparsedCards(first, cards as never),
     });
     const stored: StoredRun = {
-      run: { id: runId ?? "", hero: 0, game_start: 0, game_end: end },
+      run: { id: runId ?? "", hero: 0, game_start: 0, game_end: end, engine_build: ENGINE_BUILD, ir_build: manifest.build },
       records: result.records,
       crashed: result.crashed,
       setup,

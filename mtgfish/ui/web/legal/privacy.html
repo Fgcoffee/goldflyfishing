@@ -32,9 +32,10 @@ data, including the requests in section 8, contact <a href="mailto:{{CONTACT_EMA
 <tr><td>Saved decks (names, decklists, versions)</td><td>When you save a deck</td></tr>
 <tr><td>Simulation history (the decklists, settings, seed and results of each run)</td><td>When you run a simulation while signed in with a verified account</td></tr>
 <tr><td>Simulations run in your browser: the decks as played (which cards, by card ID, and seat order), the settings and seeds, the versions of the engine and card data used, and every game&rsquo;s result</td><td>Every time a simulation runs in your browser, whether or not you are signed in. If you are signed in, the run is kept in your account. If not, it is stored with nothing linking it to you. We keep it so results can be checked by replaying games, and so faults in the engine can be found.</td></tr>
+<tr><td>Reports you send (&ldquo;this card reads wrong&rdquo;, &ldquo;this step went wrong&rdquo;, &ldquo;report a problem&rdquo;): your words, the page, and what was on screen &mdash; the card and its reading, or the run, game, seed and step, and the decks</td><td>When you send a report, whether or not you are signed in. If you are signed in, it is kept in your account. If not, it is stored with nothing linking it to you. Admins read reports to fix what they describe.</td></tr>
 <tr><td>Sandbox card verdicts (&ldquo;this card reads wrong&rdquo;)</td><td>When you mark a card in the sandbox while signed in</td></tr>
 <tr><td>Sign-in sessions (a hashed session ID and its expiry)</td><td>While you are signed in</td></tr>
-<tr><td>Your IP address</td><td>Every request reaches our host, which keeps request logs. Our own application uses it only briefly, in memory, to rate-limit sign-in attempts.</td></tr>
+<tr><td>Your IP address</td><td>Every request reaches our host, which keeps request logs. Our own application uses it only briefly, in memory, to rate-limit sign-in attempts, uploads and reports.</td></tr>
 </table>
 <p>If you use the Archidekt import and sign in to Archidekt through it, your Archidekt
 username and password are passed straight to Archidekt to sign you in and are never stored.
@@ -54,6 +55,8 @@ abuse, investigating faults (our legitimate interests, Art. 6(1)(f)).</li>
 <li><strong>To check simulation results and improve the engine</strong> &mdash; keeping the
 runs played in your browser, replaying a sample to confirm their results, and finding cards
 the engine plays wrongly (our legitimate interests, Art. 6(1)(f)).</li>
+<li><strong>To act on your reports</strong> &mdash; reading what you sent and fixing the card
+or the engine it describes (our legitimate interests, Art. 6(1)(f)).</li>
 <li><strong>To send you service emails</strong> &mdash; address verification and password
 resets, only when you ask for them (performance of a contract). We send no marketing.</li>
 <li><strong>To meet legal obligations</strong> where they apply (Art. 6(1)(c)).</li>
@@ -104,6 +107,8 @@ or 30 minutes (password reset), and they work once.</li>
 server restart.</li>
 <li>Simulations run in your browser: in your account until you delete the account; if you
 were not signed in, 12 months, then deleted automatically.</li>
+<li>Reports: in your account until you delete the account; if you were not signed in,
+12 months, then deleted automatically.</li>
 <li>Our host&rsquo;s request logs: according to Render&rsquo;s log retention (days, not
 months).</li>
 </ul>
@@ -120,7 +125,7 @@ under <strong>Log in &rarr; your account</strong>:</p>
 <ul>
 <li><strong>Download my data</strong> gives you everything we hold about your account, as JSON.</li>
 <li><strong>Delete account</strong> permanently removes your account, decks, history,
-verdicts and sessions.</li>
+reports, verdicts and sessions.</li>
 <li>Your display name can be changed there; for anything else, email
 <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>. We reply within one month.</li>
 </ul>

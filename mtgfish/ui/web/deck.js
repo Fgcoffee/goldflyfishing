@@ -657,6 +657,13 @@ function fillDrawer(row, fetchReading) {
     if (row.commander) button("Move into the deck", () => demoteCommander(row.name), "ghost");
     button("Remove", () => { removeCard(row); closeDrawer(); }, "ghost");
   }
+  if (!row.missing && typeof Reports !== "undefined") {
+    button("Report this reading", () => {
+      const reading = document.getElementById("drawerstatus").innerText + "\n"
+        + document.getElementById("drawerreading").innerText;
+      Reports.card({ name: row.name, oracle_id: row.oracle_id || "" }, reading);
+    }, "ghost");
+  }
   if (!row.missing) {
     button("Test in sandbox", () => {
       closeDrawer();

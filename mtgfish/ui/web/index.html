@@ -27,6 +27,7 @@
     <button data-tab="recs" data-requires="recommendations">Recs</button>
     <button data-tab="replay">Replay</button>
     <button data-tab="sandbox">Sandbox</button>
+    <button data-tab="reports" hidden>Reports</button>
   </nav>
 
   <div class="top-actions">
@@ -35,6 +36,7 @@
       <button data-theme-choice="light" role="radio" title="Light">Light</button>
       <button data-theme-choice="deck" role="radio" title="Colours of the deck you are goldfishing">Deck</button>
     </div>
+    <button id="btn-report" class="ghost" title="Tell us what's wrong on this page">Report a problem</button>
     <button id="btn-subscription" class="ghost">Manage subscription</button>
     <button id="btn-login" class="primary">Log in / Register</button>
   </div>
@@ -417,6 +419,7 @@
       <label class="toggle small" title="Move the log to wherever the board is">
         <input id="boardfollow" type="checkbox" checked> log follows
       </label>
+      <button id="reportstep" class="ghost small" title="Something went wrong at this point of the game">Report this step</button>
     </div>
     <div id="replayboardview"></div>
     <p class="hint small">
@@ -508,6 +511,24 @@
   </div>
 </section>
 
+<!-- ------------------------------------------------------------ reports (admins) -->
+<section id="reports" class="tab">
+  <div class="tabhead">
+    <div>
+      <h1>Reports</h1>
+      <p class="hint">What people told us is wrong: card readings, game steps, and anything else.
+        Set each one's status as you work through them.</p>
+    </div>
+  </div>
+  <div class="row">
+    <div id="rep-filter" class="seg" role="radiogroup" aria-label="Status"></div>
+    <span class="spacer"></span>
+    <button id="rep-refresh" class="ghost small">Refresh</button>
+  </div>
+  <div id="rep-msg" class="hint"></div>
+  <div id="rep-list"></div>
+</section>
+
 </main>
 
 <footer id="footer">
@@ -545,6 +566,33 @@
 <div id="scrim" hidden data-close-drawer></div>
 
 <!-- ------------------------------------------------------------ dialogs -->
+<dialog id="dlg-report" class="modal">
+  <form method="dialog" class="modal-inner" id="rep-form">
+    <button type="button" class="modal-close" data-close-dialog aria-label="Close">&times;</button>
+    <h2 id="rep-title">Report a problem</h2>
+    <p id="rep-about" class="hint"></p>
+    <label id="rep-problem-label" class="stack-label" hidden>What's wrong
+      <select id="rep-problem">
+        <option value="missing">Something the card does is missing</option>
+        <option value="wrong">Something is read wrongly</option>
+        <option value="extra">The engine adds something the card doesn't do</option>
+        <option value="other">Something else</option>
+      </select>
+    </label>
+    <label class="stack-label"><span id="rep-text-label">What's wrong, in your own words</span>
+      <textarea id="rep-text" rows="5" maxlength="4000" required></textarea>
+    </label>
+    <p class="hint small">Sent with what's on screen (the page, and the card, run or game you're
+      looking at), so we can see it too. Signed in, it's kept in your account; see the
+      <a href="/privacy" target="_blank">Privacy Policy</a>.</p>
+    <div id="rep-status" class="hint" role="status"></div>
+    <div class="modal-actions">
+      <button type="button" class="ghost" data-close-dialog>Cancel</button>
+      <button type="submit" id="rep-send" class="primary">Send</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="dlg-auth" class="modal">
   <form class="modal-inner" id="authform" novalidate>
     <button type="button" class="modal-close" data-close-dialog aria-label="Close">&times;</button>
@@ -700,5 +748,6 @@
 <script src="shell.js"></script>
 <script src="auth.js"></script>
 <script src="library.js"></script>
+<script src="reports.js"></script>
 </body>
 </html>

@@ -1250,6 +1250,7 @@ class Bridge(QObject):
             out.append(
                 {
                     "name": ref.name,
+                    "oracle_id": card.oracle_id if card is not None else "",
                     "type_line": ref.type_line,
                     "mana_cost": ref.mana_cost,
                     "token": ref.token,

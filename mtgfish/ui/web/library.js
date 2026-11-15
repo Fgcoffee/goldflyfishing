@@ -212,6 +212,7 @@ async function libOpenRun(run) {
   if (!result.ok) { libSay("lib-runmsg", result.data.error, true); return; }
   BrowserRuns.close();
   report = result.data.report;
+  Library.openRunId = run.id; // what a report from this run names
   setStatus(`showing a past run: ${run.label}`);
   showTab("results");
 }

@@ -30,6 +30,18 @@ def _bool(name: str) -> bool:
 
 @dataclass
 class AuthSettings:
+    #: Accounts that may review reports (``mtgfish.web.reports``): verified
+    #: emails, and Discord ids, comma-separated.
+    admin_emails: frozenset[str] = field(
+        default_factory=lambda: frozenset(
+            e.strip().lower() for e in os.environ.get("MTGFISH_ADMIN_EMAILS", "").split(",") if e.strip()
+        )
+    )
+    admin_discord_ids: frozenset[str] = field(
+        default_factory=lambda: frozenset(
+            e.strip() for e in os.environ.get("MTGFISH_ADMIN_DISCORD_IDS", "").split(",") if e.strip()
+        )
+    )
     production: bool = field(
         default_factory=lambda: os.environ.get("MTGFISH_ENV", "").lower() == "production"
     )

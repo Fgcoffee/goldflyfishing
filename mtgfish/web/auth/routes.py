@@ -141,6 +141,8 @@ def build_router(auth) -> APIRouter:
                 "csrf": csrf,
                 "discord": {"enabled": settings.discord_enabled, "fake": settings.discord_fake},
                 "email": {"enabled": auth.email_enabled},
+                # Shows the report review page; the endpoints check again.
+                "admin": _is_admin(settings, user),
             }
         response = reply(payload, 200 if user else 401)
         if request.cookies.get(CSRF_COOKIE) != csrf:
@@ -454,3 +456,10 @@ def build_router(auth) -> APIRouter:
             return refuse(exc)
 
     return router
+
+
+def _is_admin(settings, user) -> bool:
+    from ..reports import is_admin
+
+    return is_admin(settings, user)
+
