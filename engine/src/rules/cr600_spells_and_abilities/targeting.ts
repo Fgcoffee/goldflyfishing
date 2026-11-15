@@ -53,11 +53,35 @@ export function targetedNodes(effects: readonly Effect[], chosenModes: readonly 
   return out;
 }
 
-/** The effects of a spell's spell abilities (CR 113.6a). */
+/** The effects of a spell's spell abilities (CR 113.6a), "each" for "target" if overloaded (CR 702.96b). */
 export function spellEffects(game: Game, spell: GameObject): Effect[] {
-  return (characteristicsOf(game, spell).abilities as readonly Ability[])
+  const effects = (characteristicsOf(game, spell).abilities as readonly Ability[])
     .filter((a) => num(a.kind) === SPELL)
     .flatMap((a) => [...list(a.effects)]);
+  return isOverloaded(spell) ? asOverloaded(effects) : effects;
+}
+
+/** Whether the spell is cast for its overload cost (CR 702.96a), read from the cost chosen as it was cast. */
+export function isOverloaded(spell: GameObject): boolean {
+  const offered = spell.alternativeCostOffered as { keyword?: string } | null;
+  const keyword = offered != null ? String(offered.keyword ?? "") : spell.alternativeCostPaid;
+  return keyword.toLowerCase() === "overload";
+}
+
+/**
+ * CR 702.96b: an overloaded spell's text has every "target" changed to
+ * "each", so its targeted effects reach everything their filter matches.
+ * F28 (fixed in TS): the IR carries overload as a bare alternative cost, and
+ * nothing made the change, so Cyclonic Rift bounced only its target.
+ */
+export function asOverloaded(effects: readonly Effect[]): Effect[] {
+  const rewrite = (e: Effect): Effect => ({
+    ...e,
+    is_targeted: false,
+    children: list(e.children).map(rewrite),
+    otherwise: list(e.otherwise).map(rewrite),
+  });
+  return effects.map(rewrite);
 }
 
 const chosenOrNull = (modes: readonly number[]): readonly number[] | null => (modes.length > 0 ? modes : null);
