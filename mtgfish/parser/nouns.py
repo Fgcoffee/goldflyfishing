@@ -490,14 +490,16 @@ def _peek_targeted(stream: Stream) -> bool:
     mark = stream.mark()
     found = False
     # "up to one other target creature" - target is never deeper than this.
-    for _ in range(5):
+    # "each of up to four target creatures" (Arcade Cabinet) is one word
+    # deeper, and "of" has to be skipped too, or the target is lost.
+    for _ in range(6):
         token = stream.peek()
         if token.kind is TokenKind.END:
             break
         if token.lower == "target":
             found = True
             break
-        if token.lower in ("up", "to", "another", "other", "each", "all", "any") or (
+        if token.lower in ("up", "to", "another", "other", "each", "of", "all", "any") or (
             token.kind is TokenKind.NUMBER
         ):
             stream.next()

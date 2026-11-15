@@ -133,6 +133,10 @@ describe("fixed: the reading matches the card", () => {
 });
 
 describe("fixed after the triage", () => {
+  it("F49 Arcade Cabinet's 'each of up to four target creatures' are targets", () => {
+    expect(ofKind(ability("Arcade Cabinet", "up to four target"), EK.ADD_COUNTERS!)[0]!.is_targeted).toBe(true);
+  });
+
   it("F49 Fists of Flame: +1/+0 for each card drawn this turn, on the board", () => {
     const b = new RealBoard();
     b.game.activePlayer = 0;
@@ -198,10 +202,6 @@ describe("open: the reading doesn't match the card", () => {
     expect(ofKind(plus, EK.CHOOSE_MODE!)[0]!.children!.length).toBe(2);
   });
 
-  it.fails("F49 Arcade Cabinet's 'up to four target creatures' are targets", () => {
-    // KNOWN: F49 - count 4, up to, but not targeted (hexproof and ward don't apply).
-    expect(ofKind(ability("Arcade Cabinet", "up to four target"), EK.ADD_COUNTERS!)[0]!.is_targeted).toBe(true);
-  });
 
   it.fails("F49 Relentless Pursuit: a creature card AND/OR a land card (up to two)", () => {
     // KNOWN: F49 - read as one card that is a creature or a land.
