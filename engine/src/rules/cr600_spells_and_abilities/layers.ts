@@ -431,7 +431,7 @@ function recordGrant(grants: Grants, id: ObjectId, before: Characteristics, afte
     grants.set(id, kept);
   }
   for (const ability of after.abilities.slice(before.abilities.length)) {
-    const index = kept.findIndex(([known]) => irEqual(known, ability));
+    const index = kept.findIndex(([known]) => known === ability || irEqual(known, ability));
     if (index < 0) kept.push([ability, timestamp]);
     else if (timestamp > (kept[index] as [Ability, number])[1]) kept[index] = [ability, timestamp];
   }
@@ -439,7 +439,7 @@ function recordGrant(grants: Grants, id: ObjectId, before: Characteristics, afte
 
 function grantedTimestamp(grants: Grants | null, id: ObjectId, ability: Ability): number {
   if (grants === null) return 0;
-  for (const [known, when] of grants.get(id) ?? []) if (irEqual(known, ability)) return when;
+  for (const [known, when] of grants.get(id) ?? []) if (known === ability || irEqual(known, ability)) return when;
   return 0;
 }
 
@@ -891,9 +891,16 @@ export function applyEffect(game: Game, obj: GameObject, current: Characteristic
   }
 }
 
-/** A bare keyword ability, as granted by name. */
+const KEYWORD_ABILITIES = new Map<string, Ability>();
+
+/** A bare keyword ability, as granted by name: one frozen object per word, so grants compare by reference first. */
 export function keywordAbility(word: string): Ability {
-  return { $: "Ability", kind: ir("AbilityKind.STATIC"), keyword: word, text: word };
+  let found = KEYWORD_ABILITIES.get(word);
+  if (found === undefined) {
+    found = Object.freeze({ $: "Ability", kind: ir("AbilityKind.STATIC"), keyword: word, text: word }) as Ability;
+    KEYWORD_ABILITIES.set(word, found);
+  }
+  return found;
 }
 
 /**
