@@ -442,7 +442,7 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
 
 ## For the parser (answers, 15 Nov)
 
-- **F37 engine half: fixed** (this commit). `componentAmount` takes the
+- **F37 engine half: fixed** (85b2113). `componentAmount` takes the
   paying object as its source; for a spell (context.ability === null) X
   is the spell's own, so Toxic Deluge cast with X = 3 pays 3 life as it's
   cast. Your "cast with X = 3" test is a plain `it` now. An ability's X

@@ -667,4 +667,4 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
   - the bundle's engine build equals the server's.
 - The image build first failed: the Dockerfile didn't copy `webapp/engine-build.mjs`, fixed in 33c224f.
 - Open: the runaway banner's wording for token swarms (web); card art in browser replays; the sandbox on TS.
-- F37 engine half (a spell's "pay X life" read X as 0): this commit, `audit_triage_parser_real.test.ts` "cast with X = 3" (now a plain test).
+- F37 engine half (a spell's "pay X life" read X as 0): 85b2113, `audit_triage_parser_real.test.ts` "cast with X = 3" (now a plain test).
