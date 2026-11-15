@@ -22,7 +22,7 @@ RUN cd webapp && npm ci --no-audit --no-fund
 COPY engine/src ./engine/src
 RUN cd engine && npm run build:replay
 COPY webapp/src ./webapp/src
-COPY webapp/vite.site.config.ts ./webapp/
+COPY webapp/vite.site.config.ts webapp/engine-build.mjs ./webapp/
 RUN cd webapp && npm run build:site && test -s ../mtgfish/ui/web/engine/goldfly-site.js
 
 FROM python:3.12-slim
