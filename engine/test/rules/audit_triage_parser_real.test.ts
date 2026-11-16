@@ -379,5 +379,26 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(player(b.game, 1).graveyard).toHaveLength(2);
     expect(asked).toBe(0);
   });
+
+  it("Boseiju, Who Endures: its controller 'may search their library for a land card with a basic land type'", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    b.play("Forest");
+    b.play("Forest");
+    const boseiju = b.hand("Boseiju, Who Endures");
+    const tower = b.play("Command Tower", 1);
+    const island = createObject(b.game, realCard("Island"), 1, Zone.LIBRARY);
+    createObject(b.game, realCard("Command Tower"), 1, Zone.LIBRARY); // not a basic land type
+    b.game.epoch += 1;
+    const channel = legalActions(b.game, 0).find((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === boseiju.id)!;
+    expect(channel).toBeDefined();
+    expect(perform(b.game, 0, { ...channel, targets: [[tower.id]] })).toBe(true);
+    resolveAll(b);
+    const live = (name: string) => [...b.game.objects.values()].filter(
+      (o) => !o.supersededBy && (o.card as { name?: string } | null)?.name === name && o.controller === 1);
+    expect(live("Command Tower").map((o) => o.zone).sort()).toEqual([Zone.LIBRARY, Zone.GRAVEYARD].sort());
+    expect(live("Island").map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
+    expect(island.zone).toBe(Zone.LIBRARY); // the old object; the card moved on as a new one
+  });
 });
 

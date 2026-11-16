@@ -343,3 +343,10 @@ def test_unless_any_player_pays_is_left_unread(card_db):
     assert not parse_card(card_db.lookup("Icy Prison")).fully_parsed
     # A condition about "a player" still reads.
     assert parse_card(card_db.lookup("Abandoned Campground")).fully_parsed
+
+
+def test_a_basic_land_type_is_any_of_the_five():
+    """CR 305.6: "a land card with a basic land type" (Boseiju)."""
+    spec = parse_object_filter(Stream.of("a land card with a basic land type"))
+    assert spec is not None and set(spec.subtypes_any) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}
+    assert spec.types_all & CardType.LAND
