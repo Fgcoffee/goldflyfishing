@@ -245,6 +245,23 @@ def _dummy(line: Line, *, is_permanent: bool) -> Ability | None:
 
     found = dummies.whole(line.text)
     if found is not None:
+        cost_text, colon, effect_text = line.text.partition(":")
+        if colon and line.kind is LineKind.ACTIVATED:
+            # "{2}, {T}, Sacrifice a creature: The next creature spell you
+            # cast this turn has cascade": still an activated ability with
+            # its cost, the dummy as its effect - the shape whoever
+            # implements it needs (readings_queue.md).
+            from .costs import parse_cost
+
+            cost, _ = parse_cost(cost_text)
+            if cost is not None:
+                return Ability(
+                    AbilityKind.ACTIVATED,
+                    effects=(Effect(EffectKind.DUMMY, rule=found.name, text=effect_text.strip()),),
+                    cost=cost,
+                    functions_in=_zones_paid_from(cost),
+                    text=line.text,
+                )
         return Ability(
             AbilityKind.STATIC,
             effects=(Effect(EffectKind.DUMMY, rule=found.name, text=line.text),),

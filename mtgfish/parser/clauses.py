@@ -6882,9 +6882,8 @@ def _ability_cost_change(stream: Stream) -> Effect | None:
     is the ability the sentence sits in.
     """
     mark = stream.mark()
-    if not stream.accept_phrase("this ability costs") and not (
-        stream.accept_phrase("this spell costs")
-    ):
+    own_ability = stream.accept_phrase("this ability costs")
+    if not own_ability and not stream.accept_phrase("this spell costs"):
         stream.reset(mark)
         return None
 
@@ -6923,6 +6922,18 @@ def _ability_cost_change(stream: Stream) -> Effect | None:
         amount = Value(
             kind=ValueKind.PRODUCT,
             operands=(amount, Value(kind=ValueKind.COUNT, filter=per)),
+        )
+    if own_ability:
+        # It changes the cost of activating the ability it sits in (CR
+        # 601.2f via 602.2b), which the engine has no way to do yet. As an
+        # effect it ran on resolution, after the cost was paid, and made the
+        # card cheaper to *cast* (readings_queue.md: the channel lands).
+        # Recognised, not implemented: the ability works at full cost.
+        return Effect(
+            EffectKind.DUMMY,
+            rule="activation-cost-change",
+            amount=amount,
+            text=" ".join(t.text for t in stream.tokens[mark : stream.mark()]),
         )
     return Effect(
         EffectKind.MODIFY_COST,

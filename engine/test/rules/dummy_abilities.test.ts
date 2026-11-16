@@ -4,7 +4,9 @@
 import "../../src/rules/match";
 import { describe, expect, it } from "vitest";
 import type { Effect } from "../../src/ir";
-import { EffectKindValues as EK } from "../../src/ir/types";
+import { AbilityKindValues as AK, EffectKindValues as EK } from "../../src/ir/types";
+import { SimpleAgent } from "../../src/ai/simple";
+import { ActionKind, PASS, type Action } from "../../src/rules/cr100_game_concepts/priority";
 import { Phase, Step } from "../../src/kernel/enums";
 import { newGame } from "../../src/kernel/game";
 import { newPlayer } from "../../src/rules/cr100_game_concepts/player";
@@ -37,4 +39,20 @@ describe("dummy abilities", () => {
     // The engine treats it as a usable mana ability, as before the rider was read.
     expect(isUsableManaAbility(mana as never)).toBe(true);
   });
+
+  it("a dummy on an activated ability keeps its cost; the bot doesn't pay for nothing", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    const village = b.play("Mistrise Village");
+    const abilities = b.chars(village).abilities as readonly { kind?: number; cost?: { components?: unknown[] }; effects?: { kind?: number }[] }[];
+    const index = abilities.findIndex((a) => a.effects?.some((e) => e.kind === EK.DUMMY));
+    const rider = abilities[index]!;
+    expect(rider.kind).toBe(AK.ACTIVATED);
+    expect(rider.cost?.components?.length).toBe(2); // {U}, {T}
+    const activate = { kind: ActionKind.ACTIVATE_ABILITY, source: village.id, abilityIndex: index, targets: [], xValue: 0, faceIndex: 0, modeChoices: [], alternativeCost: -1, additionalCosts: [] } as unknown as Action;
+    expect(new SimpleAgent({ lookahead: false }).chooseAction(b.game, 0, [activate])).toBe(PASS);
+  });
 });
+

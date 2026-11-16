@@ -48,4 +48,32 @@ def test_patterns_match_whole_text_only():
 def test_every_dummy_names_what_the_engine_needs():
     names = [d.name for d in dummies.DUMMIES]
     assert len(names) == len(set(names))
-    assert all(d.needs and (d.whole or d.rider) for d in dummies.DUMMIES)
+    assert all(d.needs and (d.whole or d.rider or d.grammar) for d in dummies.DUMMIES)
+
+
+def test_a_whole_dummy_on_an_activated_ability_keeps_its_cost(card_db):
+    """Mistrise Village: "{U}, {T}: The next spell ... can't be countered" is
+    still activated, with its cost, and the dummy as its effect."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+
+    face = parse_card(card_db.lookup("Mistrise Village")).faces[0]
+    rider = next(a for a in face.abilities if _dummy_rules(a))
+    assert rider.kind is AbilityKind.ACTIVATED
+    assert len(rider.cost.components) == 2
+
+
+def test_this_ability_costs_less_is_not_an_effect_on_resolution(card_db):
+    """Boseiju (readings_queue.md): the reduction was the ability's last
+    effect, so it ran after the cost was paid and cheapened the card's cast.
+    Now it's a recognised dummy carrying its amount; the ability works at full
+    cost."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Boseiju, Who Endures")).faces[0]
+    channel = next(a for a in face.abilities if "less to activate" in a.text)
+    kinds = [n.kind for e in channel.effects for n in e.walk()]
+    assert EffectKind.MODIFY_COST not in kinds
+    marker = channel.effects[-1]
+    assert marker.kind is EffectKind.DUMMY and marker.rule == "activation-cost-change"
+    assert marker.amount.operands[0].constant == -1

@@ -40,12 +40,21 @@ class Dummy:
     rule: str
     whole: tuple[str, ...] = ()
     rider: tuple[str, ...] = ()
+    #: Emitted by a grammar rule rather than matched by a pattern (the words
+    #: are read, with their amounts, and only the engine side is missing).
+    grammar: bool = False
 
 
 #: Costs before a colon, so an activated ability's effect can be matched.
 _COST = r"(?:[^.:\"]+: )?"
 
 DUMMIES: tuple[Dummy, ...] = (
+    Dummy(
+        "activation-cost-change",
+        "an ability that costs less (or more) to activate, per something counted (the channel lands)",
+        "601.2f",
+        grammar=True,
+    ),
     Dummy(
         "untap-during-others-untap-step",
         "untap permanents during each other player's untap step (Seedborn Muse)",

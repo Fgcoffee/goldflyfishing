@@ -140,11 +140,7 @@
       },
       {
        "$": "Effect",
-       "kind": 152,
-       "targets": {
-        "$": "ObjectFilter",
-        "source_only": true
-       },
+       "kind": 998,
        "amount": {
         "$": "Value",
         "kind": 12,
@@ -165,8 +161,8 @@
          }
         ]
        },
-       "duration": 0,
-       "text": "this ability costs less"
+       "rule": "activation-cost-change",
+       "text": "This ability costs {1} less to activate for each legendary creature you control"
       }
      ],
      "text": "{1}{G}, Discard this card: Destroy target artifact, enchantment, or nonbasic land an opponent controls. That player may search their library for a land card with a basic land type, put it onto the battlefield, then shuffle. This ability costs {1} less to activate for each legendary creature you control.",
