@@ -457,6 +457,8 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
 - The Zeniths and Beacons read, and Chaos Warp works (e1dc35c). Census: +8, 7 changed.
   - Chaos Warp, Oblation and Ominous Cemetery were misread: the target was dropped, so nothing moved. Now the target moves.
   - **Rules session:** `resolve.ts`'s MOVE_ZONE now shuffles the owner's library when the move says "shuffle". Before, "shuffles it into their library" put the card on the bottom. Not covered: CR 701.24c shuffles the library even when the card wasn't where it was expected; today a move that finds nothing shuffles nothing.
+- "If <condition>, <effect> instead" reads where it is safe (406da60): Field Research, Scute Swarm, Leafkin Druid and 10 more; also Sword of Feast and Famine. Census: +14.
+  - Not yet: the ~30 where the replacement says "that creature" or "it" (Explosive Growth, Electrostatic Bolt, Elder Cathar), or has its own target (Tear Asunder). They need the first effect's target bound before the branch is chosen, so the condition can ask about it. That's an IR question (a "choose the target, then branch" shape); say if you want it.
 - Next: the most-played unread abilities by deck usage. In order of play rank: Path of Ancestry, Myriad Landscape, Arcane Denial, Urza's Saga, Mana Drain, Victimize, Windfall, Idol of Oblivion, Force of Negation... (each needs a new shape: a mana-spent trigger, "share a land type", a delayed draw for the countered spell's controller, a granted Saga ability, mana from what was countered) Borrowed Knowledge waits with F3 for the evaluate-context change.
 
 ## For the rules session: your 200-game bench
