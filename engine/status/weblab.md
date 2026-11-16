@@ -50,7 +50,14 @@ later. Not `mtgfish/parser`.
     land type"): +0, -0 fully read, 55 changed. Dovin's Veto and Dryad of
     the Ilysian Grove now read right, and the parser's answer on Rishkar's
     Expertise holds. All three are pinned (281 cards).
-  - Last batch checked: 47f80ac.
+  - **e2bce20** (rules, TS engine only: "enters tapped unless" lands
+    entered tapped regardless). No parser change, so the readings are
+    unchanged; the golden test still passes. My Mystic Sanctuary entry was a
+    false alarm: the read-back doesn't print the trigger's `tapped: false`,
+    which the IR has. It's pinned now (282 cards). Lesson, applied since:
+    the read-back drops trigger-subject qualities, so check the IR before
+    queuing a missing trigger condition.
+  - Last batch checked: e2bce20.
 - **Item 3, dummy abilities on the site: done (752b7a4).**
   - `deckview.parse_status` gives `recognised`, the dummy rule names, as
     the TS `parseStatus` does; the bridge's board cards carry it too.

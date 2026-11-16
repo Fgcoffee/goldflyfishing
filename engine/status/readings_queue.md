@@ -115,7 +115,7 @@ at resolution it reduces the cost of *casting* the land.
 
 ## Other misreads
 
-- [x] **Mystic Sanctuary** (169). (e2bce20: the reading was right, `subject: {source_only, tapped: false}`; the read-back doesn't print it. The real fault was the engine's: every "enters tapped unless ..." land entered tapped regardless, so it never entered untapped. Fixed in replacement.ts, with a board test.) "When this land enters untapped, you may put
+- [x] **Mystic Sanctuary** (169). [web: my misread of the read-back; the IR has `tapped: false`, confirmed. Pinned in the golden set.] (e2bce20: the reading was right, `subject: {source_only, tapped: false}`; the read-back doesn't print it. The real fault was the engine's: every "enters tapped unless ..." land entered tapped regardless, so it never entered untapped. Fixed in replacement.ts, with a board test.) "When this land enters untapped, you may put
   target instant or sorcery card from your graveyard on top of your library."
   IR: `Whenever this permanent enters battlefield` with no untapped condition,
   so it also triggers when it entered tapped. Should be an intervening "if it

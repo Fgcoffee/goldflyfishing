@@ -1249,6 +1249,16 @@
    "understood": "Whenever 1 noncreature that is a spell in stack cast spell (player: an opponent), you may you draws 1 card(s), unless the player the trigger is about pays {4}."
   }
  ],
+ "Mystic Sanctuary": [
+  {
+   "oracle": "This land enters tapped unless you control three or more other Islands.",
+   "understood": "Continuously: if not (you control at least 3 another Island), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "When this land enters untapped, you may put target instant or sorcery card from your graveyard on top of your library.",
+   "understood": "Whenever this permanent enters battlefield, you may put target instant or sorcery you own in graveyard on top of its owner's library."
+  }
+ ],
  "Mystical Tutor": [
   {
    "oracle": "Search your library for an instant or sorcery card, reveal it, then shuffle and put that card on top.",
