@@ -573,6 +573,16 @@
    "understood": "Continuously: replacement - counters of any kind put by an effect on all object you control become twice that many."
   }
  ],
+ "Dovin's Veto": [
+  {
+   "oracle": "This spell can't be countered.",
+   "understood": "Continuously: object (this permanent itself) can't be_countered."
+  },
+  {
+   "oracle": "Counter target noncreature spell.",
+   "understood": "Counter target noncreature that is a spell in stack."
+  }
+ ],
  "Dragonskull Summit": [
   {
    "oracle": "This land enters tapped unless you control a Swamp or a Mountain.",
@@ -601,6 +611,16 @@
   {
    "oracle": "{T}: Add {U} or {B}.",
    "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}."
+  }
+ ],
+ "Dryad of the Ilysian Grove": [
+  {
+   "oracle": "You may play an additional land on each of your turns.",
+   "understood": "Continuously: you may you may play 1 additional land(s)."
+  },
+  {
+   "oracle": "Lands you control are every basic land type in addition to their other types.",
+   "understood": "Continuously: all land you control is also 0."
   }
  ],
  "Dwarfhold Champion": [
@@ -1481,6 +1501,16 @@
   {
    "oracle": "Nontoken creatures you control have riot.",
    "understood": "Continuously: all creature you control nontoken gains riot."
+  }
+ ],
+ "Rishkar's Expertise": [
+  {
+   "oracle": "Draw cards equal to the greatest power among creatures you control.",
+   "understood": "You draws the greatest power among all creature you control card(s)."
+  },
+  {
+   "oracle": "You may cast a spell with mana value 5 or less from your hand without paying its mana cost.",
+   "understood": "[cast_without_paying] 1 object you own with mana value 5 or less that is a spell in hand."
   }
  ],
  "Roaming Throne": [
