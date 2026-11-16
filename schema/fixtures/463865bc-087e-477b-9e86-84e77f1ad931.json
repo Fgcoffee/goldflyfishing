@@ -1,0 +1,88 @@
+{
+ "ir_version": 2,
+ "oracle_id": "463865bc-087e-477b-9e86-84e77f1ad931",
+ "name": "Seedborn Muse",
+ "card_hash": "274798d5894b9abd410c676a63793090",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "463865bc-087e-477b-9e86-84e77f1ad931",
+  "name": "Seedborn Muse",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Seedborn Muse",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Spirit"
+     ]
+    },
+    "oracle_text": "Untap all permanents you control during each other player's untap step.",
+    "power": "2",
+    "toughness": "4",
+    "colors": 16
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 289,
+  "scryfall_uri": "https://scryfall.com/card/tdc/268/seedborn-muse?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "463865bc-087e-477b-9e86-84e77f1ad931",
+   "name": "Seedborn Muse",
+   "face": 0,
+   "face_name": "Seedborn Muse",
+   "card_hash": "274798d5894b9abd410c676a63793090",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 998,
+       "rule": "untap-during-others-untap-step",
+       "text": "Untap all permanents you control during each other player's untap step."
+      }
+     ],
+     "text": "Untap all permanents you control during each other player's untap step."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "game_changer"
+ ]
+}

@@ -401,3 +401,30 @@ def test_this_is_equipped_or_enchanted(word, subtype):
     assert condition is not None
     attached = condition.filter.has_attached
     assert attached is not None and attached.subtypes_any == (subtype,)
+
+
+@pytest.mark.parametrize("name, subject", [
+    ("Kor Duelist", "source"),            # "this creature is equipped, it has ..."
+    ("Clout of the Dominus", "attached"), # "enchanted creature is blue, it gets ..."
+    ("Narcolepsy", "attached"),           # a step trigger: "tap it"
+])
+def test_it_in_a_static_ability_is_the_conditions_object(card_db, name, subject):
+    """readings_queue.md: "it" here once meant whatever was just referred to,
+    which in a static ability is nothing, so the bonus reached every permanent."""
+    from mtgfish.parser.compile import parse_card
+
+    nodes = [n for face in parse_card(card_db.lookup(name)).faces for a in face.abilities
+             for e in a.effects for n in e.walk() if n.targets is not None]
+    assert nodes and not any(n.targets.remembered for n in nodes)
+    if subject == "source":
+        assert any(n.targets.source_only for n in nodes)
+    else:
+        assert any(n.targets.has_attached is not None and n.targets.has_attached.source_only for n in nodes)
+
+
+def test_that_creature_with_nothing_to_name_is_left_unread(card_db):
+    """Deadly Wanderings: "that creature" is the one creature you control,
+    which the IR can't name; unread rather than every creature."""
+    from mtgfish.parser.compile import parse_card
+
+    assert not parse_card(card_db.lookup("Deadly Wanderings")).fully_parsed

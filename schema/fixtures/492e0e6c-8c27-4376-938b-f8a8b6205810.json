@@ -58,7 +58,7 @@
    "face": 0,
    "face_name": "Leyline of Sanctity",
    "card_hash": "a6e121f241d3e0161143f7eb56e68474",
-   "fully_read": false,
+   "fully_read": true,
    "abilities": [
     {
      "$": "Ability",
@@ -66,12 +66,12 @@
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": 998,
+       "rule": "begin-game-on-battlefield",
        "text": "If this card is in your opening hand, you may begin the game with it on the battlefield."
       }
      ],
-     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield.",
-     "unparsed": true
+     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield."
     },
     {
      "$": "Ability",
@@ -98,39 +98,8 @@
      "text": "You have hexproof."
     }
    ],
-   "failures": [
-    {
-     "$": "ParseFailure",
-     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield.",
-     "reason": "not fully consumed",
-     "remaining": [
-      "If",
-      "this",
-      "card",
-      "is",
-      "in",
-      "your",
-      "opening",
-      "hand",
-      ",",
-      "you",
-      "may",
-      "begin",
-      "the",
-      "game",
-      "with",
-      "it",
-      "on",
-      "the",
-      "battlefield",
-      "."
-     ],
-     "rule": "plain"
-    }
-   ]
+   "failures": []
   }
  ],
- "bracket": [
-  "unread"
- ]
+ "bracket": []
 }

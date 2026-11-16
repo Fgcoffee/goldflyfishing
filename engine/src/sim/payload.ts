@@ -74,13 +74,27 @@ export function replayPayload(view: ReplayView, cards: Readonly<Record<string, C
  * the card was read, "partial" with the unread abilities' text, else "ok".
  * (Python also counts abilities the sandbox saw never fire; the IR can't.)
  */
-export function parseStatus(doc: CardDocument | undefined): { status: string; unread: string[] } {
+export function parseStatus(doc: CardDocument | undefined): { status: string; unread: string[]; recognised: string[] } {
   const abilities = abilitiesOf(doc);
   const unread = abilities.filter(unreadAbility).map((a) => a.text ?? "");
+  // Recognised, not implemented yet (mtgfish/parser/dummies.py): read, but
+  // the engine can't do it. Their names, for the site to say so.
+  const recognised = abilities.flatMap((a) => dummyRules(a));
   // A vanilla creature or a basic land is not a gap.
-  if (abilities.length === 0) return { status: "ok", unread };
-  if (unread.length === abilities.length) return { status: "blank", unread };
-  return { status: unread.length > 0 ? "partial" : "ok", unread };
+  if (abilities.length === 0) return { status: "ok", unread, recognised };
+  if (unread.length === abilities.length) return { status: "blank", unread, recognised };
+  return { status: unread.length > 0 ? "partial" : "ok", unread, recognised };
+}
+
+const DUMMY = 998; // EffectKind.DUMMY
+
+/** The dummy shapes in an ability, by name (effect.rule), nested ones included. */
+function dummyRules(value: unknown): string[] {
+  if (value === null || typeof value !== "object") return [];
+  if (Array.isArray(value)) return value.flatMap(dummyRules);
+  const record = value as Record<string, unknown>;
+  const own = record.$ === "Effect" && record.kind === DUMMY ? [String(record.rule ?? "")] : [];
+  return [...own, ...Object.values(record).flatMap(dummyRules)];
 }
 
 /** Python's bit flags for a permanent on the wire. */

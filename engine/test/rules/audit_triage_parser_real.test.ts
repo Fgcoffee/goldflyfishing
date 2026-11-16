@@ -467,11 +467,16 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     const duelist = b.play("Kor Duelist");
     const keywords = () => (b.chars(duelist).abilities as readonly { keyword?: string }[]).map((a) => (a.keyword ?? "").toLowerCase());
     expect(keywords()).not.toContain("double strike");
+    const bears = b.play("Grizzly Bears");
     const sword = b.play("Sword of Fire and Ice");
     expect(attach(b.game, sword, duelist)).toBe(true);
     b.game.epoch += 1;
     invalidateAllCharacteristics(b.game);
     expect(keywords()).toContain("double strike");
+    // "It" is the Duelist: another creature gets nothing (readings_queue.md,
+    // first read as "whatever was just referred to", which was everything).
+    const bearsKeywords = (b.chars(bears).abilities as readonly { keyword?: string }[]).map((a) => (a.keyword ?? "").toLowerCase());
+    expect(bearsKeywords).not.toContain("double strike");
   });
 });
 

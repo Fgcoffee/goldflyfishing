@@ -463,6 +463,13 @@ def _control_flow(effect: Effect) -> str | None:
         return f"{_mode_choice(effect)} - {modes}"
     if kind is EffectKind.NOTHING:
         return ""
+    if kind is EffectKind.REPEAT_PER_PAYMENT:
+        # CR 702.33d, 702.157a: once for each time the cost was paid.
+        cost = effect.keywords[0] if effect.keywords else "its optional cost"
+        return f"for each time {cost} was paid: {_effects(effect.children)}"
+    if kind is EffectKind.DUMMY:
+        # Recognised, not implemented yet (mtgfish.parser.dummies).
+        return f"(recognised, not implemented yet: {effect.rule})"
     if kind is EffectKind.UNPARSED:
         return "(NOT UNDERSTOOD - inert)"
     return None

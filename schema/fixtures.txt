@@ -142,3 +142,5 @@ Chaos Warp
 Beacon of Destruction
 Scute Swarm
 Kor Duelist
+Path of Ancestry
+Seedborn Muse

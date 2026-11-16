@@ -323,6 +323,14 @@ class EffectKind(IntEnum):
     #: into their hand (``zone``, which defaults to the hand).
     SEEK = 6002
 
+    # -- recognised, not implemented ----------------------------------------
+    #: A shape the parser recognises (``mtgfish.parser.dummies``) but the
+    #: engine has no meaning for yet. ``rule`` names the shape; ``text`` is the
+    #: words. Like UNPARSED it never executes, and an executor logs it as
+    #: unimplemented; unlike UNPARSED the reading is complete, and the shape is
+    #: on the rules session's backlog.
+    DUMMY = 998
+
     # -- fallback -----------------------------------------------------------
     #: The parser could not read this. It never executes; it exists so the
     #: coverage report can name exactly what was lost, and so an ability that

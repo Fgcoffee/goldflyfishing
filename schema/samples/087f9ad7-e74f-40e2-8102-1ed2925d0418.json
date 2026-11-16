@@ -95,26 +95,24 @@
       {
        "$": "Effect",
        "kind": 999,
-       "duration": 0,
-       "children": [
-        {
-         "$": "Effect",
-         "kind": 30,
-         "targets": {
-          "$": "ObjectFilter",
-          "remembered": true
-         },
-         "text": "exile"
-        }
-       ],
-       "text": "if ... would ..., ... instead"
+       "text": "If a card or token would be put into a graveyard from anywhere, exile it instead."
       }
      ],
-     "text": "If a card or token would be put into a graveyard from anywhere, exile it instead."
+     "text": "If a card or token would be put into a graveyard from anywhere, exile it instead.",
+     "unparsed": true
     }
    ],
-   "failures": []
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "If a card or token would be put into a graveyard from anywhere, exile it instead.",
+     "reason": "\"it\" names nothing here",
+     "rule": "static-it"
+    }
+   ]
   }
  ],
- "bracket": []
+ "bracket": [
+  "unread"
+ ]
 }

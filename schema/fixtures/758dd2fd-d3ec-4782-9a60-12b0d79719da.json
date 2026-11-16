@@ -63,7 +63,7 @@
        "kind": 143,
        "targets": {
         "$": "ObjectFilter",
-        "remembered": true
+        "source_only": true
        },
        "duration": 0,
        "granted_abilities": [
