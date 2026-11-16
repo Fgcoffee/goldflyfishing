@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7bc3f92f-68a2-4934-afc4-89f6d0e8cf98",
  "name": "Dusk // Dawn",
- "card_hash": "597ae1ca518b75a412fe3dd5800c86ff",
+ "card_hash": "75a03ebff5fc025cf5b10fe02fe39b02",
  "card": {
   "$": "CardDef",
   "oracle_id": "7bc3f92f-68a2-4934-afc4-89f6d0e8cf98",
@@ -87,7 +87,7 @@
   "mana_value": 9,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 944,
+  "edhrec_rank": 987,
   "scryfall_uri": "https://scryfall.com/card/mkc/61/dusk-dawn?utm_source=api"
  },
  "faces": [
@@ -97,7 +97,7 @@
    "name": "Dusk // Dawn",
    "face": 0,
    "face_name": "Dusk",
-   "card_hash": "597ae1ca518b75a412fe3dd5800c86ff",
+   "card_hash": "75a03ebff5fc025cf5b10fe02fe39b02",
    "fully_read": true,
    "abilities": [
     {
@@ -133,7 +133,7 @@
    "name": "Dusk // Dawn",
    "face": 1,
    "face_name": "Dawn",
-   "card_hash": "597ae1ca518b75a412fe3dd5800c86ff",
+   "card_hash": "75a03ebff5fc025cf5b10fe02fe39b02",
    "fully_read": false,
    "abilities": [
     {

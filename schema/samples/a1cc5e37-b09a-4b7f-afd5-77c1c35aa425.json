@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
  "name": "Carrion Feeder",
- "card_hash": "cd5c285396b879627444f1022cad25b5",
+ "card_hash": "8da823d90e5def1b26acf0dc42ead18a",
  "card": {
   "$": "CardDef",
   "oracle_id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
@@ -40,7 +40,7 @@
   "mana_value": 1,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 613,
+  "edhrec_rank": 605,
   "scryfall_uri": "https://scryfall.com/card/mh1/81/carrion-feeder?utm_source=api"
  },
  "faces": [
@@ -50,7 +50,7 @@
    "name": "Carrion Feeder",
    "face": 0,
    "face_name": "Carrion Feeder",
-   "card_hash": "cd5c285396b879627444f1022cad25b5",
+   "card_hash": "8da823d90e5def1b26acf0dc42ead18a",
    "fully_read": true,
    "abilities": [
     {

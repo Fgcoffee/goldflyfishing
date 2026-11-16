@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f3c5978a-70fa-431f-933b-b954bd0db0ea",
  "name": "Mox Diamond",
- "card_hash": "68a855a3fdc689dd3841b893581edcaf",
+ "card_hash": "0d3d54c9e175d5b3302515235d6be186",
  "card": {
   "$": "CardDef",
   "oracle_id": "f3c5978a-70fa-431f-933b-b954bd0db0ea",
@@ -40,7 +40,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 246,
+  "edhrec_rank": 249,
   "scryfall_uri": "https://scryfall.com/card/tpr/228/mox-diamond?utm_source=api"
  },
  "faces": [
@@ -50,7 +50,7 @@
    "name": "Mox Diamond",
    "face": 0,
    "face_name": "Mox Diamond",
-   "card_hash": "68a855a3fdc689dd3841b893581edcaf",
+   "card_hash": "0d3d54c9e175d5b3302515235d6be186",
    "fully_read": false,
    "abilities": [
     {

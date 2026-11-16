@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5f601f48-d24b-4883-9fde-b3f620e7c9ea",
  "name": "Wall of Omens",
- "card_hash": "0e5703b6a1504ab684872491d7923917",
+ "card_hash": "8ace92b57bec5724cca0d0d53e94e56d",
  "card": {
   "$": "CardDef",
   "oracle_id": "5f601f48-d24b-4883-9fde-b3f620e7c9ea",
@@ -49,7 +49,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 1101,
+  "edhrec_rank": 1113,
   "scryfall_uri": "https://scryfall.com/card/tdc/138/wall-of-omens?utm_source=api"
  },
  "faces": [
@@ -59,7 +59,7 @@
    "name": "Wall of Omens",
    "face": 0,
    "face_name": "Wall of Omens",
-   "card_hash": "0e5703b6a1504ab684872491d7923917",
+   "card_hash": "8ace92b57bec5724cca0d0d53e94e56d",
    "fully_read": true,
    "abilities": [
     {

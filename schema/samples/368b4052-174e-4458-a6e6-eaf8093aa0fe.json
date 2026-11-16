@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
  "name": "Goblin Chieftain",
- "card_hash": "130055bfce47610a36f4cd922d9f26d0",
+ "card_hash": "89491ffe838d63b660a1d69926cfb0f1",
  "card": {
   "$": "CardDef",
   "oracle_id": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
@@ -55,7 +55,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 2567,
+  "edhrec_rank": 2588,
   "scryfall_uri": "https://scryfall.com/card/jmp/324/goblin-chieftain?utm_source=api"
  },
  "faces": [
@@ -65,7 +65,7 @@
    "name": "Goblin Chieftain",
    "face": 0,
    "face_name": "Goblin Chieftain",
-   "card_hash": "130055bfce47610a36f4cd922d9f26d0",
+   "card_hash": "89491ffe838d63b660a1d69926cfb0f1",
    "fully_read": true,
    "abilities": [
     {

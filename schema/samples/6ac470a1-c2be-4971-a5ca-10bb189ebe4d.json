@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
  "name": "Frenzied Goblin",
- "card_hash": "18f8203df2509495adb03417a4e13a5c",
+ "card_hash": "51481a4cda67eccba1c4660e74bfb383",
  "card": {
   "$": "CardDef",
   "oracle_id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
@@ -41,7 +41,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 9572,
+  "edhrec_rank": 9629,
   "scryfall_uri": "https://scryfall.com/card/fdn/199/frenzied-goblin?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Frenzied Goblin",
    "face": 0,
    "face_name": "Frenzied Goblin",
-   "card_hash": "18f8203df2509495adb03417a4e13a5c",
+   "card_hash": "51481a4cda67eccba1c4660e74bfb383",
    "fully_read": true,
    "abilities": [
     {

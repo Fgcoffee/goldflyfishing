@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
  "name": "Adarkar Wastes",
- "card_hash": "c316f6c85d79c0702699c7fab4c90ac6",
+ "card_hash": "f9f94844eb89510d5f34f671ca455492",
  "card": {
   "$": "CardDef",
   "oracle_id": "d5ad26cc-2bdb-46b7-b8bf-dd099d5fa09b",
@@ -31,7 +31,7 @@
   "mana_value": 0,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 147,
+  "edhrec_rank": 143,
   "scryfall_uri": "https://scryfall.com/card/eoc/147/adarkar-wastes?utm_source=api"
  },
  "faces": [
@@ -41,7 +41,7 @@
    "name": "Adarkar Wastes",
    "face": 0,
    "face_name": "Adarkar Wastes",
-   "card_hash": "c316f6c85d79c0702699c7fab4c90ac6",
+   "card_hash": "f9f94844eb89510d5f34f671ca455492",
    "fully_read": true,
    "abilities": [
     {

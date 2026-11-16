@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
  "name": "Goblin Bombardment",
- "card_hash": "d7c8190b463129cd02bfc4d60f737f8e",
+ "card_hash": "c2f7058c81972e3482fb55cbce9fc36d",
  "card": {
   "$": "CardDef",
   "oracle_id": "edad60c6-80de-4033-af1b-a703ac332983",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 461,
+  "edhrec_rank": 466,
   "scryfall_uri": "https://scryfall.com/card/mh2/279/goblin-bombardment?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Goblin Bombardment",
    "face": 0,
    "face_name": "Goblin Bombardment",
-   "card_hash": "d7c8190b463129cd02bfc4d60f737f8e",
+   "card_hash": "c2f7058c81972e3482fb55cbce9fc36d",
    "fully_read": true,
    "abilities": [
     {

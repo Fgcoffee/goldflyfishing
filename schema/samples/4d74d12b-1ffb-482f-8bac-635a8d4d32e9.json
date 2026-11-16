@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
  "name": "Goblin Piledriver",
- "card_hash": "4138a21d675f9d742f0c4e3be0629f72",
+ "card_hash": "f1285db87806d612608b5b4bad0e3e59",
  "card": {
   "$": "CardDef",
   "oracle_id": "4d74d12b-1ffb-482f-8bac-635a8d4d32e9",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 6654,
+  "edhrec_rank": 6816,
   "scryfall_uri": "https://scryfall.com/card/ori/151/goblin-piledriver?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Goblin Piledriver",
    "face": 0,
    "face_name": "Goblin Piledriver",
-   "card_hash": "4138a21d675f9d742f0c4e3be0629f72",
+   "card_hash": "f1285db87806d612608b5b4bad0e3e59",
    "fully_read": true,
    "abilities": [
     {

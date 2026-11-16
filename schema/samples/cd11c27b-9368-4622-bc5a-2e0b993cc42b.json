@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
  "name": "Mystic Confluence",
- "card_hash": "19172c2260a2b670eb8237ffceb5f447",
+ "card_hash": "b63df8a1e91b9d0d30a76865d80503c6",
  "card": {
   "$": "CardDef",
   "oracle_id": "cd11c27b-9368-4622-bc5a-2e0b993cc42b",
@@ -47,7 +47,7 @@
   "mana_value": 5,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 1460,
+  "edhrec_rank": 1474,
   "scryfall_uri": "https://scryfall.com/card/cmm/108/mystic-confluence?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Mystic Confluence",
    "face": 0,
    "face_name": "Mystic Confluence",
-   "card_hash": "19172c2260a2b670eb8237ffceb5f447",
+   "card_hash": "b63df8a1e91b9d0d30a76865d80503c6",
    "fully_read": true,
    "abilities": [
     {

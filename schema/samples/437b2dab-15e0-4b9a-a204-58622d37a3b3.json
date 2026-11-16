@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "437b2dab-15e0-4b9a-a204-58622d37a3b3",
  "name": "Fact or Fiction",
- "card_hash": "73b661a28e1a75c319fe7f1723593fce",
+ "card_hash": "72934acef82d56a908a401f834200967",
  "card": {
   "$": "CardDef",
   "oracle_id": "437b2dab-15e0-4b9a-a204-58622d37a3b3",
@@ -41,8 +41,8 @@
   "mana_value": 4,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 709,
-  "scryfall_uri": "https://scryfall.com/card/cmm/91/fact-or-fiction?utm_source=api"
+  "edhrec_rank": 700,
+  "scryfall_uri": "https://scryfall.com/card/frc/41/fact-or-fiction?utm_source=api"
  },
  "faces": [
   {
@@ -51,7 +51,7 @@
    "name": "Fact or Fiction",
    "face": 0,
    "face_name": "Fact or Fiction",
-   "card_hash": "73b661a28e1a75c319fe7f1723593fce",
+   "card_hash": "72934acef82d56a908a401f834200967",
    "fully_read": false,
    "abilities": [
     {

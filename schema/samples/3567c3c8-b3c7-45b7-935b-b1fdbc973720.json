@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
  "name": "Vandalblast",
- "card_hash": "38a568b5521816af6f994a6e0619bfe4",
+ "card_hash": "3582e90f756cfb7316bf57b7f7814651",
  "card": {
   "$": "CardDef",
   "oracle_id": "3567c3c8-b3c7-45b7-935b-b1fdbc973720",
@@ -38,7 +38,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 101,
+  "edhrec_rank": 100,
   "scryfall_uri": "https://scryfall.com/card/msc/168/vandalblast?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Vandalblast",
    "face": 0,
    "face_name": "Vandalblast",
-   "card_hash": "38a568b5521816af6f994a6e0619bfe4",
+   "card_hash": "3582e90f756cfb7316bf57b7f7814651",
    "fully_read": true,
    "abilities": [
     {

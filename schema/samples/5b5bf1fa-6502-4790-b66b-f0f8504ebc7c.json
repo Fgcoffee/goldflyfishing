@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
  "name": "Cabal Ritual",
- "card_hash": "40fc339bbe64a826ef6227f4dab41384",
+ "card_hash": "abd06ebf995471a035f64c85a51848a7",
  "card": {
   "$": "CardDef",
   "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 447,
+  "edhrec_rank": 437,
   "scryfall_uri": "https://scryfall.com/card/vma/106/cabal-ritual?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Cabal Ritual",
    "face": 0,
    "face_name": "Cabal Ritual",
-   "card_hash": "40fc339bbe64a826ef6227f4dab41384",
+   "card_hash": "abd06ebf995471a035f64c85a51848a7",
    "fully_read": false,
    "abilities": [
     {

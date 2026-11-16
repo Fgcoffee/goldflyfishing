@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
  "name": "Kataki, War's Wage",
- "card_hash": "be42d7e50d2eddaa54e37a5730c15917",
+ "card_hash": "f8b2c21df9e62e27952a6813205105e8",
  "card": {
   "$": "CardDef",
   "oracle_id": "27ffa6e9-c161-4f53-8b41-7fae5f199f41",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 9663,
+  "edhrec_rank": 9910,
   "scryfall_uri": "https://scryfall.com/card/mma/20/kataki-wars-wage?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Kataki, War's Wage",
    "face": 0,
    "face_name": "Kataki, War's Wage",
-   "card_hash": "be42d7e50d2eddaa54e37a5730c15917",
+   "card_hash": "f8b2c21df9e62e27952a6813205105e8",
    "fully_read": true,
    "abilities": [
     {

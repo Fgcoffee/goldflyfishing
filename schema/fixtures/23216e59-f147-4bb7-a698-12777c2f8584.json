@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "23216e59-f147-4bb7-a698-12777c2f8584",
  "name": "Jeweled Lotus",
- "card_hash": "a2c57ea6f0c27e8f663d4a3bd1004427",
+ "card_hash": "9531e09d72e7334e852a2001cc1d189b",
  "card": {
   "$": "CardDef",
   "oracle_id": "23216e59-f147-4bb7-a698-12777c2f8584",
@@ -40,7 +40,6 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": false,
-  "edhrec_rank": 16360,
   "scryfall_uri": "https://scryfall.com/card/cmm/396/jeweled-lotus?utm_source=api"
  },
  "faces": [
@@ -50,7 +49,7 @@
    "name": "Jeweled Lotus",
    "face": 0,
    "face_name": "Jeweled Lotus",
-   "card_hash": "a2c57ea6f0c27e8f663d4a3bd1004427",
+   "card_hash": "9531e09d72e7334e852a2001cc1d189b",
    "fully_read": true,
    "abilities": [
     {

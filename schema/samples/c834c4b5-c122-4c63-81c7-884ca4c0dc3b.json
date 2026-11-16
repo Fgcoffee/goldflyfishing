@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
  "name": "Ogre Battledriver",
- "card_hash": "a074fa6500112a1abf8e36b49dd7d503",
+ "card_hash": "8062fb0bc951be07946ed2f62ea04a47",
  "card": {
   "$": "CardDef",
   "oracle_id": "c834c4b5-c122-4c63-81c7-884ca4c0dc3b",
@@ -53,7 +53,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 3304,
+  "edhrec_rank": 3335,
   "scryfall_uri": "https://scryfall.com/card/tdc/227/ogre-battledriver?utm_source=api"
  },
  "faces": [
@@ -63,7 +63,7 @@
    "name": "Ogre Battledriver",
    "face": 0,
    "face_name": "Ogre Battledriver",
-   "card_hash": "a074fa6500112a1abf8e36b49dd7d503",
+   "card_hash": "8062fb0bc951be07946ed2f62ea04a47",
    "fully_read": true,
    "abilities": [
     {

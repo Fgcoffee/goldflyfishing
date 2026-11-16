@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
  "name": "Skullclamp",
- "card_hash": "1285cfaf80e0301967c8ff1d444ea02c",
+ "card_hash": "3000c43a8016abe0efa2f4e7dc89487f",
  "card": {
   "$": "CardDef",
   "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
@@ -40,8 +40,8 @@
   "mana_value": 1,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 40,
-  "scryfall_uri": "https://scryfall.com/card/msc/210/skullclamp?utm_source=api"
+  "edhrec_rank": 38,
+  "scryfall_uri": "https://scryfall.com/card/trc/498/skullclamp?utm_source=api"
  },
  "faces": [
   {
@@ -50,7 +50,7 @@
    "name": "Skullclamp",
    "face": 0,
    "face_name": "Skullclamp",
-   "card_hash": "1285cfaf80e0301967c8ff1d444ea02c",
+   "card_hash": "3000c43a8016abe0efa2f4e7dc89487f",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
  "name": "Mystic Gate",
- "card_hash": "0243620937cb9b0097f9cb05060e40a8",
+ "card_hash": "3f6fbf35a2d56c9249e63cf45a95b0ae",
  "card": {
   "$": "CardDef",
   "oracle_id": "e9f5feb2-2c1a-46ce-885a-4f378d7d10af",
@@ -31,8 +31,8 @@
   "mana_value": 0,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 870,
-  "scryfall_uri": "https://scryfall.com/card/cmm/1013/mystic-gate?utm_source=api"
+  "edhrec_rank": 756,
+  "scryfall_uri": "https://scryfall.com/card/frc/76/mystic-gate?utm_source=api"
  },
  "faces": [
   {
@@ -41,7 +41,7 @@
    "name": "Mystic Gate",
    "face": 0,
    "face_name": "Mystic Gate",
-   "card_hash": "0243620937cb9b0097f9cb05060e40a8",
+   "card_hash": "3f6fbf35a2d56c9249e63cf45a95b0ae",
    "fully_read": true,
    "abilities": [
     {

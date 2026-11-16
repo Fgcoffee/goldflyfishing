@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
  "name": "Mana Crypt",
- "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
+ "card_hash": "4be9b0a8701450ed5679b2949a799831",
  "card": {
   "$": "CardDef",
   "oracle_id": "2c63e4e1-89d2-4bc6-a232-94e75c4b1c8a",
@@ -36,7 +36,6 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": false,
-  "edhrec_rank": 14443,
   "scryfall_uri": "https://scryfall.com/card/2xm/270/mana-crypt?utm_source=api"
  },
  "faces": [
@@ -46,7 +45,7 @@
    "name": "Mana Crypt",
    "face": 0,
    "face_name": "Mana Crypt",
-   "card_hash": "5f21bf36ef3a7365374e649aff0f6ee2",
+   "card_hash": "4be9b0a8701450ed5679b2949a799831",
    "fully_read": false,
    "abilities": [
     {

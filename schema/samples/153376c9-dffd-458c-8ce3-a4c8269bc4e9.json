@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
  "name": "Smothering Tithe",
- "card_hash": "0c81c0c422ec9859a6119eafd817e7a5",
+ "card_hash": "33ccf5b823ea12149ce53ab57472a78d",
  "card": {
   "$": "CardDef",
   "oracle_id": "153376c9-dffd-458c-8ce3-a4c8269bc4e9",
@@ -51,7 +51,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 65,
+  "edhrec_rank": 68,
   "scryfall_uri": "https://scryfall.com/card/cmm/57/smothering-tithe?utm_source=api"
  },
  "faces": [
@@ -61,7 +61,7 @@
    "name": "Smothering Tithe",
    "face": 0,
    "face_name": "Smothering Tithe",
-   "card_hash": "0c81c0c422ec9859a6119eafd817e7a5",
+   "card_hash": "33ccf5b823ea12149ce53ab57472a78d",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8ab4d31e-7187-4ba1-97cb-1a0a11ab28bf",
  "name": "Magus of the Tabernacle",
- "card_hash": "cb1d4472e2ede657f01a751377b26224",
+ "card_hash": "5b29e30190e720cb8552ac199655c0fb",
  "card": {
   "$": "CardDef",
   "oracle_id": "8ab4d31e-7187-4ba1-97cb-1a0a11ab28bf",
@@ -47,7 +47,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 17276,
+  "edhrec_rank": 17551,
   "scryfall_uri": "https://scryfall.com/card/plc/8/magus-of-the-tabernacle?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Magus of the Tabernacle",
    "face": 0,
    "face_name": "Magus of the Tabernacle",
-   "card_hash": "cb1d4472e2ede657f01a751377b26224",
+   "card_hash": "5b29e30190e720cb8552ac199655c0fb",
    "fully_read": true,
    "abilities": [
     {

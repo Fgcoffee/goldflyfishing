@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
  "name": "Solitary Confinement",
- "card_hash": "429cddcb145be40506d4dc20c8498d8e",
+ "card_hash": "250abf0bddeb74932c4b2ca2633dd652",
  "card": {
   "$": "CardDef",
   "oracle_id": "d41ab41d-07c8-4f6d-be5e-7aec9f5f6365",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 4024,
+  "edhrec_rank": 4031,
   "scryfall_uri": "https://scryfall.com/card/mh2/265/solitary-confinement?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Solitary Confinement",
    "face": 0,
    "face_name": "Solitary Confinement",
-   "card_hash": "429cddcb145be40506d4dc20c8498d8e",
+   "card_hash": "250abf0bddeb74932c4b2ca2633dd652",
    "fully_read": true,
    "abilities": [
     {

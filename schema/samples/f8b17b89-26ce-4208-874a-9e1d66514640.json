@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
  "name": "Dig Through Time",
- "card_hash": "d3044418c468e539fc33812c8d6560f9",
+ "card_hash": "a3073a1b7e9d9182f8974983ad50a470",
  "card": {
   "$": "CardDef",
   "oracle_id": "f8b17b89-26ce-4208-874a-9e1d66514640",
@@ -50,7 +50,7 @@
   "mana_value": 8,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 623,
+  "edhrec_rank": 633,
   "scryfall_uri": "https://scryfall.com/card/soc/195/dig-through-time?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Dig Through Time",
    "face": 0,
    "face_name": "Dig Through Time",
-   "card_hash": "d3044418c468e539fc33812c8d6560f9",
+   "card_hash": "a3073a1b7e9d9182f8974983ad50a470",
    "fully_read": true,
    "abilities": [
     {

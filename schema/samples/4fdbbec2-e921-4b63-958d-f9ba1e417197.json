@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
  "name": "Purphoros, God of the Forge",
- "card_hash": "ea8f74093b51132c48937904031099f3",
+ "card_hash": "27618d561d0c15568792de669b8a28e9",
  "card": {
   "$": "CardDef",
   "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
@@ -50,7 +50,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 685,
+  "edhrec_rank": 699,
   "scryfall_uri": "https://scryfall.com/card/cmm/246/purphoros-god-of-the-forge?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Purphoros, God of the Forge",
    "face": 0,
    "face_name": "Purphoros, God of the Forge",
-   "card_hash": "ea8f74093b51132c48937904031099f3",
+   "card_hash": "27618d561d0c15568792de669b8a28e9",
    "fully_read": false,
    "abilities": [
     {

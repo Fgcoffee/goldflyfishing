@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
  "name": "Hushbringer",
- "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
+ "card_hash": "f51f7dc719e2a6544153bd0948311944",
  "card": {
   "$": "CardDef",
   "oracle_id": "3d21f710-6bbc-41ae-a8e5-02debe3e02bd",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 3961,
+  "edhrec_rank": 4092,
   "scryfall_uri": "https://scryfall.com/card/eld/18/hushbringer?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Hushbringer",
    "face": 0,
    "face_name": "Hushbringer",
-   "card_hash": "c3067cc294c9dff0fe5bf0ab56ce430a",
+   "card_hash": "f51f7dc719e2a6544153bd0948311944",
    "fully_read": false,
    "abilities": [
     {

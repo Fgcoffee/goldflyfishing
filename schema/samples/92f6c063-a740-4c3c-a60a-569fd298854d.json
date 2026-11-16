@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
  "name": "Sphere of Safety",
- "card_hash": "63fc4ddec8cc072080c86f26d9ef5a76",
+ "card_hash": "65ec608ba9ec236070d0440a18816ef3",
  "card": {
   "$": "CardDef",
   "oracle_id": "92f6c063-a740-4c3c-a60a-569fd298854d",
@@ -41,7 +41,7 @@
   "mana_value": 5,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 671,
+  "edhrec_rank": 695,
   "scryfall_uri": "https://scryfall.com/card/dsc/104/sphere-of-safety?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Sphere of Safety",
    "face": 0,
    "face_name": "Sphere of Safety",
-   "card_hash": "63fc4ddec8cc072080c86f26d9ef5a76",
+   "card_hash": "65ec608ba9ec236070d0440a18816ef3",
    "fully_read": true,
    "abilities": [
     {

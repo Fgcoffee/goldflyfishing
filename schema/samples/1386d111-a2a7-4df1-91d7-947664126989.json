@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
  "name": "Charcoal Diamond",
- "card_hash": "d7a5433259d12b9758443f4b8bfdff26",
+ "card_hash": "7489f042207d1fa5ee2657ea2c3aae1c",
  "card": {
   "$": "CardDef",
   "oracle_id": "1386d111-a2a7-4df1-91d7-947664126989",
@@ -37,7 +37,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 696,
+  "edhrec_rank": 705,
   "scryfall_uri": "https://scryfall.com/card/clb/305/charcoal-diamond?utm_source=api"
  },
  "faces": [
@@ -47,7 +47,7 @@
    "name": "Charcoal Diamond",
    "face": 0,
    "face_name": "Charcoal Diamond",
-   "card_hash": "d7a5433259d12b9758443f4b8bfdff26",
+   "card_hash": "7489f042207d1fa5ee2657ea2c3aae1c",
    "fully_read": true,
    "abilities": [
     {

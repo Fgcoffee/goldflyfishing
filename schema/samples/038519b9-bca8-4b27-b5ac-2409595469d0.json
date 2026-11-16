@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
  "name": "Diabolic Intent",
- "card_hash": "881c339c0729c876582ac03fd7d1d44f",
+ "card_hash": "f01af61f46a3ff756edc281490d4f674",
  "card": {
   "$": "CardDef",
   "oracle_id": "038519b9-bca8-4b27-b5ac-2409595469d0",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 271,
+  "edhrec_rank": 275,
   "scryfall_uri": "https://scryfall.com/card/bro/89/diabolic-intent?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Diabolic Intent",
    "face": 0,
    "face_name": "Diabolic Intent",
-   "card_hash": "881c339c0729c876582ac03fd7d1d44f",
+   "card_hash": "f01af61f46a3ff756edc281490d4f674",
    "fully_read": true,
    "abilities": [
     {

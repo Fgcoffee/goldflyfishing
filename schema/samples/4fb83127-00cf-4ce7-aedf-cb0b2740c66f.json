@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
  "name": "Reckless Bushwhacker",
- "card_hash": "e2258e8baa07efda2065c242c94ec9b0",
+ "card_hash": "0d8dea261a86f230d17488fe4427d254",
  "card": {
   "$": "CardDef",
   "oracle_id": "4fb83127-00cf-4ce7-aedf-cb0b2740c66f",
@@ -52,7 +52,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 15883,
+  "edhrec_rank": 16151,
   "scryfall_uri": "https://scryfall.com/card/ogw/116/reckless-bushwhacker?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Reckless Bushwhacker",
    "face": 0,
    "face_name": "Reckless Bushwhacker",
-   "card_hash": "e2258e8baa07efda2065c242c94ec9b0",
+   "card_hash": "0d8dea261a86f230d17488fe4427d254",
    "fully_read": false,
    "abilities": [
     {

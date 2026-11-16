@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
  "name": "Hallowed Fountain",
- "card_hash": "470d3ca968f6e8a99b2b050381e0cd6d",
+ "card_hash": "6fc5ef4a9f3f901a72307bb23bef407c",
  "card": {
   "$": "CardDef",
   "oracle_id": "f1750962-a87c-49f6-b731-02ae971ac6ea",
@@ -34,7 +34,7 @@
   "mana_value": 0,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 63,
+  "edhrec_rank": 60,
   "scryfall_uri": "https://scryfall.com/card/trk/286/hallowed-fountain?utm_source=api"
  },
  "faces": [
@@ -44,7 +44,7 @@
    "name": "Hallowed Fountain",
    "face": 0,
    "face_name": "Hallowed Fountain",
-   "card_hash": "470d3ca968f6e8a99b2b050381e0cd6d",
+   "card_hash": "6fc5ef4a9f3f901a72307bb23bef407c",
    "fully_read": true,
    "abilities": [
     {

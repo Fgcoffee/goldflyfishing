@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
  "name": "Goblin Warchief",
- "card_hash": "91d299ee14fa65e45050758484a49c1e",
+ "card_hash": "b85f38aac163c7a62109a85c3cc771d9",
  "card": {
   "$": "CardDef",
   "oracle_id": "39882df0-c20f-469d-94ba-1617224e71a1",
@@ -53,7 +53,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 2072,
+  "edhrec_rank": 2069,
   "scryfall_uri": "https://scryfall.com/card/dom/130/goblin-warchief?utm_source=api"
  },
  "faces": [
@@ -63,7 +63,7 @@
    "name": "Goblin Warchief",
    "face": 0,
    "face_name": "Goblin Warchief",
-   "card_hash": "91d299ee14fa65e45050758484a49c1e",
+   "card_hash": "b85f38aac163c7a62109a85c3cc771d9",
    "fully_read": true,
    "abilities": [
     {

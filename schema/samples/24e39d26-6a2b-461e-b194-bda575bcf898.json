@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
  "name": "Legion Loyalty",
- "card_hash": "53ae213fb6a7bd8e07d235f9610fcced",
+ "card_hash": "0b976d25928c9aca7a81b0cef26eb999",
  "card": {
   "$": "CardDef",
   "oracle_id": "24e39d26-6a2b-461e-b194-bda575bcf898",
@@ -47,7 +47,7 @@
   "mana_value": 8,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 2911,
+  "edhrec_rank": 3003,
   "scryfall_uri": "https://scryfall.com/card/tdc/122/legion-loyalty?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Legion Loyalty",
    "face": 0,
    "face_name": "Legion Loyalty",
-   "card_hash": "53ae213fb6a7bd8e07d235f9610fcced",
+   "card_hash": "0b976d25928c9aca7a81b0cef26eb999",
    "fully_read": false,
    "abilities": [
     {

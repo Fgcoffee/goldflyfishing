@@ -1,8 +1,8 @@
 {
-  "oracle_file": "oracle_cards-20260916T090153.684_0000.jsonl.gz",
-  "oracle_hash": "9d8ff76c91ece72d5e0a5e8ed85e6f381b3c0b1d175998f0d892d213ec66742a",
+  "oracle_file": "oracle_cards-20261115T220206.940_0000.jsonl.gz",
+  "oracle_hash": "0dd2142c1437097041e7101d2e313e4a76d2c9a55f611cdf5a4fc798a0b31b27",
   "schema_version": "3",
-  "cards": 38802,
-  "rulings": 78949,
-  "oracle_tags": 235168
+  "cards": 39295,
+  "rulings": 79706,
+  "oracle_tags": 240247
 }

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "1d67f5ff-1fce-45e5-b6a1-416c569351e2",
  "name": "Gitaxian Probe",
- "card_hash": "fb091cf59ae94ac8e68d20c4d1de7d67",
+ "card_hash": "9f7a0ef7a05fae73d56ea50599001377",
  "card": {
   "$": "CardDef",
   "oracle_id": "1d67f5ff-1fce-45e5-b6a1-416c569351e2",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 522,
+  "edhrec_rank": 530,
   "scryfall_uri": "https://scryfall.com/card/nph/35/gitaxian-probe?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Gitaxian Probe",
    "face": 0,
    "face_name": "Gitaxian Probe",
-   "card_hash": "fb091cf59ae94ac8e68d20c4d1de7d67",
+   "card_hash": "9f7a0ef7a05fae73d56ea50599001377",
    "fully_read": true,
    "abilities": [
     {

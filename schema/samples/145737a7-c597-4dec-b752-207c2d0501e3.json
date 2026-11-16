@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
  "name": "Goblin Matron",
- "card_hash": "088ef786a114eae901f55ccc617dfe33",
+ "card_hash": "c2ecde2384e8e371d660801e92c7b6c5",
  "card": {
   "$": "CardDef",
   "oracle_id": "145737a7-c597-4dec-b752-207c2d0501e3",
@@ -46,7 +46,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1787,
+  "edhrec_rank": 1808,
   "scryfall_uri": "https://scryfall.com/card/plst/DMR-123/goblin-matron?utm_source=api"
  },
  "faces": [
@@ -56,7 +56,7 @@
    "name": "Goblin Matron",
    "face": 0,
    "face_name": "Goblin Matron",
-   "card_hash": "088ef786a114eae901f55ccc617dfe33",
+   "card_hash": "c2ecde2384e8e371d660801e92c7b6c5",
    "fully_read": true,
    "abilities": [
     {

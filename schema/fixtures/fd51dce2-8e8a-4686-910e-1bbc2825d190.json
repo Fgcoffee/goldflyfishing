@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "fd51dce2-8e8a-4686-910e-1bbc2825d190",
  "name": "Radical Idea",
- "card_hash": "6d6c0e3bbbcb8d5aa73a8e76d46751d2",
+ "card_hash": "0573de4651469ac74bb59bcffe8e01c4",
  "card": {
   "$": "CardDef",
   "oracle_id": "fd51dce2-8e8a-4686-910e-1bbc2825d190",
@@ -45,7 +45,7 @@
   "mana_value": 2,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 8506,
+  "edhrec_rank": 8897,
   "scryfall_uri": "https://scryfall.com/card/otc/110/radical-idea?utm_source=api"
  },
  "faces": [
@@ -55,7 +55,7 @@
    "name": "Radical Idea",
    "face": 0,
    "face_name": "Radical Idea",
-   "card_hash": "6d6c0e3bbbcb8d5aa73a8e76d46751d2",
+   "card_hash": "0573de4651469ac74bb59bcffe8e01c4",
    "fully_read": true,
    "abilities": [
     {

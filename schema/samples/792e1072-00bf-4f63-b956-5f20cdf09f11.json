@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
  "name": "Goblin Recruiter",
- "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
+ "card_hash": "4f091c183ee96da2f9d1a406c1a7fd0f",
  "card": {
   "$": "CardDef",
   "oracle_id": "792e1072-00bf-4f63-b956-5f20cdf09f11",
@@ -46,7 +46,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 3338,
+  "edhrec_rank": 3372,
   "scryfall_uri": "https://scryfall.com/card/6ed/186/goblin-recruiter?utm_source=api"
  },
  "faces": [
@@ -56,7 +56,7 @@
    "name": "Goblin Recruiter",
    "face": 0,
    "face_name": "Goblin Recruiter",
-   "card_hash": "4424c160d15e1866bcb5c39e42c35d43",
+   "card_hash": "4f091c183ee96da2f9d1a406c1a7fd0f",
    "fully_read": false,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "24227761-b50e-4b9e-93a2-e82d053b3e3d",
  "name": "Fling",
- "card_hash": "4acf86d870b458589a2a4cb6e737bd9c",
+ "card_hash": "d51ba218c1cf5ba955c5887031e44bbd",
  "card": {
   "$": "CardDef",
   "oracle_id": "24227761-b50e-4b9e-93a2-e82d053b3e3d",
@@ -41,8 +41,8 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1453,
-  "scryfall_uri": "https://scryfall.com/card/jmp/320/fling?utm_source=api"
+  "edhrec_rank": 1450,
+  "scryfall_uri": "https://scryfall.com/card/j25/553/fling?utm_source=api"
  },
  "faces": [
   {
@@ -51,7 +51,7 @@
    "name": "Fling",
    "face": 0,
    "face_name": "Fling",
-   "card_hash": "4acf86d870b458589a2a4cb6e737bd9c",
+   "card_hash": "d51ba218c1cf5ba955c5887031e44bbd",
    "fully_read": true,
    "abilities": [
     {

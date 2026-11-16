@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e4bcd4ea-e7cd-4471-8f3b-18bb51d3d70c",
  "name": "Pyroclasm",
- "card_hash": "2ae403e56828761ab65fba7bedcc21dc",
+ "card_hash": "6ce08ce242adb2a434f9db64ab6cb0f6",
  "card": {
   "$": "CardDef",
   "oracle_id": "e4bcd4ea-e7cd-4471-8f3b-18bb51d3d70c",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 7668,
+  "edhrec_rank": 7824,
   "scryfall_uri": "https://scryfall.com/card/dsk/149/pyroclasm?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Pyroclasm",
    "face": 0,
    "face_name": "Pyroclasm",
-   "card_hash": "2ae403e56828761ab65fba7bedcc21dc",
+   "card_hash": "6ce08ce242adb2a434f9db64ab6cb0f6",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
  "name": "Goblin Cratermaker",
- "card_hash": "582c55ea6e91095d37a67ccf3de96612",
+ "card_hash": "927de757452bfad1e09783a3f1fbaa50",
  "card": {
   "$": "CardDef",
   "oracle_id": "1962d9b3-f057-4d2c-9c5b-386d9a66148a",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 6845,
+  "edhrec_rank": 7003,
   "scryfall_uri": "https://scryfall.com/card/hoc/194/goblin-cratermaker?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Goblin Cratermaker",
    "face": 0,
    "face_name": "Goblin Cratermaker",
-   "card_hash": "582c55ea6e91095d37a67ccf3de96612",
+   "card_hash": "927de757452bfad1e09783a3f1fbaa50",
    "fully_read": true,
    "abilities": [
     {

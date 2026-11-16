@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
  "name": "Archon of Emeria",
- "card_hash": "ba0434c43b26af11616854337a2b680a",
+ "card_hash": "5264b1bc2f46c5d9e161f94ae731191d",
  "card": {
   "$": "CardDef",
   "oracle_id": "ceef2d5a-77ea-4e56-9806-fd1a2d5be400",
@@ -49,7 +49,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 2108,
+  "edhrec_rank": 2154,
   "scryfall_uri": "https://scryfall.com/card/znr/4/archon-of-emeria?utm_source=api"
  },
  "faces": [
@@ -59,7 +59,7 @@
    "name": "Archon of Emeria",
    "face": 0,
    "face_name": "Archon of Emeria",
-   "card_hash": "ba0434c43b26af11616854337a2b680a",
+   "card_hash": "5264b1bc2f46c5d9e161f94ae731191d",
    "fully_read": false,
    "abilities": [
     {

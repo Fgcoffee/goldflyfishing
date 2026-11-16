@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
  "name": "Vito, Thorn of the Dusk Rose",
- "card_hash": "e9763789a4fe378568c1b098ea47bd8d",
+ "card_hash": "337d09ba1e67ea3445803fe2e93a062a",
  "card": {
   "$": "CardDef",
   "oracle_id": "7336a541-3ae9-4ab2-acb8-f574c0a5b3a9",
@@ -48,8 +48,8 @@
   "mana_value": 3,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 494,
-  "scryfall_uri": "https://scryfall.com/card/m21/127/vito-thorn-of-the-dusk-rose?utm_source=api"
+  "edhrec_rank": 488,
+  "scryfall_uri": "https://scryfall.com/card/j25/71/vito-thorn-of-the-dusk-rose?utm_source=api"
  },
  "faces": [
   {
@@ -58,7 +58,7 @@
    "name": "Vito, Thorn of the Dusk Rose",
    "face": 0,
    "face_name": "Vito, Thorn of the Dusk Rose",
-   "card_hash": "e9763789a4fe378568c1b098ea47bd8d",
+   "card_hash": "337d09ba1e67ea3445803fe2e93a062a",
    "fully_read": true,
    "abilities": [
     {

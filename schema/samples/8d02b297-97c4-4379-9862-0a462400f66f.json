@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8d02b297-97c4-4379-9862-0a462400f66f",
  "name": "Phyrexian Altar",
- "card_hash": "f2fd85e23bcaaeeaf8a071aea8ca1623",
+ "card_hash": "28baaa81ed08cc8dc57a3ff937a8ea2b",
  "card": {
   "$": "CardDef",
   "oracle_id": "8d02b297-97c4-4379-9862-0a462400f66f",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 310,
+  "edhrec_rank": 305,
   "scryfall_uri": "https://scryfall.com/card/2x2/311/phyrexian-altar?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Phyrexian Altar",
    "face": 0,
    "face_name": "Phyrexian Altar",
-   "card_hash": "f2fd85e23bcaaeeaf8a071aea8ca1623",
+   "card_hash": "28baaa81ed08cc8dc57a3ff937a8ea2b",
    "fully_read": true,
    "abilities": [
     {

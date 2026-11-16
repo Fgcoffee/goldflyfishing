@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "cdaab6b0-1a2d-4809-8e6b-56013acd8f78",
  "name": "Cast Down",
- "card_hash": "0dc643383899fcc0aa5125d53f45ee95",
+ "card_hash": "55e7805f1e032928d8cf17062d68b3e4",
  "card": {
   "$": "CardDef",
   "oracle_id": "cdaab6b0-1a2d-4809-8e6b-56013acd8f78",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 7303,
+  "edhrec_rank": 7505,
   "scryfall_uri": "https://scryfall.com/card/clb/119/cast-down?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Cast Down",
    "face": 0,
    "face_name": "Cast Down",
-   "card_hash": "0dc643383899fcc0aa5125d53f45ee95",
+   "card_hash": "55e7805f1e032928d8cf17062d68b3e4",
    "fully_read": true,
    "abilities": [
     {

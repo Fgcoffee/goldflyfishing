@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
  "name": "Moggcatcher",
- "card_hash": "60cee7a5d1e36bd0381fa3164dbe15c0",
+ "card_hash": "7dfa4c7303ddf113642ca45de61256ed",
  "card": {
   "$": "CardDef",
   "oracle_id": "4845dc21-7534-4896-b298-4d44cd7a3b27",
@@ -53,7 +53,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 8807,
+  "edhrec_rank": 8948,
   "scryfall_uri": "https://scryfall.com/card/nem/96/moggcatcher?utm_source=api"
  },
  "faces": [
@@ -63,7 +63,7 @@
    "name": "Moggcatcher",
    "face": 0,
    "face_name": "Moggcatcher",
-   "card_hash": "60cee7a5d1e36bd0381fa3164dbe15c0",
+   "card_hash": "7dfa4c7303ddf113642ca45de61256ed",
    "fully_read": true,
    "abilities": [
     {

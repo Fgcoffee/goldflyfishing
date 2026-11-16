@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
  "name": "Beetleback Chief",
- "card_hash": "00e9df100277678b24d252cc7df4479f",
+ "card_hash": "5b06d9e86b824db6f8ed0b5c6a5dd1bd",
  "card": {
   "$": "CardDef",
   "oracle_id": "f5c5f64c-6911-430c-a825-b32b96d39c7d",
@@ -53,7 +53,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 3582,
+  "edhrec_rank": 3664,
   "scryfall_uri": "https://scryfall.com/card/tdc/205/beetleback-chief?utm_source=api"
  },
  "faces": [
@@ -63,7 +63,7 @@
    "name": "Beetleback Chief",
    "face": 0,
    "face_name": "Beetleback Chief",
-   "card_hash": "00e9df100277678b24d252cc7df4479f",
+   "card_hash": "5b06d9e86b824db6f8ed0b5c6a5dd1bd",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
  "name": "Talisman of Progress",
- "card_hash": "86a112fd437d6454294ddb81e886ff4c",
+ "card_hash": "bc91a69011645a8a3ec84420e8cbc547",
  "card": {
   "$": "CardDef",
   "oracle_id": "00e35322-1a9a-41e3-9ce1-359c8eaa3bc7",
@@ -39,8 +39,8 @@
   "mana_value": 2,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 139,
-  "scryfall_uri": "https://scryfall.com/card/msc/221/talisman-of-progress?utm_source=api"
+  "edhrec_rank": 136,
+  "scryfall_uri": "https://scryfall.com/card/trc/508/talisman-of-progress?utm_source=api"
  },
  "faces": [
   {
@@ -49,7 +49,7 @@
    "name": "Talisman of Progress",
    "face": 0,
    "face_name": "Talisman of Progress",
-   "card_hash": "86a112fd437d6454294ddb81e886ff4c",
+   "card_hash": "bc91a69011645a8a3ec84420e8cbc547",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
  "name": "The Tabernacle at Pendrell Vale",
- "card_hash": "7d5992070cd7b0318400c164d758cca5",
+ "card_hash": "08183e931ae986eb38e00187632188f3",
  "card": {
   "$": "CardDef",
   "oracle_id": "69b409b3-fa16-4c79-8b46-215a7036ed46",
@@ -27,7 +27,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 8877,
+  "edhrec_rank": 8794,
   "scryfall_uri": "https://scryfall.com/card/me3/212/the-tabernacle-at-pendrell-vale?utm_source=api"
  },
  "faces": [
@@ -37,7 +37,7 @@
    "name": "The Tabernacle at Pendrell Vale",
    "face": 0,
    "face_name": "The Tabernacle at Pendrell Vale",
-   "card_hash": "7d5992070cd7b0318400c164d758cca5",
+   "card_hash": "08183e931ae986eb38e00187632188f3",
    "fully_read": true,
    "abilities": [
     {

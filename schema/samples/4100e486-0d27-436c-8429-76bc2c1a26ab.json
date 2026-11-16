@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
  "name": "Goblin Ringleader",
- "card_hash": "863dad650c5e50132cc3f73c89ef9a13",
+ "card_hash": "5751a11178a191f947e43ad0565427a4",
  "card": {
   "$": "CardDef",
   "oracle_id": "4100e486-0d27-436c-8429-76bc2c1a26ab",
@@ -49,7 +49,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 4360,
+  "edhrec_rank": 4427,
   "scryfall_uri": "https://scryfall.com/card/m20/143/goblin-ringleader?utm_source=api"
  },
  "faces": [
@@ -59,7 +59,7 @@
    "name": "Goblin Ringleader",
    "face": 0,
    "face_name": "Goblin Ringleader",
-   "card_hash": "863dad650c5e50132cc3f73c89ef9a13",
+   "card_hash": "5751a11178a191f947e43ad0565427a4",
    "fully_read": true,
    "abilities": [
     {

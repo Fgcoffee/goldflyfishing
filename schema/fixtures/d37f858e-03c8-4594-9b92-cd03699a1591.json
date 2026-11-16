@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d37f858e-03c8-4594-9b92-cd03699a1591",
  "name": "Scoured Barrens",
- "card_hash": "63ac822fb25fd6855cefa3d50440f66d",
+ "card_hash": "934c463cb80a58a8cafba6818d018929",
  "card": {
   "$": "CardDef",
   "oracle_id": "d37f858e-03c8-4594-9b92-cd03699a1591",
@@ -30,7 +30,7 @@
   "mana_value": 0,
   "color_identity": 5,
   "commander_legal": true,
-  "edhrec_rank": 748,
+  "edhrec_rank": 761,
   "scryfall_uri": "https://scryfall.com/card/tdm/267/scoured-barrens?utm_source=api"
  },
  "faces": [
@@ -40,7 +40,7 @@
    "name": "Scoured Barrens",
    "face": 0,
    "face_name": "Scoured Barrens",
-   "card_hash": "63ac822fb25fd6855cefa3d50440f66d",
+   "card_hash": "934c463cb80a58a8cafba6818d018929",
    "fully_read": true,
    "abilities": [
     {

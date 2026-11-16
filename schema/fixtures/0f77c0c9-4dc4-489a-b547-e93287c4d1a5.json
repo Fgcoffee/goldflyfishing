@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0f77c0c9-4dc4-489a-b547-e93287c4d1a5",
  "name": "Eldritch Evolution",
- "card_hash": "caa05698704e1d2a26a86a5efee957f6",
+ "card_hash": "a8d980ce415405733634ada8f430ccf0",
  "card": {
   "$": "CardDef",
   "oracle_id": "0f77c0c9-4dc4-489a-b547-e93287c4d1a5",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 751,
+  "edhrec_rank": 773,
   "scryfall_uri": "https://scryfall.com/card/inr/195/eldritch-evolution?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Eldritch Evolution",
    "face": 0,
    "face_name": "Eldritch Evolution",
-   "card_hash": "caa05698704e1d2a26a86a5efee957f6",
+   "card_hash": "a8d980ce415405733634ada8f430ccf0",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
  "name": "Gravecrawler",
- "card_hash": "46a4ba95ca926e70a14d6c74fd8c52d0",
+ "card_hash": "e185aed3369514f951faf2f27ebf0744",
  "card": {
   "$": "CardDef",
   "oracle_id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
@@ -40,7 +40,7 @@
   "mana_value": 1,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 677,
+  "edhrec_rank": 639,
   "scryfall_uri": "https://scryfall.com/card/tdc/93/gravecrawler?utm_source=api"
  },
  "faces": [
@@ -50,7 +50,7 @@
    "name": "Gravecrawler",
    "face": 0,
    "face_name": "Gravecrawler",
-   "card_hash": "46a4ba95ca926e70a14d6c74fd8c52d0",
+   "card_hash": "e185aed3369514f951faf2f27ebf0744",
    "fully_read": true,
    "abilities": [
     {

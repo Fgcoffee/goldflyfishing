@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
  "name": "Hallowed Burial",
- "card_hash": "76d55ef394430cf9f217ac0823280686",
+ "card_hash": "cf975caea4580d01e4dc01ff718b5f70",
  "card": {
   "$": "CardDef",
   "oracle_id": "dcaaddee-00b1-495c-9161-40c91c900aac",
@@ -47,7 +47,7 @@
   "mana_value": 5,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 16330,
+  "edhrec_rank": 16608,
   "scryfall_uri": "https://scryfall.com/card/cn2/91/hallowed-burial?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Hallowed Burial",
    "face": 0,
    "face_name": "Hallowed Burial",
-   "card_hash": "76d55ef394430cf9f217ac0823280686",
+   "card_hash": "cf975caea4580d01e4dc01ff718b5f70",
    "fully_read": false,
    "abilities": [
     {

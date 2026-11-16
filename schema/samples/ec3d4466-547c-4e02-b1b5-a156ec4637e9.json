@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
  "name": "Chrome Mox",
- "card_hash": "b4f4cf302d86940b4da67a1ff1b3b0a8",
+ "card_hash": "f96ef8a3a6f24d20a76caffdce8f7b59",
  "card": {
   "$": "CardDef",
   "oracle_id": "ec3d4466-547c-4e02-b1b5-a156ec4637e9",
@@ -43,7 +43,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 151,
+  "edhrec_rank": 156,
   "scryfall_uri": "https://scryfall.com/card/2xm/240/chrome-mox?utm_source=api"
  },
  "faces": [
@@ -53,7 +53,7 @@
    "name": "Chrome Mox",
    "face": 0,
    "face_name": "Chrome Mox",
-   "card_hash": "b4f4cf302d86940b4da67a1ff1b3b0a8",
+   "card_hash": "f96ef8a3a6f24d20a76caffdce8f7b59",
    "fully_read": true,
    "abilities": [
     {

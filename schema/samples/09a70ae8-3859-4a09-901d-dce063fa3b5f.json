@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "09a70ae8-3859-4a09-901d-dce063fa3b5f",
  "name": "Wasteland",
- "card_hash": "8f7cc00a0a4755cd21767f7ba0c6e828",
+ "card_hash": "bf51288f899db0e33bb20a2d12e2ed14",
  "card": {
   "$": "CardDef",
   "oracle_id": "09a70ae8-3859-4a09-901d-dce063fa3b5f",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 1206,
+  "edhrec_rank": 1226,
   "scryfall_uri": "https://scryfall.com/card/ema/248/wasteland?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Wasteland",
    "face": 0,
    "face_name": "Wasteland",
-   "card_hash": "8f7cc00a0a4755cd21767f7ba0c6e828",
+   "card_hash": "bf51288f899db0e33bb20a2d12e2ed14",
    "fully_read": true,
    "abilities": [
     {

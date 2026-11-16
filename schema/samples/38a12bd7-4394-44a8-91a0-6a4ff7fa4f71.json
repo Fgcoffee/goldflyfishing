@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
  "name": "Maze of Ith",
- "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
+ "card_hash": "344cba64eba512f7ae899900d58fc159",
  "card": {
   "$": "CardDef",
   "oracle_id": "38a12bd7-4394-44a8-91a0-6a4ff7fa4f71",
@@ -26,7 +26,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 548,
+  "edhrec_rank": 561,
   "scryfall_uri": "https://scryfall.com/card/dmr/250/maze-of-ith?utm_source=api"
  },
  "faces": [
@@ -36,7 +36,7 @@
    "name": "Maze of Ith",
    "face": 0,
    "face_name": "Maze of Ith",
-   "card_hash": "ea964eff804f7dcc74ebceb5b8ac4201",
+   "card_hash": "344cba64eba512f7ae899900d58fc159",
    "fully_read": true,
    "abilities": [
     {
