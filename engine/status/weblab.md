@@ -58,3 +58,6 @@ Owner paths for this job: `mtgfish/ui/web/`, `mtgfish/web/`, `mtgfish/ui/bridge.
 
 - EDHREC mode and card art couldn't be reached from this sandbox. Please
   check one EDHREC query on the deployed site after the merge.
+- The two-hourly "Nudge: web cloud agent (Cut lab and Recs)" scheduled task
+  (trig_01KVVfb4eXjzSpPVMCPqF3RD) is still firing. Nothing is left to do on
+  this job, so it can be disabled.
