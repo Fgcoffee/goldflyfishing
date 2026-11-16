@@ -124,12 +124,12 @@ at resolution it reduces the cost of *casting* the land.
   the greatest power among creatures you control." IR: `costs +0 to cast`. The
   reduction is lost, so it always costs {7}{G}{G}. Should reduce by the
   greatest power among your creatures (generic part only).
-- [ ] **Dovin's Veto** (233). "This spell can't be countered." Read as a spell
+- [x] **Dovin's Veto** (233). (47f80ac: a static ability that works on the stack, CR 113.6g; Carnage Tyrant and 50 more had the same line working only on the battlefield. The engine doesn't enforce BE_COUNTERED yet: rules.) "This spell can't be countered." Read as a spell
   effect, `Object (this permanent itself) can't be_countered`, which runs on
   resolution, too late to matter. Should be a static ability that works on the
   stack, as Hullbreaker Horror's same line already is ("Continuously: ... can't
   be_countered").
-- [ ] **Rishkar's Expertise** (238). "You may cast a spell with mana value 5 or
+- [x] **Rishkar's Expertise** (238). (Not a misread, parser's answer: the engine's CAST_WITHOUT_PAYING asks before each cast (`wants`), so "may" is part of the opcode, as for cascade. No OPTIONAL wrapper needed.) "You may cast a spell with mana value 5 or
   less from your hand without paying its mana cost." IR: `[cast_without_paying]`
   with no optional wrapper, so it must cast. Should be "you may". Minor.
 - [ ] **Panharmonicon** (262). "If an artifact or creature entering causes a
@@ -146,7 +146,7 @@ at resolution it reduces the cost of *casting* the land.
   cast it this turn, paying its costs. Mana of any type may not be spent; that
   is Ragavan's own clause, which this text doesn't have.
 
-- [ ] **Dryad of the Ilysian Grove** (300). "Lands you control are every basic
+- [x] **Dryad of the Ilysian Grove** (300). (47f80ac: all five basic land types; also Nylea's Presence, Prismatic Omen. "Every creature type" is now unread rather than adding nothing.) "Lands you control are every basic
   land type in addition to their other types." IR: the add-types effect (146)
   has no `keywords`, so no types are added. Urborg's and Yavimaya's carry
   `["Swamp"]` / `["Forest"]`. Should carry all five basic land types.
