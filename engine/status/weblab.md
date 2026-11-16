@@ -53,7 +53,7 @@ later. Not `mtgfish/parser`.
   - Replay card window and board tooltip: the same line.
   - Its own colour (`--todo`) in each theme.
   - Checked in headless Chromium against a local server.
-- **Full suite after these commits: 3681 passed, 5 failed.** None of the
+- **Full suite after dd5cc93: 3708 passed, 3 failed**: the three `test_keywords` failures below. The parser fixed the explain one, and `test_cancel` passed this time. Earlier, after afb8f0b: 3681 passed, 5 failed. None of the
   failures come from this track, which only adds files under `tests/ir/`.
   - Four come from the 15 Nov Scryfall snapshot (38875b6). Its new keywords
     and ability words aren't registered yet: Affinitycycling, Beam me up,
