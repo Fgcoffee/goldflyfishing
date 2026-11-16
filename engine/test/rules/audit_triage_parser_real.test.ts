@@ -442,5 +442,24 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(towers).toHaveLength(1);
     expect([Zone.LIBRARY, Zone.BATTLEFIELD]).toContain(towers[0]!.zone);
   });
+
+  it("Scute Swarm: 'If you control six or more lands, create a token that's a copy of this creature instead'", () => {
+    const swarmTokens = (lands: number) => {
+      const b = new RealBoard();
+      mainPhase(b);
+      for (let i = 0; i < lands; i += 1) b.play("Forest");
+      b.play("Scute Swarm");
+      const forest = b.hand("Forest");
+      const land = legalActions(b.game, 0).find((a) => a.kind === ActionKind.PLAY_LAND && a.source === forest.id)!;
+      expect(perform(b.game, 0, land)).toBe(true);
+      resolveAll(b);
+      return b.game.battlefield
+        .map((id) => b.game.objects.get(id)!)
+        .filter((o) => o.kind === 1 /* token */)
+        .map((o) => characteristicsOf(b.game, o).name);
+    };
+    expect(swarmTokens(2)).toEqual(["Insect"]); // 3 lands: the Insect
+    expect(swarmTokens(5)).toEqual(["Scute Swarm"]); // 6 lands: a copy, instead
+  });
 });
 

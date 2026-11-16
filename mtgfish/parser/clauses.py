@@ -280,6 +280,13 @@ def _effect_run(stream: Stream, *, allow_or: bool, joins: list[str] | None = Non
         effects.append(effect)
         if joins is not None:
             joins.append(joined)
+        if effect.kind is EffectKind.CONDITIONAL and "instead" in effect.keywords:
+            if not _fold_instead(effects):
+                stream.reset(stuck)
+                stream.blocked = max(stream.blocked, stuck)
+                return None
+            if joins is not None:
+                joins.pop()
 
         # Some clauses modify the effect just read rather than following it.
         # Read as siblings, "draw a card unless that player pays {1}" became
@@ -1582,6 +1589,11 @@ def _return_to_hand(stream: Stream) -> Effect | None:
 
 @clause("tap-untap")
 def _tap(stream: Stream) -> Effect | None:
+    mark = stream.mark()
+    # "and you untap all lands you control" (Sword of Feast and Famine): the
+    # subject said after another player's action; tapping is yours anyway.
+    if stream.accept("you") and not stream.at("tap", "untap"):
+        stream.reset(mark)
     if stream.accept("tap", "taps"):
         kind = EffectKind.TAP
     elif stream.accept("untap", "untaps"):
@@ -4660,6 +4672,23 @@ def _if_condition(stream: Stream) -> Effect | None:
     if condition is None:
         return None
     stream.skip_punct(",")
+    instead = _instead_end(stream)
+    if instead is not None:
+        # "If this spell was kicked, draw three cards instead." The effect is
+        # read up to "instead"; the run this sentence is in folds the
+        # effect before it into the otherwise branch (``_fold_instead``).
+        body = Stream(stream.tokens[stream.mark() : instead])
+        inner = parse_effects(body)
+        if inner is None or not body.done:
+            return None
+        stream.reset(instead + 1)
+        return Effect(
+            EffectKind.CONDITIONAL,
+            condition=condition,
+            children=tuple(inner),
+            keywords=("instead",),
+            text="if ... instead",
+        )
     inner = parse_effects(stream)
     if inner is None:
         return None
@@ -4669,6 +4698,76 @@ def _if_condition(stream: Stream) -> Effect | None:
         children=tuple(inner),
         text="if",
     )
+
+
+def _refers_back(effect: Effect) -> bool:
+    """Whether an "if ... instead" names what an earlier effect acted on, or
+    chooses targets of its own."""
+    def condition_refers(condition) -> bool:
+        if condition is None:
+            return False
+        spec = getattr(condition, "filter", None)
+        if spec is not None and (spec.remembered):
+            return True
+        return any(condition_refers(op) for op in getattr(condition, "operands", ()) or ())
+
+    if condition_refers(effect.condition):
+        return True
+    for node in effect.children[0].walk():
+        if node.is_targeted:
+            return True
+        for spec in (node.targets, node.damage_source):
+            if spec is not None and (
+                spec.remembered
+                # "each creature target player controls": a player target.
+                or ControllerRelation.SPECIFIC in (spec.controller, spec.owner)
+            ):
+                return True
+        if node.players is not None and node.players.scope in (
+            PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT,
+        ):
+            return True
+        if condition_refers(node.condition):
+            return True
+    return False
+
+
+def _instead_end(stream: Stream) -> int | None:
+    """The index of a sentence-final "instead" in this sentence, if any."""
+    i = stream.mark()
+    tokens = stream.tokens
+    while i < len(tokens) and tokens[i].text != ".":
+        if tokens[i].lower == "instead":
+            after = tokens[i + 1].text if i + 1 < len(tokens) else "."
+            return i if after == "." else None
+        i += 1
+    return None
+
+
+def _fold_instead(effects: list[Effect]) -> bool:
+    """"Draw two cards. If this spell was kicked, draw three cards instead."
+    (CR 608.2c): the last effect is an "if ... instead"; it replaces the one
+    before it when the condition holds, so that one becomes its otherwise
+    branch. Only when both are the same kind of effect - what "instead"
+    replaces is then plain. False when it can't be folded."""
+    last = effects[-1]
+    if len(effects) < 2 or len(last.children) != 1:
+        return False
+    before = effects[-2]
+    if before.kind is not last.children[0].kind or before.kind is EffectKind.CONDITIONAL:
+        return False
+    if _refers_back(last):
+        # "If that creature is a Human, put two counters on it instead": "that
+        # creature" is the target the first effect chose, and with the first
+        # effect moved into the otherwise branch nothing has been referred to
+        # when the condition holds. Likewise a replacement with a target of
+        # its own ("exile target nonland permanent instead") changes what
+        # was targeted as the spell was cast. Left unread.
+        return False
+    effects[-2:] = [
+        replace(last, keywords=(), otherwise=(before,), text="if ... instead")
+    ]
+    return True
 
 
 def parse_condition_text(stream: Stream):

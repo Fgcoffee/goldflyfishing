@@ -368,3 +368,25 @@ def test_shuffle_this_into_its_owners_library():
     effect = parse_effects(Stream.of("Shuffle this into its owner's library."))[0]
     assert effect.kind is EffectKind.MOVE_ZONE and effect.targets.source_only
     assert "shuffle" in effect.keywords
+
+
+def test_if_instead_replaces_the_effect_before_it():
+    """Field Research: the kicked draw replaces the plain one, not both."""
+    effects = parse_effects(Stream.of("Draw two cards. If this spell was kicked, draw three cards instead."))
+    assert len(effects) == 1
+    only = effects[0]
+    assert only.kind is EffectKind.CONDITIONAL
+    assert only.children[0].amount.constant == 3 and only.otherwise[0].amount.constant == 2
+
+
+@pytest.mark.parametrize("text", [
+    # "that creature" is the first effect's target: unread, not misread.
+    "Target creature gets +2/+2 until end of turn. If this spell was kicked, "
+    "that creature gets +5/+5 until end of turn instead.",
+    # A different target in the replacement.
+    "Exile target artifact or enchantment. If this spell was kicked, exile target nonland permanent instead.",
+    # Different kinds of effect: what "instead" replaces isn't plain.
+    "Draw a card. If you control a Forest, create a 1/1 white Spirit creature token instead.",
+])
+def test_if_instead_is_left_unread_when_it_refers_back(text):
+    assert parse_effects(Stream.of(text)) is None
