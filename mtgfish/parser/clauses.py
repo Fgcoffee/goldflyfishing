@@ -5595,6 +5595,12 @@ def _state_condition(stream: Stream):
         narrowed = replace(subject, blocking=True)
     elif stream.accept("blocked"):
         narrowed = replace(subject, blocked=True)
+    elif stream.accept("equipped"):
+        # "As long as this is equipped" (CR 301.5): an Equipment is attached.
+        narrowed = replace(subject, has_attached=ObjectFilter(subtypes_any=("Equipment",)))
+    elif stream.accept("enchanted"):
+        # "As long as this is enchanted" (CR 303.4): an Aura is attached.
+        narrowed = replace(subject, has_attached=ObjectFilter(subtypes_any=("Aura",)))
     else:
         stream.reset(mark)
         return None

@@ -9,9 +9,9 @@ import { describe, expect, it } from "vitest";
 import { complete, type Ability, type Effect } from "../../src/ir";
 import { AbilityKindValues as AK, CostKindValues as CK, EffectKindValues as EK, PlayerScopeValues as PS, ValueKindValues as VK, ZoneValues as Z } from "../../src/ir/types";
 import { Color, Phase, Step, Zone } from "../../src/kernel/enums";
-import { createObject, player } from "../../src/kernel/game";
+import { createObject, invalidateAllCharacteristics, player } from "../../src/kernel/game";
 import { playerTarget } from "../../src/kernel/ids";
-import { destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
+import { attach, destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
 import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
 import { ActionKind, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
@@ -460,6 +460,18 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     };
     expect(swarmTokens(2)).toEqual(["Insect"]); // 3 lands: the Insect
     expect(swarmTokens(5)).toEqual(["Scute Swarm"]); // 6 lands: a copy, instead
+  });
+
+  it("Kor Duelist: 'As long as this creature is equipped, it has double strike'", () => {
+    const b = new RealBoard();
+    const duelist = b.play("Kor Duelist");
+    const keywords = () => (b.chars(duelist).abilities as readonly { keyword?: string }[]).map((a) => (a.keyword ?? "").toLowerCase());
+    expect(keywords()).not.toContain("double strike");
+    const sword = b.play("Sword of Fire and Ice");
+    expect(attach(b.game, sword, duelist)).toBe(true);
+    b.game.epoch += 1;
+    invalidateAllCharacteristics(b.game);
+    expect(keywords()).toContain("double strike");
   });
 });
 

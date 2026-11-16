@@ -390,3 +390,14 @@ def test_if_instead_replaces_the_effect_before_it():
 ])
 def test_if_instead_is_left_unread_when_it_refers_back(text):
     assert parse_effects(Stream.of(text)) is None
+
+
+@pytest.mark.parametrize("word, subtype", [("equipped", "Equipment"), ("enchanted", "Aura")])
+def test_this_is_equipped_or_enchanted(word, subtype):
+    """"As long as this creature is equipped": something of that kind is attached."""
+    from mtgfish.parser.clauses import parse_condition_text
+
+    condition = parse_condition_text(Stream.of(f"this creature is {word}"))
+    assert condition is not None
+    attached = condition.filter.has_attached
+    assert attached is not None and attached.subtypes_any == (subtype,)
