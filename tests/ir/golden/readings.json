@@ -251,6 +251,16 @@
    "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {R}{W}."
   }
  ],
+ "Boseiju, Who Endures": [
+  {
+   "oracle": "{T}: Add {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {G}."
+  },
+  {
+   "oracle": "{1}{G}, Discard this card: Destroy target artifact, enchantment, or nonbasic land an opponent controls. That player may search their library for a land card with a basic land type, put it onto the battlefield, then shuffle. This ability costs {1} less to activate for each legendary creature you control.",
+   "understood": "Pay {1}{G}, discard this card (from hand): destroy target nonbasic artifact or enchantment or land an opponent controls, then the controller of that object may you searches their library for 1 Plains or Island or Swamp or Mountain or Forest land and puts it into battlefield, then (recognised, not implemented yet: activation-cost-change)."
+  }
+ ],
  "Bountiful Promenade": [
   {
    "oracle": "This land enters tapped unless you have two or more opponents.",
@@ -457,6 +467,12 @@
   {
    "oracle": "Overload {6}{U}",
    "understood": "Has Overload."
+  }
+ ],
+ "Dark Apostle": [
+  {
+   "oracle": "Gift of Chaos - {3}, {T}: The next noncreature spell you cast this turn has cascade.",
+   "understood": "Pay {3}, {T}: (recognised, not implemented yet: next-spell-rider)."
   }
  ],
  "Dark Ritual": [
@@ -1139,6 +1155,20 @@
    "understood": "Whenever 1 object token sacrificed/token created (player: you), each opponent loses 1 life."
   }
  ],
+ "Mistrise Village": [
+  {
+   "oracle": "This land enters tapped unless you control a Mountain or a Forest.",
+   "understood": "Continuously: if not (you control at least 1 Mountain or Forest), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {U}."
+  },
+  {
+   "oracle": "{U}, {T}: The next spell you cast this turn can't be countered.",
+   "understood": "Pay {U}, {T}: (recognised, not implemented yet: next-spell-rider)."
+  }
+ ],
  "Misty Rainforest": [
   {
    "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Forest or Island card, put it onto the battlefield, then shuffle.",
@@ -1257,6 +1287,16 @@
   {
    "oracle": "{1}, {T}: Add {W}{B}.",
    "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {W}{B}."
+  }
+ ],
+ "Otawara, Soaring City": [
+  {
+   "oracle": "{T}: Add {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {U}."
+  },
+  {
+   "oracle": "{3}{U}, Discard this card: Return target artifact, creature, enchantment, or planeswalker to its owner's hand. This ability costs {1} less to activate for each legendary creature you control.",
+   "understood": "Pay {3}{U}, discard this card (from hand): return to hand target artifact or creature or enchantment or planeswalker, then (recognised, not implemented yet: activation-cost-change)."
   }
  ],
  "Overgrown Farmland": [
@@ -1637,6 +1677,12 @@
    "understood": "You searches their library for up to 2 Forest and puts it into battlefield."
   }
  ],
+ "Sloppity Bilepiper": [
+  {
+   "oracle": "{2}, {T}, Sacrifice a creature: The next creature spell you cast this turn has cascade.",
+   "understood": "Pay {2}, {T}, sacrifice 1 creature: (recognised, not implemented yet: next-spell-rider)."
+  }
+ ],
  "Smoldering Marsh": [
   {
    "oracle": "This land enters tapped unless you control two or more basic lands.",
@@ -1825,6 +1871,16 @@
   {
    "oracle": "{1}{B}: Each player mills a card.",
    "understood": "Pay {1}{B}: each player mills 1 card(s)."
+  }
+ ],
+ "Takenuma, Abandoned Mire": [
+  {
+   "oracle": "{T}: Add {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {B}."
+  },
+  {
+   "oracle": "{3}{B}, Discard this card: Mill three cards, then return a creature or planeswalker card from your graveyard to your hand. This ability costs {1} less to activate for each legendary creature you control.",
+   "understood": "Pay {3}{B}, discard this card (from hand): you mills 3 card(s), then return to hand 1 creature or planeswalker you own in graveyard, then (recognised, not implemented yet: activation-cost-change)."
   }
  ],
  "Talisman of Conviction": [
@@ -2148,6 +2204,20 @@
   {
    "oracle": "Sacrifice a creature: Scry 1.",
    "understood": "Pay sacrifice 1 creature: you scries 1."
+  }
+ ],
+ "Wand of the Worldsoul": [
+  {
+   "oracle": "This artifact enters tapped.",
+   "understood": "Continuously: tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {W}."
+  },
+  {
+   "oracle": "{T}: The next spell you cast this turn has convoke.",
+   "understood": "Pay {T}: (recognised, not implemented yet: next-spell-rider)."
   }
  ],
  "War Room": [

@@ -42,7 +42,11 @@ later. Not `mtgfish/parser`.
     which are now in the golden set (271 cards). Two low-priority issues
     queued: activated dummies lose their cost, and Branch of Vitu-Ghazi has
     Disguise twice.
-  - Last batch checked: 0100e79.
+  - **Batch 1b04e2e** (activated dummies keep their cost; the channel
+    lands' "costs less to activate" becomes a dummy): 0 gained, 33 changed.
+    The 7 queued cards now read right and are pinned in the golden set (278
+    cards). The spot-check run on it is in progress.
+  - Last batch checked: 1b04e2e.
 - **Item 3, dummy abilities on the site: done (752b7a4).**
   - `deckview.parse_status` gives `recognised`, the dummy rule names, as
     the TS `parseStatus` does; the bridge's board cards carry it too.
