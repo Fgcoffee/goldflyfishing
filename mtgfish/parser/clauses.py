@@ -8282,18 +8282,12 @@ def _shuffle_into_library(stream: Stream) -> Effect | None:
     matters: read as a plain shuffle it removes nothing.
     """
     mark = stream.mark()
-    players, _ = parse_player_filter(stream)
-    if players is None:
-        stream.reset(mark)
-        return None
-
-    subject = None
-    look = stream.mark()
-    if stream.accept("of"):
-        subject, targeted = parse_target(stream)
-        if subject is None:
-            stream.reset(look)
-    else:
+    subject, targeted = _owned_object(stream)
+    if subject is None:
+        players, _ = parse_player_filter(stream)
+        if players is None:
+            stream.reset(mark)
+            return None
         targeted = False
 
     if not stream.accept("shuffles", "shuffle"):
@@ -8324,7 +8318,70 @@ def _shuffle_into_library(stream: Stream) -> Effect | None:
         targets=subject if subject is not None else ObjectFilter(remembered=True),
         zone=Zone.LIBRARY,
         is_targeted=targeted,
+        # CR 701.24a: shuffled in, not put on the bottom.
+        keywords=("shuffle",),
         text="shuffle it into its owner's library",
+    )
+
+
+def _owned_object(stream: Stream):
+    """The object in "the owner of target permanent" and "target creature's
+    owner": what the sentence then moves. The player phrase alone kept only
+    "its owner" and dropped the object, so Chaos Warp moved nothing. (None,
+    False) and nothing consumed when the subject isn't one of these."""
+    mark = stream.mark()
+    stream.accept("the")
+    if stream.accept("owner"):
+        if stream.accept("of"):
+            subject, targeted = parse_target(stream)
+            if subject is not None and not subject.includes_players:
+                return subject, targeted
+        stream.reset(mark)
+        return None, False
+    stream.reset(mark)
+    # "target creature's owner": the possessive ends a noun phrase.
+    for offset in range(1, 6):
+        token = stream.peek(offset - 1)
+        if token.kind is not TokenKind.WORD:
+            break
+        if token.text.endswith("'s") and stream.peek(offset).lower == "owner":
+            words = [stream.peek(i).text for i in range(offset - 1)] + [token.text[:-2]]
+            inner = Stream.of(" ".join(words))
+            subject, targeted = parse_target(inner)
+            if subject is None or not inner.done or subject.includes_players:
+                return None, False
+            for _ in range(offset + 1):
+                stream.next()
+            return subject, targeted
+    return None, False
+
+
+@clause("shuffle-self-into-library")
+def _shuffle_self_into_library(stream: Stream) -> Effect | None:
+    """"Shuffle this into its owner's library." (the Zenith and Beacon
+    cycles): the spell or permanent goes into its owner's library, which is
+    then shuffled (CR 701.24a). A spell that moves itself this way is not
+    also put into the graveyard (CR 608.2m)."""
+    mark = stream.mark()
+    if not stream.accept("shuffle", "shuffles"):
+        return None
+    spec = parse_object_filter(stream)
+    if spec is None or not spec.source_only:
+        stream.reset(mark)
+        return None
+    if not stream.accept("into") or not (
+        stream.accept_phrase("its owner's library")
+        or stream.accept_phrase("their owner's library")
+        or stream.accept_phrase("your library")
+    ):
+        stream.reset(mark)
+        return None
+    return Effect(
+        EffectKind.MOVE_ZONE,
+        targets=spec,
+        zone=Zone.LIBRARY,
+        keywords=("shuffle",),
+        text="shuffle this into its owner's library",
     )
 
 

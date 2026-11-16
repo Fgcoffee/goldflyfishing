@@ -400,5 +400,47 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(live("Island").map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
     expect(island.zone).toBe(Zone.LIBRARY); // the old object; the card moved on as a new one
   });
+
+  it("Beacon of Destruction: 'Shuffle this into its owner's library' - into the library, not the graveyard", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    for (let i = 0; i < 5; i += 1) b.play("Mountain");
+    for (let i = 0; i < 10; i += 1) createObject(b.game, realCard("Forest"), 0, Zone.LIBRARY);
+    const beacon = b.hand("Beacon of Destruction");
+    b.game.epoch += 1;
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === beacon.id)!;
+    expect(cast).toBeDefined();
+    expect(perform(b.game, 0, { ...cast, targets: [[playerTarget(1)]] })).toBe(true);
+    resolveAll(b);
+    expect(player(b.game, 1).life).toBe(35);
+    const me = player(b.game, 0);
+    const named = (id: number) => (b.game.objects.get(id)!.card as { name?: string }).name;
+    expect(me.graveyard.map(named)).not.toContain("Beacon of Destruction");
+    expect(me.library.map(named)).toContain("Beacon of Destruction");
+  });
+
+  it("Chaos Warp: 'shuffles it into their library' - shuffled in, not put on the bottom", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    for (let i = 0; i < 3; i += 1) b.play("Mountain");
+    const warp = b.hand("Chaos Warp");
+    const tower = b.play("Command Tower", 1);
+    for (let i = 0; i < 30; i += 1) createObject(b.game, realCard("Island"), 1, Zone.LIBRARY);
+    b.game.epoch += 1;
+    const before = player(b.game, 1).library.slice();
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === warp.id)!;
+    expect(perform(b.game, 0, { ...cast, targets: [[tower.id]] })).toBe(true);
+    resolveAll(b);
+    // The targeted Tower left the battlefield (it was read as moving nothing).
+    expect(tower.supersededBy).toBeTruthy();
+    const lib = player(b.game, 1).library;
+    const named = (id: number) => (b.game.objects.get(id)!.card as { name?: string }).name;
+    // Shuffled: the Islands that are still there are in a new order, and the
+    // Tower is in the library (or, revealed on top, back on the battlefield).
+    expect(lib.filter((id) => before.includes(id))).not.toEqual(before.filter((id) => lib.includes(id)));
+    const towers = [...b.game.objects.values()].filter((o) => !o.supersededBy && named(o.id) === "Command Tower");
+    expect(towers).toHaveLength(1);
+    expect([Zone.LIBRARY, Zone.BATTLEFIELD]).toContain(towers[0]!.zone);
+  });
 });
 

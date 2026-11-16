@@ -350,3 +350,21 @@ def test_a_basic_land_type_is_any_of_the_five():
     spec = parse_object_filter(Stream.of("a land card with a basic land type"))
     assert spec is not None and set(spec.subtypes_any) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}
     assert spec.types_all & CardType.LAND
+
+
+@pytest.mark.parametrize("text, targeted", [
+    ("The owner of target permanent shuffles it into their library.", True),
+    ("Target creature's owner shuffles it into their library.", True),
+])
+def test_the_owner_of_a_target_shuffles_that_target_in(text, targeted):
+    """Chaos Warp: the target is what moves, and it's shuffled in."""
+    effect = parse_effects(Stream.of(text))[0]
+    assert effect.kind is EffectKind.MOVE_ZONE and effect.is_targeted is targeted
+    assert not effect.targets.remembered and "shuffle" in effect.keywords
+
+
+def test_shuffle_this_into_its_owners_library():
+    """The Zenith and Beacon cycles: the card itself, shuffled in."""
+    effect = parse_effects(Stream.of("Shuffle this into its owner's library."))[0]
+    assert effect.kind is EffectKind.MOVE_ZONE and effect.targets.source_only
+    assert "shuffle" in effect.keywords
