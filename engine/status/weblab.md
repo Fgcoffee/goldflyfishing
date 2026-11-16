@@ -38,6 +38,16 @@ later. Not `mtgfish/parser`.
     the cause and a suggested guard.
   - Next: run it on every new `[ir]` batch (`git log --grep='^\[ir\]'`).
   - Last batch checked: b2ce87b.
+- **Full suite after these commits: 3681 passed, 5 failed.** None of the
+  failures come from this track, which only adds files under `tests/ir/`.
+  - Four come from the 15 Nov Scryfall snapshot (38875b6). Its new keywords
+    and ability words aren't registered yet: Affinitycycling, Beam me up,
+    Halflingcycling, Empower Jace, Actualize, Battlefront, Federation, Seek
+    out, Strange new worlds. Also one effect opcode without a phrasing in
+    `test_explain` (11 of 10 allowed). For the rules and parser agents.
+  - `tests/sim/test_cancel.py::test_a_parallel_run_stops_and_leaves_no_workers`
+    took 206 s against a 180 s limit under the full `-n 4` load. It passes
+    alone (4 passed). Flaky under load.
 - **Later:** item 3, dummy abilities on the Deck tab and in the card window,
   once the parser publishes the IR field (see `engine/status/parser.md`).
 
