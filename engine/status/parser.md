@@ -454,6 +454,9 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
   - **Rules session:** `resolve.ts`'s DISCARD executor now picks with `game.rng` when the effect carries "at random", instead of asking the agent. Only these cards draw from the generator, so other games' digests are unchanged.
   - The 4 lost: "unless any player pays" (Cleansing, Icy Prison, Nakaya Shade, Soul Strings) was read as each player asked in turn. The first payment should stop it, and the engine charged every willing player. The IR can't say "any one player", so they're unread until it can. An IR addition (a payer scope "any player, first to pay") would bring them back with Aether Rift; say if you want it.
 - Boseiju, Who Endures reads (65c6600): "a land card with a basic land type" is any of the five (CR 305.6). Four more cards came with it. Census: +5.
+- The Zeniths and Beacons read, and Chaos Warp works (e1dc35c). Census: +8, 7 changed.
+  - Chaos Warp, Oblation and Ominous Cemetery were misread: the target was dropped, so nothing moved. Now the target moves.
+  - **Rules session:** `resolve.ts`'s MOVE_ZONE now shuffles the owner's library when the move says "shuffle". Before, "shuffles it into their library" put the card on the bottom. Not covered: CR 701.24c shuffles the library even when the card wasn't where it was expected; today a move that finds nothing shuffles nothing.
 - Next: the most-played unread abilities by deck usage. In order of play rank: Path of Ancestry, Myriad Landscape, Arcane Denial, Urza's Saga, Mana Drain, Victimize, Windfall, Idol of Oblivion, Force of Negation... (each needs a new shape: a mana-spent trigger, "share a land type", a delayed draw for the countered spell's controller, a granted Saga ability, mana from what was countered) Borrowed Knowledge waits with F3 for the evaluate-context change.
 
 ## For the rules session: your 200-game bench
