@@ -37,7 +37,22 @@ later. Not `mtgfish/parser`.
     equipped Kor Duelist gives a Grizzly Bears double strike). Queued with
     the cause and a suggested guard.
   - Next: run it on every new `[ir]` batch (`git log --grep='^\[ir\]'`).
-  - Last batch checked: b2ce87b.
+  - **Batch 0100e79** (dummy abilities, the "it" fix): +37, -2 (on
+    purpose). Sample of 30 checked. The fix holds on all 13 queued cards,
+    which are now in the golden set (271 cards). Two low-priority issues
+    queued: activated dummies lose their cost, and Branch of Vitu-Ghazi has
+    Disguise twice.
+  - Last batch checked: 0100e79.
+- **Item 3, dummy abilities on the site: done (752b7a4).**
+  - `deckview.parse_status` gives `recognised`, the dummy rule names, as
+    the TS `parseStatus` does; the bridge's board cards carry it too.
+  - Deck tab: a "recognised, not implemented yet" chip, a "Not implemented"
+    filter (also counted under "Needs attention"), and a badge on each tile.
+    List view gets a pill; the card window gets a line naming each shape,
+    in place of the green "reads all of it".
+  - Replay card window and board tooltip: the same line.
+  - Its own colour (`--todo`) in each theme.
+  - Checked in headless Chromium against a local server.
 - **Full suite after these commits: 3681 passed, 5 failed.** None of the
   failures come from this track, which only adds files under `tests/ir/`.
   - Four come from the 15 Nov Scryfall snapshot (38875b6). Its new keywords

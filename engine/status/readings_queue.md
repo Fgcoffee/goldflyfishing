@@ -50,6 +50,34 @@ read, and all 17 were checked. The condition reads right; the subject doesn't.
   (whatever was just referred to)`. In a trigger with nothing acted on yet,
   "it" should be the source. Same cause, unconfirmed on a board.
 
+## Spot check: parser batch 0100e79 (dummy abilities; the "it" fix)
+
+`readings_spot_check 0100e79~1`: +37 fully read, -2 (Deadly Wanderings and
+Homicidal Seclusion, unread on purpose). I checked a sample of 30, most of
+them dummies.
+- The "it" fix holds on all 13 cards above: "it" is now `this permanent
+  itself`. They're in the golden set now, so this mistake can't come back
+  unnoticed.
+- The dummies name the right shapes, and the readable parts beside them read
+  right: Photon, Leyline of Abundance, Leyline Axe, Endbringer's other
+  abilities, Kessig Naturalist.
+- [ ] **A whole dummy on an activated ability drops its cost and becomes
+  static.**
+  - Cards: Sloppity Bilepiper ("{2}, {T}, Sacrifice a creature: The next
+    creature spell you cast this turn has cascade"), Mistrise Village ("{U},
+    {T}: The next spell ... can't be countered"), Wand of the Worldsoul
+    ("{T}: The next spell ... has convoke"), Dark Apostle.
+  - All read as `Continuously: (recognised, not implemented yet:
+    next-spell-rider)`.
+  - Harmless while the engine skips dummies. But the shape is wrong for
+    whoever implements it, and the ability can no longer be activated: the
+    sacrifice and the tap are gone.
+  - Should keep the ability's kind and cost, with the dummy as its effect.
+    Low priority.
+- [ ] **Branch of Vitu-Ghazi.** The reminder-style line "turn face up: {3}"
+  reads as a second `Has Disguise`, so the card has Disguise twice. Should be
+  absorbed into the keyword. Low priority.
+
 ## Mana abilities lose their colour restriction
 
 All of these read as "add one mana of any colour", so in a game the source

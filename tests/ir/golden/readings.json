@@ -63,6 +63,22 @@
    "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Mountain or Plains and puts it into battlefield."
   }
  ],
+ "Armed Assailant": [
+  {
+   "oracle": "Deathtouch",
+   "understood": "Has Deathtouch."
+  },
+  {
+   "oracle": "As long as this creature is equipped, it gets +2/+0 and has menace.",
+   "understood": "Continuously: if you control at least 1 object (this permanent itself) with all Equipment attached, object (this permanent itself) gets +2/+0, then object (this permanent itself) gains menace."
+  }
+ ],
+ "Armory Veteran": [
+  {
+   "oracle": "As long as this creature is equipped, it has menace.",
+   "understood": "Continuously (while you control at least 1 object (this permanent itself) with all Equipment attached): object (this permanent itself) gains menace."
+  }
+ ],
  "Ash Barrens": [
   {
    "oracle": "{T}: Add {C}.",
@@ -85,10 +101,26 @@
    "understood": "Destroy target object an opponent controls, then the controller of that object may you searches their library for 1 basic land and puts it into battlefield."
   }
  ],
+ "Auriok Glaivemaster": [
+  {
+   "oracle": "As long as this creature is equipped, it gets +1/+1 and has first strike.",
+   "understood": "Continuously: if you control at least 1 object (this permanent itself) with all Equipment attached, object (this permanent itself) gets +1/+1, then object (this permanent itself) gains first strike."
+  }
+ ],
  "Austere Command": [
   {
    "oracle": "Choose two -",
    "understood": "Choose 2 - destroy all artifact; or destroy all enchantment; or destroy all creature with mana value 3 or less; or destroy all creature with mana value 4 or greater."
+  }
+ ],
+ "Avacynian Missionaries // Lunarch Inquisitors": [
+  {
+   "oracle": "At the beginning of your end step, if this creature is equipped, transform it.",
+   "understood": "Whenever end step (player: you) - but only if you control at least 1 object (this permanent itself) with all Equipment attached, transform object (this permanent itself)."
+  },
+  {
+   "oracle": "When this creature transforms into this, you may exile another target creature until this creature leaves the battlefield.",
+   "understood": "Whenever this permanent transformed, you may exile target another creature until this leaves the battlefield."
   }
  ],
  "Avenger of Zendikar": [
@@ -555,6 +587,12 @@
    "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}."
   }
  ],
+ "Dwarfhold Champion": [
+  {
+   "oracle": "As long as this creature is equipped, it gets +0/+2.",
+   "understood": "Continuously (while you control at least 1 object (this permanent itself) with all Equipment attached): object (this permanent itself) gets +0/+2."
+  }
+ ],
  "Elvish Mystic": [
   {
    "oracle": "{T}: Add {G}.",
@@ -675,6 +713,16 @@
   {
    "oracle": "Counter target noncreature spell.",
    "understood": "Counter target noncreature that is a spell in stack."
+  }
+ ],
+ "Fireblade Charger": [
+  {
+   "oracle": "As long as this creature is equipped, it has haste.",
+   "understood": "Continuously (while you control at least 1 object (this permanent itself) with all Equipment attached): object (this permanent itself) gains haste."
+  },
+  {
+   "oracle": "When this creature dies, it deals damage equal to its power to any target.",
+   "understood": "Whenever this permanent dies, deal this permanent's power damage to target battle or creature or planeswalker or player."
   }
  ],
  "Flawless Maneuver": [
@@ -953,10 +1001,38 @@
    "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {G}, then deal 1 damage to you."
   }
  ],
+ "Kitesail Apprentice": [
+  {
+   "oracle": "As long as this creature is equipped, it gets +1/+1 and has flying.",
+   "understood": "Continuously: if you control at least 1 object (this permanent itself) with all Equipment attached, object (this permanent itself) gets +1/+1, then object (this permanent itself) gains flying."
+  }
+ ],
  "Kodama's Reach": [
   {
    "oracle": "Search your library for up to two basic land cards, reveal those cards, put one onto the battlefield tapped and the other into your hand, then shuffle.",
    "understood": "You searches their library for up to 2 basic land and puts one into battlefield tapped and the other into hand."
+  }
+ ],
+ "Kor Duelist": [
+  {
+   "oracle": "As long as this creature is equipped, it has double strike.",
+   "understood": "Continuously (while you control at least 1 object (this permanent itself) with all Equipment attached): object (this permanent itself) gains double strike."
+  }
+ ],
+ "Leonin Den-Guard": [
+  {
+   "oracle": "As long as this creature is equipped, it gets +1/+1 and has vigilance.",
+   "understood": "Continuously: if you control at least 1 object (this permanent itself) with all Equipment attached, object (this permanent itself) gets +1/+1, then object (this permanent itself) gains vigilance."
+  }
+ ],
+ "Leonin Lightbringer": [
+  {
+   "oracle": "Ward {2}",
+   "understood": "Whenever this permanent targeted (from all object an opponent controls in stack), counter object (the spell or ability that triggered this) in stack, unless the controller of the spell or ability that triggered this pays {2}."
+  },
+  {
+   "oracle": "As long as this creature is equipped, it gets +1/+1.",
+   "understood": "Continuously (while you control at least 1 object (this permanent itself) with all Equipment attached): object (this permanent itself) gets +1/+1."
   }
  ],
  "Lightning Bolt": [
@@ -1549,6 +1625,12 @@
    "understood": "Pay {1} (sorcery speed only): attach to target creature you control."
   }
  ],
+ "Skyhunter Cub": [
+  {
+   "oracle": "As long as this creature is equipped, it gets +1/+1 and has flying.",
+   "understood": "Continuously: if you control at least 1 object (this permanent itself) with all Equipment attached, object (this permanent itself) gets +1/+1, then object (this permanent itself) gains flying."
+  }
+ ],
  "Skyshroud Claim": [
   {
    "oracle": "Search your library for up to two Forest cards, put them onto the battlefield, then shuffle.",
@@ -1691,6 +1773,12 @@
   {
    "oracle": "{T}: Add {G} or {W}.",
    "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {W}."
+  }
+ ],
+ "Sunspear Shikari": [
+  {
+   "oracle": "As long as this creature is equipped, it has first strike and lifelink.",
+   "understood": "Continuously (while you control at least 1 object (this permanent itself) with all Equipment attached): object (this permanent itself) gains first strike, lifelink."
   }
  ],
  "Swan Song": [
@@ -1893,6 +1981,12 @@
   {
    "oracle": "{T}: Add {C}{C}{C}.",
    "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}{C}{C}."
+  }
+ ],
+ "Thran Golem": [
+  {
+   "oracle": "As long as this creature is enchanted, it gets +2/+2 and has flying, first strike, and trample.",
+   "understood": "Continuously: if you control at least 1 object (this permanent itself) with all Aura attached, object (this permanent itself) gets +2/+2, then object (this permanent itself) gains flying, first strike, trample."
   }
  ],
  "Three Tree City": [
