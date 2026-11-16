@@ -478,5 +478,21 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     const bearsKeywords = (b.chars(bears).abilities as readonly { keyword?: string }[]).map((a) => (a.keyword ?? "").toLowerCase());
     expect(bearsKeywords).not.toContain("double strike");
   });
+
+  it("Mystic Sanctuary: 'When this land enters untapped' - not when it enters tapped (readings_queue.md)", () => {
+    const triggersWith = (islands: number) => {
+      const b = new RealBoard();
+      mainPhase(b);
+      for (let i = 0; i < islands; i += 1) b.play("Island");
+      b.graveyard("Lightning Bolt");
+      const sanctuary = b.hand("Mystic Sanctuary");
+      const land = legalActions(b.game, 0).find((a) => a.kind === ActionKind.PLAY_LAND && a.source === sanctuary.id)!;
+      expect(perform(b.game, 0, land)).toBe(true);
+      settle(b.game);
+      return b.game.stack.length;
+    };
+    expect(triggersWith(0)).toBe(0); // fewer than three other Islands: enters tapped
+    expect(triggersWith(3)).toBe(1); // enters untapped: the trigger goes on the stack
+  });
 });
 
