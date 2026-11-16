@@ -61,8 +61,8 @@ them dummies.
 - The dummies name the right shapes, and the readable parts beside them read
   right: Photon, Leyline of Abundance, Leyline Axe, Endbringer's other
   abilities, Kessig Naturalist.
-- [ ] **A whole dummy on an activated ability drops its cost and becomes
-  static.**
+- [x] **A whole dummy on an activated ability drops its cost and becomes
+  static.** (1b04e2e: activated, with its cost; the bot won't activate it)
   - Cards: Sloppity Bilepiper ("{2}, {T}, Sacrifice a creature: The next
     creature spell you cast this turn has cascade"), Mistrise Village ("{U},
     {T}: The next spell ... can't be countered"), Wand of the Worldsoul
@@ -108,10 +108,10 @@ The channel lands' cost reduction ends up as the last effect of the ability,
 creature you control to cast`. So it does nothing to the activation cost, and
 at resolution it reduces the cost of *casting* the land.
 
-- [ ] **Boseiju, Who Endures** (71). Should reduce the activation cost by {1}
+- [x] **Boseiju, Who Endures** (71). (1b04e2e: no longer an effect on resolution; a recognised dummy carrying the reduction, so the ability works at full cost until the engine can reduce it.) Should reduce the activation cost by {1}
   per legendary creature you control (CR 601.2f, via 602.2b).
-- [ ] **Otawara, Soaring City** (83). Same.
-- [ ] **Takenuma, Abandoned Mire** (239). Same.
+- [x] **Otawara, Soaring City** (83). Same.
+- [x] **Takenuma, Abandoned Mire** (239). Same.
 
 ## Other misreads
 

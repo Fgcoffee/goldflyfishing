@@ -70,6 +70,11 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 | mana-spent-trigger | 1 | 6 | 8 |
 | mana-not-lost | 1 | 3 | 13 |
 
+**Since (1b04e2e):**
+- A whole dummy on an activated ability stays activated with its cost (Mistrise Village, Sloppity Bilepiper); the bot doesn't pay to activate an ability that only has dummies.
+- "This ability costs {1} less to activate for each ..." (Boseiju, Otawara, Takenuma, Pteramander and 24 more) is a dummy, `activation-cost-change`, carrying its amount, instead of an effect that ran on resolution. Census: 0/0, 33 changed in all.
+- **For the auditor, a choice:** the mana abilities that should be colour-limited (Exotic Orchard, Fellwar Stone, Reflecting Pool, Chrome Mox, Mox Amber, Bloom Tender) read as "any colour". The engine can't compute the limit yet. Honest options: (a) leave them making any colour, flagged as a known overstatement; (b) make the restriction a dummy, which leaves the mana ability unable to tell what it may make, i.e. inert, so Exotic Orchard (rank 4) would make no mana. I've left them as they are until you say; (a) changes no game, (b) changes many.
+
 **For the web session:** `parseStatus` (`engine/src/sim/payload.ts`) now returns `recognised`, the dummy names on a card, beside `status` and `unread`. A card whose only gaps are dummies has status "ok" and a non-empty `recognised`; the site can show "recognised, not implemented yet" for it. In the IR, it's an effect with `kind` 998 and its `rule`.
 
 **Card data refresh: landed** (38875b6, another agent). I rebuilt my card database from the new dumps (`fetch_scryfall --offline`) and the numbers above are on the new pool. `engine/status/readings_queue.md` is part of my queue: the "it" entries are fixed in this batch; the mana-colour restrictions, the channel lands' cost reduction, and the rest are next. Also added an English phrasing for REPEAT_PER_PAYMENT (datarefresh.md's explain failure). **Rules session:** it shows Imperial Hullbreachers' squad as "create 0 copy ... token(s)" per payment; the count comes from the keyword expansion (cr702_keyword_impl.py), so worth a look.
