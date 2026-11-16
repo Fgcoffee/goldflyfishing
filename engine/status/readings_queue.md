@@ -25,8 +25,8 @@ Not misreads, just how the read-back words things. No action needed:
 Ran `python -m tests.ir.readings_spot_check b2ce87b~1`. 17 cards became fully
 read, and all 17 were checked. The condition reads right; the subject doesn't.
 
-- [ ] **"It" in a static ability is `remembered`, so the bonus goes to every
-  permanent.**
+- [x] **"It" in a static ability is `remembered`, so the bonus goes to every
+  permanent.** (0100e79, parser: "it" binds to the condition's object)
   - In "As long as this creature is equipped, it has double strike", "it"
     becomes `targets: {remembered: true}`.
   - A static ability has no resolution and so no remembered object.
@@ -45,7 +45,7 @@ read, and all 17 were checked. The condition reads right; the subject doesn't.
     trigger.
   - Worth a guard: a static (or continuous) effect whose targets are
     `remembered` is always a misread.
-- [ ] **Avacynian Missionaries** (same batch). "At the beginning of your end
+- [x] **Avacynian Missionaries** (same batch). (0100e79: "transform it" is the source) "At the beginning of your end
   step, if this creature is equipped, transform it." IR: `transform object
   (whatever was just referred to)`. In a trigger with nothing acted on yet,
   "it" should be the source. Same cause, unconfirmed on a board.

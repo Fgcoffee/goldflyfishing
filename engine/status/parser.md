@@ -38,6 +38,42 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
   - Rules session: it matches `kernel/card.ts` field for field, plus three fields you don't have: `edhrec_rank`, `scryfall_uri` and `attraction_lights` (CR 717.1, Attractions). Add them to `CardDef` or ignore them.
   - Until IR v2 lands, its enums (layout, colors, types) are v1 strings like the rest; read them with `enumValue`.
 
+## Top priority from 16 Nov: the card database read to nearly 100%
+
+**Numbers, 16 Nov, on the new snapshot (2026-11-15)** (census; the pool is every card legal in some format):
+
+| | before this batch | after | of |
+|---|---|---|---|
+| abilities | 44,694 (70.4%) | 44,747 (70.5%) | 63,494 |
+| cards, whole pool | 17,520 (53.0%) | 17,556 (53.2%) | 33,032 |
+| top 100 by play rate | 96 | 97 | 100 |
+| top 1,000 | 817 | 824 | 1,000 |
+| top 5,000 | 2,815 | 2,833 | 5,000 |
+
+"Read" counts recognised dummies (below) as read.
+
+**"It" in a static ability fixed (from the readings queue).** My b2ce87b batch read "As long as this creature is equipped, it has double strike" with "it" as whatever was just referred to; a static ability has nothing referred to, so every permanent got double strike (the web agent confirmed it on a board). Now, where "it" is the first thing acted on in a static ability or a step trigger, it binds to the object the condition is about: the source ("this creature is equipped") or what the source is attached to ("enchanted creature is blue"). With no such object, a static ability is left unread. Census on the new pool: 37 readings changed, all "it" now bound (including older misreads: Clout of the Dominus, Narcolepsy, Mana Bloom, Pristine Angel, Arixmethes); 2 lost, Deadly Wanderings and Homicidal Seclusion ("that creature" for the one creature you control), now unread instead of buffing everything. The Kor Duelist board test now checks a Grizzly Bears beside it gets nothing.
+
+**The failures among the top 1,000** (`play_rate_report --depth 1000`): 170 abilities in 154 clusters. It's a long tail: no shape covers more than 3 played cards, so the target (95% of the top 1,000) needs the dummies as well as grammar rules. Top shapes: "the next spell you cast this turn", "untap during each other player's untap step", opening-hand Leylines, "the color of your choice", "if this card is in your graveyard", mana-spent riders, delayed triggers on a countered spell (Mana Drain, Arcane Denial), "share a land type".
+
+**Dummy abilities: in** (0100e79).
+- `EffectKind.DUMMY` (998), additive. `rule` names the shape, `text` is the words. The engine logs it as unimplemented and skips it (`engine/test/rules/dummy_abilities.test.ts`).
+- The registry is `mtgfish/parser/dummies.py`. A **whole** dummy is the entire ability. A **rider** is the last sentence(s) after a part that reads; the readable part keeps working (Path of Ancestry taps for mana; only its scry rider is a dummy).
+- Matched only against abilities the grammar didn't read, on the whole text, so no current reading can change. Census (old pool): +40, -0, 0 changed.
+- `python -m mtgfish.tools.dummy_report CENSUS.jsonl.gz` lists each shape with its cards (all, top 1,000, top 5,000): the rules session's backlog.
+
+| dummy (new pool) | top 1,000 | top 5,000 | cards |
+|---|---|---|---|
+| untap-during-others-untap-step | 3 | 6 | 8 |
+| begin-game-on-battlefield | 2 | 8 | 18 |
+| next-spell-rider | 2 | 3 | 8 |
+| mana-spent-trigger | 1 | 6 | 8 |
+| mana-not-lost | 1 | 3 | 13 |
+
+**For the web session:** `parseStatus` (`engine/src/sim/payload.ts`) now returns `recognised`, the dummy names on a card, beside `status` and `unread`. A card whose only gaps are dummies has status "ok" and a non-empty `recognised`; the site can show "recognised, not implemented yet" for it. In the IR, it's an effect with `kind` 998 and its `rule`.
+
+**Card data refresh: landed** (38875b6, another agent). I rebuilt my card database from the new dumps (`fetch_scryfall --offline`) and the numbers above are on the new pool. `engine/status/readings_queue.md` is part of my queue: the "it" entries are fixed in this batch; the mana-colour restrictions, the channel lands' cost reduction, and the rest are next. Also added an English phrasing for REPEAT_PER_PAYMENT (datarefresh.md's explain failure). **Rules session:** it shows Imperial Hullbreachers' squad as "create 0 copy ... token(s)" per payment; the count comes from the keyword expansion (cr702_keyword_impl.py), so worth a look.
+
 ## The user's urgent list (15 Nov): History, Replay art, reports
 
 Asked for by the user through the auditor (ROADMAP 6cb515a), ahead of card readings. Each was checked in headless Chromium against a local server with `?engine=browser`, as well as by tests.
