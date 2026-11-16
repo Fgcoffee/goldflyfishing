@@ -23,15 +23,21 @@ later. Not `mtgfish/parser`.
   - The other 258 go into `tests/ir/golden/readings.json`, pinned by
     `tests/ir/test_golden_readings.py`: one test per card; a failure shows the
     old and new reading, and the docstring says how to refresh a card.
-  - Status: test and queue written. Generating the JSON, running the tests and
-    committing were blocked this session by repeated failures of the tool
-    permission check (no verdict). Next session: run
-    `scratchpad/golden/build_golden.py`, or rebuild it from the steps above,
-    then run the full suite, commit and push.
-- **Next:** item 2, spot-checking 30 cards per `[ir]` batch.
-  - Watch `git log --grep='^\[ir\]'`.
-  - Diff fully-read sets before and after each batch.
-  - Sample 30 cards and check them the same way.
+  - Committed in e6d51c1; 259 tests pass. Phyrexian Arena was refreshed for
+    the 15 Nov snapshot's rewording (same reading).
+- **Item 2, batch spot checks: tool in place, first batch checked.**
+  - `python -m tests.ir.readings_spot_check BASE_REV` parses the pool at
+    BASE_REV (git worktree) and at HEAD against the same card database.
+    It prints the fully-read counts and a sample of 30 newly fully-read
+    cards (`--sample`, `--seed`), with Oracle beside reading. It takes a
+    few minutes.
+  - **Batch b2ce87b** ("is equipped / enchanted"): +17 fully read, all
+    checked. 12 are misread, confirmed on the TS engine: "it" in the static
+    ability is `remembered`, so the bonus goes to every permanent (an
+    equipped Kor Duelist gives a Grizzly Bears double strike). Queued with
+    the cause and a suggested guard.
+  - Next: run it on every new `[ir]` batch (`git log --grep='^\[ir\]'`).
+  - Last batch checked: b2ce87b.
 - **Later:** item 3, dummy abilities on the Deck tab and in the card window,
   once the parser publishes the IR field (see `engine/status/parser.md`).
 

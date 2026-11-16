@@ -20,6 +20,36 @@ Not misreads, just how the read-back words things. No action needed:
 - "enters tapped" prints as "Continuously: tap object". Read correctly as a
   replacement.
 
+## Spot check: parser batch b2ce87b ("as long as this is equipped / enchanted")
+
+Ran `python -m tests.ir.readings_spot_check b2ce87b~1`. 17 cards became fully
+read, and all 17 were checked. The condition reads right; the subject doesn't.
+
+- [ ] **"It" in a static ability is `remembered`, so the bonus goes to every
+  permanent.**
+  - In "As long as this creature is equipped, it has double strike", "it"
+    becomes `targets: {remembered: true}`.
+  - A static ability has no resolution and so no remembered object.
+    `matches` ignores the flag, so the filter has no constraint at all.
+  - **Confirmed on the TS engine:** with Kor Duelist equipped (Sword of Fire
+    and Ice), a Grizzly Bears elsewhere on the board also has double strike.
+    (Scratch vitest on `RealBoard`, not committed.) The parser's board test
+    only checked the Duelist itself.
+  - "It" here should be `source_only` (the creature itself).
+  - Affected (12): Kor Duelist, Armed Assailant, Kitesail Apprentice,
+    Fireblade Charger, Sunspear Shikari, Leonin Lightbringer, Dwarfhold
+    Champion, Armory Veteran, Leonin Den-Guard, Thran Golem, Skyhunter Cub,
+    Auriok Glaivemaster.
+  - The other five in the batch read right: Patriot, Young Avenger; Raksha
+    Golden Cub; Gate Hound; Dreampod Druid; Fireblade Charger's death
+    trigger.
+  - Worth a guard: a static (or continuous) effect whose targets are
+    `remembered` is always a misread.
+- [ ] **Avacynian Missionaries** (same batch). "At the beginning of your end
+  step, if this creature is equipped, transform it." IR: `transform object
+  (whatever was just referred to)`. In a trigger with nothing acted on yet,
+  "it" should be the source. Same cause, unconfirmed on a board.
+
 ## Mana abilities lose their colour restriction
 
 All of these read as "add one mana of any colour", so in a game the source
