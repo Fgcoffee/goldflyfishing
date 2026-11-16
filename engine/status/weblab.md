@@ -1,4 +1,41 @@
-# weblab session: status (Cut lab and Recs restore)
+# weblab session: status
+
+## Current job: card-reading correctness (from 16 Nov, user's go-ahead)
+
+Catch cards the parser marks fully read but reads **wrong**. Owned paths:
+`tests/ir/test_golden_readings.py`, `tests/ir/golden/`,
+`engine/status/readings_queue.md`, and the site files for "dummy abilities"
+later. Not `mtgfish/parser`.
+
+- **Item 1, golden readings for the top 300 (by EDHREC rank): reviewed.**
+  - 274 of 300 are marked fully read. Each ability's Oracle line was checked
+    against `explain_card` (rendered from the opcodes), and against the IR
+    where the English was ambiguous.
+  - **16 fully-read cards are misread.** They're queued in
+    `engine/status/readings_queue.md` for the parser agent, grouped by cause:
+    - mana abilities that lose their colour limit (Exotic Orchard, Fellwar
+      Stone, Chrome Mox, Reflecting Pool, Mox Amber, Bloom Tender);
+    - the channel lands' "costs {1} less to activate" read as a resolution
+      effect (Boseiju, Otawara, Takenuma);
+    - one-offs: Mystic Sanctuary, The Great Henge, Dovin's Veto, Rishkar's
+      Expertise, Panharmonicon, Ragavan (cast for free instead of paying),
+      Dryad of the Ilysian Grove.
+  - The other 258 go into `tests/ir/golden/readings.json`, pinned by
+    `tests/ir/test_golden_readings.py`: one test per card; a failure shows the
+    old and new reading, and the docstring says how to refresh a card.
+  - Status: test and queue written. Generating the JSON, running the tests and
+    committing were blocked this session by repeated failures of the tool
+    permission check (no verdict). Next session: run
+    `scratchpad/golden/build_golden.py`, or rebuild it from the steps above,
+    then run the full suite, commit and push.
+- **Next:** item 2, spot-checking 30 cards per `[ir]` batch.
+  - Watch `git log --grep='^\[ir\]'`.
+  - Diff fully-read sets before and after each batch.
+  - Sample 30 cards and check them the same way.
+- **Later:** item 3, dummy abilities on the Deck tab and in the card window,
+  once the parser publishes the IR field (see `engine/status/parser.md`).
+
+# Earlier job: Cut lab and Recs restore (done)
 
 Owner of this file: the web agent restoring PR #28's Cut lab and Recs tabs.
 Owner paths for this job: `mtgfish/ui/web/`, `mtgfish/web/`, `mtgfish/ui/bridge.py`,

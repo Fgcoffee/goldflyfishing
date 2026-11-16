@@ -1,0 +1,2161 @@
+{
+ "Abrade": [
+  {
+   "oracle": "Choose one -",
+   "understood": "Choose one - deal 3 damage to target creature; or destroy target artifact."
+  }
+ ],
+ "Adarkar Wastes": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {W} or {U}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {U}, then deal 1 damage to you."
+  }
+ ],
+ "Aetherize": [
+  {
+   "oracle": "Return all attacking creatures to their owner's hand.",
+   "understood": "Return to hand all creature attacking."
+  }
+ ],
+ "Akroma's Will": [
+  {
+   "oracle": "Choose one. If you control a commander as you cast this spell, you may choose both instead.",
+   "understood": "Choose one (if you control at least 1 object commander as the modes are chosen: choose at least 1 and up to 2 instead) - all creature you control gains flying, vigilance, double strike until end of turn; or all creature you control gains lifelink, indestructible, Protection from each color until end of turn."
+  }
+ ],
+ "An Offer You Can't Refuse": [
+  {
+   "oracle": "Counter target noncreature spell. Its controller creates two Treasure tokens.",
+   "understood": "Counter target noncreature that is a spell in stack, then the controller of that object creates 2 Treasure token(s)."
+  }
+ ],
+ "Ancient Tomb": [
+  {
+   "oracle": "{T}: Add {C}{C}. This land deals 2 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}{C}, then deal 2 damage to you."
+  }
+ ],
+ "Anguished Unmaking": [
+  {
+   "oracle": "Exile target nonland permanent. You lose 3 life.",
+   "understood": "Exile target nonland, then you loses 3 life."
+  }
+ ],
+ "Arcane Signet": [
+  {
+   "oracle": "{T}: Add one mana of any color in your commander's color identity.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color in your commander's color identity."
+  }
+ ],
+ "Archmage Emeritus": [
+  {
+   "oracle": "Whenever you cast or copy an instant or sorcery spell, draw a card.",
+   "understood": "Whenever 1 instant or sorcery that is a spell in stack cast spell/copied (player: you), you draws 1 card(s)."
+  }
+ ],
+ "Arid Mesa": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Mountain or Plains card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Mountain or Plains and puts it into battlefield."
+  }
+ ],
+ "Ash Barrens": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "Basic landcycling {1}",
+   "understood": "Pay {1}, discard this card (from hand): you searches their library for 1 basic land in library."
+  }
+ ],
+ "Ashnod's Altar": [
+  {
+   "oracle": "Sacrifice a creature: Add {C}{C}.",
+   "understood": "Pay sacrifice 1 creature (mana ability - does not use the stack): you adds {C}{C}."
+  }
+ ],
+ "Assassin's Trophy": [
+  {
+   "oracle": "Destroy target permanent an opponent controls. Its controller may search their library for a basic land card, put it onto the battlefield, then shuffle.",
+   "understood": "Destroy target object an opponent controls, then the controller of that object may you searches their library for 1 basic land and puts it into battlefield."
+  }
+ ],
+ "Austere Command": [
+  {
+   "oracle": "Choose two -",
+   "understood": "Choose 2 - destroy all artifact; or destroy all enchantment; or destroy all creature with mana value 3 or less; or destroy all creature with mana value 4 or greater."
+  }
+ ],
+ "Avenger of Zendikar": [
+  {
+   "oracle": "When this creature enters, create a 0/1 green Plant creature token for each land you control.",
+   "understood": "Whenever this permanent enters battlefield, you creates the number of all land you control 0/1 Plant token(s)."
+  },
+  {
+   "oracle": "Whenever a land you control enters, you may put a +1/+1 counter on each Plant creature you control.",
+   "understood": "Whenever 1 land you control enters battlefield, you may put 1 +1/+1 counter(s) on all Plant creature you control."
+  }
+ ],
+ "Azorius Signet": [
+  {
+   "oracle": "{1}, {T}: Add {W}{U}.",
+   "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {W}{U}."
+  }
+ ],
+ "Basilisk Collar": [
+  {
+   "oracle": "Equipped creature has deathtouch and lifelink.",
+   "understood": "Continuously: all object with object (this permanent itself) attached gains deathtouch, lifelink."
+  },
+  {
+   "oracle": "Equip {2}",
+   "understood": "Pay {2} (sorcery speed only): attach to target creature you control."
+  }
+ ],
+ "Battlefield Forge": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {R} or {W}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {W}, then deal 1 damage to you."
+  }
+ ],
+ "Beast Whisperer": [
+  {
+   "oracle": "Whenever you cast a creature spell, draw a card.",
+   "understood": "Whenever 1 creature that is a spell in stack cast spell (player: you), you draws 1 card(s)."
+  }
+ ],
+ "Beast Within": [
+  {
+   "oracle": "Destroy target permanent. Its controller creates a 3/3 green Beast creature token.",
+   "understood": "Destroy target object, then the controller of that object creates 1 3/3 Beast token(s)."
+  }
+ ],
+ "Big Score": [
+  {
+   "oracle": "As an additional cost to cast this spell, discard a card.",
+   "understood": "Casting this spell also pays discard 1 object."
+  },
+  {
+   "oracle": "Draw two cards and create two Treasure tokens.",
+   "understood": "You draws 2 card(s), then you creates 2 Treasure token(s)."
+  }
+ ],
+ "Birds of Paradise": [
+  {
+   "oracle": "Flying",
+   "understood": "Has Flying."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Black Market Connections": [
+  {
+   "oracle": "At the beginning of your first main phase, choose one or more -",
+   "understood": "Whenever phase began (player: you) (of precombat main), choose at least 1 and up to 3 - you creates 1 Treasure token(s), then you loses 1 life; or you draws 1 card(s), then you loses 2 life; or you creates 1 3/2 Shapeshifter with changeling token(s), then you loses 3 life."
+  }
+ ],
+ "Blasphemous Act": [
+  {
+   "oracle": "This spell costs {1} less to cast for each creature on the battlefield.",
+   "understood": "Object (this permanent itself) costs -1 times the number of all creature to cast."
+  },
+  {
+   "oracle": "this deals 13 damage to each creature.",
+   "understood": "Deal 13 damage to all creature."
+  }
+ ],
+ "Blood Artist": [
+  {
+   "oracle": "Whenever this creature or another creature dies, target player loses 1 life and you gain 1 life.",
+   "understood": "Whenever 1 creature dies, target player loses 1 life, then you gains 1 life."
+  }
+ ],
+ "Blood Crypt": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Bloodstained Mire": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Swamp or Mountain card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Swamp or Mountain and puts it into battlefield."
+  }
+ ],
+ "Bojuka Bog": [
+  {
+   "oracle": "This land enters tapped.",
+   "understood": "Continuously: tap object (this permanent itself)."
+  },
+  {
+   "oracle": "When this land enters, exile target player's graveyard.",
+   "understood": "Whenever this permanent enters battlefield, exile all object in graveyard."
+  },
+  {
+   "oracle": "{T}: Add {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {B}."
+  }
+ ],
+ "Boros Charm": [
+  {
+   "oracle": "Choose one -",
+   "understood": "Choose one - deal 4 damage to target planeswalker or player; or all object you control gains indestructible until end of turn; or target creature gains double strike until end of turn."
+  }
+ ],
+ "Boros Signet": [
+  {
+   "oracle": "{1}, {T}: Add {R}{W}.",
+   "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {R}{W}."
+  }
+ ],
+ "Bountiful Promenade": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {G} or {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {W}."
+  }
+ ],
+ "Brainstorm": [
+  {
+   "oracle": "Draw three cards, then put two cards from your hand on top of your library in any order.",
+   "understood": "You draws 3 card(s), then put 2 object you own in hand on top of its owner's library."
+  }
+ ],
+ "Breeding Pool": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Brushland": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {G} or {W}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {W}, then deal 1 damage to you."
+  }
+ ],
+ "Buried Ruin": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand.",
+   "understood": "Pay {2}, {T}, sacrifice this: return to hand target artifact you own in graveyard."
+  }
+ ],
+ "Cabal Coffers": [
+  {
+   "oracle": "{2}, {T}: Add {B} for each Swamp you control.",
+   "understood": "Pay {2}, {T} (mana ability - does not use the stack): you adds {B} the number of all Swamp you control time(s)."
+  }
+ ],
+ "Canopy Vista": [
+  {
+   "oracle": "This land enters tapped unless you control two or more basic lands.",
+   "understood": "Continuously: if not (you control at least 2 basic land), tap object (this permanent itself)."
+  }
+ ],
+ "Cascade Bluffs": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{U/R}, {T}: Add {U}{U}, {U}{R}, or {R}{R}.",
+   "understood": "Pay {U/R}, {T} (mana ability - does not use the stack): choose one - you adds {U}{U}; or you adds {U}{R}; or you adds {R}{R}."
+  }
+ ],
+ "Cavern of Souls": [
+  {
+   "oracle": "As this land enters, choose a creature type.",
+   "understood": "Continuously: [choose_quality]."
+  },
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type, and that spell can't be countered.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color (spend only on 1 creature of the chosen type that is a spell in stack), then object (whatever was just referred to) in stack can't be_countered."
+  }
+ ],
+ "Caves of Koilos": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {W} or {B}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {B}, then deal 1 damage to you."
+  }
+ ],
+ "Chaos Warp": [
+  {
+   "oracle": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield.",
+   "understood": "Move target object to library, then reveal 1 object from the top 1 of library, then if the object just referred to is artifact or battle or creature or enchantment or land or planeswalker, put onto the battlefield object (whatever was just referred to)."
+  }
+ ],
+ "Choked Estuary": [
+  {
+   "oracle": "As this land enters, you may reveal an Island or Swamp card from your hand. If you don't, this land enters tapped.",
+   "understood": "Continuously: you may reveal all Island or Swamp you own in hand, then if that was not done, tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}."
+  }
+ ],
+ "Chromatic Lantern": [
+  {
+   "oracle": "Lands you control have \"{T}: Add one mana of any color.\"",
+   "understood": "Continuously: all land you control gains Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Cinder Glade": [
+  {
+   "oracle": "This land enters tapped unless you control two or more basic lands.",
+   "understood": "Continuously: if not (you control at least 2 basic land), tap object (this permanent itself)."
+  }
+ ],
+ "City of Brass": [
+  {
+   "oracle": "Whenever this land becomes tapped, it deals 1 damage to you.",
+   "understood": "Whenever this permanent tapped, deal 1 damage to you."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Clifftop Retreat": [
+  {
+   "oracle": "This land enters tapped unless you control a Mountain or a Plains.",
+   "understood": "Continuously: if not (you control at least 1 Mountain or Plains), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {R} or {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {W}."
+  }
+ ],
+ "Command Beacon": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}, Sacrifice this land: Put your commander into your hand from the command zone.",
+   "understood": "Pay {T}, sacrifice this: move all object you own commander in command to hand."
+  }
+ ],
+ "Command Tower": [
+  {
+   "oracle": "{T}: Add one mana of any color in your commander's color identity.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color in your commander's color identity."
+  }
+ ],
+ "Commander's Sphere": [
+  {
+   "oracle": "{T}: Add one mana of any color in your commander's color identity.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color in your commander's color identity."
+  },
+  {
+   "oracle": "Sacrifice this artifact: Draw a card.",
+   "understood": "Pay sacrifice this: you draws 1 card(s)."
+  }
+ ],
+ "Counterspell": [
+  {
+   "oracle": "Counter target spell.",
+   "understood": "Counter target object that is a spell in stack."
+  }
+ ],
+ "Craterhoof Behemoth": [
+  {
+   "oracle": "Haste",
+   "understood": "Has Haste."
+  },
+  {
+   "oracle": "When this creature enters, creatures you control gain trample and get +X/+X until end of turn, where X is the number of creatures you control.",
+   "understood": "Whenever this permanent enters battlefield, all creature you control gains trample until end of turn, then all creature you control gets +the number of all creature you control/+the number of all creature you control until end of turn."
+  }
+ ],
+ "Crop Rotation": [
+  {
+   "oracle": "As an additional cost to cast this spell, sacrifice a land.",
+   "understood": "Casting this spell also pays sacrifice 1 land."
+  },
+  {
+   "oracle": "Search your library for a land card, put that card onto the battlefield, then shuffle.",
+   "understood": "You searches their library for 1 land and puts it into battlefield."
+  }
+ ],
+ "Cultivate": [
+  {
+   "oracle": "Search your library for up to two basic land cards, reveal those cards, put one onto the battlefield tapped and the other into your hand, then shuffle.",
+   "understood": "You searches their library for up to 2 basic land and puts one into battlefield tapped and the other into hand."
+  }
+ ],
+ "Cyclonic Rift": [
+  {
+   "oracle": "Return target nonland permanent you don't control to its owner's hand.",
+   "understood": "Return to hand target nonland an opponent controls."
+  },
+  {
+   "oracle": "Overload {6}{U}",
+   "understood": "Has Overload."
+  }
+ ],
+ "Dark Ritual": [
+  {
+   "oracle": "Add {B}{B}{B}.",
+   "understood": "You adds {B}{B}{B}."
+  }
+ ],
+ "Darksteel Citadel": [
+  {
+   "oracle": "Indestructible",
+   "understood": "Has Indestructible."
+  },
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  }
+ ],
+ "Deadly Dispute": [
+  {
+   "oracle": "As an additional cost to cast this spell, sacrifice an artifact or creature.",
+   "understood": "Casting this spell also pays sacrifice 1 artifact or creature."
+  },
+  {
+   "oracle": "Draw two cards and create a Treasure token.",
+   "understood": "You draws 2 card(s), then you creates 1 Treasure token(s)."
+  }
+ ],
+ "Deadly Rollick": [
+  {
+   "oracle": "If you control a commander, you may cast this spell without paying its mana cost.",
+   "understood": "Alternative cost: you may cast this spell without paying its mana cost (only if you control at least 1 object commander) (cast from hand or command zone)."
+  },
+  {
+   "oracle": "Exile target creature.",
+   "understood": "Exile target creature."
+  }
+ ],
+ "Deflecting Swat": [
+  {
+   "oracle": "If you control a commander, you may cast this spell without paying its mana cost.",
+   "understood": "Alternative cost: you may cast this spell without paying its mana cost (only if you control at least 1 object commander) (cast from hand or command zone)."
+  },
+  {
+   "oracle": "You may choose new targets for target spell or ability.",
+   "understood": "You may change the targets of target object in stack."
+  }
+ ],
+ "Delighted Halfling": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color. Spend this mana only to cast a legendary spell, and that spell can't be countered.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color (spend only on 1 legendary that is a spell in stack), then object (whatever was just referred to) in stack can't be_countered."
+  }
+ ],
+ "Demonic Tutor": [
+  {
+   "oracle": "Search your library for a card, put that card into your hand, then shuffle.",
+   "understood": "You searches their library for 1 object and puts it into hand."
+  }
+ ],
+ "Deserted Beach": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W} or {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {U}."
+  }
+ ],
+ "Diabolic Intent": [
+  {
+   "oracle": "As an additional cost to cast this spell, sacrifice a creature.",
+   "understood": "Casting this spell also pays sacrifice 1 creature."
+  },
+  {
+   "oracle": "Search your library for a card, put that card into your hand, then shuffle.",
+   "understood": "You searches their library for 1 object and puts it into hand."
+  }
+ ],
+ "Dimir Signet": [
+  {
+   "oracle": "{1}, {T}: Add {U}{B}.",
+   "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {U}{B}."
+  }
+ ],
+ "Doubling Season": [
+  {
+   "oracle": "If an effect would create one or more tokens under your control, it creates twice that many of those tokens instead.",
+   "understood": "Continuously: replacement - tokens created for you become twice that many."
+  },
+  {
+   "oracle": "If an effect would put one or more counters on a permanent you control, it puts twice that many of those counters on that permanent instead.",
+   "understood": "Continuously: replacement - counters of any kind put by an effect on all object you control become twice that many."
+  }
+ ],
+ "Dragonskull Summit": [
+  {
+   "oracle": "This land enters tapped unless you control a Swamp or a Mountain.",
+   "understood": "Continuously: if not (you control at least 1 Swamp or Mountain), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {B} or {R}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {R}."
+  }
+ ],
+ "Dreamroot Cascade": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {G} or {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {U}."
+  }
+ ],
+ "Drowned Catacomb": [
+  {
+   "oracle": "This land enters tapped unless you control an Island or a Swamp.",
+   "understood": "Continuously: if not (you control at least 1 Island or Swamp), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}."
+  }
+ ],
+ "Elvish Mystic": [
+  {
+   "oracle": "{T}: Add {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {G}."
+  }
+ ],
+ "Enlightened Tutor": [
+  {
+   "oracle": "Search your library for an artifact or enchantment card, reveal it, then shuffle and put that card on top.",
+   "understood": "You searches their library for 1 artifact or enchantment, shuffles, and puts it on top of their library."
+  }
+ ],
+ "Eternal Witness": [
+  {
+   "oracle": "When this creature enters, you may return target card from your graveyard to your hand.",
+   "understood": "Whenever this permanent enters battlefield, you may return to hand target object you own in graveyard."
+  }
+ ],
+ "Evolving Wilds": [
+  {
+   "oracle": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "understood": "Pay {T}, sacrifice this: you searches their library for 1 basic land and puts it into battlefield tapped."
+  }
+ ],
+ "Exploration": [
+  {
+   "oracle": "You may play an additional land on each of your turns.",
+   "understood": "Continuously: you may you may play 1 additional land(s)."
+  }
+ ],
+ "Explore": [
+  {
+   "oracle": "You may play an additional land this turn.",
+   "understood": "You may you may play 1 additional land(s)."
+  },
+  {
+   "oracle": "Draw a card.",
+   "understood": "You draws 1 card(s)."
+  }
+ ],
+ "Exsanguinate": [
+  {
+   "oracle": "Each opponent loses X life. You gain life equal to the life lost this way.",
+   "understood": "Each opponent loses X life, then you gains the life lost this way life."
+  }
+ ],
+ "Fabled Passage": [
+  {
+   "oracle": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. Then if you control four or more lands, untap that land.",
+   "understood": "Pay {T}, sacrifice this: you searches their library for 1 basic land and puts it into battlefield tapped, then if you control at least 4 land, untap land (whatever was just referred to)."
+  }
+ ],
+ "Faerie Mastermind": [
+  {
+   "oracle": "Flash",
+   "understood": "Has Flash."
+  },
+  {
+   "oracle": "Flying",
+   "understood": "Has Flying."
+  },
+  {
+   "oracle": "Whenever an opponent draws their second card each turn, you draw a card.",
+   "understood": "Whenever drew card (player: an opponent) (only the #2 such event each turn), you draws 1 card(s)."
+  },
+  {
+   "oracle": "{3}{U}: Each player draws a card.",
+   "understood": "Pay {3}{U}: each player draws 1 card(s)."
+  }
+ ],
+ "Faithless Looting": [
+  {
+   "oracle": "Draw two cards, then discard two cards.",
+   "understood": "You draws 2 card(s), then you discards 2 card(s)."
+  },
+  {
+   "oracle": "Flashback {2}{R}",
+   "understood": "Has Flashback."
+  }
+ ],
+ "Farewell": [
+  {
+   "oracle": "Choose one or more -",
+   "understood": "Choose at least 1 and up to 4 - exile all artifact; or exile all creature; or exile all enchantment; or exile all object in graveyard."
+  }
+ ],
+ "Farseek": [
+  {
+   "oracle": "Search your library for a Plains, Island, Swamp, or Mountain card, put it onto the battlefield tapped, then shuffle.",
+   "understood": "You searches their library for 1 Plains or Island or Swamp or Mountain and puts it into battlefield tapped."
+  }
+ ],
+ "Feed the Swarm": [
+  {
+   "oracle": "Destroy target creature or enchantment an opponent controls. You lose life equal to that permanent's mana value.",
+   "understood": "Destroy target creature or enchantment an opponent controls, then you loses the mana value of object (whatever was just referred to) life."
+  }
+ ],
+ "Fell the Profane // Fell Mire": [
+  {
+   "oracle": "Destroy target creature or planeswalker.",
+   "understood": "Destroy target creature or planeswalker."
+  },
+  {
+   "oracle": "As this land enters, you may pay 3 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 3 life, then if that was not done, tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {B}."
+  }
+ ],
+ "Fierce Guardianship": [
+  {
+   "oracle": "If you control a commander, you may cast this spell without paying its mana cost.",
+   "understood": "Alternative cost: you may cast this spell without paying its mana cost (only if you control at least 1 object commander) (cast from hand or command zone)."
+  },
+  {
+   "oracle": "Counter target noncreature spell.",
+   "understood": "Counter target noncreature that is a spell in stack."
+  }
+ ],
+ "Flawless Maneuver": [
+  {
+   "oracle": "If you control a commander, you may cast this spell without paying its mana cost.",
+   "understood": "Alternative cost: you may cast this spell without paying its mana cost (only if you control at least 1 object commander) (cast from hand or command zone)."
+  },
+  {
+   "oracle": "Creatures you control gain indestructible until end of turn.",
+   "understood": "All creature you control gains indestructible until end of turn."
+  }
+ ],
+ "Flooded Grove": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{G/U}, {T}: Add {G}{G}, {G}{U}, or {U}{U}.",
+   "understood": "Pay {G/U}, {T} (mana ability - does not use the stack): choose one - you adds {G}{G}; or you adds {G}{U}; or you adds {U}{U}."
+  }
+ ],
+ "Flooded Strand": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Plains or Island card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Plains or Island and puts it into battlefield."
+  }
+ ],
+ "Force of Will": [
+  {
+   "oracle": "You may pay 1 life and exile a blue card from your hand rather than pay this spell's mana cost.",
+   "understood": "Alternative cost, paid instead of the mana cost: pay 1 life, exile 1 blue you own in hand from hand (cast from hand or command zone)."
+  },
+  {
+   "oracle": "Counter target spell.",
+   "understood": "Counter target object that is a spell in stack."
+  }
+ ],
+ "Foundry Inspector": [
+  {
+   "oracle": "Artifact spells you cast cost {1} less to cast.",
+   "understood": "Continuously: all artifact you control that is a spell in stack costs -1 to cast."
+  }
+ ],
+ "Frantic Search": [
+  {
+   "oracle": "Draw two cards, then discard two cards. Untap up to three lands.",
+   "understood": "You draws 2 card(s), then you discards 2 card(s), then untap up to 3 land."
+  }
+ ],
+ "Fyndhorn Elves": [
+  {
+   "oracle": "{T}: Add {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {G}."
+  }
+ ],
+ "Gamble": [
+  {
+   "oracle": "Search your library for a card, put that card into your hand, discard a card at random, then shuffle.",
+   "understood": "You searches their library for 1 object and puts it into hand, then you discards 1 card(s) at random, then you shuffles."
+  }
+ ],
+ "Garruk's Uprising": [
+  {
+   "oracle": "When this enchantment enters, if you control a creature with power 4 or greater, draw a card.",
+   "understood": "Whenever this permanent enters battlefield - but only if you control at least 1 creature with power 4 or greater, you draws 1 card(s)."
+  },
+  {
+   "oracle": "Creatures you control have trample.",
+   "understood": "Continuously: all creature you control gains trample."
+  },
+  {
+   "oracle": "Whenever a creature you control with power 4 or greater enters, draw a card.",
+   "understood": "Whenever 1 creature you control with power 4 or greater enters battlefield, you draws 1 card(s)."
+  }
+ ],
+ "Generous Gift": [
+  {
+   "oracle": "Destroy target permanent. Its controller creates a 3/3 green Elephant creature token.",
+   "understood": "Destroy target object, then the controller of that object creates 1 3/3 Elephant token(s)."
+  }
+ ],
+ "Ghostly Prison": [
+  {
+   "oracle": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+   "understood": "Continuously: all creature can't attack you, unless its controller pays {2}."
+  }
+ ],
+ "Glacial Fortress": [
+  {
+   "oracle": "This land enters tapped unless you control a Plains or an Island.",
+   "understood": "Continuously: if not (you control at least 1 Plains or Island), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W} or {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {U}."
+  }
+ ],
+ "Godless Shrine": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Grand Abolisher": [
+  {
+   "oracle": "During your turn, your opponents can't cast spells or activate abilities of artifacts, creatures, or enchantments.",
+   "understood": "Continuously (while it is your turn): each opponent can't cast_spell of object that is a spell; each opponent can't activate_ability of artifact or creature or enchantment; each opponent can't activate_mana_ability of artifact or creature or enchantment; each opponent can't activate_loyalty_ability of artifact or creature or enchantment."
+  }
+ ],
+ "Gray Merchant of Asphodel": [
+  {
+   "oracle": "When this creature enters, each opponent loses X life, where X is your devotion to black. You gain life equal to the life lost this way.",
+   "understood": "Whenever this permanent enters battlefield, each opponent loses your devotion to black life, then you gains the life lost this way life."
+  }
+ ],
+ "Growth Spiral": [
+  {
+   "oracle": "Draw a card. You may put a land card from your hand onto the battlefield.",
+   "understood": "You draws 1 card(s), then you may put onto the battlefield 1 land you own in hand."
+  }
+ ],
+ "Hallowed Fountain": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Hardened Scales": [
+  {
+   "oracle": "If one or more +1/+1 counters would be put on a creature you control, that many plus one +1/+1 counters are put on it instead.",
+   "understood": "Continuously: replacement - +1/+1 counters put on all creature you control become that many plus 1."
+  }
+ ],
+ "Harrow": [
+  {
+   "oracle": "As an additional cost to cast this spell, sacrifice a land.",
+   "understood": "Casting this spell also pays sacrifice 1 land."
+  },
+  {
+   "oracle": "Search your library for up to two basic land cards, put them onto the battlefield, then shuffle.",
+   "understood": "You searches their library for up to 2 basic land and puts it into battlefield."
+  }
+ ],
+ "Haunted Ridge": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {B} or {R}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {R}."
+  }
+ ],
+ "Herald's Horn": [
+  {
+   "oracle": "As this artifact enters, choose a creature type.",
+   "understood": "Continuously: [choose_quality]."
+  },
+  {
+   "oracle": "Creature spells you cast of the chosen type cost {1} less to cast.",
+   "understood": "Continuously: all creature you control of the chosen type that is a spell in stack costs -1 to cast."
+  },
+  {
+   "oracle": "At the beginning of your upkeep, look at the top card of your library. If it's a creature card of the chosen type, you may reveal it and put it into your hand.",
+   "understood": "Whenever upkeep (player: you), you looks at the top 1 card(s) of their library (setting them aside to choose from; nothing moves), then if the object just referred to is creature of the chosen type, you may reveal object (whatever was just referred to), then move object (whatever was just referred to) to hand."
+  }
+ ],
+ "Heroic Intervention": [
+  {
+   "oracle": "Permanents you control gain hexproof and indestructible until end of turn.",
+   "understood": "All object you control gains hexproof, indestructible until end of turn."
+  }
+ ],
+ "Hinterland Harbor": [
+  {
+   "oracle": "This land enters tapped unless you control a Forest or an Island.",
+   "understood": "Continuously: if not (you control at least 1 Forest or Island), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {G} or {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {U}."
+  }
+ ],
+ "Hullbreaker Horror": [
+  {
+   "oracle": "Flash",
+   "understood": "Has Flash."
+  },
+  {
+   "oracle": "This spell can't be countered.",
+   "understood": "Continuously: object (this permanent itself) can't be_countered."
+  },
+  {
+   "oracle": "Whenever you cast a spell, choose up to one -",
+   "understood": "Whenever 1 object that is a spell in stack cast spell (player: you), choose up to one - return to hand target object an opponent controls that is a spell in stack; or return to hand target nonland."
+  }
+ ],
+ "Impact Tremors": [
+  {
+   "oracle": "Whenever a creature you control enters, this enchantment deals 1 damage to each opponent.",
+   "understood": "Whenever 1 creature you control enters battlefield, deal 1 damage to each opponent."
+  }
+ ],
+ "Infernal Grasp": [
+  {
+   "oracle": "Destroy target creature. You lose 2 life.",
+   "understood": "Destroy target creature, then you loses 2 life."
+  }
+ ],
+ "Inspiring Call": [
+  {
+   "oracle": "Draw a card for each creature you control with a +1/+1 counter on it. Those creatures gain indestructible until end of turn.",
+   "understood": "You draws the number of all creature you control with 1 or greater +1/+1 counters card(s), then creature (whatever was just referred to) gains indestructible until end of turn."
+  }
+ ],
+ "Inventors' Fair": [
+  {
+   "oracle": "At the beginning of your upkeep, if you control three or more artifacts, you gain 1 life.",
+   "understood": "Whenever upkeep (player: you) - but only if you control at least 3 artifact, you gains 1 life."
+  },
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{4}, {T}, Sacrifice this: Search your library for an artifact card, reveal it, put it into your hand, then shuffle. Activate only if you control three or more artifacts.",
+   "understood": "Pay {4}, {T}, sacrifice this (only if you control at least 3 artifact): you searches their library for 1 artifact and puts it into hand."
+  }
+ ],
+ "Isolated Chapel": [
+  {
+   "oracle": "This land enters tapped unless you control a Plains or a Swamp.",
+   "understood": "Continuously: if not (you control at least 1 Plains or Swamp), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {B}."
+  }
+ ],
+ "Izzet Signet": [
+  {
+   "oracle": "{1}, {T}: Add {U}{R}.",
+   "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {U}{R}."
+  }
+ ],
+ "Jeska's Will": [
+  {
+   "oracle": "Choose one. If you control a commander as you cast this spell, you may choose both instead.",
+   "understood": "Choose one (if you control at least 1 object commander as the modes are chosen: choose at least 1 and up to 2 instead) - you adds {R} the number of all object an opponent controls in hand time(s); or exile 3 object you own from the top 3 of your library, then [play_from_zone] object (whatever was just referred to)."
+  }
+ ],
+ "Jet Medallion": [
+  {
+   "oracle": "Black spells you cast cost {1} less to cast.",
+   "understood": "Continuously: all black you control that is a spell in stack costs -1 to cast."
+  }
+ ],
+ "Karn's Bastion": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{4}, {T}: Proliferate.",
+   "understood": "Pay {4}, {T}: proliferate."
+  }
+ ],
+ "Karplusan Forest": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {R} or {G}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {G}, then deal 1 damage to you."
+  }
+ ],
+ "Kodama's Reach": [
+  {
+   "oracle": "Search your library for up to two basic land cards, reveal those cards, put one onto the battlefield tapped and the other into your hand, then shuffle.",
+   "understood": "You searches their library for up to 2 basic land and puts one into battlefield tapped and the other into hand."
+  }
+ ],
+ "Lightning Bolt": [
+  {
+   "oracle": "this deals 3 damage to any target.",
+   "understood": "Deal 3 damage to target battle or creature or planeswalker or player."
+  }
+ ],
+ "Lightning Greaves": [
+  {
+   "oracle": "Equipped creature has haste and shroud.",
+   "understood": "Continuously: all object with object (this permanent itself) attached gains haste, shroud."
+  },
+  {
+   "oracle": "Equip {0}",
+   "understood": "Pay {0} (sorcery speed only): attach to target creature you control."
+  }
+ ],
+ "Llanowar Elves": [
+  {
+   "oracle": "{T}: Add {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {G}."
+  }
+ ],
+ "Llanowar Wastes": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {B} or {G}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {G}, then deal 1 damage to you."
+  }
+ ],
+ "Lotus Petal": [
+  {
+   "oracle": "{T}, Sacrifice this artifact: Add one mana of any color.",
+   "understood": "Pay {T}, sacrifice this (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Luxury Suite": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {B} or {R}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {R}."
+  }
+ ],
+ "Mana Confluence": [
+  {
+   "oracle": "{T}, Pay 1 life: Add one mana of any color.",
+   "understood": "Pay {T}, pay 1 life (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Mana Geyser": [
+  {
+   "oracle": "Add {R} for each tapped land your opponents control.",
+   "understood": "You adds {R} the number of all land an opponent controls tapped time(s)."
+  }
+ ],
+ "Mana Vault": [
+  {
+   "oracle": "This artifact doesn't untap during your untap step.",
+   "understood": "Continuously: object (this permanent itself) can't untap during its controller's untap step."
+  },
+  {
+   "oracle": "At the beginning of your upkeep, you may pay {4}. If you do, untap this artifact.",
+   "understood": "Whenever upkeep (player: you), you may you pays {4}, then when you do, untap object (this permanent itself)."
+  },
+  {
+   "oracle": "At the beginning of your draw step, if this artifact is tapped, it deals 1 damage to you.",
+   "understood": "Whenever draw step (player: you) - but only if you control at least 1 object (this permanent itself) tapped, deal 1 damage to you."
+  },
+  {
+   "oracle": "{T}: Add {C}{C}{C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}{C}{C}."
+  }
+ ],
+ "Marsh Flats": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Plains or Swamp card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Plains or Swamp and puts it into battlefield."
+  }
+ ],
+ "Mind Stone": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{1}, {T}, Sacrifice this artifact: Draw a card.",
+   "understood": "Pay {1}, {T}, sacrifice this: you draws 1 card(s)."
+  }
+ ],
+ "Mirkwood Bats": [
+  {
+   "oracle": "Flying",
+   "understood": "Has Flying."
+  },
+  {
+   "oracle": "Whenever you create or sacrifice a token, each opponent loses 1 life.",
+   "understood": "Whenever 1 object token sacrificed/token created (player: you), each opponent loses 1 life."
+  }
+ ],
+ "Misty Rainforest": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Forest or Island card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Forest or Island and puts it into battlefield."
+  }
+ ],
+ "Mithril Coat": [
+  {
+   "oracle": "Flash",
+   "understood": "Has Flash."
+  },
+  {
+   "oracle": "Indestructible",
+   "understood": "Has Indestructible."
+  },
+  {
+   "oracle": "When this enters, attach it to target legendary creature you control.",
+   "understood": "Whenever this permanent enters battlefield, attach to target legendary creature you control."
+  },
+  {
+   "oracle": "Equipped creature has indestructible.",
+   "understood": "Continuously: all object with object (this permanent itself) attached gains indestructible."
+  },
+  {
+   "oracle": "Equip {3}",
+   "understood": "Pay {3} (sorcery speed only): attach to target creature you control."
+  }
+ ],
+ "Morbid Opportunist": [
+  {
+   "oracle": "Whenever one or more other creatures die, draw a card. This ability triggers only once each turn.",
+   "understood": "Whenever one or more another creature dies (once for each batch of simultaneous events) (once each turn), you draws 1 card(s)."
+  }
+ ],
+ "Morphic Pool": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}."
+  }
+ ],
+ "Mox Opal": [
+  {
+   "oracle": "{T}: Add one mana of any color. Activate only if you control three or more artifacts.",
+   "understood": "Pay {T} (only if you control at least 3 artifact) (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Mystic Remora": [
+  {
+   "oracle": "Cumulative upkeep {1}",
+   "understood": "Whenever upkeep (player: you), put 1 age counter(s) on object (this permanent itself), then you may you pays {1}, then if that was not done, sacrifice object (this permanent itself)."
+  },
+  {
+   "oracle": "Whenever an opponent casts a noncreature spell, you may draw a card unless that player pays {4}.",
+   "understood": "Whenever 1 noncreature that is a spell in stack cast spell (player: an opponent), you may you draws 1 card(s), unless the player the trigger is about pays {4}."
+  }
+ ],
+ "Mystical Tutor": [
+  {
+   "oracle": "Search your library for an instant or sorcery card, reveal it, then shuffle and put that card on top.",
+   "understood": "You searches their library for 1 instant or sorcery, shuffles, and puts it on top of their library."
+  }
+ ],
+ "Nature's Lore": [
+  {
+   "oracle": "Search your library for a Forest card, put that card onto the battlefield, then shuffle.",
+   "understood": "You searches their library for 1 Forest and puts it into battlefield."
+  }
+ ],
+ "Negate": [
+  {
+   "oracle": "Counter target noncreature spell.",
+   "understood": "Counter target noncreature that is a spell in stack."
+  }
+ ],
+ "Night's Whisper": [
+  {
+   "oracle": "You draw two cards and lose 2 life.",
+   "understood": "You draws 2 card(s), then you loses 2 life."
+  }
+ ],
+ "Nykthos, Shrine to Nyx": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{2}, {T}: Choose a color. Add an amount of mana of that color equal to your devotion to that color.",
+   "understood": "Pay {2}, {T} (mana ability - does not use the stack): [choose_quality], then you adds your devotion to the chosen colour mana of the chosen color."
+  }
+ ],
+ "Opt": [
+  {
+   "oracle": "Scry 1.",
+   "understood": "You scries 1."
+  },
+  {
+   "oracle": "Draw a card.",
+   "understood": "You draws 1 card(s)."
+  }
+ ],
+ "Ornithopter of Paradise": [
+  {
+   "oracle": "Flying",
+   "understood": "Has Flying."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Orzhov Signet": [
+  {
+   "oracle": "{1}, {T}: Add {W}{B}.",
+   "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {W}{B}."
+  }
+ ],
+ "Overgrown Farmland": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {G} or {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {W}."
+  }
+ ],
+ "Overgrown Tomb": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Patchwork Banner": [
+  {
+   "oracle": "As this artifact enters, choose a creature type.",
+   "understood": "Continuously: [choose_quality]."
+  },
+  {
+   "oracle": "Creatures you control of the chosen type get +1/+1.",
+   "understood": "Continuously: all creature you control of the chosen type gets +1/+1."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color."
+  }
+ ],
+ "Path to Exile": [
+  {
+   "oracle": "Exile target creature. Its controller may search their library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+   "understood": "Exile target creature, then the controller of that object may you searches their library for 1 basic land and puts it into battlefield tapped."
+  }
+ ],
+ "Phyrexian Arena": [
+  {
+   "oracle": "At the beginning of your upkeep, you draw a card and lose 1 life.",
+   "understood": "Whenever upkeep (player: you), you draws 1 card(s), then you loses 1 life."
+  }
+ ],
+ "Phyrexian Tower": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}, Sacrifice a creature: Add {B}{B}.",
+   "understood": "Pay {T}, sacrifice 1 creature (mana ability - does not use the stack): you adds {B}{B}."
+  }
+ ],
+ "Pitiless Plunderer": [
+  {
+   "oracle": "Whenever another creature you control dies, create a Treasure token.",
+   "understood": "Whenever 1 another creature you control dies, you creates 1 Treasure token(s)."
+  }
+ ],
+ "Polluted Delta": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for an Island or Swamp card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Island or Swamp and puts it into battlefield."
+  }
+ ],
+ "Ponder": [
+  {
+   "oracle": "Look at the top three cards of your library, then put them back in any order. You may shuffle.",
+   "understood": "You looks at the top 3 card(s) of their library (setting them aside to choose from; nothing moves), then put object (whatever was just referred to) on top of its owner's library, then you may you shuffles."
+  },
+  {
+   "oracle": "Draw a card.",
+   "understood": "You draws 1 card(s)."
+  }
+ ],
+ "Pongify": [
+  {
+   "oracle": "Destroy target creature. It can't be regenerated. Its controller creates a 3/3 green Ape creature token.",
+   "understood": "Destroy target creature, then object (whatever was just referred to) can't be_regenerated, then the controller of that object creates 1 3/3 Ape token(s)."
+  }
+ ],
+ "Prairie Stream": [
+  {
+   "oracle": "This land enters tapped unless you control two or more basic lands.",
+   "understood": "Continuously: if not (you control at least 2 basic land), tap object (this permanent itself)."
+  }
+ ],
+ "Preordain": [
+  {
+   "oracle": "Scry 2, then draw a card.",
+   "understood": "You scries 2, then you draws 1 card(s)."
+  }
+ ],
+ "Prismatic Vista": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 basic land and puts it into battlefield."
+  }
+ ],
+ "Professional Face-Breaker": [
+  {
+   "oracle": "Menace",
+   "understood": "Has Menace."
+  },
+  {
+   "oracle": "Whenever one or more creatures you control deal combat damage to a player, create a Treasure token.",
+   "understood": "Whenever combat damage dealt (from one or more creature you control) (to a player) (once for each batch of simultaneous events), you creates 1 Treasure token(s)."
+  },
+  {
+   "oracle": "Sacrifice a Treasure: Exile the top card of your library. You may play that card this turn.",
+   "understood": "Pay sacrifice 1 Treasure: exile 1 object you own from the top 1 of your library, then [play_from_zone] object (whatever was just referred to)."
+  }
+ ],
+ "Propaganda": [
+  {
+   "oracle": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+   "understood": "Continuously: all creature can't attack you, unless its controller pays {2}."
+  }
+ ],
+ "Rakdos Signet": [
+  {
+   "oracle": "{1}, {T}: Add {B}{R}.",
+   "understood": "Pay {1}, {T} (mana ability - does not use the stack): you adds {B}{R}."
+  }
+ ],
+ "Rampant Growth": [
+  {
+   "oracle": "Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+   "understood": "You searches their library for 1 basic land and puts it into battlefield tapped."
+  }
+ ],
+ "Rapid Hybridization": [
+  {
+   "oracle": "Destroy target creature. It can't be regenerated. That creature's controller creates a 3/3 green Frog Lizard creature token.",
+   "understood": "Destroy target creature, then object (whatever was just referred to) can't be_regenerated, then the controller of that object creates 1 3/3 Frog Lizard token(s)."
+  }
+ ],
+ "Reanimate": [
+  {
+   "oracle": "Put target creature card from a graveyard onto the battlefield under your control. You lose life equal to that card's mana value.",
+   "understood": "Put onto the battlefield target creature in graveyard, then you loses the mana value of object (whatever was just referred to) life."
+  }
+ ],
+ "Rejuvenating Springs": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {G} or {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {U}."
+  }
+ ],
+ "Reliquary Tower": [
+  {
+   "oracle": "You have no maximum hand size.",
+   "understood": "Continuously: you may skip the cleanup discard."
+  },
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  }
+ ],
+ "Return of the Wildspeaker": [
+  {
+   "oracle": "Choose one -",
+   "understood": "Choose one - you draws the greatest power among all non-Human creature you control card(s); or all non-Human creature you control gets +3/+3 until end of turn."
+  }
+ ],
+ "Rhystic Study": [
+  {
+   "oracle": "Whenever an opponent casts a spell, you may draw a card unless that player pays {1}.",
+   "understood": "Whenever 1 object that is a spell in stack cast spell (player: an opponent), you may you draws 1 card(s), unless the player the trigger is about pays {1}."
+  }
+ ],
+ "Rhythm of the Wild": [
+  {
+   "oracle": "Creature spells you control can't be countered.",
+   "understood": "Continuously: all creature you control that is a spell in stack can't be_countered."
+  },
+  {
+   "oracle": "Nontoken creatures you control have riot.",
+   "understood": "Continuously: all creature you control nontoken gains riot."
+  }
+ ],
+ "Roaming Throne": [
+  {
+   "oracle": "Ward {2}",
+   "understood": "Whenever this permanent targeted (from all object an opponent controls in stack), counter object (the spell or ability that triggered this) in stack, unless the controller of the spell or ability that triggered this pays {2}."
+  },
+  {
+   "oracle": "As this creature enters, choose a creature type.",
+   "understood": "Continuously: [choose_quality]."
+  },
+  {
+   "oracle": "This creature is the chosen type in addition to its other types.",
+   "understood": "Continuously: object (this permanent itself) is also 0."
+  },
+  {
+   "oracle": "If a triggered ability of another creature you control of the chosen type triggers, it triggers an additional time.",
+   "understood": "Continuously: [extra_trigger] 1 another creature you control of the chosen type."
+  }
+ ],
+ "Rockfall Vale": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {R} or {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {G}."
+  }
+ ],
+ "Rogue's Passage": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{4}, {T}: Target creature can't be blocked this turn.",
+   "understood": "Pay {4}, {T}: target creature can't be_blocked until end of turn."
+  }
+ ],
+ "Rootbound Crag": [
+  {
+   "oracle": "This land enters tapped unless you control a Mountain or a Forest.",
+   "understood": "Continuously: if not (you control at least 1 Mountain or Forest), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {R} or {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {G}."
+  }
+ ],
+ "Ruby Medallion": [
+  {
+   "oracle": "Red spells you cast cost {1} less to cast.",
+   "understood": "Continuously: all red you control that is a spell in stack costs -1 to cast."
+  }
+ ],
+ "Rugged Prairie": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{R/W}, {T}: Add {R}{R}, {R}{W}, or {W}{W}.",
+   "understood": "Pay {R/W}, {T} (mana ability - does not use the stack): choose one - you adds {R}{R}; or you adds {R}{W}; or you adds {W}{W}."
+  }
+ ],
+ "Sacred Foundry": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Sakura-Tribe Elder": [
+  {
+   "oracle": "Sacrifice this creature: Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+   "understood": "Pay sacrifice this: you searches their library for 1 basic land and puts it into battlefield tapped."
+  }
+ ],
+ "Scalding Tarn": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for an Island or Mountain card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Island or Mountain and puts it into battlefield."
+  }
+ ],
+ "Scavenger Grounds": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{2}, {T}, Sacrifice a Desert: Exile all graveyards.",
+   "understood": "Pay {2}, {T}, sacrifice 1 Desert: exile all object in graveyard."
+  }
+ ],
+ "Scute Swarm": [
+  {
+   "oracle": "Whenever a land you control enters, create a 1/1 green Insect creature token. If you control six or more lands, create a token that's a copy of this creature instead.",
+   "understood": "Whenever 1 land you control enters battlefield, if you control at least 6 land, you creates 1 copy of object (this permanent itself) token(s); otherwise you creates 1 1/1 Insect token(s)."
+  }
+ ],
+ "Sea of Clouds": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W} or {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {U}."
+  }
+ ],
+ "Sensei's Divining Top": [
+  {
+   "oracle": "{1}: Look at the top three cards of your library, then put them back in any order.",
+   "understood": "Pay {1}: you looks at the top 3 card(s) of their library (setting them aside to choose from; nothing moves), then put object (whatever was just referred to) on top of its owner's library."
+  },
+  {
+   "oracle": "{T}: Draw a card, then put this artifact on top of its owner's library.",
+   "understood": "Pay {T}: you draws 1 card(s), then put object (this permanent itself) on top of its owner's library."
+  }
+ ],
+ "Shattered Sanctum": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {B}."
+  }
+ ],
+ "Shipwreck Marsh": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}."
+  }
+ ],
+ "Shivan Reef": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {U} or {R}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {R}, then deal 1 damage to you."
+  }
+ ],
+ "Sign in Blood": [
+  {
+   "oracle": "Target player draws two cards and loses 2 life.",
+   "understood": "Target player draws 2 card(s), then the player targeted earlier loses 2 life."
+  }
+ ],
+ "Sink into Stupor // Soporific Springs": [
+  {
+   "oracle": "Return target spell or nonland permanent an opponent controls to its owner's hand.",
+   "understood": "Return to hand target nonland an opponent controls that is a spell in battlefield or stack."
+  },
+  {
+   "oracle": "As this land enters, you may pay 3 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 3 life, then if that was not done, tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {U}."
+  }
+ ],
+ "Skullclamp": [
+  {
+   "oracle": "Equipped creature gets +1/-1.",
+   "understood": "Continuously: all object with object (this permanent itself) attached gets +1/-1."
+  },
+  {
+   "oracle": "Whenever equipped creature dies, draw two cards.",
+   "understood": "Whenever all object with object (this permanent itself) attached dies, you draws 2 card(s)."
+  },
+  {
+   "oracle": "Equip {1}",
+   "understood": "Pay {1} (sorcery speed only): attach to target creature you control."
+  }
+ ],
+ "Skyshroud Claim": [
+  {
+   "oracle": "Search your library for up to two Forest cards, put them onto the battlefield, then shuffle.",
+   "understood": "You searches their library for up to 2 Forest and puts it into battlefield."
+  }
+ ],
+ "Smoldering Marsh": [
+  {
+   "oracle": "This land enters tapped unless you control two or more basic lands.",
+   "understood": "Continuously: if not (you control at least 2 basic land), tap object (this permanent itself)."
+  }
+ ],
+ "Smothering Tithe": [
+  {
+   "oracle": "Whenever an opponent draws a card, that player may pay {2}. If the player doesn't, you create a Treasure token.",
+   "understood": "Whenever drew card (player: an opponent), the player the trigger is about may you pays {2}, then if that was not done, you creates 1 Treasure token(s)."
+  }
+ ],
+ "Snap": [
+  {
+   "oracle": "Return target creature to its owner's hand. Untap up to two lands.",
+   "understood": "Return to hand target creature, then untap up to 2 land."
+  }
+ ],
+ "Sol Ring": [
+  {
+   "oracle": "{T}: Add {C}{C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}{C}."
+  }
+ ],
+ "Solemn Simulacrum": [
+  {
+   "oracle": "When this creature enters, you may search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+   "understood": "Whenever this permanent enters battlefield, you may you searches their library for 1 basic land and puts it into battlefield tapped."
+  },
+  {
+   "oracle": "When this creature dies, you may draw a card.",
+   "understood": "Whenever this permanent dies, you may you draws 1 card(s)."
+  }
+ ],
+ "Spectator Seating": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {R} or {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {W}."
+  }
+ ],
+ "Spire Garden": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {R} or {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {G}."
+  }
+ ],
+ "Steam Vents": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Stomping Ground": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Storm-Kiln Artist": [
+  {
+   "oracle": "This creature gets +1/+0 for each artifact you control.",
+   "understood": "Continuously: object (this permanent itself) gets +the number of all artifact you control/+0."
+  },
+  {
+   "oracle": "Whenever you cast or copy an instant or sorcery spell, create a Treasure token.",
+   "understood": "Whenever 1 instant or sorcery that is a spell in stack cast spell/copied (player: you), you creates 1 Treasure token(s)."
+  }
+ ],
+ "Stormcarved Coast": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U} or {R}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {R}."
+  }
+ ],
+ "Stroke of Midnight": [
+  {
+   "oracle": "Destroy target nonland permanent. Its controller creates a 1/1 white Human creature token.",
+   "understood": "Destroy target nonland, then the controller of that object creates 1 1/1 Human token(s)."
+  }
+ ],
+ "Sulfur Falls": [
+  {
+   "oracle": "This land enters tapped unless you control an Island or a Mountain.",
+   "understood": "Continuously: if not (you control at least 1 Island or Mountain), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U} or {R}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {R}."
+  }
+ ],
+ "Sulfurous Springs": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {B} or {R}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {R}, then deal 1 damage to you."
+  }
+ ],
+ "Sundown Pass": [
+  {
+   "oracle": "This land enters tapped unless you control two or more other lands.",
+   "understood": "Continuously: if not (you control at least 2 another land), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {R} or {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {W}."
+  }
+ ],
+ "Sunken Hollow": [
+  {
+   "oracle": "This land enters tapped unless you control two or more basic lands.",
+   "understood": "Continuously: if not (you control at least 2 basic land), tap object (this permanent itself)."
+  }
+ ],
+ "Sunpetal Grove": [
+  {
+   "oracle": "This land enters tapped unless you control a Forest or a Plains.",
+   "understood": "Continuously: if not (you control at least 1 Forest or Plains), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {G} or {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {W}."
+  }
+ ],
+ "Swan Song": [
+  {
+   "oracle": "Counter target enchantment, instant, or sorcery spell. Its controller creates a 2/2 blue Bird creature token with flying.",
+   "understood": "Counter target enchantment or instant or sorcery that is a spell in stack, then the controller of that object creates 1 2/2 Bird with flying token(s)."
+  }
+ ],
+ "Swiftfoot Boots": [
+  {
+   "oracle": "Equipped creature has hexproof and haste.",
+   "understood": "Continuously: all object with object (this permanent itself) attached gains hexproof, haste."
+  },
+  {
+   "oracle": "Equip {1}",
+   "understood": "Pay {1} (sorcery speed only): attach to target creature you control."
+  }
+ ],
+ "Sword of the Animist": [
+  {
+   "oracle": "Equipped creature gets +1/+1.",
+   "understood": "Continuously: all object with object (this permanent itself) attached gets +1/+1."
+  },
+  {
+   "oracle": "Whenever equipped creature attacks, you may search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "understood": "Whenever all object with object (this permanent itself) attached attacks, you may you searches their library for 1 basic land and puts it into battlefield tapped."
+  },
+  {
+   "oracle": "Equip {2}",
+   "understood": "Pay {2} (sorcery speed only): attach to target creature you control."
+  }
+ ],
+ "Swords to Plowshares": [
+  {
+   "oracle": "Exile target creature. Its controller gains life equal to its power.",
+   "understood": "Exile target creature, then the controller of that object gains the power of object (whatever was just referred to) life."
+  }
+ ],
+ "Syr Konrad, the Grim": [
+  {
+   "oracle": "Whenever another creature dies, or a creature card is put into a graveyard from anywhere other than the battlefield, or a creature card leaves your graveyard, this deals 1 damage to each opponent.",
+   "understood": "Whenever 1 another creature dies (or 2 other condition(s)), deal 1 damage to each opponent."
+  },
+  {
+   "oracle": "{1}{B}: Each player mills a card.",
+   "understood": "Pay {1}{B}: each player mills 1 card(s)."
+  }
+ ],
+ "Talisman of Conviction": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {R} or {W}. This artifact deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {R}; or you adds {W}, then deal 1 damage to you."
+  }
+ ],
+ "Talisman of Creativity": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {U} or {R}. This artifact deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {R}, then deal 1 damage to you."
+  }
+ ],
+ "Talisman of Dominance": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {U} or {B}. This artifact deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}, then deal 1 damage to you."
+  }
+ ],
+ "Talisman of Hierarchy": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {W} or {B}. This artifact deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {B}, then deal 1 damage to you."
+  }
+ ],
+ "Talisman of Indulgence": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {B} or {R}. This artifact deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {R}, then deal 1 damage to you."
+  }
+ ],
+ "Talisman of Progress": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {W} or {U}. This artifact deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {U}, then deal 1 damage to you."
+  }
+ ],
+ "Teferi's Protection": [
+  {
+   "oracle": "Until your next turn, your life total can't change and you gain protection from everything. All permanents you control phase out.",
+   "understood": "You can't life_total_change until your next turn, then you gains Protection from object until your next turn, then phase out all object you control."
+  },
+  {
+   "oracle": "Exile this.",
+   "understood": "Exile object (this permanent itself)."
+  }
+ ],
+ "Temple Garden": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Temple of Epiphany": [
+  {
+   "oracle": "This land enters tapped.",
+   "understood": "Continuously: tap object (this permanent itself)."
+  },
+  {
+   "oracle": "When this land enters, scry 1.",
+   "understood": "Whenever this permanent enters battlefield, you scries 1."
+  },
+  {
+   "oracle": "{T}: Add {U} or {R}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {R}."
+  }
+ ],
+ "Temple of Silence": [
+  {
+   "oracle": "This land enters tapped.",
+   "understood": "Continuously: tap object (this permanent itself)."
+  },
+  {
+   "oracle": "When this land enters, scry 1.",
+   "understood": "Whenever this permanent enters battlefield, you scries 1."
+  },
+  {
+   "oracle": "{T}: Add {W} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {B}."
+  }
+ ],
+ "Temple of the False God": [
+  {
+   "oracle": "{T}: Add {C}{C}. Activate only if you control five or more lands.",
+   "understood": "Pay {T} (only if you control at least 5 land) (mana ability - does not use the stack): you adds {C}{C}."
+  }
+ ],
+ "Terminate": [
+  {
+   "oracle": "Destroy target creature. It can't be regenerated.",
+   "understood": "Destroy target creature, then object (whatever was just referred to) can't be_regenerated."
+  }
+ ],
+ "Terramorphic Expanse": [
+  {
+   "oracle": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "understood": "Pay {T}, sacrifice this: you searches their library for 1 basic land and puts it into battlefield tapped."
+  }
+ ],
+ "The One Ring": [
+  {
+   "oracle": "Indestructible",
+   "understood": "Has Indestructible."
+  },
+  {
+   "oracle": "When this enters, if you cast it, you gain protection from everything until your next turn.",
+   "understood": "Whenever this permanent enters battlefield - but only if was cast, you gains Protection from object until your next turn."
+  },
+  {
+   "oracle": "At the beginning of your upkeep, you lose 1 life for each burden counter on this.",
+   "understood": "Whenever upkeep (player: you), you loses the number of burden counters on this permanent's life."
+  },
+  {
+   "oracle": "{T}: Put a burden counter on this, then draw a card for each burden counter on this.",
+   "understood": "Pay {T}: put 1 burden counter(s) on object (this permanent itself), then you draws the number of burden counters on this permanent's card(s)."
+  }
+ ],
+ "Thought Vessel": [
+  {
+   "oracle": "You have no maximum hand size.",
+   "understood": "Continuously: you may skip the cleanup discard."
+  },
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  }
+ ],
+ "Thran Dynamo": [
+  {
+   "oracle": "{T}: Add {C}{C}{C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}{C}{C}."
+  }
+ ],
+ "Three Tree City": [
+  {
+   "oracle": "As this enters, choose a creature type.",
+   "understood": "Continuously: [choose_quality]."
+  },
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{2}, {T}: Choose a color. Add an amount of mana of that color equal to the number of creatures you control of the chosen type.",
+   "understood": "Pay {2}, {T} (mana ability - does not use the stack): [choose_quality], then you adds the number of all creature you control of the chosen type mana of the chosen color."
+  }
+ ],
+ "Three Visits": [
+  {
+   "oracle": "Search your library for a Forest card, put it onto the battlefield, then shuffle.",
+   "understood": "You searches their library for 1 Forest and puts it into battlefield."
+  }
+ ],
+ "Thrill of Possibility": [
+  {
+   "oracle": "As an additional cost to cast this spell, discard a card.",
+   "understood": "Casting this spell also pays discard 1 object."
+  },
+  {
+   "oracle": "Draw two cards.",
+   "understood": "You draws 2 card(s)."
+  }
+ ],
+ "Tireless Provisioner": [
+  {
+   "oracle": "Whenever a land you control enters, create a Food token or a Treasure token.",
+   "understood": "Whenever 1 land you control enters battlefield, choose one - you creates 1 Food token(s); or you creates 1 Treasure token(s)."
+  }
+ ],
+ "Toxic Deluge": [
+  {
+   "oracle": "As an additional cost to cast this spell, pay X life.",
+   "understood": "Casting this spell also pays pay X life."
+  },
+  {
+   "oracle": "All creatures get -X/-X until end of turn.",
+   "understood": "All creature gets +0 minus X/+0 minus X until end of turn."
+  }
+ ],
+ "Training Center": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {U} or {R}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {R}."
+  }
+ ],
+ "Unclaimed Territory": [
+  {
+   "oracle": "As this land enters, choose a creature type.",
+   "understood": "Continuously: [choose_quality]."
+  },
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds 1 mana of any color (spend only on 1 creature of the chosen type that is a spell in stack)."
+  }
+ ],
+ "Underground River": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {U} or {B}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {U}; or you adds {B}, then deal 1 damage to you."
+  }
+ ],
+ "Underground Sea": [],
+ "Undergrowth Stadium": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {B} or {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {G}."
+  }
+ ],
+ "Unexpected Windfall": [
+  {
+   "oracle": "As an additional cost to cast this spell, discard a card.",
+   "understood": "Casting this spell also pays discard 1 object."
+  },
+  {
+   "oracle": "Draw two cards and create two Treasure tokens.",
+   "understood": "You draws 2 card(s), then you creates 2 Treasure token(s)."
+  }
+ ],
+ "Untimely Malfunction": [
+  {
+   "oracle": "Choose one -",
+   "understood": "Choose one - destroy target artifact; or change the targets of target object in stack; or up to 2 creature can't block until end of turn."
+  }
+ ],
+ "Urborg, Tomb of Yawgmoth": [
+  {
+   "oracle": "Each land is a Swamp in addition to its other land types.",
+   "understood": "Continuously: all land is also 0."
+  }
+ ],
+ "Vampiric Tutor": [
+  {
+   "oracle": "Search your library for a card, then shuffle and put that card on top. You lose 2 life.",
+   "understood": "You searches their library for 1 object, shuffles, and puts it on top of their library, then you loses 2 life."
+  }
+ ],
+ "Vandalblast": [
+  {
+   "oracle": "Destroy target artifact you don't control.",
+   "understood": "Destroy target artifact an opponent controls."
+  },
+  {
+   "oracle": "Overload {4}{R}",
+   "understood": "Has Overload."
+  }
+ ],
+ "Vault of Champions": [
+  {
+   "oracle": "This land enters tapped unless you have two or more opponents.",
+   "understood": "Continuously: if not (you have 2 or greater each opponent), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W} or {B}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {W}; or you adds {B}."
+  }
+ ],
+ "Verdant Catacombs": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Swamp or Forest card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Swamp or Forest and puts it into battlefield."
+  }
+ ],
+ "Village Rites": [
+  {
+   "oracle": "As an additional cost to cast this spell, sacrifice a creature.",
+   "understood": "Casting this spell also pays sacrifice 1 creature."
+  },
+  {
+   "oracle": "Draw two cards.",
+   "understood": "You draws 2 card(s)."
+  }
+ ],
+ "Viscera Seer": [
+  {
+   "oracle": "Sacrifice a creature: Scry 1.",
+   "understood": "Pay sacrifice 1 creature: you scries 1."
+  }
+ ],
+ "War Room": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card.",
+   "understood": "Pay {3}, {T}, pay commander_colour_identity() life: you draws 1 card(s)."
+  }
+ ],
+ "Watery Grave": [
+  {
+   "oracle": "As this land enters, you may pay 2 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
+  }
+ ],
+ "Wayfarer's Bauble": [
+  {
+   "oracle": "{2}, {T}, Sacrifice this artifact: Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+   "understood": "Pay {2}, {T}, sacrifice this: you searches their library for 1 basic land and puts it into battlefield tapped."
+  }
+ ],
+ "Wild Growth": [
+  {
+   "oracle": "Enchant land",
+   "understood": "Has Enchant."
+  },
+  {
+   "oracle": "Whenever enchanted land is tapped for mana, its controller adds an additional {G}.",
+   "understood": "Whenever all object with object (this permanent itself) attached tapped for mana, the controller of the object the trigger is about adds {G}."
+  }
+ ],
+ "Windswept Heath": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Forest or Plains card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Forest or Plains and puts it into battlefield."
+  }
+ ],
+ "Witch Enchanter // Witch-Blessed Meadow": [
+  {
+   "oracle": "When this creature enters, destroy target artifact or enchantment an opponent controls.",
+   "understood": "Whenever this permanent enters battlefield, destroy target artifact or enchantment an opponent controls."
+  },
+  {
+   "oracle": "As this land enters, you may pay 3 life. If you don't, it enters tapped.",
+   "understood": "Continuously: you may you loses 3 life, then if that was not done, tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {W}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {W}."
+  }
+ ],
+ "Withering Torment": [
+  {
+   "oracle": "Destroy target creature or enchantment. You lose 2 life.",
+   "understood": "Destroy target creature or enchantment, then you loses 2 life."
+  }
+ ],
+ "Wooded Foothills": [
+  {
+   "oracle": "{T}, Pay 1 life, Sacrifice this land: Search your library for a Mountain or Forest card, put it onto the battlefield, then shuffle.",
+   "understood": "Pay {T}, pay 1 life, sacrifice this: you searches their library for 1 Mountain or Forest and puts it into battlefield."
+  }
+ ],
+ "Woodland Cemetery": [
+  {
+   "oracle": "This land enters tapped unless you control a Swamp or a Forest.",
+   "understood": "Continuously: if not (you control at least 1 Swamp or Forest), tap object (this permanent itself)."
+  },
+  {
+   "oracle": "{T}: Add {B} or {G}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {B}; or you adds {G}."
+  }
+ ],
+ "Worldly Tutor": [
+  {
+   "oracle": "Search your library for a creature card, reveal it, then shuffle and put the card on top.",
+   "understood": "You searches their library for 1 creature, shuffles, and puts it on top of their library."
+  }
+ ],
+ "Yavimaya Coast": [
+  {
+   "oracle": "{T}: Add {C}.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {C}."
+  },
+  {
+   "oracle": "{T}: Add {G} or {U}. This land deals 1 damage to you.",
+   "understood": "Pay {T} (mana ability - does not use the stack): choose one - you adds {G}; or you adds {U}, then deal 1 damage to you."
+  }
+ ],
+ "Yavimaya, Cradle of Growth": [
+  {
+   "oracle": "Each land is a Forest in addition to its other land types.",
+   "understood": "Continuously: all land is also 0."
+  }
+ ],
+ "Zulaport Cutthroat": [
+  {
+   "oracle": "Whenever this creature or another creature you control dies, each opponent loses 1 life and you gain 1 life.",
+   "understood": "Whenever 1 creature you control dies, each opponent loses 1 life, then you gains 1 life."
+  }
+ ]
+}
