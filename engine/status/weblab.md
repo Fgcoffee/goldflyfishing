@@ -46,7 +46,11 @@ later. Not `mtgfish/parser`.
     lands' "costs less to activate" becomes a dummy): 0 gained, 33 changed.
     The 7 queued cards now read right and are pinned in the golden set (278
     cards). Spot check: +0, -0 fully read, as the census said.
-  - Last batch checked: 1b04e2e.
+  - **Batch 47f80ac** ("can't be countered" on the stack; "every basic
+    land type"): +0, -0 fully read, 55 changed. Dovin's Veto and Dryad of
+    the Ilysian Grove now read right, and the parser's answer on Rishkar's
+    Expertise holds. All three are pinned (281 cards).
+  - Last batch checked: 47f80ac.
 - **Item 3, dummy abilities on the site: done (752b7a4).**
   - `deckview.parse_status` gives `recognised`, the dummy rule names, as
     the TS `parseStatus` does; the bridge's board cards carry it too.
