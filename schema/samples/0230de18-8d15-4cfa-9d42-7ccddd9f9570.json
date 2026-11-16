@@ -68,7 +68,7 @@
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
@@ -92,7 +92,12 @@
        "text": "can't"
       }
      ],
-     "text": "This spell can't be countered."
+     "text": "This spell can't be countered.",
+     "functions_in": {
+      "$set": [
+       4
+      ]
+     }
     },
     {
      "$": "Ability",

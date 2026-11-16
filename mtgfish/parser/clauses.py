@@ -29,6 +29,7 @@ from ..rules.kernel.query import (
     ValueKind,
 )
 from .nouns import (
+    BASIC_LAND_TYPES,
     SELF_NOUNS,
     chosen_count,
     parse_comparison,
@@ -7293,11 +7294,12 @@ def _in_addition_to_types(stream: Stream) -> Effect | None:
         )
 
     # "every basic land type" - all of them, rather than a named one.
-    every = bool(
-        stream.accept_phrase("every basic land type")
-        or stream.accept_phrase("every creature type")
-        or stream.accept_phrase("all creature types")
-    )
+    every = stream.accept_phrase("every basic land type")
+    if stream.at_phrase("every creature type") or stream.at_phrase("all creature types"):
+        # Every creature type there is: no list of subtypes says that, and
+        # read as none (as it was), it added nothing. Left unread.
+        stream.reset(mark)
+        return None
     spec = None if every else parse_object_filter(stream)
     if spec is None and not every:
         stream.reset(mark)
@@ -7319,7 +7321,9 @@ def _in_addition_to_types(stream: Stream) -> Effect | None:
         EffectKind.ADD_TYPE,
         targets=targets,
         types=spec.types_all if spec is not None else CardType.NONE,
-        keywords=spec.subtypes_all if spec is not None else (),
+        # "every basic land type" (Dryad of the Ilysian Grove): all five
+        # (CR 305.6); it was read as none (readings_queue.md).
+        keywords=spec.subtypes_all if spec is not None else BASIC_LAND_TYPES,
         duration=duration,
         is_targeted=targeted,
         text="is X in addition to its other types",

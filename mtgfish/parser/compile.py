@@ -146,9 +146,25 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
                 ability = [recognised]
         abilities.extend(ability)
 
-    abilities = [_bind_it(ability, result) for ability in abilities]
+    abilities = [_on_the_stack(_bind_it(ability, result)) for ability in abilities]
     result.abilities = tuple(_refuse_borrowed_kicker(abilities, result))
     return result
+
+
+def _on_the_stack(ability: Ability) -> Ability:
+    """"This spell can't be countered." (Dovin's Veto, Carnage Tyrant): a
+    static ability of the spell, working while it's on the stack (CR
+    113.6g). On an instant it was read as a spell effect, which runs on
+    resolution, too late; on a permanent, as working on the battlefield."""
+    from dataclasses import replace as _replace
+
+    from ..rules.cr600_spells_and_abilities.abilities import STACK_ONLY
+
+    if ability.unparsed or ability.text.strip().lower().rstrip(".") != "this spell can't be countered":
+        return ability
+    if ability.kind not in (AbilityKind.SPELL, AbilityKind.STATIC):
+        return ability
+    return _replace(ability, kind=AbilityKind.STATIC, functions_in=STACK_ONLY)
 
 
 def _bind_it(ability: Ability, result: ParsedFace) -> Ability:

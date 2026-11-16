@@ -428,3 +428,25 @@ def test_that_creature_with_nothing_to_name_is_left_unread(card_db):
     from mtgfish.parser.compile import parse_card
 
     assert not parse_card(card_db.lookup("Deadly Wanderings")).fully_parsed
+
+
+@pytest.mark.parametrize("name", ["Dovin's Veto", "Carnage Tyrant"])
+def test_cant_be_countered_works_on_the_stack(card_db, name):
+    """readings_queue.md: on an instant it was a spell effect (runs on
+    resolution, too late); on a permanent, it worked on the battlefield."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+    from mtgfish.rules.kernel.enums import Zone
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    line = next(a for a in face.abilities if a.text.lower().startswith("this spell can't be countered"))
+    assert line.kind is AbilityKind.STATIC and line.functions_in == frozenset({Zone.STACK})
+
+
+def test_every_basic_land_type_is_all_five(card_db):
+    """Dryad of the Ilysian Grove (readings_queue.md): read as no types."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Dryad of the Ilysian Grove")).faces[0]
+    added = [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.ADD_TYPE]
+    assert added and set(added[0].keywords) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}
