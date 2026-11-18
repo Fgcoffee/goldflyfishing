@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
  "name": "Llanowar Elves",
- "card_hash": "5b59649d28266705d9a6db93dc82ebe7",
+ "card_hash": "6a062a94c65db7f2c17551d5a59f2b52",
  "card": {
   "$": "CardDef",
   "oracle_id": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
@@ -44,7 +44,7 @@
   "mana_value": 1,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 58,
+  "edhrec_rank": 54,
   "scryfall_uri": "https://scryfall.com/card/fdn/227/llanowar-elves?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Llanowar Elves",
    "face": 0,
    "face_name": "Llanowar Elves",
-   "card_hash": "5b59649d28266705d9a6db93dc82ebe7",
+   "card_hash": "6a062a94c65db7f2c17551d5a59f2b52",
    "fully_read": true,
    "abilities": [
     {

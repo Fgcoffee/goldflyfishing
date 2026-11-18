@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
  "name": "Cyclonic Rift",
- "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
+ "card_hash": "9f769a66cc0f78821b46ffe7ce190991",
  "card": {
   "$": "CardDef",
   "oracle_id": "d75b9c82-1b49-4c3e-a1b5-aeef57d6644b",
@@ -44,7 +44,7 @@
   "mana_value": 2,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 55,
+  "edhrec_rank": 58,
   "scryfall_uri": "https://scryfall.com/card/rvr/40/cyclonic-rift?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Cyclonic Rift",
    "face": 0,
    "face_name": "Cyclonic Rift",
-   "card_hash": "6ffcaf0a4fe443dda7ac6404c6e9e383",
+   "card_hash": "9f769a66cc0f78821b46ffe7ce190991",
    "fully_read": true,
    "abilities": [
     {

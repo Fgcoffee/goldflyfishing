@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
  "name": "Goblin Lackey",
- "card_hash": "b12e3d5b70123e837bbf0a9c4799578d",
+ "card_hash": "e493e9f935180bc65402bd1753e8cae2",
  "card": {
   "$": "CardDef",
   "oracle_id": "213fbbdd-f1bc-4bba-9124-7b26e9a706c8",
@@ -40,7 +40,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 4844,
+  "edhrec_rank": 4853,
   "scryfall_uri": "https://scryfall.com/card/vma/167/goblin-lackey?utm_source=api"
  },
  "faces": [
@@ -50,7 +50,7 @@
    "name": "Goblin Lackey",
    "face": 0,
    "face_name": "Goblin Lackey",
-   "card_hash": "b12e3d5b70123e837bbf0a9c4799578d",
+   "card_hash": "e493e9f935180bc65402bd1753e8cae2",
    "fully_read": true,
    "abilities": [
     {

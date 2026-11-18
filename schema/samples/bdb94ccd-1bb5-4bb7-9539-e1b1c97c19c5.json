@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
  "name": "Pashalik Mons",
- "card_hash": "e9f985d0503c61b0334818ece104a9cb",
+ "card_hash": "b630a855d71dac4a0e708f0300a3380e",
  "card": {
   "$": "CardDef",
   "oracle_id": "bdb94ccd-1bb5-4bb7-9539-e1b1c97c19c5",
@@ -48,7 +48,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 2683,
+  "edhrec_rank": 2699,
   "scryfall_uri": "https://scryfall.com/card/dmr/133/pashalik-mons?utm_source=api"
  },
  "faces": [
@@ -58,7 +58,7 @@
    "name": "Pashalik Mons",
    "face": 0,
    "face_name": "Pashalik Mons",
-   "card_hash": "e9f985d0503c61b0334818ece104a9cb",
+   "card_hash": "b630a855d71dac4a0e708f0300a3380e",
    "fully_read": true,
    "abilities": [
     {

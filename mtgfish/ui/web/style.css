@@ -29,6 +29,8 @@
   --warn-soft: rgba(242, 193, 78, .16);
   --bad-soft: rgba(239, 100, 97, .16);
   --good-soft: rgba(76, 195, 138, .14);
+  --todo: #9aa8ff;
+  --todo-soft: rgba(154, 168, 255, .16);
   --code: #0b172c;
   --shadow: 0 10px 30px rgba(0, 0, 0, .35);
   --blur: none;
@@ -56,6 +58,8 @@
   --warn-soft: rgba(229, 172, 20, .18);
   --bad-soft: rgba(207, 63, 60, .12);
   --good-soft: rgba(29, 138, 87, .10);
+  --todo: #4453c4;
+  --todo-soft: rgba(68, 83, 196, .10);
   --code: #f3f5f8;
   --shadow: 0 10px 30px rgba(23, 32, 44, .12);
   --blur: none;
@@ -86,6 +90,8 @@
   --warn-soft: rgba(245, 200, 79, .18);
   --bad-soft: rgba(255, 122, 112, .18);
   --good-soft: rgba(95, 211, 154, .14);
+  --todo: #a8b4ff;
+  --todo-soft: rgba(168, 180, 255, .16);
   --code: rgba(8, 8, 10, .6);
   --shadow: 0 10px 30px rgba(0, 0, 0, .45);
   --blur: blur(14px);
@@ -1046,3 +1052,15 @@ details.panel summary { cursor: pointer; font-weight: 600; }
 .rep-mine { margin: 4px 0 0; padding-left: 18px; font-size: 12px; color: var(--dim); max-height: 140px; overflow: auto; }
 #rep-kind { width: auto; }
 
+
+/* ------------------------------- recognised, not implemented yet (dummies) */
+/* Read by the parser, skipped by the engine: neither "fully read" nor "unread". */
+
+.chip-stat.todo { border-color: var(--todo); background: var(--todo-soft); }
+.sw.todo { background: var(--todo); }
+.tile.recognised { outline-color: var(--todo); }
+.tile .badge.recognised { background: var(--todo); color: #0d1030; }
+.tile.partial .badge.recognised, .tile.blank .badge.recognised { bottom: 32px; }
+.pill.recognised { background: var(--todo-soft); color: var(--todo); margin-left: 4px; }
+.verdictline.recognised { background: var(--todo-soft); color: var(--todo); }
+.reading.todo { color: var(--todo); }

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5b147eab-39dd-4c2a-8f59-d778037788aa",
  "name": "Spike Feeder",
- "card_hash": "ded812ed8814f10f7f5f989513118127",
+ "card_hash": "d6d6132fef6122bdd098fab6ac0414eb",
  "card": {
   "$": "CardDef",
   "oracle_id": "5b147eab-39dd-4c2a-8f59-d778037788aa",
@@ -52,7 +52,7 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 9328,
+  "edhrec_rank": 9286,
   "scryfall_uri": "https://scryfall.com/card/tpr/196/spike-feeder?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Spike Feeder",
    "face": 0,
    "face_name": "Spike Feeder",
-   "card_hash": "ded812ed8814f10f7f5f989513118127",
+   "card_hash": "d6d6132fef6122bdd098fab6ac0414eb",
    "fully_read": true,
    "abilities": [
     {

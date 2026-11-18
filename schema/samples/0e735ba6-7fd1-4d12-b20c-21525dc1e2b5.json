@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0e735ba6-7fd1-4d12-b20c-21525dc1e2b5",
  "name": "Hanweir Battlements",
- "card_hash": "0f219ea0c9b6a79e624bd9a5437795d1",
+ "card_hash": "633115c7bab10217e30a1dcd6c0608a2",
  "card": {
   "$": "CardDef",
   "oracle_id": "0e735ba6-7fd1-4d12-b20c-21525dc1e2b5",
@@ -32,7 +32,7 @@
   "mana_value": 0,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 3227,
+  "edhrec_rank": 3265,
   "scryfall_uri": "https://scryfall.com/card/inr/279/hanweir-battlements?utm_source=api"
  },
  "faces": [
@@ -42,7 +42,7 @@
    "name": "Hanweir Battlements",
    "face": 0,
    "face_name": "Hanweir Battlements",
-   "card_hash": "0f219ea0c9b6a79e624bd9a5437795d1",
+   "card_hash": "633115c7bab10217e30a1dcd6c0608a2",
    "fully_read": false,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
  "name": "Goblin Bushwhacker",
- "card_hash": "90f4a4b27ffef946226ee2193c61faad",
+ "card_hash": "3dedb8e563355ae37dc60ab0f4fde3c1",
  "card": {
   "$": "CardDef",
   "oracle_id": "878b6808-48af-4047-ac35-bfc58bf92e7d",
@@ -44,7 +44,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 8183,
+  "edhrec_rank": 8190,
   "scryfall_uri": "https://scryfall.com/card/zen/125/goblin-bushwhacker?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Goblin Bushwhacker",
    "face": 0,
    "face_name": "Goblin Bushwhacker",
-   "card_hash": "90f4a4b27ffef946226ee2193c61faad",
+   "card_hash": "3dedb8e563355ae37dc60ab0f4fde3c1",
    "fully_read": true,
    "abilities": [
     {

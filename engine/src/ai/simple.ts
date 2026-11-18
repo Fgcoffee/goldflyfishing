@@ -27,6 +27,7 @@ import { isContinuing, LOOP_REPETITIONS } from "../rules/loops";
 export { LOOP_REPETITIONS } from "../rules/loops";
 
 const TRIGGERED = ir("AbilityKind.TRIGGERED");
+const DUMMY = ir("EffectKind.DUMMY");
 const charsOf = (game: Game, obj: GameObject): Characteristics => characteristicsOf(game, obj);
 
 /** Plays out its hand and attacks when the maths is in its favour. */
@@ -165,7 +166,9 @@ export class SimpleAgent implements Agent, CombatAgent {
     if (casts.length) casts = this.worthCastingNow(game, playerId, casts);
     if (casts.length) return this.bestSpell(game, casts);
 
-    const activations = legal.filter((a) => a.kind === ActionKind.ACTIVATE_ABILITY && !this.isMana(game, a) && !this.repeatedTooOften(game, a));
+    const activations = legal.filter(
+      (a) => a.kind === ActionKind.ACTIVATE_ABILITY && !this.isMana(game, a) && !this.doesNothing(game, a) && !this.repeatedTooOften(game, a),
+    );
     if (activations.length) return activations[0]!;
     return PASS;
   }
@@ -195,6 +198,18 @@ export class SimpleAgent implements Agent, CombatAgent {
     const obj = game.objects.get(act.source);
     if (obj === undefined) return false;
     return (charsOf(game, obj).typeLine.types & (CardType.INSTANT | CardType.SORCERY)) === 0;
+  }
+
+  /**
+   * An ability whose only effects are dummies (recognised, not implemented
+   * yet: mtgfish/parser/dummies.py) does nothing in a game, so paying its
+   * cost is a loss.
+   */
+  private doesNothing(game: Game, act: Action): boolean {
+    const obj = game.objects.get(act.source);
+    if (obj === undefined) return false;
+    const effects = list(charsOf(game, obj).abilities[act.abilityIndex]?.effects);
+    return effects.length > 0 && effects.every((e) => num(e.kind) === DUMMY);
   }
 
   private isMana(game: Game, act: Action): boolean {

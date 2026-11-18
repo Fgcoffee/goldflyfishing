@@ -288,9 +288,17 @@ def test_every_opcode_has_an_executor():
     missing = sorted(
         kind.name
         for kind in EffectKind
-        if kind is not EffectKind.UNPARSED and kind not in EXECUTORS
+        if kind not in (EffectKind.UNPARSED, EffectKind.DUMMY) and kind not in EXECUTORS
     )
     assert not missing, f"opcodes with no executor: {missing}"
+
+
+def test_a_dummy_deliberately_has_no_executor():
+    """DUMMY (mtgfish/parser/dummies.py) is a shape recognised and not yet
+    implemented: like UNPARSED it must never run, and the engine logs it."""
+    from mtgfish.rules.cr600_spells_and_abilities.resolve import EXECUTORS
+
+    assert EffectKind.DUMMY not in EXECUTORS
 
 
 def test_unparsed_deliberately_has_no_executor():

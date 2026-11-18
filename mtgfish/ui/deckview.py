@@ -20,6 +20,7 @@ from ..data.cards import CardDef
 from ..data.db import CardDatabase
 from ..parser import parse_card
 from ..rules.cr100_game_concepts.cr106_mana import ManaSymbolKind
+from ..rules.cr600_spells_and_abilities.effects import EffectKind
 from ..rules.kernel.enums import COLOR_LETTERS, COLOR_ORDER, CardType, Color, color_letters
 
 #: Scryfall's image CDN. Addressed by printing id, so showing a whole deck
@@ -76,7 +77,7 @@ def image_urls(card: CardDef, raw: dict | None) -> dict:
 def parse_status(card: CardDef, verdicts=None) -> dict:
     """How much of this card the engine will actually do."""
     if verdicts is not None and verdicts.is_suppressed(card.name):
-        return {"status": "off", "abilities": 0, "understood": 0, "unread": []}
+        return {"status": "off", "abilities": 0, "understood": 0, "unread": [], "recognised": []}
 
     parsed = parse_card(card)
     total = sum(face.total for face in parsed.faces)
@@ -88,6 +89,20 @@ def parse_status(card: CardDef, verdicts=None) -> dict:
         if ability.unparsed
         or any(node.is_unparsed for effect in ability.effects for node in effect.walk())
     ]
+    # Recognised, not implemented yet (mtgfish.parser.dummies): the parser
+    # knows the shape, the engine skips it. Counted as read, so a card whose
+    # only gaps are these is "ok"; the site says so separately. The same
+    # list the browser engine's parseStatus gives (engine/src/sim/payload.ts).
+    recognised = sorted(
+        {
+            node.rule
+            for face in parsed.faces
+            for ability in face.abilities
+            for effect in ability.effects
+            for node in effect.walk()
+            if node.kind is EffectKind.DUMMY and node.rule
+        }
+    )
     if total == 0:
         status = "ok"  # A vanilla creature or a basic land is not a gap.
     elif read == 0:
@@ -96,7 +111,13 @@ def parse_status(card: CardDef, verdicts=None) -> dict:
         status = "partial"
     else:
         status = "ok"
-    return {"status": status, "abilities": total, "understood": read, "unread": unread}
+    return {
+        "status": status,
+        "abilities": total,
+        "understood": read,
+        "unread": unread,
+        "recognised": recognised,
+    }
 
 
 def type_group(card: CardDef) -> str:

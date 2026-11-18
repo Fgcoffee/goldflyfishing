@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "273b339c-964b-4a18-8eb5-ceb8abcdfd9e",
  "name": "Divination",
- "card_hash": "759b7e2f40ccd8e357ce6f84056b1f43",
+ "card_hash": "447c59487dc6c2e341d38d58da914c11",
  "card": {
   "$": "CardDef",
   "oracle_id": "273b339c-964b-4a18-8eb5-ceb8abcdfd9e",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 6235,
+  "edhrec_rank": 6330,
   "scryfall_uri": "https://scryfall.com/card/m19/51/divination?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Divination",
    "face": 0,
    "face_name": "Divination",
-   "card_hash": "759b7e2f40ccd8e357ce6f84056b1f43",
+   "card_hash": "447c59487dc6c2e341d38d58da914c11",
    "fully_read": true,
    "abilities": [
     {

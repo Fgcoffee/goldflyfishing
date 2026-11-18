@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f22c3624-6bd5-4761-b8ad-ac301ad9351c",
  "name": "Curse of the Pierced Heart",
- "card_hash": "65bc660f148d38dda0db4f347c9fc59a",
+ "card_hash": "bf29b5d4507dcf6e1ade2908a6ea6215",
  "card": {
   "$": "CardDef",
   "oracle_id": "f22c3624-6bd5-4761-b8ad-ac301ad9351c",
@@ -48,7 +48,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 12845,
+  "edhrec_rank": 12917,
   "scryfall_uri": "https://scryfall.com/card/isd/138/curse-of-the-pierced-heart?utm_source=api"
  },
  "faces": [
@@ -58,7 +58,7 @@
    "name": "Curse of the Pierced Heart",
    "face": 0,
    "face_name": "Curse of the Pierced Heart",
-   "card_hash": "65bc660f148d38dda0db4f347c9fc59a",
+   "card_hash": "bf29b5d4507dcf6e1ade2908a6ea6215",
    "fully_read": false,
    "abilities": [
     {

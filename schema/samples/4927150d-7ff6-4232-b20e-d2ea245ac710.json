@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
  "name": "Tectonic Edge",
- "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
+ "card_hash": "a45815aadbb115287493a33e85d0f29f",
  "card": {
   "$": "CardDef",
   "oracle_id": "4927150d-7ff6-4232-b20e-d2ea245ac710",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 4105,
+  "edhrec_rank": 4249,
   "scryfall_uri": "https://scryfall.com/card/c14/313/tectonic-edge?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Tectonic Edge",
    "face": 0,
    "face_name": "Tectonic Edge",
-   "card_hash": "5b5c16b7bfa4013c8b38742aa450576c",
+   "card_hash": "a45815aadbb115287493a33e85d0f29f",
    "fully_read": true,
    "abilities": [
     {

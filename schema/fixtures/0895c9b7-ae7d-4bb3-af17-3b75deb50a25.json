@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
  "name": "Command Tower",
- "card_hash": "3a8065cee6eb1f994c607446a1ea2fc0",
+ "card_hash": "d810912b67d7b93ecabf4bac77ac7393",
  "card": {
   "$": "CardDef",
   "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
@@ -34,7 +34,7 @@
   "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 2,
-  "scryfall_uri": "https://scryfall.com/card/msc/233/command-tower?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trc/521/command-tower?utm_source=api"
  },
  "faces": [
   {
@@ -43,7 +43,7 @@
    "name": "Command Tower",
    "face": 0,
    "face_name": "Command Tower",
-   "card_hash": "3a8065cee6eb1f994c607446a1ea2fc0",
+   "card_hash": "d810912b67d7b93ecabf4bac77ac7393",
    "fully_read": true,
    "abilities": [
     {

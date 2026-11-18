@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
  "name": "Chalice of the Void",
- "card_hash": "7a8c800247135a58bc129fc86128756f",
+ "card_hash": "cda79ffdd66916b2ab8d8500497d0cc8",
  "card": {
   "$": "CardDef",
   "oracle_id": "74027ba4-a6ba-4696-baf1-60ef0b27ee0a",
@@ -38,7 +38,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 9320,
+  "edhrec_rank": 9482,
   "scryfall_uri": "https://scryfall.com/card/a25/222/chalice-of-the-void?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Chalice of the Void",
    "face": 0,
    "face_name": "Chalice of the Void",
-   "card_hash": "7a8c800247135a58bc129fc86128756f",
+   "card_hash": "cda79ffdd66916b2ab8d8500497d0cc8",
    "fully_read": true,
    "abilities": [
     {

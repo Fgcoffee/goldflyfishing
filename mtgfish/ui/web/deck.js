@@ -27,6 +27,13 @@ const STATUS_TEXT = {
   missing: "Not found",
 };
 const ATTENTION = new Set(["partial", "blank", "off", "missing"]);
+
+/* Recognised, not implemented yet: abilities the parser knows the shape of
+ * and the engine skips (mtgfish/parser/dummies.py). The card counts as read,
+ * so it can be "Fully read" and still do less than its text says. */
+function recognisedOf(row) { return row.recognised || []; }
+function needsAttention(row) { return ATTENTION.has(row.status) || recognisedOf(row).length > 0; }
+function ruleText(rule) { return rule.replace(/-/g, " "); }
 const TYPE_ORDER = ["Commander", "Creature", "Planeswalker", "Battle", "Instant", "Sorcery",
   "Artifact", "Enchantment", "Land", "Other", "Not found"];
 const MANA_COLORS = { W: "#e6d9a8", U: "#3f8fd2", B: "#8a7c80", R: "#dc5f47", G: "#4a9d68", C: "#a7a8b0" };
@@ -188,6 +195,8 @@ function renderHero(view) {
   chip("% of abilities understood", pct, pct >= 90 ? "good" : pct >= 75 ? "warn" : "bad");
   if (stats.status.partial) chip(" partly read", stats.status.partial, "warn", "partial");
   if (stats.status.blank) chip(" unread", stats.status.blank, "bad", "blank");
+  const todo = deckRows().reduce((n, row) => n + (recognisedOf(row).length ? row.quantity : 0), 0);
+  if (todo) chip(" recognised, not implemented yet", todo, "todo", "recognised");
   if (view.unresolved.length) chip(" not found", view.unresolved.length, "bad", "attention");
 }
 
@@ -204,19 +213,24 @@ function renderCards() {
   host.textContent = "";
   const rows = deckRows().filter((row) => {
     if (Deck.filter === "all") return true;
-    if (Deck.filter === "attention") return ATTENTION.has(row.status);
+    if (Deck.filter === "attention") return needsAttention(row);
+    if (Deck.filter === "recognised") return recognisedOf(row).length > 0;
     return row.status === Deck.filter;
   });
 
-  const counts = { attention: 0, partial: 0, blank: 0 };
+  const counts = { attention: 0, partial: 0, blank: 0, recognised: 0 };
   deckRows().forEach((row) => {
-    if (ATTENTION.has(row.status)) counts.attention += row.quantity;
+    if (needsAttention(row)) counts.attention += row.quantity;
     if (row.status === "partial") counts.partial += row.quantity;
     if (row.status === "blank") counts.blank += row.quantity;
+    if (recognisedOf(row).length) counts.recognised += row.quantity;
   });
   document.querySelectorAll("#deckfilter button").forEach((button) => {
     const key = button.dataset.filter;
-    const base = { all: "All", attention: "Needs attention", partial: "Partial", blank: "Unread" }[key];
+    const base = {
+      all: "All", attention: "Needs attention", partial: "Partial", blank: "Unread",
+      recognised: "Not implemented",
+    }[key];
     const label = key === "all" ? base : `${base} (${counts[key]})`;
     const swatch = button.querySelector(".sw");
     button.textContent = "";
@@ -257,7 +271,8 @@ function cardGrid(rows) {
 }
 
 function cardTile(row) {
-  const tile = el("div", `tile ${row.status}${row.commander ? " commander" : ""}`);
+  const todo = recognisedOf(row).length > 0;
+  const tile = el("div", `tile ${row.status}${todo ? " recognised" : ""}${row.commander ? " commander" : ""}`);
   tile.tabIndex = 0;
   tile.title = row.name;
 
@@ -285,6 +300,11 @@ function cardTile(row) {
     const text = row.status === "partial"
       ? `Partly read - ${row.understood}/${row.abilities}` : STATUS_TEXT[row.status];
     tile.appendChild(el("span", "badge", text));
+  }
+  if (todo) {
+    const badge = el("span", "badge recognised", "Recognised, not implemented yet");
+    badge.title = recognisedOf(row).map(ruleText).join("; ");
+    tile.appendChild(badge);
   }
 
   const actions = el("div", "tile-actions");
@@ -322,6 +342,11 @@ function cardTable(rows) {
     const status = el("td", "s");
     status.appendChild(el("span", `pill ${row.status}`,
       row.status === "partial" ? `Partly read ${row.understood}/${row.abilities}` : STATUS_TEXT[row.status]));
+    if (recognisedOf(row).length) {
+      const pill = el("span", "pill recognised", "not implemented yet");
+      pill.title = recognisedOf(row).map(ruleText).join("; ");
+      status.appendChild(pill);
+    }
     tr.appendChild(status);
     tr.addEventListener("click", () => openDrawer(row));
     body.appendChild(tr);
@@ -635,7 +660,17 @@ function fillDrawer(row, fetchReading) {
     off: "Switched off by you in the sandbox - its abilities are withheld from every run.",
     missing: "No card by this name. Check the spelling, or remove it.",
   };
-  status.appendChild(el("div", `verdictline ${row.status}`, lines[row.status]));
+  const todo = recognisedOf(row);
+  // A card whose only gaps are recognised abilities is "ok", but a green
+  // "reads all of it" over a card the engine partly skips would mislead.
+  if (!(row.status === "ok" && todo.length)) {
+    status.appendChild(el("div", `verdictline ${row.status}`, lines[row.status]));
+  }
+  if (todo.length) {
+    status.appendChild(el("div", "verdictline recognised",
+      `Recognised, not implemented yet: ${todo.map(ruleText).join("; ")}. `
+      + "The engine knows what this does but skips it in simulations, so results understate the card."));
+  }
 
   const actions = document.getElementById("draweractions");
   actions.textContent = "";

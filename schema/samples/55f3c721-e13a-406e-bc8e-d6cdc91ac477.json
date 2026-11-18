@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
  "name": "Authority of the Consuls",
- "card_hash": "40ca2eefaeb49aaf8c3810bc1da18f14",
+ "card_hash": "06f1e2e5bc3a716858ed4384df7c20d7",
  "card": {
   "$": "CardDef",
   "oracle_id": "55f3c721-e13a-406e-bc8e-d6cdc91ac477",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 334,
+  "edhrec_rank": 300,
   "scryfall_uri": "https://scryfall.com/card/fdn/137/authority-of-the-consuls?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Authority of the Consuls",
    "face": 0,
    "face_name": "Authority of the Consuls",
-   "card_hash": "40ca2eefaeb49aaf8c3810bc1da18f14",
+   "card_hash": "06f1e2e5bc3a716858ed4384df7c20d7",
    "fully_read": true,
    "abilities": [
     {

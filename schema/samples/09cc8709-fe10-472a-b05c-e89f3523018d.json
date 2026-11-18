@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
  "name": "Austere Command",
- "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
+ "card_hash": "bc869ace33a529a02b27cd9a1370cb73",
  "card": {
   "$": "CardDef",
   "oracle_id": "09cc8709-fe10-472a-b05c-e89f3523018d",
@@ -47,8 +47,8 @@
   "mana_value": 6,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 169,
-  "scryfall_uri": "https://scryfall.com/card/msc/121/austere-command?utm_source=api"
+  "edhrec_rank": 171,
+  "scryfall_uri": "https://scryfall.com/card/trc/418/austere-command?utm_source=api"
  },
  "faces": [
   {
@@ -57,7 +57,7 @@
    "name": "Austere Command",
    "face": 0,
    "face_name": "Austere Command",
-   "card_hash": "94c68f1a8c9e3be920a8ca64b9db1c6b",
+   "card_hash": "bc869ace33a529a02b27cd9a1370cb73",
    "fully_read": true,
    "abilities": [
     {

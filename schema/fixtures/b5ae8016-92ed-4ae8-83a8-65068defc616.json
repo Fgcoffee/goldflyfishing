@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b5ae8016-92ed-4ae8-83a8-65068defc616",
  "name": "Tannuk, Steadfast Second",
- "card_hash": "e77432a3289af45cc7de0b8484231c4f",
+ "card_hash": "54e492ddd1b862c368675cb5289e9f31",
  "card": {
   "$": "CardDef",
   "oracle_id": "b5ae8016-92ed-4ae8-83a8-65068defc616",
@@ -54,7 +54,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 4653,
+  "edhrec_rank": 4489,
   "scryfall_uri": "https://scryfall.com/card/eoe/162/tannuk-steadfast-second?utm_source=api"
  },
  "faces": [
@@ -64,7 +64,7 @@
    "name": "Tannuk, Steadfast Second",
    "face": 0,
    "face_name": "Tannuk, Steadfast Second",
-   "card_hash": "e77432a3289af45cc7de0b8484231c4f",
+   "card_hash": "54e492ddd1b862c368675cb5289e9f31",
    "fully_read": true,
    "abilities": [
     {

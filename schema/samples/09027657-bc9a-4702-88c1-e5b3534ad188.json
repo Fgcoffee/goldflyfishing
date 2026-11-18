@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
  "name": "Increasing Ambition",
- "card_hash": "f4e654c1551c51797a2c078d9337fb17",
+ "card_hash": "8e4fcf3179c8b9e30c114f8e78f911d1",
  "card": {
   "$": "CardDef",
   "oracle_id": "09027657-bc9a-4702-88c1-e5b3534ad188",
@@ -44,7 +44,7 @@
   "mana_value": 5,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 9453,
+  "edhrec_rank": 9516,
   "scryfall_uri": "https://scryfall.com/card/dka/69/increasing-ambition?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Increasing Ambition",
    "face": 0,
    "face_name": "Increasing Ambition",
-   "card_hash": "f4e654c1551c51797a2c078d9337fb17",
+   "card_hash": "8e4fcf3179c8b9e30c114f8e78f911d1",
    "fully_read": false,
    "abilities": [
     {

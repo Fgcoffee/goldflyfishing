@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4b515bb0-f275-4400-8032-3173b799ab40",
  "name": "Walking Ballista",
- "card_hash": "d96fe8c2aa72a72b543983fe55cfd0a9",
+ "card_hash": "820f615634b96900deeea8dd88928070",
  "card": {
   "$": "CardDef",
   "oracle_id": "4b515bb0-f275-4400-8032-3173b799ab40",
@@ -43,7 +43,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 427,
+  "edhrec_rank": 417,
   "scryfall_uri": "https://scryfall.com/card/2xm/306/walking-ballista?utm_source=api"
  },
  "faces": [
@@ -53,7 +53,7 @@
    "name": "Walking Ballista",
    "face": 0,
    "face_name": "Walking Ballista",
-   "card_hash": "d96fe8c2aa72a72b543983fe55cfd0a9",
+   "card_hash": "820f615634b96900deeea8dd88928070",
    "fully_read": true,
    "abilities": [
     {

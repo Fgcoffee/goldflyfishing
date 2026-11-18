@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9cfe86ae-eebe-44aa-a956-4b3e9e621105",
  "name": "Krenko's Command",
- "card_hash": "55e76d2f19612a166c67ab79dfb11dfb",
+ "card_hash": "07823e9e608b4258d54af9051d8f8f68",
  "card": {
   "$": "CardDef",
   "oracle_id": "9cfe86ae-eebe-44aa-a956-4b3e9e621105",
@@ -41,8 +41,8 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 2035,
-  "scryfall_uri": "https://scryfall.com/card/clu/139/krenkos-command?utm_source=api"
+  "edhrec_rank": 2037,
+  "scryfall_uri": "https://scryfall.com/card/j25/140/krenkos-command?utm_source=api"
  },
  "faces": [
   {
@@ -51,7 +51,7 @@
    "name": "Krenko's Command",
    "face": 0,
    "face_name": "Krenko's Command",
-   "card_hash": "55e76d2f19612a166c67ab79dfb11dfb",
+   "card_hash": "07823e9e608b4258d54af9051d8f8f68",
    "fully_read": true,
    "abilities": [
     {

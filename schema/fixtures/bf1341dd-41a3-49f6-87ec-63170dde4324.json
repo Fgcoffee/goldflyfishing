@@ -1,0 +1,219 @@
+{
+ "ir_version": 2,
+ "oracle_id": "bf1341dd-41a3-49f6-87ec-63170dde4324",
+ "name": "Boseiju, Who Endures",
+ "card_hash": "85e931f90f3dfe3f157a2b5c5d2073e5",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "bf1341dd-41a3-49f6-87ec-63170dde4324",
+  "name": "Boseiju, Who Endures",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Boseiju, Who Endures",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 16
+    },
+    "oracle_text": "{T}: Add {G}.\nChannel — {1}{G}, Discard this card: Destroy target artifact, enchantment, or nonbasic land an opponent controls. That player may search their library for a land card with a basic land type, put it onto the battlefield, then shuffle. This ability costs {1} less to activate for each legendary creature you control.",
+    "keywords": [
+     "Channel"
+    ],
+    "produced_mana": [
+     "G"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 78,
+  "scryfall_uri": "https://scryfall.com/card/neo/266/boseiju-who-endures?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "bf1341dd-41a3-49f6-87ec-63170dde4324",
+   "name": "Boseiju, Who Endures",
+   "face": 0,
+   "face_name": "Boseiju, Who Endures",
+   "card_hash": "85e931f90f3dfe3f157a2b5c5d2073e5",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{G}"
+       ],
+       "colors": 16,
+       "text": "add {G}"
+      }
+     ],
+     "text": "{T}: Add {G}.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_any": 25,
+        "supertypes_none": 1,
+        "controller": 2
+       },
+       "is_targeted": true,
+       "text": "destroy"
+      },
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 13003
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 23,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 16,
+          "subtypes_any": [
+           "Plains",
+           "Island",
+           "Swamp",
+           "Mountain",
+           "Forest"
+          ],
+          "zones": {
+           "$set": []
+          },
+          "count": {
+           "$": "Value",
+           "constant": 1
+          }
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 1
+         },
+         "zone": 2,
+         "text": "search library"
+        }
+       ],
+       "text": "may"
+      },
+      {
+       "$": "Effect",
+       "kind": 998,
+       "amount": {
+        "$": "Value",
+        "kind": 12,
+        "operands": [
+         {
+          "$": "Value",
+          "constant": -1
+         },
+         {
+          "$": "Value",
+          "kind": 2,
+          "filter": {
+           "$": "ObjectFilter",
+           "types_all": 4,
+           "supertypes_all": 2,
+           "controller": 1
+          }
+         }
+        ]
+       },
+       "rule": "activation-cost-change",
+       "text": "This ability costs {1} less to activate for each legendary creature you control"
+      }
+     ],
+     "text": "{1}{G}, Discard this card: Destroy target artifact, enchantment, or nonbasic land an opponent controls. That player may search their library for a land card with a basic land type, put it onto the battlefield, then shuffle. This ability costs {1} less to activate for each legendary creature you control.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 1,
+           "text": "{1}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 16,
+           "text": "{G}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 11,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "source_only": true
+        },
+        "text": "discard this"
+       }
+      ]
+     },
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
  "name": "Path to Exile",
- "card_hash": "7a596641ddb73283b0c03d0c992a80fd",
+ "card_hash": "3e3f4defacdf0ef4bfd3dd7384f9a265",
  "card": {
   "$": "CardDef",
   "oracle_id": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
@@ -35,8 +35,8 @@
   "mana_value": 1,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 15,
-  "scryfall_uri": "https://scryfall.com/card/msc/141/path-to-exile?utm_source=api"
+  "edhrec_rank": 14,
+  "scryfall_uri": "https://scryfall.com/card/trc/425/path-to-exile?utm_source=api"
  },
  "faces": [
   {
@@ -45,7 +45,7 @@
    "name": "Path to Exile",
    "face": 0,
    "face_name": "Path to Exile",
-   "card_hash": "7a596641ddb73283b0c03d0c992a80fd",
+   "card_hash": "3e3f4defacdf0ef4bfd3dd7384f9a265",
    "fully_read": true,
    "abilities": [
     {

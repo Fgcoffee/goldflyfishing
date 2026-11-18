@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "32452ccf-88c7-41d6-93e5-15d31f29726d",
  "name": "Frozen Aether",
- "card_hash": "4318bfdfcec089b9ea7a03e9c22e520d",
+ "card_hash": "9de1a343dadab9fa718d9b519a88c4a7",
  "card": {
   "$": "CardDef",
   "oracle_id": "32452ccf-88c7-41d6-93e5-15d31f29726d",
@@ -41,7 +41,7 @@
   "mana_value": 4,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 8611,
+  "edhrec_rank": 8770,
   "scryfall_uri": "https://scryfall.com/card/plc/54/frozen-aether?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Frozen Aether",
    "face": 0,
    "face_name": "Frozen Aether",
-   "card_hash": "4318bfdfcec089b9ea7a03e9c22e520d",
+   "card_hash": "9de1a343dadab9fa718d9b519a88c4a7",
    "fully_read": true,
    "abilities": [
     {

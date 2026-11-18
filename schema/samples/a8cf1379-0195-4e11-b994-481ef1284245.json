@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a8cf1379-0195-4e11-b994-481ef1284245",
  "name": "Stasis",
- "card_hash": "84672d2b4ea744d4bcf204064f94d295",
+ "card_hash": "d2e621e471439e4ae637bc6b0a8929fa",
  "card": {
   "$": "CardDef",
   "oracle_id": "a8cf1379-0195-4e11-b994-481ef1284245",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 7799,
+  "edhrec_rank": 7894,
   "scryfall_uri": "https://scryfall.com/card/me4/64/stasis?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Stasis",
    "face": 0,
    "face_name": "Stasis",
-   "card_hash": "84672d2b4ea744d4bcf204064f94d295",
+   "card_hash": "d2e621e471439e4ae637bc6b0a8929fa",
    "fully_read": false,
    "abilities": [
     {

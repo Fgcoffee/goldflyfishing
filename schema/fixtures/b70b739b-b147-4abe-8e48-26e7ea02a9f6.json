@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b70b739b-b147-4abe-8e48-26e7ea02a9f6",
  "name": "Phase Dolphin",
- "card_hash": "fe52b701be99e0056a3a3ec27392062c",
+ "card_hash": "e5e5e34b64070cbeed8c39bfdd19cde8",
  "card": {
   "$": "CardDef",
   "oracle_id": "b70b739b-b147-4abe-8e48-26e7ea02a9f6",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 21283,
+  "edhrec_rank": 21510,
   "scryfall_uri": "https://scryfall.com/card/iko/62/phase-dolphin?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Phase Dolphin",
    "face": 0,
    "face_name": "Phase Dolphin",
-   "card_hash": "fe52b701be99e0056a3a3ec27392062c",
+   "card_hash": "e5e5e34b64070cbeed8c39bfdd19cde8",
    "fully_read": true,
    "abilities": [
     {

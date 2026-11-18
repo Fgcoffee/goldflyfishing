@@ -1244,7 +1244,7 @@ class Bridge(QObject):
         out = []
         for ref in film.cards:
             card = self.db.lookup(ref.name)
-            status = {"status": "ok", "unread": []}
+            status = {"status": "ok", "unread": [], "recognised": []}
             if card is not None:
                 status = parse_status(card, self.sandbox.verdicts)
             out.append(
@@ -1257,6 +1257,7 @@ class Bridge(QObject):
                     **self._card_picture(ref.name),
                     "status": status["status"],
                     "unread": status["unread"],
+                    "recognised": status["recognised"],
                 }
             )
         return out

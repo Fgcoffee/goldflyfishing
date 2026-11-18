@@ -1,4 +1,87 @@
-# weblab session: status (Cut lab and Recs restore)
+# weblab session: status
+
+## Current job: card-reading correctness (from 16 Nov, user's go-ahead)
+
+Catch cards the parser marks fully read but reads **wrong**. Owned paths:
+`tests/ir/test_golden_readings.py`, `tests/ir/golden/`,
+`engine/status/readings_queue.md`, and the site files for "dummy abilities"
+later. Not `mtgfish/parser`.
+
+- **Item 1, golden readings for the top 300 (by EDHREC rank): reviewed.**
+  - 274 of 300 are marked fully read. Each ability's Oracle line was checked
+    against `explain_card` (rendered from the opcodes), and against the IR
+    where the English was ambiguous.
+  - **16 fully-read cards are misread.** They're queued in
+    `engine/status/readings_queue.md` for the parser agent, grouped by cause:
+    - mana abilities that lose their colour limit (Exotic Orchard, Fellwar
+      Stone, Chrome Mox, Reflecting Pool, Mox Amber, Bloom Tender);
+    - the channel lands' "costs {1} less to activate" read as a resolution
+      effect (Boseiju, Otawara, Takenuma);
+    - one-offs: Mystic Sanctuary, The Great Henge, Dovin's Veto, Rishkar's
+      Expertise, Panharmonicon, Ragavan (cast for free instead of paying),
+      Dryad of the Ilysian Grove.
+  - The other 258 go into `tests/ir/golden/readings.json`, pinned by
+    `tests/ir/test_golden_readings.py`: one test per card; a failure shows the
+    old and new reading, and the docstring says how to refresh a card.
+  - Committed in e6d51c1; 259 tests pass. Phyrexian Arena was refreshed for
+    the 15 Nov snapshot's rewording (same reading).
+- **Item 2, batch spot checks: tool in place, first batch checked.**
+  - `python -m tests.ir.readings_spot_check BASE_REV` parses the pool at
+    BASE_REV (git worktree) and at HEAD against the same card database.
+    It prints the fully-read counts and a sample of 30 newly fully-read
+    cards (`--sample`, `--seed`), with Oracle beside reading. It takes a
+    few minutes.
+  - **Batch b2ce87b** ("is equipped / enchanted"): +17 fully read, all
+    checked. 12 are misread, confirmed on the TS engine: "it" in the static
+    ability is `remembered`, so the bonus goes to every permanent (an
+    equipped Kor Duelist gives a Grizzly Bears double strike). Queued with
+    the cause and a suggested guard.
+  - Next: run it on every new `[ir]` batch (`git log --grep='^\[ir\]'`).
+  - **Batch 0100e79** (dummy abilities, the "it" fix): +37, -2 (on
+    purpose). Sample of 30 checked. The fix holds on all 13 queued cards,
+    which are now in the golden set (271 cards). Two low-priority issues
+    queued: activated dummies lose their cost, and Branch of Vitu-Ghazi has
+    Disguise twice.
+  - **Batch 1b04e2e** (activated dummies keep their cost; the channel
+    lands' "costs less to activate" becomes a dummy): 0 gained, 33 changed.
+    The 7 queued cards now read right and are pinned in the golden set (278
+    cards). Spot check: +0, -0 fully read, as the census said.
+  - **Batch 47f80ac** ("can't be countered" on the stack; "every basic
+    land type"): +0, -0 fully read, 55 changed. Dovin's Veto and Dryad of
+    the Ilysian Grove now read right, and the parser's answer on Rishkar's
+    Expertise holds. All three are pinned (281 cards).
+  - **e2bce20** (rules, TS engine only: "enters tapped unless" lands
+    entered tapped regardless). No parser change, so the readings are
+    unchanged; the golden test still passes. My Mystic Sanctuary entry was a
+    false alarm: the read-back doesn't print the trigger's `tapped: false`,
+    which the IR has. It's pinned now (282 cards). Lesson, applied since:
+    the read-back drops trigger-subject qualities, so check the IR before
+    queuing a missing trigger condition.
+  - Last batch checked: e2bce20.
+- **Item 3, dummy abilities on the site: done (752b7a4).**
+  - `deckview.parse_status` gives `recognised`, the dummy rule names, as
+    the TS `parseStatus` does; the bridge's board cards carry it too.
+  - Deck tab: a "recognised, not implemented yet" chip, a "Not implemented"
+    filter (also counted under "Needs attention"), and a badge on each tile.
+    List view gets a pill; the card window gets a line naming each shape,
+    in place of the green "reads all of it".
+  - Replay card window and board tooltip: the same line.
+  - Its own colour (`--todo`) in each theme.
+  - Checked in headless Chromium against a local server.
+- **Full suite after dd5cc93: 3708 passed, 3 failed**: the three `test_keywords` failures below. The parser fixed the explain one, and `test_cancel` passed this time. Earlier, after afb8f0b: 3681 passed, 5 failed. None of the
+  failures come from this track, which only adds files under `tests/ir/`.
+  - Four come from the 15 Nov Scryfall snapshot (38875b6). Its new keywords
+    and ability words aren't registered yet: Affinitycycling, Beam me up,
+    Halflingcycling, Empower Jace, Actualize, Battlefront, Federation, Seek
+    out, Strange new worlds. Also one effect opcode without a phrasing in
+    `test_explain` (11 of 10 allowed). For the rules and parser agents.
+  - `tests/sim/test_cancel.py::test_a_parallel_run_stops_and_leaves_no_workers`
+    took 206 s against a 180 s limit under the full `-n 4` load. It passes
+    alone (4 passed). Flaky under load.
+- **Later:** item 3, dummy abilities on the Deck tab and in the card window,
+  once the parser publishes the IR field (see `engine/status/parser.md`).
+
+# Earlier job: Cut lab and Recs restore (done)
 
 Owner of this file: the web agent restoring PR #28's Cut lab and Recs tabs.
 Owner paths for this job: `mtgfish/ui/web/`, `mtgfish/web/`, `mtgfish/ui/bridge.py`,
@@ -56,5 +139,15 @@ Owner paths for this job: `mtgfish/ui/web/`, `mtgfish/web/`, `mtgfish/ui/bridge.
 
 ## Questions for the auditor
 
+- 18 Nov: no commits on the branch since 3908c2a (16 Nov, 20:13), so
+  there's no parser batch to check. "Nudge: cloud agent (reading
+  correctness)" (trig_01GJQNxfHN5zX6nP7Rq4wGyG) has fired 19 times since,
+  each one a wasted wake on an account near its weekly limit. It could be
+  paused until the parser pushes again. The readings track is up to date,
+  and I'll check the next batch whenever I'm woken after it lands.
+
 - EDHREC mode and card art couldn't be reached from this sandbox. Please
   check one EDHREC query on the deployed site after the merge.
+- The two-hourly "Nudge: web cloud agent (Cut lab and Recs)" scheduled task
+  (trig_01KVVfb4eXjzSpPVMCPqF3RD) is still firing. Nothing is left to do on
+  this job, so it can be disabled.

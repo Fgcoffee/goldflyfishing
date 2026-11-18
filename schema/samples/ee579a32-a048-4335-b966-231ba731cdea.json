@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
  "name": "Phyrexian Arena",
- "card_hash": "1361cf181508b2753985e7b6f4ba0b63",
+ "card_hash": "fd14445c3972100c1d59dd371378609c",
  "card": {
   "$": "CardDef",
   "oracle_id": "ee579a32-a048-4335-b966-231ba731cdea",
@@ -40,14 +40,14 @@
      "$": "TypeLine",
      "types": 8
     },
-    "oracle_text": "At the beginning of your upkeep, you draw a card and you lose 1 life.",
+    "oracle_text": "At the beginning of your upkeep, you draw a card and lose 1 life.",
     "colors": 4
    }
   ],
   "mana_value": 3,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 103,
+  "edhrec_rank": 106,
   "scryfall_uri": "https://scryfall.com/card/fdn/180/phyrexian-arena?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Phyrexian Arena",
    "face": 0,
    "face_name": "Phyrexian Arena",
-   "card_hash": "1361cf181508b2753985e7b6f4ba0b63",
+   "card_hash": "fd14445c3972100c1d59dd371378609c",
    "fully_read": true,
    "abilities": [
     {
@@ -89,7 +89,7 @@
        "text": "lose life"
       }
      ],
-     "text": "At the beginning of your upkeep, you draw a card and you lose 1 life.",
+     "text": "At the beginning of your upkeep, you draw a card and lose 1 life.",
      "trigger": {
       "$": "TriggerCondition",
       "event_kinds": {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
  "name": "Mystical Tutor",
- "card_hash": "0889bd58f11391fcf1f3c6496a5cfaeb",
+ "card_hash": "1c518a6015b27fc5ced70202dd79de8e",
  "card": {
   "$": "CardDef",
   "oracle_id": "fb81f95c-70f8-4eb7-8d15-15d0ae23ec03",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 160,
+  "edhrec_rank": 165,
   "scryfall_uri": "https://scryfall.com/card/dmr/60/mystical-tutor?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Mystical Tutor",
    "face": 0,
    "face_name": "Mystical Tutor",
-   "card_hash": "0889bd58f11391fcf1f3c6496a5cfaeb",
+   "card_hash": "1c518a6015b27fc5ced70202dd79de8e",
    "fully_read": true,
    "abilities": [
     {

@@ -1,0 +1,52 @@
+{
+ "ir_version": 2,
+ "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+ "name": "Swamp",
+ "card_hash": "3ce0b6f23b8bcd0344b558d489306fbf",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+  "name": "Swamp",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Swamp",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 1,
+     "types": 16,
+     "subtypes": [
+      "Swamp"
+     ]
+    },
+    "oracle_text": "({T}: Add {B}.)",
+    "produced_mana": [
+     "B"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 4,
+  "commander_legal": true,
+  "scryfall_uri": "https://scryfall.com/card/mdd/296/swamp?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+   "name": "Swamp",
+   "face": 0,
+   "face_name": "Swamp",
+   "card_hash": "3ce0b6f23b8bcd0344b558d489306fbf",
+   "fully_read": true,
+   "abilities": [],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

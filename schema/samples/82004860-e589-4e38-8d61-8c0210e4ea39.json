@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
  "name": "Demonic Tutor",
- "card_hash": "de744fc7543ea2b2de2f930765e433f9",
+ "card_hash": "cd7cfa8b3fe9c0e7e1a0d51eb404d940",
  "card": {
   "$": "CardDef",
   "oracle_id": "82004860-e589-4e38-8d61-8c0210e4ea39",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 62,
+  "edhrec_rank": 65,
   "scryfall_uri": "https://scryfall.com/card/cmm/150/demonic-tutor?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Demonic Tutor",
    "face": 0,
    "face_name": "Demonic Tutor",
-   "card_hash": "de744fc7543ea2b2de2f930765e433f9",
+   "card_hash": "cd7cfa8b3fe9c0e7e1a0d51eb404d940",
    "fully_read": true,
    "abilities": [
     {

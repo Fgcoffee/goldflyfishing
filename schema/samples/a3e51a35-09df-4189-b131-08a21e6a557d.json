@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a3e51a35-09df-4189-b131-08a21e6a557d",
  "name": "Cryptic Command",
- "card_hash": "18142e38c715ef158b01cbfca5f56d33",
+ "card_hash": "394545ce161afb391334e8ae4d5d59f7",
  "card": {
   "$": "CardDef",
   "oracle_id": "a3e51a35-09df-4189-b131-08a21e6a557d",
@@ -53,8 +53,8 @@
   "mana_value": 4,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 1614,
-  "scryfall_uri": "https://scryfall.com/card/ima/48/cryptic-command?utm_source=api"
+  "edhrec_rank": 1588,
+  "scryfall_uri": "https://scryfall.com/card/trc/435/cryptic-command?utm_source=api"
  },
  "faces": [
   {
@@ -63,7 +63,7 @@
    "name": "Cryptic Command",
    "face": 0,
    "face_name": "Cryptic Command",
-   "card_hash": "18142e38c715ef158b01cbfca5f56d33",
+   "card_hash": "394545ce161afb391334e8ae4d5d59f7",
    "fully_read": true,
    "abilities": [
     {

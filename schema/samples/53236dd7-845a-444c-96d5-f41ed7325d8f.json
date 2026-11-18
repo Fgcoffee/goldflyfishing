@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
  "name": "Rhystic Study",
- "card_hash": "2fc0894c429802838638bca715f0394b",
+ "card_hash": "6a4a35973b6cff1ba4f46633cc60581f",
  "card": {
   "$": "CardDef",
   "oracle_id": "53236dd7-845a-444c-96d5-f41ed7325d8f",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 44,
+  "edhrec_rank": 46,
   "scryfall_uri": "https://scryfall.com/card/j22/114/rhystic-study?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Rhystic Study",
    "face": 0,
    "face_name": "Rhystic Study",
-   "card_hash": "2fc0894c429802838638bca715f0394b",
+   "card_hash": "6a4a35973b6cff1ba4f46633cc60581f",
    "fully_read": true,
    "abilities": [
     {

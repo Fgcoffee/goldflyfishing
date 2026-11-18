@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6d9af084-cd5d-4242-b0f0-24a36d0a75d4",
  "name": "Arcbound Worker",
- "card_hash": "c2af107ddfc320e6422ad5bb9c64242b",
+ "card_hash": "6db55c33ffdd8e1c756358ce966a6745",
  "card": {
   "$": "CardDef",
   "oracle_id": "6d9af084-cd5d-4242-b0f0-24a36d0a75d4",
@@ -42,7 +42,7 @@
   "mana_value": 1,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 7855,
+  "edhrec_rank": 7957,
   "scryfall_uri": "https://scryfall.com/card/mma/201/arcbound-worker?utm_source=api"
  },
  "faces": [
@@ -52,7 +52,7 @@
    "name": "Arcbound Worker",
    "face": 0,
    "face_name": "Arcbound Worker",
-   "card_hash": "c2af107ddfc320e6422ad5bb9c64242b",
+   "card_hash": "6db55c33ffdd8e1c756358ce966a6745",
    "fully_read": true,
    "abilities": [
     {

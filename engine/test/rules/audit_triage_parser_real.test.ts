@@ -9,8 +9,9 @@ import { describe, expect, it } from "vitest";
 import { complete, type Ability, type Effect } from "../../src/ir";
 import { AbilityKindValues as AK, CostKindValues as CK, EffectKindValues as EK, PlayerScopeValues as PS, ValueKindValues as VK, ZoneValues as Z } from "../../src/ir/types";
 import { Color, Phase, Step, Zone } from "../../src/kernel/enums";
-import { createObject, player } from "../../src/kernel/game";
-import { destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
+import { createObject, invalidateAllCharacteristics, player } from "../../src/kernel/game";
+import { playerTarget } from "../../src/kernel/ids";
+import { attach, destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
 import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
 import { ActionKind, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
@@ -360,4 +361,138 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(back.map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
     expect(phoenix).toBeDefined();
   });
+
+  it("Hymn to Tourach: 'discards two cards at random' - the game picks, not the player", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    for (let i = 0; i < 2; i += 1) b.play("Swamp");
+    const hymn = b.hand("Hymn to Tourach");
+    for (let i = 0; i < 5; i += 1) b.hand("Grizzly Bears", 1);
+    // An agent that would always pick: random discards must not ask it.
+    let asked = 0;
+    b.game.agents.set(1, { chooseDiscard: (game: typeof b.game, pid: number) => { asked += 1; return player(game, pid).hand[0]!; } });
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === hymn.id)!;
+    expect(cast).toBeDefined();
+    expect(perform(b.game, 0, { ...cast, targets: [[playerTarget(1)]] })).toBe(true);
+    resolveAll(b);
+    expect(player(b.game, 1).hand).toHaveLength(3);
+    expect(player(b.game, 1).graveyard).toHaveLength(2);
+    expect(asked).toBe(0);
+  });
+
+  it("Boseiju, Who Endures: its controller 'may search their library for a land card with a basic land type'", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    b.play("Forest");
+    b.play("Forest");
+    const boseiju = b.hand("Boseiju, Who Endures");
+    const tower = b.play("Command Tower", 1);
+    const island = createObject(b.game, realCard("Island"), 1, Zone.LIBRARY);
+    createObject(b.game, realCard("Command Tower"), 1, Zone.LIBRARY); // not a basic land type
+    b.game.epoch += 1;
+    const channel = legalActions(b.game, 0).find((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === boseiju.id)!;
+    expect(channel).toBeDefined();
+    expect(perform(b.game, 0, { ...channel, targets: [[tower.id]] })).toBe(true);
+    resolveAll(b);
+    const live = (name: string) => [...b.game.objects.values()].filter(
+      (o) => !o.supersededBy && (o.card as { name?: string } | null)?.name === name && o.controller === 1);
+    expect(live("Command Tower").map((o) => o.zone).sort()).toEqual([Zone.LIBRARY, Zone.GRAVEYARD].sort());
+    expect(live("Island").map((o) => o.zone)).toEqual([Zone.BATTLEFIELD]);
+    expect(island.zone).toBe(Zone.LIBRARY); // the old object; the card moved on as a new one
+  });
+
+  it("Beacon of Destruction: 'Shuffle this into its owner's library' - into the library, not the graveyard", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    for (let i = 0; i < 5; i += 1) b.play("Mountain");
+    for (let i = 0; i < 10; i += 1) createObject(b.game, realCard("Forest"), 0, Zone.LIBRARY);
+    const beacon = b.hand("Beacon of Destruction");
+    b.game.epoch += 1;
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === beacon.id)!;
+    expect(cast).toBeDefined();
+    expect(perform(b.game, 0, { ...cast, targets: [[playerTarget(1)]] })).toBe(true);
+    resolveAll(b);
+    expect(player(b.game, 1).life).toBe(35);
+    const me = player(b.game, 0);
+    const named = (id: number) => (b.game.objects.get(id)!.card as { name?: string }).name;
+    expect(me.graveyard.map(named)).not.toContain("Beacon of Destruction");
+    expect(me.library.map(named)).toContain("Beacon of Destruction");
+  });
+
+  it("Chaos Warp: 'shuffles it into their library' - shuffled in, not put on the bottom", () => {
+    const b = new RealBoard();
+    mainPhase(b);
+    for (let i = 0; i < 3; i += 1) b.play("Mountain");
+    const warp = b.hand("Chaos Warp");
+    const tower = b.play("Command Tower", 1);
+    for (let i = 0; i < 30; i += 1) createObject(b.game, realCard("Island"), 1, Zone.LIBRARY);
+    b.game.epoch += 1;
+    const before = player(b.game, 1).library.slice();
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === warp.id)!;
+    expect(perform(b.game, 0, { ...cast, targets: [[tower.id]] })).toBe(true);
+    resolveAll(b);
+    // The targeted Tower left the battlefield (it was read as moving nothing).
+    expect(tower.supersededBy).toBeTruthy();
+    const lib = player(b.game, 1).library;
+    const named = (id: number) => (b.game.objects.get(id)!.card as { name?: string }).name;
+    // Shuffled: the Islands that are still there are in a new order, and the
+    // Tower is in the library (or, revealed on top, back on the battlefield).
+    expect(lib.filter((id) => before.includes(id))).not.toEqual(before.filter((id) => lib.includes(id)));
+    const towers = [...b.game.objects.values()].filter((o) => !o.supersededBy && named(o.id) === "Command Tower");
+    expect(towers).toHaveLength(1);
+    expect([Zone.LIBRARY, Zone.BATTLEFIELD]).toContain(towers[0]!.zone);
+  });
+
+  it("Scute Swarm: 'If you control six or more lands, create a token that's a copy of this creature instead'", () => {
+    const swarmTokens = (lands: number) => {
+      const b = new RealBoard();
+      mainPhase(b);
+      for (let i = 0; i < lands; i += 1) b.play("Forest");
+      b.play("Scute Swarm");
+      const forest = b.hand("Forest");
+      const land = legalActions(b.game, 0).find((a) => a.kind === ActionKind.PLAY_LAND && a.source === forest.id)!;
+      expect(perform(b.game, 0, land)).toBe(true);
+      resolveAll(b);
+      return b.game.battlefield
+        .map((id) => b.game.objects.get(id)!)
+        .filter((o) => o.kind === 1 /* token */)
+        .map((o) => characteristicsOf(b.game, o).name);
+    };
+    expect(swarmTokens(2)).toEqual(["Insect"]); // 3 lands: the Insect
+    expect(swarmTokens(5)).toEqual(["Scute Swarm"]); // 6 lands: a copy, instead
+  });
+
+  it("Kor Duelist: 'As long as this creature is equipped, it has double strike'", () => {
+    const b = new RealBoard();
+    const duelist = b.play("Kor Duelist");
+    const keywords = () => (b.chars(duelist).abilities as readonly { keyword?: string }[]).map((a) => (a.keyword ?? "").toLowerCase());
+    expect(keywords()).not.toContain("double strike");
+    const bears = b.play("Grizzly Bears");
+    const sword = b.play("Sword of Fire and Ice");
+    expect(attach(b.game, sword, duelist)).toBe(true);
+    b.game.epoch += 1;
+    invalidateAllCharacteristics(b.game);
+    expect(keywords()).toContain("double strike");
+    // "It" is the Duelist: another creature gets nothing (readings_queue.md,
+    // first read as "whatever was just referred to", which was everything).
+    const bearsKeywords = (b.chars(bears).abilities as readonly { keyword?: string }[]).map((a) => (a.keyword ?? "").toLowerCase());
+    expect(bearsKeywords).not.toContain("double strike");
+  });
+
+  it("Mystic Sanctuary: 'When this land enters untapped' - not when it enters tapped (readings_queue.md)", () => {
+    const triggersWith = (islands: number) => {
+      const b = new RealBoard();
+      mainPhase(b);
+      for (let i = 0; i < islands; i += 1) b.play("Island");
+      b.graveyard("Lightning Bolt");
+      const sanctuary = b.hand("Mystic Sanctuary");
+      const land = legalActions(b.game, 0).find((a) => a.kind === ActionKind.PLAY_LAND && a.source === sanctuary.id)!;
+      expect(perform(b.game, 0, land)).toBe(true);
+      settle(b.game);
+      return b.game.stack.length;
+    };
+    expect(triggersWith(0)).toBe(0); // fewer than three other Islands: enters tapped
+    expect(triggersWith(3)).toBe(1); // enters untapped: the trigger goes on the stack
+  });
 });
+

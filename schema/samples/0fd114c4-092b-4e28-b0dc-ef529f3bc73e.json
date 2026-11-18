@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
  "name": "Jeska's Will",
- "card_hash": "6255d462c685d292f8caedb8f0f6f2eb",
+ "card_hash": "3695f7fa1808f35a1809566312cf44e2",
  "card": {
   "$": "CardDef",
   "oracle_id": "0fd114c4-092b-4e28-b0dc-ef529f3bc73e",
@@ -44,7 +44,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 104,
+  "edhrec_rank": 108,
   "scryfall_uri": "https://scryfall.com/card/mkc/156/jeskas-will?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Jeska's Will",
    "face": 0,
    "face_name": "Jeska's Will",
-   "card_hash": "6255d462c685d292f8caedb8f0f6f2eb",
+   "card_hash": "3695f7fa1808f35a1809566312cf44e2",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
  "name": "Glowrider",
- "card_hash": "66c450187662a5b41d2e13bb51645345",
+ "card_hash": "345a6f6f46f1f9eef2b1c4c5ce5c7fab",
  "card": {
   "$": "CardDef",
   "oracle_id": "aaf825b0-af0f-47a0-8b00-85f0614cef5d",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 15159,
+  "edhrec_rank": 15506,
   "scryfall_uri": "https://scryfall.com/card/lgn/15/glowrider?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Glowrider",
    "face": 0,
    "face_name": "Glowrider",
-   "card_hash": "66c450187662a5b41d2e13bb51645345",
+   "card_hash": "345a6f6f46f1f9eef2b1c4c5ce5c7fab",
    "fully_read": true,
    "abilities": [
     {

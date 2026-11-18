@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
  "name": "Legion Warboss",
- "card_hash": "d172539dcc8dd041aa2bda537d62e262",
+ "card_hash": "465544db1367079b2594a3bd990b52d1",
  "card": {
   "$": "CardDef",
   "oracle_id": "0ccb9af3-6902-4130-a59c-4c882dc3a2fd",
@@ -50,7 +50,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1797,
+  "edhrec_rank": 1793,
   "scryfall_uri": "https://scryfall.com/card/tdc/220/legion-warboss?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Legion Warboss",
    "face": 0,
    "face_name": "Legion Warboss",
-   "card_hash": "d172539dcc8dd041aa2bda537d62e262",
+   "card_hash": "465544db1367079b2594a3bd990b52d1",
    "fully_read": false,
    "abilities": [
     {

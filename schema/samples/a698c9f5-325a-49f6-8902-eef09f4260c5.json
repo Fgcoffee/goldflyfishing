@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
  "name": "Lodestone Golem",
- "card_hash": "a9e004bb7b3067663af23b374a4c4755",
+ "card_hash": "a2f6a1618cd6d90c949b6fcb2e3c2611",
  "card": {
   "$": "CardDef",
   "oracle_id": "a698c9f5-325a-49f6-8902-eef09f4260c5",
@@ -39,7 +39,7 @@
   "mana_value": 4,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 7158,
+  "edhrec_rank": 7317,
   "scryfall_uri": "https://scryfall.com/card/mm2/219/lodestone-golem?utm_source=api"
  },
  "faces": [
@@ -49,7 +49,7 @@
    "name": "Lodestone Golem",
    "face": 0,
    "face_name": "Lodestone Golem",
-   "card_hash": "a9e004bb7b3067663af23b374a4c4755",
+   "card_hash": "a2f6a1618cd6d90c949b6fcb2e3c2611",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
  "name": "Teferi, Time Raveler",
- "card_hash": "2d54287f0acc600ca55dbac1333e7f80",
+ "card_hash": "ada8f72f5bd8278c14de8e8dbd6ac3f4",
  "card": {
   "$": "CardDef",
   "oracle_id": "ae7604bb-4818-45a3-960c-cf3d83f15964",
@@ -52,7 +52,7 @@
   "mana_value": 3,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 1141,
+  "edhrec_rank": 1130,
   "scryfall_uri": "https://scryfall.com/card/rvr/232/teferi-time-raveler?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Teferi, Time Raveler",
    "face": 0,
    "face_name": "Teferi, Time Raveler",
-   "card_hash": "2d54287f0acc600ca55dbac1333e7f80",
+   "card_hash": "ada8f72f5bd8278c14de8e8dbd6ac3f4",
    "fully_read": false,
    "abilities": [
     {

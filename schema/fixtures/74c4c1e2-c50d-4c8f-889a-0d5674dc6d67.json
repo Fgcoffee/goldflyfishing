@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "74c4c1e2-c50d-4c8f-889a-0d5674dc6d67",
  "name": "Turn to Frog",
- "card_hash": "2f6498541af7429d525961cb0d146037",
+ "card_hash": "cbf66b51d9b05ab2e41037f23de645e7",
  "card": {
   "$": "CardDef",
   "oracle_id": "74c4c1e2-c50d-4c8f-889a-0d5674dc6d67",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 8935,
+  "edhrec_rank": 9128,
   "scryfall_uri": "https://scryfall.com/card/clu/103/turn-to-frog?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Turn to Frog",
    "face": 0,
    "face_name": "Turn to Frog",
-   "card_hash": "2f6498541af7429d525961cb0d146037",
+   "card_hash": "cbf66b51d9b05ab2e41037f23de645e7",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
  "name": "Aura of Silence",
- "card_hash": "6014f43ecc410ffa37d8728a5fc4e006",
+ "card_hash": "774f0cf99f50bd3361ff2fc2b6a3256b",
  "card": {
   "$": "CardDef",
   "oracle_id": "e7faf8eb-e829-4109-8dfe-42865a23ba86",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 2184,
+  "edhrec_rank": 2220,
   "scryfall_uri": "https://scryfall.com/card/c15/60/aura-of-silence?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Aura of Silence",
    "face": 0,
    "face_name": "Aura of Silence",
-   "card_hash": "6014f43ecc410ffa37d8728a5fc4e006",
+   "card_hash": "774f0cf99f50bd3361ff2fc2b6a3256b",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e8065e1d-e937-4b56-8011-78f0d07328a0",
  "name": "Krenko, Tin Street Kingpin",
- "card_hash": "29040bb3d725c5a67693193584c3f73f",
+ "card_hash": "f7c8933fd0c1569d9ae65071f9eb130b",
  "card": {
   "$": "CardDef",
   "oracle_id": "e8065e1d-e937-4b56-8011-78f0d07328a0",
@@ -47,8 +47,8 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 899,
-  "scryfall_uri": "https://scryfall.com/card/moc/287/krenko-tin-street-kingpin?utm_source=api"
+  "edhrec_rank": 932,
+  "scryfall_uri": "https://scryfall.com/card/j25/572/krenko-tin-street-kingpin?utm_source=api"
  },
  "faces": [
   {
@@ -57,7 +57,7 @@
    "name": "Krenko, Tin Street Kingpin",
    "face": 0,
    "face_name": "Krenko, Tin Street Kingpin",
-   "card_hash": "29040bb3d725c5a67693193584c3f73f",
+   "card_hash": "f7c8933fd0c1569d9ae65071f9eb130b",
    "fully_read": false,
    "abilities": [
     {

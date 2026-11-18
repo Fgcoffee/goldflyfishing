@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
  "name": "Opposition",
- "card_hash": "4f605c4a49a26a01e992e6532858c6b4",
+ "card_hash": "84d336adcaeeea8ee50c2229aa7f0717",
  "card": {
   "$": "CardDef",
   "oracle_id": "bf0b252d-1295-44e4-bac3-113b5732a2a9",
@@ -47,7 +47,7 @@
   "mana_value": 4,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 6178,
+  "edhrec_rank": 6242,
   "scryfall_uri": "https://scryfall.com/card/dmr/62/opposition?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Opposition",
    "face": 0,
    "face_name": "Opposition",
-   "card_hash": "4f605c4a49a26a01e992e6532858c6b4",
+   "card_hash": "84d336adcaeeea8ee50c2229aa7f0717",
    "fully_read": true,
    "abilities": [
     {

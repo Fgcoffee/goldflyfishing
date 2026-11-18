@@ -269,6 +269,9 @@ const Board = (() => {
     } else if (card.status === "partial") {
       lines.push("partly read: " + (card.unread || []).join(" / "));
     }
+    if ((card.recognised || []).length) {
+      lines.push("recognised, not implemented yet: " + card.recognised.map((r) => r.replace(/-/g, " ")).join(" / "));
+    }
     return lines.join("\n");
   }
 
@@ -314,6 +317,10 @@ const Board = (() => {
         "Partly read. These abilities never fired: " + (card.unread || []).join("; ")));
     } else if (card.token && !card.image) {
       info.appendChild(el("div", "dim", "A token - no printing, so no art."));
+    } else if ((card.recognised || []).length) {
+      info.appendChild(el("div", "reading todo",
+        "Recognised, not implemented yet: " + card.recognised.map((r) => r.replace(/-/g, " ")).join("; ")
+        + ". The engine skips this, so the card did less in this game than its text says."));
     } else {
       info.appendChild(el("div", "reading ok", "The parser read this card completely."));
     }

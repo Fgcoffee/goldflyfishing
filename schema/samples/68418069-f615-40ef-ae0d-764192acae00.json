@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "68418069-f615-40ef-ae0d-764192acae00",
  "name": "Krenko, Mob Boss",
- "card_hash": "6774f35dde8104624ce3c95ff0a28dff",
+ "card_hash": "0db956949cd8a71f79142804a4afcf3e",
  "card": {
   "$": "CardDef",
   "oracle_id": "68418069-f615-40ef-ae0d-764192acae00",
@@ -54,7 +54,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1085,
+  "edhrec_rank": 1091,
   "scryfall_uri": "https://scryfall.com/card/fdn/204/krenko-mob-boss?utm_source=api"
  },
  "faces": [
@@ -64,7 +64,7 @@
    "name": "Krenko, Mob Boss",
    "face": 0,
    "face_name": "Krenko, Mob Boss",
-   "card_hash": "6774f35dde8104624ce3c95ff0a28dff",
+   "card_hash": "0db956949cd8a71f79142804a4afcf3e",
    "fully_read": true,
    "abilities": [
     {

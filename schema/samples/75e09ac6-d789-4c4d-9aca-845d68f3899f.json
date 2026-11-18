@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
  "name": "Windborn Muse",
- "card_hash": "e4a547d807aa3715ad561366e6d9d997",
+ "card_hash": "cb314135e1a0f05fa99ed337a2d45728",
  "card": {
   "$": "CardDef",
   "oracle_id": "75e09ac6-d789-4c4d-9aca-845d68f3899f",
@@ -49,7 +49,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 1000,
+  "edhrec_rank": 1002,
   "scryfall_uri": "https://scryfall.com/card/mkc/92/windborn-muse?utm_source=api"
  },
  "faces": [
@@ -59,7 +59,7 @@
    "name": "Windborn Muse",
    "face": 0,
    "face_name": "Windborn Muse",
-   "card_hash": "e4a547d807aa3715ad561366e6d9d997",
+   "card_hash": "cb314135e1a0f05fa99ed337a2d45728",
    "fully_read": true,
    "abilities": [
     {

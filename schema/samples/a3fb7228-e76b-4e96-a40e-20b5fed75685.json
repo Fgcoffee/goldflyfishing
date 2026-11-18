@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
  "name": "Mountain",
- "card_hash": "e9d1e326575fe0f20400ce79ffcf0103",
+ "card_hash": "40dd308b3173cbf3d389acdc9ae92d77",
  "card": {
   "$": "CardDef",
   "oracle_id": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
@@ -33,7 +33,7 @@
   "mana_value": 0,
   "color_identity": 8,
   "commander_legal": true,
-  "scryfall_uri": "https://scryfall.com/card/trk/323/mountain?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/mdd/298/mountain?utm_source=api"
  },
  "faces": [
   {
@@ -42,7 +42,7 @@
    "name": "Mountain",
    "face": 0,
    "face_name": "Mountain",
-   "card_hash": "e9d1e326575fe0f20400ce79ffcf0103",
+   "card_hash": "40dd308b3173cbf3d389acdc9ae92d77",
    "fully_read": true,
    "abilities": [],
    "failures": []

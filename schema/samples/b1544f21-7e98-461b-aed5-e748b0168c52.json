@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
  "name": "Swords to Plowshares",
- "card_hash": "fcdc4d35288d37ced64ba6f3affe9745",
+ "card_hash": "ef8520edb5fb335f4ef263c4cc864154",
  "card": {
   "$": "CardDef",
   "oracle_id": "b1544f21-7e98-461b-aed5-e748b0168c52",
@@ -36,7 +36,7 @@
   "color_identity": 1,
   "commander_legal": true,
   "edhrec_rank": 11,
-  "scryfall_uri": "https://scryfall.com/card/msc/143/swords-to-plowshares?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trc/429/swords-to-plowshares?utm_source=api"
  },
  "faces": [
   {
@@ -45,7 +45,7 @@
    "name": "Swords to Plowshares",
    "face": 0,
    "face_name": "Swords to Plowshares",
-   "card_hash": "fcdc4d35288d37ced64ba6f3affe9745",
+   "card_hash": "ef8520edb5fb335f4ef263c4cc864154",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
  "name": "Conspicuous Snoop",
- "card_hash": "0f340222764a151fc25a7466c0e21e55",
+ "card_hash": "b4c14d5e8031b9b9c4edfd135759c281",
  "card": {
   "$": "CardDef",
   "oracle_id": "f5d1bd3c-0e65-4999-a810-881b2389b40e",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 3262,
+  "edhrec_rank": 3264,
   "scryfall_uri": "https://scryfall.com/card/m21/139/conspicuous-snoop?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Conspicuous Snoop",
    "face": 0,
    "face_name": "Conspicuous Snoop",
-   "card_hash": "0f340222764a151fc25a7466c0e21e55",
+   "card_hash": "b4c14d5e8031b9b9c4edfd135759c281",
    "fully_read": false,
    "abilities": [
     {

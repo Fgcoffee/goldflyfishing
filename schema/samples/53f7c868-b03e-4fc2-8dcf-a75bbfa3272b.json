@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
  "name": "Dark Ritual",
- "card_hash": "683bb12fa14f202b5a74f1b5d95ea88e",
+ "card_hash": "00f1deff644c02b1c5a11cc0c9a7d2b2",
  "card": {
   "$": "CardDef",
   "oracle_id": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
@@ -38,7 +38,7 @@
   "mana_value": 1,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 33,
+  "edhrec_rank": 34,
   "scryfall_uri": "https://scryfall.com/card/msc/793/dark-ritual?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Dark Ritual",
    "face": 0,
    "face_name": "Dark Ritual",
-   "card_hash": "683bb12fa14f202b5a74f1b5d95ea88e",
+   "card_hash": "00f1deff644c02b1c5a11cc0c9a7d2b2",
    "fully_read": true,
    "abilities": [
     {

@@ -117,6 +117,37 @@ parallel" below.**
 - [x] *(web, new cloud session; 9217363, 137c3c7)* **Restore Cut lab and Recs** from PR #28 (`worktree-cut-lab-recs`), merged into the current code on the server engine as before. A browser-engine version can follow.
 - [x] *(parser, after the two above)* **Reports,** as in the Reports section below, **plus a generic "Report a problem" button** (ad96101, 2f60213; what's left is listed under Reports) on every page: free text, the page, the current run or deck if any, and an optional screenshot-free description. Stored with the others and shown on the admin review page.
 
+## Top priority from 16 Nov: the card database read to nearly 100% (parser)
+
+The user's plan: the parser reads every card into the static database (the IR export, rebuilt at every deploy). We sample what's broken, fix the parser, and repeat until only tiny classes of cards stay unread (stickers and the like). Anything the parser recognises but the engine can't yet do becomes a named **dummy ability**, logged so the rules session can flesh it out later.
+
+- [ ] **Refresh the card data first** (a new set is out). The rest is measured against the current pool. Needs Scryfall's hosts (`api.scryfall.com`, `data.scryfall.io`) allowed in the environment.
+  - `python -m mtgfish.tools.fetch_scryfall`, then rebuild the card database.
+  - Census the old against the new.
+  - Commit the new dumps.
+- [ ] **Baseline numbers,** reported after every batch in `engine/status/parser.md`:
+  - abilities read;
+  - cards fully read: the whole pool, and the top 100 / 1,000 / 5,000 by play rate (`play_rate_report`);
+  - the failure clusters (`parse_report`);
+  - the dummy-ability registry.
+- [ ] **Dummy abilities.** When a shape is recognised but has no engine meaning yet, the parser emits a named placeholder effect instead of leaving the ability unread.
+  - It's additive to the schema: the engine logs it as unimplemented and skips it, as it does today.
+  - A registry lists each dummy kind with how many cards, weighted by play rate, use it. That's the rules session's backlog.
+  - The site shows such abilities as "recognised, not implemented yet", distinct from unread.
+- [ ] **The loop:** take the top failure clusters by play-weighted impact, not random samples. Each grammar rule fixes many cards.
+  - Fix it, with a test.
+  - Census before and after: no reading changes except the intended ones.
+  - Re-export the IR and refresh the samples. Repeat.
+  - Similar shapes (e.g. "when" read, but "whenever their first noncreature spell each turn" not, as on Esper Sentinel) are handled as one pattern.
+- [ ] **Correctness, measured separately from coverage** (read is not the same as read right):
+  - golden snapshot tests for the 300 most-played cards, each checked against its Oracle text;
+  - a random spot check of fully read cards in every batch;
+  - the users' "Report this reading" queue.
+- **Targets, in order:**
+  1. 95% of the top 1,000 played cards fully read (81% today);
+  2. 95% of the top 5,000 (56%);
+  3. the whole pool (54%), with only dummy abilities and tiny classes left.
+
 ## Now, in parallel (from 15 Nov)
 
 The engine is ported (milestones 1-4), so rules fixes start now in the TypeScript engine, alongside the web work.
@@ -153,7 +184,7 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
   - F59 Soul-Guide Lantern.
 - [ ] **Fix the open card-reading findings,** BLOCK first. Re-export the IR and refresh the samples.
 - [ ] **Cards that don't read yet:** "Choose any number of target creatures" (Cauldron of Souls), then the most-played unread abilities by deck usage.
-- [ ] **The AI attacks with its swarms** (15 Nov, top priority after F37). Today a 1/1 token never attacks while the opponent has any creature, so token armies grow until the cap stops the game with no winner (14 of 200 bench games).
+- [x] **The AI attacks with its swarms** (15 Nov, top priority after F37). (be2499a, 1cb2be4: the bot already attacked all-out; 5 of the 14 runaways were an engine bug, standing restrictions that never expired, and the bot now passes over a player whose damage is always prevented. Runaways 14 -> 11 on the 200-game bench, all locks the rules allow. No lookahead size budget: capping it changes which actions the bot picks, so it waits for a call from the user or auditor; see engine/status/parser.md.) Today a 1/1 token never attacks while the opponent has any creature, so token armies grow until the cap stops the game with no winner (14 of 200 bench games).
   - A lethal check (alpha strike) and a swarm rule.
   - A size budget for the lookahead on huge boards.
   - Check on the 200-game bench: swarm runaways near 0, and win rates in normal games not reckless.

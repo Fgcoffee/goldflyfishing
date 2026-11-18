@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
  "name": "Kismet",
- "card_hash": "ebeaa5622e6b3f77d144616584724e79",
+ "card_hash": "f0ebcf16385bcf5d672e9c1be407182a",
  "card": {
   "$": "CardDef",
   "oracle_id": "81fdd1c4-d43b-4f8b-8712-7c2bf45a3e0b",
@@ -41,7 +41,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 11948,
+  "edhrec_rank": 12148,
   "scryfall_uri": "https://scryfall.com/card/me4/17/kismet?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Kismet",
    "face": 0,
    "face_name": "Kismet",
-   "card_hash": "ebeaa5622e6b3f77d144616584724e79",
+   "card_hash": "f0ebcf16385bcf5d672e9c1be407182a",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f2782c21-ed99-4821-8938-cc539e783ec7",
  "name": "Call for Blood",
- "card_hash": "cb93283ea03d5b9257d58fdd5341f7af",
+ "card_hash": "86c7068839eface8086997bc1ed47990",
  "card": {
   "$": "CardDef",
   "oracle_id": "f2782c21-ed99-4821-8938-cc539e783ec7",
@@ -44,7 +44,7 @@
   "mana_value": 5,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 29084,
+  "edhrec_rank": 29510,
   "scryfall_uri": "https://scryfall.com/card/bok/63/call-for-blood?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Call for Blood",
    "face": 0,
    "face_name": "Call for Blood",
-   "card_hash": "cb93283ea03d5b9257d58fdd5341f7af",
+   "card_hash": "86c7068839eface8086997bc1ed47990",
    "fully_read": true,
    "abilities": [
     {

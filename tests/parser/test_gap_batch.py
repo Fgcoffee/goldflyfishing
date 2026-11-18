@@ -323,3 +323,130 @@ def test_your_commander_from_the_command_zone(card_db):
     assert move.kind is EffectKind.MOVE_ZONE and move.zone is Zone.HAND
     assert move.targets.is_commander and move.targets.owner is ControllerRelation.YOU
     assert move.targets.zones == frozenset({Zone.COMMAND})
+
+
+def test_discarding_at_random_is_not_the_players_choice(card_db):
+    from mtgfish.parser.compile import parse_card
+
+    effect = parse_card(card_db.lookup("Hymn to Tourach")).faces[0].abilities[0].effects[0]
+    assert effect.kind is EffectKind.DISCARD and effect.amount.constant == 2
+    assert "at random" in effect.keywords
+    plain = parse_effects(Stream.of("Target player discards two cards."))[0]
+    assert "at random" not in plain.keywords
+
+
+def test_unless_any_player_pays_is_left_unread(card_db):
+    """The first player who pays stops it; the IR can only ask each player in
+    turn, so the card stays unread rather than misread."""
+    from mtgfish.parser.compile import parse_card
+
+    assert not parse_card(card_db.lookup("Icy Prison")).fully_parsed
+    # A condition about "a player" still reads.
+    assert parse_card(card_db.lookup("Abandoned Campground")).fully_parsed
+
+
+def test_a_basic_land_type_is_any_of_the_five():
+    """CR 305.6: "a land card with a basic land type" (Boseiju)."""
+    spec = parse_object_filter(Stream.of("a land card with a basic land type"))
+    assert spec is not None and set(spec.subtypes_any) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}
+    assert spec.types_all & CardType.LAND
+
+
+@pytest.mark.parametrize("text, targeted", [
+    ("The owner of target permanent shuffles it into their library.", True),
+    ("Target creature's owner shuffles it into their library.", True),
+])
+def test_the_owner_of_a_target_shuffles_that_target_in(text, targeted):
+    """Chaos Warp: the target is what moves, and it's shuffled in."""
+    effect = parse_effects(Stream.of(text))[0]
+    assert effect.kind is EffectKind.MOVE_ZONE and effect.is_targeted is targeted
+    assert not effect.targets.remembered and "shuffle" in effect.keywords
+
+
+def test_shuffle_this_into_its_owners_library():
+    """The Zenith and Beacon cycles: the card itself, shuffled in."""
+    effect = parse_effects(Stream.of("Shuffle this into its owner's library."))[0]
+    assert effect.kind is EffectKind.MOVE_ZONE and effect.targets.source_only
+    assert "shuffle" in effect.keywords
+
+
+def test_if_instead_replaces_the_effect_before_it():
+    """Field Research: the kicked draw replaces the plain one, not both."""
+    effects = parse_effects(Stream.of("Draw two cards. If this spell was kicked, draw three cards instead."))
+    assert len(effects) == 1
+    only = effects[0]
+    assert only.kind is EffectKind.CONDITIONAL
+    assert only.children[0].amount.constant == 3 and only.otherwise[0].amount.constant == 2
+
+
+@pytest.mark.parametrize("text", [
+    # "that creature" is the first effect's target: unread, not misread.
+    "Target creature gets +2/+2 until end of turn. If this spell was kicked, "
+    "that creature gets +5/+5 until end of turn instead.",
+    # A different target in the replacement.
+    "Exile target artifact or enchantment. If this spell was kicked, exile target nonland permanent instead.",
+    # Different kinds of effect: what "instead" replaces isn't plain.
+    "Draw a card. If you control a Forest, create a 1/1 white Spirit creature token instead.",
+])
+def test_if_instead_is_left_unread_when_it_refers_back(text):
+    assert parse_effects(Stream.of(text)) is None
+
+
+@pytest.mark.parametrize("word, subtype", [("equipped", "Equipment"), ("enchanted", "Aura")])
+def test_this_is_equipped_or_enchanted(word, subtype):
+    """"As long as this creature is equipped": something of that kind is attached."""
+    from mtgfish.parser.clauses import parse_condition_text
+
+    condition = parse_condition_text(Stream.of(f"this creature is {word}"))
+    assert condition is not None
+    attached = condition.filter.has_attached
+    assert attached is not None and attached.subtypes_any == (subtype,)
+
+
+@pytest.mark.parametrize("name, subject", [
+    ("Kor Duelist", "source"),            # "this creature is equipped, it has ..."
+    ("Clout of the Dominus", "attached"), # "enchanted creature is blue, it gets ..."
+    ("Narcolepsy", "attached"),           # a step trigger: "tap it"
+])
+def test_it_in_a_static_ability_is_the_conditions_object(card_db, name, subject):
+    """readings_queue.md: "it" here once meant whatever was just referred to,
+    which in a static ability is nothing, so the bonus reached every permanent."""
+    from mtgfish.parser.compile import parse_card
+
+    nodes = [n for face in parse_card(card_db.lookup(name)).faces for a in face.abilities
+             for e in a.effects for n in e.walk() if n.targets is not None]
+    assert nodes and not any(n.targets.remembered for n in nodes)
+    if subject == "source":
+        assert any(n.targets.source_only for n in nodes)
+    else:
+        assert any(n.targets.has_attached is not None and n.targets.has_attached.source_only for n in nodes)
+
+
+def test_that_creature_with_nothing_to_name_is_left_unread(card_db):
+    """Deadly Wanderings: "that creature" is the one creature you control,
+    which the IR can't name; unread rather than every creature."""
+    from mtgfish.parser.compile import parse_card
+
+    assert not parse_card(card_db.lookup("Deadly Wanderings")).fully_parsed
+
+
+@pytest.mark.parametrize("name", ["Dovin's Veto", "Carnage Tyrant"])
+def test_cant_be_countered_works_on_the_stack(card_db, name):
+    """readings_queue.md: on an instant it was a spell effect (runs on
+    resolution, too late); on a permanent, it worked on the battlefield."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+    from mtgfish.rules.kernel.enums import Zone
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    line = next(a for a in face.abilities if a.text.lower().startswith("this spell can't be countered"))
+    assert line.kind is AbilityKind.STATIC and line.functions_in == frozenset({Zone.STACK})
+
+
+def test_every_basic_land_type_is_all_five(card_db):
+    """Dryad of the Ilysian Grove (readings_queue.md): read as no types."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Dryad of the Ilysian Grove")).faces[0]
+    added = [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.ADD_TYPE]
+    assert added and set(added[0].keywords) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}

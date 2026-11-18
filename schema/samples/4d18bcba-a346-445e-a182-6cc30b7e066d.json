@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
  "name": "Ashnod's Altar",
- "card_hash": "58b3f67d4e90c3d00e40dd7cca4fc281",
+ "card_hash": "ab3dbe689e9dd5498ef8133ce3c6fa2e",
  "card": {
   "$": "CardDef",
   "oracle_id": "4d18bcba-a346-445e-a182-6cc30b7e066d",
@@ -37,7 +37,7 @@
   "mana_value": 3,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 134,
+  "edhrec_rank": 135,
   "scryfall_uri": "https://scryfall.com/card/cmm/368/ashnods-altar?utm_source=api"
  },
  "faces": [
@@ -47,7 +47,7 @@
    "name": "Ashnod's Altar",
    "face": 0,
    "face_name": "Ashnod's Altar",
-   "card_hash": "58b3f67d4e90c3d00e40dd7cca4fc281",
+   "card_hash": "ab3dbe689e9dd5498ef8133ce3c6fa2e",
    "fully_read": true,
    "abilities": [
     {

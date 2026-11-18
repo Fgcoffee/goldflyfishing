@@ -1,0 +1,155 @@
+{
+ "ir_version": 2,
+ "oracle_id": "17b60106-a4c7-410a-8ac3-ec8e74e29a7c",
+ "name": "Mystic Sanctuary",
+ "card_hash": "e3ae5c792e14665c3bacdc16c4b2ea84",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "17b60106-a4c7-410a-8ac3-ec8e74e29a7c",
+  "name": "Mystic Sanctuary",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mystic Sanctuary",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 16,
+     "subtypes": [
+      "Island"
+     ]
+    },
+    "oracle_text": "({T}: Add {U}.)\nThis land enters tapped unless you control three or more other Islands.\nWhen this land enters untapped, you may put target instant or sorcery card from your graveyard on top of your library.",
+    "produced_mana": [
+     "U"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 176,
+  "scryfall_uri": "https://scryfall.com/card/soc/388/mystic-sanctuary?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "17b60106-a4c7-410a-8ac3-ec8e74e29a7c",
+   "name": "Mystic Sanctuary",
+   "face": 0,
+   "face_name": "Mystic Sanctuary",
+   "card_hash": "e3ae5c792e14665c3bacdc16c4b2ea84",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 22,
+        "operands": [
+         {
+          "$": "Condition",
+          "kind": 5,
+          "filter": {
+           "$": "ObjectFilter",
+           "subtypes_all": [
+            "Island"
+           ],
+           "other_than_source": true,
+           "controller": 1
+          },
+          "constraint": {
+           "$": "NumericConstraint",
+           "comparison": 5,
+           "value": {
+            "$": "Value",
+            "constant": 3
+           }
+          },
+          "text": "you control ..."
+         }
+        ],
+        "text": "unless ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 70,
+         "targets": {
+          "$": "ObjectFilter",
+          "source_only": true
+         },
+         "duration": 0,
+         "text": "enters tapped"
+        }
+       ],
+       "text": "unless ..."
+      }
+     ],
+     "text": "This land enters tapped unless you control three or more other Islands."
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 34,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_any": 192,
+          "zones": {
+           "$set": [
+            3
+           ]
+          },
+          "owner": 1
+         },
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "is_targeted": true,
+         "text": "put on library"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "When this land enters untapped, you may put target instant or sorcery card from your graveyard on top of your library.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "source_only": true,
+       "tapped": false
+      },
+      "text": "when this enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

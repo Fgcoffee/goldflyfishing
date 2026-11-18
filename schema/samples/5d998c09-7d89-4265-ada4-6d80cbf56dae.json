@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
  "name": "Blind Obedience",
- "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
+ "card_hash": "12445ba0782d6e293c61f083684bd2f6",
  "card": {
   "$": "CardDef",
   "oracle_id": "5d998c09-7d89-4265-ada4-6d80cbf56dae",
@@ -44,7 +44,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 503,
+  "edhrec_rank": 508,
   "scryfall_uri": "https://scryfall.com/card/rvr/9/blind-obedience?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Blind Obedience",
    "face": 0,
    "face_name": "Blind Obedience",
-   "card_hash": "c4f7247bde7cac2d66938565c3335f7a",
+   "card_hash": "12445ba0782d6e293c61f083684bd2f6",
    "fully_read": true,
    "abilities": [
     {

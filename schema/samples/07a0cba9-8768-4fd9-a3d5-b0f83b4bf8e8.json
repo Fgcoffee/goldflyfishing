@@ -62,10 +62,13 @@
        "$": "Effect",
        "kind": 28,
        "targets": {
-        "$": "ObjectFilter",
-        "remembered": true
+        "$": "ObjectFilter"
        },
+       "is_targeted": true,
        "zone": 0,
+       "keywords": [
+        "shuffle"
+       ],
        "text": "shuffle it into its owner's library"
       },
       {

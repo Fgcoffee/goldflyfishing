@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
  "name": "Catastrophe",
- "card_hash": "6f066def213dc1aa14075b71657865da",
+ "card_hash": "5650dcc45def30c1eba9651aaf1fd556",
  "card": {
   "$": "CardDef",
   "oracle_id": "ed68160e-5e3d-44f2-ac7a-3749fda10119",
@@ -47,7 +47,7 @@
   "mana_value": 6,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 12458,
+  "edhrec_rank": 12724,
   "scryfall_uri": "https://scryfall.com/card/usg/6/catastrophe?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Catastrophe",
    "face": 0,
    "face_name": "Catastrophe",
-   "card_hash": "6f066def213dc1aa14075b71657865da",
+   "card_hash": "5650dcc45def30c1eba9651aaf1fd556",
    "fully_read": true,
    "abilities": [
     {

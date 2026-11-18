@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6385fd0d-256d-4400-9319-afa8170024db",
  "name": "Culling the Weak",
- "card_hash": "34c4b9bae2cd0e959e8633b10f090379",
+ "card_hash": "b5ed36c5ef2bae95bcdf43a6b720437c",
  "card": {
   "$": "CardDef",
   "oracle_id": "6385fd0d-256d-4400-9319-afa8170024db",
@@ -38,7 +38,7 @@
   "mana_value": 1,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 525,
+  "edhrec_rank": 493,
   "scryfall_uri": "https://scryfall.com/card/exo/55/culling-the-weak?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Culling the Weak",
    "face": 0,
    "face_name": "Culling the Weak",
-   "card_hash": "34c4b9bae2cd0e959e8633b10f090379",
+   "card_hash": "b5ed36c5ef2bae95bcdf43a6b720437c",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "566b4dcc-b7d7-4443-b2d0-954f1fc33a11",
  "name": "Burn Trail",
- "card_hash": "5965779f91fc93f3b6ea8e17a77e7067",
+ "card_hash": "ff6e23c2899db60b393b1fa6ea7d264f",
  "card": {
   "$": "CardDef",
   "oracle_id": "566b4dcc-b7d7-4443-b2d0-954f1fc33a11",
@@ -44,7 +44,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 29471,
+  "edhrec_rank": 30040,
   "scryfall_uri": "https://scryfall.com/card/shm/86/burn-trail?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Burn Trail",
    "face": 0,
    "face_name": "Burn Trail",
-   "card_hash": "5965779f91fc93f3b6ea8e17a77e7067",
+   "card_hash": "ff6e23c2899db60b393b1fa6ea7d264f",
    "fully_read": true,
    "abilities": [
     {

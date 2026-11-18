@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a9d288b8-cdc1-4e55-a0c9-d6edfc95e65d",
  "name": "Shock",
- "card_hash": "c205c13e5457f7d74b679abfc9a50e61",
+ "card_hash": "d026ebd4376fa227c686cb6e595d6de6",
  "card": {
   "$": "CardDef",
   "oracle_id": "a9d288b8-cdc1-4e55-a0c9-d6edfc95e65d",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 2213,
+  "edhrec_rank": 2229,
   "scryfall_uri": "https://scryfall.com/card/msc/809/shock?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Shock",
    "face": 0,
    "face_name": "Shock",
-   "card_hash": "c205c13e5457f7d74b679abfc9a50e61",
+   "card_hash": "d026ebd4376fa227c686cb6e595d6de6",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
  "name": "Cabal Coffers",
- "card_hash": "6c307419a06a18350b57e5c6e0745496",
+ "card_hash": "4e7be553369700324d0a82eed5e620cb",
  "card": {
   "$": "CardDef",
   "oracle_id": "7358e164-5704-4e78-9b21-6a9bf2a968ce",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 196,
+  "edhrec_rank": 202,
   "scryfall_uri": "https://scryfall.com/card/mh2/301/cabal-coffers?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Cabal Coffers",
    "face": 0,
    "face_name": "Cabal Coffers",
-   "card_hash": "6c307419a06a18350b57e5c6e0745496",
+   "card_hash": "4e7be553369700324d0a82eed5e620cb",
    "fully_read": true,
    "abilities": [
     {

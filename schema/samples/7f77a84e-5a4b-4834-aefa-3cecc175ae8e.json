@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
  "name": "Jace, the Mind Sculptor",
- "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
+ "card_hash": "b6ef8e41d92e56bfa45aab588fee965e",
  "card": {
   "$": "CardDef",
   "oracle_id": "7f77a84e-5a4b-4834-aefa-3cecc175ae8e",
@@ -52,7 +52,7 @@
   "mana_value": 4,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 3566,
+  "edhrec_rank": 3247,
   "scryfall_uri": "https://scryfall.com/card/2xm/56/jace-the-mind-sculptor?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Jace, the Mind Sculptor",
    "face": 0,
    "face_name": "Jace, the Mind Sculptor",
-   "card_hash": "2a0257f638d07ad23d53fce6f9eb977f",
+   "card_hash": "b6ef8e41d92e56bfa45aab588fee965e",
    "fully_read": false,
    "abilities": [
     {

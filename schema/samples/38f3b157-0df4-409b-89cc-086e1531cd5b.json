@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
  "name": "Gray Merchant of Asphodel",
- "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
+ "card_hash": "d19c4f4493094542d8f1afd642beebd9",
  "card": {
   "$": "CardDef",
   "oracle_id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
@@ -52,7 +52,7 @@
   "mana_value": 5,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 245,
+  "edhrec_rank": 241,
   "scryfall_uri": "https://scryfall.com/card/dsc/142/gray-merchant-of-asphodel?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Gray Merchant of Asphodel",
    "face": 0,
    "face_name": "Gray Merchant of Asphodel",
-   "card_hash": "b6b61daf861cf563c81cdf3a839c0f43",
+   "card_hash": "d19c4f4493094542d8f1afd642beebd9",
    "fully_read": true,
    "abilities": [
     {

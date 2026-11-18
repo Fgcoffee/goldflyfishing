@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
  "name": "Hordeling Outburst",
- "card_hash": "bafa88e88bbad5eb2a0b4ce79917f836",
+ "card_hash": "d15c7e7cc82c66fd89286416fb3acade",
  "card": {
   "$": "CardDef",
   "oracle_id": "a6450b8e-eb18-431c-9eb7-7daf107978b2",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 2485,
+  "edhrec_rank": 2531,
   "scryfall_uri": "https://scryfall.com/card/a25/134/hordeling-outburst?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Hordeling Outburst",
    "face": 0,
    "face_name": "Hordeling Outburst",
-   "card_hash": "bafa88e88bbad5eb2a0b4ce79917f836",
+   "card_hash": "d15c7e7cc82c66fd89286416fb3acade",
    "fully_read": true,
    "abilities": [
     {

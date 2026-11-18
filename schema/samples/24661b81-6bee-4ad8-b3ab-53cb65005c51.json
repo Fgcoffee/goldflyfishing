@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
  "name": "Goblin Rabblemaster",
- "card_hash": "9da14d96824a561bad4c26f03774eff6",
+ "card_hash": "175de6aaa8cd012e4cbf77d663c7709f",
  "card": {
   "$": "CardDef",
   "oracle_id": "24661b81-6bee-4ad8-b3ab-53cb65005c51",
@@ -47,8 +47,8 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 4545,
-  "scryfall_uri": "https://scryfall.com/card/ddt/46/goblin-rabblemaster?utm_source=api"
+  "edhrec_rank": 4531,
+  "scryfall_uri": "https://scryfall.com/card/j25/558/goblin-rabblemaster?utm_source=api"
  },
  "faces": [
   {
@@ -57,7 +57,7 @@
    "name": "Goblin Rabblemaster",
    "face": 0,
    "face_name": "Goblin Rabblemaster",
-   "card_hash": "9da14d96824a561bad4c26f03774eff6",
+   "card_hash": "175de6aaa8cd012e4cbf77d663c7709f",
    "fully_read": true,
    "abilities": [
     {

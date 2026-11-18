@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "654ff673-4630-4068-9bcf-e88a7877eb58",
  "name": "Dragonlord Ojutai",
- "card_hash": "7af05be6a0cdda54049d947ef86e703f",
+ "card_hash": "1733928b2cfe388bdd69da97bc922dbe",
  "card": {
   "$": "CardDef",
   "oracle_id": "654ff673-4630-4068-9bcf-e88a7877eb58",
@@ -57,7 +57,7 @@
   "mana_value": 5,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 7106,
+  "edhrec_rank": 7381,
   "scryfall_uri": "https://scryfall.com/card/ncc/337/dragonlord-ojutai?utm_source=api"
  },
  "faces": [
@@ -67,7 +67,7 @@
    "name": "Dragonlord Ojutai",
    "face": 0,
    "face_name": "Dragonlord Ojutai",
-   "card_hash": "7af05be6a0cdda54049d947ef86e703f",
+   "card_hash": "1733928b2cfe388bdd69da97bc922dbe",
    "fully_read": true,
    "abilities": [
     {

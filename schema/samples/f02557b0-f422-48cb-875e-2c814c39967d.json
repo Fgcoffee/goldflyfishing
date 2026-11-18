@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
  "name": "Hellrider",
- "card_hash": "0c8c68cebd8540ca2db9878b84bd753d",
+ "card_hash": "0e5f1759eef6cfc7479a1a9d1930e5ae",
  "card": {
   "$": "CardDef",
   "oracle_id": "f02557b0-f422-48cb-875e-2c814c39967d",
@@ -55,7 +55,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 5842,
+  "edhrec_rank": 5699,
   "scryfall_uri": "https://scryfall.com/card/jmp/334/hellrider?utm_source=api"
  },
  "faces": [
@@ -65,7 +65,7 @@
    "name": "Hellrider",
    "face": 0,
    "face_name": "Hellrider",
-   "card_hash": "0c8c68cebd8540ca2db9878b84bd753d",
+   "card_hash": "0e5f1759eef6cfc7479a1a9d1930e5ae",
    "fully_read": false,
    "abilities": [
     {
