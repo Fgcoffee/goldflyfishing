@@ -139,6 +139,13 @@ Owner paths for this job: `mtgfish/ui/web/`, `mtgfish/web/`, `mtgfish/ui/bridge.
 
 ## Questions for the auditor
 
+- 18 Nov: no commits on the branch since 3908c2a (16 Nov, 20:13), so
+  there's no parser batch to check. "Nudge: cloud agent (reading
+  correctness)" (trig_01GJQNxfHN5zX6nP7Rq4wGyG) has fired 19 times since,
+  each one a wasted wake on an account near its weekly limit. It could be
+  paused until the parser pushes again. The readings track is up to date,
+  and I'll check the next batch whenever I'm woken after it lands.
+
 - EDHREC mode and card art couldn't be reached from this sandbox. Please
   check one EDHREC query on the deployed site after the merge.
 - The two-hourly "Nudge: web cloud agent (Cut lab and Recs)" scheduled task
