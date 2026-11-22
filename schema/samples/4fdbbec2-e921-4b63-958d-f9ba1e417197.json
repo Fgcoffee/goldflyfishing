@@ -61,7 +61,7 @@
    "face": 0,
    "face_name": "Purphoros, God of the Forge",
    "card_hash": "27618d561d0c15568792de669b8a28e9",
-   "fully_read": false,
+   "fully_read": true,
    "abilities": [
     {
      "$": "Ability",
@@ -75,12 +75,34 @@
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
-       "text": "As long as your devotion to red is less than five, this isn't a creature."
+       "kind": 147,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "types": 4,
+       "text": "isn't a all creature"
       }
      ],
      "text": "As long as your devotion to red is less than five, this isn't a creature.",
-     "unparsed": true
+     "static_condition": {
+      "$": "Condition",
+      "kind": 2003,
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": 2,
+       "value": {
+        "$": "Value",
+        "constant": 5
+       }
+      },
+      "text": "a value comparison",
+      "value": {
+       "$": "Value",
+       "kind": 22,
+       "colors": 8
+      }
+     }
     },
     {
      "$": "Ability",
@@ -170,25 +192,8 @@
      }
     }
    ],
-   "failures": [
-    {
-     "$": "ParseFailure",
-     "text": "As long as your devotion to red is less than five, this isn't a creature.",
-     "reason": "not fully consumed",
-     "consumed": 12,
-     "remaining": [
-      "this",
-      "isn't",
-      "a",
-      "creature",
-      "."
-     ],
-     "rule": "plain"
-    }
-   ]
+   "failures": []
   }
  ],
- "bracket": [
-  "unread"
- ]
+ "bracket": []
 }
