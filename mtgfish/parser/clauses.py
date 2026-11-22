@@ -7283,6 +7283,37 @@ def _play_from_zone(stream: Stream) -> Effect | None:
     )
 
 
+@clause("isnt-a-type")
+def _isnt_a_type(stream: Stream) -> Effect | None:
+    """"As long as your devotion to red is less than five, this isn't a
+    creature." (The Theros gods; CR 205.1, 613.1d.)
+
+    The card type is removed while the condition holds; the condition is the
+    static ability's, read by the "as long as" wrapper. Only a bare card type
+    ("a creature"), nothing that would need a filter.
+    """
+    mark = stream.mark()
+    targets, targeted = parse_target(stream)
+    if targets is None:
+        stream.reset(mark)
+        return None
+    if not (stream.accept("isn't") or stream.accept_phrase("is not")):
+        stream.reset(mark)
+        return None
+    stream.accept("a", "an")
+    spec = parse_object_filter(stream)
+    if spec is None or not spec.types_all or spec != ObjectFilter(types_all=spec.types_all, zones=spec.zones):
+        stream.reset(mark)
+        return None
+    return Effect(
+        EffectKind.REMOVE_TYPE,
+        targets=targets,
+        types=spec.types_all,
+        is_targeted=targeted,
+        text="isn't a " + spec.describe(),
+    )
+
+
 @clause("in-addition-to-types")
 def _in_addition_to_types(stream: Stream) -> Effect | None:
     """"Each land is a Swamp in addition to its other land types." (CR 205.1b.)

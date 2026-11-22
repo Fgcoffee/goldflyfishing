@@ -8,7 +8,7 @@ import "../../src/rules/cr600_spells_and_abilities/replacement";
 import { describe, expect, it } from "vitest";
 import { complete, type Ability, type Effect } from "../../src/ir";
 import { AbilityKindValues as AK, CostKindValues as CK, EffectKindValues as EK, PlayerScopeValues as PS, ValueKindValues as VK, ZoneValues as Z } from "../../src/ir/types";
-import { Color, Phase, Step, Zone } from "../../src/kernel/enums";
+import { CardType, Color, Phase, Step, Zone } from "../../src/kernel/enums";
 import { createObject, invalidateAllCharacteristics, player } from "../../src/kernel/game";
 import { playerTarget } from "../../src/kernel/ids";
 import { attach, destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
@@ -522,5 +522,16 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     b.game.pendingTriggers.length = 0;
     expect(destroy(b.game, entered)).toBe(true);
     expect(b.game.pendingTriggers).toHaveLength(2);
+  });
+
+  it("Purphoros: not a creature below devotion five, a creature at five (CR 700.5)", () => {
+    const b = new RealBoard();
+    const isCreature = (o: ReturnType<RealBoard["play"]>) => (b.chars(o).typeLine.types & CardType.CREATURE) !== 0;
+    const god = b.play("Purphoros, God of the Forge"); // {3}{R}: devotion 1
+    expect(isCreature(god)).toBe(false);
+    for (let i = 0; i < 4; i += 1) b.play("Purphoros, God of the Forge"); // five red symbols in all
+    b.game.epoch += 1;
+    invalidateAllCharacteristics(b.game);
+    expect(isCreature(god)).toBe(true);
   });
 });

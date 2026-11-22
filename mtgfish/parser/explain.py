@@ -671,9 +671,9 @@ def _continuous(effect: Effect, objects: str) -> str | None:
         return f"{objects} becomes {effect.colors}{duration}"
     if kind in (EffectKind.ADD_TYPE, EffectKind.SET_TYPE):
         verb = "becomes" if kind is EffectKind.SET_TYPE else "is also"
-        return f"{objects} {verb} {effect.types}{duration}"
+        return f"{objects} {verb} {_type_names(effect)}{duration}"
     if kind is EffectKind.REMOVE_TYPE:
-        return f"{objects} loses {effect.types}{duration}"
+        return f"{objects} isn't {_type_names(effect)}{duration}"
     if kind is EffectKind.RESTRICTION and any(
         _player_scoped(effect, r) for r in effect.restrictions
     ):
@@ -1002,3 +1002,15 @@ def _duration(duration: int) -> str:
         Duration.CUSTOM: " (for a stated duration)",
     }
     return names.get(Duration(duration), "")
+
+
+def _type_names(effect) -> str:
+    """"creature", "artifact creature", the subtypes: an IntFlag printed as
+    a number ("loses 4") said nothing."""
+    from ..rules.kernel.enums import CardType
+
+    names = [t.name.lower() for t in CardType if t and t in effect.types]
+    words = names + list(effect.keywords)
+    if getattr(effect, "of_chosen_type", False):
+        words.append("the chosen type")
+    return " ".join(words) if words else "no type"

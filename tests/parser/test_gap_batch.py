@@ -547,3 +547,17 @@ def test_cast_this_spell_only_during_is_not_an_instruction(card_db):
     face = parse_card(card_db.lookup("Delirium")).faces[0]
     line = next(a for a in face.abilities if a.text.startswith("Cast this spell only"))
     assert line.unparsed
+
+
+@pytest.mark.parametrize("name", ["Purphoros, God of the Forge", "Xenagos, God of Revels"])
+def test_a_god_isnt_a_creature_below_its_devotion(card_db, name):
+    """The Theros gods' "As long as your devotion to red is less than five,
+    this isn't a creature" was unread."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.enums import CardType
+
+    parsed = parse_card(card_db.lookup(name))
+    assert parsed.fully_parsed
+    line = next(a for a in parsed.faces[0].abilities if "isn't a creature" in a.text)
+    assert [(e.kind, e.types) for e in line.effects] == [(EffectKind.REMOVE_TYPE, CardType.CREATURE)]
+    assert line.static_condition.value.kind.name == "DEVOTION"

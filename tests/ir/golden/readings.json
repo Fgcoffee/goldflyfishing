@@ -620,7 +620,7 @@
   },
   {
    "oracle": "Lands you control are every basic land type in addition to their other types.",
-   "understood": "Continuously: all land you control is also 0."
+   "understood": "Continuously: all land you control is also Plains Island Swamp Mountain Forest."
   }
  ],
  "Dwarfhold Champion": [
@@ -1550,7 +1550,7 @@
   },
   {
    "oracle": "This creature is the chosen type in addition to its other types.",
-   "understood": "Continuously: object (this permanent itself) is also 0."
+   "understood": "Continuously: object (this permanent itself) is also the chosen type."
   },
   {
    "oracle": "If a triggered ability of another creature you control of the chosen type triggers, it triggers an additional time.",
@@ -2225,7 +2225,7 @@
  "Urborg, Tomb of Yawgmoth": [
   {
    "oracle": "Each land is a Swamp in addition to its other land types.",
-   "understood": "Continuously: all land is also 0."
+   "understood": "Continuously: all land is also Swamp."
   }
  ],
  "Vampiric Tutor": [
@@ -2383,7 +2383,7 @@
  "Yavimaya, Cradle of Growth": [
   {
    "oracle": "Each land is a Forest in addition to its other land types.",
-   "understood": "Continuously: all land is also 0."
+   "understood": "Continuously: all land is also Forest."
   }
  ],
  "Zulaport Cutthroat": [
