@@ -8218,6 +8218,7 @@ def _extra_trigger(stream: Stream) -> Effect | None:
 
     cause = None
     whose = None
+    event = None
 
     if stream.accept_phrase("a triggered ability of"):
         whose = parse_object_filter(stream)
@@ -8235,21 +8236,27 @@ def _extra_trigger(stream: Stream) -> Effect | None:
         if cause is None:
             stream.reset(mark)
             return None
-        # "entering", "being cast", "you casting or copying an instant" - the
-        # participle names the event, which the collector does not need: the
-        # cause filter and the affected filter together are what decide.
+        # "entering", "dying", "attacking" - the participle names the event,
+        # and it matters: it was skipped, so Teysa ("a creature dying")
+        # doubled a creature's *entering* triggers too. Only the events
+        # below are read; any other participle leaves the ability unread.
         # It starts with the participle: anything else is the cause's noun
         # phrase going on unread ("a land *or Bird you control* entering" -
         # skipped, Traveling Chocobo counted only lands).
         if not stream.peek().lower.endswith("ing"):
             stream.reset(mark)
             return None
+        words = []
         while not stream.done and not stream.at("causes"):
             if stream.peek().text in (".", ";", ","):
                 stream.reset(mark)
                 return None
-            stream.next()
+            words.append(stream.next().lower)
         if not stream.accept("causes"):
+            stream.reset(mark)
+            return None
+        event = _causing_event(" ".join(words))
+        if event is None:
             stream.reset(mark)
             return None
         if not stream.accept_phrase("a triggered ability of"):
@@ -8277,8 +8284,38 @@ def _extra_trigger(stream: Stream) -> Effect | None:
         EffectKind.EXTRA_TRIGGER,
         targets=whose,
         trigger_cause=cause,
+        trigger=event,
         amount=Value.of(1),
         text="that ability triggers an additional time",
+    )
+
+
+def _causing_event(words: str):
+    """The event named by "a creature *dying* causes ..." (CR 603.2b), as
+    the trigger condition the extra-trigger check compares against.
+
+    ``None`` for a participle not listed here: better unread than doubling
+    every trigger the cause takes part in.
+    """
+    from ..rules.cr600_spells_and_abilities.abilities import TriggerCondition
+    from ..rules.kernel.events import EventKind as Kind
+
+    events = {
+        "entering": (Kind.ENTERS_BATTLEFIELD,),
+        "entering the battlefield": (Kind.ENTERS_BATTLEFIELD,),
+        "entering or leaving the battlefield": (Kind.ENTERS_BATTLEFIELD, Kind.LEAVES_BATTLEFIELD),
+        "dying": (Kind.DIES,),
+        "attacking": (Kind.ATTACKS,),
+        "becoming the target of a spell or ability": (Kind.TARGETED,),
+        "dealing combat damage to a player": (Kind.COMBAT_DAMAGE_DEALT,),
+    }
+    kinds = events.get(words)
+    if kinds is None:
+        return None
+    return TriggerCondition(
+        event_kinds=frozenset(kinds),
+        to_player=words.endswith("to a player"),
+        text=words,
     )
 
 

@@ -479,3 +479,25 @@ def test_a_tapped_token_enters_tapped(card_db, name, tapped):
     face = parse_card(card_db.lookup(name)).faces[0]
     made = [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.CREATE_TOKEN]
     assert made and all(n.token.enters_tapped is tapped for n in made)
+
+
+@pytest.mark.parametrize("name, events", [
+    ("Teysa Karlov", {"DIES"}),
+    ("Panharmonicon", {"ENTERS_BATTLEFIELD"}),
+    ("Gandalf the White", {"ENTERS_BATTLEFIELD", "LEAVES_BATTLEFIELD"}),
+    ("Wulfgar of Icewind Dale", {"ATTACKS"}),
+])
+def test_an_extra_trigger_keeps_its_causing_event(card_db, name, events):
+    """"If a creature *dying* causes a triggered ability ... to trigger": the
+    participle was skipped, so Teysa doubled a creature's entering triggers."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    extra = next(e for a in face.abilities for e in a.effects if e.kind is EffectKind.EXTRA_TRIGGER)
+    assert {k.name for k in extra.trigger.event_kinds} == events
+
+
+def test_an_extra_trigger_with_an_unknown_event_is_unread():
+    from mtgfish.parser.clauses import _causing_event
+
+    assert _causing_event("drawing a card") is None

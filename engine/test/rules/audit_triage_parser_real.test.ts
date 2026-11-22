@@ -18,6 +18,7 @@ import { computeTotalCost } from "../../src/rules/cr600_spells_and_abilities/tot
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
 import { resolveTop } from "../../src/rules/cr600_spells_and_abilities/stack";
 import { legalActions } from "../../src/rules/legality";
+import { moveObject } from "../../src/rules/zones";
 import { RealBoard, REAL_ABILITIES, realCard, realDocument as doc } from "./real_cards";
 
 /** A card's abilities as the engine reads them (face 0), defaults filled in. */
@@ -506,5 +507,20 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     b.game.epoch += 1;
     invalidateAllCharacteristics(b.game);
     expect(computeTotalCost(b.game, henge, 0, cast).reduction).toBe(2);
+  });
+
+  it("Teysa Karlov: 'a creature dying causes' doubles dies triggers, not entering ones (CR 603.2b)", () => {
+    // The parser skipped the participle: Teysa doubled every trigger a creature caused.
+    const b = new RealBoard();
+    b.play("Teysa Karlov");
+    b.play("Blood Artist"); // whenever a creature dies
+    b.play("Soul Warden"); // whenever another creature enters
+    const bears = b.hand("Grizzly Bears");
+    b.game.pendingTriggers.length = 0;
+    const entered = moveObject(b.game, bears, Zone.BATTLEFIELD);
+    expect(b.game.pendingTriggers).toHaveLength(1);
+    b.game.pendingTriggers.length = 0;
+    expect(destroy(b.game, entered)).toBe(true);
+    expect(b.game.pendingTriggers).toHaveLength(2);
   });
 });

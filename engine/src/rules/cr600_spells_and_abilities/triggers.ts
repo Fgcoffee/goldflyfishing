@@ -297,6 +297,11 @@ function extraTriggers(game: Game, obj: GameObject, e: GameEvent): number {
       if (num(ability.kind) !== STATIC || flag(ability.unparsed)) continue;
       for (const effect of list(ability.effects)) {
         if (num(effect.kind) !== EXTRA_TRIGGER) continue;
+        // "If a creature *dying* causes ...": the event that did the causing
+        // (Teysa doubles dies triggers, not a creature entering).
+        const event = (effect.trigger ?? null) as TriggerCondition | null;
+        if (event !== null && !eventKinds(event).has(e.kind)) continue;
+        if (event !== null && flag(event.to_player) && e.objectId !== NO_OBJECT) continue;
         const context = { source: source.id, controller: source.controller, allowStale: true };
         if (effect.targets != null && !hooks.matches(game, obj, effect.targets, context)) continue;
         const cause = subjectOf(game, e);

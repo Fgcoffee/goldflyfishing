@@ -147,3 +147,6 @@ Seedborn Muse
 Mistrise Village
 Mystic Sanctuary
 The Great Henge
+Teysa Karlov
+Blood Artist
+Soul Warden

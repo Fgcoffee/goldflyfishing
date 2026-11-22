@@ -1,0 +1,149 @@
+{
+ "ir_version": 2,
+ "oracle_id": "644eeefd-e684-4ca8-8aef-a892ca130c07",
+ "name": "Teysa Karlov",
+ "card_hash": "04217546831bcf416964f71b2ddc5ced",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "644eeefd-e684-4ca8-8aef-a892ca130c07",
+  "name": "Teysa Karlov",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Teysa Karlov",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 1,
+       "text": "{W}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Advisor"
+     ]
+    },
+    "oracle_text": "If a creature dying causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time.\nCreature tokens you control have vigilance and lifelink.",
+    "power": "2",
+    "toughness": "4",
+    "colors": 5
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 5,
+  "commander_legal": true,
+  "edhrec_rank": 1350,
+  "scryfall_uri": "https://scryfall.com/card/cmm/359/teysa-karlov?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "644eeefd-e684-4ca8-8aef-a892ca130c07",
+   "name": "Teysa Karlov",
+   "face": 0,
+   "face_name": "Teysa Karlov",
+   "card_hash": "04217546831bcf416964f71b2ddc5ced",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 211,
+       "targets": {
+        "$": "ObjectFilter",
+        "controller": 1,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "trigger": {
+        "$": "TriggerCondition",
+        "event_kinds": {
+         "$set": [
+          3
+         ]
+        },
+        "text": "dying"
+       },
+       "trigger_cause": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "that ability triggers an additional time"
+      }
+     ],
+     "text": "If a creature dying causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1,
+        "is_token": true
+       },
+       "duration": 0,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "vigilance",
+         "keyword": "vigilance"
+        },
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "lifelink",
+         "keyword": "lifelink"
+        }
+       ],
+       "text": "gains vigilance, lifelink"
+      }
+     ],
+     "text": "Creature tokens you control have vigilance and lifelink."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

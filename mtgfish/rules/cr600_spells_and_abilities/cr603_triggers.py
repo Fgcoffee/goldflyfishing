@@ -349,6 +349,13 @@ def _extra_triggers(game: Game, obj: GameObject, event: Event) -> int:
             for effect in ability.effects:
                 if effect.kind is not EffectKind.EXTRA_TRIGGER:
                     continue
+                # "If a creature *dying* causes ...": the causing event
+                # (Teysa doubles dies triggers, not a creature entering).
+                when = effect.trigger
+                if when is not None and event.kind not in when.event_kinds:
+                    continue
+                if when is not None and when.to_player and event.object_id != NO_OBJECT:
+                    continue
                 if effect.targets is not None and not matches(
                     game,
                     obj,
