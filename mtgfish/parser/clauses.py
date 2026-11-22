@@ -1038,6 +1038,13 @@ def _replace_x(node, value: Value):
         return rebuilt if any(a is not b for a, b in zip(rebuilt, node)) else node
     if not dataclasses.is_dataclass(node) or isinstance(node, type):
         return node
+    if isinstance(node, ObjectFilter):
+        # "return target creature card with mana value X or less ..., where
+        # X is its power" (Julian Bashir): inside the filter, "its" can't be
+        # the candidate (that would be "mana value less than its power"); it
+        # is the source. Left as the affected object, the engine compared
+        # each card's mana value with that card's own power.
+        value = _of_source(value)
     changes = {}
     for field in dataclasses.fields(node):
         if field.name in _OWN_X_FIELDS:
@@ -1049,6 +1056,16 @@ def _replace_x(node, value: Value):
         if rebuilt is not current:
             changes[field.name] = rebuilt
     return dataclasses.replace(node, **changes) if changes else node
+
+
+def _of_source(value: Value) -> Value:
+    """``value`` with every "its" (``of_affected``) read as the source's."""
+    import dataclasses
+
+    operands = tuple(_of_source(o) for o in value.operands)
+    if not value.of_affected and all(a is b for a, b in zip(operands, value.operands)):
+        return value
+    return dataclasses.replace(value, of_affected=False, operands=operands)
 
 
 def _mentions_x(node) -> bool:

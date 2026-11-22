@@ -501,3 +501,15 @@ def test_an_extra_trigger_with_an_unknown_event_is_unread():
     from mtgfish.parser.clauses import _causing_event
 
     assert _causing_event("drawing a card") is None
+
+
+def test_its_inside_a_target_filters_x_is_the_source(card_db):
+    """Julian Bashir (readings_queue.md): "mana value X or less ..., where X
+    is its power". With "its" as the affected object, the engine compared each
+    card's mana value with that card's own power."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Julian Bashir, Frontier Doctor")).faces[0]
+    put = next(e for a in face.abilities for e in a.effects if e.kind is EffectKind.PUT_ONTO_BATTLEFIELD)
+    bound = put.targets.mana_value.value
+    assert bound.kind.name == "POWER" and not bound.of_affected
