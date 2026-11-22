@@ -66,7 +66,12 @@ later. Not `mtgfish/parser`.
     real misread, now fixed. The IR's power value no longer has
     `of_affected`. Pinned (285 cards). Census 1 changed, 0 gained or lost,
     so no spot-check run was needed.
-  - Last batch checked: 0047f5f.
+  - **89cb727** ("you may cast that card" pays): 0 gained or lost, 19
+    abilities changed; the golden test still passes. Ragavan's cast is now
+    paid. Its exile of "that player's library" still binds to TARGET_PLAYER
+    with no target; that's the rules session's unbound "that player" gap
+    (110 cards). So Ragavan isn't pinned yet.
+  - Last batch checked: 89cb727.
 - **Item 3, dummy abilities on the site: done (752b7a4).**
   - `deckview.parse_status` gives `recognised`, the dummy rule names, as
     the TS `parseStatus` does; the bridge's board cards carry it too.
