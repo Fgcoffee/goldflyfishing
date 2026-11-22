@@ -132,7 +132,7 @@ at resolution it reduces the cost of *casting* the land.
 - [x] **Rishkar's Expertise** (238) [web: re-checked at 47f80ac, pinned in the golden set] (Not a misread, parser's answer: the engine's CAST_WITHOUT_PAYING asks before each cast (`wants`), so "may" is part of the opcode, as for cascade. No OPTIONAL wrapper needed.) "You may cast a spell with mana value 5 or
   less from your hand without paying its mana cost." IR: `[cast_without_paying]`
   with no optional wrapper, so it must cast. Should be "you may". Minor.
-- [ ] **Panharmonicon** (262). "If an artifact or creature entering causes a
+- [x] **Panharmonicon** (262). (f51ee2e: the cause filter was there, but its event, "entering", was skipped, so a creature attacking or dying also doubled triggers. Now checked by both engines; Teysa and 10 more had the same gap.) "If an artifact or creature entering causes a
   triggered ability of a permanent you control to trigger, that ability triggers
   an additional time." IR: `[extra_trigger] 1 object you control`, without the
   "artifact or creature entering" condition, so every trigger you control would
