@@ -120,7 +120,7 @@ at resolution it reduces the cost of *casting* the land.
   IR: `Whenever this permanent enters battlefield` with no untapped condition,
   so it also triggers when it entered tapped. Should be an intervening "if it
   entered untapped" check.
-- [ ] **The Great Henge** (222). "This spell costs {X} less to cast, where X is
+- [x] **The Great Henge** (222). (91575eb: reduced by -X, X bound to the definition; 18 other cards with the same line; engine test.) "This spell costs {X} less to cast, where X is
   the greatest power among creatures you control." IR: `costs +0 to cast`. The
   reduction is lost, so it always costs {7}{G}{G}. Should reduce by the
   greatest power among your creatures (generic part only).

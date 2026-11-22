@@ -40,15 +40,15 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 
 ## Top priority from 16 Nov: the card database read to nearly 100%
 
-**Numbers, 16 Nov, on the new snapshot (2026-11-15)** (census; the pool is every card legal in some format):
+**Numbers on the new snapshot (2026-11-15); latest column 22 Nov** (census; the pool is every card legal in some format):
 
-| | before this batch | after | of |
-|---|---|---|---|
-| abilities | 44,694 (70.4%) | 44,747 (70.5%) | 63,494 |
-| cards, whole pool | 17,520 (53.0%) | 17,556 (53.2%) | 33,032 |
-| top 100 by play rate | 96 | 97 | 100 |
-| top 1,000 | 817 | 824 | 1,000 |
-| top 5,000 | 2,815 | 2,833 | 5,000 |
+| | 16 Nov, before | 16 Nov, after | 22 Nov | of |
+|---|---|---|---|---|
+| abilities | 44,694 (70.4%) | 44,747 (70.5%) | 44,757 (70.5%) | 63,494 |
+| cards, whole pool | 17,520 (53.0%) | 17,556 (53.2%) | 17,566 (53.2%) | 33,032 |
+| top 100 by play rate | 96 | 97 | 97 | 100 |
+| top 1,000 | 817 | 824 | 824 | 1,000 |
+| top 5,000 | 2,815 | 2,833 | 2,833 | 5,000 |
 
 "Read" counts recognised dummies (below) as read.
 
@@ -75,7 +75,9 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 - "This ability costs {1} less to activate for each ..." (Boseiju, Otawara, Takenuma, Pteramander and 24 more) is a dummy, `activation-cost-change`, carrying its amount, instead of an effect that ran on resolution. Census: 0/0, 33 changed in all.
 - "This spell can't be countered" is a static ability on the stack (47f80ac; 52 cards), and "every basic land type" adds all five (3 cards). Rishkar's Expertise answered in the queue (not a misread).
 - **Engine fix, rules session please look (e2bce20):** `applySelfEntryReplacements` (replacement.ts) tapped every "enters tapped unless ..." land without asking the condition: 116 read cards, most played duals among them, always entered tapped. It now walks only the branch whose condition holds. Board test: Mystic Sanctuary. Every bench and browser-run digest with those lands will change.
-- **For the auditor, a choice:** the mana abilities that should be colour-limited (Exotic Orchard, Fellwar Stone, Reflecting Pool, Chrome Mox, Mox Amber, Bloom Tender) read as "any colour". The engine can't compute the limit yet. Honest options: (a) leave them making any colour, flagged as a known overstatement; (b) make the restriction a dummy, which leaves the mana ability unable to tell what it may make, i.e. inert, so Exotic Orchard (rank 4) would make no mana. I've left them as they are until you say; (a) changes no game, (b) changes many.
+- - **22 Nov (88e6a7a, 91575eb):** "costs {X} less, where X is ..." keeps its reduction (The Great Henge and 18 more; engine test); "create a tapped ... token" enters tapped (42 cards); the snapshot's new keywords and ability words are registered, so `test_keywords` is green again (+10 cards, the Seek out ability word). Full Python suite: 3733 passed, 1 failed (`test_cancel`, the known timing flake under `-n 4`). Engine 955.
+- **Next, in progress:** "If a creature *dying* causes a triggered ability ... to trigger" (Teysa, Panharmonicon, Yarok, Drivnod and 8 more) keeps the cause but drops the event, so Teysa also doubles a creature's *entering* triggers. Parser and both engines are being changed to check the event.
+**For the auditor, a choice:** the mana abilities that should be colour-limited (Exotic Orchard, Fellwar Stone, Reflecting Pool, Chrome Mox, Mox Amber, Bloom Tender) read as "any colour". The engine can't compute the limit yet. Honest options: (a) leave them making any colour, flagged as a known overstatement; (b) make the restriction a dummy, which leaves the mana ability unable to tell what it may make, i.e. inert, so Exotic Orchard (rank 4) would make no mana. I've left them as they are until you say; (a) changes no game, (b) changes many.
 
 **For the web session:** `parseStatus` (`engine/src/sim/payload.ts`) now returns `recognised`, the dummy names on a card, beside `status` and `unread`. A card whose only gaps are dummies has status "ok" and a non-empty `recognised`; the site can show "recognised, not implemented yet" for it. In the IR, it's an effect with `kind` 998 and its `rule`.
 
