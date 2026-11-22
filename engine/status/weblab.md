@@ -57,7 +57,12 @@ later. Not `mtgfish/parser`.
     which the IR has. It's pinned now (282 cards). Lesson, applied since:
     the read-back drops trigger-subject qualities, so check the IR before
     queuing a missing trigger condition.
-  - Last batch checked: e2bce20.
+  - **91575eb, f51ee2e** (parser) and **88e6a7a** (rules, new keywords):
+    +10 fully read, -0, all "draw your second card" cards from the new
+    snapshot. They read right; one to confirm (Julian Bashir's "its
+    power"). The Great Henge and Panharmonicon now read right and are
+    pinned (284 cards).
+  - Last batch checked: f51ee2e.
 - **Item 3, dummy abilities on the site: done (752b7a4).**
   - `deckview.parse_status` gives `recognised`, the dummy rule names, as
     the TS `parseStatus` does; the bridge's board cards carry it too.

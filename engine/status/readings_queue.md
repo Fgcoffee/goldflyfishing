@@ -78,6 +78,23 @@ them dummies.
   reads as a second `Has Disguise`, so the card has Disguise twice. Should be
   absorbed into the keyword. Low priority.
 
+## Spot check: parser batches 91575eb and f51ee2e (and rules 88e6a7a)
+
+`readings_spot_check d5e41a4`: +10 fully read, -0. All 10 are the new
+snapshot's "whenever you draw your second card each turn" cards (Ro Laren,
+Worf, Data ×2, Dr. Pulaski, Chief O'Brien, Tom Paris, Rom and Leeta, Beverly
+Crusher, Julian Bashir). The trigger reads right on all 10, as `drew card
+(player: you) (only the #2 such event each turn)`. Beverly Crusher's "up to
+three target creatures" is `count 3, up_to` in the IR; the read-back drops
+the count.
+- [ ] **Julian Bashir, Frontier Doctor** (to confirm, not a confirmed
+  misread). "return target creature card with mana value X or less from your
+  graveyard to the battlefield, where X is its power". "Its" is Bashir. The
+  target filter has `mana_value <= Value(POWER, of_affected: true)`. If
+  `of_affected` makes the engine read each candidate card's own power while
+  matching targets, that's wrong: it should be the source's power. Please
+  check which it does.
+
 ## Mana abilities lose their colour restriction
 
 All of these read as "add one mana of any colour", so in a game the source
