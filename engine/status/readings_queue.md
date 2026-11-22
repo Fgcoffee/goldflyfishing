@@ -120,7 +120,7 @@ at resolution it reduces the cost of *casting* the land.
   IR: `Whenever this permanent enters battlefield` with no untapped condition,
   so it also triggers when it entered tapped. Should be an intervening "if it
   entered untapped" check.
-- [x] **The Great Henge** (222). (91575eb: reduced by -X, X bound to the definition; 18 other cards with the same line; engine test.) "This spell costs {X} less to cast, where X is
+- [x] **The Great Henge** (222). [web: re-checked; costs -1 x greatest power among your creatures. Pinned.] (91575eb: reduced by -X, X bound to the definition; 18 other cards with the same line; engine test.) "This spell costs {X} less to cast, where X is
   the greatest power among creatures you control." IR: `costs +0 to cast`. The
   reduction is lost, so it always costs {7}{G}{G}. Should reduce by the
   greatest power among your creatures (generic part only).
@@ -132,7 +132,7 @@ at resolution it reduces the cost of *casting* the land.
 - [x] **Rishkar's Expertise** (238) [web: re-checked at 47f80ac, pinned in the golden set] (Not a misread, parser's answer: the engine's CAST_WITHOUT_PAYING asks before each cast (`wants`), so "may" is part of the opcode, as for cascade. No OPTIONAL wrapper needed.) "You may cast a spell with mana value 5 or
   less from your hand without paying its mana cost." IR: `[cast_without_paying]`
   with no optional wrapper, so it must cast. Should be "you may". Minor.
-- [x] **Panharmonicon** (262). (f51ee2e: the cause filter was there, but its event, "entering", was skipped, so a creature attacking or dying also doubled triggers. Now checked by both engines; Teysa and 10 more had the same gap.) "If an artifact or creature entering causes a
+- [x] **Panharmonicon** (262). [web: re-checked; IR has `trigger: entering` + `trigger_cause: artifact or creature`. Pinned in the golden set.] (f51ee2e: the cause filter was there, but its event, "entering", was skipped, so a creature attacking or dying also doubled triggers. Now checked by both engines; Teysa and 10 more had the same gap.) "If an artifact or creature entering causes a
   triggered ability of a permanent you control to trigger, that ability triggers
   an additional time." IR: `[extra_trigger] 1 object you control`, without the
   "artifact or creature entering" condition, so every trigger you control would

@@ -1345,6 +1345,12 @@
    "understood": "Continuously: you may you loses 2 life, then if that was not done, tap object (this permanent itself)."
   }
  ],
+ "Panharmonicon": [
+  {
+   "oracle": "If an artifact or creature entering causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time.",
+   "understood": "Continuously: [extra_trigger] 1 object you control."
+  }
+ ],
  "Patchwork Banner": [
   {
    "oracle": "As this artifact enters, choose a creature type.",
@@ -2043,6 +2049,20 @@
   {
    "oracle": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
    "understood": "Pay {T}, sacrifice this: you searches their library for 1 basic land and puts it into battlefield tapped."
+  }
+ ],
+ "The Great Henge": [
+  {
+   "oracle": "This spell costs {X} less to cast, where X is the greatest power among creatures you control.",
+   "understood": "Continuously: object (this permanent itself) costs -1 times the greatest power among all creature you control to cast."
+  },
+  {
+   "oracle": "{T}: Add {G}{G}. You gain 2 life.",
+   "understood": "Pay {T} (mana ability - does not use the stack): you adds {G}{G}, then you gains 2 life."
+  },
+  {
+   "oracle": "Whenever a nontoken creature you control enters, put a +1/+1 counter on it and draw a card.",
+   "understood": "Whenever 1 creature you control nontoken enters battlefield, put 1 +1/+1 counter(s) on object (whatever was just referred to), then you draws 1 card(s)."
   }
  ],
  "The One Ring": [
