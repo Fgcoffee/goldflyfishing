@@ -2562,6 +2562,10 @@ def _token(spec, types, power, toughness, keywords, abilities, maker, amount) ->
     return Effect(
         EffectKind.CREATE_TOKEN,
         token=TokenSpec(
+            # "create two tapped Treasure tokens": the noun reader takes
+            # "tapped" as a constraint on the filter, and nothing carried it
+            # to the token, so it entered untapped.
+            enters_tapped=spec.tapped is True,
             name=spec.subtypes_all[0] if spec.subtypes_all else "Token",
             types=types,
             subtypes=spec.subtypes_all,
@@ -6161,10 +6165,18 @@ def _costs_less(stream: Stream) -> Effect | None:
     stream.accept_phrase("to cast")
     stream.accept_phrase("to activate")
 
+    if symbols == ["{X}"]:
+        # "This spell costs {X} less to cast, where X is the greatest power
+        # among creatures you control" (The Great Henge, Ghalta). {X} has
+        # mana value 0, so this read as "costs 0 less"; X stays a variable
+        # for the trailing definition to fill in (``_bind_x``, CR 107.3b).
+        changed = Value(ValueKind.PRODUCT, operands=(Value.of(sign), Value(kind=ValueKind.X)))
+    else:
+        changed = Value.of(sign * (reduction or (amount.constant if amount else 0)))
     return Effect(
         EffectKind.MODIFY_COST,
         targets=targets,
-        amount=Value.of(sign * (reduction or (amount.constant if amount else 0))),
+        amount=changed,
         duration=Duration.PERMANENT,
         text="costs less to cast",
     )

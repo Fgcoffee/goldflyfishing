@@ -450,3 +450,32 @@ def test_every_basic_land_type_is_all_five(card_db):
     face = parse_card(card_db.lookup("Dryad of the Ilysian Grove")).faces[0]
     added = [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.ADD_TYPE]
     assert added and set(added[0].keywords) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}
+
+
+@pytest.mark.parametrize("name", ["The Great Henge", "Ghalta, Primal Hunger", "Drag to the Underworld"])
+def test_costs_x_less_keeps_its_definition(card_db, name):
+    """readings_queue.md: "costs {X} less ..., where X is ..." read as "costs
+    0 less" ({X} has mana value 0). X is now the trailing definition."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.query import ValueKind
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    change = next(n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.MODIFY_COST)
+    assert change.amount.kind is ValueKind.PRODUCT
+    sign, x = change.amount.operands
+    assert sign.constant == -1 and x.kind not in (ValueKind.X, ValueKind.CONSTANT)
+
+
+@pytest.mark.parametrize("name, tapped", [
+    ("Rom and Leeta, Unlikely Pair", True),  # "create two tapped Treasure tokens"
+    ("Fallaji Excavation", True),  # "Create three tapped Powerstone tokens"
+    ("Smothering Tithe", False),  # "create a Treasure token"
+])
+def test_a_tapped_token_enters_tapped(card_db, name, tapped):
+    """The noun reader took "tapped" as a filter constraint and nothing carried
+    it to the token, so every "create a tapped ..." token entered untapped."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    made = [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.CREATE_TOKEN]
+    assert made and all(n.token.enters_tapped is tapped for n in made)

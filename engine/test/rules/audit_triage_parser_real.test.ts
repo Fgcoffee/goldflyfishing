@@ -13,7 +13,8 @@ import { createObject, invalidateAllCharacteristics, player } from "../../src/ke
 import { playerTarget } from "../../src/kernel/ids";
 import { attach, destroy, draw } from "../../src/rules/cr100_game_concepts/actions";
 import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
-import { ActionKind, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
+import { action, ActionKind, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
+import { computeTotalCost } from "../../src/rules/cr600_spells_and_abilities/total_cost";
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
 import { resolveTop } from "../../src/rules/cr600_spells_and_abilities/stack";
 import { legalActions } from "../../src/rules/legality";
@@ -494,5 +495,16 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(triggersWith(0)).toBe(0); // fewer than three other Islands: enters tapped
     expect(triggersWith(3)).toBe(1); // enters untapped: the trigger goes on the stack
   });
-});
 
+  it("The Great Henge: 'costs {X} less, where X is the greatest power among creatures you control' (readings_queue.md)", () => {
+    // Read as "costs 0 less" (an {X} symbol has mana value 0), so it always cost {7}{G}{G}.
+    const b = new RealBoard();
+    const henge = b.hand("The Great Henge");
+    const cast = action(ActionKind.CAST_SPELL, { source: henge.id });
+    expect(computeTotalCost(b.game, henge, 0, cast).reduction).toBe(0);
+    b.play("Grizzly Bears");
+    b.game.epoch += 1;
+    invalidateAllCharacteristics(b.game);
+    expect(computeTotalCost(b.game, henge, 0, cast).reduction).toBe(2);
+  });
+});
