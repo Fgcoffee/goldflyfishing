@@ -44,11 +44,11 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 
 | | 16 Nov, before | 16 Nov, after | 22 Nov | of |
 |---|---|---|---|---|
-| abilities | 44,694 (70.4%) | 44,747 (70.5%) | 44,757 (70.5%) | 63,494 |
-| cards, whole pool | 17,520 (53.0%) | 17,556 (53.2%) | 17,566 (53.2%) | 33,032 |
+| abilities | 44,694 (70.4%) | 44,747 (70.5%) | 44,776 (70.5%) | 63,494 |
+| cards, whole pool | 17,520 (53.0%) | 17,556 (53.2%) | 17,582 (53.2%) | 33,032 |
 | top 100 by play rate | 96 | 97 | 97 | 100 |
-| top 1,000 | 817 | 824 | 824 | 1,000 |
-| top 5,000 | 2,815 | 2,833 | 2,833 | 5,000 |
+| top 1,000 | 817 | 824 | 826 | 1,000 |
+| top 5,000 | 2,815 | 2,833 | 2,847 | 5,000 |
 
 "Read" counts recognised dummies (below) as read.
 
@@ -80,6 +80,8 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
 - **Julian Bashir (0047f5f):** the web agent asked; it was a misread ("its power" in a target filter read each candidate's own power). Fixed; 1 card.
 - **Paid casts (89cb727):** "you may cast that card" was free (Ragavan, Yawgmoth's Will and 17 more); now paid. "Cast this spell only during" is unread rather than a self-cast.
 - **For the rules session, found today:** "that player" / "they" in an object filter (owner/controller SPECIFIC, no player) matches nothing in either engine: 110 read cards, `audit/unbound_that_player.md`, board-checked on All Is Dust and How to Start a Riot. Proposed binding in the audit log.
+- **Theros gods (e08b81f):** "this isn't a creature" below devotion: +16 cards. Read-back now names card types instead of a number; golden entries for Dryad, Roaming Throne, Urborg and Yavimaya refreshed (wording only), web session please note.
+- **Branch of Vitu-Ghazi** answered in the queue: two disguise abilities by design (CR 702.37a).
 **For the auditor, a choice:** the mana abilities that should be colour-limited (Exotic Orchard, Fellwar Stone, Reflecting Pool, Chrome Mox, Mox Amber, Bloom Tender) read as "any colour". The engine can't compute the limit yet. Honest options: (a) leave them making any colour, flagged as a known overstatement; (b) make the restriction a dummy, which leaves the mana ability unable to tell what it may make, i.e. inert, so Exotic Orchard (rank 4) would make no mana. I've left them as they are until you say; (a) changes no game, (b) changes many.
 
 **For the web session:** `parseStatus` (`engine/src/sim/payload.ts`) now returns `recognised`, the dummy names on a card, beside `status` and `unread`. A card whose only gaps are dummies has status "ok" and a non-empty `recognised`; the site can show "recognised, not implemented yet" for it. In the IR, it's an effect with `kind` 998 and its `rule`.
