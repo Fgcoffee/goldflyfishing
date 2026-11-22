@@ -74,7 +74,7 @@ them dummies.
     sacrifice and the tap are gone.
   - Should keep the ability's kind and cost, with the dummy as its effect.
     Low priority.
-- [ ] **Branch of Vitu-Ghazi.** The reminder-style line "turn face up: {3}"
+- [x] **Branch of Vitu-Ghazi.** (Not a misread, parser's answer: morph, megamorph and disguise expand on purpose to two abilities, CR 702.37a: the face-down cast from hand, and the turn-face-up special action, whose cost the special action reads (cr702_keyword_impl.py `_morph`). Every morph card has both. The read-back labels both by the keyword; its text is "turn face up: {3}". Lossy read-back only.) The reminder-style line "turn face up: {3}"
   reads as a second `Has Disguise`, so the card has Disguise twice. Should be
   absorbed into the keyword. Low priority.
 
