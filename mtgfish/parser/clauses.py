@@ -9819,11 +9819,47 @@ def _keyword_action(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
+    if matched.lower() == "cast":
+        if stream.at("only"):
+            # "Cast this spell only during an opponent's turn" (Delirium,
+            # Seedtime) is a timing restriction (CR 601.3), not an
+            # instruction to cast it. It read as the spell casting itself.
+            stream.reset(mark)
+            return None
+        effects = _paid_unless_free(stream, effects)
+
     if len(effects) == 1:
         return effects[0] if not targeted else _retarget(effects[0], targeted)
     return Effect(
         EffectKind.SEQUENCE, children=tuple(effects), text=" ".join(words)
     )
+
+
+def _paid_unless_free(stream: Stream, effects: list[Effect]) -> list[Effect]:
+    """"You may cast that card" pays for it (CR 601.2f); only "... without
+    paying its mana cost" is free.
+
+    The keyword-action table expands "cast" to the free-cast opcode, so
+    Ragavan's "Until end of turn, you may cast that card" cast it for free
+    (readings_queue.md). Without the phrase it is a paid cast: the
+    play-from-zone opcode, with lands excluded, since a land can't be cast.
+    """
+    if stream.at("without"):
+        # Left in the stream, as before: the clauses that read the free cast
+        # whole ("a spell with mana value 3 or less ... without paying its
+        # mana cost") keep the count this route would lose.
+        return effects
+    out = []
+    for effect in effects:
+        if effect.kind is EffectKind.CAST_WITHOUT_PAYING:
+            targets = effect.targets or ObjectFilter()
+            effect = replace(
+                effect,
+                kind=EffectKind.PLAY_FROM_ZONE,
+                targets=replace(targets, types_none=targets.types_none | CardType.LAND),
+            )
+        out.append(effect)
+    return out
 
 
 #: Keyword actions whose executor acts on the objects its filter picks, and so

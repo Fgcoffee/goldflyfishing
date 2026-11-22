@@ -513,3 +513,37 @@ def test_its_inside_a_target_filters_x_is_the_source(card_db):
     put = next(e for a in face.abilities for e in a.effects if e.kind is EffectKind.PUT_ONTO_BATTLEFIELD)
     bound = put.targets.mana_value.value
     assert bound.kind.name == "POWER" and not bound.of_affected
+
+
+@pytest.mark.parametrize("name, free", [
+    ("Ragavan, Nimble Pilferer", False),  # "you may cast that card"
+    ("Yawgmoth's Will", False),  # "you may play lands and cast spells from your graveyard"
+    ("Torrential Gearhulk", True),  # "... without paying its mana cost"
+])
+def test_cast_pays_unless_it_says_free(card_db, name, free):
+    """readings_queue.md: the keyword-action table made every "cast" free,
+    so Ragavan's and Yawgmoth's Will's casts cost nothing."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    kinds = {n.kind for a in face.abilities for e in a.effects for n in e.walk()}
+    assert (EffectKind.CAST_WITHOUT_PAYING in kinds) is free
+    if not free:
+        assert EffectKind.PLAY_FROM_ZONE in kinds
+
+
+def test_a_free_cast_keeps_its_count(card_db):
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Sram's Expertise")).faces[0]
+    cast = next(n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.CAST_WITHOUT_PAYING)
+    assert cast.targets.count is not None
+
+
+def test_cast_this_spell_only_during_is_not_an_instruction(card_db):
+    """Delirium: a timing restriction, read as the spell casting itself."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Delirium")).faces[0]
+    line = next(a for a in face.abilities if a.text.startswith("Cast this spell only"))
+    assert line.unparsed
