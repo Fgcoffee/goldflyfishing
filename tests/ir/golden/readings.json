@@ -1017,6 +1017,16 @@
    "understood": "Continuously: all black you control that is a spell in stack costs -1 to cast."
   }
  ],
+ "Julian Bashir, Frontier Doctor": [
+  {
+   "oracle": "Whenever you draw your second card each turn, put a +1/+1 counter on this.",
+   "understood": "Whenever drew card (player: you) (only the #2 such event each turn), put 1 +1/+1 counter(s) on object (this permanent itself)."
+  },
+  {
+   "oracle": "Whenever this attacks, return target creature card with mana value X or less from your graveyard to the battlefield, where X is its power.",
+   "understood": "Whenever this permanent attacks, put onto the battlefield target creature you own with mana value this permanent's power or less in graveyard."
+  }
+ ],
  "Karn's Bastion": [
   {
    "oracle": "{T}: Add {C}.",

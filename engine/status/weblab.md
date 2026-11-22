@@ -62,7 +62,11 @@ later. Not `mtgfish/parser`.
     snapshot. They read right; one to confirm (Julian Bashir's "its
     power"). The Great Henge and Panharmonicon now read right and are
     pinned (284 cards).
-  - Last batch checked: f51ee2e.
+  - **0047f5f** (Julian Bashir's "its power" is the source's): it was a
+    real misread, now fixed. The IR's power value no longer has
+    `of_affected`. Pinned (285 cards). Census 1 changed, 0 gained or lost,
+    so no spot-check run was needed.
+  - Last batch checked: 0047f5f.
 - **Item 3, dummy abilities on the site: done (752b7a4).**
   - `deckview.parse_status` gives `recognised`, the dummy rule names, as
     the TS `parseStatus` does; the bridge's board cards carry it too.
