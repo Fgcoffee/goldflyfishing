@@ -87,7 +87,7 @@ Crusher, Julian Bashir). The trigger reads right on all 10, as `drew card
 (player: you) (only the #2 such event each turn)`. Beverly Crusher's "up to
 three target creatures" is `count 3, up_to` in the IR; the read-back drops
 the count.
-- [ ] **Julian Bashir, Frontier Doctor** (to confirm, not a confirmed
+- [x] **Julian Bashir, Frontier Doctor** (0047f5f: confirmed a misread. With `of_affected` the engine read each candidate card's own power, so it returned creatures whose mana value was at most their own power. Inside a target filter, "its" in a where-X definition is now the source. Census: only this card changed.) (to confirm, not a confirmed
   misread). "return target creature card with mana value X or less from your
   graveyard to the battlefield, where X is its power". "Its" is Bashir. The
   target filter has `mana_value <= Value(POWER, of_affected: true)`. If
