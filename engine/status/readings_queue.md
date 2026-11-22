@@ -155,7 +155,7 @@ at resolution it reduces the cost of *casting* the land.
   "artifact or creature entering" condition, so every trigger you control would
   double. Should be limited to triggers caused by an artifact or creature
   entering the battlefield.
-- [ ] **Ragavan, Nimble Pilferer** (275). "... exile the top card of that
+- [x] **Ragavan, Nimble Pilferer** (275). (89cb727: the cast now pays, 18 other cards too. The exile of "that player's library" is an engine gap shared by 110 cards, for the rules session: audit/unbound_that_player.md.) "... exile the top card of that
   player's library. Until end of turn, you may cast that card." IR: `you may
   [cast_without_paying] object`. Ragavan lets you cast it **paying its cost**,
   not for free. The exile also doesn't name the damaged player's library.
