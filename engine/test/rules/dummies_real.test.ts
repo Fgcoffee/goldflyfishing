@@ -9,7 +9,8 @@ import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool
 import { ActionKind } from "../../src/rules/cr100_game_concepts/priority";
 import { legalActions } from "../../src/rules/legality";
 import { DEFAULT_TURN_OPTIONS, turnBasedActions } from "../../src/rules/cr500_turn_structure/turn";
-import { IMPLEMENTED_DUMMIES } from "../../src/rules/dummies";
+import { beginGameOnBattlefield, IMPLEMENTED_DUMMIES } from "../../src/rules/dummies";
+import { Zone } from "../../src/kernel/enums";
 import { RealBoard } from "./real_cards";
 
 function untapStepOf(b: RealBoard, active: number): void {
@@ -76,5 +77,26 @@ describe("activation-cost-change (CR 601.2f): the channel lands", () => {
   it("and isn't affordable with one mana without one", () => {
     const [b, boseiju] = setUp(false);
     expect(channel(b, boseiju)).toHaveLength(0);
+  });
+});
+
+describe("begin-game-on-battlefield (CR 103.6): the Leylines", () => {
+  it("Leyline of the Void in the opening hand begins the game on the battlefield; other cards stay", () => {
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    const leyline = b.hand("Leyline of the Void", 1);
+    const bears = b.hand("Grizzly Bears", 1);
+    beginGameOnBattlefield(b.game);
+    const now = b.game.objects.get(leyline.supersededBy || leyline.id)!;
+    expect(now.zone).toBe(Zone.BATTLEFIELD);
+    expect(now.controller).toBe(1);
+    expect(bears.zone).toBe(Zone.HAND);
+  });
+  it("an agent may decline it", () => {
+    const b = new RealBoard();
+    b.game.agents.set(0, { chooseOptional: () => false } as never);
+    const leyline = b.hand("Leyline of the Void", 0);
+    beginGameOnBattlefield(b.game);
+    expect(leyline.zone).toBe(Zone.HAND);
   });
 });

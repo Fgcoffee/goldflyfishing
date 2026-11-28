@@ -29,6 +29,7 @@ import type { DeckSpec, GameEngine, RunSetup } from "../sim/runner";
 import type { Agent } from "./cr100_game_concepts/priority";
 import { SimpleAgent } from "../ai/simple";
 import { setUpGame, type SetupDeck } from "./cr100_game_concepts/setup";
+import { beginGameOnBattlefield } from "./dummies";
 import { lossReasonName, LossReason } from "../kernel/enums";
 import { characteristicsOf } from "./cr600_spells_and_abilities/layers";
 import { runGame, type TurnOptions } from "./cr500_turn_structure/turn";
@@ -131,6 +132,7 @@ export function playGame(setup: RunSetup, index: number, seed: number, options: 
 
   for (const p of game.players) game.agents.set(p.id, options.agentFor?.(p.id) ?? new SimpleAgent());
   observer.recordOpeningHand(game);
+  beginGameOnBattlefield(game); // CR 103.6: the Leylines (rules/dummies.ts)
 
   const turnOptions: TurnOptions = { firstPlayerSkipsFirstDraw: false, maxRounds: setup.maxRounds };
   const finished = runGame(game, turnOptions);

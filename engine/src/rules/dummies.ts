@@ -8,8 +8,12 @@
  */
 
 import type { Ability, Effect, ObjectFilter } from "../ir";
-import { CardType } from "../kernel/enums";
-import { logRecord, permanents, type Game } from "../kernel/game";
+import { CardType, Zone } from "../kernel/enums";
+import { logRecord, permanents, player, type Game } from "../kernel/game";
+import { addCounters } from "../kernel/gameobject";
+import { exile } from "./cr100_game_concepts/actions";
+import { moveObject } from "./zones";
+import { printedCharacteristics } from "./cr600_spells_and_abilities/layers";
 import type { GameObject } from "../kernel/gameobject";
 import { matchHooks } from "../kernel/hooks";
 import type { PlayerId } from "../kernel/ids";
@@ -18,7 +22,7 @@ import { characteristicsOf } from "./cr600_spells_and_abilities/layers";
 import { flag, ir, list, num } from "./ir_read";
 
 /** The dummy shapes the engine carries out; the parser can report their cards as read. */
-export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change"]);
+export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield"]);
 
 const DUMMY = ir("EffectKind.DUMMY") as number;
 const STATIC = ir("AbilityKind.STATIC") as number;
@@ -97,4 +101,55 @@ export function activationCostChange(game: Game, source: GameObject, ability: Ab
     total += matchHooks().evaluate(game, effect.amount, { source: source.id, controller: source.controller });
   }
   return total;
+}
+
+/** An agent that may decline a Leyline (CR 103.6 says "may"); without one, yes. */
+interface OpeningHandChooser {
+  chooseOptional?(game: Game, player: PlayerId, effect: unknown): boolean;
+}
+
+/**
+ * CR 103.6: after mulligans, starting with the starting player and in turn
+ * order, each player may put cards from their opening hand that say so onto
+ * the battlefield (the Leylines). They begin the game there, so nothing
+ * "enters" for triggers. Gemstone Caverns' version only for a player who
+ * isn't starting: with a luck counter, exiling another card from hand (the
+ * last one in hand, a fixed choice: no agent decides it yet).
+ */
+export function beginGameOnBattlefield(game: Game): void {
+  const starting = game.activePlayer;
+  const order = game.turnOrder.length > 0 ? game.turnOrder : game.players.map((p) => p.id);
+  const at = Math.max(0, order.indexOf(starting));
+  const seats = [...order.slice(at), ...order.slice(0, at)];
+  const before = game.suppressTriggers;
+  game.suppressTriggers = true;
+  try {
+    for (const pid of seats) {
+      const p = player(game, pid);
+      for (const id of p.hand.slice()) {
+        const card = game.objects.get(id);
+        if (card === undefined || card.zone === undefined) continue;
+        for (const ability of printedCharacteristics(game, card).abilities as readonly Ability[]) {
+          const effect = list(ability.effects).find((e) => num(e.kind) === DUMMY && e.rule === "begin-game-on-battlefield");
+          if (effect === undefined) continue;
+          const luck = String(effect.text ?? "").toLowerCase().includes("luck counter");
+          if (luck && pid === starting) break;
+          const agent = game.agents.get(pid) as OpeningHandChooser | undefined;
+          if (agent?.chooseOptional !== undefined && !agent.chooseOptional(game, pid, effect)) break;
+          const permanent = moveObject(game, card, Zone.BATTLEFIELD, { toPlayer: pid });
+          permanent.summoningSick = false;
+          if (luck) {
+            addCounters(permanent, "luck", 1);
+            const other = p.hand[p.hand.length - 1];
+            const exiled = other === undefined ? undefined : game.objects.get(other);
+            if (exiled !== undefined) exile(game, exiled);
+          }
+          logRecord(game, `${characteristicsOf(game, permanent).name} begins the game on the battlefield (CR 103.6)`, { kind: "setup", player: pid });
+          break;
+        }
+      }
+    }
+  } finally {
+    game.suppressTriggers = before;
+  }
 }
