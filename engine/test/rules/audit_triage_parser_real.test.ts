@@ -579,7 +579,7 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
       resolveTop(b.game);
       settle(b.game);
     }
-    const onBattlefield = [...b.game.battlefield].map((id) => b.game.objects.get(id)!).filter((o) => o.card?.name === "Grizzly Bears");
+    const onBattlefield = [...b.game.battlefield].map((id) => b.game.objects.get(id)!).filter((o) => (o.card as { name?: string } | null)?.name === "Grizzly Bears");
     expect(onBattlefield.map((o) => o.controller).sort()).toEqual([0, 1]);
     expect(onBattlefield.some((o) => o.id === mine.id || o.id === theirs.id)).toBe(false);
   });
