@@ -577,3 +577,21 @@ def test_target_player_controls_targets_the_player(card_db, name, scope):
     effect = parse_card(card_db.lookup(name)).faces[0].abilities[0].effects[0]
     assert effect.is_targeted and effect.players.scope.name == scope
     assert effect.targets.controller is ControllerRelation.SPECIFIC
+
+
+def test_each_player_carries_through_living_death(card_db):
+    """rules.md (28 Nov): Living Death's sacrifice read as yours, and the
+    returned creatures entered under your control."""
+    from mtgfish.parser.compile import parse_card
+
+    line = parse_card(card_db.lookup("Living Death")).faces[0].abilities[0]
+    exile, sacrifice, put = line.effects
+    assert exile.players.scope.name == sacrifice.players.scope.name == "EACH_PLAYER"
+    assert put.under_owners_control
+
+
+def test_target_player_exiles_targets_the_player(card_db):
+    from mtgfish.parser.compile import parse_card
+
+    effect = parse_card(card_db.lookup("Tombfire")).faces[0].abilities[0].effects[0]
+    assert effect.is_targeted and effect.players.scope.name == "TARGET_PLAYER"

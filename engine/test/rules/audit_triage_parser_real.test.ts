@@ -558,4 +558,29 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(blackAfter(0)).toBe(3);
     expect(blackAfter(7)).toBe(5);
   });
+
+  it("Living Death: each player sacrifices their creatures and gets their own back (CR 110.2a)", () => {
+    // Read as "you sacrifice", and every returned creature entered under the caster's control.
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    const mine = b.play("Grizzly Bears", 0);
+    const theirs = b.play("Grizzly Bears", 1);
+    b.graveyard("Grizzly Bears", 0);
+    b.graveyard("Grizzly Bears", 1);
+    const spell = b.hand("Living Death");
+    addMana(player(b.game, 0).manaPool, manaKind(Color.BLACK), 2);
+    addMana(player(b.game, 0).manaPool, manaKind(Color.NONE), 3);
+    const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === spell.id)!;
+    expect(perform(b.game, 0, cast)).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    const onBattlefield = [...b.game.battlefield].map((id) => b.game.objects.get(id)!).filter((o) => o.card?.name === "Grizzly Bears");
+    expect(onBattlefield.map((o) => o.controller).sort()).toEqual([0, 1]);
+    expect(onBattlefield.some((o) => o.id === mine.id || o.id === theirs.id)).toBe(false);
+  });
 });

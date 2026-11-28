@@ -398,6 +398,18 @@ def _elided_subject(first, effect: Effect, previous: Effect) -> Effect | None:
     word = first.lower
     if word not in _THIRD_PERSON_VERBS and word not in _THIRD_PERSON_MOVERS:
         return effect
+    if (
+        word == "puts"
+        and previous.players is not None
+        and previous.players.scope is PlayerScope.EACH_PLAYER
+        and effect.kind is EffectKind.PUT_ONTO_BATTLEFIELD
+        and effect.targets is not None
+        and effect.targets.remembered
+    ):
+        # "Each player ... then puts all cards they exiled this way onto the
+        # battlefield" (Living Death): each card was exiled by its owner, from
+        # their own graveyard, so each enters under its owner's control.
+        return replace(effect, under_owners_control=True)
     if effect.players is None or effect.players.scope is not PlayerScope.YOU:
         return effect
     subject = previous.players
@@ -1510,7 +1522,7 @@ def _exile(stream: Stream) -> Effect | None:
     # "*Each player* exiles all creature cards from their graveyard" - the
     # exiler need not be you, and reading it as your own exile pointed the
     # whole effect at the wrong graveyards.
-    who, _ = parse_player_filter(stream)
+    who, who_targeted = parse_player_filter(stream)
     if not stream.accept("exile", "exiles"):
         stream.reset(mark)
         return None
@@ -1541,7 +1553,14 @@ def _exile(stream: Stream) -> Effect | None:
         EffectKind.EXILE,
         targets=targets,
         from_zone=origin,
-        is_targeted=targeted,
+        # "Each player exiles all creature cards from their graveyard": kept,
+        # so the sentence's next verbs ("then sacrifices ...") are each
+        # player's too, not yours (Living Death).
+        players=who if who is not None and who.scope is not PlayerScope.YOU else None,
+        # "Target player exiles all cards with flashback from their
+        # graveyard" (Tombfire): the player is the target (CR 115.1), and
+        # the cards are theirs.
+        is_targeted=targeted or bool(who_targeted),
         text="exile",
     )
 

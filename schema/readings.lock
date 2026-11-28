@@ -1050,7 +1050,7 @@
 07d40173-53e7-4328-a3b0-6214d93855b6	partial	87dc862ca2afd01e	Master of Waves
 07d7f9d2-5414-4aaf-b6f2-1fedf16c3af7	read	ada3877083ab3aa3	Recuperate
 07d830a7-f0a2-4d46-9a53-101dca681603	read	fd2ab4bf4b4233e2	Nightdrinker Moroii
-07db0374-3297-49c3-886d-a6bb42f7bb18	partial	4bbe0fb6c9a7ab97	Avatar of Growth
+07db0374-3297-49c3-886d-a6bb42f7bb18	partial	3d548ced40866764	Avatar of Growth
 07e15387-f346-4fa0-b556-d1c52d4acc07	partial	3aaf5c5e55460a5c	Sab-Sunen, Luxa Embodied
 07e5f59e-3a98-4e01-a368-0be60e0463ba	partial	f393854b842c8502	Acquisitions Expert
 07eb70cf-e6af-4924-a00d-bdf2c6ba78e1	partial	12177bf18d771621	Angel of Fury
@@ -7204,7 +7204,7 @@
 37f82ad8-4f0b-4b17-abcc-03f43d4fdf1c	read	b455fbedd16d33c6	Great Fierce Bee
 37f924e1-7c25-4f06-88bb-054693a21e5a	read	a127525638f42890	Conduit Pylons
 37fd3a9d-74fe-4180-805a-b865e7228a77	read	80f838d5c79f2eb3	Star Pupil
-37feb05b-1f69-4d0d-837c-592461a431e0	read	7c993b8df8d038bc	Tombfire
+37feb05b-1f69-4d0d-837c-592461a431e0	read	fed5f99bdba9b7fe	Tombfire
 37ff5ba6-0763-4c73-85bf-66856e67b8f3	partial	ee004808a1854ab6	Prahv, Spires of Order
 38013607-dd80-4eb9-b0b6-f07e6023c0d0	read	cdde8ec92dac50e3	Vent Sentinel
 380429d5-82db-449c-b9b9-3e82ab987972	read	13544a7c95e62261	Orim's Thunder
@@ -7368,7 +7368,7 @@
 39363190-7f79-4fae-bcfc-b17ec4e07bfe	read	0c71a9c3fe9fe237	Eager Construct
 39375b5d-f509-4482-8d34-797dae17d38b	read	a7df9cd6accc6279	Paragon of Open Graves
 3937a96c-3be1-465d-98b6-1db67d2215e6	partial	6362d41f5509bce7	Return from Extinction
-3939fbe0-3be4-41ef-828d-c93f2cb33b4f	read	c374961ae2665f05	Living End
+3939fbe0-3be4-41ef-828d-c93f2cb33b4f	read	96b22bd9c84f2765	Living End
 393a254f-be31-431a-9341-a51286f8cbce	read	de8c0a8c1e5b358a	Blast Zone
 393a5d32-fc8e-422b-a957-59e545a54cb6	partial	01be48e7ebd97351	The Destined Warrior
 393b9d9e-9d71-43e7-aede-eac7f85d2365	partial	f5aa65dab5c671a3	Demonic Covenant
@@ -12780,7 +12780,7 @@
 62d394e1-6e7d-4703-8fd8-494f0f043876	partial	17bd57f44f1de0b3	The Beamtown Bullies
 62d7ed6e-c386-477e-b155-982c3790f842	read	5ffee2be5f7dfe79	Soul's Fire
 62d8c8c8-bc24-42f2-9e2e-9efd08e47bb1	read	dac1ef6024901105	Claustrophobia
-62dac700-49f7-4745-af67-37d2a81dcebc	read	5224e8400f9e8b70	Scrap Mastery
+62dac700-49f7-4745-af67-37d2a81dcebc	read	3087997e47d10ec1	Scrap Mastery
 62dca41b-58b0-45eb-ada7-568e80a2abec	read	de7843c2245e27fe	Acolyte of Xathrid
 62ddc5ae-ced9-4319-854c-1a114c6afc3f	read	61f66444b85d0930	Counsel of the Soratami
 62e3f285-886c-414e-b4ff-403a7c01c23a	read	88036148a71a7f71	Abbey Matron
@@ -14384,7 +14384,7 @@
 6efd11c8-be8a-4d44-a776-66d058638ad1	partial	bd2660971952d3aa	Goblin Kites
 6eff5e17-946b-4433-9f48-88f103844c42	partial	eee5dcddc5795d9e	Griffnaut Tracker
 6effbf59-3933-4a77-9a6a-fd3bedf45c26	read	1c948d9cca2d871c	Borough Backup
-6f01c124-0518-428c-9efe-7f3741f3c109	read	c3d21c4cacf1cde7	Induced Amnesia
+6f01c124-0518-428c-9efe-7f3741f3c109	partial	227424e12fac0406	Induced Amnesia
 6f053f0d-c9c7-4fcd-b218-a29d1d080104	partial	5854809fcbaf856f	Ancient Vendetta
 6f067bfd-1c59-463f-99e1-61161b43b405	read	052fbed6269e0d03	Bounty of Might
 6f096e98-d351-4050-90ed-4c6f12e129d6	read	dc107491aaf40c83	Llanowar Envoy
@@ -20618,7 +20618,7 @@
 9e62f30d-3130-416e-b459-48b5f71f8be9	read	41d538bb779345bb	Pillar of Origins
 9e660f66-0a94-4694-95e0-25296799b193	read	0066486a463aadf8	Parcel Myr
 9e66f2d6-cc51-4747-914d-2c04e439da2b	read	89e4608bc296a0f3	Scragnoth
-9e6a3df4-67a3-452e-a6ef-f04dbadb21ef	read	b8cf4a0f65ff8bf3	Living Death
+9e6a3df4-67a3-452e-a6ef-f04dbadb21ef	read	76a95d1141b785ca	Living Death
 9e6e1ea6-4682-4056-b70e-fe45d0c9fdee	partial	b1670219247f4335	Samite Sanctuary
 9e6e6458-9e0e-404c-af07-225c4665eaec	read	748034f1dd5f9726	Sun-Crowned Hunters
 9e6f76dc-b7db-49b6-a61e-3495b81e61d7	read	82939585a59a64dc	Ogre Berserker
@@ -26798,7 +26798,7 @@ ce55c0a9-3334-440e-ae1b-c04a9e1c3d87	read	b1d4fab4b9be34a0	Stall Out
 ce55c9a8-25ba-404c-95b4-c14ba4763081	read	260985d1a3ddc396	Icehide Troll
 ce585b28-f22f-41ba-8858-aebc0164922d	partial	1613892adcd0ba11	Untamed Kavu
 ce588fd3-642e-4df9-8061-6fcfc6e81270	read	780864956dba2655	Jace's Ingenuity
-ce5ca56a-fce8-4e19-807f-7b8638fe4bcf	read	9246641bfa304231	Mudhole
+ce5ca56a-fce8-4e19-807f-7b8638fe4bcf	read	77299571436a1449	Mudhole
 ce5e52c9-4cb1-42aa-8403-bcd143d68704	partial	dd8d947ca7282ca0	Quarum Trench Gnomes
 ce5f5ff9-13f7-41eb-ada0-7f73de42acef	read	f66b9d626dbd39e9	Short Bow
 ce60402c-34cd-44fe-ae1d-4a5404298f5b	partial	1f4ed7b24f137a24	Reaping Willow
@@ -32349,7 +32349,7 @@ f8219a99-1620-40aa-a257-fc3dfb239d51	read	d73eab0617a1601f	Chapel Geist
 f82265fd-e772-4347-a27f-37b00ccd416b	read	5adb123c5131b4cc	Zealous Lorecaster
 f823b122-94ac-42ba-b511-9e54d64db112	read	c732a286d26a02b2	Mindwhisker
 f8252564-3e61-4ed5-bef1-6ec22882854b	partial	dacd3b7d3b27af78	Desperate Stand
-f825c98f-a327-440b-8c0d-ebe02e23bfb7	read	613b8f5585e29f77	Field of Ruin
+f825c98f-a327-440b-8c0d-ebe02e23bfb7	read	a0ffb6e04318fbfa	Field of Ruin
 f8263274-8cb4-4eab-b541-c7655b555830	read	a8588d3314dd9fd5	Nightshade Dryad
 f826ac35-7dde-414c-94ec-0bdfe04327b4	read	e110fce3b03732b2	Thunderous Snapper
 f8273146-f2e5-40ec-ba96-c0a4192caec8	read	108ff541cd6779c5	Alaborn Cavalier
