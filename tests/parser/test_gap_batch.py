@@ -561,3 +561,19 @@ def test_a_god_isnt_a_creature_below_its_devotion(card_db, name):
     line = next(a for a in parsed.faces[0].abilities if "isn't a creature" in a.text)
     assert [(e.kind, e.types) for e in line.effects] == [(EffectKind.REMOVE_TYPE, CardType.CREATURE)]
     assert line.static_condition.value.kind.name == "DEVOTION"
+
+
+@pytest.mark.parametrize("name, scope", [
+    ("Primeval Light", "TARGET_PLAYER"),  # "Destroy all enchantments target player controls."
+    ("Overwhelming Forces", "TARGET_OPPONENT"),  # "Destroy all creatures target opponent controls."
+])
+def test_target_player_controls_targets_the_player(card_db, name, scope):
+    """The rules session (rules.md, 28 Nov): "target player controls" read as
+    a controller with no player and no target, so there was no player to
+    choose. The instruction targets the player now."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.query import ControllerRelation
+
+    effect = parse_card(card_db.lookup(name)).faces[0].abilities[0].effects[0]
+    assert effect.is_targeted and effect.players.scope.name == scope
+    assert effect.targets.controller is ControllerRelation.SPECIFIC

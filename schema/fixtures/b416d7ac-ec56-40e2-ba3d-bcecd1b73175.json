@@ -66,6 +66,11 @@
         "types_all": 8,
         "controller": 4
        },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 4
+       },
+       "is_targeted": true,
        "text": "destroy"
       }
      ],

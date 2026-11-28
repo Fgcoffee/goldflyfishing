@@ -122,7 +122,41 @@ def parse_effect(stream: Stream) -> Effect | None:
             best, best_end = effect, stream.mark()
 
     stream.reset(best_end if best is not None else start)
+    if best is not None:
+        best = _player_target_in_filter(best, stream.tokens[start:best_end])
     return best
+
+
+def _player_target_in_filter(effect: Effect, tokens) -> Effect:
+    """"Destroy all enchantments target player controls" (Primeval Light),
+    "Creatures target player controls get +2/+0" (How to Start a Riot).
+
+    The noun reader takes "target player controls" as a controller relation
+    with no player named, and nothing put the target on the instruction, so
+    there was no player to choose and nothing to bind "that player" to. The
+    player is the instruction's target (CR 115.1): marked here, once the
+    clause that read the words is known.
+    """
+    words = [t.lower for t in tokens]
+    scopes = []
+    for i in range(len(words) - 2):
+        if words[i] == "target" and words[i + 2] == "controls" and words[i + 1] in ("player", "opponent"):
+            scopes.append(PlayerScope.TARGET_PLAYER if words[i + 1] == "player" else PlayerScope.TARGET_OPPONENT)
+    spec = effect.targets
+    if (
+        len(scopes) != 1
+        or effect.players is not None
+        or effect.is_targeted
+        or spec is None
+        or spec.controller not in (ControllerRelation.SPECIFIC, ControllerRelation.OPPONENT)
+    ):
+        return effect
+    return replace(
+        effect,
+        players=PlayerFilter(scope=scopes[0]),
+        is_targeted=True,
+        targets=replace(spec, controller=ControllerRelation.SPECIFIC),
+    )
 
 
 def parse_effects(stream: Stream) -> list[Effect] | None:

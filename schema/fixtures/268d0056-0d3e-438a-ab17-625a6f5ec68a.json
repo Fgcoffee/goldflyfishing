@@ -95,10 +95,15 @@
         "types_all": 4,
         "controller": 4
        },
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 4
+       },
        "amount": {
         "$": "Value",
         "constant": 2
        },
+       "is_targeted": true,
        "duration": 1,
        "text": "gets +2/+0"
       }
