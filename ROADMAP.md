@@ -177,6 +177,8 @@ The engine is ported (milestones 1-4), so rules fixes start now in the TypeScrip
   - continuous effects not recomputed in full for each one.
   - Same digests before and after. Target: bench game 9 (seed 1673232466) to turn 52 in under 5 s.
   - Then profile a median game and fix the top three hotspots. Then raise the cap from 500 to 5,000.
+  - [x] Incremental board, on by default (dc48d3a, 28c5768, 840c2c9, a72131c): check mode found 0 differences on the 200 bench games, the user's 1,000 and the Vitest suite; same digests off/check/on; 7-9% faster.
+  - **Decided 28 Nov (auditor): the cap stays at 500.** At 5,000 the work budget stops swarms near 1,000 permanents anyway, and the 10 swarm games took 217 s against 45 s (0f96c02, engine/status/rules.md). A recorded runaway is better than a 60 s game.
 - [ ] **Interaction reports from users** (see Reports): replay to the reported step, then fix or log.
 
 ### parser
