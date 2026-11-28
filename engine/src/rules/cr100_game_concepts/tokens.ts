@@ -16,7 +16,7 @@ import type { Ability, ManaCost, TokenSpec } from "../../ir";
 import type { FaceDef } from "../../kernel/card";
 import { CardType, Color, Layout, Supertype, Zone } from "../../kernel/enums";
 import { event, EventKind } from "../../kernel/events";
-import { createObject, invalidateAllCharacteristics, logRecord, player, type Game } from "../../kernel/game";
+import { createObject, invalidateAllCharacteristics, invalidateObjects, logRecord, player, type Game } from "../../kernel/game";
 import { ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
 import { NO_OBJECT, type ObjectId, type PlayerId } from "../../kernel/ids";
@@ -218,7 +218,7 @@ export function createTokens(
     obj.tapped = flag(spec.enters_tapped);
     obj.enteredBattlefieldTurn = game.turn;
     obj.summoningSick = true;
-    invalidateAllCharacteristics(game);
+    invalidateObjects(game, [obj.id]); // only the new token changed (rules/layers' partial recompute)
 
     // CR 111.5: checked after building it, since the prohibition is about
     // the token's characteristics.

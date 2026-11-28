@@ -47,6 +47,7 @@ import {
   controlPlayer,
   createObject,
   invalidateAllCharacteristics,
+  invalidateObjects,
   livingPlayers,
   logRecord,
   nextPlayer,
@@ -1638,7 +1639,10 @@ export function registerContinuous(resolution: Resolution, effect: Effect): void
     };
   }
   push(lockedAmounts(resolution, resolved));
-  invalidateAllCharacteristics(game);
+  // Aimed at named objects: only they can change (rules/layers' partial recompute).
+  const aimed = list(resolved.targets?.specific);
+  if (aimed.length > 0) invalidateObjects(game, aimed);
+  else invalidateAllCharacteristics(game);
 }
 
 // -- players -------------------------------------------------------------------------------

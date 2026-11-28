@@ -127,7 +127,10 @@ export function board(game: Game): Board {
       }
       computed = partial.board;
       meta = partial.meta;
-      game.work.units += partial.computed;
+      // The meter counts the board, not the work saved, so the budget (and so
+      // every result) is the same with the switch on or off.
+      game.work.units += partial.board.size;
+      incrementalStats.partial += 1;
     }
   }
   if (computed === null) {
@@ -135,6 +138,7 @@ export function board(game: Game): Board {
     computed = full.board;
     meta = full.meta;
     game.work.units += computed.size;
+    incrementalStats.full += 1;
   }
   game.boardCache = computed;
   game.boardEpoch = game.epoch;
@@ -155,6 +159,9 @@ let incrementalMode: IncrementalMode = "off";
 export function setIncrementalBoard(mode: IncrementalMode): void {
   incrementalMode = mode;
 }
+
+/** How many boards were computed each way since the process started (diagnostics, the bench). */
+export const incrementalStats = { partial: 0, full: 0 };
 
 export function incrementalBoard(): IncrementalMode {
   return incrementalMode;
