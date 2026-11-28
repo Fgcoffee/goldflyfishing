@@ -1,0 +1,93 @@
+{
+ "ir_version": 2,
+ "oracle_id": "90e46d04-9d53-4a24-aff0-f8c61e1db97d",
+ "name": "Stronghold Discipline",
+ "card_hash": "3cf8a4d8391d8ab6112e37816d201581",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "90e46d04-9d53-4a24-aff0-f8c61e1db97d",
+  "name": "Stronghold Discipline",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Stronghold Discipline",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Each player loses 1 life for each creature they control.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 23424,
+  "scryfall_uri": "https://scryfall.com/card/cns/126/stronghold-discipline?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "90e46d04-9d53-4a24-aff0-f8c61e1db97d",
+   "name": "Stronghold Discipline",
+   "face": 0,
+   "face_name": "Stronghold Discipline",
+   "card_hash": "3cf8a4d8391d8ab6112e37816d201581",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 52,
+       "players": {
+        "$": "PlayerFilter",
+        "scope": 2
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "controller": 4
+        }
+       },
+       "text": "lose life"
+      }
+     ],
+     "text": "Each player loses 1 life for each creature they control."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "046f5783-cc7b-416a-8cf6-2bcef9c2cc1a",
  "name": "Simic Growth Chamber",
- "card_hash": "95ae325fdb794e00db47146ecc1e9566",
+ "card_hash": "c0403d3b71a580af7842175163780f9b",
  "card": {
   "$": "CardDef",
   "oracle_id": "046f5783-cc7b-416a-8cf6-2bcef9c2cc1a",
@@ -30,7 +30,7 @@
   "mana_value": 0,
   "color_identity": 18,
   "commander_legal": true,
-  "edhrec_rank": 313,
+  "edhrec_rank": 326,
   "scryfall_uri": "https://scryfall.com/card/dsc/298/simic-growth-chamber?utm_source=api"
  },
  "faces": [
@@ -40,7 +40,7 @@
    "name": "Simic Growth Chamber",
    "face": 0,
    "face_name": "Simic Growth Chamber",
-   "card_hash": "95ae325fdb794e00db47146ecc1e9566",
+   "card_hash": "c0403d3b71a580af7842175163780f9b",
    "fully_read": true,
    "abilities": [
     {

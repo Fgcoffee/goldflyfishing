@@ -40,6 +40,16 @@ def test_a_half_read_card_is_partial_not_blank(card_db):
     assert status["unread"]
 
 
+def test_a_recognised_ability_is_named_not_hidden(card_db):
+    """A dummy ability counts as read, so the card is "ok"; the site needs its name."""
+    status = parse_status(card_db.lookup("Path of Ancestry"))
+    assert status["status"] == "ok"
+    assert status["recognised"] == ["mana-spent-trigger"]
+    assert parse_status(card_db.lookup("Sol Ring"))["recognised"] == []
+    # One the engine now carries out (dummies.ENGINE_IMPLEMENTED) isn't a gap.
+    assert parse_status(card_db.lookup("Seedborn Muse"))["recognised"] == []
+
+
 def test_images_come_from_the_cdn_not_the_api(card_db):
     """A hundred API calls per deck would trip Scryfall's rate limit."""
     card = card_db.lookup("Sol Ring")

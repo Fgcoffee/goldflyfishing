@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
  "name": "Castle Locthwain",
- "card_hash": "13e66d59deb093fd5e492deaffd74509",
+ "card_hash": "4b4e989a74f01fdbd6d767bf37717c1f",
  "card": {
   "$": "CardDef",
   "oracle_id": "be811e70-aaaa-41f3-bf9e-5d3f9f719b49",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 793,
+  "edhrec_rank": 786,
   "scryfall_uri": "https://scryfall.com/card/clb/884/castle-locthwain?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Castle Locthwain",
    "face": 0,
    "face_name": "Castle Locthwain",
-   "card_hash": "13e66d59deb093fd5e492deaffd74509",
+   "card_hash": "4b4e989a74f01fdbd6d767bf37717c1f",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
  "name": "Cabal Ritual",
- "card_hash": "40fc339bbe64a826ef6227f4dab41384",
+ "card_hash": "abd06ebf995471a035f64c85a51848a7",
  "card": {
   "$": "CardDef",
   "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 447,
+  "edhrec_rank": 437,
   "scryfall_uri": "https://scryfall.com/card/vma/106/cabal-ritual?utm_source=api"
  },
  "faces": [
@@ -57,8 +57,8 @@
    "name": "Cabal Ritual",
    "face": 0,
    "face_name": "Cabal Ritual",
-   "card_hash": "40fc339bbe64a826ef6227f4dab41384",
-   "fully_read": false,
+   "card_hash": "abd06ebf995471a035f64c85a51848a7",
+   "fully_read": true,
    "abilities": [
     {
      "$": "Ability",
@@ -66,65 +66,80 @@
      "effects": [
       {
        "$": "Effect",
-       "kind": 120,
-       "players": {
-        "$": "PlayerFilter"
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 2,
+        "filter": {
+         "$": "ObjectFilter",
+         "zones": {
+          "$set": [
+           3
+          ]
+         },
+         "owner": 1
+        },
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 5,
+         "value": {
+          "$": "Value",
+          "constant": 7
+         }
+        },
+        "text": "there are ..."
        },
-       "amount": {
-        "$": "Value",
-        "constant": 3
-       },
-       "mana_produced": [
-        "{B}",
-        "{B}",
-        "{B}"
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 5
+         },
+         "mana_produced": [
+          "{B}",
+          "{B}",
+          "{B}",
+          "{B}",
+          "{B}"
+         ],
+         "colors": 4,
+         "text": "add {B}{B}{B}{B}{B}"
+        }
        ],
-       "colors": 4,
-       "text": "add {B}{B}{B}"
+       "otherwise": [
+        {
+         "$": "Effect",
+         "kind": 120,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 3
+         },
+         "mana_produced": [
+          "{B}",
+          "{B}",
+          "{B}"
+         ],
+         "colors": 4,
+         "text": "add {B}{B}{B}"
+        }
+       ],
+       "text": "if ... instead"
       }
      ],
      "text": "Add {B}{B}{B}."
-    },
-    {
-     "$": "Ability",
-     "kind": 3,
-     "effects": [
-      {
-       "$": "Effect",
-       "kind": 999,
-       "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard."
-      }
-     ],
-     "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard.",
-     "unparsed": true
     }
    ],
-   "failures": [
-    {
-     "$": "ParseFailure",
-     "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard.",
-     "reason": "not fully consumed",
-     "consumed": 6,
-     "remaining": [
-      "instead",
-      "if",
-      "there",
-      "are",
-      "seven",
-      "or",
-      "more",
-      "cards",
-      "in",
-      "your",
-      "graveyard",
-      "."
-     ],
-     "rule": "plain"
-    }
-   ]
+   "failures": [],
+   "authored": true
   }
  ],
- "bracket": [
-  "unread"
- ]
+ "bracket": []
 }

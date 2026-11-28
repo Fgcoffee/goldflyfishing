@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
  "name": "Snuff Out",
- "card_hash": "1d4566d54649e095800bcca7dda71e27",
+ "card_hash": "fd3ddc725f2db7a3b6710f5ce92b6cdc",
  "card": {
   "$": "CardDef",
   "oracle_id": "324824cb-f938-401c-b9b5-d8908b431ef0",
@@ -41,7 +41,7 @@
   "mana_value": 4,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 700,
+  "edhrec_rank": 670,
   "scryfall_uri": "https://scryfall.com/card/gvl/53/snuff-out?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Snuff Out",
    "face": 0,
    "face_name": "Snuff Out",
-   "card_hash": "1d4566d54649e095800bcca7dda71e27",
+   "card_hash": "fd3ddc725f2db7a3b6710f5ce92b6cdc",
    "fully_read": true,
    "abilities": [
     {

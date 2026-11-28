@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "385c1208-bfea-44e2-b236-4f38bc90db9f",
  "name": "Gladecover Scout",
- "card_hash": "99975d47672b5a46b5876c3a64d04af8",
+ "card_hash": "a405890ac656fc98dda60b75b5539e6a",
  "card": {
   "$": "CardDef",
   "oracle_id": "385c1208-bfea-44e2-b236-4f38bc90db9f",
@@ -44,7 +44,7 @@
   "mana_value": 1,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 14038,
+  "edhrec_rank": 14275,
   "scryfall_uri": "https://scryfall.com/card/m14/176/gladecover-scout?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Gladecover Scout",
    "face": 0,
    "face_name": "Gladecover Scout",
-   "card_hash": "99975d47672b5a46b5876c3a64d04af8",
+   "card_hash": "a405890ac656fc98dda60b75b5539e6a",
    "fully_read": true,
    "abilities": [
     {

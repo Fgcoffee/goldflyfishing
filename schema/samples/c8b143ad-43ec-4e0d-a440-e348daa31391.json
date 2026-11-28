@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
  "name": "Swiftfoot Boots",
- "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
+ "card_hash": "940f70192ec5b05894310a9cbba9b007",
  "card": {
   "$": "CardDef",
   "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
@@ -41,7 +41,7 @@
   "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 12,
-  "scryfall_uri": "https://scryfall.com/card/mbc/77/swiftfoot-boots?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trc/501/swiftfoot-boots?utm_source=api"
  },
  "faces": [
   {
@@ -50,7 +50,7 @@
    "name": "Swiftfoot Boots",
    "face": 0,
    "face_name": "Swiftfoot Boots",
-   "card_hash": "a2a0ba5f0f9f67ef561e24c26fd60842",
+   "card_hash": "940f70192ec5b05894310a9cbba9b007",
    "fully_read": true,
    "abilities": [
     {

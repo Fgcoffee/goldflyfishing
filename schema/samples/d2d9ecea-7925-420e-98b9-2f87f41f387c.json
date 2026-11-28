@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
  "name": "Land Tax",
- "card_hash": "845abdcc4a43ff7eb76fb14401245d13",
+ "card_hash": "32e952054f806bf8bdfca5b50c6c7a39",
  "card": {
   "$": "CardDef",
   "oracle_id": "d2d9ecea-7925-420e-98b9-2f87f41f387c",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 367,
+  "edhrec_rank": 355,
   "scryfall_uri": "https://scryfall.com/card/soc/153/land-tax?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Land Tax",
    "face": 0,
    "face_name": "Land Tax",
-   "card_hash": "845abdcc4a43ff7eb76fb14401245d13",
+   "card_hash": "32e952054f806bf8bdfca5b50c6c7a39",
    "fully_read": true,
    "abilities": [
     {

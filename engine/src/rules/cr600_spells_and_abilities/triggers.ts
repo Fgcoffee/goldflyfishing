@@ -297,6 +297,11 @@ function extraTriggers(game: Game, obj: GameObject, e: GameEvent): number {
       if (num(ability.kind) !== STATIC || flag(ability.unparsed)) continue;
       for (const effect of list(ability.effects)) {
         if (num(effect.kind) !== EXTRA_TRIGGER) continue;
+        // "If a creature *dying* causes ...": the event that did the causing
+        // (Teysa doubles dies triggers, not a creature entering).
+        const event = (effect.trigger ?? null) as TriggerCondition | null;
+        if (event !== null && !eventKinds(event).has(e.kind)) continue;
+        if (event !== null && flag(event.to_player) && e.objectId !== NO_OBJECT) continue;
         const context = { source: source.id, controller: source.controller, allowStale: true };
         if (effect.targets != null && !hooks.matches(game, obj, effect.targets, context)) continue;
         const cause = subjectOf(game, e);
@@ -719,11 +724,13 @@ function chooseTriggerTargets(game: Game, stackObject: GameObject, controller: P
   const source = game.objects.get(stackObject.source);
   const hooks = matchHooks();
 
+  // "That player" in a target's filter: the trigger event's player.
+  const thatPlayer = (stackObject.triggerEvent as { player?: PlayerId } | null)?.player ?? NO_PLAYER;
   const candidatesOf = (effect: Effect): number[] => {
-    if (source !== undefined) return candidatesFor(game, source, effect, controller);
+    if (source !== undefined) return candidatesFor(game, source, effect, controller, thatPlayer);
     // The source is gone: the filters alone decide.
     if (targetsAPlayer(effect)) return targetablePlayers(game, effect.players ?? null, controller).map(playerTarget);
-    const found = hooks.find(game, effect.targets!, { source: stackObject.source, controller }).map((o) => o.id);
+    const found = hooks.find(game, effect.targets!, { source: stackObject.source, controller, thatPlayer }).map((o) => o.id);
     if (includesPlayers(effect.targets!)) for (const p of livingPlayers(game)) found.push(playerTarget(p.id));
     return found;
   };

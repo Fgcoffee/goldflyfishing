@@ -36,6 +36,13 @@ export interface MatchOptions {
   readonly override?: Characteristics;
   /** Allow a superseded object - last-known information only (CR 603.6e). */
   readonly allowStale?: boolean;
+  /**
+   * The player "that player" / "they" stands for: a filter whose owner or
+   * controller is SPECIFIC with no player named binds to this one (the
+   * player an instruction is being carried out for, else the one chosen
+   * earlier, else the trigger event's). Unset, such a filter matches nothing.
+   */
+  readonly thatPlayer?: PlayerId;
 }
 
 /**
@@ -103,8 +110,9 @@ export function matches(game: Game, obj: GameObject, spec: ObjectFilter, options
   // Phased-out permanents don't exist (CR 702.26a) unless asked for.
   if (obj.phasedOut && spec.phased_out !== true) return false;
 
-  if (!controllerMatches(game, obj, spec, controller, source)) return false;
-  if (!ownerMatches(obj, spec, controller)) return false;
+  const bound = options.thatPlayer ?? NO_PLAYER;
+  if (!controllerMatches(game, obj, spec, controller, source, bound)) return false;
+  if (!ownerMatches(obj, spec, controller, bound)) return false;
 
   const chars = options.override ?? characteristicsOf(game, obj);
   const types = chars.typeLine.types;
@@ -304,12 +312,13 @@ function controllerMatches(
   spec: ObjectFilter,
   controller: PlayerId,
   source: ObjectId,
+  bound: PlayerId,
 ): boolean {
   const relation = num(spec.controller);
   if (relation === ControllerRelation.ANY) return true;
   if (relation === ControllerRelation.YOU) return obj.controller === controller;
   if (relation === ControllerRelation.OPPONENT) return obj.controller !== controller && controller !== NO_PLAYER;
-  if (relation === ControllerRelation.SPECIFIC) return obj.controller === (spec.controller_specific ?? null);
+  if (relation === ControllerRelation.SPECIFIC) return obj.controller === (spec.controller_specific ?? (bound === NO_PLAYER ? null : bound));
   if (relation === ControllerRelation.SAME_AS_SOURCE) return obj.controller === controller;
   if (relation === ControllerRelation.DEFENDING_PLAYER) return defendingPlayers(game, source).includes(obj.controller);
   return true;
@@ -326,12 +335,12 @@ export function defendingPlayers(game: Game, source: ObjectId): PlayerId[] {
 }
 
 /** CR 108.3: who owns it, which is not who controls it. */
-function ownerMatches(obj: GameObject, spec: ObjectFilter, controller: PlayerId): boolean {
+function ownerMatches(obj: GameObject, spec: ObjectFilter, controller: PlayerId, bound: PlayerId): boolean {
   const relation = num(spec.owner);
   if (relation === ControllerRelation.ANY) return true;
   if (relation === ControllerRelation.YOU) return obj.owner === controller;
   if (relation === ControllerRelation.OPPONENT) return obj.owner !== controller && controller !== NO_PLAYER;
-  if (relation === ControllerRelation.SPECIFIC) return obj.owner === (spec.controller_specific ?? null);
+  if (relation === ControllerRelation.SPECIFIC) return obj.owner === (spec.controller_specific ?? (bound === NO_PLAYER ? null : bound));
   if (relation === ControllerRelation.SAME_AS_SOURCE) return obj.owner === controller;
   return true;
 }
@@ -496,7 +505,7 @@ export function find(game: Game, spec: ObjectFilter, options: MatchOptions = {})
   const out: GameObject[] = [];
   for (const zone of zones.length > 0 ? zones : [Zone.BATTLEFIELD]) {
     for (const obj of objectsInZone(game, zone)) {
-      if (matches(game, obj, spec, { source: options.source, controller: options.controller })) out.push(obj);
+      if (matches(game, obj, spec, { source: options.source, controller: options.controller, thatPlayer: options.thatPlayer })) out.push(obj);
     }
   }
   if (spec.source_only && out.length === 0) return theSourceWhereverItIs(game, spec, options);

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d3df7128-31dd-4d71-90be-87e2e9ff51b4",
  "name": "Dust Bowl",
- "card_hash": "f56ff3479a0767092b7e02631ce750c2",
+ "card_hash": "ca89e92f527ccf9fbe1abfdb060130ba",
  "card": {
   "$": "CardDef",
   "oracle_id": "d3df7128-31dd-4d71-90be-87e2e9ff51b4",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 5254,
+  "edhrec_rank": 5357,
   "scryfall_uri": "https://scryfall.com/card/mmq/316/dust-bowl?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Dust Bowl",
    "face": 0,
    "face_name": "Dust Bowl",
-   "card_hash": "f56ff3479a0767092b7e02631ce750c2",
+   "card_hash": "ca89e92f527ccf9fbe1abfdb060130ba",
    "fully_read": true,
    "abilities": [
     {

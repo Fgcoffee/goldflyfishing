@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
  "name": "Ghostly Prison",
- "card_hash": "0afea804a89670ac82c9b2b1e4274712",
+ "card_hash": "aef8d9f868ef7ee4ae88cce5ab778eb6",
  "card": {
   "$": "CardDef",
   "oracle_id": "e828b189-0e8f-43b8-b909-4c23e742e028",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 162,
+  "edhrec_rank": 160,
   "scryfall_uri": "https://scryfall.com/card/soc/146/ghostly-prison?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Ghostly Prison",
    "face": 0,
    "face_name": "Ghostly Prison",
-   "card_hash": "0afea804a89670ac82c9b2b1e4274712",
+   "card_hash": "aef8d9f868ef7ee4ae88cce5ab778eb6",
    "fully_read": true,
    "abilities": [
     {

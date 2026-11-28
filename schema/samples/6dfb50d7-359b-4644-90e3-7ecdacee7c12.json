@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
  "name": "Scheming Symmetry",
- "card_hash": "6396b6247998170e0569076fb38f3c36",
+ "card_hash": "ad0baa5032e8324b13963e78edf9d7eb",
  "card": {
   "$": "CardDef",
   "oracle_id": "6dfb50d7-359b-4644-90e3-7ecdacee7c12",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 1838,
+  "edhrec_rank": 1839,
   "scryfall_uri": "https://scryfall.com/card/m20/113/scheming-symmetry?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Scheming Symmetry",
    "face": 0,
    "face_name": "Scheming Symmetry",
-   "card_hash": "6396b6247998170e0569076fb38f3c36",
+   "card_hash": "ad0baa5032e8324b13963e78edf9d7eb",
    "fully_read": false,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f2f165b6-ef0a-42ad-9352-ba68be8248b0",
  "name": "Teferi, Hero of Dominaria",
- "card_hash": "f9112e5422e41230c03d083fec000d80",
+ "card_hash": "eb5f9b47594b467a50be33b7acc73097",
  "card": {
   "$": "CardDef",
   "oracle_id": "f2f165b6-ef0a-42ad-9352-ba68be8248b0",
@@ -52,7 +52,7 @@
   "mana_value": 5,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 4191,
+  "edhrec_rank": 3791,
   "scryfall_uri": "https://scryfall.com/card/dom/207/teferi-hero-of-dominaria?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Teferi, Hero of Dominaria",
    "face": 0,
    "face_name": "Teferi, Hero of Dominaria",
-   "card_hash": "f9112e5422e41230c03d083fec000d80",
+   "card_hash": "eb5f9b47594b467a50be33b7acc73097",
    "fully_read": false,
    "abilities": [
     {

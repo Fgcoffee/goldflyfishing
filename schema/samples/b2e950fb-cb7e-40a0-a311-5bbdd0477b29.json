@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
  "name": "Sun Titan",
- "card_hash": "28c1e9681d20154c96cf45f30e6d892c",
+ "card_hash": "7a999c177188f31c106e4237bb5c3659",
  "card": {
   "$": "CardDef",
   "oracle_id": "b2e950fb-cb7e-40a0-a311-5bbdd0477b29",
@@ -55,8 +55,8 @@
   "mana_value": 6,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 309,
-  "scryfall_uri": "https://scryfall.com/card/soc/178/sun-titan?utm_source=api"
+  "edhrec_rank": 316,
+  "scryfall_uri": "https://scryfall.com/card/trc/428/sun-titan?utm_source=api"
  },
  "faces": [
   {
@@ -65,7 +65,7 @@
    "name": "Sun Titan",
    "face": 0,
    "face_name": "Sun Titan",
-   "card_hash": "28c1e9681d20154c96cf45f30e6d892c",
+   "card_hash": "7a999c177188f31c106e4237bb5c3659",
    "fully_read": true,
    "abilities": [
     {

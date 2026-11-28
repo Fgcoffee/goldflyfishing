@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
  "name": "Generous Gift",
- "card_hash": "2db8974625b5c6854965d46393f182b7",
+ "card_hash": "96f509637546eeb0ad7a65d9cc545dbc",
  "card": {
   "$": "CardDef",
   "oracle_id": "fae37e28-e137-4177-b973-fa8b4dd8f409",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 61,
+  "edhrec_rank": 63,
   "scryfall_uri": "https://scryfall.com/card/msc/133/generous-gift?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Generous Gift",
    "face": 0,
    "face_name": "Generous Gift",
-   "card_hash": "2db8974625b5c6854965d46393f182b7",
+   "card_hash": "96f509637546eeb0ad7a65d9cc545dbc",
    "fully_read": true,
    "abilities": [
     {

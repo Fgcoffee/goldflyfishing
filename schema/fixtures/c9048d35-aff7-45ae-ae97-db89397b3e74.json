@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c9048d35-aff7-45ae-ae97-db89397b3e74",
  "name": "Avalanche Riders",
- "card_hash": "bb56a0c45173e804445f411de39d6153",
+ "card_hash": "b65e0a555e76d21fdc488a336619df8a",
  "card": {
   "$": "CardDef",
   "oracle_id": "c9048d35-aff7-45ae-ae97-db89397b3e74",
@@ -51,7 +51,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 20779,
+  "edhrec_rank": 21228,
   "scryfall_uri": "https://scryfall.com/card/tsb/55/avalanche-riders?utm_source=api"
  },
  "faces": [
@@ -61,7 +61,7 @@
    "name": "Avalanche Riders",
    "face": 0,
    "face_name": "Avalanche Riders",
-   "card_hash": "bb56a0c45173e804445f411de39d6153",
+   "card_hash": "b65e0a555e76d21fdc488a336619df8a",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
  "name": "Detention Sphere",
- "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
+ "card_hash": "c616bea78ceff2486eb45fa8c161fc46",
  "card": {
   "$": "CardDef",
   "oracle_id": "0a0b376d-7824-4ba5-8bc9-bc0be12800c5",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 8400,
+  "edhrec_rank": 8583,
   "scryfall_uri": "https://scryfall.com/card/rtr/155/detention-sphere?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Detention Sphere",
    "face": 0,
    "face_name": "Detention Sphere",
-   "card_hash": "837416f2a6b4d909c09a418b50c87e5a",
+   "card_hash": "c616bea78ceff2486eb45fa8c161fc46",
    "fully_read": false,
    "abilities": [
     {

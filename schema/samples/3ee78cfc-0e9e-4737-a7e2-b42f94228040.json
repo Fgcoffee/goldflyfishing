@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "3ee78cfc-0e9e-4737-a7e2-b42f94228040",
  "name": "Cruel Celebrant",
- "card_hash": "68d3e0fc4a0998e06ff584fcceb13bfb",
+ "card_hash": "5ffef202319cad17bfb875b33cd3a192",
  "card": {
   "$": "CardDef",
   "oracle_id": "3ee78cfc-0e9e-4737-a7e2-b42f94228040",
@@ -46,7 +46,7 @@
   "mana_value": 2,
   "color_identity": 5,
   "commander_legal": true,
-  "edhrec_rank": 956,
+  "edhrec_rank": 986,
   "scryfall_uri": "https://scryfall.com/card/lcc/267/cruel-celebrant?utm_source=api"
  },
  "faces": [
@@ -56,7 +56,7 @@
    "name": "Cruel Celebrant",
    "face": 0,
    "face_name": "Cruel Celebrant",
-   "card_hash": "68d3e0fc4a0998e06ff584fcceb13bfb",
+   "card_hash": "5ffef202319cad17bfb875b33cd3a192",
    "fully_read": true,
    "abilities": [
     {

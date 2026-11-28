@@ -9,10 +9,10 @@
 import type { Ability, Effect } from "../../ir";
 import { CardType, Zone } from "../../kernel/enums";
 import { event, EventKind, type GameEvent } from "../../kernel/events";
-import { invalidateAllCharacteristics, logRecord, player, type Game } from "../../kernel/game";
+import { invalidateAllCharacteristics, invalidateObjects, logRecord, player, type Game } from "../../kernel/game";
 import { addCounters, counterCount, isLive, newGameObject, objectText, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
-import { allocateObjectId, allocateTimestamp, isPlayerTarget, targetPlayer, type ObjectId } from "../../kernel/ids";
+import { allocateObjectId, allocateTimestamp, isPlayerTarget, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { popDepth, pushDepth } from "../../kernel/log";
 import { attach, attachToPlayer, carryLinks } from "../cr100_game_concepts/actions";
 import { hasType } from "../cr200_parts_of_a_card/characteristics";
@@ -55,8 +55,26 @@ export function resolveTop(game: Game): boolean {
   } finally {
     popDepth(game.log);
   }
-  invalidateAllCharacteristics(game);
+  // The catch-all after a resolution. An ability made only of effects that
+  // note their own changes (P/T, grants, tokens, life, damage) needs no more.
+  if (obj.kind === ObjectKind.ABILITY && notesItsOwnChanges(obj.ability as Ability | null)) invalidateObjects(game, []);
+  else invalidateAllCharacteristics(game);
   return true;
+}
+
+// Life totals and damage never change characteristics; damage that does
+// something to an object (wither, infect, loyalty) goes through counters,
+// which invalidate everything themselves.
+const SELF_NOTING: ReadonlySet<number> = new Set(
+  ["SEQUENCE", "MODIFY_PT", "GRANT_ABILITY", "CREATE_TOKEN", "GAIN_LIFE", "LOSE_LIFE", "DAMAGE"].map((n) => ir(`EffectKind.${n}` as never) as number),
+);
+
+/** Whether every instruction of an ability is one that notes its own changes (rules/layers). */
+function notesItsOwnChanges(ability: Ability | null): boolean {
+  if (ability === null) return false;
+  const all = (effects: readonly Effect[]): boolean =>
+    effects.every((e) => SELF_NOTING.has(num(e.kind)) && list(e.otherwise).length === 0 && all(list(e.children)));
+  return list(ability.effects).length > 0 && all(list(ability.effects));
 }
 
 // -- abilities ------------------------------------------------------------------------
@@ -278,7 +296,9 @@ export function allTargetsIllegal(game: Game, obj: GameObject): boolean {
       }
       const candidate = game.objects.get(id);
       if (candidate === undefined) continue;
-      if (effect.targets == null || matchHooks().matches(game, candidate, effect.targets, { source: obj.source || obj.id, controller: obj.controller })) {
+      // "Target creature that player controls": the trigger event's player, as when it was chosen.
+      const thatPlayer = (obj.triggerEvent as { player?: PlayerId } | null)?.player ?? NO_PLAYER;
+      if (effect.targets == null || matchHooks().matches(game, candidate, effect.targets, { source: obj.source || obj.id, controller: obj.controller, thatPlayer })) {
         return false;
       }
     }

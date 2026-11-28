@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
  "name": "Prairie Stream",
- "card_hash": "19a9830cc206a3b9c02dfc5f1e162ee4",
+ "card_hash": "f97d1bb744c37b87df1d039a6b03fc75",
  "card": {
   "$": "CardDef",
   "oracle_id": "5330e24a-8568-446e-840a-594cd08bd1bc",
@@ -34,8 +34,8 @@
   "mana_value": 0,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 105,
-  "scryfall_uri": "https://scryfall.com/card/msc/257/prairie-stream?utm_source=api"
+  "edhrec_rank": 101,
+  "scryfall_uri": "https://scryfall.com/card/trc/548/prairie-stream?utm_source=api"
  },
  "faces": [
   {
@@ -44,7 +44,7 @@
    "name": "Prairie Stream",
    "face": 0,
    "face_name": "Prairie Stream",
-   "card_hash": "19a9830cc206a3b9c02dfc5f1e162ee4",
+   "card_hash": "f97d1bb744c37b87df1d039a6b03fc75",
    "fully_read": true,
    "abilities": [
     {

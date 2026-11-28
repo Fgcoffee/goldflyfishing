@@ -47,6 +47,7 @@ import {
   controlPlayer,
   createObject,
   invalidateAllCharacteristics,
+  invalidateObjects,
   livingPlayers,
   logRecord,
   nextPlayer,
@@ -325,7 +326,7 @@ export function isPerPlayerSacrifice(effect: Effect): boolean {
 export function objectsOf(resolution: Resolution, effect: Effect, chosen: readonly number[] | null = null): GameObject[] {
   const game = resolution.game;
   const spec = effect.targets;
-  const scope = { source: resolution.source, controller: resolution.controller };
+  const scope = { source: resolution.source, controller: resolution.controller, thatPlayer: boundPlayer(resolution) };
   if (spec != null && flag(spec.from_pile)) return fromPile(resolution, effect);
   if (spec != null && flag(spec.remembered)) {
     const found: GameObject[] = [];
@@ -403,7 +404,7 @@ function fromPile(resolution: Resolution, effect: Effect): GameObject[] {
     const obj = game.objects.get(id);
     if (obj === undefined || !isLive(obj)) continue;
     const spec = { ...loose, zones: { $set: [obj.zone] } };
-    if (matchHooks().matches(game, obj, spec, { source: resolution.source, controller: resolution.controller })) candidates.push(obj);
+    if (matchHooks().matches(game, obj, spec, { source: resolution.source, controller: resolution.controller, thatPlayer: boundPlayer(resolution) })) candidates.push(obj);
   }
   return narrowedToCount(resolution, effect, candidates);
 }
@@ -566,7 +567,55 @@ function evaluateContext(resolution: Resolution) {
     dieResults: resolution.dieResults,
     remembered: resolution.remembered.slice(),
     thisWay: resolution.thisWay,
+    thatPlayer: boundPlayer(resolution),
   };
+}
+
+/**
+ * Who "that player" / "they" is for an object filter that names no player
+ * (owner or controller SPECIFIC, none given): the player the instruction is
+ * being carried out for (`thatPlayer`, set while an executor goes player by
+ * player), else the one player chosen earlier in the resolution, else the
+ * trigger event's player ("deals combat damage to a player ... that
+ * player's library"). Python bound none of them, so such a filter matched
+ * nothing (audit/unbound_that_player.md; fixed in TS).
+ */
+export function boundPlayer(resolution: Resolution): PlayerId {
+  if (resolution.thatPlayer !== NO_PLAYER) return resolution.thatPlayer;
+  const chosen = living(resolution.game, resolution.chosenPlayers);
+  if (chosen.length === 1) return chosen[0]!;
+  const e = triggerEventOf(resolution);
+  return e !== null && e.player !== NO_PLAYER ? e.player : NO_PLAYER;
+}
+
+const SPECIFIC_RELATION = ir("ControllerRelation.SPECIFIC") as number;
+
+/** Whether an IR value or filter has an object filter whose player is "that player" (named by no one). */
+export function readsThatPlayer(node: unknown): boolean {
+  if (node === null || typeof node !== "object") return false;
+  if (Array.isArray(node)) return node.some(readsThatPlayer);
+  const o = node as Record<string, unknown>;
+  if (o.$ === "ObjectFilter" && (num(o.controller) === SPECIFIC_RELATION || num(o.owner) === SPECIFIC_RELATION) && o.controller_specific == null) {
+    return true;
+  }
+  for (const [k, v] of Object.entries(o)) if (k !== "$" && typeof v === "object" && readsThatPlayer(v)) return true;
+  return false;
+}
+
+/** `fn` with "that player" bound to `pid` (an executor going player by player). */
+function asThatPlayer<T>(resolution: Resolution, pid: PlayerId, fn: () => T): T {
+  const before = resolution.thatPlayer;
+  resolution.thatPlayer = pid;
+  try {
+    return fn();
+  } finally {
+    resolution.thatPlayer = before;
+  }
+}
+
+/** The amount for one player: "for each creature they control" counts that player's. */
+function amountFor(resolution: Resolution, effect: Effect, pid: PlayerId, once: number): number {
+  return readsThatPlayer(effect.amount) ? asThatPlayer(resolution, pid, () => amountOf(resolution, effect)) : once;
 }
 
 /** The effect's amount (or second amount), evaluated against the game. */
@@ -1028,10 +1077,13 @@ registerExecutor(EK.SACRIFICE, (resolution, effect) => {
     return;
   }
   // CR 701.21a, 608.2d: each player sacrifices their own, their choice.
-  const everything = matchHooks().find(game, effect.targets!, { source: resolution.source, controller: resolution.controller });
+  const scope = { source: resolution.source, controller: resolution.controller };
+  const perPlayer = readsThatPlayer(effect.targets);
+  const everything = perPlayer ? [] : matchHooks().find(game, effect.targets!, scope);
   const sacrificed: ObjectId[] = [];
   for (const pid of playersOf(resolution, effect)) {
-    const theirs = everything.filter((o) => o.controller === pid);
+    // "Each player sacrifices all permanents they control": "they" is each in turn.
+    const theirs = (perPlayer ? matchHooks().find(game, effect.targets!, { ...scope, thatPlayer: pid }) : everything).filter((o) => o.controller === pid);
     for (const obj of sacrificeChoice(resolution, effect, theirs, pid)) {
       sacrificed.push(obj.id);
       sacrifice(game, obj, { source: resolution.source });
@@ -1072,6 +1124,11 @@ registerExecutor(ir("EffectKind.MOVE_ZONE"), (resolution, effect) => {
   const objects = objectsOf(resolution, effect);
   revealIfSaid(resolution, effect, objects); // CR 701.20
   for (const obj of objects) moveObject(resolution.game, obj, destination as Zone, { toPlayer: obj.owner });
+  // "Shuffle it into its owner's library" (CR 701.24a): each library a card
+  // went into is shuffled, so it isn't left on the bottom.
+  if (destination === Zone.LIBRARY && list(effect.keywords).includes("shuffle")) {
+    for (const owner of new Set(objects.map((o) => o.owner))) shuffleLibrary(resolution.game, owner);
+  }
 });
 
 function revealIfSaid(resolution: Resolution, effect: Effect, objects: readonly GameObject[]): void {
@@ -1082,6 +1139,8 @@ function revealIfSaid(resolution: Resolution, effect: Effect, objects: readonly 
 registerExecutor(ir("EffectKind.DISCARD"), (resolution, effect) => {
   const game = resolution.game;
   const count = amountOf(resolution, effect);
+  // "discards two cards at random" (Hymn to Tourach): the game picks, not the player.
+  const atRandom = list(effect.keywords).includes("at random");
   const discarded: ObjectId[] = [];
   for (const pid of playersOf(resolution, effect)) {
     const p = player(game, pid);
@@ -1089,7 +1148,9 @@ registerExecutor(ir("EffectKind.DISCARD"), (resolution, effect) => {
     for (let i = 0; i < count; i += 1) {
       if (p.hand.length === 0) break;
       const last = p.hand[p.hand.length - 1]!;
-      const choice = agent?.chooseDiscard !== undefined ? agent.chooseDiscard(game, pid) : last;
+      const choice = atRandom
+        ? p.hand[randrange(game.rng, p.hand.length)]!
+        : agent?.chooseDiscard !== undefined ? agent.chooseDiscard(game, pid) : last;
       const obj = game.objects.get(choice) ?? game.objects.get(last)!;
       discarded.push(obj.id);
       discard(game, obj, { source: resolution.source });
@@ -1287,17 +1348,19 @@ registerExecutor(EK.DAMAGE, (resolution, effect) => {
   let recipients = targetedPlayers(chosen);
   if (recipients.length > 0) resolution.chosenPlayers = recipients.slice(); // "that player"
   if (recipients.length === 0 && effect.players != null && !isTargeted(effect)) recipients = playersOf(resolution, effect);
-  for (const pid of recipients) dealDamage(game, pid, amount, { source: dealer, sourceController: dealerController, lifelink });
+  for (const pid of recipients) {
+    dealDamage(game, pid, amountFor(resolution, effect, pid, amount), { source: dealer, sourceController: dealerController, lifelink });
+  }
 });
 
 registerExecutor(EK.GAIN_LIFE, (resolution, effect) => {
   const amount = amountOf(resolution, effect);
-  for (const pid of playersOf(resolution, effect)) gainLife(resolution.game, pid, amount, { source: resolution.source });
+  for (const pid of playersOf(resolution, effect)) gainLife(resolution.game, pid, amountFor(resolution, effect, pid, amount), { source: resolution.source });
 });
 
 registerExecutor(EK.LOSE_LIFE, (resolution, effect) => {
   const amount = amountOf(resolution, effect);
-  for (const pid of playersOf(resolution, effect)) loseLife(resolution.game, pid, amount, { source: resolution.source });
+  for (const pid of playersOf(resolution, effect)) loseLife(resolution.game, pid, amountFor(resolution, effect, pid, amount), { source: resolution.source });
 });
 
 registerExecutor(ir("EffectKind.SET_LIFE"), (resolution, effect) => {
@@ -1576,7 +1639,10 @@ export function registerContinuous(resolution: Resolution, effect: Effect): void
     };
   }
   push(lockedAmounts(resolution, resolved));
-  invalidateAllCharacteristics(game);
+  // Aimed at named objects: only they can change (rules/layers' partial recompute).
+  const aimed = list(resolved.targets?.specific);
+  if (aimed.length > 0) invalidateObjects(game, aimed);
+  else invalidateAllCharacteristics(game);
 }
 
 // -- players -------------------------------------------------------------------------------

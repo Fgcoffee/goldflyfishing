@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "492e0e6c-8c27-4376-938b-f8a8b6205810",
  "name": "Leyline of Sanctity",
- "card_hash": "eb2bab3f9811b29e5812923a02dbf916",
+ "card_hash": "a6e121f241d3e0161143f7eb56e68474",
  "card": {
   "$": "CardDef",
   "oracle_id": "492e0e6c-8c27-4376-938b-f8a8b6205810",
@@ -47,7 +47,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 7512,
+  "edhrec_rank": 7680,
   "scryfall_uri": "https://scryfall.com/card/m20/26/leyline-of-sanctity?utm_source=api"
  },
  "faces": [
@@ -57,8 +57,8 @@
    "name": "Leyline of Sanctity",
    "face": 0,
    "face_name": "Leyline of Sanctity",
-   "card_hash": "eb2bab3f9811b29e5812923a02dbf916",
-   "fully_read": false,
+   "card_hash": "a6e121f241d3e0161143f7eb56e68474",
+   "fully_read": true,
    "abilities": [
     {
      "$": "Ability",
@@ -66,12 +66,12 @@
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
+       "kind": 998,
+       "rule": "begin-game-on-battlefield",
        "text": "If this card is in your opening hand, you may begin the game with it on the battlefield."
       }
      ],
-     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield.",
-     "unparsed": true
+     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield."
     },
     {
      "$": "Ability",
@@ -98,39 +98,8 @@
      "text": "You have hexproof."
     }
    ],
-   "failures": [
-    {
-     "$": "ParseFailure",
-     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield.",
-     "reason": "not fully consumed",
-     "remaining": [
-      "If",
-      "this",
-      "card",
-      "is",
-      "in",
-      "your",
-      "opening",
-      "hand",
-      ",",
-      "you",
-      "may",
-      "begin",
-      "the",
-      "game",
-      "with",
-      "it",
-      "on",
-      "the",
-      "battlefield",
-      "."
-     ],
-     "rule": "plain"
-    }
-   ]
+   "failures": []
   }
  ],
- "bracket": [
-  "unread"
- ]
+ "bracket": []
 }

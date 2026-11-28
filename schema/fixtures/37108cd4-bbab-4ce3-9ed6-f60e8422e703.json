@@ -1,0 +1,202 @@
+{
+ "ir_version": 2,
+ "oracle_id": "37108cd4-bbab-4ce3-9ed6-f60e8422e703",
+ "name": "Ragavan, Nimble Pilferer",
+ "card_hash": "d9ce38cd19d150f37dbebbfd2d03c205",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "37108cd4-bbab-4ce3-9ed6-f60e8422e703",
+  "name": "Ragavan, Nimble Pilferer",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Ragavan, Nimble Pilferer",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "Monkey",
+      "Pirate"
+     ]
+    },
+    "oracle_text": "Whenever Ragavan deals combat damage to a player, create a Treasure token and exile the top card of that player's library. Until end of turn, you may cast that card.\nDash {1}{R} (You may cast this spell for its dash cost. If you do, it gains haste, and it's returned from the battlefield to its owner's hand at the beginning of the next end step.)",
+    "power": "2",
+    "toughness": "1",
+    "colors": 8,
+    "keywords": [
+     "Treasure",
+     "Dash"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 284,
+  "scryfall_uri": "https://scryfall.com/card/mh2/138/ragavan-nimble-pilferer?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "37108cd4-bbab-4ce3-9ed6-f60e8422e703",
+   "name": "Ragavan, Nimble Pilferer",
+   "face": 0,
+   "face_name": "Ragavan, Nimble Pilferer",
+   "card_hash": "d9ce38cd19d150f37dbebbfd2d03c205",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 35,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "token": {
+        "$": "TokenSpec",
+        "name": "Treasure",
+        "types": 1,
+        "subtypes": [
+         "Treasure"
+        ]
+       },
+       "text": "create token"
+      },
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          0
+         ]
+        },
+        "from_top": 1,
+        "owner": 4,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": 0,
+       "duration": 1,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 4,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "duration": 1,
+         "children": [
+          {
+           "$": "Effect",
+           "kind": 104,
+           "targets": {
+            "$": "ObjectFilter",
+            "types_none": 16,
+            "remembered": true
+           },
+           "players": {
+            "$": "PlayerFilter"
+           },
+           "duration": 1,
+           "text": "cast"
+          }
+         ],
+         "text": "may"
+        }
+       ],
+       "text": "for a duration"
+      }
+     ],
+     "text": "Whenever this deals combat damage to a player, create a Treasure token and exile the top card of that player's library. Until end of turn, you may cast that card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "to_player": true,
+      "text": "when this deals combat damage to a player"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Dash {1}{R}",
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Dash",
+     "alternative_cost": {
+      "$": "AlternativeCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 1,
+            "text": "{1}"
+           },
+           {
+            "$": "ManaSymbol",
+            "kind": 2,
+            "colors": 8,
+            "text": "{R}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "keyword": "Dash",
+      "text": "Dash {1}{R}"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

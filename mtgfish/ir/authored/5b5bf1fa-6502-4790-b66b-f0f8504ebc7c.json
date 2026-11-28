@@ -1,0 +1,97 @@
+{
+ "oracle_id": "5b5bf1fa-6502-4790-b66b-f0f8504ebc7c",
+ "name": "Cabal Ritual",
+ "card_hash": "abd06ebf995471a035f64c85a51848a7",
+ "note": "Threshold splits one mana ability in two, and the 'instead' line has no first half of its own to fold into; the paraphrase reads the two lines as one. Unique wording among the top 1,000.",
+ "faces": [
+  {
+   "abilities": [
+    {
+     "text": "Add {B}{B}{B}.",
+     "as": "Add {B}{B}{B}. If there are seven or more cards in your graveyard, add {B}{B}{B}{B}{B} instead.",
+     "ir": {
+      "$": "Ability",
+      "kind": 0,
+      "effects": [
+       {
+        "$": "Effect",
+        "kind": 1,
+        "condition": {
+         "$": "Condition",
+         "kind": 2,
+         "filter": {
+          "$": "ObjectFilter",
+          "zones": {
+           "$set": [
+            3
+           ]
+          },
+          "owner": 1
+         },
+         "constraint": {
+          "$": "NumericConstraint",
+          "comparison": 5,
+          "value": {
+           "$": "Value",
+           "constant": 7
+          }
+         },
+         "text": "there are ..."
+        },
+        "children": [
+         {
+          "$": "Effect",
+          "kind": 120,
+          "players": {
+           "$": "PlayerFilter"
+          },
+          "amount": {
+           "$": "Value",
+           "constant": 5
+          },
+          "mana_produced": [
+           "{B}",
+           "{B}",
+           "{B}",
+           "{B}",
+           "{B}"
+          ],
+          "colors": 4,
+          "text": "add {B}{B}{B}{B}{B}"
+         }
+        ],
+        "otherwise": [
+         {
+          "$": "Effect",
+          "kind": 120,
+          "players": {
+           "$": "PlayerFilter"
+          },
+          "amount": {
+           "$": "Value",
+           "constant": 3
+          },
+          "mana_produced": [
+           "{B}",
+           "{B}",
+           "{B}"
+          ],
+          "colors": 4,
+          "text": "add {B}{B}{B}"
+         }
+        ],
+        "text": "if ... instead"
+       }
+      ],
+      "text": "Add {B}{B}{B}."
+     }
+    },
+    {
+     "text": "Add {B}{B}{B}{B}{B} instead if there are seven or more cards in your graveyard.",
+     "as": "",
+     "ir": null
+    }
+   ]
+  }
+ ]
+}

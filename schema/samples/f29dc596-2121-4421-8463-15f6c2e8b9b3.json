@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
  "name": "Rogue's Passage",
- "card_hash": "02cba0866749f0261d0fbf23e55b8b22",
+ "card_hash": "efb7a869ad7234b11f18490ba12899e8",
  "card": {
   "$": "CardDef",
   "oracle_id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
@@ -30,7 +30,7 @@
   "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 18,
-  "scryfall_uri": "https://scryfall.com/card/hoc/212/rogues-passage?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trc/552/rogues-passage?utm_source=api"
  },
  "faces": [
   {
@@ -39,7 +39,7 @@
    "name": "Rogue's Passage",
    "face": 0,
    "face_name": "Rogue's Passage",
-   "card_hash": "02cba0866749f0261d0fbf23e55b8b22",
+   "card_hash": "efb7a869ad7234b11f18490ba12899e8",
    "fully_read": true,
    "abilities": [
     {

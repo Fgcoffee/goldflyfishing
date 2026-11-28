@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "3f347ebf-e0d2-4ae0-ad84-df7a460404e0",
  "name": "Coral Atoll",
- "card_hash": "bf3d17ca9829a153aca13976376b8cd1",
+ "card_hash": "4530a954fb646ac783908689830e3eea",
  "card": {
   "$": "CardDef",
   "oracle_id": "3f347ebf-e0d2-4ae0-ad84-df7a460404e0",
@@ -30,7 +30,7 @@
   "mana_value": 0,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 5805,
+  "edhrec_rank": 5908,
   "scryfall_uri": "https://scryfall.com/card/cmr/480/coral-atoll?utm_source=api"
  },
  "faces": [
@@ -40,7 +40,7 @@
    "name": "Coral Atoll",
    "face": 0,
    "face_name": "Coral Atoll",
-   "card_hash": "bf3d17ca9829a153aca13976376b8cd1",
+   "card_hash": "4530a954fb646ac783908689830e3eea",
    "fully_read": true,
    "abilities": [
     {

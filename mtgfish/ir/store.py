@@ -46,9 +46,12 @@ def code_fingerprint() -> str:
         return _code
     from ..parser.store import code_fingerprint as parser_code
 
+    from .authored import digest as authored_digest
     from .bracket import game_changers_digest
 
     digest = hashlib.sha256(parser_code().encode())
+    # Authored readings (mtgfish/ir/authored/*.json) change documents too.
+    digest.update(authored_digest().encode())
     # The Game Changers list (in each document's "bracket") comes from the
     # card dump and can change without any card's text changing.
     digest.update(game_changers_digest().encode())
@@ -71,9 +74,22 @@ def card_document(card, digest: str | None = None) -> dict:
 
     if digest is None:
         digest = card_hash(card)
+    from .authored import abilities as authored_abilities
+
     faces = []
     parsed_faces = []
+    # A reviewed, hand-written reading (mtgfish/ir/authored) replaces the
+    # parser's for a card whose wording is one of a kind; None when the card
+    # has none, or its text changed since it was written.
+    authored = authored_abilities(card, digest)
     for index in range(max(1, len(card.faces))):
+        if authored is not None:
+            abilities = authored[index] if index < len(authored) else ()
+            parsed_faces.append((abilities, True))
+            face = encode_face(card, index, abilities, [], digest)
+            face["authored"] = True
+            faces.append(face)
+            continue
         parsed = parse_face(card, index)
         parsed_faces.append((parsed.abilities, not parsed.failures))
         faces.append(encode_face(card, index, parsed.abilities, parsed.failures, digest))

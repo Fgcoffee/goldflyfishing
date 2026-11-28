@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8c2dd8dc-8623-4518-b3fd-dcb9f647fa98",
  "name": "Sly Instigator",
- "card_hash": "a1ed4481a0eff2c74afe4bc4033ac1c3",
+ "card_hash": "1afbb2b293a55fcaf50ac5da08612d72",
  "card": {
   "$": "CardDef",
   "oracle_id": "8c2dd8dc-8623-4518-b3fd-dcb9f647fa98",
@@ -50,7 +50,7 @@
   "mana_value": 4,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 10801,
+  "edhrec_rank": 11035,
   "scryfall_uri": "https://scryfall.com/card/clb/736/sly-instigator?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Sly Instigator",
    "face": 0,
    "face_name": "Sly Instigator",
-   "card_hash": "a1ed4481a0eff2c74afe4bc4033ac1c3",
+   "card_hash": "1afbb2b293a55fcaf50ac5da08612d72",
    "fully_read": true,
    "abilities": [
     {

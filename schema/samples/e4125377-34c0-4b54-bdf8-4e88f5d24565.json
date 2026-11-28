@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e4125377-34c0-4b54-bdf8-4e88f5d24565",
  "name": "Approach of the Second Sun",
- "card_hash": "873c19b0f19e0e0713bbdd32a8242d1f",
+ "card_hash": "07f1f4e538e2b0f6658cffc4b6cf4cb7",
  "card": {
   "$": "CardDef",
   "oracle_id": "e4125377-34c0-4b54-bdf8-4e88f5d24565",
@@ -41,7 +41,7 @@
   "mana_value": 7,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 997,
+  "edhrec_rank": 954,
   "scryfall_uri": "https://scryfall.com/card/akh/4/approach-of-the-second-sun?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Approach of the Second Sun",
    "face": 0,
    "face_name": "Approach of the Second Sun",
-   "card_hash": "873c19b0f19e0e0713bbdd32a8242d1f",
+   "card_hash": "07f1f4e538e2b0f6658cffc4b6cf4cb7",
    "fully_read": false,
    "abilities": [
     {

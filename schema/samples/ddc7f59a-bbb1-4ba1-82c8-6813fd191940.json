@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
  "name": "Siege-Gang Commander",
- "card_hash": "641e8afc08f10050f1f361f7815581ce",
+ "card_hash": "ddcbf3fc253ccece04580fa548adb856",
  "card": {
   "$": "CardDef",
   "oracle_id": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
@@ -52,7 +52,7 @@
   "mana_value": 5,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1590,
+  "edhrec_rank": 1620,
   "scryfall_uri": "https://scryfall.com/card/plst/DMR-136/siege-gang-commander?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Siege-Gang Commander",
    "face": 0,
    "face_name": "Siege-Gang Commander",
-   "card_hash": "641e8afc08f10050f1f361f7815581ce",
+   "card_hash": "ddcbf3fc253ccece04580fa548adb856",
    "fully_read": true,
    "abilities": [
     {

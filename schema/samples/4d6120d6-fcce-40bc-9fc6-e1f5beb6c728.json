@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
  "name": "Embercleave",
- "card_hash": "4cec1cd25e0492e5e73eb9ede76002db",
+ "card_hash": "e0039fd62338719053964fbf63406f14",
  "card": {
   "$": "CardDef",
   "oracle_id": "4d6120d6-fcce-40bc-9fc6-e1f5beb6c728",
@@ -55,7 +55,7 @@
   "mana_value": 6,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1353,
+  "edhrec_rank": 1398,
   "scryfall_uri": "https://scryfall.com/card/eld/120/embercleave?utm_source=api"
  },
  "faces": [
@@ -65,7 +65,7 @@
    "name": "Embercleave",
    "face": 0,
    "face_name": "Embercleave",
-   "card_hash": "4cec1cd25e0492e5e73eb9ede76002db",
+   "card_hash": "e0039fd62338719053964fbf63406f14",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
  "name": "Celestial Colonnade",
- "card_hash": "31b86e6c35ba43c047f9d60fb5d19811",
+ "card_hash": "b52985f6972938749bac1d5a9d762476",
  "card": {
   "$": "CardDef",
   "oracle_id": "876ac6f6-74de-4666-84c6-83d81f054723",
@@ -30,7 +30,7 @@
   "mana_value": 0,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 5547,
+  "edhrec_rank": 5574,
   "scryfall_uri": "https://scryfall.com/card/uma/238/celestial-colonnade?utm_source=api"
  },
  "faces": [
@@ -40,7 +40,7 @@
    "name": "Celestial Colonnade",
    "face": 0,
    "face_name": "Celestial Colonnade",
-   "card_hash": "31b86e6c35ba43c047f9d60fb5d19811",
+   "card_hash": "b52985f6972938749bac1d5a9d762476",
    "fully_read": false,
    "abilities": [
     {

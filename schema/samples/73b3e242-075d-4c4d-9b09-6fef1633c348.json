@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "73b3e242-075d-4c4d-9b09-6fef1633c348",
  "name": "Sejiri Refuge",
- "card_hash": "7ab2a6aa93f5cbc2226e9ae65a456937",
+ "card_hash": "cb72184dae9f3d23c009d2f39fad977b",
  "card": {
   "$": "CardDef",
   "oracle_id": "73b3e242-075d-4c4d-9b09-6fef1633c348",
@@ -30,7 +30,7 @@
   "mana_value": 0,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 4811,
+  "edhrec_rank": 4900,
   "scryfall_uri": "https://scryfall.com/card/khc/118/sejiri-refuge?utm_source=api"
  },
  "faces": [
@@ -40,7 +40,7 @@
    "name": "Sejiri Refuge",
    "face": 0,
    "face_name": "Sejiri Refuge",
-   "card_hash": "7ab2a6aa93f5cbc2226e9ae65a456937",
+   "card_hash": "cb72184dae9f3d23c009d2f39fad977b",
    "fully_read": true,
    "abilities": [
     {

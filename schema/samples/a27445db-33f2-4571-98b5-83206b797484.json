@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
  "name": "Shared Animosity",
- "card_hash": "ad80641d12bda7a20bc2cb658943cfcd",
+ "card_hash": "6bafceac6f2722af8b0351c79521911b",
  "card": {
   "$": "CardDef",
   "oracle_id": "a27445db-33f2-4571-98b5-83206b797484",
@@ -41,8 +41,8 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 681,
-  "scryfall_uri": "https://scryfall.com/card/lcc/231/shared-animosity?utm_source=api"
+  "edhrec_rank": 687,
+  "scryfall_uri": "https://scryfall.com/card/trc/454/shared-animosity?utm_source=api"
  },
  "faces": [
   {
@@ -51,7 +51,7 @@
    "name": "Shared Animosity",
    "face": 0,
    "face_name": "Shared Animosity",
-   "card_hash": "ad80641d12bda7a20bc2cb658943cfcd",
+   "card_hash": "6bafceac6f2722af8b0351c79521911b",
    "fully_read": false,
    "abilities": [
     {

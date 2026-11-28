@@ -29,6 +29,7 @@ from ..rules.kernel.query import (
     ValueKind,
 )
 from .nouns import (
+    BASIC_LAND_TYPES,
     SELF_NOUNS,
     chosen_count,
     parse_comparison,
@@ -121,7 +122,41 @@ def parse_effect(stream: Stream) -> Effect | None:
             best, best_end = effect, stream.mark()
 
     stream.reset(best_end if best is not None else start)
+    if best is not None:
+        best = _player_target_in_filter(best, stream.tokens[start:best_end])
     return best
+
+
+def _player_target_in_filter(effect: Effect, tokens) -> Effect:
+    """"Destroy all enchantments target player controls" (Primeval Light),
+    "Creatures target player controls get +2/+0" (How to Start a Riot).
+
+    The noun reader takes "target player controls" as a controller relation
+    with no player named, and nothing put the target on the instruction, so
+    there was no player to choose and nothing to bind "that player" to. The
+    player is the instruction's target (CR 115.1): marked here, once the
+    clause that read the words is known.
+    """
+    words = [t.lower for t in tokens]
+    scopes = []
+    for i in range(len(words) - 2):
+        if words[i] == "target" and words[i + 2] == "controls" and words[i + 1] in ("player", "opponent"):
+            scopes.append(PlayerScope.TARGET_PLAYER if words[i + 1] == "player" else PlayerScope.TARGET_OPPONENT)
+    spec = effect.targets
+    if (
+        len(scopes) != 1
+        or effect.players is not None
+        or effect.is_targeted
+        or spec is None
+        or spec.controller not in (ControllerRelation.SPECIFIC, ControllerRelation.OPPONENT)
+    ):
+        return effect
+    return replace(
+        effect,
+        players=PlayerFilter(scope=scopes[0]),
+        is_targeted=True,
+        targets=replace(spec, controller=ControllerRelation.SPECIFIC),
+    )
 
 
 def parse_effects(stream: Stream) -> list[Effect] | None:
@@ -280,6 +315,13 @@ def _effect_run(stream: Stream, *, allow_or: bool, joins: list[str] | None = Non
         effects.append(effect)
         if joins is not None:
             joins.append(joined)
+        if effect.kind is EffectKind.CONDITIONAL and "instead" in effect.keywords:
+            if not _fold_instead(effects):
+                stream.reset(stuck)
+                stream.blocked = max(stream.blocked, stuck)
+                return None
+            if joins is not None:
+                joins.pop()
 
         # Some clauses modify the effect just read rather than following it.
         # Read as siblings, "draw a card unless that player pays {1}" became
@@ -503,6 +545,16 @@ def _unless_tail(stream: Stream, effect: Effect) -> Effect | None:
 
     mark = stream.mark()
     if not stream.accept("unless"):
+        return None
+    if (stream.at_phrase("any player") or stream.at_phrase("a player")) and stream.peek(2).lower in (
+        "pay", "pays",
+    ):
+        # "unless any player pays {3}" (Icy Prison): the first player who
+        # pays stops it. The IR can only ask each player in turn, which
+        # charges every willing player and runs the effect once per refusal.
+        # Left unread rather than read as that. ("unless a player has 13 or
+        # less life" is a condition, read below.)
+        stream.reset(mark)
         return None
 
     payer, _ = parse_player_filter(stream)
@@ -1020,6 +1072,13 @@ def _replace_x(node, value: Value):
         return rebuilt if any(a is not b for a, b in zip(rebuilt, node)) else node
     if not dataclasses.is_dataclass(node) or isinstance(node, type):
         return node
+    if isinstance(node, ObjectFilter):
+        # "return target creature card with mana value X or less ..., where
+        # X is its power" (Julian Bashir): inside the filter, "its" can't be
+        # the candidate (that would be "mana value less than its power"); it
+        # is the source. Left as the affected object, the engine compared
+        # each card's mana value with that card's own power.
+        value = _of_source(value)
     changes = {}
     for field in dataclasses.fields(node):
         if field.name in _OWN_X_FIELDS:
@@ -1031,6 +1090,16 @@ def _replace_x(node, value: Value):
         if rebuilt is not current:
             changes[field.name] = rebuilt
     return dataclasses.replace(node, **changes) if changes else node
+
+
+def _of_source(value: Value) -> Value:
+    """``value`` with every "its" (``of_affected``) read as the source's."""
+    import dataclasses
+
+    operands = tuple(_of_source(o) for o in value.operands)
+    if not value.of_affected and all(a is b for a, b in zip(operands, value.operands)):
+        return value
+    return dataclasses.replace(value, of_affected=False, operands=operands)
 
 
 def _mentions_x(node) -> bool:
@@ -1088,12 +1157,16 @@ def _discard(stream: Stream) -> Effect | None:
         return None
     amount = parse_value(stream) or Value.of(1)
     stream.accept("card", "cards")
+    # "discards two cards at random" (Hymn to Tourach, Gamble): not the
+    # player's choice.
+    at_random = stream.accept_phrase("at random")
     amount = _scaled(stream, amount)
     return Effect(
         EffectKind.DISCARD,
         players=players or YOU,
         amount=amount,
         is_targeted=targeted,
+        keywords=("at random",) if at_random else (),
         text="discard",
     )
 
@@ -1568,6 +1641,11 @@ def _return_to_hand(stream: Stream) -> Effect | None:
 
 @clause("tap-untap")
 def _tap(stream: Stream) -> Effect | None:
+    mark = stream.mark()
+    # "and you untap all lands you control" (Sword of Feast and Famine): the
+    # subject said after another player's action; tapping is yours anyway.
+    if stream.accept("you") and not stream.at("tap", "untap"):
+        stream.reset(mark)
     if stream.accept("tap", "taps"):
         kind = EffectKind.TAP
     elif stream.accept("untap", "untaps"):
@@ -2535,6 +2613,10 @@ def _token(spec, types, power, toughness, keywords, abilities, maker, amount) ->
     return Effect(
         EffectKind.CREATE_TOKEN,
         token=TokenSpec(
+            # "create two tapped Treasure tokens": the noun reader takes
+            # "tapped" as a constraint on the filter, and nothing carried it
+            # to the token, so it entered untapped.
+            enters_tapped=spec.tapped is True,
             name=spec.subtypes_all[0] if spec.subtypes_all else "Token",
             types=types,
             subtypes=spec.subtypes_all,
@@ -4646,6 +4728,23 @@ def _if_condition(stream: Stream) -> Effect | None:
     if condition is None:
         return None
     stream.skip_punct(",")
+    instead = _instead_end(stream)
+    if instead is not None:
+        # "If this spell was kicked, draw three cards instead." The effect is
+        # read up to "instead"; the run this sentence is in folds the
+        # effect before it into the otherwise branch (``_fold_instead``).
+        body = Stream(stream.tokens[stream.mark() : instead])
+        inner = parse_effects(body)
+        if inner is None or not body.done:
+            return None
+        stream.reset(instead + 1)
+        return Effect(
+            EffectKind.CONDITIONAL,
+            condition=condition,
+            children=tuple(inner),
+            keywords=("instead",),
+            text="if ... instead",
+        )
     inner = parse_effects(stream)
     if inner is None:
         return None
@@ -4655,6 +4754,76 @@ def _if_condition(stream: Stream) -> Effect | None:
         children=tuple(inner),
         text="if",
     )
+
+
+def _refers_back(effect: Effect) -> bool:
+    """Whether an "if ... instead" names what an earlier effect acted on, or
+    chooses targets of its own."""
+    def condition_refers(condition) -> bool:
+        if condition is None:
+            return False
+        spec = getattr(condition, "filter", None)
+        if spec is not None and (spec.remembered):
+            return True
+        return any(condition_refers(op) for op in getattr(condition, "operands", ()) or ())
+
+    if condition_refers(effect.condition):
+        return True
+    for node in effect.children[0].walk():
+        if node.is_targeted:
+            return True
+        for spec in (node.targets, node.damage_source):
+            if spec is not None and (
+                spec.remembered
+                # "each creature target player controls": a player target.
+                or ControllerRelation.SPECIFIC in (spec.controller, spec.owner)
+            ):
+                return True
+        if node.players is not None and node.players.scope in (
+            PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT,
+        ):
+            return True
+        if condition_refers(node.condition):
+            return True
+    return False
+
+
+def _instead_end(stream: Stream) -> int | None:
+    """The index of a sentence-final "instead" in this sentence, if any."""
+    i = stream.mark()
+    tokens = stream.tokens
+    while i < len(tokens) and tokens[i].text != ".":
+        if tokens[i].lower == "instead":
+            after = tokens[i + 1].text if i + 1 < len(tokens) else "."
+            return i if after == "." else None
+        i += 1
+    return None
+
+
+def _fold_instead(effects: list[Effect]) -> bool:
+    """"Draw two cards. If this spell was kicked, draw three cards instead."
+    (CR 608.2c): the last effect is an "if ... instead"; it replaces the one
+    before it when the condition holds, so that one becomes its otherwise
+    branch. Only when both are the same kind of effect - what "instead"
+    replaces is then plain. False when it can't be folded."""
+    last = effects[-1]
+    if len(effects) < 2 or len(last.children) != 1:
+        return False
+    before = effects[-2]
+    if before.kind is not last.children[0].kind or before.kind is EffectKind.CONDITIONAL:
+        return False
+    if _refers_back(last):
+        # "If that creature is a Human, put two counters on it instead": "that
+        # creature" is the target the first effect chose, and with the first
+        # effect moved into the otherwise branch nothing has been referred to
+        # when the condition holds. Likewise a replacement with a target of
+        # its own ("exile target nonland permanent instead") changes what
+        # was targeted as the spell was cast. Left unread.
+        return False
+    effects[-2:] = [
+        replace(last, keywords=(), otherwise=(before,), text="if ... instead")
+    ]
+    return True
 
 
 def parse_condition_text(stream: Stream):
@@ -5482,6 +5651,12 @@ def _state_condition(stream: Stream):
         narrowed = replace(subject, blocking=True)
     elif stream.accept("blocked"):
         narrowed = replace(subject, blocked=True)
+    elif stream.accept("equipped"):
+        # "As long as this is equipped" (CR 301.5): an Equipment is attached.
+        narrowed = replace(subject, has_attached=ObjectFilter(subtypes_any=("Equipment",)))
+    elif stream.accept("enchanted"):
+        # "As long as this is enchanted" (CR 303.4): an Aura is attached.
+        narrowed = replace(subject, has_attached=ObjectFilter(subtypes_any=("Aura",)))
     else:
         stream.reset(mark)
         return None
@@ -6041,10 +6216,18 @@ def _costs_less(stream: Stream) -> Effect | None:
     stream.accept_phrase("to cast")
     stream.accept_phrase("to activate")
 
+    if symbols == ["{X}"]:
+        # "This spell costs {X} less to cast, where X is the greatest power
+        # among creatures you control" (The Great Henge, Ghalta). {X} has
+        # mana value 0, so this read as "costs 0 less"; X stays a variable
+        # for the trailing definition to fill in (``_bind_x``, CR 107.3b).
+        changed = Value(ValueKind.PRODUCT, operands=(Value.of(sign), Value(kind=ValueKind.X)))
+    else:
+        changed = Value.of(sign * (reduction or (amount.constant if amount else 0)))
     return Effect(
         EffectKind.MODIFY_COST,
         targets=targets,
-        amount=Value.of(sign * (reduction or (amount.constant if amount else 0))),
+        amount=changed,
         duration=Duration.PERMANENT,
         text="costs less to cast",
     )
@@ -6763,9 +6946,8 @@ def _ability_cost_change(stream: Stream) -> Effect | None:
     is the ability the sentence sits in.
     """
     mark = stream.mark()
-    if not stream.accept_phrase("this ability costs") and not (
-        stream.accept_phrase("this spell costs")
-    ):
+    own_ability = stream.accept_phrase("this ability costs")
+    if not own_ability and not stream.accept_phrase("this spell costs"):
         stream.reset(mark)
         return None
 
@@ -6804,6 +6986,18 @@ def _ability_cost_change(stream: Stream) -> Effect | None:
         amount = Value(
             kind=ValueKind.PRODUCT,
             operands=(amount, Value(kind=ValueKind.COUNT, filter=per)),
+        )
+    if own_ability:
+        # It changes the cost of activating the ability it sits in (CR
+        # 601.2f via 602.2b), which the engine has no way to do yet. As an
+        # effect it ran on resolution, after the cost was paid, and made the
+        # card cheaper to *cast* (readings_queue.md: the channel lands).
+        # Recognised, not implemented: the ability works at full cost.
+        return Effect(
+            EffectKind.DUMMY,
+            rule="activation-cost-change",
+            amount=amount,
+            text=" ".join(t.text for t in stream.tokens[mark : stream.mark()]),
         )
     return Effect(
         EffectKind.MODIFY_COST,
@@ -7123,6 +7317,37 @@ def _play_from_zone(stream: Stream) -> Effect | None:
     )
 
 
+@clause("isnt-a-type")
+def _isnt_a_type(stream: Stream) -> Effect | None:
+    """"As long as your devotion to red is less than five, this isn't a
+    creature." (The Theros gods; CR 205.1, 613.1d.)
+
+    The card type is removed while the condition holds; the condition is the
+    static ability's, read by the "as long as" wrapper. Only a bare card type
+    ("a creature"), nothing that would need a filter.
+    """
+    mark = stream.mark()
+    targets, targeted = parse_target(stream)
+    if targets is None:
+        stream.reset(mark)
+        return None
+    if not (stream.accept("isn't") or stream.accept_phrase("is not")):
+        stream.reset(mark)
+        return None
+    stream.accept("a", "an")
+    spec = parse_object_filter(stream)
+    if spec is None or not spec.types_all or spec != ObjectFilter(types_all=spec.types_all, zones=spec.zones):
+        stream.reset(mark)
+        return None
+    return Effect(
+        EffectKind.REMOVE_TYPE,
+        targets=targets,
+        types=spec.types_all,
+        is_targeted=targeted,
+        text="isn't a " + spec.describe(),
+    )
+
+
 @clause("in-addition-to-types")
 def _in_addition_to_types(stream: Stream) -> Effect | None:
     """"Each land is a Swamp in addition to its other land types." (CR 205.1b.)
@@ -7163,11 +7388,12 @@ def _in_addition_to_types(stream: Stream) -> Effect | None:
         )
 
     # "every basic land type" - all of them, rather than a named one.
-    every = bool(
-        stream.accept_phrase("every basic land type")
-        or stream.accept_phrase("every creature type")
-        or stream.accept_phrase("all creature types")
-    )
+    every = stream.accept_phrase("every basic land type")
+    if stream.at_phrase("every creature type") or stream.at_phrase("all creature types"):
+        # Every creature type there is: no list of subtypes says that, and
+        # read as none (as it was), it added nothing. Left unread.
+        stream.reset(mark)
+        return None
     spec = None if every else parse_object_filter(stream)
     if spec is None and not every:
         stream.reset(mark)
@@ -7189,7 +7415,9 @@ def _in_addition_to_types(stream: Stream) -> Effect | None:
         EffectKind.ADD_TYPE,
         targets=targets,
         types=spec.types_all if spec is not None else CardType.NONE,
-        keywords=spec.subtypes_all if spec is not None else (),
+        # "every basic land type" (Dryad of the Ilysian Grove): all five
+        # (CR 305.6); it was read as none (readings_queue.md).
+        keywords=spec.subtypes_all if spec is not None else BASIC_LAND_TYPES,
         duration=duration,
         is_targeted=targeted,
         text="is X in addition to its other types",
@@ -8072,6 +8300,7 @@ def _extra_trigger(stream: Stream) -> Effect | None:
 
     cause = None
     whose = None
+    event = None
 
     if stream.accept_phrase("a triggered ability of"):
         whose = parse_object_filter(stream)
@@ -8089,21 +8318,27 @@ def _extra_trigger(stream: Stream) -> Effect | None:
         if cause is None:
             stream.reset(mark)
             return None
-        # "entering", "being cast", "you casting or copying an instant" - the
-        # participle names the event, which the collector does not need: the
-        # cause filter and the affected filter together are what decide.
+        # "entering", "dying", "attacking" - the participle names the event,
+        # and it matters: it was skipped, so Teysa ("a creature dying")
+        # doubled a creature's *entering* triggers too. Only the events
+        # below are read; any other participle leaves the ability unread.
         # It starts with the participle: anything else is the cause's noun
         # phrase going on unread ("a land *or Bird you control* entering" -
         # skipped, Traveling Chocobo counted only lands).
         if not stream.peek().lower.endswith("ing"):
             stream.reset(mark)
             return None
+        words = []
         while not stream.done and not stream.at("causes"):
             if stream.peek().text in (".", ";", ","):
                 stream.reset(mark)
                 return None
-            stream.next()
+            words.append(stream.next().lower)
         if not stream.accept("causes"):
+            stream.reset(mark)
+            return None
+        event = _causing_event(" ".join(words))
+        if event is None:
             stream.reset(mark)
             return None
         if not stream.accept_phrase("a triggered ability of"):
@@ -8131,8 +8366,38 @@ def _extra_trigger(stream: Stream) -> Effect | None:
         EffectKind.EXTRA_TRIGGER,
         targets=whose,
         trigger_cause=cause,
+        trigger=event,
         amount=Value.of(1),
         text="that ability triggers an additional time",
+    )
+
+
+def _causing_event(words: str):
+    """The event named by "a creature *dying* causes ..." (CR 603.2b), as
+    the trigger condition the extra-trigger check compares against.
+
+    ``None`` for a participle not listed here: better unread than doubling
+    every trigger the cause takes part in.
+    """
+    from ..rules.cr600_spells_and_abilities.abilities import TriggerCondition
+    from ..rules.kernel.events import EventKind as Kind
+
+    events = {
+        "entering": (Kind.ENTERS_BATTLEFIELD,),
+        "entering the battlefield": (Kind.ENTERS_BATTLEFIELD,),
+        "entering or leaving the battlefield": (Kind.ENTERS_BATTLEFIELD, Kind.LEAVES_BATTLEFIELD),
+        "dying": (Kind.DIES,),
+        "attacking": (Kind.ATTACKS,),
+        "becoming the target of a spell or ability": (Kind.TARGETED,),
+        "dealing combat damage to a player": (Kind.COMBAT_DAMAGE_DEALT,),
+    }
+    kinds = events.get(words)
+    if kinds is None:
+        return None
+    return TriggerCondition(
+        event_kinds=frozenset(kinds),
+        to_player=words.endswith("to a player"),
+        text=words,
     )
 
 
@@ -8268,18 +8533,12 @@ def _shuffle_into_library(stream: Stream) -> Effect | None:
     matters: read as a plain shuffle it removes nothing.
     """
     mark = stream.mark()
-    players, _ = parse_player_filter(stream)
-    if players is None:
-        stream.reset(mark)
-        return None
-
-    subject = None
-    look = stream.mark()
-    if stream.accept("of"):
-        subject, targeted = parse_target(stream)
-        if subject is None:
-            stream.reset(look)
-    else:
+    subject, targeted = _owned_object(stream)
+    if subject is None:
+        players, _ = parse_player_filter(stream)
+        if players is None:
+            stream.reset(mark)
+            return None
         targeted = False
 
     if not stream.accept("shuffles", "shuffle"):
@@ -8310,7 +8569,70 @@ def _shuffle_into_library(stream: Stream) -> Effect | None:
         targets=subject if subject is not None else ObjectFilter(remembered=True),
         zone=Zone.LIBRARY,
         is_targeted=targeted,
+        # CR 701.24a: shuffled in, not put on the bottom.
+        keywords=("shuffle",),
         text="shuffle it into its owner's library",
+    )
+
+
+def _owned_object(stream: Stream):
+    """The object in "the owner of target permanent" and "target creature's
+    owner": what the sentence then moves. The player phrase alone kept only
+    "its owner" and dropped the object, so Chaos Warp moved nothing. (None,
+    False) and nothing consumed when the subject isn't one of these."""
+    mark = stream.mark()
+    stream.accept("the")
+    if stream.accept("owner"):
+        if stream.accept("of"):
+            subject, targeted = parse_target(stream)
+            if subject is not None and not subject.includes_players:
+                return subject, targeted
+        stream.reset(mark)
+        return None, False
+    stream.reset(mark)
+    # "target creature's owner": the possessive ends a noun phrase.
+    for offset in range(1, 6):
+        token = stream.peek(offset - 1)
+        if token.kind is not TokenKind.WORD:
+            break
+        if token.text.endswith("'s") and stream.peek(offset).lower == "owner":
+            words = [stream.peek(i).text for i in range(offset - 1)] + [token.text[:-2]]
+            inner = Stream.of(" ".join(words))
+            subject, targeted = parse_target(inner)
+            if subject is None or not inner.done or subject.includes_players:
+                return None, False
+            for _ in range(offset + 1):
+                stream.next()
+            return subject, targeted
+    return None, False
+
+
+@clause("shuffle-self-into-library")
+def _shuffle_self_into_library(stream: Stream) -> Effect | None:
+    """"Shuffle this into its owner's library." (the Zenith and Beacon
+    cycles): the spell or permanent goes into its owner's library, which is
+    then shuffled (CR 701.24a). A spell that moves itself this way is not
+    also put into the graveyard (CR 608.2m)."""
+    mark = stream.mark()
+    if not stream.accept("shuffle", "shuffles"):
+        return None
+    spec = parse_object_filter(stream)
+    if spec is None or not spec.source_only:
+        stream.reset(mark)
+        return None
+    if not stream.accept("into") or not (
+        stream.accept_phrase("its owner's library")
+        or stream.accept_phrase("their owner's library")
+        or stream.accept_phrase("your library")
+    ):
+        stream.reset(mark)
+        return None
+    return Effect(
+        EffectKind.MOVE_ZONE,
+        targets=spec,
+        zone=Zone.LIBRARY,
+        keywords=("shuffle",),
+        text="shuffle this into its owner's library",
     )
 
 
@@ -9562,11 +9884,47 @@ def _keyword_action(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
+    if matched.lower() == "cast":
+        if stream.at("only"):
+            # "Cast this spell only during an opponent's turn" (Delirium,
+            # Seedtime) is a timing restriction (CR 601.3), not an
+            # instruction to cast it. It read as the spell casting itself.
+            stream.reset(mark)
+            return None
+        effects = _paid_unless_free(stream, effects)
+
     if len(effects) == 1:
         return effects[0] if not targeted else _retarget(effects[0], targeted)
     return Effect(
         EffectKind.SEQUENCE, children=tuple(effects), text=" ".join(words)
     )
+
+
+def _paid_unless_free(stream: Stream, effects: list[Effect]) -> list[Effect]:
+    """"You may cast that card" pays for it (CR 601.2f); only "... without
+    paying its mana cost" is free.
+
+    The keyword-action table expands "cast" to the free-cast opcode, so
+    Ragavan's "Until end of turn, you may cast that card" cast it for free
+    (readings_queue.md). Without the phrase it is a paid cast: the
+    play-from-zone opcode, with lands excluded, since a land can't be cast.
+    """
+    if stream.at("without"):
+        # Left in the stream, as before: the clauses that read the free cast
+        # whole ("a spell with mana value 3 or less ... without paying its
+        # mana cost") keep the count this route would lose.
+        return effects
+    out = []
+    for effect in effects:
+        if effect.kind is EffectKind.CAST_WITHOUT_PAYING:
+            targets = effect.targets or ObjectFilter()
+            effect = replace(
+                effect,
+                kind=EffectKind.PLAY_FROM_ZONE,
+                targets=replace(targets, types_none=targets.types_none | CardType.LAND),
+            )
+        out.append(effect)
+    return out
 
 
 #: Keyword actions whose executor acts on the objects its filter picks, and so

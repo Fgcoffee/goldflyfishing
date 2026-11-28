@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
  "name": "Fire Diamond",
- "card_hash": "de3cd641d6e83804ac9f1693d95b6065",
+ "card_hash": "a83da49679121aca03ca2938fbe321f3",
  "card": {
   "$": "CardDef",
   "oracle_id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
@@ -37,7 +37,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 715,
+  "edhrec_rank": 743,
   "scryfall_uri": "https://scryfall.com/card/clb/313/fire-diamond?utm_source=api"
  },
  "faces": [
@@ -47,7 +47,7 @@
    "name": "Fire Diamond",
    "face": 0,
    "face_name": "Fire Diamond",
-   "card_hash": "de3cd641d6e83804ac9f1693d95b6065",
+   "card_hash": "a83da49679121aca03ca2938fbe321f3",
    "fully_read": true,
    "abilities": [
     {

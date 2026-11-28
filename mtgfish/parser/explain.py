@@ -318,7 +318,10 @@ def _effect_body(effect: Effect) -> str:
     objects = _objects(effect)
 
     if kind in _PLAYER_VERBS:
-        return f"{who} {_PLAYER_VERBS[kind].replace('{n}', amount)}"
+        said = f"{who} {_PLAYER_VERBS[kind].replace('{n}', amount)}"
+        # "discards two cards at random": not their choice, and the reading
+        # has to say so or the difference is invisible.
+        return said + (" at random" if "at random" in effect.keywords else "")
     if kind in _OBJECT_VERBS:
         return _object_verb(effect, objects)
 
@@ -460,6 +463,17 @@ def _control_flow(effect: Effect) -> str | None:
         return f"{_mode_choice(effect)} - {modes}"
     if kind is EffectKind.NOTHING:
         return ""
+    if kind is EffectKind.REPEAT_PER_PAYMENT:
+        # CR 702.33d, 702.157a: once for each time the cost was paid.
+        cost = effect.keywords[0] if effect.keywords else "its optional cost"
+        return f"for each time {cost} was paid: {_effects(effect.children)}"
+    if kind is EffectKind.DUMMY:
+        # Recognised, not implemented yet (mtgfish.parser.dummies).
+        from .dummies import ENGINE_IMPLEMENTED
+
+        if effect.rule in ENGINE_IMPLEMENTED:
+            return f"(recognised, done by the engine: {effect.rule})"
+        return f"(recognised, not implemented yet: {effect.rule})"
     if kind is EffectKind.UNPARSED:
         return "(NOT UNDERSTOOD - inert)"
     return None
@@ -661,9 +675,9 @@ def _continuous(effect: Effect, objects: str) -> str | None:
         return f"{objects} becomes {effect.colors}{duration}"
     if kind in (EffectKind.ADD_TYPE, EffectKind.SET_TYPE):
         verb = "becomes" if kind is EffectKind.SET_TYPE else "is also"
-        return f"{objects} {verb} {effect.types}{duration}"
+        return f"{objects} {verb} {_type_names(effect)}{duration}"
     if kind is EffectKind.REMOVE_TYPE:
-        return f"{objects} loses {effect.types}{duration}"
+        return f"{objects} isn't {_type_names(effect)}{duration}"
     if kind is EffectKind.RESTRICTION and any(
         _player_scoped(effect, r) for r in effect.restrictions
     ):
@@ -992,3 +1006,15 @@ def _duration(duration: int) -> str:
         Duration.CUSTOM: " (for a stated duration)",
     }
     return names.get(Duration(duration), "")
+
+
+def _type_names(effect) -> str:
+    """"creature", "artifact creature", the subtypes: an IntFlag printed as
+    a number ("loses 4") said nothing."""
+    from ..rules.kernel.enums import CardType
+
+    names = [t.name.lower() for t in CardType if t and t in effect.types]
+    words = names + list(effect.keywords)
+    if getattr(effect, "of_chosen_type", False):
+        words.append("the chosen type")
+    return " ".join(words) if words else "no type"

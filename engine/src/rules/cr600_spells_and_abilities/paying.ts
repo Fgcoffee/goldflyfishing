@@ -35,6 +35,7 @@ import {
 import { loseLife } from "../cr100_game_concepts/player";
 import { charsManaValue, hasKeyword, hasType, isCreature } from "../cr200_parts_of_a_card/characteristics";
 import { emit } from "../emit";
+import { activationCostChange } from "../dummies";
 import { flag, ir, list, num, numSet } from "../ir_read";
 import {
   fromIR as fromIRCost,
@@ -583,12 +584,22 @@ export function recordActivation(source: GameObject, ability: Ability, index: nu
 
 /** The mana an activation costs after its own reductions: power-up (CR 702.193a-b, 118.7). */
 export function activationManaCost(game: Game, source: GameObject, ability: Ability): ManaCost {
-  const mana = manaComponent(ability.cost);
+  return withCostChange(game, source, ability, poweredUp(game, source, ability, manaComponent(ability.cost)));
+}
+
+function poweredUp(game: Game, source: GameObject, ability: Ability, mana: ManaCost): ManaCost {
   if (isEmpty(mana) || !flag(ability.reduced_by_own_mana_cost_on_entry) || source.zone !== Zone.BATTLEFIELD || !enteredThisTurn(source, game.turn)) {
     return mana;
   }
   const own = substituteX(fromIRCost(chars(game, source).manaCost), 0);
   return isEmpty(own) ? mana : reducedByMana(mana, own);
+}
+
+/** The activation's own "costs {1} less to activate for each ..." (rules/dummies.ts), on the generic part. */
+function withCostChange(game: Game, source: GameObject, ability: Ability, mana: ManaCost): ManaCost {
+  const change = activationCostChange(game, source, ability);
+  if (change === 0) return mana;
+  return change < 0 ? reducedBy(mana, -change) : increasedBy(mana, change);
 }
 
 /** Whether an ability's cost could be paid now, for an announced X (CR 107.3a). */

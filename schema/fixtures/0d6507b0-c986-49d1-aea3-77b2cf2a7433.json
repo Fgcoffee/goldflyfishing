@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0d6507b0-c986-49d1-aea3-77b2cf2a7433",
  "name": "Borrowed Knowledge",
- "card_hash": "e0c9a1ab929f8c183b2bbb30186f5fb1",
+ "card_hash": "3d35cb65d2e289be62fdb101fa4c7cb5",
  "card": {
   "$": "CardDef",
   "oracle_id": "0d6507b0-c986-49d1-aea3-77b2cf2a7433",
@@ -47,7 +47,7 @@
   "mana_value": 4,
   "color_identity": 9,
   "commander_legal": true,
-  "edhrec_rank": 13108,
+  "edhrec_rank": 12409,
   "scryfall_uri": "https://scryfall.com/card/sos/178/borrowed-knowledge?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Borrowed Knowledge",
    "face": 0,
    "face_name": "Borrowed Knowledge",
-   "card_hash": "e0c9a1ab929f8c183b2bbb30186f5fb1",
+   "card_hash": "3d35cb65d2e289be62fdb101fa4c7cb5",
    "fully_read": true,
    "abilities": [
     {

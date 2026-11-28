@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
  "name": "Tempt with Vengeance",
- "card_hash": "526e12022aebe26ecbf45503164eb9d8",
+ "card_hash": "33278aa79be247c35d147850dc86ed8f",
  "card": {
   "$": "CardDef",
   "oracle_id": "8e356df5-ca92-4be2-871e-8965c2510fbe",
@@ -43,7 +43,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 2664,
+  "edhrec_rank": 2601,
   "scryfall_uri": "https://scryfall.com/card/tdc/239/tempt-with-vengeance?utm_source=api"
  },
  "faces": [
@@ -53,7 +53,7 @@
    "name": "Tempt with Vengeance",
    "face": 0,
    "face_name": "Tempt with Vengeance",
-   "card_hash": "526e12022aebe26ecbf45503164eb9d8",
+   "card_hash": "33278aa79be247c35d147850dc86ed8f",
    "fully_read": false,
    "abilities": [
     {

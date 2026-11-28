@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
  "name": "Elspeth, Sun's Champion",
- "card_hash": "e300bdbb5bf30269cb54ff33744ed707",
+ "card_hash": "f6cd2b7c3ea7db7e79266c866fb15c47",
  "card": {
   "$": "CardDef",
   "oracle_id": "05e6b243-48a6-4a42-bc5f-413441de9c33",
@@ -52,8 +52,8 @@
   "mana_value": 6,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 829,
-  "scryfall_uri": "https://scryfall.com/card/mkc/62/elspeth-suns-champion?utm_source=api"
+  "edhrec_rank": 767,
+  "scryfall_uri": "https://scryfall.com/card/frc/24/elspeth-suns-champion?utm_source=api"
  },
  "faces": [
   {
@@ -62,7 +62,7 @@
    "name": "Elspeth, Sun's Champion",
    "face": 0,
    "face_name": "Elspeth, Sun's Champion",
-   "card_hash": "e300bdbb5bf30269cb54ff33744ed707",
+   "card_hash": "f6cd2b7c3ea7db7e79266c866fb15c47",
    "fully_read": false,
    "abilities": [
     {

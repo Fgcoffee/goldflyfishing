@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0c6c5336-9233-4ab1-9d55-79f20be7ea57",
  "name": "Thorn of Amethyst",
- "card_hash": "86a7da879f60b78b6b3a421a30c6c542",
+ "card_hash": "55e3a68958b46487955a1cedfbd91107",
  "card": {
   "$": "CardDef",
   "oracle_id": "0c6c5336-9233-4ab1-9d55-79f20be7ea57",
@@ -34,7 +34,7 @@
   "mana_value": 2,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 6601,
+  "edhrec_rank": 6732,
   "scryfall_uri": "https://scryfall.com/card/lrw/262/thorn-of-amethyst?utm_source=api"
  },
  "faces": [
@@ -44,7 +44,7 @@
    "name": "Thorn of Amethyst",
    "face": 0,
    "face_name": "Thorn of Amethyst",
-   "card_hash": "86a7da879f60b78b6b3a421a30c6c542",
+   "card_hash": "55e3a68958b46487955a1cedfbd91107",
    "fully_read": true,
    "abilities": [
     {

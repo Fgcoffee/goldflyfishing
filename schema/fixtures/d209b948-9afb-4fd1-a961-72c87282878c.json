@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d209b948-9afb-4fd1-a961-72c87282878c",
  "name": "Kenrith, the Returned King",
- "card_hash": "f85ba2dc19455ad07b78ece2376761ea",
+ "card_hash": "f4a7cabfb708f5215f5d8670e269b768",
  "card": {
   "$": "CardDef",
   "oracle_id": "d209b948-9afb-4fd1-a961-72c87282878c",
@@ -48,7 +48,7 @@
   "mana_value": 5,
   "color_identity": 31,
   "commander_legal": true,
-  "edhrec_rank": 3104,
+  "edhrec_rank": 3154,
   "scryfall_uri": "https://scryfall.com/card/plst/ELD-303/kenrith-the-returned-king?utm_source=api"
  },
  "faces": [
@@ -58,7 +58,7 @@
    "name": "Kenrith, the Returned King",
    "face": 0,
    "face_name": "Kenrith, the Returned King",
-   "card_hash": "f85ba2dc19455ad07b78ece2376761ea",
+   "card_hash": "f4a7cabfb708f5215f5d8670e269b768",
    "fully_read": true,
    "abilities": [
     {

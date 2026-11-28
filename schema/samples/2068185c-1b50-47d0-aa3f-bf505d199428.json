@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
  "name": "Dark Confidant",
- "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
+ "card_hash": "6d5cd2f36ac57dfe93ae9473300c95d0",
  "card": {
   "$": "CardDef",
   "oracle_id": "2068185c-1b50-47d0-aa3f-bf505d199428",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 1241,
+  "edhrec_rank": 1227,
   "scryfall_uri": "https://scryfall.com/card/fin/94/dark-confidant?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Dark Confidant",
    "face": 0,
    "face_name": "Dark Confidant",
-   "card_hash": "a1e2e69c8168cdbe191e9aab5707d769",
+   "card_hash": "6d5cd2f36ac57dfe93ae9473300c95d0",
    "fully_read": true,
    "abilities": [
     {

@@ -21,6 +21,13 @@ used at all: every card is parsed live, exactly as without a store, until
 ``python -m mtgfish.tools.parse_store build`` brings it up to date. The git
 hooks in ``.githooks`` and the Scryfall fetch run that build when the code or
 the data changes, but nothing depends on them having run.
+
+``schema/readings.lock`` (``mtgfish.tools.readings_lock``) is not a source
+either: it records the readings that were accepted, and a test compares the
+parser against it. The one deliberate source beside the parser is
+``mtgfish/ir/authored`` (reviewed, hand-written readings for one-of-a-kind
+wordings), which the IR export serves in place of the parse; this store
+never sees it.
 """
 
 from __future__ import annotations

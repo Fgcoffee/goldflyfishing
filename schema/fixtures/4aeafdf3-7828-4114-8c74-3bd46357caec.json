@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4aeafdf3-7828-4114-8c74-3bd46357caec",
  "name": "Tezzeret the Seeker",
- "card_hash": "539da6959506f0ecbd94b2171f388497",
+ "card_hash": "c33796d251d979a9397ae49081a75cfa",
  "card": {
   "$": "CardDef",
   "oracle_id": "4aeafdf3-7828-4114-8c74-3bd46357caec",
@@ -52,7 +52,7 @@
   "mana_value": 5,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 1733,
+  "edhrec_rank": 1785,
   "scryfall_uri": "https://scryfall.com/card/mm2/62/tezzeret-the-seeker?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Tezzeret the Seeker",
    "face": 0,
    "face_name": "Tezzeret the Seeker",
-   "card_hash": "539da6959506f0ecbd94b2171f388497",
+   "card_hash": "c33796d251d979a9397ae49081a75cfa",
    "fully_read": true,
    "abilities": [
     {

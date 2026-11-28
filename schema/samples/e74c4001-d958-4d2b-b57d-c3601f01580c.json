@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e74c4001-d958-4d2b-b57d-c3601f01580c",
  "name": "Battle Cry Goblin",
- "card_hash": "530704686b65eae69f0c88e14640fd92",
+ "card_hash": "33563ad27a817e4fc781c4ad1be765d0",
  "card": {
   "$": "CardDef",
   "oracle_id": "e74c4001-d958-4d2b-b57d-c3601f01580c",
@@ -49,8 +49,8 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 5096,
-  "scryfall_uri": "https://scryfall.com/card/afr/132/battle-cry-goblin?utm_source=api"
+  "edhrec_rank": 5196,
+  "scryfall_uri": "https://scryfall.com/card/j25/127/battle-cry-goblin?utm_source=api"
  },
  "faces": [
   {
@@ -59,7 +59,7 @@
    "name": "Battle Cry Goblin",
    "face": 0,
    "face_name": "Battle Cry Goblin",
-   "card_hash": "530704686b65eae69f0c88e14640fd92",
+   "card_hash": "33563ad27a817e4fc781c4ad1be765d0",
    "fully_read": false,
    "abilities": [
     {

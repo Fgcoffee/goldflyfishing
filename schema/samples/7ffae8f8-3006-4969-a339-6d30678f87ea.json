@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7ffae8f8-3006-4969-a339-6d30678f87ea",
  "name": "Night's Whisper",
- "card_hash": "707f705d81242037c40db39b8a76966f",
+ "card_hash": "1070a06bb30cbf5ff66544a211b71395",
  "card": {
   "$": "CardDef",
   "oracle_id": "7ffae8f8-3006-4969-a339-6d30678f87ea",
@@ -41,8 +41,8 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 182,
-  "scryfall_uri": "https://scryfall.com/card/hoc/189/nights-whisper?utm_source=api"
+  "edhrec_rank": 175,
+  "scryfall_uri": "https://scryfall.com/card/trc/446/nights-whisper?utm_source=api"
  },
  "faces": [
   {
@@ -51,7 +51,7 @@
    "name": "Night's Whisper",
    "face": 0,
    "face_name": "Night's Whisper",
-   "card_hash": "707f705d81242037c40db39b8a76966f",
+   "card_hash": "1070a06bb30cbf5ff66544a211b71395",
    "fully_read": true,
    "abilities": [
     {

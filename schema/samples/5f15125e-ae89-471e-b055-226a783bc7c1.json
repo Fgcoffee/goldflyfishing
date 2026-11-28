@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
  "name": "Aetherflux Reservoir",
- "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
+ "card_hash": "fd443325a6589352835f108a28d2a907",
  "card": {
   "$": "CardDef",
   "oracle_id": "5f15125e-ae89-471e-b055-226a783bc7c1",
@@ -34,7 +34,7 @@
   "mana_value": 4,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 373,
+  "edhrec_rank": 364,
   "scryfall_uri": "https://scryfall.com/card/kld/192/aetherflux-reservoir?utm_source=api"
  },
  "faces": [
@@ -44,7 +44,7 @@
    "name": "Aetherflux Reservoir",
    "face": 0,
    "face_name": "Aetherflux Reservoir",
-   "card_hash": "287e02bf9b835b5af1cf43014dbefc68",
+   "card_hash": "fd443325a6589352835f108a28d2a907",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
  "name": "Aven Mindcensor",
- "card_hash": "8093f2feb3936673a73788749583d1c0",
+ "card_hash": "706188a68649ed58feb864592318faf8",
  "card": {
   "$": "CardDef",
   "oracle_id": "d9517c5d-66d0-4178-96fb-a8c04f311ad8",
@@ -51,7 +51,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 1235,
+  "edhrec_rank": 1283,
   "scryfall_uri": "https://scryfall.com/card/clb/688/aven-mindcensor?utm_source=api"
  },
  "faces": [
@@ -61,7 +61,7 @@
    "name": "Aven Mindcensor",
    "face": 0,
    "face_name": "Aven Mindcensor",
-   "card_hash": "8093f2feb3936673a73788749583d1c0",
+   "card_hash": "706188a68649ed58feb864592318faf8",
    "fully_read": false,
    "abilities": [
     {

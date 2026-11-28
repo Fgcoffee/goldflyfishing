@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
  "name": "Warren Instigator",
- "card_hash": "2a6728c3ea964167289f5f15262fa007",
+ "card_hash": "ea10b0a5d9aa450097f5a8e1ebea88ee",
  "card": {
   "$": "CardDef",
   "oracle_id": "47f75e25-8a52-4452-a3a8-bf1bd00942d1",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 5662,
+  "edhrec_rank": 5780,
   "scryfall_uri": "https://scryfall.com/card/ddt/32/warren-instigator?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Warren Instigator",
    "face": 0,
    "face_name": "Warren Instigator",
-   "card_hash": "2a6728c3ea964167289f5f15262fa007",
+   "card_hash": "ea10b0a5d9aa450097f5a8e1ebea88ee",
    "fully_read": true,
    "abilities": [
     {

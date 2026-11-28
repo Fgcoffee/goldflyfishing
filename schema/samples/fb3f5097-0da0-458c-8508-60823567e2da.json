@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
  "name": "Sunfall",
- "card_hash": "1121aa8b6faad9ea9e47ead9b40d1f4c",
+ "card_hash": "f8991a6eb0cbf697b7505ce3a39e1ce3",
  "card": {
   "$": "CardDef",
   "oracle_id": "fb3f5097-0da0-458c-8508-60823567e2da",
@@ -51,8 +51,8 @@
   "mana_value": 5,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 3973,
-  "scryfall_uri": "https://scryfall.com/card/mom/40/sunfall?utm_source=api"
+  "edhrec_rank": 3314,
+  "scryfall_uri": "https://scryfall.com/card/frc/36/sunfall?utm_source=api"
  },
  "faces": [
   {
@@ -61,7 +61,7 @@
    "name": "Sunfall",
    "face": 0,
    "face_name": "Sunfall",
-   "card_hash": "1121aa8b6faad9ea9e47ead9b40d1f4c",
+   "card_hash": "f8991a6eb0cbf697b7505ce3a39e1ce3",
    "fully_read": false,
    "abilities": [
     {

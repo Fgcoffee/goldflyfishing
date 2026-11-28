@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
  "name": "Castle Embereth",
- "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
+ "card_hash": "0522b51b85acc093c64ceb47fc7164e4",
  "card": {
   "$": "CardDef",
   "oracle_id": "91fbb25b-8521-483f-88b0-77778d25f7fd",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1082,
+  "edhrec_rank": 1104,
   "scryfall_uri": "https://scryfall.com/card/tdc/347/castle-embereth?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Castle Embereth",
    "face": 0,
    "face_name": "Castle Embereth",
-   "card_hash": "f7fd36cc3ec0d483df2fa77a7fe37759",
+   "card_hash": "0522b51b85acc093c64ceb47fc7164e4",
    "fully_read": true,
    "abilities": [
     {

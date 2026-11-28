@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
  "name": "Magus of the Moat",
- "card_hash": "bf3fc3e91083ed30518610659a74dcc2",
+ "card_hash": "15582e5b66d886e050775b187bf28455",
  "card": {
   "$": "CardDef",
   "oracle_id": "a035f865-b4db-4b9f-bccc-8572acd2033c",
@@ -53,7 +53,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 7569,
+  "edhrec_rank": 7666,
   "scryfall_uri": "https://scryfall.com/card/fut/12/magus-of-the-moat?utm_source=api"
  },
  "faces": [
@@ -63,7 +63,7 @@
    "name": "Magus of the Moat",
    "face": 0,
    "face_name": "Magus of the Moat",
-   "card_hash": "bf3fc3e91083ed30518610659a74dcc2",
+   "card_hash": "15582e5b66d886e050775b187bf28455",
    "fully_read": true,
    "abilities": [
     {

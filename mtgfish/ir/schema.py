@@ -158,6 +158,13 @@ def json_schema() -> dict:
             "fully_read": {"type": "boolean"},
             "abilities": {"type": "array", "items": {"$ref": "#/$defs/Ability"}},
             "failures": {"type": "array", "items": {"$ref": "#/$defs/ParseFailure"}},
+            "authored": {
+                "type": "boolean",
+                "description": (
+                    "The abilities are a reviewed, hand-written reading"
+                    " (mtgfish/ir/authored), not the parser's. Absent: the parser's."
+                ),
+            },
         },
         "required": [
             "ir_version", "oracle_id", "name", "face", "face_name", "card_hash",
@@ -330,6 +337,8 @@ def typescript() -> str:
         "  fully_read: boolean;",
         "  abilities: Array<Ability>;",
         "  failures: Array<ParseFailure>;",
+        "  /** A reviewed, hand-written reading (mtgfish/ir/authored), not the parser's. */",
+        "  authored?: boolean;",
         "}",
         "",
         "export interface CardDocument {",

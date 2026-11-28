@@ -1,0 +1,214 @@
+{
+ "ir_version": 2,
+ "oracle_id": "78427103-9543-41fb-b6d4-72963fe87275",
+ "name": "The Great Henge",
+ "card_hash": "e25f797d9170e857a2c37127309f7db6",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "78427103-9543-41fb-b6d4-72963fe87275",
+  "name": "The Great Henge",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "The Great Henge",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 7,
+       "text": "{7}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1
+    },
+    "oracle_text": "This spell costs {X} less to cast, where X is the greatest power among creatures you control.\n{T}: Add {G}{G}. You gain 2 life.\nWhenever a nontoken creature you control enters, put a +1/+1 counter on it and draw a card.",
+    "colors": 16,
+    "produced_mana": [
+     "G"
+    ]
+   }
+  ],
+  "mana_value": 9,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 230,
+  "scryfall_uri": "https://scryfall.com/card/cmm/294/the-great-henge?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "78427103-9543-41fb-b6d4-72963fe87275",
+   "name": "The Great Henge",
+   "face": 0,
+   "face_name": "The Great Henge",
+   "card_hash": "e25f797d9170e857a2c37127309f7db6",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 152,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 12,
+        "operands": [
+         {
+          "$": "Value",
+          "constant": -1
+         },
+         {
+          "$": "Value",
+          "kind": 18,
+          "filter": {
+           "$": "ObjectFilter",
+           "types_all": 4,
+           "controller": 1
+          },
+          "operands": [
+           {
+            "$": "Value",
+            "kind": 3,
+            "of_affected": true
+           }
+          ]
+         }
+        ]
+       },
+       "duration": 0,
+       "text": "costs less to cast"
+      }
+     ],
+     "text": "This spell costs {X} less to cast, where X is the greatest power among creatures you control."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "mana_produced": [
+        "{G}",
+        "{G}"
+       ],
+       "colors": 16,
+       "text": "add {G}{G}"
+      },
+      {
+       "$": "Effect",
+       "kind": 51,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "text": "gain life"
+      }
+     ],
+     "text": "{T}: Add {G}{G}. You gain 2 life.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 72,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "counter_type": "+1/+1",
+       "text": "add counters"
+      },
+      {
+       "$": "Effect",
+       "kind": 20,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "draw"
+      }
+     ],
+     "text": "Whenever a nontoken creature you control enters, put a +1/+1 counter on it and draw a card.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        1
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "types_all": 4,
+       "controller": 1,
+       "is_token": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "text": "whenever something enters"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

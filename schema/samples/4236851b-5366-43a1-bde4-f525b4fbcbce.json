@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
  "name": "Bloodchief's Thirst",
- "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
+ "card_hash": "14a4bb04e464b3e966ccf30625f87a58",
  "card": {
   "$": "CardDef",
   "oracle_id": "4236851b-5366-43a1-bde4-f525b4fbcbce",
@@ -38,7 +38,7 @@
   "mana_value": 1,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 14302,
+  "edhrec_rank": 14496,
   "scryfall_uri": "https://scryfall.com/card/znr/94/bloodchiefs-thirst?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Bloodchief's Thirst",
    "face": 0,
    "face_name": "Bloodchief's Thirst",
-   "card_hash": "813c51b8f14a84c9cbe77a1630ed158b",
+   "card_hash": "14a4bb04e464b3e966ccf30625f87a58",
    "fully_read": false,
    "abilities": [
     {

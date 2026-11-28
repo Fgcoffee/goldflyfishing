@@ -38,6 +38,61 @@ All on `claude/modest-bohr-yqrqm7`. `npm test`, `npm run typecheck` and
   - Rules session: it matches `kernel/card.ts` field for field, plus three fields you don't have: `edhrec_rank`, `scryfall_uri` and `attraction_lights` (CR 717.1, Attractions). Add them to `CardDef` or ignore them.
   - Until IR v2 lands, its enums (layout, colors, types) are v1 strings like the rest; read them with `enumValue`.
 
+## Top priority from 16 Nov: the card database read to nearly 100%
+
+**Numbers on the new snapshot (2026-11-15); latest column 22 Nov** (census; the pool is every card legal in some format):
+
+| | 16 Nov, before | 16 Nov, after | 22 Nov | of |
+|---|---|---|---|---|
+| abilities | 44,694 (70.4%) | 44,747 (70.5%) | 44,776 (70.5%) | 63,494 |
+| cards, whole pool | 17,520 (53.0%) | 17,556 (53.2%) | 17,582 (53.2%) | 33,032 |
+| top 100 by play rate | 96 | 97 | 97 | 100 |
+| top 1,000 | 817 | 824 | 826 | 1,000 |
+| top 5,000 | 2,815 | 2,833 | 2,847 | 5,000 |
+
+"Read" counts recognised dummies (below) as read.
+
+**"It" in a static ability fixed (from the readings queue).** My b2ce87b batch read "As long as this creature is equipped, it has double strike" with "it" as whatever was just referred to; a static ability has nothing referred to, so every permanent got double strike (the web agent confirmed it on a board). Now, where "it" is the first thing acted on in a static ability or a step trigger, it binds to the object the condition is about: the source ("this creature is equipped") or what the source is attached to ("enchanted creature is blue"). With no such object, a static ability is left unread. Census on the new pool: 37 readings changed, all "it" now bound (including older misreads: Clout of the Dominus, Narcolepsy, Mana Bloom, Pristine Angel, Arixmethes); 2 lost, Deadly Wanderings and Homicidal Seclusion ("that creature" for the one creature you control), now unread instead of buffing everything. The Kor Duelist board test now checks a Grizzly Bears beside it gets nothing.
+
+**The failures among the top 1,000** (`play_rate_report --depth 1000`): 170 abilities in 154 clusters. It's a long tail: no shape covers more than 3 played cards, so the target (95% of the top 1,000) needs the dummies as well as grammar rules. Top shapes: "the next spell you cast this turn", "untap during each other player's untap step", opening-hand Leylines, "the color of your choice", "if this card is in your graveyard", mana-spent riders, delayed triggers on a countered spell (Mana Drain, Arcane Denial), "share a land type".
+
+**Dummy abilities: in** (0100e79).
+- `EffectKind.DUMMY` (998), additive. `rule` names the shape, `text` is the words. The engine logs it as unimplemented and skips it (`engine/test/rules/dummy_abilities.test.ts`).
+- The registry is `mtgfish/parser/dummies.py`. A **whole** dummy is the entire ability. A **rider** is the last sentence(s) after a part that reads; the readable part keeps working (Path of Ancestry taps for mana; only its scry rider is a dummy).
+- Matched only against abilities the grammar didn't read, on the whole text, so no current reading can change. Census (old pool): +40, -0, 0 changed.
+- `python -m mtgfish.tools.dummy_report CENSUS.jsonl.gz` lists each shape with its cards (all, top 1,000, top 5,000): the rules session's backlog.
+
+| dummy (new pool) | top 1,000 | top 5,000 | cards |
+|---|---|---|---|
+| untap-during-others-untap-step | 3 | 6 | 8 |
+| begin-game-on-battlefield | 2 | 8 | 18 |
+| next-spell-rider | 2 | 3 | 8 |
+| mana-spent-trigger | 1 | 6 | 8 |
+| mana-not-lost | 1 | 3 | 13 |
+
+**Since (1b04e2e):**
+- A whole dummy on an activated ability stays activated with its cost (Mistrise Village, Sloppity Bilepiper); the bot doesn't pay to activate an ability that only has dummies.
+- "This ability costs {1} less to activate for each ..." (Boseiju, Otawara, Takenuma, Pteramander and 24 more) is a dummy, `activation-cost-change`, carrying its amount, instead of an effect that ran on resolution. Census: 0/0, 33 changed in all.
+- "This spell can't be countered" is a static ability on the stack (47f80ac; 52 cards), and "every basic land type" adds all five (3 cards). Rishkar's Expertise answered in the queue (not a misread).
+- **Engine fix, rules session please look (e2bce20):** `applySelfEntryReplacements` (replacement.ts) tapped every "enters tapped unless ..." land without asking the condition: 116 read cards, most played duals among them, always entered tapped. It now walks only the branch whose condition holds. Board test: Mystic Sanctuary. Every bench and browser-run digest with those lands will change.
+- - **22 Nov (88e6a7a, 91575eb):** "costs {X} less, where X is ..." keeps its reduction (The Great Henge and 18 more; engine test); "create a tapped ... token" enters tapped (42 cards); the snapshot's new keywords and ability words are registered, so `test_keywords` is green again (+10 cards, the Seek out ability word). Full Python suite: 3733 passed, 1 failed (`test_cancel`, the known timing flake under `-n 4`). Engine 955.
+- **Extra triggers check their causing event (f51ee2e):** "if a creature *dying* causes ..." (Teysa, Panharmonicon, Yarok, Drivnod and 8 more) dropped the event, so Teysa doubled entering triggers too. Parser reads the event; both engines check it. Census: 12 changed, 0/0; Wayta's "being dealt damage" is unread now. Rules: Felix Five-Boots' cause is matched against the damage recipient (audit log).
+- **Julian Bashir (0047f5f):** the web agent asked; it was a misread ("its power" in a target filter read each candidate's own power). Fixed; 1 card.
+- **Paid casts (89cb727):** "you may cast that card" was free (Ragavan, Yawgmoth's Will and 17 more); now paid. "Cast this spell only during" is unread rather than a self-cast.
+- **For the rules session, found today:** "that player" / "they" in an object filter (owner/controller SPECIFIC, no player) matches nothing in either engine: 110 read cards, `audit/unbound_that_player.md`, board-checked on All Is Dust and How to Start a Riot. Proposed binding in the audit log.
+- **Theros gods (e08b81f):** "this isn't a creature" below devotion: +16 cards. Read-back now names card types instead of a number; golden entries for Dryad, Roaming Throne, Urborg and Yavimaya refreshed (wording only), web session please note.
+- **Branch of Vitu-Ghazi** answered in the queue: two disguise abilities by design (CR 702.37a).
+- **Readings lock (e2faf02), the auditor's (a):** `schema/readings.lock`, one line per format-pool card (oracle id, read/partial/notext, a hash of its IR abilities, name), 33,399 cards. `tests/ir/test_readings_lock.py` fails when any reading differs; `python -m mtgfish.tools.readings_lock write` updates it in the same commit, and its diff names the cards that moved. About 80 s of the Python suite. Next: (b) per-card authored readings, then "choose target then branch" and "any one player, first to pay" (both decided yes).
+- **Authored readings (a7346cc), the auditor's (b):** `mtgfish/ir/authored/<oracle_id>.json`, served by the export in place of the parse and marked `"authored": true` on the face (schema: optional, additive). Written with `python -m mtgfish.tools.authored write NAME --as F.I "<paraphrase>"`: the paraphrase is a wording the parser reads, kept beside the IR for review. `tests/ir/test_authored.py`: current text, decodes, validates, served, and flags a paraphrase that now reads differently. First card: **Cabal Ritual** (engine test: 3 black, 5 with seven cards in the graveyard). The lock shows it as `authored`. Many of the top-1,000 one-offs need IR the engine lacks (Mother of Runes' "color of your choice"); those are dummies or grammar-plus-engine work, not authoring.
+
+**Numbers (28 Nov):** top 100: 97; top 1,000: 826; top 5,000: 2,847; pool: 17,582 read + 1 authored of 33,032.
+- **For the rules session (140eef5):** "target player controls" now targets the player: Primeval Light, How to Start a Riot and 38 more. Living Death's "each player ... then sacrifices" (read as "you sacrifice") and Public Execution's "that player" = the target's controller are still open on my side.
+**For the auditor, a choice:** the mana abilities that should be colour-limited (Exotic Orchard, Fellwar Stone, Reflecting Pool, Chrome Mox, Mox Amber, Bloom Tender) read as "any colour". The engine can't compute the limit yet. Honest options: (a) leave them making any colour, flagged as a known overstatement; (b) make the restriction a dummy, which leaves the mana ability unable to tell what it may make, i.e. inert, so Exotic Orchard (rank 4) would make no mana. I've left them as they are until you say; (a) changes no game, (b) changes many.
+
+**For the web session:** `parseStatus` (`engine/src/sim/payload.ts`) now returns `recognised`, the dummy names on a card, beside `status` and `unread`. A card whose only gaps are dummies has status "ok" and a non-empty `recognised`; the site can show "recognised, not implemented yet" for it. In the IR, it's an effect with `kind` 998 and its `rule`.
+
+**Card data refresh: landed** (38875b6, another agent). I rebuilt my card database from the new dumps (`fetch_scryfall --offline`) and the numbers above are on the new pool. `engine/status/readings_queue.md` is part of my queue: the "it" entries are fixed in this batch; the mana-colour restrictions, the channel lands' cost reduction, and the rest are next. Also added an English phrasing for REPEAT_PER_PAYMENT (datarefresh.md's explain failure). **Rules session:** it shows Imperial Hullbreachers' squad as "create 0 copy ... token(s)" per payment; the count comes from the keyword expansion (cr702_keyword_impl.py), so worth a look.
+
 ## The user's urgent list (15 Nov): History, Replay art, reports
 
 Asked for by the user through the auditor (ROADMAP 6cb515a), ahead of card readings. Each was checked in headless Chromium against a local server with `?engine=browser`, as well as by tests.
@@ -450,7 +505,17 @@ Every finding checked against the IR as exported now, on the TS engine's fixture
     - `replacement.ts` `commanderZoneReplacement`: a commander leaving the command zone for a hand was put back (CR 903.9b offered "instead" and the default took it). It now skips the choice when the commander is already in the command zone.
     - `pool.ts` `restrictionPermits`: a mana restriction to "your commander" paid for any spell, because only types were checked. `PaymentContext` now carries `commander`. Still unchecked: `of_chosen_type` (Pillar of Origins pays for any creature spell).
   - Graveyard triggers were dead: a triggered ability that returns "this card from your graveyard" worked only on the battlefield. Bloodghast, Squee, Punishing Fire, Akoum Firebird and about 30 more never fired. Now such a trigger works in the graveyard (CR 113.6m), except Aura triggers on what they enchant, which look back from the battlefield. Those are the 36 changed readings.
-- Next: the most-played unread abilities by deck usage. In order of play rank: Path of Ancestry, Myriad Landscape, Arcane Denial, Boseiju, Esper Sentinel, Urza's Saga, Mana Drain, Victimize, Windfall, Idol of Oblivion, Gamble, Force of Negation... Borrowed Knowledge waits with F3 for the evaluate-context change.
+- "Discards ... at random" reads (bb628cf): Hymn to Tourach, Mind Twist, Gamble, Hypnotic Specter and 30 more. Census: +34, -4.
+  - **Rules session:** `resolve.ts`'s DISCARD executor now picks with `game.rng` when the effect carries "at random", instead of asking the agent. Only these cards draw from the generator, so other games' digests are unchanged.
+  - The 4 lost: "unless any player pays" (Cleansing, Icy Prison, Nakaya Shade, Soul Strings) was read as each player asked in turn. The first payment should stop it, and the engine charged every willing player. The IR can't say "any one player", so they're unread until it can. An IR addition (a payer scope "any player, first to pay") would bring them back with Aether Rift; say if you want it.
+- Boseiju, Who Endures reads (65c6600): "a land card with a basic land type" is any of the five (CR 305.6). Four more cards came with it. Census: +5.
+- The Zeniths and Beacons read, and Chaos Warp works (e1dc35c). Census: +8, 7 changed.
+  - Chaos Warp, Oblation and Ominous Cemetery were misread: the target was dropped, so nothing moved. Now the target moves.
+  - **Rules session:** `resolve.ts`'s MOVE_ZONE now shuffles the owner's library when the move says "shuffle". Before, "shuffles it into their library" put the card on the bottom. Not covered: CR 701.24c shuffles the library even when the card wasn't where it was expected; today a move that finds nothing shuffles nothing.
+- "If <condition>, <effect> instead" reads where it is safe (406da60): Field Research, Scute Swarm, Leafkin Druid and 10 more; also Sword of Feast and Famine. Census: +14.
+  - Not yet: the ~30 where the replacement says "that creature" or "it" (Explosive Growth, Electrostatic Bolt, Elder Cathar), or has its own target (Tear Asunder). They need the first effect's target bound before the branch is chosen, so the condition can ask about it. That's an IR question (a "choose the target, then branch" shape); say if you want it.
+- "As long as this creature is equipped / enchanted" reads (b2ce87b): Kor Duelist, Fireblade Charger, Gate Hound and 16 more. Census: +19.
+- Next: the most-played unread abilities by deck usage. In order of play rank: Path of Ancestry, Myriad Landscape, Arcane Denial, Urza's Saga, Mana Drain, Victimize, Windfall, Idol of Oblivion, Force of Negation... (each needs a new shape: a mana-spent trigger, "share a land type", a delayed draw for the countered spell's controller, a granted Saga ability, mana from what was countered) Borrowed Knowledge waits with F3 for the evaluate-context change.
 
 ## For the rules session: your 200-game bench
 

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
  "name": "Mogg War Marshal",
- "card_hash": "6ea84b22e5af640ca7d24a7fb69c7489",
+ "card_hash": "4879fc6b3821c988a01f51befba1e030",
  "card": {
   "$": "CardDef",
   "oracle_id": "7b8f4879-578e-40e4-863a-41d0c32c6bdd",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 3004,
+  "edhrec_rank": 3054,
   "scryfall_uri": "https://scryfall.com/card/plst/DMR-131/mogg-war-marshal?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Mogg War Marshal",
    "face": 0,
    "face_name": "Mogg War Marshal",
-   "card_hash": "6ea84b22e5af640ca7d24a7fb69c7489",
+   "card_hash": "4879fc6b3821c988a01f51befba1e030",
    "fully_read": true,
    "abilities": [
     {

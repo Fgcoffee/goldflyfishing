@@ -136,11 +136,166 @@ def parse_face(card, face_index: int = 0) -> ParsedFace:
     abilities: list[Ability] = []
 
     for line in split_abilities(text, is_permanent=is_permanent):
+        failed = len(result.failures)
         ability = _parse_line(line, result, is_permanent=is_permanent)
+        if len(ability) == 1 and ability[0].unparsed:
+            recognised = _dummy(line, is_permanent=is_permanent)
+            if recognised is not None:
+                # Recognised, not implemented: no longer a parse failure.
+                del result.failures[failed:]
+                ability = [recognised]
         abilities.extend(ability)
 
+    abilities = [_on_the_stack(_bind_it(ability, result)) for ability in abilities]
     result.abilities = tuple(_refuse_borrowed_kicker(abilities, result))
     return result
+
+
+def _on_the_stack(ability: Ability) -> Ability:
+    """"This spell can't be countered." (Dovin's Veto, Carnage Tyrant): a
+    static ability of the spell, working while it's on the stack (CR
+    113.6g). On an instant it was read as a spell effect, which runs on
+    resolution, too late; on a permanent, as working on the battlefield."""
+    from dataclasses import replace as _replace
+
+    from ..rules.cr600_spells_and_abilities.abilities import STACK_ONLY
+
+    if ability.unparsed or ability.text.strip().lower().rstrip(".") != "this spell can't be countered":
+        return ability
+    if ability.kind not in (AbilityKind.SPELL, AbilityKind.STATIC):
+        return ability
+    return _replace(ability, kind=AbilityKind.STATIC, functions_in=STACK_ONLY)
+
+
+def _bind_it(ability: Ability, result: ParsedFace) -> Ability:
+    """"It" where nothing has been acted on yet.
+
+    "As long as this creature is equipped, it has double strike": "it" is read
+    as whatever the resolution acted on last, and a static ability has no
+    resolution. Left so, the filter has no constraint and the bonus reaches
+    every permanent. The same goes for a trigger at a step ("At the
+    beginning of your end step, if this creature is equipped, transform
+    it"), where nothing has been acted on when it resolves.
+
+    When the ability's condition is about the source itself, "it" is the
+    source. Otherwise the reading names nothing, and the ability is left
+    unread rather than applied to everything.
+    """
+    from dataclasses import replace as _replace
+
+    stepwise = (
+        ability.kind is AbilityKind.TRIGGERED
+        and ability.trigger is not None
+        and ability.trigger.subject is None
+        and ability.trigger.source is None
+    )
+    if ability.unparsed or not (ability.kind is AbilityKind.STATIC or stepwise):
+        return ability
+    # Only when "it" is the first thing acted on: after "reveal the top card",
+    # "its mana value" is that card (Dark Confidant).
+    if not _opens_with_a_back_reference(ability.effects):
+        return ability
+    conditions = [ability.static_condition]
+    if ability.trigger is not None:
+        conditions.append(ability.trigger.intervening_if)
+    conditions += [node.condition for effect in ability.effects for node in effect.walk()]
+    subjects = {_one_object(c) for c in conditions} - {None}
+    if len(subjects) == 1:
+        subject = subjects.pop()
+        return _replace(ability, effects=tuple(_bind_to(e, subject) for e in ability.effects))
+    if ability.kind is AbilityKind.TRIGGERED:
+        # "deals 1 damage to them" (the player the trigger is about), "a
+        # token copy of it" inside a for-each: the engine binds those.
+        return ability
+    result.failures.append(
+        ParseFailure(ability.text, '"it" names nothing here', rule="static-it")
+    )
+    return Ability.unreadable(ability.text)
+
+
+def _one_object(condition):
+    """The one object a condition is about, when it's the source ("this
+    creature is equipped") or what the source is attached to ("enchanted
+    creature is untapped"): "source" or "attached". None otherwise."""
+    if condition is None:
+        return None
+    spec = getattr(condition, "filter", None)
+    if spec is not None:
+        if spec.source_only:
+            return "source"
+        if spec.has_attached is not None and spec.has_attached.source_only:
+            return "attached"
+    found = {_one_object(op) for op in (getattr(condition, "operands", ()) or ())} - {None}
+    return found.pop() if len(found) == 1 else None
+
+
+def _bind_to(effect, subject: str):
+    """"It" in ``effect`` (and its branches) as the condition's object."""
+    from dataclasses import replace as _replace
+
+    from ..rules.kernel.query import ObjectFilter
+
+    targets = effect.targets
+    if targets is not None and targets.remembered:
+        if subject == "source":
+            targets = _replace(targets, remembered=False, source_only=True)
+        else:
+            targets = _replace(
+                targets, remembered=False, has_attached=ObjectFilter(source_only=True)
+            )
+    return _replace(
+        effect,
+        targets=targets,
+        children=tuple(_bind_to(c, subject) for c in effect.children),
+        otherwise=tuple(_bind_to(c, subject) for c in effect.otherwise),
+    )
+
+
+def _dummy(line: Line, *, is_permanent: bool) -> Ability | None:
+    """An unread ability that is a known shape the engine can't do yet
+    (``mtgfish.parser.dummies``): the whole of it, or a rider after a part
+    the grammar reads. None if it's neither."""
+    from dataclasses import replace as _replace
+
+    from . import dummies
+
+    found = dummies.whole(line.text)
+    if found is not None:
+        cost_text, colon, effect_text = line.text.partition(":")
+        if colon and line.kind is LineKind.ACTIVATED:
+            # "{2}, {T}, Sacrifice a creature: The next creature spell you
+            # cast this turn has cascade": still an activated ability with
+            # its cost, the dummy as its effect - the shape whoever
+            # implements it needs (readings_queue.md).
+            from .costs import parse_cost
+
+            cost, _ = parse_cost(cost_text)
+            if cost is not None:
+                return Ability(
+                    AbilityKind.ACTIVATED,
+                    effects=(Effect(EffectKind.DUMMY, rule=found.name, text=effect_text.strip()),),
+                    cost=cost,
+                    functions_in=_zones_paid_from(cost),
+                    text=line.text,
+                )
+        return Ability(
+            AbilityKind.STATIC,
+            effects=(Effect(EffectKind.DUMMY, rule=found.name, text=line.text),),
+            text=line.text,
+        )
+    split = dummies.rider(line.text)
+    if split is None:
+        return None
+    found, head, tail = split
+    heads = list(split_abilities(head, is_permanent=is_permanent))
+    if len(heads) != 1:
+        return None
+    scratch = ParsedFace()
+    parsed = _parse_line(heads[0], scratch, is_permanent=is_permanent)
+    if len(parsed) != 1 or parsed[0].unparsed or scratch.failures:
+        return None
+    marker = Effect(EffectKind.DUMMY, rule=found.name, text=tail)
+    return _replace(parsed[0], effects=(*parsed[0].effects, marker), text=line.text)
 
 
 #: The keywords whose payment "it was kicked / bargained" can report about

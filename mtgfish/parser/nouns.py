@@ -296,6 +296,7 @@ def parse_object_filter(stream: Stream) -> ObjectFilter | None:
     # where the two questions have the same answer; a coloured cost is a
     # different question and is left unread rather than approximated.
     spec = _printed_mana_cost(stream, spec)
+    spec = _basic_land_type(stream, spec)
     spec = _in_a_players_zone(stream, spec)
     spec = _whole_phrase_disjunction(stream, spec)
     stream.accept_phrase("of the chosen color")
@@ -2252,6 +2253,26 @@ def _in_a_players_zone(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
             else spec.controller
         ),
     )
+
+
+#: CR 305.6: the five basic land types.
+BASIC_LAND_TYPES = ("Plains", "Island", "Swamp", "Mountain", "Forest")
+
+
+def _basic_land_type(stream: Stream, spec: ObjectFilter) -> ObjectFilter:
+    """"a land card with a basic land type" (Boseiju, Who Endures): any one
+    of the five (CR 305.6), so Plains or Island or ... - a Tundra counts,
+    a Wastes doesn't. Only where nothing already narrows the subtypes."""
+    mark = stream.mark()
+    if not stream.accept("with"):
+        return spec
+    if not stream.accept("a", "an") or not stream.accept_phrase("basic land type"):
+        stream.reset(mark)
+        return spec
+    if spec.subtypes_any or spec.subtypes_all or spec.any_of:
+        stream.reset(mark)
+        return spec
+    return replace(spec, subtypes_any=BASIC_LAND_TYPES)
 
 
 def _printed_mana_cost(stream: Stream, spec: ObjectFilter) -> ObjectFilter:

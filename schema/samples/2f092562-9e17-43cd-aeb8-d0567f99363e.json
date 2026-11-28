@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "2f092562-9e17-43cd-aeb8-d0567f99363e",
  "name": "Go for the Throat",
- "card_hash": "6c3d13fff7cb9e9c0df1ad0af0737aef",
+ "card_hash": "64b2cfb98852c05950db0929f1c39ec2",
  "card": {
   "$": "CardDef",
   "oracle_id": "2f092562-9e17-43cd-aeb8-d0567f99363e",
@@ -41,8 +41,8 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 376,
-  "scryfall_uri": "https://scryfall.com/card/moc/250/go-for-the-throat?utm_source=api"
+  "edhrec_rank": 380,
+  "scryfall_uri": "https://scryfall.com/card/j25/447/go-for-the-throat?utm_source=api"
  },
  "faces": [
   {
@@ -51,7 +51,7 @@
    "name": "Go for the Throat",
    "face": 0,
    "face_name": "Go for the Throat",
-   "card_hash": "6c3d13fff7cb9e9c0df1ad0af0737aef",
+   "card_hash": "64b2cfb98852c05950db0929f1c39ec2",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
  "name": "Skirk Prospector",
- "card_hash": "1789c5a54e34a9986fa60abd8325a4fa",
+ "card_hash": "4cea0fb2ce70951980f8baba7d866329",
  "card": {
   "$": "CardDef",
   "oracle_id": "c18013e4-0b99-44e3-a2b2-027ace68723a",
@@ -43,7 +43,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1336,
+  "edhrec_rank": 1359,
   "scryfall_uri": "https://scryfall.com/card/dmr/137/skirk-prospector?utm_source=api"
  },
  "faces": [
@@ -53,7 +53,7 @@
    "name": "Skirk Prospector",
    "face": 0,
    "face_name": "Skirk Prospector",
-   "card_hash": "1789c5a54e34a9986fa60abd8325a4fa",
+   "card_hash": "4cea0fb2ce70951980f8baba7d866329",
    "fully_read": true,
    "abilities": [
     {

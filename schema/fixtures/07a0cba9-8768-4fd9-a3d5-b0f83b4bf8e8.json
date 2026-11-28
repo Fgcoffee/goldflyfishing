@@ -1,0 +1,135 @@
+{
+ "ir_version": 2,
+ "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
+ "name": "Chaos Warp",
+ "card_hash": "ff4801b6525f80926e798e52e1ef6ea1",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
+  "name": "Chaos Warp",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Chaos Warp",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 29,
+  "scryfall_uri": "https://scryfall.com/card/mbc/72/chaos-warp?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
+   "name": "Chaos Warp",
+   "face": 0,
+   "face_name": "Chaos Warp",
+   "card_hash": "ff4801b6525f80926e798e52e1ef6ea1",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 28,
+       "targets": {
+        "$": "ObjectFilter"
+       },
+       "is_targeted": true,
+       "zone": 0,
+       "keywords": [
+        "shuffle"
+       ],
+       "text": "shuffle it into its owner's library"
+      },
+      {
+       "$": "Effect",
+       "kind": 25,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          0
+         ]
+        },
+        "from_top": 1,
+        "owner": 4,
+        "count": {
+         "$": "Value",
+         "constant": 1
+        }
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "text": "reveals"
+      },
+      {
+       "$": "Effect",
+       "kind": 1,
+       "condition": {
+        "$": "Condition",
+        "kind": 18,
+        "filter": {
+         "$": "ObjectFilter",
+         "types_any": 63,
+         "remembered": true,
+         "zones": {
+          "$set": []
+         }
+        },
+        "text": "it is ..."
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 33,
+         "targets": {
+          "$": "ObjectFilter",
+          "remembered": true
+         },
+         "zone": 2,
+         "text": "put onto the battlefield"
+        }
+       ],
+       "text": "if"
+      }
+     ],
+     "text": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

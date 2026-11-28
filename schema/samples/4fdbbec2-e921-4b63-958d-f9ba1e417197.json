@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
  "name": "Purphoros, God of the Forge",
- "card_hash": "ea8f74093b51132c48937904031099f3",
+ "card_hash": "27618d561d0c15568792de669b8a28e9",
  "card": {
   "$": "CardDef",
   "oracle_id": "4fdbbec2-e921-4b63-958d-f9ba1e417197",
@@ -50,7 +50,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 685,
+  "edhrec_rank": 699,
   "scryfall_uri": "https://scryfall.com/card/cmm/246/purphoros-god-of-the-forge?utm_source=api"
  },
  "faces": [
@@ -60,8 +60,8 @@
    "name": "Purphoros, God of the Forge",
    "face": 0,
    "face_name": "Purphoros, God of the Forge",
-   "card_hash": "ea8f74093b51132c48937904031099f3",
-   "fully_read": false,
+   "card_hash": "27618d561d0c15568792de669b8a28e9",
+   "fully_read": true,
    "abilities": [
     {
      "$": "Ability",
@@ -75,12 +75,34 @@
      "effects": [
       {
        "$": "Effect",
-       "kind": 999,
-       "text": "As long as your devotion to red is less than five, this isn't a creature."
+       "kind": 147,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "types": 4,
+       "text": "isn't a all creature"
       }
      ],
      "text": "As long as your devotion to red is less than five, this isn't a creature.",
-     "unparsed": true
+     "static_condition": {
+      "$": "Condition",
+      "kind": 2003,
+      "constraint": {
+       "$": "NumericConstraint",
+       "comparison": 2,
+       "value": {
+        "$": "Value",
+        "constant": 5
+       }
+      },
+      "text": "a value comparison",
+      "value": {
+       "$": "Value",
+       "kind": 22,
+       "colors": 8
+      }
+     }
     },
     {
      "$": "Ability",
@@ -170,25 +192,8 @@
      }
     }
    ],
-   "failures": [
-    {
-     "$": "ParseFailure",
-     "text": "As long as your devotion to red is less than five, this isn't a creature.",
-     "reason": "not fully consumed",
-     "consumed": 12,
-     "remaining": [
-      "this",
-      "isn't",
-      "a",
-      "creature",
-      "."
-     ],
-     "rule": "plain"
-    }
-   ]
+   "failures": []
   }
  ],
- "bracket": [
-  "unread"
- ]
+ "bracket": []
 }

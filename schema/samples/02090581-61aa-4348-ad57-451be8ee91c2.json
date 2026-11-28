@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
  "name": "Ponder",
- "card_hash": "948238ce80e94cffaed449b6114b9016",
+ "card_hash": "553b22ccb3537257ed3e1144b23a023f",
  "card": {
   "$": "CardDef",
   "oracle_id": "02090581-61aa-4348-ad57-451be8ee91c2",
@@ -35,8 +35,8 @@
   "mana_value": 1,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 145,
-  "scryfall_uri": "https://scryfall.com/card/tdc/159/ponder?utm_source=api"
+  "edhrec_rank": 147,
+  "scryfall_uri": "https://scryfall.com/card/trc/440/ponder?utm_source=api"
  },
  "faces": [
   {
@@ -45,7 +45,7 @@
    "name": "Ponder",
    "face": 0,
    "face_name": "Ponder",
-   "card_hash": "948238ce80e94cffaed449b6114b9016",
+   "card_hash": "553b22ccb3537257ed3e1144b23a023f",
    "fully_read": true,
    "abilities": [
     {

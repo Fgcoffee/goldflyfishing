@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "313130ab-13db-4d0a-b3f3-b60e060b303c",
  "name": "Rattleblaze Scarecrow",
- "card_hash": "ed9f860dfca912a415e5e73942e6f7be",
+ "card_hash": "41eee74d5aecc78a7ff288806479bf63",
  "card": {
   "$": "CardDef",
   "oracle_id": "313130ab-13db-4d0a-b3f3-b60e060b303c",
@@ -39,7 +39,7 @@
   "mana_value": 6,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 16825,
+  "edhrec_rank": 17202,
   "scryfall_uri": "https://scryfall.com/card/shm/259/rattleblaze-scarecrow?utm_source=api"
  },
  "faces": [
@@ -49,7 +49,7 @@
    "name": "Rattleblaze Scarecrow",
    "face": 0,
    "face_name": "Rattleblaze Scarecrow",
-   "card_hash": "ed9f860dfca912a415e5e73942e6f7be",
+   "card_hash": "41eee74d5aecc78a7ff288806479bf63",
    "fully_read": true,
    "abilities": [
     {

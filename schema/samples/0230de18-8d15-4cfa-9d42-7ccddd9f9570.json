@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0230de18-8d15-4cfa-9d42-7ccddd9f9570",
  "name": "Supreme Verdict",
- "card_hash": "00c9ba555c5e99d8f26db3d9c0112b53",
+ "card_hash": "47406169c7b52dd40d2a91a9072fae2e",
  "card": {
   "$": "CardDef",
   "oracle_id": "0230de18-8d15-4cfa-9d42-7ccddd9f9570",
@@ -53,8 +53,8 @@
   "mana_value": 4,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 473,
-  "scryfall_uri": "https://scryfall.com/card/clu/211/supreme-verdict?utm_source=api"
+  "edhrec_rank": 469,
+  "scryfall_uri": "https://scryfall.com/card/trc/480/supreme-verdict?utm_source=api"
  },
  "faces": [
   {
@@ -63,12 +63,12 @@
    "name": "Supreme Verdict",
    "face": 0,
    "face_name": "Supreme Verdict",
-   "card_hash": "00c9ba555c5e99d8f26db3d9c0112b53",
+   "card_hash": "47406169c7b52dd40d2a91a9072fae2e",
    "fully_read": true,
    "abilities": [
     {
      "$": "Ability",
-     "kind": 0,
+     "kind": 3,
      "effects": [
       {
        "$": "Effect",
@@ -92,7 +92,12 @@
        "text": "can't"
       }
      ],
-     "text": "This spell can't be countered."
+     "text": "This spell can't be countered.",
+     "functions_in": {
+      "$set": [
+       4
+      ]
+     }
     },
     {
      "$": "Ability",

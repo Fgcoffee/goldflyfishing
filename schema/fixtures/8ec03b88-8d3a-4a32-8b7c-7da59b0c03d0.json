@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8ec03b88-8d3a-4a32-8b7c-7da59b0c03d0",
  "name": "Colossus Hammer",
- "card_hash": "33dbbf9a4c201895c37e859e07b81323",
+ "card_hash": "953e95e473d0fa27f6351702dbf58e93",
  "card": {
   "$": "CardDef",
   "oracle_id": "8ec03b88-8d3a-4a32-8b7c-7da59b0c03d0",
@@ -40,7 +40,7 @@
   "mana_value": 1,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 822,
+  "edhrec_rank": 809,
   "scryfall_uri": "https://scryfall.com/card/afc/202/colossus-hammer?utm_source=api"
  },
  "faces": [
@@ -50,7 +50,7 @@
    "name": "Colossus Hammer",
    "face": 0,
    "face_name": "Colossus Hammer",
-   "card_hash": "33dbbf9a4c201895c37e859e07b81323",
+   "card_hash": "953e95e473d0fa27f6351702dbf58e93",
    "fully_read": true,
    "abilities": [
     {

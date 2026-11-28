@@ -58,8 +58,22 @@ describe("replayPayload and boardPayload", () => {
 describe("parseStatus", () => {
   it("a vanilla card is ok; nothing read is blank; some read is partial", () => {
     const doc = (abilities: object[]) => ({ faces: [{ abilities }] }) as unknown as CardDocument;
-    expect(parseStatus(doc([]))).toEqual({ status: "ok", unread: [] });
-    expect(parseStatus(doc([{ unparsed: true, text: "x" }]))).toEqual({ status: "blank", unread: ["x"] });
+    expect(parseStatus(doc([]))).toEqual({ status: "ok", unread: [], recognised: [] });
+    expect(parseStatus(doc([{ unparsed: true, text: "x" }]))).toEqual({ status: "blank", unread: ["x"], recognised: [] });
     expect(parseStatus(doc([{ unparsed: true, text: "x" }, { text: "y" }])).status).toBe("partial");
+  });
+
+  it("names the recognised-not-implemented (dummy) shapes, and they aren't gaps", () => {
+    const doc = { faces: [{ abilities: [
+      { $: "Ability", effects: [{ $: "Effect", kind: 120 }, { $: "Effect", kind: 998, rule: "mana-spent-trigger" }] },
+    ] }] } as unknown as CardDocument;
+    expect(parseStatus(doc)).toEqual({ status: "ok", unread: [], recognised: ["mana-spent-trigger"] });
+  });
+
+  it("a dummy the engine carries out (IMPLEMENTED_DUMMIES) isn't listed", () => {
+    const doc = { faces: [{ abilities: [
+      { $: "Ability", effects: [{ $: "Effect", kind: 998, rule: "untap-during-others-untap-step" }] },
+    ] }] } as unknown as CardDocument;
+    expect(parseStatus(doc)).toEqual({ status: "ok", unread: [], recognised: [] });
   });
 });

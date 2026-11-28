@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
  "name": "Crypt Ghast",
- "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
+ "card_hash": "84a3b03539a3f05eeb88da508bec55b6",
  "card": {
   "$": "CardDef",
   "oracle_id": "a3c8d817-7949-4dae-b9f5-f9d952479270",
@@ -52,7 +52,7 @@
   "mana_value": 4,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 531,
+  "edhrec_rank": 518,
   "scryfall_uri": "https://scryfall.com/card/rvr/70/crypt-ghast?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Crypt Ghast",
    "face": 0,
    "face_name": "Crypt Ghast",
-   "card_hash": "b94d0cf130fc6edc0c8aa5276ffdddbd",
+   "card_hash": "84a3b03539a3f05eeb88da508bec55b6",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
  "name": "Narset, Parter of Veils",
- "card_hash": "a1775e5a5e1cbebd48edf8ba303648f7",
+ "card_hash": "7e43b3eea4ab73e29d7305f5b9372743",
  "card": {
   "$": "CardDef",
   "oracle_id": "ab26fbe2-e808-48b9-8d0d-3fbb6c3d554f",
@@ -52,7 +52,7 @@
   "mana_value": 3,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 974,
+  "edhrec_rank": 992,
   "scryfall_uri": "https://scryfall.com/card/cmm/853/narset-parter-of-veils?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Narset, Parter of Veils",
    "face": 0,
    "face_name": "Narset, Parter of Veils",
-   "card_hash": "a1775e5a5e1cbebd48edf8ba303648f7",
+   "card_hash": "7e43b3eea4ab73e29d7305f5b9372743",
    "fully_read": false,
    "abilities": [
     {

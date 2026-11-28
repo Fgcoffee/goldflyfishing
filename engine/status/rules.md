@@ -440,6 +440,111 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Incremental board: on (a72131c); the 5,000 cap: not raised (28 Nov)
+
+Built in dc48d3a, 28c5768, 840c2c9, behind `setIncrementalBoard`; now on
+by default (a72131c). A board recomputes only the objects that changed
+when that is provably exact (typed invalidations; an effect it can't
+prove local, or an untyped change, recomputes everything).
+
+**Check mode** (each partial board compared with a full one; throws on any
+difference): zero differences on all three.
+
+| Set | Games | Differences | Partial boards | Digests and work units, off vs check vs on |
+|---|---|---|---|---|
+| Bench, runSeed 20261114 | 200 | 0 | 881,391 of 8,268,787 | identical (0 of 200 differ) |
+| User's run (`user_run_15nov`) | 1,000 | 0 | 4,272,434 of 241,308,196 | identical (0 of 1,000 differ) |
+| Vitest suite | 970 tests | 0 | - | passes in check and on |
+
+**Times (summed over games; 4 games at a time on 4 cores, so noisy):**
+
+| Set | Off | On | Max game, off / on |
+|---|---|---|---|
+| Bench, 200 games | 375 s | 343 s | 16.6 s / 13.8 s |
+| User's 1,000 | 2,020 s | 1,882 s | 11.0 s / 9.2 s |
+
+A speed-up of 7-9%, not more: only 2% of the user's boards and 11% of the
+bench's can be partial. Most changes are untyped (they recompute
+everything), or come from effects the partial path won't trust (anthems
+whose filter reads P/T or abilities, conditions, CDAs, Shared Animosity).
+
+**The swarm cap: not raised.** At 5,000 (tried, not committed), the 10
+bench swarm games (all Krenko) no longer stop at the cap. They stop at the
+work budget instead, at 600 to 1,400 permanents: every board still counts
+its full size to the meter, which keeps the result the same in every
+mode. Two of the ten reach a real end (146 and 70 by life).
+
+| Game | Cap 500 (off) | Cap 5,000 (on) | How it ends at 5,000 | Peak | Partial / full |
+|---|---|---|---|---|---|
+| 9 | 6.6 s | 9.6 s (off: 11.4 s) | work budget | 966 | 3,316 / 627 |
+| 27 | 1.7 s | 5.7 s | work budget (Shared Animosity) | 1,385 | 2,756 / 567 |
+| 33 | 1.4 s | 4.9 s | work budget | 1,434 | 2,973 / 616 |
+| 55 | 7.7 s | 32.3 s | work budget | 1,039 | 2,290 / 1,973 |
+| 70 | 10.1 s | 33.2 s | life (a real end) | 1,257 | 2 / 4,935 |
+| 77 | 1.8 s | 25.3 s | work budget | 1,434 | 764 / 3,027 |
+| 119 | 8.8 s | 64.0 s | work budget | 985 | 0 / 4,342 |
+| 123 | 2.9 s | 30.4 s | work budget | 1,195 | 62 / 5,334 |
+| 146 | 1.8 s | 2.5 s | life (a real end) | 607 | 1,264 / 886 |
+| 173 | 1.9 s | 8.7 s | work budget | 1,305 | 4,105 / 1,513 |
+
+Together: 45 s at 500 against 217 s at 5,000, with 8 of 10 still stopped
+as runaways. So the cap stays at 500. Making 5,000 worth it needs two more
+things, which I haven't started (for the auditor to decide):
+1. The work meter counts the board's real cost (only the recomputed part
+   when partial). Then results would differ between modes in swarm games
+   (a different stopping turn), so replays must record the mode.
+2. More partial boards on swarm boards: type the remaining catch-alls
+   (attacks, counters, zone changes), and trust anthems whose filter reads
+   types only. Games 70, 119 and 123 are nearly all full recomputes.
+
+## Dummy abilities carried out (28 Nov): cbfb1b9, ff7df0e
+
+`engine/src/rules/dummies.ts` gives behaviour to the parser's DUMMY effects
+by `rule`, and exports **`IMPLEMENTED_DUMMIES`**:
+- `untap-during-others-untap-step` (Seedborn Muse, Unwinding Clock): in
+  each other player's untap step, the controller untaps what it names,
+  under the usual "doesn't untap" restrictions (CR 502.3).
+- `activation-cost-change` (Boseiju, Otawara and the other channel lands):
+  `activationManaCost` applies the ability's own amount to the generic part
+  (CR 601.2f), so Boseiju's channel costs {G} with a legendary creature.
+- `begin-game-on-battlefield` (the Leylines, CR 103.6): after the opening
+  hands, starting player first, each may put them onto the battlefield; no
+  "enters" triggers. Gemstone Caverns' version for a player who isn't
+  starting: a luck counter, and the last card in hand is exiled (fixed
+  choice, no agent decides it yet).
+- Tests: `engine/test/rules/dummies_real.test.ts` (real cards).
+- **For the parser:** these three can report as read (`IMPLEMENTED_DUMMIES`,
+  e.g. `parseStatus` treating them as ok, or switch the readings off DUMMY:
+  your call). For untap-during-others, the engine reads the dummy's
+  `targets` when you give one; without it, it reads the words for "this
+  creature/artifact/permanent" and "all permanents/artifacts/creatures/
+  lands you control" only. Next on your list: next-spell-rider,
+  mana-spent-trigger, mana-not-lost (1 to 2 top-1,000 cards each); say
+  which you want first, or send the next ranking.
+
+## Resumed 28 Nov: "that player" in object filters (17bf183)
+
+- Matching takes `thatPlayer`: a filter whose owner or controller is
+  SPECIFIC with no player named binds to it (unset: matches nothing, as
+  before). Values pass it to counts. resolve.ts `boundPlayer`: the player
+  an executor is carrying the instruction out for, else the one player
+  chosen earlier, else the trigger event's player. Damage, life gain and
+  loss, and per-player sacrifice evaluate per player when their filter
+  reads it (`readsThatPlayer`; otherwise unchanged). Trigger targets are
+  chosen and checked with the event's player.
+- Tests (real cards): All Is Dust, Stronghold Discipline, Acidic Soil,
+  Ragavan (exiles the damaged player's top card), Throat Slitter (targets
+  the damaged player's creature, and doesn't fizzle).
+- **For the parser:** Ragavan's exile works now (your 864afae). Primeval
+  Light and How to Start a Riot read with no "target player" (no player
+  in the IR, nothing to bind): the reading needs the player target.
+  Living Death's sacrifice lost "each player". Cards in the list whose
+  "that player" is another target's controller (Public Execution's "each
+  other creature that player controls") would need the targeted object's
+  controller: not done yet; say which shapes matter most.
+- Next (auditor's order): the dummy-ability backlog, then the incremental
+  board.
+
 ## PAUSED (15 Nov, 19:20 UTC, at the user's request via the auditor)
 
 Stopped before writing any incremental-board code; nothing half-done.

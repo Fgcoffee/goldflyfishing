@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8f878efc-850f-43d2-a6fe-5ea8d1dd5afb",
  "name": "Twincast",
- "card_hash": "a44e8574454e11913c3cd0e98f43d2c5",
+ "card_hash": "235c0bccd75fd4601a375efad140906c",
  "card": {
   "$": "CardDef",
   "oracle_id": "8f878efc-850f-43d2-a6fe-5ea8d1dd5afb",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 6258,
+  "edhrec_rank": 6251,
   "scryfall_uri": "https://scryfall.com/card/m10/78/twincast?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Twincast",
    "face": 0,
    "face_name": "Twincast",
-   "card_hash": "a44e8574454e11913c3cd0e98f43d2c5",
+   "card_hash": "235c0bccd75fd4601a375efad140906c",
    "fully_read": true,
    "abilities": [
     {

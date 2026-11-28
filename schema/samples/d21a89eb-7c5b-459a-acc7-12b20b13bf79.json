@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
  "name": "Strip Mine",
- "card_hash": "9a07828161280ff79bb09c17c2876bc3",
+ "card_hash": "6497bb112d9f9c0a60f9b0ebbfa51a34",
  "card": {
   "$": "CardDef",
   "oracle_id": "d21a89eb-7c5b-459a-acc7-12b20b13bf79",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 526,
+  "edhrec_rank": 535,
   "scryfall_uri": "https://scryfall.com/card/vma/316/strip-mine?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Strip Mine",
    "face": 0,
    "face_name": "Strip Mine",
-   "card_hash": "9a07828161280ff79bb09c17c2876bc3",
+   "card_hash": "6497bb112d9f9c0a60f9b0ebbfa51a34",
    "fully_read": true,
    "abilities": [
     {

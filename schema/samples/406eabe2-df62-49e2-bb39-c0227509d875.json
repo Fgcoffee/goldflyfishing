@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "406eabe2-df62-49e2-bb39-c0227509d875",
  "name": "Irrigated Farmland",
- "card_hash": "03929385f11485b45095e9988df7c8e6",
+ "card_hash": "dc119781ec660374c745399f6a5036f5",
  "card": {
   "$": "CardDef",
   "oracle_id": "406eabe2-df62-49e2-bb39-c0227509d875",
@@ -37,8 +37,8 @@
   "mana_value": 0,
   "color_identity": 3,
   "commander_legal": true,
-  "edhrec_rank": 811,
-  "scryfall_uri": "https://scryfall.com/card/msc/251/irrigated-farmland?utm_source=api"
+  "edhrec_rank": 803,
+  "scryfall_uri": "https://scryfall.com/card/trc/538/irrigated-farmland?utm_source=api"
  },
  "faces": [
   {
@@ -47,7 +47,7 @@
    "name": "Irrigated Farmland",
    "face": 0,
    "face_name": "Irrigated Farmland",
-   "card_hash": "03929385f11485b45095e9988df7c8e6",
+   "card_hash": "dc119781ec660374c745399f6a5036f5",
    "fully_read": true,
    "abilities": [
     {

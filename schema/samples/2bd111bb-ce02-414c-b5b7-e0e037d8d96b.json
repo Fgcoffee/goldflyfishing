@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
  "name": "Bolas's Citadel",
- "card_hash": "93a9c8eb46b2981d12e187729d363307",
+ "card_hash": "012971212fd027f3ccd37d879437b8ab",
  "card": {
   "$": "CardDef",
   "oracle_id": "2bd111bb-ce02-414c-b5b7-e0e037d8d96b",
@@ -54,7 +54,7 @@
   "mana_value": 6,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 269,
+  "edhrec_rank": 280,
   "scryfall_uri": "https://scryfall.com/card/war/79/bolass-citadel?utm_source=api"
  },
  "faces": [
@@ -64,7 +64,7 @@
    "name": "Bolas's Citadel",
    "face": 0,
    "face_name": "Bolas's Citadel",
-   "card_hash": "93a9c8eb46b2981d12e187729d363307",
+   "card_hash": "012971212fd027f3ccd37d879437b8ab",
    "fully_read": false,
    "abilities": [
     {

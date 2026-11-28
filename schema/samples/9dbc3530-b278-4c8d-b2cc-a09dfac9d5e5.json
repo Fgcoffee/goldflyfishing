@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
  "name": "Reassembling Skeleton",
- "card_hash": "1e372052ebc7806ce1845c6b1bef6f33",
+ "card_hash": "192e428ef8ce7a43701892aef04632b4",
  "card": {
   "$": "CardDef",
   "oracle_id": "9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 773,
+  "edhrec_rank": 776,
   "scryfall_uri": "https://scryfall.com/card/tdc/195/reassembling-skeleton?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Reassembling Skeleton",
    "face": 0,
    "face_name": "Reassembling Skeleton",
-   "card_hash": "1e372052ebc7806ce1845c6b1bef6f33",
+   "card_hash": "192e428ef8ce7a43701892aef04632b4",
    "fully_read": true,
    "abilities": [
     {

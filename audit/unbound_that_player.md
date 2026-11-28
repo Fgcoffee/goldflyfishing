@@ -1,0 +1,118 @@
+# Fully read cards with an unbound 'that player' / 'they' in an object filter
+
+Generated 22 Nov by the parser session (scan of parse_card over the pool).
+Each has an ObjectFilter with controller or owner = SPECIFIC and
+controller_specific = null. Neither engine binds it, so the filter matches
+nothing: confirmed on a board for All Is Dust (an opponent's Grizzly Bears
+survives) and How to Start a Riot (no pump). See audit/AUDIT_LOG.md.
+
+- Aberrant | Whenever this creature deals combat damage to a player, destroy target artifact or enchantment that player controls.
+- Acidic Soil | this deals damage to each player equal to the number of lands they control.
+- All Is Dust | Each player sacrifices all permanents they control that are one or more colors.
+- Anathemancer | When this creature enters, it deals damage to target player equal to the number of nonbasic lands that player controls.
+- Ancient Runes | At the beginning of each player's upkeep, this enchantment deals damage to that player equal to the number of artifacts they control.
+- Arm with Aether | Until end of turn, creatures you control gain "Whenever this creature deals damage to an opponent, you may return target creature that playe
+- Arms of Hadar | Creatures target player controls get -2/-2 until end of turn.
+- Ashling's Command | Choose two -
+- Balefire Dragon | Whenever this creature deals combat damage to a player, it deals that much damage to each creature that player controls.
+- Bilbo's Burglaring | For each opponent, gain control of up to one target artifact that player controls.
+- Black Bolt, Inhuman King | Whenever this becomes the target of a spell or ability an opponent controls, destroy target nonland permanent that player controls.
+- Blatant Thievery | For each opponent, gain control of target permanent that player controls.
+- Blind Zealot | Whenever this creature deals combat damage to a player, you may sacrifice it. If you do, destroy target creature that player controls.
+- Blinkmoth Urn | At the beginning of each player's first main phase, if this artifact is untapped, that player adds {C} for each artifact they control.
+- Burden of Greed | Target player loses 1 life for each tapped artifact they control.
+- Cabaretti Confluence | Choose three. You may choose the same mode more than once.
+- Caustic Wasps | Whenever this creature deals combat damage to a player, you may destroy target artifact that player controls.
+- Chaos Warp | The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put
+- Citadel of Pain | At the beginning of each player's end step, this enchantment deals X damage to that player, where X is the number of untapped lands they con
+- Clone Legion | For each creature target player controls, create a token that's a copy of that creature.
+- Cold Snap | At the beginning of each player's upkeep, this enchantment deals damage to that player equal to the number of snow lands they control.
+- Collective Effort | Choose one or more -
+- Dark Salvation | Target player creates X 2/2 black Zombie creature tokens, then up to one target creature gets -1/-1 until end of turn for each Zombie that p
+- Dawnglare Invoker | {8}: Tap all creatures target player controls.
+- Dawning Purist | Whenever this creature deals combat damage to a player, you may destroy target enchantment that player controls.
+- Divine Congregation | You gain 2 life for each creature target player controls.
+- Dokuchi Silencer | Whenever this creature deals combat damage to a player, you may discard a creature card. When you do, destroy target creature or planeswalke
+- Dreadmaw's Ire | Until end of turn, target attacking creature gets +2/+2 and gains trample and "Whenever this creature deals combat damage to a player, destr
+- Emissary of Despair | Whenever this creature deals combat damage to a player, that player loses 1 life for each artifact they control.
+- Emissary of Hope | Whenever this creature deals combat damage to a player, you gain 1 life for each artifact that player controls.
+- Enigma Thief | When this creature enters, for each opponent, return up to one target nonland permanent that player controls to its owner's hand.
+- Feline Sovereign | Whenever one or more Cats you control deal combat damage to a player, destroy up to one target artifact or enchantment that player controls.
+- Fishing Gear | Whenever equipped creature deals combat damage to a player, exile the top card of that player's library. If it's a permanent card, you may p
+- Flames of the Raze-Boar | this deals 4 damage to target creature an opponent controls. Then this deals 2 damage to each other creature that player controls if you con
+- Generous Plunderer | Whenever this creature attacks, it deals damage to defending player equal to the number of artifacts they control.
+- Geode Rager | Whenever a land you control enters, goad each creature target player controls.
+- Ghostly Prison | Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.
+- Gilt-Leaf Archdruid | Tap seven untapped Druids you control: Gain control of all lands target player controls.
+- Great Oak Guardian | When this creature enters, creatures target player controls get +2/+2 until end of turn. Untap them.
+- Grub's Command | Choose two -
+- Gulf Squid | When this creature enters, tap all lands target player controls.
+- Hammer of Ruin | Whenever equipped creature deals combat damage to a player, you may destroy target Equipment that player controls.
+- Hapatra, the Desert Fang | When this enters, for each opponent, put X -1/-1 counters on up to one target creature that player controls, where X is the greatest mana va
+- Hapatra, the Desert Frost | When this enters, for each opponent, tap up to one target creature that player controls. Put a stun counter on each of those creatures.
+- Haytham Kenway | When this enters, for each opponent, exile up to one target creature that player controls until this leaves the battlefield.
+- Hellkite Tyrant | Whenever this creature deals combat damage to a player, gain control of all artifacts that player controls.
+- Hoard Hauler | Whenever this Vehicle deals combat damage to a player, create a Treasure token for each artifact they control.
+- How to Start a Riot | Creatures target player controls get +2/+0 until end of turn.
+- In the Darkness Bind Them | For each opponent, gain control of up to one target creature that player controls until end of turn. Untap those creatures. They gain haste 
+- Inscription of Abundance | Choose one. If this spell was kicked, choose any number instead.
+- Invoke Justice | Return target permanent card from your graveyard to the battlefield, then distribute four +1/+1 counters among any number of creatures and/o
+- Kappa Tech-Wrecker | Whenever this creature deals combat damage to a player, you may remove a deathtouch counter from it. When you do, exile target artifact or e
+- Karma | At the beginning of each player's upkeep, this enchantment deals damage to that player equal to the number of Swamps they control.
+- Lich's Relic | When this Equipment enters, you may pay {2}. When you do, for each opponent, destroy up to one target creature or planeswalker that player c
+- Living Death | Each player exiles all creature cards from their graveyard, then sacrifices all creatures they control, then puts all cards they exiled this
+- Living End | Each player exiles all creature cards from their graveyard, then sacrifices all creatures they control, then puts all cards they exiled this
+- Maestros Confluence | Choose three. You may choose the same mode more than once.
+- Magus of the Abyss | At the beginning of each player's upkeep, destroy target nonartifact creature that player controls of their choice. It can't be regenerated.
+- Malboro | When this creature enters, each opponent discards a card, loses 2 life, and exiles the top three cards of their library.
+- Mass Diminish | Until your next turn, creatures target player controls have base power and toughness 1/1.
+- Mass Mutiny | For each opponent, gain control of up to one target creature that player controls until end of turn. Untap those creatures. They gain haste 
+- Meadowboon | When this creature leaves the battlefield, put a +1/+1 counter on each creature target player controls.
+- Mistblade Shinobi | Whenever this creature deals combat damage to a player, you may return target creature that player controls to its owner's hand.
+- Molten Primordial | When this creature enters, for each opponent, gain control of up to one target creature that player controls until end of turn. Untap those 
+- Nature's Will | Whenever one or more creatures you control deal combat damage to a player, tap all lands that player controls and untap all lands you contro
+- Naya Charm | Choose one -
+- Netherborn Phalanx | When this creature enters, each opponent loses 1 life for each creature they control.
+- Night // Day | Creatures target player controls get +1/+1 until end of turn.
+- Orochi Soul-Reaver | Whenever one or more creatures you control deal combat damage to a player, create a Treasure token and manifest the top card of that player'
+- Pact of the Serpent | Choose a creature type. Target player draws X cards and loses X life, where X is the number of creatures they control of the chosen type.
+- Pep, Raucous Raider | Whenever a creature you control deals combat damage to a player, exile the top card of that player's library. It perpetually becomes an arti
+- Planet Killer | Whenever this creature deals combat damage to a player, put a +1/+1 counter on it for each land that player controls.
+- Polymorphist's Jest | Until end of turn, each creature target player controls loses all abilities and becomes a blue Frog with base power and toughness 1/1.
+- Popular Entertainer | Commander creatures you own have "Whenever one or more creatures you control deal combat damage to a player, goad target creature that playe
+- Primal Order | At the beginning of each player's upkeep, this enchantment deals damage to that player equal to the number of nonbasic lands they control.
+- Primaris Eliminator | When this creature enters, choose one -
+- Primeval Light | Destroy all enchantments target player controls.
+- Propaganda | Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.
+- Public Execution | Destroy target creature an opponent controls. Each other creature that player controls gets -2/-0 until end of turn.
+- Ragavan, Nimble Pilferer | Whenever this deals combat damage to a player, create a Treasure token and exile the top card of that player's library. Until end of turn, y
+- Riptide Entrancer | Whenever this creature deals combat damage to a player, you may sacrifice it. If you do, gain control of target creature that player control
+- River's Rebuke | Return all nonland permanents target player controls to their owner's hand.
+- Rustmouth Ogre | Whenever this creature deals combat damage to a player, you may destroy target artifact that player controls.
+- Satyr Firedancer | Whenever an instant or sorcery spell you control deals damage to an opponent, this creature deals that much damage to target creature that p
+- Savage Alliance | Choose one or more -
+- Scalelord Reckoner | Whenever a Dragon you control becomes the target of a spell or ability an opponent controls, destroy target nonland permanent that player co
+- Schema Thief | Whenever this creature deals combat damage to a player, create a token that's a copy of target artifact that player controls.
+- Scrap Mastery | Each player exiles all artifact cards from their graveyard, then sacrifices all artifacts they control, then puts all cards they exiled this
+- Scrib Nibblers | {T}: Exile the top card of target player's library. If it's a land card, you gain 1 life.
+- Shields of Velis Vel | Creatures target player controls get +0/+1 and gain all creature types until end of turn.
+- Shockmaw Dragon | Whenever this creature deals combat damage to a player, it deals 1 damage to each creature that player controls.
+- Sigil of Sleep | Whenever enchanted creature deals damage to a player, return target creature that player controls to its owner's hand.
+- Soltari Visionary | Whenever this creature deals damage to a player, destroy target enchantment that player controls.
+- Stern Judge | {T}: Each player loses 1 life for each Swamp they control.
+- Stronghold Discipline | Each player loses 1 life for each creature they control.
+- Sudden Disappearance | Exile all nonland permanents target player controls. Return the exiled cards to the battlefield under their owner's control at the beginning
+- Sygg's Command | Choose two -
+- Tempted by the Oriq | For each opponent, gain control of up to one target creature or planeswalker that player controls with mana value 3 or less.
+- The Abyss | At the beginning of each player's upkeep, destroy target nonartifact creature that player controls of their choice. It can't be regenerated.
+- The Theorist, Jace Beleren | -2: For each opponent, return up to one target artifact or creature that player controls to its owner's hand.
+- Throat Slitter | Whenever this creature deals combat damage to a player, destroy target nonblack creature that player controls.
+- Treacherous Terrain | this deals damage to each opponent equal to the number of lands that player controls.
+- Tri-Sentinel, Act of Vengeance | When this enters, for each opponent, this deals 3 damage to up to one target creature that player controls.
+- Trygon Predator | Whenever this creature deals combat damage to a player, you may destroy target artifact or enchantment that player controls.
+- Trystan's Command | Choose two -
+- Twisted Fates | Destroy target nonland permanent. Put a +1/+1 counter on each creature target player controls.
+- Typhoon | this deals damage to each opponent equal to the number of Islands that player controls.
+- Villainous Wrath | Target opponent loses life equal to the number of creatures they control. Then destroy all creatures.
+- Waiting in the Weeds | Each player creates a 1/1 green Cat creature token for each untapped Forest they control.
+- Windborn Muse | Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.

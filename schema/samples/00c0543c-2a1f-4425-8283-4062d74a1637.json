@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "00c0543c-2a1f-4425-8283-4062d74a1637",
  "name": "Solemn Simulacrum",
- "card_hash": "f8e42681b01756e481bfd61f8e1c1a6e",
+ "card_hash": "3236886ca29c0838a284b505ba51dfca",
  "card": {
   "$": "CardDef",
   "oracle_id": "00c0543c-2a1f-4425-8283-4062d74a1637",
@@ -39,7 +39,7 @@
   "mana_value": 4,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 38,
+  "edhrec_rank": 44,
   "scryfall_uri": "https://scryfall.com/card/msc/215/solemn-simulacrum?utm_source=api"
  },
  "faces": [
@@ -49,7 +49,7 @@
    "name": "Solemn Simulacrum",
    "face": 0,
    "face_name": "Solemn Simulacrum",
-   "card_hash": "f8e42681b01756e481bfd61f8e1c1a6e",
+   "card_hash": "3236886ca29c0838a284b505ba51dfca",
    "fully_read": true,
    "abilities": [
     {

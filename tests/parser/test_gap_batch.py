@@ -323,3 +323,257 @@ def test_your_commander_from_the_command_zone(card_db):
     assert move.kind is EffectKind.MOVE_ZONE and move.zone is Zone.HAND
     assert move.targets.is_commander and move.targets.owner is ControllerRelation.YOU
     assert move.targets.zones == frozenset({Zone.COMMAND})
+
+
+def test_discarding_at_random_is_not_the_players_choice(card_db):
+    from mtgfish.parser.compile import parse_card
+
+    effect = parse_card(card_db.lookup("Hymn to Tourach")).faces[0].abilities[0].effects[0]
+    assert effect.kind is EffectKind.DISCARD and effect.amount.constant == 2
+    assert "at random" in effect.keywords
+    plain = parse_effects(Stream.of("Target player discards two cards."))[0]
+    assert "at random" not in plain.keywords
+
+
+def test_unless_any_player_pays_is_left_unread(card_db):
+    """The first player who pays stops it; the IR can only ask each player in
+    turn, so the card stays unread rather than misread."""
+    from mtgfish.parser.compile import parse_card
+
+    assert not parse_card(card_db.lookup("Icy Prison")).fully_parsed
+    # A condition about "a player" still reads.
+    assert parse_card(card_db.lookup("Abandoned Campground")).fully_parsed
+
+
+def test_a_basic_land_type_is_any_of_the_five():
+    """CR 305.6: "a land card with a basic land type" (Boseiju)."""
+    spec = parse_object_filter(Stream.of("a land card with a basic land type"))
+    assert spec is not None and set(spec.subtypes_any) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}
+    assert spec.types_all & CardType.LAND
+
+
+@pytest.mark.parametrize("text, targeted", [
+    ("The owner of target permanent shuffles it into their library.", True),
+    ("Target creature's owner shuffles it into their library.", True),
+])
+def test_the_owner_of_a_target_shuffles_that_target_in(text, targeted):
+    """Chaos Warp: the target is what moves, and it's shuffled in."""
+    effect = parse_effects(Stream.of(text))[0]
+    assert effect.kind is EffectKind.MOVE_ZONE and effect.is_targeted is targeted
+    assert not effect.targets.remembered and "shuffle" in effect.keywords
+
+
+def test_shuffle_this_into_its_owners_library():
+    """The Zenith and Beacon cycles: the card itself, shuffled in."""
+    effect = parse_effects(Stream.of("Shuffle this into its owner's library."))[0]
+    assert effect.kind is EffectKind.MOVE_ZONE and effect.targets.source_only
+    assert "shuffle" in effect.keywords
+
+
+def test_if_instead_replaces_the_effect_before_it():
+    """Field Research: the kicked draw replaces the plain one, not both."""
+    effects = parse_effects(Stream.of("Draw two cards. If this spell was kicked, draw three cards instead."))
+    assert len(effects) == 1
+    only = effects[0]
+    assert only.kind is EffectKind.CONDITIONAL
+    assert only.children[0].amount.constant == 3 and only.otherwise[0].amount.constant == 2
+
+
+@pytest.mark.parametrize("text", [
+    # "that creature" is the first effect's target: unread, not misread.
+    "Target creature gets +2/+2 until end of turn. If this spell was kicked, "
+    "that creature gets +5/+5 until end of turn instead.",
+    # A different target in the replacement.
+    "Exile target artifact or enchantment. If this spell was kicked, exile target nonland permanent instead.",
+    # Different kinds of effect: what "instead" replaces isn't plain.
+    "Draw a card. If you control a Forest, create a 1/1 white Spirit creature token instead.",
+])
+def test_if_instead_is_left_unread_when_it_refers_back(text):
+    assert parse_effects(Stream.of(text)) is None
+
+
+@pytest.mark.parametrize("word, subtype", [("equipped", "Equipment"), ("enchanted", "Aura")])
+def test_this_is_equipped_or_enchanted(word, subtype):
+    """"As long as this creature is equipped": something of that kind is attached."""
+    from mtgfish.parser.clauses import parse_condition_text
+
+    condition = parse_condition_text(Stream.of(f"this creature is {word}"))
+    assert condition is not None
+    attached = condition.filter.has_attached
+    assert attached is not None and attached.subtypes_any == (subtype,)
+
+
+@pytest.mark.parametrize("name, subject", [
+    ("Kor Duelist", "source"),            # "this creature is equipped, it has ..."
+    ("Clout of the Dominus", "attached"), # "enchanted creature is blue, it gets ..."
+    ("Narcolepsy", "attached"),           # a step trigger: "tap it"
+])
+def test_it_in_a_static_ability_is_the_conditions_object(card_db, name, subject):
+    """readings_queue.md: "it" here once meant whatever was just referred to,
+    which in a static ability is nothing, so the bonus reached every permanent."""
+    from mtgfish.parser.compile import parse_card
+
+    nodes = [n for face in parse_card(card_db.lookup(name)).faces for a in face.abilities
+             for e in a.effects for n in e.walk() if n.targets is not None]
+    assert nodes and not any(n.targets.remembered for n in nodes)
+    if subject == "source":
+        assert any(n.targets.source_only for n in nodes)
+    else:
+        assert any(n.targets.has_attached is not None and n.targets.has_attached.source_only for n in nodes)
+
+
+def test_that_creature_with_nothing_to_name_is_left_unread(card_db):
+    """Deadly Wanderings: "that creature" is the one creature you control,
+    which the IR can't name; unread rather than every creature."""
+    from mtgfish.parser.compile import parse_card
+
+    assert not parse_card(card_db.lookup("Deadly Wanderings")).fully_parsed
+
+
+@pytest.mark.parametrize("name", ["Dovin's Veto", "Carnage Tyrant"])
+def test_cant_be_countered_works_on_the_stack(card_db, name):
+    """readings_queue.md: on an instant it was a spell effect (runs on
+    resolution, too late); on a permanent, it worked on the battlefield."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.cr600_spells_and_abilities.abilities import AbilityKind
+    from mtgfish.rules.kernel.enums import Zone
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    line = next(a for a in face.abilities if a.text.lower().startswith("this spell can't be countered"))
+    assert line.kind is AbilityKind.STATIC and line.functions_in == frozenset({Zone.STACK})
+
+
+def test_every_basic_land_type_is_all_five(card_db):
+    """Dryad of the Ilysian Grove (readings_queue.md): read as no types."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Dryad of the Ilysian Grove")).faces[0]
+    added = [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.ADD_TYPE]
+    assert added and set(added[0].keywords) == {"Plains", "Island", "Swamp", "Mountain", "Forest"}
+
+
+@pytest.mark.parametrize("name", ["The Great Henge", "Ghalta, Primal Hunger", "Drag to the Underworld"])
+def test_costs_x_less_keeps_its_definition(card_db, name):
+    """readings_queue.md: "costs {X} less ..., where X is ..." read as "costs
+    0 less" ({X} has mana value 0). X is now the trailing definition."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.query import ValueKind
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    change = next(n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.MODIFY_COST)
+    assert change.amount.kind is ValueKind.PRODUCT
+    sign, x = change.amount.operands
+    assert sign.constant == -1 and x.kind not in (ValueKind.X, ValueKind.CONSTANT)
+
+
+@pytest.mark.parametrize("name, tapped", [
+    ("Rom and Leeta, Unlikely Pair", True),  # "create two tapped Treasure tokens"
+    ("Fallaji Excavation", True),  # "Create three tapped Powerstone tokens"
+    ("Smothering Tithe", False),  # "create a Treasure token"
+])
+def test_a_tapped_token_enters_tapped(card_db, name, tapped):
+    """The noun reader took "tapped" as a filter constraint and nothing carried
+    it to the token, so every "create a tapped ..." token entered untapped."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    made = [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.CREATE_TOKEN]
+    assert made and all(n.token.enters_tapped is tapped for n in made)
+
+
+@pytest.mark.parametrize("name, events", [
+    ("Teysa Karlov", {"DIES"}),
+    ("Panharmonicon", {"ENTERS_BATTLEFIELD"}),
+    ("Gandalf the White", {"ENTERS_BATTLEFIELD", "LEAVES_BATTLEFIELD"}),
+    ("Wulfgar of Icewind Dale", {"ATTACKS"}),
+])
+def test_an_extra_trigger_keeps_its_causing_event(card_db, name, events):
+    """"If a creature *dying* causes a triggered ability ... to trigger": the
+    participle was skipped, so Teysa doubled a creature's entering triggers."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    extra = next(e for a in face.abilities for e in a.effects if e.kind is EffectKind.EXTRA_TRIGGER)
+    assert {k.name for k in extra.trigger.event_kinds} == events
+
+
+def test_an_extra_trigger_with_an_unknown_event_is_unread():
+    from mtgfish.parser.clauses import _causing_event
+
+    assert _causing_event("drawing a card") is None
+
+
+def test_its_inside_a_target_filters_x_is_the_source(card_db):
+    """Julian Bashir (readings_queue.md): "mana value X or less ..., where X
+    is its power". With "its" as the affected object, the engine compared each
+    card's mana value with that card's own power."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Julian Bashir, Frontier Doctor")).faces[0]
+    put = next(e for a in face.abilities for e in a.effects if e.kind is EffectKind.PUT_ONTO_BATTLEFIELD)
+    bound = put.targets.mana_value.value
+    assert bound.kind.name == "POWER" and not bound.of_affected
+
+
+@pytest.mark.parametrize("name, free", [
+    ("Ragavan, Nimble Pilferer", False),  # "you may cast that card"
+    ("Yawgmoth's Will", False),  # "you may play lands and cast spells from your graveyard"
+    ("Torrential Gearhulk", True),  # "... without paying its mana cost"
+])
+def test_cast_pays_unless_it_says_free(card_db, name, free):
+    """readings_queue.md: the keyword-action table made every "cast" free,
+    so Ragavan's and Yawgmoth's Will's casts cost nothing."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    kinds = {n.kind for a in face.abilities for e in a.effects for n in e.walk()}
+    assert (EffectKind.CAST_WITHOUT_PAYING in kinds) is free
+    if not free:
+        assert EffectKind.PLAY_FROM_ZONE in kinds
+
+
+def test_a_free_cast_keeps_its_count(card_db):
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Sram's Expertise")).faces[0]
+    cast = next(n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.CAST_WITHOUT_PAYING)
+    assert cast.targets.count is not None
+
+
+def test_cast_this_spell_only_during_is_not_an_instruction(card_db):
+    """Delirium: a timing restriction, read as the spell casting itself."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup("Delirium")).faces[0]
+    line = next(a for a in face.abilities if a.text.startswith("Cast this spell only"))
+    assert line.unparsed
+
+
+@pytest.mark.parametrize("name", ["Purphoros, God of the Forge", "Xenagos, God of Revels"])
+def test_a_god_isnt_a_creature_below_its_devotion(card_db, name):
+    """The Theros gods' "As long as your devotion to red is less than five,
+    this isn't a creature" was unread."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.enums import CardType
+
+    parsed = parse_card(card_db.lookup(name))
+    assert parsed.fully_parsed
+    line = next(a for a in parsed.faces[0].abilities if "isn't a creature" in a.text)
+    assert [(e.kind, e.types) for e in line.effects] == [(EffectKind.REMOVE_TYPE, CardType.CREATURE)]
+    assert line.static_condition.value.kind.name == "DEVOTION"
+
+
+@pytest.mark.parametrize("name, scope", [
+    ("Primeval Light", "TARGET_PLAYER"),  # "Destroy all enchantments target player controls."
+    ("Overwhelming Forces", "TARGET_OPPONENT"),  # "Destroy all creatures target opponent controls."
+])
+def test_target_player_controls_targets_the_player(card_db, name, scope):
+    """The rules session (rules.md, 28 Nov): "target player controls" read as
+    a controller with no player and no target, so there was no player to
+    choose. The instruction targets the player now."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.query import ControllerRelation
+
+    effect = parse_card(card_db.lookup(name)).faces[0].abilities[0].effects[0]
+    assert effect.is_targeted and effect.players.scope.name == scope
+    assert effect.targets.controller is ControllerRelation.SPECIFIC

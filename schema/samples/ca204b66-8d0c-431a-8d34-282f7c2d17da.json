@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
  "name": "Lightning Greaves",
- "card_hash": "8c6f4c1ece112fc542ed34f4fd4b8749",
+ "card_hash": "5298cc2d3ec10231c68a90bbf69e69aa",
  "card": {
   "$": "CardDef",
   "oracle_id": "ca204b66-8d0c-431a-8d34-282f7c2d17da",
@@ -41,7 +41,7 @@
   "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 13,
-  "scryfall_uri": "https://scryfall.com/card/msc/202/lightning-greaves?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trc/496/lightning-greaves?utm_source=api"
  },
  "faces": [
   {
@@ -50,7 +50,7 @@
    "name": "Lightning Greaves",
    "face": 0,
    "face_name": "Lightning Greaves",
-   "card_hash": "8c6f4c1ece112fc542ed34f4fd4b8749",
+   "card_hash": "5298cc2d3ec10231c68a90bbf69e69aa",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6de714e1-446d-4fb9-9e3d-bcd3ec6af9ca",
  "name": "Jungle Hollow",
- "card_hash": "6e949ddd5089380056d83b5a5141be8b",
+ "card_hash": "62f9202d24073b95064fbc77fdadd0b4",
  "card": {
   "$": "CardDef",
   "oracle_id": "6de714e1-446d-4fb9-9e3d-bcd3ec6af9ca",
@@ -30,7 +30,7 @@
   "mana_value": 0,
   "color_identity": 20,
   "commander_legal": true,
-  "edhrec_rank": 784,
+  "edhrec_rank": 810,
   "scryfall_uri": "https://scryfall.com/card/tdm/258/jungle-hollow?utm_source=api"
  },
  "faces": [
@@ -40,7 +40,7 @@
    "name": "Jungle Hollow",
    "face": 0,
    "face_name": "Jungle Hollow",
-   "card_hash": "6e949ddd5089380056d83b5a5141be8b",
+   "card_hash": "62f9202d24073b95064fbc77fdadd0b4",
    "fully_read": true,
    "abilities": [
     {

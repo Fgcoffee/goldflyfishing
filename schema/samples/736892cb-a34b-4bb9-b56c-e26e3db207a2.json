@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
  "name": "Mana Vault",
- "card_hash": "65a8a518acc87465a6dce684bc6b446e",
+ "card_hash": "3a6d999f2136a321e9d8f1c60ebae3f9",
  "card": {
   "$": "CardDef",
   "oracle_id": "736892cb-a34b-4bb9-b56c-e26e3db207a2",
@@ -37,7 +37,7 @@
   "mana_value": 1,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 148,
+  "edhrec_rank": 152,
   "scryfall_uri": "https://scryfall.com/card/2x2/308/mana-vault?utm_source=api"
  },
  "faces": [
@@ -47,7 +47,7 @@
    "name": "Mana Vault",
    "face": 0,
    "face_name": "Mana Vault",
-   "card_hash": "65a8a518acc87465a6dce684bc6b446e",
+   "card_hash": "3a6d999f2136a321e9d8f1c60ebae3f9",
    "fully_read": true,
    "abilities": [
     {

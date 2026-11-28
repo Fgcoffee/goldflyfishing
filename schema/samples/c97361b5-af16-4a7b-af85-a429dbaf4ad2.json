@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c97361b5-af16-4a7b-af85-a429dbaf4ad2",
  "name": "Mind Stone",
- "card_hash": "530d32d89a86fbd7979b94edd4189d81",
+ "card_hash": "98ea87d1a28fc0cd7ac2286e0c5c4f9f",
  "card": {
   "$": "CardDef",
   "oracle_id": "c97361b5-af16-4a7b-af85-a429dbaf4ad2",
@@ -38,7 +38,7 @@
   "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 32,
-  "scryfall_uri": "https://scryfall.com/card/mbc/76/mind-stone?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trc/497/mind-stone?utm_source=api"
  },
  "faces": [
   {
@@ -47,7 +47,7 @@
    "name": "Mind Stone",
    "face": 0,
    "face_name": "Mind Stone",
-   "card_hash": "530d32d89a86fbd7979b94edd4189d81",
+   "card_hash": "98ea87d1a28fc0cd7ac2286e0c5c4f9f",
    "fully_read": true,
    "abilities": [
     {

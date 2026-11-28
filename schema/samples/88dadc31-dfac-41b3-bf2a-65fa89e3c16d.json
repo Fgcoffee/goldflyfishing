@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "88dadc31-dfac-41b3-bf2a-65fa89e3c16d",
  "name": "Linvala, Keeper of Silence",
- "card_hash": "2a70f6e09e89f6e6b7150ce47682741d",
+ "card_hash": "8d4e411b74f6a27d8a62f0d9604926bd",
  "card": {
   "$": "CardDef",
   "oracle_id": "88dadc31-dfac-41b3-bf2a-65fa89e3c16d",
@@ -56,7 +56,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 2596,
+  "edhrec_rank": 2641,
   "scryfall_uri": "https://scryfall.com/card/jmp/119/linvala-keeper-of-silence?utm_source=api"
  },
  "faces": [
@@ -66,7 +66,7 @@
    "name": "Linvala, Keeper of Silence",
    "face": 0,
    "face_name": "Linvala, Keeper of Silence",
-   "card_hash": "2a70f6e09e89f6e6b7150ce47682741d",
+   "card_hash": "8d4e411b74f6a27d8a62f0d9604926bd",
    "fully_read": false,
    "abilities": [
     {

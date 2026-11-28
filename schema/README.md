@@ -31,6 +31,42 @@ Rerun `export` after the parser or the card data changes. It writes every
 card, about 75 seconds on four cores. To serve one deck, look up its cards
 in `index.json` and send their card files.
 
+## The readings lock
+
+`schema/readings.lock` records every format-pool card's reading: one line per
+card, `oracle_id`, state (`read`, `partial`, `notext`), a hash of the
+abilities in its IR document, and the name. `tests/ir/test_readings_lock.py`
+fails while the parser and the lock disagree, so the card database changes
+only on purpose:
+
+```bash
+python -m mtgfish.tools.readings_lock check   # which cards' readings moved
+python -m mtgfish.tools.readings_lock write   # accept them (commit with the change)
+```
+
+The lock's git diff is the list of cards whose reading moved. It is a record
+checked against the parser, never read in its place.
+
+## Authored readings
+
+`mtgfish/ir/authored/<oracle_id>.json` holds reviewed, hand-written readings
+for cards whose wording is one of a kind (`mtgfish/ir/authored.py`). The
+export serves them in place of the parser's reading and marks the face
+`"authored": true`. Each ability keeps the paraphrase it was read from
+(`as`), a wording the parser reads that means what the Oracle line means, so
+a reviewer can check it. A card whose text changed since falls back to the
+parser, and `tests/ir/test_authored.py` fails until it is re-authored.
+
+```bash
+python -m mtgfish.tools.authored show "Cabal Ritual"
+python -m mtgfish.tools.authored write "Cabal Ritual" --as 0.0 "<paraphrase>" --as 0.1 "" --note "<why>"
+python -m mtgfish.tools.authored check
+```
+
+Grammar rules stay the first choice for any wording more than one card
+shares: they cover future sets too. This store is a deliberate source, unlike
+the parse store, which is a cache.
+
 ## Serving a deck from Python
 
 ```python

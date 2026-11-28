@@ -574,7 +574,10 @@ export function applySelfEntryReplacements(game: Game, obj: GameObject): void {
   for (const ability of characteristicsOf(game, obj).abilities) {
     if (num(ability.kind) !== STATIC || flag(ability.unparsed)) continue;
     for (const top of list(ability.effects)) {
-      for (const node of walk(top)) {
+      // Only the branch whose condition holds as it enters: "This land
+      // enters tapped unless you control three or more other Islands" (CR
+      // 614.1c). Walking every branch tapped every such land.
+      for (const node of walkTaken(game, obj, top)) {
         const kind = num(node.kind);
         if (kind === EK.COPY_PERMANENT && isEntryCopy(node)) {
           enterAsCopy(game, obj, node);
@@ -633,6 +636,17 @@ export function amplifyReveals(game: Game, obj: GameObject): number {
   for (const id of revealed) emit(game, event(EventKind.REVEALED, { objectId: id, player: obj.controller }));
   if (revealed.length) logRecord(game, `amplify: revealed ${revealed.length} card(s)`, { kind: "replace", player: obj.controller });
   return revealed.length;
+}
+
+/** `walk`, but through a CONDITIONAL only into the branch its condition picks as `obj` enters. */
+function* walkTaken(game: Game, obj: GameObject, effect: Effect): Generator<Effect> {
+  if (num(effect.kind) === EK.CONDITIONAL && !isAlways(effect.condition)) {
+    const holds = matchHooks().holds(game, effect.condition as Condition, { source: obj.id, controller: obj.controller });
+    for (const child of holds ? children(effect) : otherwise(effect)) yield* walkTaken(game, obj, child);
+    return;
+  }
+  yield effect;
+  for (const child of [...children(effect), ...otherwise(effect)]) yield* walkTaken(game, obj, child);
 }
 
 function entryConditionHolds(game: Game, obj: GameObject, node: Effect): boolean {

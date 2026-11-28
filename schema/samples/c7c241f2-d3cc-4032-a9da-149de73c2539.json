@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
  "name": "Vryn Wingmare",
- "card_hash": "f8f4016a967cd187b33f6f69d770e2b4",
+ "card_hash": "22a7d54f91eb3e4677732bab44eced0d",
  "card": {
   "$": "CardDef",
   "oracle_id": "c7c241f2-d3cc-4032-a9da-149de73c2539",
@@ -49,7 +49,7 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 8288,
+  "edhrec_rank": 8542,
   "scryfall_uri": "https://scryfall.com/card/m21/43/vryn-wingmare?utm_source=api"
  },
  "faces": [
@@ -59,7 +59,7 @@
    "name": "Vryn Wingmare",
    "face": 0,
    "face_name": "Vryn Wingmare",
-   "card_hash": "f8f4016a967cd187b33f6f69d770e2b4",
+   "card_hash": "22a7d54f91eb3e4677732bab44eced0d",
    "fully_read": true,
    "abilities": [
     {

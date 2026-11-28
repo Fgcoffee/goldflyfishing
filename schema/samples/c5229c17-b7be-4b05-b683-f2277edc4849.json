@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
  "name": "Enlightened Tutor",
- "card_hash": "d985d7022f3ee33a868dd68a392f382a",
+ "card_hash": "d8ca5d3b2a4440c40f90aa3564f59259",
  "card": {
   "$": "CardDef",
   "oracle_id": "c5229c17-b7be-4b05-b683-f2277edc4849",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 123,
+  "edhrec_rank": 125,
   "scryfall_uri": "https://scryfall.com/card/dmr/6/enlightened-tutor?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Enlightened Tutor",
    "face": 0,
    "face_name": "Enlightened Tutor",
-   "card_hash": "d985d7022f3ee33a868dd68a392f382a",
+   "card_hash": "d8ca5d3b2a4440c40f90aa3564f59259",
    "fully_read": true,
    "abilities": [
     {

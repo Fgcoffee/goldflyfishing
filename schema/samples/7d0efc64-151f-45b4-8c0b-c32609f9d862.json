@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
  "name": "Knight of the White Orchid",
- "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
+ "card_hash": "b0d0adb36c52ecb4fd0972f33e1047ef",
  "card": {
   "$": "CardDef",
   "oracle_id": "7d0efc64-151f-45b4-8c0b-c32609f9d862",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 648,
+  "edhrec_rank": 666,
   "scryfall_uri": "https://scryfall.com/card/moc/193/knight-of-the-white-orchid?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Knight of the White Orchid",
    "face": 0,
    "face_name": "Knight of the White Orchid",
-   "card_hash": "f6a174b9516b87742ffd0beedf5e71c3",
+   "card_hash": "b0d0adb36c52ecb4fd0972f33e1047ef",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
  "name": "Preordain",
- "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
+ "card_hash": "2c53b3d4f53fc86e0060f417af7b64ef",
  "card": {
   "$": "CardDef",
   "oracle_id": "ac641490-ca14-48d7-8cc4-b69ce984befa",
@@ -38,7 +38,7 @@
   "mana_value": 1,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 218,
+  "edhrec_rank": 212,
   "scryfall_uri": "https://scryfall.com/card/tdc/161/preordain?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Preordain",
    "face": 0,
    "face_name": "Preordain",
-   "card_hash": "9992f9172ffdcdeefea9d20294e3519c",
+   "card_hash": "2c53b3d4f53fc86e0060f417af7b64ef",
    "fully_read": true,
    "abilities": [
     {

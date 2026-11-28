@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
  "name": "Sign in Blood",
- "card_hash": "403abcf9e81b9df32a14b3a1591d018c",
+ "card_hash": "b9fe6bedc7b17eeb5f71d5f3d4da9fdc",
  "card": {
   "$": "CardDef",
   "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 231,
+  "edhrec_rank": 234,
   "scryfall_uri": "https://scryfall.com/card/dsc/156/sign-in-blood?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Sign in Blood",
    "face": 0,
    "face_name": "Sign in Blood",
-   "card_hash": "403abcf9e81b9df32a14b3a1591d018c",
+   "card_hash": "b9fe6bedc7b17eeb5f71d5f3d4da9fdc",
    "fully_read": true,
    "abilities": [
     {

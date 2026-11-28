@@ -1,0 +1,117 @@
+{
+ "ir_version": 2,
+ "oracle_id": "3d783beb-9ca6-4681-9276-fc3ad13b993f",
+ "name": "Balefire Dragon",
+ "card_hash": "84f2f2d5882d2e3088642b9c8bfcb166",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "3d783beb-9ca6-4681-9276-fc3ad13b993f",
+  "name": "Balefire Dragon",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Balefire Dragon",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 5,
+       "text": "{5}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Dragon"
+     ]
+    },
+    "oracle_text": "Flying\nWhenever this creature deals combat damage to a player, it deals that much damage to each creature that player controls.",
+    "power": "6",
+    "toughness": "6",
+    "colors": 8,
+    "keywords": [
+     "Flying"
+    ]
+   }
+  ],
+  "mana_value": 7,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 1292,
+  "scryfall_uri": "https://scryfall.com/card/inr/479/balefire-dragon?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "3d783beb-9ca6-4681-9276-fc3ad13b993f",
+   "name": "Balefire Dragon",
+   "face": 0,
+   "face_name": "Balefire Dragon",
+   "card_hash": "84f2f2d5882d2e3088642b9c8bfcb166",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Flying",
+     "keyword": "Flying"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 50,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 4
+       },
+       "amount": {
+        "$": "Value",
+        "kind": 25
+       },
+       "text": "deal damage"
+      }
+     ],
+     "text": "Whenever this creature deals combat damage to a player, it deals that much damage to each creature that player controls.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "to_player": true,
+      "text": "when this deals combat damage to a player"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

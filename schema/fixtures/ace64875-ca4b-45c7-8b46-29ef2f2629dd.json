@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ace64875-ca4b-45c7-8b46-29ef2f2629dd",
  "name": "Lyev Decree",
- "card_hash": "77521c8be96d5c61216b6eafe85fc488",
+ "card_hash": "6af04d2dffeef0e684858999de6ae516",
  "card": {
   "$": "CardDef",
   "oracle_id": "ace64875-ca4b-45c7-8b46-29ef2f2629dd",
@@ -44,7 +44,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 25468,
+  "edhrec_rank": 25850,
   "scryfall_uri": "https://scryfall.com/card/dgm/3/lyev-decree?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Lyev Decree",
    "face": 0,
    "face_name": "Lyev Decree",
-   "card_hash": "77521c8be96d5c61216b6eafe85fc488",
+   "card_hash": "6af04d2dffeef0e684858999de6ae516",
    "fully_read": true,
    "abilities": [
     {

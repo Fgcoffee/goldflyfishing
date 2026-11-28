@@ -25,7 +25,12 @@ export interface EvaluateOptions {
   readonly remembered?: readonly ObjectId[];
   /** How much the resolution has done so far, by event kind ("the life lost this way"). */
   readonly thisWay?: ReadonlyMap<number, number>;
+  /** Who "that player" / "they" is in an object filter (matching.ts `MatchOptions.thatPlayer`). */
+  readonly thatPlayer?: PlayerId;
 }
+
+/** The bound "that player" of the evaluation in progress, read by `among`. */
+let boundThatPlayer: PlayerId | undefined;
 
 /**
  * CR 107.2, 903.4f: a number that could not be determined is worth zero, but
@@ -49,7 +54,13 @@ function popcount(value: number): number {
 /** What a Value currently is. */
 export function evaluate(game: Game, value: Value | number, options: EvaluateOptions = {}): number {
   lastUndeterminable = false;
-  return evaluateInner(game, value, options);
+  const outer = boundThatPlayer;
+  boundThatPlayer = options.thatPlayer;
+  try {
+    return evaluateInner(game, value, options);
+  } finally {
+    boundThatPlayer = outer;
+  }
 }
 
 function evaluateInner(game: Game, value: Value | number, options: EvaluateOptions): number {
@@ -234,17 +245,17 @@ export function among(
     const out: GameObject[] = [];
     for (const id of specific) {
       const obj = game.objects.get(id);
-      if (obj !== undefined && matches(game, obj, described, { source, controller, allowStale: true })) out.push(obj);
+      if (obj !== undefined && matches(game, obj, described, { source, controller, allowStale: true, thatPlayer: boundThatPlayer })) out.push(obj);
     }
     return out;
   }
-  if (!spec.remembered) return find(game, spec, { source, controller });
+  if (!spec.remembered) return find(game, spec, { source, controller, thatPlayer: boundThatPlayer });
   const described: ObjectFilter = { ...spec, remembered: false, zones: { $set: [] }, count: null, up_to: false };
   const found: GameObject[] = [];
   for (const id of remembered) {
     const obj = game.objects.get(id);
     if (obj === undefined || found.includes(obj)) continue;
-    if (matches(game, obj, described, { source, controller, allowStale: true })) found.push(obj);
+    if (matches(game, obj, described, { source, controller, allowStale: true, thatPlayer: boundThatPlayer })) found.push(obj);
   }
   return found;
 }

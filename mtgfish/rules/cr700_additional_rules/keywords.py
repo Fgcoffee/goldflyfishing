@@ -190,6 +190,7 @@ KEYWORD_ABILITIES: dict[str, KeywordSpec] = _build(
             "Mountaincycling",
             "Forestcycling",
             "Slivercycling",
+            "Halflingcycling",
             "Wizardcycling",
             "Level Up",
             "Crew",
@@ -382,6 +383,13 @@ KEYWORD_ACTIONS: dict[str, KeywordSpec] = _build(
             "Proliferate",
             "Regenerate",
         ],
+        # In the 15 Nov 2026 Scryfall snapshot's catalogs; their rules text
+        # hasn't been read here yet, so nothing more is claimed than the name.
+        (Category.OTHER, Status.DECLARED, "New in the 15 Nov snapshot; behaviour not read yet"): [
+            "Affinitycycling",
+            "Beam me up",
+            "Empower Jace",
+        ],
         (Category.OTHER, Status.DECLARED, ""): [
             "Abandon",
             "Adapt",
@@ -503,6 +511,8 @@ ABILITY_WORDS: frozenset[str] = frozenset(
         "Spell mastery", "Strive", "Survival", "Sweep",
         "Tempting offer", "Threshold", "Underdog", "Undergrowth", "Valiant", "Vivid",
         "Void", "Will of the Planeswalkers", "Will of the council",
+        # 15 Nov 2026 snapshot.
+        "Actualize", "Battlefront", "Federation", "Seek out", "Strange new worlds",
     ]
 )
 
