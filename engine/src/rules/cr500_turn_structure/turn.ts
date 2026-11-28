@@ -8,6 +8,7 @@
  * another cleanup step follows (CR 514.3a).
  */
 
+import { untapDuringOthersUntapStep } from "../dummies";
 import { Phase, Step } from "../../kernel/enums";
 import { event, EventKind } from "../../kernel/events";
 import {
@@ -306,6 +307,7 @@ function untapStep(game: Game): void {
     }
     obj.tapped = false;
   }
+  untapDuringOthersUntapStep(game, active); // Seedborn Muse (rules/dummies.ts)
   emit(game, event(EventKind.UNTAP_STEP, { player: active }));
   // CR 302.6: summoning sickness ends; CR 702.30a reads what arrived.
   for (const obj of permanents(game, active)) {

@@ -1,0 +1,103 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f4e32fc1-1b8d-441e-8e76-71f19f98e925",
+ "name": "Leyline of the Void",
+ "card_hash": "d99d051e10744dd4ba63e9427394f609",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f4e32fc1-1b8d-441e-8e76-71f19f98e925",
+  "name": "Leyline of the Void",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Leyline of the Void",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 4,
+       "text": "{B}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "If this card is in your opening hand, you may begin the game with it on the battlefield.\nIf a card would be put into an opponent's graveyard from anywhere, exile it instead.",
+    "colors": 4
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 4,
+  "commander_legal": true,
+  "edhrec_rank": 3464,
+  "scryfall_uri": "https://scryfall.com/card/dsk/106/leyline-of-the-void?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f4e32fc1-1b8d-441e-8e76-71f19f98e925",
+   "name": "Leyline of the Void",
+   "face": 0,
+   "face_name": "Leyline of the Void",
+   "card_hash": "d99d051e10744dd4ba63e9427394f609",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 998,
+       "rule": "begin-game-on-battlefield",
+       "text": "If this card is in your opening hand, you may begin the game with it on the battlefield."
+      }
+     ],
+     "text": "If this card is in your opening hand, you may begin the game with it on the battlefield."
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "If a card would be put into an opponent's graveyard from anywhere, exile it instead."
+      }
+     ],
+     "text": "If a card would be put into an opponent's graveyard from anywhere, exile it instead.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "If a card would be put into an opponent's graveyard from anywhere, exile it instead.",
+     "reason": "\"it\" names nothing here",
+     "rule": "static-it"
+    }
+   ]
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

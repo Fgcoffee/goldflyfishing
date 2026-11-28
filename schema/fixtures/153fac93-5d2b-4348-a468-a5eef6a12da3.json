@@ -1,0 +1,68 @@
+{
+ "ir_version": 2,
+ "oracle_id": "153fac93-5d2b-4348-a468-a5eef6a12da3",
+ "name": "Unwinding Clock",
+ "card_hash": "7229fc8a095cf4a3f3a846f00be4a9eb",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "153fac93-5d2b-4348-a468-a5eef6a12da3",
+  "name": "Unwinding Clock",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Unwinding Clock",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "Untap all artifacts you control during each other player's untap step."
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 547,
+  "scryfall_uri": "https://scryfall.com/card/c18/228/unwinding-clock?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "153fac93-5d2b-4348-a468-a5eef6a12da3",
+   "name": "Unwinding Clock",
+   "face": 0,
+   "face_name": "Unwinding Clock",
+   "card_hash": "7229fc8a095cf4a3f3a846f00be4a9eb",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 998,
+       "rule": "untap-during-others-untap-step",
+       "text": "Untap all artifacts you control during each other player's untap step."
+      }
+     ],
+     "text": "Untap all artifacts you control during each other player's untap step."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}
