@@ -19,6 +19,7 @@ from pathlib import Path
 
 from ..data.db import CardDatabase
 from ..sim import DETAIL_LEVELS, RunConfig, render, replay_game, run, shown_at, summarize, verify
+from ..sim.runner import GameCrashed
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -51,6 +52,13 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="skip the determinism check (it replays a handful of games)",
     )
+    parser.add_argument(
+        "--fail-on-crash",
+        action="store_true",
+        help="exit with status 3 if any game crashed (crashed games are left "
+        "out of the report either way; a run where every game crashed always "
+        "exits 3)",
+    )
     args = parser.parse_args(argv)
 
     db = CardDatabase()
@@ -73,7 +81,13 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"Simulating {args.games} games...", file=sys.stderr)
     started = time.time()
-    result = run(config, progress=_progress)
+    try:
+        result = run(config, progress=_progress)
+    except GameCrashed as exc:
+        # Every game crashed, so there is no report to print.
+        print(file=sys.stderr)
+        print(f"run failed: {exc}", file=sys.stderr)
+        return CRASHED_EXIT
     elapsed = time.time() - started
     print(file=sys.stderr)
 
@@ -93,7 +107,20 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.replay is not None:
         _print_replay(config, args.replay, args.replay_detail)
+    if report.crashed:
+        print(
+            f"{len(report.crashed)} game(s) crashed; see the list in the report.",
+            file=sys.stderr,
+        )
+        if args.fail_on_crash:
+            return CRASHED_EXIT
     return 0
+
+
+#: Exit status of ``--fail-on-crash`` when a game crashed. Not 1, which the
+#: script already uses for an unreadable deck, and not 2, argparse's usage
+#: error, so a bench can tell the three apart.
+CRASHED_EXIT = 3
 
 
 def _write(path: Path, text: str, report, config: RunConfig) -> None:

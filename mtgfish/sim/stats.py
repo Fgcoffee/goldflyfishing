@@ -421,6 +421,20 @@ def render(report: Report) -> str:
             f"{report.average_win_turn:.1f} player-turns around the table)"
         )
 
+    # Crashed games are left out of every number in this report, so a run
+    # that lost some would otherwise just show a smaller "Games:" figure.
+    if report.crashed:
+        total = report.games + len(report.crashed)
+        lines.append("")
+        lines.append(
+            f"{len(report.crashed)} of {total} games crashed "
+            "(left out of every number above):"
+        )
+        for crash in report.crashed:
+            lines.append(
+                f"  game {crash['index']}  seed {crash['seed']}  {crash['error'][:110]}"
+            )
+
     lines.append("")
     lines.append("How games ended:")
     for reason, count in report.win_reasons.most_common():
