@@ -21,10 +21,11 @@ import { Act, prohibited } from "./cr500_turn_structure/restrictions";
 import { characteristicsOf, layerFor } from "./cr600_spells_and_abilities/layers";
 import { allocateTimestamp } from "../kernel/ids";
 import { hasType } from "./cr200_parts_of_a_card/characteristics";
+import { addMana, manaOfKind, removeMana, type ManaKind } from "./mana/pool";
 import { flag, ir, list, num } from "./ir_read";
 
 /** The dummy shapes the engine carries out; the parser can report their cards as read. */
-export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield", "next-spell-rider"]);
+export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield", "next-spell-rider", "mana-not-lost"]);
 
 const DUMMY = ir("EffectKind.DUMMY") as number;
 const STATIC = ir("AbilityKind.STATIC") as number;
@@ -169,12 +170,31 @@ export function spellRiderOf(effect: Effect): { spells: string; rider: string } 
 }
 
 /**
+ * mana-not-lost (Birgi, Savage Ventmaw, CR 500.4): "this mana", what the
+ * same resolution just added, is kept as steps and phases end until the
+ * turn ends (it goes as the cleanup step ends). Mana already spent from it
+ * isn't touched.
+ */
+function keepManaUntilEndOfTurn(game: Game, manaAdded: readonly [PlayerId, ManaKind, number][]): boolean {
+  for (const [pid, kind, amount] of manaAdded) {
+    if (kind.untilEndOfTurn) continue;
+    const pool = player(game, pid).manaPool;
+    const n = Math.min(amount, manaOfKind(pool, kind));
+    if (n <= 0) continue;
+    removeMana(pool, kind, n);
+    addMana(pool, { ...kind, untilEndOfTurn: true }, n);
+  }
+  return true;
+}
+
+/**
  * Carries out a dummy effect as it resolves; false when its shape isn't one
  * done at resolution. next-spell-rider (Mistrise Village, Archway of
  * Innovation): the controller's next spell this turn that fits gets the
  * rider, when it is cast (rules/casting.ts takes it).
  */
-export function resolveDummy(game: Game, controller: PlayerId, effect: Effect): boolean {
+export function resolveDummy(game: Game, controller: PlayerId, effect: Effect, manaAdded: readonly [PlayerId, ManaKind, number][] = []): boolean {
+  if (effect.rule === "mana-not-lost") return keepManaUntilEndOfTurn(game, manaAdded);
   if (effect.rule !== "next-spell-rider") return false;
   const read = spellRiderOf(effect);
   if (read === null) return false;

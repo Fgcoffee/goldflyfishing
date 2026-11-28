@@ -77,6 +77,8 @@ export interface ManaKind {
   readonly restriction: ManaRestriction | null;
   /** CR 702.189a: kept through the combat phase's step ends. */
   readonly untilEndOfCombat: boolean;
+  /** "Until end of turn, you don't lose this mana as steps and phases end" (Birgi): kept until the turn's last step ends. */
+  readonly untilEndOfTurn: boolean;
 }
 
 export function manaKind(color: Color, options: Partial<Omit<ManaKind, "color">> = {}): ManaKind {
@@ -85,18 +87,20 @@ export function manaKind(color: Color, options: Partial<Omit<ManaKind, "color">>
     snow: options.snow ?? false,
     restriction: options.restriction ?? null,
     untilEndOfCombat: options.untilEndOfCombat ?? false,
+    untilEndOfTurn: options.untilEndOfTurn ?? false,
   };
 }
 
 /** Canonical identity of a kind: equal kinds have equal keys. */
 export function manaKindKey(kind: ManaKind): string {
-  return `${kind.color}|${kind.snow ? 1 : 0}|${kind.restriction?.key ?? ""}|${kind.untilEndOfCombat ? 1 : 0}`;
+  return `${kind.color}|${kind.snow ? 1 : 0}|${kind.restriction?.key ?? ""}|${kind.untilEndOfCombat ? 1 : 0}${kind.untilEndOfTurn ? "|t" : ""}`;
 }
 
 export function manaKindText(kind: ManaKind): string {
   let base = kind.color ? colorLetters(kind.color) : "C";
   if (kind.snow) base += "(snow)";
   if (kind.untilEndOfCombat) base += "(until end of combat)";
+  if (kind.untilEndOfTurn) base += "(until end of turn)";
   if (kind.restriction !== null) base += `[${kind.restriction.key}]`;
   return base;
 }
@@ -109,6 +113,7 @@ export function compareKinds(a: ManaKind, b: ManaKind): number {
   const rb = b.restriction?.key ?? "";
   if (ra !== rb) return ra < rb ? -1 : 1;
   if (a.untilEndOfCombat !== b.untilEndOfCombat) return a.untilEndOfCombat ? 1 : -1;
+  if (a.untilEndOfTurn !== b.untilEndOfTurn) return a.untilEndOfTurn ? 1 : -1;
   return 0;
 }
 
@@ -175,12 +180,14 @@ export function amountOfColor(pool: ManaPool, color: Color): number {
 
 /**
  * Empty the pool, returning how much was lost (CR 500.4). With
- * `keepCombatMana`, mana an effect keeps until end of combat stays.
+ * `keepCombatMana`, mana an effect keeps until end of combat stays; with
+ * `keepTurnMana`, mana kept until end of turn stays.
  */
-export function clearPool(pool: ManaPool, keepCombatMana = false): number {
+export function clearPool(pool: ManaPool, keepCombatMana = false, keepTurnMana = false): number {
   let lost = 0;
   for (const [key, b] of [...pool.buckets]) {
     if (keepCombatMana && b.kind.untilEndOfCombat) continue;
+    if (keepTurnMana && b.kind.untilEndOfTurn) continue;
     lost += b.count;
     pool.buckets.delete(key);
   }

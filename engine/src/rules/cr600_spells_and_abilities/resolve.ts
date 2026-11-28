@@ -143,6 +143,8 @@ export interface Resolution {
   chosenPlayers: PlayerId[];
   /** CR 701.19c: set while a "can't be regenerated" destroy runs. */
   unregenerable: boolean;
+  /** The mana this resolution has added, per player ("this mana", rules/dummies.ts). */
+  manaAdded: [PlayerId, ManaKind, number][];
 }
 
 export function newResolution(
@@ -171,6 +173,7 @@ export function newResolution(
     triggerEvent: null,
     chosenPlayers: [],
     unregenerable: false,
+    manaAdded: [],
     ...fields,
   };
 }
@@ -736,7 +739,17 @@ function doAddMana(resolution: Resolution, effect: Effect): void {
   }
   emit(game, event(EventKind.MANA_ADDED, { player: resolution.controller, source: resolution.source }));
 }
-registerExecutor(EK.ADD_MANA, doAddMana);
+registerExecutor(EK.ADD_MANA, (resolution, effect) => {
+  // What was added, for "you don't lose this mana" (rules/dummies.ts).
+  const before = resolution.game.players.map((p) => new Map(poolSnapshot(p.manaPool).map(([k, n]) => [manaKindKey(k), n])));
+  doAddMana(resolution, effect);
+  resolution.game.players.forEach((p, i) => {
+    for (const [kind, n] of poolSnapshot(p.manaPool)) {
+      const added = n - (before[i]!.get(manaKindKey(kind)) ?? 0);
+      if (added > 0) resolution.manaAdded.push([p.id, kind, added]);
+    }
+  });
+});
 
 /**
  * Resolve a mana ability at once, without the stack (CR 605.3b). With
@@ -1548,7 +1561,7 @@ registerExecutor(ir("EffectKind.GOAD"), (resolution, effect) => {
 
 /** A dummy whose shape is carried out at resolution (rules/dummies.ts); any other does nothing, loudly. */
 registerExecutor(ir("EffectKind.DUMMY"), (resolution, effect) => {
-  if (resolveDummy(resolution.game, resolution.controller, effect)) return;
+  if (resolveDummy(resolution.game, resolution.controller, effect, resolution.manaAdded)) return;
   logRecord(resolution.game, `Effect not executed (${num(effect.kind)}): ${str(effect.text) || "effect"}`, {
     kind: "unimplemented",
     player: resolution.controller,

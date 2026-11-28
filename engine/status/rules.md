@@ -524,8 +524,14 @@ by `rule`, and exports **`IMPLEMENTED_DUMMIES`**:
   (`spellRiderOf` returns null): **for the parser**, a `spells` filter and
   a `keywords` list on the dummy would let me drop the regex.
   Test: `engine/test/rules/next_spell_rider_real.test.ts`.
+- `mana-not-lost` (Birgi, Savage Ventmaw, Klauth, Su-Chi Cave Guard and 10
+  more; 28 Nov): "this mana" is what the same resolution's ADD_MANA added
+  (`Resolution.manaAdded`); it becomes mana kept until end of turn
+  (`ManaKind.untilEndOfTurn`, like firebending's combat mana), kept through
+  step and phase ends and lost as the cleanup step ends (CR 500.4).
+  Test: `engine/test/rules/mana_not_lost_real.test.ts`.
 - Tests: `engine/test/rules/dummies_real.test.ts` (real cards).
-- **For the parser:** these four can report as read (`IMPLEMENTED_DUMMIES`,
+- **For the parser:** these five can report as read (`IMPLEMENTED_DUMMIES`,
   e.g. `parseStatus` treating them as ok, or switch the readings off DUMMY:
   your call). For untap-during-others, the engine reads the dummy's
   `targets` when you give one; without it, it reads the words for "this

@@ -451,7 +451,7 @@ export class Sandbox {
     }
     if (!game.relaxations.manaPoolsPersist) {
       const keepCombatMana = game.phase === Phase.COMBAT && step !== Step.END_OF_COMBAT;
-      for (const p of game.players) clearPool(p.manaPool, keepCombatMana);
+      for (const p of game.players) clearPool(p.manaPool, keepCombatMana, step !== Step.CLEANUP);
     }
   }
 

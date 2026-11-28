@@ -247,8 +247,10 @@ function emptyManaPools(game: Game, step: Step | null = null): void {
   if (game.relaxations.manaPoolsPersist) return;
   // CR 702.189a: combat mana survives the combat phase's step ends.
   const keepCombatMana = step !== null && game.phase === Phase.COMBAT && step !== Step.END_OF_COMBAT;
+  // Mana kept until end of turn goes as the cleanup step ends (called with no step).
+  const keepTurnMana = step !== null;
   for (const p of game.players) {
-    const lost = clearPool(p.manaPool, keepCombatMana);
+    const lost = clearPool(p.manaPool, keepCombatMana, keepTurnMana);
     if (lost > 0) emit(game, event(EventKind.MANA_EMPTIED, { player: p.id, amount: lost }));
   }
 }
