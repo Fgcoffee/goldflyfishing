@@ -6,7 +6,7 @@ import "../../src/rules/match";
 import "../../src/rules/cr600_spells_and_abilities/replacement";
 import { describe, expect, it } from "vitest";
 import { Color, Phase, Step, Zone } from "../../src/kernel/enums";
-import { createObject, player, type Game } from "../../src/kernel/game";
+import { createObject, invalidateAllCharacteristics, player, type Game } from "../../src/kernel/game";
 import type { GameObject } from "../../src/kernel/gameobject";
 import { addMana, manaKind } from "../../src/rules/cr100_game_concepts/mana_pool";
 import { ActionKind, PassingAgent, perform, settle } from "../../src/rules/cr100_game_concepts/priority";
@@ -112,8 +112,40 @@ describe("mana-spent-trigger", () => {
     expect(hasKeyword(characteristicsOf(b.game, spell), "Can't be countered")).toBe(false);
   });
 
+  it("Hall of the Bandit Lord: its {C} spent on a creature spell: the creature has haste, and keeps it", () => {
+    const b = board();
+    const hall = b.play("Hall of the Bandit Lord", 0);
+    hall.tapped = false;
+    addMana(player(b.game, 0).manaPool, manaKind(Color.GREEN), 1);
+    const bears = b.hand("Grizzly Bears", 0);
+    cast(b, 0, bears); // {1}{G}: the Hall's {C} pays the {1}
+    expect(hall.tapped).toBe(true);
+    resolveAll(b);
+    const permanent = now(b.game, bears);
+    expect(permanent.zone).toBe(Zone.BATTLEFIELD);
+    expect(hasKeyword(characteristicsOf(b.game, permanent), "Haste")).toBe(true);
+    b.game.turn += 1; // "it gains haste": no end
+    invalidateAllCharacteristics(b.game);
+    expect(hasKeyword(characteristicsOf(b.game, permanent), "Haste")).toBe(true);
+  });
+
+  it("Carnelian Orb of Dragonkind: only a Dragon creature spell gains haste, until end of turn", () => {
+    const b = board();
+    b.play("Carnelian Orb of Dragonkind", 0);
+    addMana(player(b.game, 0).manaPool, manaKind(Color.GREEN), 1);
+    const bears = b.hand("Grizzly Bears", 0); // not a Dragon
+    cast(b, 0, bears);
+    resolveAll(b);
+    expect(hasKeyword(characteristicsOf(b.game, now(b.game, bears)), "Haste")).toBe(false);
+    expect(spentRiderOf("If that mana is spent on a Dragon creature spell, it gains haste until end of turn.")).toMatchObject({
+      quality: "dragon",
+      does: "haste",
+      untilEndOfTurn: true,
+    });
+  });
+
   it("is listed as implemented; other wordings stay unread", () => {
     expect(IMPLEMENTED_DUMMIES.has("mana-spent-trigger")).toBe(true);
-    expect(spentRiderOf("If that mana is spent on a creature spell, it gains haste.")).toBeNull();
+    expect(spentRiderOf("If that mana is spent on a creature spell, it gains riot.")).toBeNull();
   });
 });

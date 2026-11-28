@@ -238,7 +238,14 @@ export function riderAbility(rider: SpellRider): Ability | null {
 }
 
 /** Abilities a spell has while it is a spell, from a rider (an effect aimed at it alone). */
-function grantToSpell(game: Game, spell: GameObject, controller: PlayerId, abilities: readonly Ability[], text: string): void {
+function grantToSpell(
+  game: Game,
+  spell: GameObject,
+  controller: PlayerId,
+  abilities: readonly Ability[],
+  text: string,
+  duration: number = Duration.END_OF_TURN,
+): void {
   if (abilities.length === 0) return;
   const grant = {
     $: "Effect",
@@ -253,7 +260,7 @@ function grantToSpell(game: Game, spell: GameObject, controller: PlayerId, abili
     controller,
     timestamp: allocateTimestamp(game.ids),
     layer: layerFor(grant),
-    duration: Duration.END_OF_TURN,
+    duration,
     createdTurn: game.turn,
     ability: null,
     fromStaticAbility: false,
@@ -291,14 +298,24 @@ export function takeSpellRiders(game: Game, playerId: PlayerId, spell: GameObjec
 // -- mana-spent-trigger -------------------------------------------------------------------
 
 const SPENT_WORDS =
-  /^(?:when|if) that mana is spent (?:to cast|on) an? (red |dragon |multicolored )?(instant or sorcery|creature) spell( that shares a creature type with your commander)?, (scry (\d+)|that spell can't be countered|copy that spell and you may choose new targets for the copy)\.?$/;
+  /^(?:when|if) that mana is spent (?:to cast|on) an? (red |dragon |multicolored )?(instant or sorcery|creature) spell( that shares a creature type with your commander)?, (scry (\d+)|that spell can't be countered|copy that spell and you may choose new targets for the copy|it gains haste( until end of turn)?)\.?$/;
 
-/** A mana-spent-trigger dummy's words, read; null for a wording not done yet (haste, riot, a counter). */
-export function spentRiderOf(text: string): { quality: string; spells: string; sharesCommander: boolean; does: string; n: number } | null {
+/** A mana-spent-trigger dummy's words, read; null for a wording not done yet (riot, a +1/+1 counter). */
+export function spentRiderOf(
+  text: string,
+): { quality: string; spells: string; sharesCommander: boolean; does: string; n: number; untilEndOfTurn: boolean } | null {
   const m = SPENT_WORDS.exec(text.toLowerCase().trim());
   if (m === null) return null;
-  const does = m[5] !== undefined ? "scry" : m[4]!.startsWith("copy") ? "copy" : "can't be countered";
-  return { quality: (m[1] ?? "").trim(), spells: m[2]!, sharesCommander: m[3] !== undefined, does, n: Number(m[5] ?? 1) };
+  const words = m[4]!;
+  const does = m[5] !== undefined ? "scry" : words.startsWith("copy") ? "copy" : words.startsWith("it gains haste") ? "haste" : "can't be countered";
+  return {
+    quality: (m[1] ?? "").trim(),
+    spells: m[2]!,
+    sharesCommander: m[3] !== undefined,
+    does,
+    n: Number(m[5] ?? 1),
+    untilEndOfTurn: m[6] !== undefined,
+  };
 }
 
 /** "That mana": what the same resolution's ADD_MANA made carries the rider until spent. */
@@ -350,11 +367,19 @@ const countBits = (n: number): number => {
  * CR 106.12, 601.2h: mana with a rider was spent on this spell, `amount`
  * units of it. Path of Ancestry: a trigger to scry 1 (each unit is "that
  * mana"); Pyromancer's Goggles, Primal Amulet: a trigger to copy the spell;
- * Boseiju, Who Shelters All: the spell can't be countered.
+ * Boseiju, Who Shelters All: the spell can't be countered; Hall of the
+ * Bandit Lord, Carnelian Orb of Dragonkind: it gains haste.
  */
 export function manaSpentOn(game: Game, payer: PlayerId, spell: GameObject, rider: ManaRider, amount: number): void {
   const read = spentRiderOf(rider.text);
   if (read === null || !spentRiderFits(game, spell, payer, read)) return;
+  if (read.does === "haste") {
+    // Hall of the Bandit Lord, Carnelian Orb: the spell and the permanent it becomes
+    // (rules/stack.ts carries an effect aimed at the spell onto it), for good or until end of turn.
+    const haste = { $: "Ability", kind: STATIC as never, keyword: "Haste", text: "Haste" } as Ability;
+    grantToSpell(game, spell, payer, [haste], rider.text, read.untilEndOfTurn ? Duration.END_OF_TURN : Duration.PERMANENT);
+    return;
+  }
   if (read.does === "can't be countered") {
     grantToSpell(game, spell, payer, [{ $: "Ability", kind: STATIC as never, keyword: "Can't be countered", text: "Can't be countered" }], rider.text);
     return;

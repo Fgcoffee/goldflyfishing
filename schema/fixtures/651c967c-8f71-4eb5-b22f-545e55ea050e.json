@@ -1,0 +1,105 @@
+{
+ "ir_version": 2,
+ "oracle_id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
+ "name": "Carnelian Orb of Dragonkind",
+ "card_hash": "ced9003f6e8bc7152e7f2218de7fe552",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
+  "name": "Carnelian Orb of Dragonkind",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Carnelian Orb of Dragonkind",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 1
+    },
+    "oracle_text": "{T}: Add {R}. If that mana is spent on a Dragon creature spell, it gains haste until end of turn.",
+    "colors": 8,
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 2202,
+  "scryfall_uri": "https://scryfall.com/card/fdn/759/carnelian-orb-of-dragonkind?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
+   "name": "Carnelian Orb of Dragonkind",
+   "face": 0,
+   "face_name": "Carnelian Orb of Dragonkind",
+   "card_hash": "ced9003f6e8bc7152e7f2218de7fe552",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      },
+      {
+       "$": "Effect",
+       "kind": 998,
+       "rule": "mana-spent-trigger",
+       "text": "If that mana is spent on a Dragon creature spell, it gains haste until end of turn."
+      }
+     ],
+     "text": "{T}: Add {R}. If that mana is spent on a Dragon creature spell, it gains haste until end of turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

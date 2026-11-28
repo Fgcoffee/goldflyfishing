@@ -1,0 +1,116 @@
+{
+ "ir_version": 2,
+ "oracle_id": "32fe7ac4-86f5-44af-9f73-ee8f6a9ce2ba",
+ "name": "Hall of the Bandit Lord",
+ "card_hash": "b05ec0e964a647db0aac8f23612f3cc2",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "32fe7ac4-86f5-44af-9f73-ee8f6a9ce2ba",
+  "name": "Hall of the Bandit Lord",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Hall of the Bandit Lord",
+    "mana_cost": {
+     "$": "ManaCost"
+    },
+    "has_mana_cost": false,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 16
+    },
+    "oracle_text": "Hall of the Bandit Lord enters tapped.\n{T}, Pay 3 life: Add {C}. If that mana is spent on a creature spell, it gains haste.",
+    "produced_mana": [
+     "C"
+    ]
+   }
+  ],
+  "mana_value": 0,
+  "color_identity": 0,
+  "commander_legal": true,
+  "edhrec_rank": 3050,
+  "scryfall_uri": "https://scryfall.com/card/chk/277/hall-of-the-bandit-lord?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "32fe7ac4-86f5-44af-9f73-ee8f6a9ce2ba",
+   "name": "Hall of the Bandit Lord",
+   "face": 0,
+   "face_name": "Hall of the Bandit Lord",
+   "card_hash": "b05ec0e964a647db0aac8f23612f3cc2",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 70,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true
+       },
+       "duration": 0,
+       "text": "enters tapped"
+      }
+     ],
+     "text": "this enters tapped."
+    },
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{C}"
+       ],
+       "text": "add {C}"
+      },
+      {
+       "$": "Effect",
+       "kind": 998,
+       "rule": "mana-spent-trigger",
+       "text": "If that mana is spent on a creature spell, it gains haste."
+      }
+     ],
+     "text": "{T}, Pay 3 life: Add {C}. If that mana is spent on a creature spell, it gains haste.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       },
+       {
+        "$": "CostComponent",
+        "kind": 30,
+        "amount": {
+         "$": "Value",
+         "constant": 3
+        },
+        "text": "pay life"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

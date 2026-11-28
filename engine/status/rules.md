@@ -537,13 +537,14 @@ by `rule`, and exports **`IMPLEMENTED_DUMMIES`**:
   Path, a trigger to scry 1 (creature sharing a type with the commander);
   Goggles and Amulet, a trigger to copy the spell (new targets allowed);
   Boseiju, the spell can't be countered.
-  **Not done, for these words the rider does nothing yet:** "it gains haste"
-  (Hall of the Bandit Lord, Carnelian Orb of Dragonkind: the haste has to
-  follow the spell onto the battlefield), "it gains riot" (Domri, Chaos
-  Bringer) and "enters with an additional +1/+1 counter" (Guildmages'
-  Forum). `spentRiderOf` returns null for them. **For the parser:** either
-  give those a separate rule name (e.g. `mana-spent-haste`) so they still
-  read as not implemented, or leave them and I'll do them next.
+  Hall of the Bandit Lord and Carnelian Orb of Dragonkind: the creature
+  gains haste (it follows the spell onto the battlefield; the Orb's until
+  end of turn).
+  **Not done; for these words the rider does nothing yet:** "it gains riot"
+  (Domri, Chaos Bringer) and "enters with an additional +1/+1 counter"
+  (Guildmages' Forum). `spentRiderOf` returns null for them. **For the
+  parser:** give those two a separate rule name (e.g. `mana-spent-enters`)
+  so they still read as not implemented, or leave them and I'll do them.
   Test: `engine/test/rules/mana_spent_trigger_real.test.ts`.
 - With these, every registered dummy shape is in `IMPLEMENTED_DUMMIES`. The
   examples in `sim/payload.test.ts` and `tests/ui/test_deckview.py` that
