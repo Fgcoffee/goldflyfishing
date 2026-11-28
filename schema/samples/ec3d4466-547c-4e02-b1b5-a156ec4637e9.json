@@ -121,6 +121,15 @@
        },
        "colors": 31,
        "text": "add mana of any color"
+      },
+      {
+       "$": "Effect",
+       "kind": 998,
+       "keywords": [
+        "exiled-card"
+       ],
+       "rule": "mana-colour-limit",
+       "text": "of any of the exiled card's colors"
       }
      ],
      "text": "{T}: Add one mana of any of the exiled card's colors.",

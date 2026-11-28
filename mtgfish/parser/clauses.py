@@ -290,6 +290,7 @@ def _effect_run(stream: Stream, *, allow_or: bool, joins: list[str] | None = Non
         if stream.done:
             break
         stuck = stream.mark()
+        stream.mana_limit = None
         effect = parse_effect(stream)
         if effect is None:
             stream.reset(stuck)
@@ -315,6 +316,15 @@ def _effect_run(stream: Stream, *, allow_or: bool, joins: list[str] | None = Non
         effects.append(effect)
         if joins is not None:
             joins.append(joined)
+        if stream.mana_limit is not None:
+            limit = _mana_limit_dummy(stream)
+            if limit is not None and any(n.kind is EffectKind.ADD_MANA for n in effect.walk()):
+                # "Add one mana of any color that a land an opponent controls
+                # could produce": the mana is read as any colour, and the
+                # limit is tracked beside it (dummies.py, mana-colour-limit).
+                effects.append(limit)
+                if joins is not None:
+                    joins.append("seq")
         if effect.kind is EffectKind.CONDITIONAL and "instead" in effect.keywords:
             if not _fold_instead(effects):
                 stream.reset(stuck)
@@ -2967,24 +2977,96 @@ def _mana_colour_source(stream: Stream):
 
     for phrase in sorted(_COLOUR_SOURCES, key=lambda p: -len(p.split())):
         if stream.accept_phrase(phrase):
+            tail_start = stream.mark()
+            tail_used = None
             for tail in _COLOUR_TAILS:
                 if stream.accept_phrase(tail):
+                    tail_used = tail
                     break
             # "of any color *that a land an opponent controls could produce*"
-            # and every other source a card can name. Which source it is
-            # changes nothing the grammar can act on - the engine settles the
-            # available colours from the board either way - so the clause is
-            # read by shape rather than listed by card.
-            could_produce_tail(stream)
-            colour_among_tail(stream)
+            # and every other source a card can name. The mana stays any
+            # colour (the engine can't compute the limit yet), and the limit
+            # is recorded as a mana-colour-limit dummy so the overstatement
+            # is tracked (``_note_mana_limit``).
+            produce_start = stream.mark()
+            produced = could_produce_tail(stream)
+            among_start = stream.mark()
+            among = colour_among_tail(stream)
+            _note_mana_limit(stream, phrase, tail_used, tail_start, produced, produce_start, among, among_start)
             return _any_colour()
 
     mark = stream.mark()
     if stream.accept_phrase("of any color") or stream.accept_phrase("of any type"):
-        if could_produce_tail(stream) or colour_among_tail(stream):
+        typed = stream.tokens[mark + 2].lower == "type" if mark + 2 < len(stream.tokens) else False
+        produce_start = stream.mark()
+        produced = could_produce_tail(stream)
+        among_start = stream.mark()
+        among = (not produced) and colour_among_tail(stream)
+        if produced or among:
+            _note_mana_limit(
+                stream, "of any type" if typed else "of any color", None, produce_start,
+                produced, produce_start, among, among_start,
+            )
             return _any_colour()
         stream.reset(mark)
     return None
+
+
+#: The fixed colour phrases that are limits, not free choices, and which
+#: kind of limit each is.
+_LIMITING_PHRASES = {
+    "of any type that a land you control could produce": "could-produce-type",
+    "of any color that a land you control could produce": "could-produce",
+    "of any of the exiled card's colors": "exiled-card",
+    "of any of the exiled cards' colors": "exiled-card",
+    "of any color among permanents you control": "colours-among",
+}
+
+
+def _note_mana_limit(stream, phrase, tail, tail_start, produced, produce_start, among, among_start) -> None:
+    """Record the limit a colour phrase put on a mana ability, if any."""
+    from .nouns import parse_object_filter as _filter
+    from .tokens import Stream as _Stream
+
+    def source(start: int, words: tuple[str, ...]) -> ObjectFilter | None:
+        tokens = [t for t in stream.tokens[start:stream.mark()] if t.lower not in words]
+        return _filter(_Stream(tokens)) if tokens else None
+
+    kind = spec = None
+    if produced:
+        kind = "could-produce-type" if phrase == "of any type" else "could-produce"
+        spec = source(produce_start, ("that", "which", "could", "produce", "add"))
+    elif among:
+        kind, spec = "colours-among", source(among_start, ("among",))
+    elif phrase in _LIMITING_PHRASES:
+        kind = _LIMITING_PHRASES[phrase]
+        if kind.startswith("could-produce"):
+            spec = ObjectFilter(types_all=CardType.LAND, controller=ControllerRelation.YOU)
+        elif kind == "colours-among":
+            spec = ObjectFilter(controller=ControllerRelation.YOU)
+    elif tail in ("that a land you control could produce",):
+        kind, spec = "could-produce", ObjectFilter(types_all=CardType.LAND, controller=ControllerRelation.YOU)
+    elif tail == "among colors of permanents you control":
+        kind, spec = "colours-among", ObjectFilter(controller=ControllerRelation.YOU)
+    if kind is not None:
+        words = " ".join(t.text for t in stream.tokens[tail_start - len(phrase.split()):stream.mark()])
+        stream.mana_limit = (stream.mark(), kind, spec, words)
+
+
+def _mana_limit_dummy(stream) -> Effect | None:
+    """The mana-colour-limit dummy for a limit recorded during the last
+    effect, then cleared."""
+    noted, stream.mana_limit = stream.mana_limit, None
+    if noted is None or noted[0] > stream.mark():
+        return None
+    _end, kind, spec, words = noted
+    return Effect(
+        EffectKind.DUMMY,
+        rule="mana-colour-limit",
+        targets=spec,
+        keywords=(kind,),
+        text=words,
+    )
 
 
 def _mana_run(stream: Stream) -> list[str]:
@@ -7278,6 +7360,9 @@ def _for_each_colour(stream: Stream) -> Effect | None:
         stream.reset(mark)
         return None
 
+    # One mana of each colour present, not any colours: the colours are free
+    # until the engine computes them; tracked as a mana-colour-limit dummy.
+    stream.mana_limit = (stream.mark(), "one-of-each-colour-among", spec, " ".join(t.text for t in stream.tokens[mark:stream.mark()]))
     return Effect(
         EffectKind.ADD_MANA,
         players=YOU,

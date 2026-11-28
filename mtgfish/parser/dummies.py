@@ -94,6 +94,16 @@ DUMMIES: tuple[Dummy, ...] = (
         ),
     ),
     Dummy(
+        "mana-colour-limit",
+        "limit the colours a mana ability makes (it makes any colour until then, an overstatement):"
+        " keywords[0] says how - could-produce (colours the targets permanents could produce),"
+        " could-produce-type (the same, colorless included), colours-among (colours among the targets"
+        " permanents), exiled-card (the colours of the card exiled with this), one-of-each-colour-among"
+        " (one mana of each colour among the targets permanents)",
+        "106.7",
+        grammar=True,
+    ),
+    Dummy(
         "mana-not-lost",
         "mana that isn't lost as steps and phases end (Birgi)",
         "500.4",
@@ -119,6 +129,12 @@ _RIDER = [(d, re.compile(p)) for d in DUMMIES for p in d.rider]
 ENGINE_IMPLEMENTED: frozenset[str] = frozenset(
     {"untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield", "next-spell-rider", "mana-not-lost", "mana-spent-trigger"}
 )
+
+
+#: Implemented dummies the correctness agent has checked on real cards
+#: (engine/status/dummy_backlog.md shows them as "verified"). The web
+#: session adds a name here when it signs one off.
+VERIFIED: frozenset[str] = frozenset()
 
 
 def whole(text: str) -> Dummy | None:

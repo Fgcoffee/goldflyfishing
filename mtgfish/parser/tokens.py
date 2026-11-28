@@ -157,6 +157,11 @@ class Stream:
     #: last token, fails, and every report then says "failed at '.'", which
     #: names nothing at all.
     blocked: int = 0
+    #: A limit on which colours a mana ability may make that the colour
+    #: reader consumed ("that a land an opponent controls could produce"):
+    #: ``(end position, kind, ObjectFilter | None, words)``, picked up by
+    #: ``parse_effects`` as a ``mana-colour-limit`` dummy beside the mana.
+    mana_limit: object = None
 
     @classmethod
     def of(cls, text: str) -> Stream:

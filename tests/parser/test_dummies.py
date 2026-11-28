@@ -88,3 +88,35 @@ def test_engine_implemented_matches_the_browser_engine():
     line = next(l for l in source.splitlines() if "IMPLEMENTED_DUMMIES" in l and "new Set" in l)
     assert set(re.findall(r'"([a-z0-9-]+)"', line)) == set(dummies.ENGINE_IMPLEMENTED)
     assert dummies.ENGINE_IMPLEMENTED <= {d.name for d in dummies.DUMMIES}
+
+
+@pytest.mark.parametrize("name, how, source", [
+    ("Exotic Orchard", "could-produce", "land an opponent controls"),
+    ("Reflecting Pool", "could-produce-type", "land you control"),
+    ("Chrome Mox", "exiled-card", None),
+    ("Mox Amber", "colours-among", "legendary creature or planeswalker you control"),
+    ("Bloom Tender", "one-of-each-colour-among", "object you control"),
+])
+def test_a_colour_limited_mana_ability_tracks_its_limit(card_db, name, how, source):
+    """The auditor's choice (a): the mana stays any colour (no game changes),
+    and the limit is a tracked dummy carrying what limits it, for the rules
+    session to switch on."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    mana = next(a for a in face.abilities if any(e.kind is EffectKind.ADD_MANA for e in a.effects))
+    limit = mana.effects[-1]
+    assert limit.kind is EffectKind.DUMMY and limit.rule == "mana-colour-limit"
+    assert limit.keywords == (how,)
+    if source is None:
+        assert limit.targets is None
+    else:
+        assert source in limit.targets.describe()
+
+
+def test_an_unlimited_colour_choice_has_no_limit(card_db):
+    from mtgfish.parser.compile import parse_card
+
+    for name in ("Birds of Paradise", "Command Tower"):
+        face = parse_card(card_db.lookup(name)).faces[0]
+        assert not [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.DUMMY]
