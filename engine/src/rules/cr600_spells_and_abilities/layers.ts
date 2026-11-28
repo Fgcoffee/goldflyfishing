@@ -13,6 +13,7 @@
  */
 
 import type { Ability, Effect, ObjectFilter, Value } from "../../ir";
+import { DEFAULTS as IR_DEFAULTS } from "../../ir/defaults";
 import { CardType, Color, Layer, Layout, Supertype, Zone } from "../../kernel/enums";
 import type { CardTypeLine, FaceDef } from "../../kernel/card";
 import { printedNumber } from "../../kernel/card";
@@ -114,11 +115,49 @@ type Board = Map<ObjectId, Characteristics>;
 export function board(game: Game): Board {
   if (game.boardInProgress !== null) return game.boardInProgress;
   if (game.boardCache !== null && game.boardEpoch === game.epoch) return game.boardCache;
-  const computed = computeBoard(game);
-  game.work.units += computed.size;
+  let computed: Board | null = null;
+  let meta: BoardMeta | null = null;
+  if (incrementalMode !== "off" && game.boardCache !== null && game.boardDirty !== null && game.boardMeta !== null) {
+    const partial = computePartial(game, game.boardCache, game.boardMeta as BoardMeta, game.boardDirty);
+    if (partial !== null) {
+      if (incrementalMode === "check") {
+        const full = computeFull(game);
+        const difference = boardDifference(partial.board, full.board);
+        if (difference !== null) throw new Error(`incremental board differs from a full recompute: ${difference}`);
+      }
+      computed = partial.board;
+      meta = partial.meta;
+      game.work.units += partial.computed;
+    }
+  }
+  if (computed === null) {
+    const full = computeFull(game);
+    computed = full.board;
+    meta = full.meta;
+    game.work.units += computed.size;
+  }
   game.boardCache = computed;
   game.boardEpoch = game.epoch;
+  game.boardDirty = new Set();
+  game.boardMeta = meta;
   return computed;
+}
+
+/**
+ * The incremental board, behind a switch. "off" (the default): every board
+ * is computed in full, as always. "check": a partial recompute is tried
+ * where it may be, and compared with a full one, throwing on any
+ * difference (the full one is used). "on": the partial one is used.
+ */
+export type IncrementalMode = "off" | "check" | "on";
+let incrementalMode: IncrementalMode = "off";
+
+export function setIncrementalBoard(mode: IncrementalMode): void {
+  incrementalMode = mode;
+}
+
+export function incrementalBoard(): IncrementalMode {
+  return incrementalMode;
 }
 
 /** An object's current characteristics, after continuous effects. */
@@ -274,6 +313,11 @@ type Grants = Map<ObjectId, [Ability, number][]>;
  * effect names (CR 611.2c, 611.3a).
  */
 export function computeBoard(game: Game): Board {
+  return computeFull(game).board;
+}
+
+/** Battlefield, stack and emblems, in that order (without objects reached elsewhere). */
+function mainScope(game: Game): GameObject[] {
   const scope: GameObject[] = [];
   for (const id of game.battlefield) pushIfPresent(game, scope, id);
   for (const id of game.stack) pushIfPresent(game, scope, id);
@@ -281,15 +325,36 @@ export function computeBoard(game: Game): Board {
     const obj = game.objects.get(id);
     if (obj !== undefined && obj.kind === ObjectKind.EMBLEM) scope.push(obj);
   }
-  scope.push(...reachedElsewhere(game, scope));
+  return scope;
+}
 
+function computeFull(game: Game): { board: Board; meta: BoardMeta } {
+  const scope = mainScope(game);
+  const reached = reachedElsewhere(game, scope);
+  scope.push(...reached);
+  const run = computeOn(game, scope);
+  return { board: run.state, meta: metaOf(game, run, reached.length > 0) };
+}
+
+interface LayerRun {
+  readonly state: Board;
+  /** Every effect applied, both passes of liveEffects. */
+  readonly effects: readonly ContinuousEffect[];
+  /** The static abilities' effects of the final pass, in order. */
+  readonly statics: readonly ContinuousEffect[];
+}
+
+/** The layer system over these objects only (all of them, for a full board). */
+function computeOn(game: Game, scope: readonly GameObject[]): LayerRun {
   const state: Board = new Map();
   for (const obj of scope) state.set(obj.id, printedCharacteristics(game, obj));
   const byId = new Map<ObjectId, GameObject>(scope.map((o) => [o.id, o]));
   const previous = game.boardInProgress;
   game.boardInProgress = state;
+  const first = liveEffects(game, state, byId);
+  let second: ContinuousEffect[] = first;
   try {
-    let byLayer = groupByLayer(liveEffects(game, state, byId));
+    let byLayer = groupByLayer(first);
     const grants: Grants = new Map();
     for (const layer of LAYER_ORDER) {
       applyLayer(game, layer, state, byId, byLayer.get(layer) ?? [], grants);
@@ -301,13 +366,145 @@ export function computeBoard(game: Game): Board {
           }));
         }
       }
-      if (layer === Layer.ABILITY) byLayer = groupByLayer(liveEffects(game, state, byId, grants));
+      if (layer === Layer.ABILITY) byLayer = groupByLayer((second = liveEffects(game, state, byId, grants)));
     }
     for (const [id, obj] of byId) state.set(id, settleTypeCharacteristics(obj, state.get(id) as Characteristics));
   } finally {
     game.boardInProgress = previous;
   }
-  return state;
+  return { state, effects: [...first, ...second], statics: second.filter((ce) => ce.fromStaticAbility) };
+}
+
+// -- the incremental board (behind `setIncrementalBoard`) --------------------------------
+
+interface BoardMeta {
+  /** Every effect is of the kinds and shapes a partial recompute can trust (`closedEffect`). */
+  readonly closed: boolean;
+  /** Effects created by resolutions, by identity, as of the cached board. */
+  readonly resolutionEffects: ReadonlySet<ContinuousEffect>;
+  /** The static abilities' effects, in order, as of the cached board. */
+  readonly statics: readonly ContinuousEffect[];
+  /** The objects those come from. */
+  readonly sources: ReadonlySet<ObjectId>;
+}
+
+function metaOf(game: Game, run: LayerRun, reached: boolean): BoardMeta {
+  const resolutionEffects = new Set(game.continuousEffects.filter((ce) => !ce.expired && EFFECT_LAYERS.has(kindOf(ce.effect as Effect))));
+  const closed =
+    !reached &&
+    perpetuallyChanged(game).length === 0 &&
+    game.continuousEffects.every((ce) => ce.expired || closedEffect(ce)) &&
+    run.effects.every(closedEffect);
+  return { closed, resolutionEffects, statics: run.statics, sources: new Set(run.statics.map((ce) => ce.source)) };
+}
+
+const LOCAL_FILTER_KEYS: ReadonlySet<string> = new Set([
+  "$", "types_any", "types_all", "types_none", "supertypes_all", "supertypes_none", "subtypes_any", "subtypes_all", "subtypes_none",
+  "colors_any", "colors_all", "colors_none", "must_be_colorless", "must_be_coloured", "must_be_multicolored", "must_be_monocolored",
+  "named", "not_named", "other_than_source", "source_only", "specific", "zones", "controller", "owner", "is_token",
+]);
+const LOCAL_RELATIONS: ReadonlySet<number> = new Set([0, 1, 2, 3]); // ANY, YOU, OPPONENT, SAME_AS_SOURCE
+
+/** Whether a filter reads only the object's own lasting characteristics (not tapped, attacking, counters, other objects). */
+function localFilter(spec: ObjectFilter): boolean {
+  const defaults = IR_DEFAULTS.ObjectFilter as Record<string, unknown>;
+  for (const [key, value] of Object.entries(spec)) {
+    if (LOCAL_FILTER_KEYS.has(key)) continue;
+    if (value === undefined || value === null) continue;
+    if (JSON.stringify(value) === JSON.stringify(defaults[key] ?? null)) continue;
+    return false;
+  }
+  if (!LOCAL_RELATIONS.has(num(spec.controller)) || !LOCAL_RELATIONS.has(num(spec.owner))) return false;
+  const zones = numSet(spec.zones, [Zone.BATTLEFIELD]);
+  return zones.size === 1 && zones.has(Zone.BATTLEFIELD);
+}
+
+/**
+ * An effect a partial recompute can trust: it only changes P/T or adds
+ * abilities, by constant amounts, under no condition, to objects picked by
+ * a local filter that reads neither P/T nor abilities, so no effect can
+ * depend on another (CR 613.8) and objects nobody touched keep their result.
+ */
+function closedEffect(ce: ContinuousEffect): boolean {
+  const effect = ce.effect as Effect;
+  const kind = kindOf(effect);
+  if (kind !== EK.MODIFY_PT && kind !== EK.GRANT_ABILITY) return false;
+  if (ce.isCda) return false;
+  if (kind === EK.MODIFY_PT && (!constantOrAbsent(effect.amount) || !constantOrAbsent(effect.amount2))) return false;
+  if (ce.ability !== null && ce.ability.static_condition !== undefined && num(ce.ability.static_condition.kind) !== 0) return false;
+  const spec = effect.targets;
+  if (spec === undefined || spec === null) return true;
+  if (!localFilter(spec)) return false;
+  const read = fieldsRead(spec);
+  return !read.pt && !read.abilities;
+}
+
+const constantOrAbsent = (value: Value | undefined): boolean => value === undefined || isConstant(value);
+
+/**
+ * The board recomputed only where it can have changed, or null where that
+ * can't be trusted (then it's computed in full). Valid when every change
+ * since the cache was typed (`game.boardDirty`), every effect is closed,
+ * none was removed or expired, new ones aim only at changed objects, and
+ * the static abilities' effects are the same ones: then an object nobody
+ * touched has the same characteristics as before. The changed objects, new
+ * objects and every static ability's source are recomputed, together, by
+ * the same layer code as a full board.
+ */
+function computePartial(game: Game, cache: Board, meta: BoardMeta, dirty: ReadonlySet<ObjectId>): { board: Board; meta: BoardMeta; computed: number } | null {
+  if (!meta.closed) return null;
+  const scope = mainScope(game);
+  if (reachedElsewhere(game, scope).length > 0) return null;
+  const live = game.continuousEffects.filter((ce) => !ce.expired && EFFECT_LAYERS.has(kindOf(ce.effect as Effect)));
+  const liveSet = new Set(live);
+  for (const ce of meta.resolutionEffects) if (!liveSet.has(ce)) return null;
+  for (const ce of live) {
+    if (meta.resolutionEffects.has(ce)) continue;
+    if (!closedEffect(ce)) return null;
+    const spec = (ce.effect as Effect).targets;
+    const aimed = spec == null ? [ce.source] : list(spec.specific);
+    if (aimed.length === 0 || aimed.some((id) => !dirty.has(id))) return null;
+  }
+  const recompute = scope.filter((obj) => dirty.has(obj.id) || meta.sources.has(obj.id) || !cache.has(obj.id));
+  const run = computeOn(game, recompute);
+  if (!run.effects.every(closedEffect)) return null;
+  if (run.statics.length !== meta.statics.length) return null;
+  for (let i = 0; i < run.statics.length; i += 1) {
+    const a = run.statics[i]!;
+    const b = meta.statics[i]!;
+    if (a.source !== b.source || a.timestamp !== b.timestamp || a.ability !== b.ability || a.effect !== b.effect) return null;
+  }
+  const board: Board = new Map();
+  for (const obj of scope) board.set(obj.id, run.state.get(obj.id) ?? (cache.get(obj.id) as Characteristics));
+  return {
+    board,
+    meta: { closed: true, resolutionEffects: liveSet, statics: run.statics, sources: meta.sources },
+    computed: recompute.length,
+  };
+}
+
+/** Where two boards differ, or null: for the check mode. */
+function boardDifference(a: Board, b: Board): string | null {
+  if (a.size !== b.size) return `sizes ${a.size} and ${b.size}`;
+  const ids = [...a.keys()];
+  if (ids.some((id, i) => id !== [...b.keys()][i])) return "object order";
+  for (const id of ids) {
+    const x = a.get(id) as Characteristics;
+    const y = b.get(id);
+    if (y === undefined) return `object ${id} missing`;
+    for (const key of Object.keys(x) as (keyof Characteristics)[]) {
+      if (x[key] === y[key]) continue;
+      if (key === "abilities") {
+        const xa = x.abilities;
+        const ya = y.abilities;
+        if (xa.length === ya.length && xa.every((ab, i) => ab === ya[i] || irEqual(ab, ya[i]))) continue;
+      } else if (JSON.stringify(x[key]) === JSON.stringify(y[key])) {
+        continue;
+      }
+      return `object ${id} ${key}`;
+    }
+  }
+  return null;
 }
 
 function pushIfPresent(game: Game, out: GameObject[], id: ObjectId): void {

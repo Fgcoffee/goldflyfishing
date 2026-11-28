@@ -92,6 +92,15 @@ export interface Game {
   /** The whole-board layer computation, valid while `boardEpoch === epoch`. */
   boardCache: Map<ObjectId, Characteristics> | null;
   boardEpoch: number;
+  /**
+   * What changed since `boardCache` was computed: the objects named by typed
+   * invalidations (`invalidateObjects`), or null once any untyped one
+   * (`invalidateAllCharacteristics`) happened. rules/layers reads it for a
+   * partial recompute (behind a switch).
+   */
+  boardDirty: Set<ObjectId> | null;
+  /** rules/layers' facts about the cached board, for a partial recompute. */
+  boardMeta: unknown;
   /** The board being computed right now, for reads made during it. */
   boardInProgress: Map<ObjectId, Characteristics> | null;
   gameOver: boolean;
@@ -208,6 +217,8 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     epoch: 0,
     boardCache: null,
     boardEpoch: -1,
+    boardDirty: null,
+    boardMeta: null,
     boardInProgress: null,
     gameOver: false,
     winners: [],
@@ -301,6 +312,8 @@ export function cloneGame(game: Game): Game {
     log: cloneGameLog(game.log),
     boardCache: null,
     boardEpoch: -1,
+    boardDirty: null,
+    boardMeta: null,
     boardInProgress: null,
     turnOrder: game.turnOrder.slice(),
     continuousEffects: cloneRecords(game.continuousEffects),
@@ -365,6 +378,17 @@ export function logRecord(
 /** Mark every cached characteristic stale. */
 export function invalidateAllCharacteristics(game: Game): void {
   game.epoch += 1;
+  game.boardDirty = null;
+}
+
+/**
+ * A change confined to these objects' own state (a token created, an effect
+ * aimed at them): the epoch moves as for any change, and the objects are
+ * noted, so the layer system may recompute only them (rules/layers).
+ */
+export function invalidateObjects(game: Game, ids: Iterable<ObjectId>): void {
+  game.epoch += 1;
+  if (game.boardDirty !== null) for (const id of ids) game.boardDirty.add(id);
 }
 
 export function player(game: Game, playerId: PlayerId): Player {
