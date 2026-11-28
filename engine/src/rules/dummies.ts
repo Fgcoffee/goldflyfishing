@@ -8,7 +8,7 @@
  */
 
 import type { Ability, Effect, ObjectFilter } from "../ir";
-import { CardType, Duration, Zone } from "../kernel/enums";
+import { CardType, Color, Duration, Zone } from "../kernel/enums";
 import { invalidateAllCharacteristics, invalidateObjects, logRecord, permanents, player, type Game, type SpellRider } from "../kernel/game";
 import { addCounters } from "../kernel/gameobject";
 import { exile } from "./cr100_game_concepts/actions";
@@ -19,13 +19,17 @@ import { matchHooks } from "../kernel/hooks";
 import type { PlayerId } from "../kernel/ids";
 import { Act, prohibited } from "./cr500_turn_structure/restrictions";
 import { characteristicsOf, layerFor } from "./cr600_spells_and_abilities/layers";
-import { allocateTimestamp } from "../kernel/ids";
+import { allocateTimestamp, NO_OBJECT, type ObjectId } from "../kernel/ids";
 import { hasType } from "./cr200_parts_of_a_card/characteristics";
-import { addMana, manaOfKind, removeMana, type ManaKind } from "./mana/pool";
+import { addMana, manaOfKind, removeMana, type ManaKind, type ManaRider } from "./mana/pool";
+import { pendingTrigger } from "./cr600_spells_and_abilities/triggers";
+import { MAY_CHOOSE_NEW_TARGETS } from "./cr700_additional_rules/faces";
+import { event, EventKind } from "../kernel/events";
+import { commanderIdentity } from "./zones";
 import { flag, ir, list, num } from "./ir_read";
 
 /** The dummy shapes the engine carries out; the parser can report their cards as read. */
-export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield", "next-spell-rider", "mana-not-lost"]);
+export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield", "next-spell-rider", "mana-not-lost", "mana-spent-trigger"]);
 
 const DUMMY = ir("EffectKind.DUMMY") as number;
 const STATIC = ir("AbilityKind.STATIC") as number;
@@ -193,8 +197,15 @@ function keepManaUntilEndOfTurn(game: Game, manaAdded: readonly [PlayerId, ManaK
  * Innovation): the controller's next spell this turn that fits gets the
  * rider, when it is cast (rules/casting.ts takes it).
  */
-export function resolveDummy(game: Game, controller: PlayerId, effect: Effect, manaAdded: readonly [PlayerId, ManaKind, number][] = []): boolean {
+export function resolveDummy(
+  game: Game,
+  controller: PlayerId,
+  effect: Effect,
+  manaAdded: readonly [PlayerId, ManaKind, number][] = [],
+  source: ObjectId = NO_OBJECT,
+): boolean {
   if (effect.rule === "mana-not-lost") return keepManaUntilEndOfTurn(game, manaAdded);
+  if (effect.rule === "mana-spent-trigger") return tagSpentRider(game, effect, manaAdded, source);
   if (effect.rule !== "next-spell-rider") return false;
   const read = spellRiderOf(effect);
   if (read === null) return false;
@@ -226,6 +237,32 @@ export function riderAbility(rider: SpellRider): Ability | null {
   return { $: "Ability", kind: STATIC as never, keyword: word, text: word };
 }
 
+/** Abilities a spell has while it is a spell, from a rider (an effect aimed at it alone). */
+function grantToSpell(game: Game, spell: GameObject, controller: PlayerId, abilities: readonly Ability[], text: string): void {
+  if (abilities.length === 0) return;
+  const grant = {
+    $: "Effect",
+    kind: ir("EffectKind.GRANT_ABILITY"),
+    targets: { $: "ObjectFilter", specific: [spell.id], zones: { $set: [Zone.STACK] } },
+    granted_abilities: abilities,
+    text,
+  } as unknown as Effect;
+  game.continuousEffects.push({
+    effect: grant,
+    source: spell.id,
+    controller,
+    timestamp: allocateTimestamp(game.ids),
+    layer: layerFor(grant),
+    duration: Duration.END_OF_TURN,
+    createdTurn: game.turn,
+    ability: null,
+    fromStaticAbility: false,
+    isCda: false,
+    expired: false,
+  } as never);
+  invalidateObjects(game, [spell.id]);
+}
+
 /**
  * CR 601.2a: as the spell goes on the stack, it takes every waiting rider
  * that fits ("the next spell": all of them, on the one spell), and has
@@ -238,29 +275,7 @@ export function takeSpellRiders(game: Game, playerId: PlayerId, spell: GameObjec
   const taken = waitingRiders(game, playerId, spell);
   game.spellRiders = before.filter((r) => r.turn === game.turn && !taken.includes(r));
   const abilities = taken.map(riderAbility).filter((a): a is Ability => a !== null);
-  if (abilities.length > 0) {
-    const grant = {
-      $: "Effect",
-      kind: ir("EffectKind.GRANT_ABILITY"),
-      targets: { $: "ObjectFilter", specific: [spell.id], zones: { $set: [Zone.STACK] } },
-      granted_abilities: abilities,
-      text: "the next spell you cast this turn",
-    } as unknown as Effect;
-    game.continuousEffects.push({
-      effect: grant,
-      source: spell.id,
-      controller: playerId,
-      timestamp: allocateTimestamp(game.ids),
-      layer: layerFor(grant),
-      duration: Duration.END_OF_TURN,
-      createdTurn: game.turn,
-      ability: null,
-      fromStaticAbility: false,
-      isCda: false,
-      expired: false,
-    } as never);
-    invalidateObjects(game, [spell.id]);
-  }
+  grantToSpell(game, spell, playerId, abilities, "the next spell you cast this turn");
   return {
     taken,
     undo: () => {
@@ -271,4 +286,97 @@ export function takeSpellRiders(game: Game, playerId: PlayerId, spell: GameObjec
       }
     },
   };
+}
+
+// -- mana-spent-trigger -------------------------------------------------------------------
+
+const SPENT_WORDS =
+  /^(?:when|if) that mana is spent (?:to cast|on) an? (red |dragon |multicolored )?(instant or sorcery|creature) spell( that shares a creature type with your commander)?, (scry (\d+)|that spell can't be countered|copy that spell and you may choose new targets for the copy)\.?$/;
+
+/** A mana-spent-trigger dummy's words, read; null for a wording not done yet (haste, riot, a counter). */
+export function spentRiderOf(text: string): { quality: string; spells: string; sharesCommander: boolean; does: string; n: number } | null {
+  const m = SPENT_WORDS.exec(text.toLowerCase().trim());
+  if (m === null) return null;
+  const does = m[5] !== undefined ? "scry" : m[4]!.startsWith("copy") ? "copy" : "can't be countered";
+  return { quality: (m[1] ?? "").trim(), spells: m[2]!, sharesCommander: m[3] !== undefined, does, n: Number(m[5] ?? 1) };
+}
+
+/** "That mana": what the same resolution's ADD_MANA made carries the rider until spent. */
+function tagSpentRider(game: Game, effect: Effect, manaAdded: readonly [PlayerId, ManaKind, number][], source: ObjectId): boolean {
+  const text = String(effect.text ?? "");
+  if (spentRiderOf(text) === null) return false;
+  for (const [pid, kind, amount] of manaAdded) {
+    if (kind.spentRider !== null) continue;
+    const pool = player(game, pid).manaPool;
+    const n = Math.min(amount, manaOfKind(pool, kind));
+    if (n <= 0) continue;
+    removeMana(pool, kind, n);
+    addMana(pool, { ...kind, spentRider: { source, text } }, n);
+  }
+  return true;
+}
+
+function commanderCreatureTypes(game: Game, playerId: PlayerId): Set<string> {
+  const out = new Set<string>();
+  for (const id of player(game, playerId).commanders) {
+    const obj = game.objects.get(commanderIdentity(game, id)) ?? game.objects.get(id);
+    if (obj === undefined || obj.card === null) continue;
+    const c = printedCharacteristics(game, obj);
+    if (hasType(c, CardType.CREATURE) || c.typeLine.subtypes.length > 0) for (const t of c.typeLine.subtypes) out.add(t);
+  }
+  return out;
+}
+
+function spentRiderFits(game: Game, spell: GameObject, payer: PlayerId, read: NonNullable<ReturnType<typeof spentRiderOf>>): boolean {
+  const c = characteristicsOf(game, spell);
+  if (read.spells === "creature" ? !hasType(c, CardType.CREATURE) : !(hasType(c, CardType.INSTANT) || hasType(c, CardType.SORCERY))) return false;
+  if (read.quality === "red" && (c.colors & Color.RED) === 0) return false;
+  if (read.quality === "dragon" && !c.typeLine.subtypes.includes("Dragon")) return false;
+  if (read.quality === "multicolored" && countBits(c.colors) < 2) return false;
+  if (read.sharesCommander) {
+    const theirs = commanderCreatureTypes(game, payer);
+    if (!c.typeLine.subtypes.some((t) => theirs.has(t))) return false;
+  }
+  return true;
+}
+
+const countBits = (n: number): number => {
+  let k = 0;
+  for (let x = n; x; x &= x - 1) k += 1;
+  return k;
+};
+
+/**
+ * CR 106.12, 601.2h: mana with a rider was spent on this spell, `amount`
+ * units of it. Path of Ancestry: a trigger to scry 1 (each unit is "that
+ * mana"); Pyromancer's Goggles, Primal Amulet: a trigger to copy the spell;
+ * Boseiju, Who Shelters All: the spell can't be countered.
+ */
+export function manaSpentOn(game: Game, payer: PlayerId, spell: GameObject, rider: ManaRider, amount: number): void {
+  const read = spentRiderOf(rider.text);
+  if (read === null || !spentRiderFits(game, spell, payer, read)) return;
+  if (read.does === "can't be countered") {
+    grantToSpell(game, spell, payer, [{ $: "Ability", kind: STATIC as never, keyword: "Can't be countered", text: "Can't be countered" }], rider.text);
+    return;
+  }
+  const effect = read.does === "scry"
+    ? { $: "Effect", kind: ir("EffectKind.SCRY"), amount: { $: "Value", constant: read.n }, text: `scry ${read.n}` }
+    : {
+        $: "Effect",
+        kind: ir("EffectKind.COPY_SPELL"),
+        targets: { $: "ObjectFilter", specific: [spell.id], zones: { $set: [Zone.STACK] } },
+        amount: { $: "Value", constant: 1 },
+        keywords: [MAY_CHOOSE_NEW_TARGETS],
+        text: "copy that spell",
+      };
+  const ability = {
+    $: "Ability",
+    kind: ir("AbilityKind.TRIGGERED"),
+    trigger: { $: "TriggerCondition", event_kinds: { $set: [EventKind.MANA_SPENT] }, text: "when that mana is spent" },
+    effects: [effect],
+    text: rider.text,
+  } as unknown as Ability;
+  for (let i = 0; i < amount; i += 1) {
+    game.pendingTriggers.push(pendingTrigger(rider.source, ability, event(EventKind.MANA_SPENT, { player: payer, objectId: spell.id }), payer));
+  }
 }

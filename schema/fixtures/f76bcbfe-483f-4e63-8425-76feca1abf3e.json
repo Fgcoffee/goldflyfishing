@@ -1,0 +1,99 @@
+{
+ "ir_version": 2,
+ "oracle_id": "f76bcbfe-483f-4e63-8425-76feca1abf3e",
+ "name": "Pyromancer's Goggles",
+ "card_hash": "dea7a3a3132a9045f2811050caf02de8",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "f76bcbfe-483f-4e63-8425-76feca1abf3e",
+  "name": "Pyromancer's Goggles",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Pyromancer's Goggles",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 5,
+       "text": "{5}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1
+    },
+    "oracle_text": "{T}: Add {R}. When that mana is spent to cast a red instant or sorcery spell, copy that spell and you may choose new targets for the copy.",
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 5,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 2868,
+  "scryfall_uri": "https://scryfall.com/card/fdn/677/pyromancers-goggles?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "f76bcbfe-483f-4e63-8425-76feca1abf3e",
+   "name": "Pyromancer's Goggles",
+   "face": 0,
+   "face_name": "Pyromancer's Goggles",
+   "card_hash": "dea7a3a3132a9045f2811050caf02de8",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      },
+      {
+       "$": "Effect",
+       "kind": 998,
+       "rule": "mana-spent-trigger",
+       "text": "When that mana is spent to cast a red instant or sorcery spell, copy that spell and you may choose new targets for the copy."
+      }
+     ],
+     "text": "{T}: Add {R}. When that mana is spent to cast a red instant or sorcery spell, copy that spell and you may choose new targets for the copy.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 1,
+        "text": "{T}"
+       }
+      ]
+     },
+     "is_mana_ability": true
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

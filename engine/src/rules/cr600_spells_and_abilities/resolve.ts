@@ -1561,7 +1561,7 @@ registerExecutor(ir("EffectKind.GOAD"), (resolution, effect) => {
 
 /** A dummy whose shape is carried out at resolution (rules/dummies.ts); any other does nothing, loudly. */
 registerExecutor(ir("EffectKind.DUMMY"), (resolution, effect) => {
-  if (resolveDummy(resolution.game, resolution.controller, effect, resolution.manaAdded)) return;
+  if (resolveDummy(resolution.game, resolution.controller, effect, resolution.manaAdded, resolution.source)) return;
   logRecord(resolution.game, `Effect not executed (${num(effect.kind)}): ${str(effect.text) || "effect"}`, {
     kind: "unimplemented",
     player: resolution.controller,

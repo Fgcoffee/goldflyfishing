@@ -79,6 +79,14 @@ export interface ManaKind {
   readonly untilEndOfCombat: boolean;
   /** "Until end of turn, you don't lose this mana as steps and phases end" (Birgi): kept until the turn's last step ends. */
   readonly untilEndOfTurn: boolean;
+  /** "When that mana is spent to cast ..." (Path of Ancestry): what this mana does when spent (rules/dummies.ts). */
+  readonly spentRider: ManaRider | null;
+}
+
+/** A rider on mana an ability made: its source and the dummy's words. */
+export interface ManaRider {
+  readonly source: number;
+  readonly text: string;
 }
 
 export function manaKind(color: Color, options: Partial<Omit<ManaKind, "color">> = {}): ManaKind {
@@ -88,12 +96,13 @@ export function manaKind(color: Color, options: Partial<Omit<ManaKind, "color">>
     restriction: options.restriction ?? null,
     untilEndOfCombat: options.untilEndOfCombat ?? false,
     untilEndOfTurn: options.untilEndOfTurn ?? false,
+    spentRider: options.spentRider ?? null,
   };
 }
 
 /** Canonical identity of a kind: equal kinds have equal keys. */
 export function manaKindKey(kind: ManaKind): string {
-  return `${kind.color}|${kind.snow ? 1 : 0}|${kind.restriction?.key ?? ""}|${kind.untilEndOfCombat ? 1 : 0}${kind.untilEndOfTurn ? "|t" : ""}`;
+  return `${kind.color}|${kind.snow ? 1 : 0}|${kind.restriction?.key ?? ""}|${kind.untilEndOfCombat ? 1 : 0}${kind.untilEndOfTurn ? "|t" : ""}${kind.spentRider ? `|r${kind.spentRider.source}:${kind.spentRider.text}` : ""}`;
 }
 
 export function manaKindText(kind: ManaKind): string {
@@ -101,6 +110,7 @@ export function manaKindText(kind: ManaKind): string {
   if (kind.snow) base += "(snow)";
   if (kind.untilEndOfCombat) base += "(until end of combat)";
   if (kind.untilEndOfTurn) base += "(until end of turn)";
+  if (kind.spentRider) base += `(from #${kind.spentRider.source}, with a rider)`;
   if (kind.restriction !== null) base += `[${kind.restriction.key}]`;
   return base;
 }
@@ -114,6 +124,9 @@ export function compareKinds(a: ManaKind, b: ManaKind): number {
   if (ra !== rb) return ra < rb ? -1 : 1;
   if (a.untilEndOfCombat !== b.untilEndOfCombat) return a.untilEndOfCombat ? 1 : -1;
   if (a.untilEndOfTurn !== b.untilEndOfTurn) return a.untilEndOfTurn ? 1 : -1;
+  const sa = a.spentRider ? `${a.spentRider.source}:${a.spentRider.text}` : "";
+  const sb = b.spentRider ? `${b.spentRider.source}:${b.spentRider.text}` : "";
+  if (sa !== sb) return sa < sb ? -1 : 1;
   return 0;
 }
 

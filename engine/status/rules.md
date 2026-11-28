@@ -530,8 +530,28 @@ by `rule`, and exports **`IMPLEMENTED_DUMMIES`**:
   (`ManaKind.untilEndOfTurn`, like firebending's combat mana), kept through
   step and phase ends and lost as the cleanup step ends (CR 500.4).
   Test: `engine/test/rules/mana_not_lost_real.test.ts`.
+- `mana-spent-trigger` (Path of Ancestry, Pyromancer's Goggles, Primal
+  Amulet, Boseiju, Who Shelters All; 28 Nov): the mana the ability added
+  carries the rider (`ManaKind.spentRider`: source and words, so it stays
+  apart in the pool). Spent on a spell that fits (CR 601.2h), each unit:
+  Path, a trigger to scry 1 (creature sharing a type with the commander);
+  Goggles and Amulet, a trigger to copy the spell (new targets allowed);
+  Boseiju, the spell can't be countered.
+  **Not done, for these words the rider does nothing yet:** "it gains haste"
+  (Hall of the Bandit Lord, Carnelian Orb of Dragonkind: the haste has to
+  follow the spell onto the battlefield), "it gains riot" (Domri, Chaos
+  Bringer) and "enters with an additional +1/+1 counter" (Guildmages'
+  Forum). `spentRiderOf` returns null for them. **For the parser:** either
+  give those a separate rule name (e.g. `mana-spent-haste`) so they still
+  read as not implemented, or leave them and I'll do them next.
+  Test: `engine/test/rules/mana_spent_trigger_real.test.ts`.
+- With these, every registered dummy shape is in `IMPLEMENTED_DUMMIES`. The
+  examples in `sim/payload.test.ts` and `tests/ui/test_deckview.py` that
+  used mana-spent-trigger as "not implemented" now use a made-up rule and
+  expect Path of Ancestry to read as done (parser's tests; changed only
+  there).
 - Tests: `engine/test/rules/dummies_real.test.ts` (real cards).
-- **For the parser:** these five can report as read (`IMPLEMENTED_DUMMIES`,
+- **For the parser:** these six can report as read (`IMPLEMENTED_DUMMIES`,
   e.g. `parseStatus` treating them as ok, or switch the readings off DUMMY:
   your call). For untap-during-others, the engine reads the dummy's
   `targets` when you give one; without it, it reads the words for "this

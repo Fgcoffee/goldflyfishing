@@ -44,9 +44,10 @@ def test_a_recognised_ability_is_named_not_hidden(card_db):
     """A dummy ability counts as read, so the card is "ok"; the site needs its name."""
     status = parse_status(card_db.lookup("Path of Ancestry"))
     assert status["status"] == "ok"
-    assert status["recognised"] == ["mana-spent-trigger"]
+    # Every registered shape is carried out by the engine now (dummies.ENGINE_IMPLEMENTED),
+    # Path of Ancestry's mana-spent-trigger included, so none is listed as a gap.
+    assert status["recognised"] == []
     assert parse_status(card_db.lookup("Sol Ring"))["recognised"] == []
-    # One the engine now carries out (dummies.ENGINE_IMPLEMENTED) isn't a gap.
     assert parse_status(card_db.lookup("Seedborn Muse"))["recognised"] == []
 
 

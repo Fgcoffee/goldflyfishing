@@ -65,9 +65,10 @@ describe("parseStatus", () => {
 
   it("names the recognised-not-implemented (dummy) shapes, and they aren't gaps", () => {
     const doc = { faces: [{ abilities: [
-      { $: "Ability", effects: [{ $: "Effect", kind: 120 }, { $: "Effect", kind: 998, rule: "mana-spent-trigger" }] },
+      // A shape the engine doesn't carry out (made up: every registered shape is done by now).
+      { $: "Ability", effects: [{ $: "Effect", kind: 120 }, { $: "Effect", kind: 998, rule: "some-future-shape" }] },
     ] }] } as unknown as CardDocument;
-    expect(parseStatus(doc)).toEqual({ status: "ok", unread: [], recognised: ["mana-spent-trigger"] });
+    expect(parseStatus(doc)).toEqual({ status: "ok", unread: [], recognised: ["some-future-shape"] });
   });
 
   it("a dummy the engine carries out (IMPLEMENTED_DUMMIES) isn't listed", () => {

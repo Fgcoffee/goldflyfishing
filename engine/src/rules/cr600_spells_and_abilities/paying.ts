@@ -35,7 +35,7 @@ import {
 import { loseLife } from "../cr100_game_concepts/player";
 import { charsManaValue, hasKeyword, hasType, isCreature } from "../cr200_parts_of_a_card/characteristics";
 import { emit } from "../emit";
-import { activationCostChange } from "../dummies";
+import { activationCostChange, manaSpentOn } from "../dummies";
 import { flag, ir, list, num, numSet } from "../ir_read";
 import {
   fromIR as fromIRCost,
@@ -122,6 +122,8 @@ export function pay(game: Game, playerId: PlayerId, total: TotalCost, context: G
     for (const [kind, amount] of payment.mana) {
       removeMana(p.manaPool, kind, amount);
       if (amount > 0 && onStack) context!.manaSpentColors |= kind.color; // CR 702.44a, converge
+      // "When that mana is spent to cast ..." (Path of Ancestry; rules/dummies.ts).
+      if (amount > 0 && onStack && kind.spentRider !== null) manaSpentOn(game, playerId, context!, kind.spentRider, amount);
     }
     if (payment.life) {
       loseLife(p, payment.life);
