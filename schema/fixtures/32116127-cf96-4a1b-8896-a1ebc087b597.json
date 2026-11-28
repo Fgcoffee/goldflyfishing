@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "32116127-cf96-4a1b-8896-a1ebc087b597",
  "name": "Llanowar Wastes",
- "card_hash": "d8f575d408bb21774f2ca20cd68d90c4",
+ "card_hash": "178b6bb69f88d45409e6748c08c108e6",
  "card": {
   "$": "CardDef",
   "oracle_id": "32116127-cf96-4a1b-8896-a1ebc087b597",
@@ -31,7 +31,7 @@
   "mana_value": 0,
   "color_identity": 20,
   "commander_legal": true,
-  "edhrec_rank": 141,
+  "edhrec_rank": 137,
   "scryfall_uri": "https://scryfall.com/card/soc/383/llanowar-wastes?utm_source=api"
  },
  "faces": [
@@ -41,7 +41,7 @@
    "name": "Llanowar Wastes",
    "face": 0,
    "face_name": "Llanowar Wastes",
-   "card_hash": "d8f575d408bb21774f2ca20cd68d90c4",
+   "card_hash": "178b6bb69f88d45409e6748c08c108e6",
    "fully_read": true,
    "abilities": [
     {

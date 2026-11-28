@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "339f5334-b65a-445a-a016-20e997e0b4bb",
  "name": "Mistrise Village",
- "card_hash": "4214f00a93f3530bb6688166d356aee0",
+ "card_hash": "aa672ca961e9bbf44c8683b47c656c64",
  "card": {
   "$": "CardDef",
   "oracle_id": "339f5334-b65a-445a-a016-20e997e0b4bb",
@@ -29,7 +29,7 @@
   "mana_value": 0,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 363,
+  "edhrec_rank": 389,
   "scryfall_uri": "https://scryfall.com/card/tdm/261/mistrise-village?utm_source=api"
  },
  "faces": [
@@ -39,7 +39,7 @@
    "name": "Mistrise Village",
    "face": 0,
    "face_name": "Mistrise Village",
-   "card_hash": "4214f00a93f3530bb6688166d356aee0",
+   "card_hash": "aa672ca961e9bbf44c8683b47c656c64",
    "fully_read": true,
    "abilities": [
     {

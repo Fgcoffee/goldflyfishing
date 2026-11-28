@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "aa854d50-444c-49d9-bfb1-5476b33c1c0b",
  "name": "Scute Swarm",
- "card_hash": "2c25c92bafd72f7b3166348eabab0470",
+ "card_hash": "7f681c20a2bde1c8b2c3a7d0e2547f3b",
  "card": {
   "$": "CardDef",
   "oracle_id": "aa854d50-444c-49d9-bfb1-5476b33c1c0b",
@@ -49,8 +49,8 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 243,
-  "scryfall_uri": "https://scryfall.com/card/trc/470/scute-swarm?utm_source=api"
+  "edhrec_rank": 239,
+  "scryfall_uri": "https://scryfall.com/card/dsc/197/scute-swarm?utm_source=api"
  },
  "faces": [
   {
@@ -59,7 +59,7 @@
    "name": "Scute Swarm",
    "face": 0,
    "face_name": "Scute Swarm",
-   "card_hash": "2c25c92bafd72f7b3166348eabab0470",
+   "card_hash": "7f681c20a2bde1c8b2c3a7d0e2547f3b",
    "fully_read": true,
    "abilities": [
     {

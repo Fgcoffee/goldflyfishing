@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "0bfa4512-e35a-4c93-b324-80ec659f5a97",
  "name": "Ulamog, the Ceaseless Hunger",
- "card_hash": "971bbd908c68975a192d7ca3eeb8275c",
+ "card_hash": "55f178354197c5bb52674c9e43762ff4",
  "card": {
   "$": "CardDef",
   "oracle_id": "0bfa4512-e35a-4c93-b324-80ec659f5a97",
@@ -43,7 +43,7 @@
   "mana_value": 10,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 1336,
+  "edhrec_rank": 1343,
   "scryfall_uri": "https://scryfall.com/card/cmm/5/ulamog-the-ceaseless-hunger?utm_source=api"
  },
  "faces": [
@@ -53,7 +53,7 @@
    "name": "Ulamog, the Ceaseless Hunger",
    "face": 0,
    "face_name": "Ulamog, the Ceaseless Hunger",
-   "card_hash": "971bbd908c68975a192d7ca3eeb8275c",
+   "card_hash": "55f178354197c5bb52674c9e43762ff4",
    "fully_read": true,
    "abilities": [
     {

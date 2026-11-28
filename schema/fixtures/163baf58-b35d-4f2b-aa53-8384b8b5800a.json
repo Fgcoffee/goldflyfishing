@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "163baf58-b35d-4f2b-aa53-8384b8b5800a",
  "name": "Replication Technique",
- "card_hash": "4b08762442c40bd486f88aaf0818443d",
+ "card_hash": "968f7c1bfc7a870704d63d7adb33febe",
  "card": {
   "$": "CardDef",
   "oracle_id": "163baf58-b35d-4f2b-aa53-8384b8b5800a",
@@ -44,7 +44,7 @@
   "mana_value": 5,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 4258,
+  "edhrec_rank": 4299,
   "scryfall_uri": "https://scryfall.com/card/soc/200/replication-technique?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Replication Technique",
    "face": 0,
    "face_name": "Replication Technique",
-   "card_hash": "4b08762442c40bd486f88aaf0818443d",
+   "card_hash": "968f7c1bfc7a870704d63d7adb33febe",
    "fully_read": true,
    "abilities": [
     {

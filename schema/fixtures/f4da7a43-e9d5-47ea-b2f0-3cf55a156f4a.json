@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f4da7a43-e9d5-47ea-b2f0-3cf55a156f4a",
  "name": "Chandra Nalaar",
- "card_hash": "e02ac74285ac927666899395344650a7",
+ "card_hash": "b9142fbec529b4ce11e4e24b357f88c3",
  "card": {
   "$": "CardDef",
   "oracle_id": "f4da7a43-e9d5-47ea-b2f0-3cf55a156f4a",
@@ -52,7 +52,7 @@
   "mana_value": 5,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 14538,
+  "edhrec_rank": 14325,
   "scryfall_uri": "https://scryfall.com/card/jvc/34/chandra-nalaar?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Chandra Nalaar",
    "face": 0,
    "face_name": "Chandra Nalaar",
-   "card_hash": "e02ac74285ac927666899395344650a7",
+   "card_hash": "b9142fbec529b4ce11e4e24b357f88c3",
    "fully_read": false,
    "abilities": [
     {

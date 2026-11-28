@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
  "name": "Norn's Annex",
- "card_hash": "818db577f7e3116511cff33935c74376",
+ "card_hash": "a82d921c7ad91ed234e20d791cfab199",
  "card": {
   "$": "CardDef",
   "oracle_id": "9a1fbe72-4a17-42be-8e23-d7d30a5e59c1",
@@ -47,7 +47,7 @@
   "mana_value": 5,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 1926,
+  "edhrec_rank": 1957,
   "scryfall_uri": "https://scryfall.com/card/cmm/829/norns-annex?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Norn's Annex",
    "face": 0,
    "face_name": "Norn's Annex",
-   "card_hash": "818db577f7e3116511cff33935c74376",
+   "card_hash": "a82d921c7ad91ed234e20d791cfab199",
    "fully_read": true,
    "abilities": [
     {

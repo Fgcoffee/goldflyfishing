@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "bf1341dd-41a3-49f6-87ec-63170dde4324",
  "name": "Boseiju, Who Endures",
- "card_hash": "85e931f90f3dfe3f157a2b5c5d2073e5",
+ "card_hash": "d6fddd2837a99a2455c73b4c443a3921",
  "card": {
   "$": "CardDef",
   "oracle_id": "bf1341dd-41a3-49f6-87ec-63170dde4324",
@@ -33,7 +33,7 @@
   "mana_value": 0,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 78,
+  "edhrec_rank": 76,
   "scryfall_uri": "https://scryfall.com/card/neo/266/boseiju-who-endures?utm_source=api"
  },
  "faces": [
@@ -43,7 +43,7 @@
    "name": "Boseiju, Who Endures",
    "face": 0,
    "face_name": "Boseiju, Who Endures",
-   "card_hash": "85e931f90f3dfe3f157a2b5c5d2073e5",
+   "card_hash": "d6fddd2837a99a2455c73b4c443a3921",
    "fully_read": true,
    "abilities": [
     {

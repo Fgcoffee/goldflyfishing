@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8f933fae-6c0c-42d7-a817-14760d8285cd",
  "name": "Exquisite Blood",
- "card_hash": "f32db9997542f29432cf2a6e8de0b271",
+ "card_hash": "d71179f49f6036f3d9eb722bf19af5b5",
  "card": {
   "$": "CardDef",
   "oracle_id": "8f933fae-6c0c-42d7-a817-14760d8285cd",
@@ -41,7 +41,7 @@
   "mana_value": 5,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 521,
+  "edhrec_rank": 516,
   "scryfall_uri": "https://scryfall.com/card/lcc/195/exquisite-blood?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Exquisite Blood",
    "face": 0,
    "face_name": "Exquisite Blood",
-   "card_hash": "f32db9997542f29432cf2a6e8de0b271",
+   "card_hash": "d71179f49f6036f3d9eb722bf19af5b5",
    "fully_read": true,
    "abilities": [
     {

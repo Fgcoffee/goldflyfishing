@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f56596be-e12f-4ab6-af61-3ef8dc87134c",
  "name": "Reverse Engineer",
- "card_hash": "212a785f610ea49d60079826a6801c9c",
+ "card_hash": "5f1a007da81a2bbd50fe703516a1eda4",
  "card": {
   "$": "CardDef",
   "oracle_id": "f56596be-e12f-4ab6-af61-3ef8dc87134c",
@@ -50,7 +50,7 @@
   "mana_value": 5,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 8045,
+  "edhrec_rank": 7999,
   "scryfall_uri": "https://scryfall.com/card/cmm/116/reverse-engineer?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Reverse Engineer",
    "face": 0,
    "face_name": "Reverse Engineer",
-   "card_hash": "212a785f610ea49d60079826a6801c9c",
+   "card_hash": "5f1a007da81a2bbd50fe703516a1eda4",
    "fully_read": true,
    "abilities": [
     {

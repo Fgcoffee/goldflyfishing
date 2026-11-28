@@ -12,7 +12,7 @@ import { event, EventKind, type GameEvent } from "../../kernel/events";
 import { invalidateAllCharacteristics, logRecord, player, type Game } from "../../kernel/game";
 import { addCounters, counterCount, isLive, newGameObject, objectText, ObjectKind, type GameObject } from "../../kernel/gameobject";
 import { matchHooks } from "../../kernel/hooks";
-import { allocateObjectId, allocateTimestamp, isPlayerTarget, targetPlayer, type ObjectId } from "../../kernel/ids";
+import { allocateObjectId, allocateTimestamp, isPlayerTarget, NO_PLAYER, targetPlayer, type ObjectId, type PlayerId } from "../../kernel/ids";
 import { popDepth, pushDepth } from "../../kernel/log";
 import { attach, attachToPlayer, carryLinks } from "../cr100_game_concepts/actions";
 import { hasType } from "../cr200_parts_of_a_card/characteristics";
@@ -278,7 +278,9 @@ export function allTargetsIllegal(game: Game, obj: GameObject): boolean {
       }
       const candidate = game.objects.get(id);
       if (candidate === undefined) continue;
-      if (effect.targets == null || matchHooks().matches(game, candidate, effect.targets, { source: obj.source || obj.id, controller: obj.controller })) {
+      // "Target creature that player controls": the trigger event's player, as when it was chosen.
+      const thatPlayer = (obj.triggerEvent as { player?: PlayerId } | null)?.player ?? NO_PLAYER;
+      if (effect.targets == null || matchHooks().matches(game, candidate, effect.targets, { source: obj.source || obj.id, controller: obj.controller, thatPlayer })) {
         return false;
       }
     }

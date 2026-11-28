@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5470dcfa-4eff-43da-abf7-19922841f719",
  "name": "Kitchen Finks",
- "card_hash": "a1d45aad2c53ca3c7212636026959fbd",
+ "card_hash": "622b7e2a5b6fd9cfce1c86d2d5e9cb30",
  "card": {
   "$": "CardDef",
   "oracle_id": "5470dcfa-4eff-43da-abf7-19922841f719",
@@ -55,7 +55,7 @@
   "mana_value": 3,
   "color_identity": 17,
   "commander_legal": true,
-  "edhrec_rank": 14874,
+  "edhrec_rank": 14625,
   "scryfall_uri": "https://scryfall.com/card/uma/216/kitchen-finks?utm_source=api"
  },
  "faces": [
@@ -65,7 +65,7 @@
    "name": "Kitchen Finks",
    "face": 0,
    "face_name": "Kitchen Finks",
-   "card_hash": "a1d45aad2c53ca3c7212636026959fbd",
+   "card_hash": "622b7e2a5b6fd9cfce1c86d2d5e9cb30",
    "fully_read": true,
    "abilities": [
     {

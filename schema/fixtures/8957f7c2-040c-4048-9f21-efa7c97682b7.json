@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8957f7c2-040c-4048-9f21-efa7c97682b7",
  "name": "Ambush Viper",
- "card_hash": "05e6df2bd8df276e56193088ee842d6a",
+ "card_hash": "20365f7b3a77e88e3894fcd594f754fa",
  "card": {
   "$": "CardDef",
   "oracle_id": "8957f7c2-040c-4048-9f21-efa7c97682b7",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 4878,
+  "edhrec_rank": 4813,
   "scryfall_uri": "https://scryfall.com/card/inr/186/ambush-viper?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Ambush Viper",
    "face": 0,
    "face_name": "Ambush Viper",
-   "card_hash": "05e6df2bd8df276e56193088ee842d6a",
+   "card_hash": "20365f7b3a77e88e3894fcd594f754fa",
    "fully_read": true,
    "abilities": [
     {

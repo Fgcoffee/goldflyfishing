@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "cb7baa46-7963-4d45-9a6e-e3c34db3c0e6",
  "name": "Life's Legacy",
- "card_hash": "11a42bcc4a4c74cb02b3027c49584e7a",
+ "card_hash": "a3fde07959a5ced18300808a5df86d88",
  "card": {
   "$": "CardDef",
   "oracle_id": "cb7baa46-7963-4d45-9a6e-e3c34db3c0e6",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 2558,
+  "edhrec_rank": 2522,
   "scryfall_uri": "https://scryfall.com/card/ncc/300/lifes-legacy?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Life's Legacy",
    "face": 0,
    "face_name": "Life's Legacy",
-   "card_hash": "11a42bcc4a4c74cb02b3027c49584e7a",
+   "card_hash": "a3fde07959a5ced18300808a5df86d88",
    "fully_read": true,
    "abilities": [
     {

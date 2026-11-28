@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a35c2e20-eb90-4132-b65f-be1fcb569819",
  "name": "Watchwolf",
- "card_hash": "b4db091a1192a4ba1df23b48bd6e2133",
+ "card_hash": "da35540c0686dc64ff3f1b2869677c2b",
  "card": {
   "$": "CardDef",
   "oracle_id": "a35c2e20-eb90-4132-b65f-be1fcb569819",
@@ -46,7 +46,7 @@
   "mana_value": 2,
   "color_identity": 17,
   "commander_legal": true,
-  "edhrec_rank": 13121,
+  "edhrec_rank": 12989,
   "scryfall_uri": "https://scryfall.com/card/a25/220/watchwolf?utm_source=api"
  },
  "faces": [
@@ -56,7 +56,7 @@
    "name": "Watchwolf",
    "face": 0,
    "face_name": "Watchwolf",
-   "card_hash": "b4db091a1192a4ba1df23b48bd6e2133",
+   "card_hash": "da35540c0686dc64ff3f1b2869677c2b",
    "fully_read": true,
    "abilities": [],
    "failures": []

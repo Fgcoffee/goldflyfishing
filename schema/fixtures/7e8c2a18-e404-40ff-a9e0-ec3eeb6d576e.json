@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "7e8c2a18-e404-40ff-a9e0-ec3eeb6d576e",
  "name": "Command Beacon",
- "card_hash": "ff7385ea8af4f7abb5386657977f953e",
+ "card_hash": "4fcdecfb8f1ce596714289d2e41c9e1d",
  "card": {
   "$": "CardDef",
   "oracle_id": "7e8c2a18-e404-40ff-a9e0-ec3eeb6d576e",
@@ -30,7 +30,7 @@
   "color_identity": 0,
   "commander_legal": true,
   "edhrec_rank": 183,
-  "scryfall_uri": "https://scryfall.com/card/trc/520/command-beacon?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/tdc/352/command-beacon?utm_source=api"
  },
  "faces": [
   {
@@ -39,7 +39,7 @@
    "name": "Command Beacon",
    "face": 0,
    "face_name": "Command Beacon",
-   "card_hash": "ff7385ea8af4f7abb5386657977f953e",
+   "card_hash": "4fcdecfb8f1ce596714289d2e41c9e1d",
    "fully_read": true,
    "abilities": [
     {

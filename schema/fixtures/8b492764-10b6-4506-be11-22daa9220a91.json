@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8b492764-10b6-4506-be11-22daa9220a91",
  "name": "Young Wolf",
- "card_hash": "4a132564bf5ec7008d0c47c749a0c266",
+ "card_hash": "43aceb071fbd021f1151b570b21e1dc8",
  "card": {
   "$": "CardDef",
   "oracle_id": "8b492764-10b6-4506-be11-22daa9220a91",
@@ -43,7 +43,7 @@
   "mana_value": 1,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 7018,
+  "edhrec_rank": 7033,
   "scryfall_uri": "https://scryfall.com/card/inr/227/young-wolf?utm_source=api"
  },
  "faces": [
@@ -53,7 +53,7 @@
    "name": "Young Wolf",
    "face": 0,
    "face_name": "Young Wolf",
-   "card_hash": "4a132564bf5ec7008d0c47c749a0c266",
+   "card_hash": "43aceb071fbd021f1151b570b21e1dc8",
    "fully_read": true,
    "abilities": [
     {

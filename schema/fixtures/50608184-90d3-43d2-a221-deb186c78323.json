@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "50608184-90d3-43d2-a221-deb186c78323",
  "name": "Goblin Piker",
- "card_hash": "53c06da8b1c056d6651bd548e09278d9",
+ "card_hash": "91a92e94730283f056aa4e34f7f48a68",
  "card": {
   "$": "CardDef",
   "oracle_id": "50608184-90d3-43d2-a221-deb186c78323",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 26238,
+  "edhrec_rank": 25844,
   "scryfall_uri": "https://scryfall.com/card/m12/141/goblin-piker?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Goblin Piker",
    "face": 0,
    "face_name": "Goblin Piker",
-   "card_hash": "53c06da8b1c056d6651bd548e09278d9",
+   "card_hash": "91a92e94730283f056aa4e34f7f48a68",
    "fully_read": true,
    "abilities": [],
    "failures": []

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "2249001c-08d5-4c0a-86f8-d97519a39f37",
  "name": "Stoke the Flames",
- "card_hash": "61d8fe2221377f9497bcda7149e0c169",
+ "card_hash": "1a7c0c1d534df0a7a4fd86e6cf40148d",
  "card": {
   "$": "CardDef",
   "oracle_id": "2249001c-08d5-4c0a-86f8-d97519a39f37",
@@ -50,7 +50,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 10787,
+  "edhrec_rank": 10317,
   "scryfall_uri": "https://scryfall.com/card/mom/166/stoke-the-flames?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Stoke the Flames",
    "face": 0,
    "face_name": "Stoke the Flames",
-   "card_hash": "61d8fe2221377f9497bcda7149e0c169",
+   "card_hash": "1a7c0c1d534df0a7a4fd86e6cf40148d",
    "fully_read": true,
    "abilities": [
     {

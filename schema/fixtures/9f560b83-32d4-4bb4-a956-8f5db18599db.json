@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9f560b83-32d4-4bb4-a956-8f5db18599db",
  "name": "Banisher Priest",
- "card_hash": "ce27c4151a558c3b9f8ef2f1e950b9af",
+ "card_hash": "21c3bab1da82e35ca55207b04af16d2a",
  "card": {
   "$": "CardDef",
   "oracle_id": "9f560b83-32d4-4bb4-a956-8f5db18599db",
@@ -53,8 +53,8 @@
   "mana_value": 3,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 11730,
-  "scryfall_uri": "https://scryfall.com/card/j25/169/banisher-priest?utm_source=api"
+  "edhrec_rank": 11565,
+  "scryfall_uri": "https://scryfall.com/card/moc/173/banisher-priest?utm_source=api"
  },
  "faces": [
   {
@@ -63,7 +63,7 @@
    "name": "Banisher Priest",
    "face": 0,
    "face_name": "Banisher Priest",
-   "card_hash": "ce27c4151a558c3b9f8ef2f1e950b9af",
+   "card_hash": "21c3bab1da82e35ca55207b04af16d2a",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "8a4028cd-6004-4fb0-a044-0bee662a78e1",
  "name": "Ainok Bond-Kin",
- "card_hash": "0cc330f2fa943e1523f35a6d65ce7704",
+ "card_hash": "58a3f3c55ebc7d6d48727d74851b05fc",
  "card": {
   "$": "CardDef",
   "oracle_id": "8a4028cd-6004-4fb0-a044-0bee662a78e1",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 5563,
+  "edhrec_rank": 5509,
   "scryfall_uri": "https://scryfall.com/card/cmm/7/ainok-bond-kin?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Ainok Bond-Kin",
    "face": 0,
    "face_name": "Ainok Bond-Kin",
-   "card_hash": "0cc330f2fa943e1523f35a6d65ce7704",
+   "card_hash": "58a3f3c55ebc7d6d48727d74851b05fc",
    "fully_read": true,
    "abilities": [
     {

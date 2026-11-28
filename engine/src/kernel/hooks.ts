@@ -23,6 +23,8 @@ export interface MatchContext {
   readonly source?: ObjectId;
   /** Who "you" is. */
   readonly controller?: PlayerId;
+  /** Who "that player" / "they" is in a filter with no player named (match/matching.ts). */
+  readonly thatPlayer?: PlayerId;
 }
 
 export interface MatchHooks {

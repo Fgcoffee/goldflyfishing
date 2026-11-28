@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "63a19c7c-49d7-4b75-aac8-d0ff36c45fb8",
  "name": "Sowing Mycospawn",
- "card_hash": "7b92029b716e115f1c34613426c1a849",
+ "card_hash": "ba4b85468b8cfc6ca858a794efc3ecc2",
  "card": {
   "$": "CardDef",
   "oracle_id": "63a19c7c-49d7-4b75-aac8-d0ff36c45fb8",
@@ -50,7 +50,7 @@
   "mana_value": 4,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 2062,
+  "edhrec_rank": 2094,
   "scryfall_uri": "https://scryfall.com/card/mh3/170/sowing-mycospawn?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Sowing Mycospawn",
    "face": 0,
    "face_name": "Sowing Mycospawn",
-   "card_hash": "7b92029b716e115f1c34613426c1a849",
+   "card_hash": "ba4b85468b8cfc6ca858a794efc3ecc2",
    "fully_read": true,
    "abilities": [
     {

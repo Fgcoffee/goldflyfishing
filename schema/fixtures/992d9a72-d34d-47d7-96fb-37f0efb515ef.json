@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "992d9a72-d34d-47d7-96fb-37f0efb515ef",
  "name": "Hymn to Tourach",
- "card_hash": "ef7f42862288ebdbdd975d5d964d2d64",
+ "card_hash": "61476c8edf7827ea77fb879f095aa272",
  "card": {
   "$": "CardDef",
   "oracle_id": "992d9a72-d34d-47d7-96fb-37f0efb515ef",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 9641,
+  "edhrec_rank": 9587,
   "scryfall_uri": "https://scryfall.com/card/ema/92/hymn-to-tourach?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Hymn to Tourach",
    "face": 0,
    "face_name": "Hymn to Tourach",
-   "card_hash": "ef7f42862288ebdbdd975d5d964d2d64",
+   "card_hash": "61476c8edf7827ea77fb879f095aa272",
    "fully_read": true,
    "abilities": [
     {

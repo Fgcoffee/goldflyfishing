@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "3adb7681-977f-4a32-9ec8-51481b958268",
  "name": "Rakdos Signet",
- "card_hash": "a6bf83201da647f8e2cc90026c8a9043",
+ "card_hash": "711ea0c48d43df3bcc66d2f2ff6f55f5",
  "card": {
   "$": "CardDef",
   "oracle_id": "3adb7681-977f-4a32-9ec8-51481b958268",
@@ -38,8 +38,8 @@
   "mana_value": 2,
   "color_identity": 12,
   "commander_legal": true,
-  "edhrec_rank": 170,
-  "scryfall_uri": "https://scryfall.com/card/frc/60/rakdos-signet?utm_source=api"
+  "edhrec_rank": 166,
+  "scryfall_uri": "https://scryfall.com/card/dsc/250/rakdos-signet?utm_source=api"
  },
  "faces": [
   {
@@ -48,7 +48,7 @@
    "name": "Rakdos Signet",
    "face": 0,
    "face_name": "Rakdos Signet",
-   "card_hash": "a6bf83201da647f8e2cc90026c8a9043",
+   "card_hash": "711ea0c48d43df3bcc66d2f2ff6f55f5",
    "fully_read": true,
    "abilities": [
     {

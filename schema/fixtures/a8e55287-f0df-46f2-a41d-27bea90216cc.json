@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a8e55287-f0df-46f2-a41d-27bea90216cc",
  "name": "Arcade Cabinet",
- "card_hash": "363e2fa5fbd13a7f9e057624cff19541",
+ "card_hash": "a9b0acc76a71a2899b8ddbaf79ad02f0",
  "card": {
   "$": "CardDef",
   "oracle_id": "a8e55287-f0df-46f2-a41d-27bea90216cc",
@@ -37,7 +37,7 @@
   "mana_value": 3,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 6906,
+  "edhrec_rank": 7333,
   "scryfall_uri": "https://scryfall.com/card/tmc/36/arcade-cabinet?utm_source=api"
  },
  "faces": [
@@ -47,7 +47,7 @@
    "name": "Arcade Cabinet",
    "face": 0,
    "face_name": "Arcade Cabinet",
-   "card_hash": "363e2fa5fbd13a7f9e057624cff19541",
+   "card_hash": "a9b0acc76a71a2899b8ddbaf79ad02f0",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b5479c97-df19-49c7-b305-7a0336fd1cb3",
  "name": "Sublime Archangel",
- "card_hash": "e010e71918e4604e85059f677ccbb861",
+ "card_hash": "524a712557c52f3c5c9b8ff74d450dbd",
  "card": {
   "$": "CardDef",
   "oracle_id": "b5479c97-df19-49c7-b305-7a0336fd1cb3",
@@ -56,7 +56,7 @@
   "mana_value": 4,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 8577,
+  "edhrec_rank": 8447,
   "scryfall_uri": "https://scryfall.com/card/uma/38/sublime-archangel?utm_source=api"
  },
  "faces": [
@@ -66,7 +66,7 @@
    "name": "Sublime Archangel",
    "face": 0,
    "face_name": "Sublime Archangel",
-   "card_hash": "e010e71918e4604e85059f677ccbb861",
+   "card_hash": "524a712557c52f3c5c9b8ff74d450dbd",
    "fully_read": true,
    "abilities": [
     {

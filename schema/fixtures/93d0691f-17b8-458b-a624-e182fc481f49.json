@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "93d0691f-17b8-458b-a624-e182fc481f49",
  "name": "Ertai's Trickery",
- "card_hash": "82fd68908ccf35b4545c7603679df3b1",
+ "card_hash": "c1314ebe33c31f359bec6b23bea56682",
  "card": {
   "$": "CardDef",
   "oracle_id": "93d0691f-17b8-458b-a624-e182fc481f49",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 31805,
+  "edhrec_rank": 31232,
   "scryfall_uri": "https://scryfall.com/card/pls/24/ertais-trickery?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Ertai's Trickery",
    "face": 0,
    "face_name": "Ertai's Trickery",
-   "card_hash": "82fd68908ccf35b4545c7603679df3b1",
+   "card_hash": "c1314ebe33c31f359bec6b23bea56682",
    "fully_read": false,
    "abilities": [
     {

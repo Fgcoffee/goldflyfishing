@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5811d905-cae5-4f92-a78e-abb43f8864a7",
  "name": "Cauldron of Souls",
- "card_hash": "bcb4565cd664ab12d2edd07be3b88680",
+ "card_hash": "afb432f63061667781099334799f384d",
  "card": {
   "$": "CardDef",
   "oracle_id": "5811d905-cae5-4f92-a78e-abb43f8864a7",
@@ -34,7 +34,7 @@
   "mana_value": 5,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 4432,
+  "edhrec_rank": 4345,
   "scryfall_uri": "https://scryfall.com/card/cm2/180/cauldron-of-souls?utm_source=api"
  },
  "faces": [
@@ -44,7 +44,7 @@
    "name": "Cauldron of Souls",
    "face": 0,
    "face_name": "Cauldron of Souls",
-   "card_hash": "bcb4565cd664ab12d2edd07be3b88680",
+   "card_hash": "afb432f63061667781099334799f384d",
    "fully_read": true,
    "abilities": [
     {

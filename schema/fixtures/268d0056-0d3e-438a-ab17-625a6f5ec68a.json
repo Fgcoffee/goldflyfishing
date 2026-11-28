@@ -1,0 +1,113 @@
+{
+ "ir_version": 2,
+ "oracle_id": "268d0056-0d3e-438a-ab17-625a6f5ec68a",
+ "name": "How to Start a Riot",
+ "card_hash": "0c98869229f12d0659609569043fa9cd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "268d0056-0d3e-438a-ab17-625a6f5ec68a",
+  "name": "How to Start a Riot",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "How to Start a Riot",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64,
+     "subtypes": [
+      "Lesson"
+     ]
+    },
+    "oracle_text": "Target creature gains menace until end of turn. (It can't be blocked except by two or more creatures.)\nCreatures target player controls get +2/+0 until end of turn.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 7197,
+  "scryfall_uri": "https://scryfall.com/card/tla/140/how-to-start-a-riot?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "268d0056-0d3e-438a-ab17-625a6f5ec68a",
+   "name": "How to Start a Riot",
+   "face": 0,
+   "face_name": "How to Start a Riot",
+   "card_hash": "0c98869229f12d0659609569043fa9cd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 143,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "duration": 1,
+       "granted_abilities": [
+        {
+         "$": "Ability",
+         "kind": 3,
+         "text": "menace",
+         "keyword": "menace"
+        }
+       ],
+       "text": "gains menace"
+      }
+     ],
+     "text": "Target creature gains menace until end of turn."
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 140,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 4
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 2
+       },
+       "duration": 1,
+       "text": "gets +2/+0"
+      }
+     ],
+     "text": "Creatures target player controls get +2/+0 until end of turn."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

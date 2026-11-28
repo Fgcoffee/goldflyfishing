@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9c01e2a6-61e7-455c-b09f-8c0de2266782",
  "name": "Pyromatics",
- "card_hash": "c5bf1f6a012b1f261a5b2436730e94c2",
+ "card_hash": "2e15947610d3a61c6dc5ef5f78f7b888",
  "card": {
   "$": "CardDef",
   "oracle_id": "9c01e2a6-61e7-455c-b09f-8c0de2266782",
@@ -44,7 +44,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 20615,
+  "edhrec_rank": 20225,
   "scryfall_uri": "https://scryfall.com/card/ddj/20/pyromatics?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Pyromatics",
    "face": 0,
    "face_name": "Pyromatics",
-   "card_hash": "c5bf1f6a012b1f261a5b2436730e94c2",
+   "card_hash": "2e15947610d3a61c6dc5ef5f78f7b888",
    "fully_read": true,
    "abilities": [
     {

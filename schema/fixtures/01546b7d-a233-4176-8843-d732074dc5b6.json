@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "01546b7d-a233-4176-8843-d732074dc5b6",
  "name": "Doubling Season",
- "card_hash": "3e9550fa6c503513715d970e02582470",
+ "card_hash": "039acc8bdf7fc28361362a19411765f5",
  "card": {
   "$": "CardDef",
   "oracle_id": "01546b7d-a233-4176-8843-d732074dc5b6",
@@ -41,7 +41,7 @@
   "mana_value": 5,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 186,
+  "edhrec_rank": 190,
   "scryfall_uri": "https://scryfall.com/card/fdn/216/doubling-season?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Doubling Season",
    "face": 0,
    "face_name": "Doubling Season",
-   "card_hash": "3e9550fa6c503513715d970e02582470",
+   "card_hash": "039acc8bdf7fc28361362a19411765f5",
    "fully_read": true,
    "abilities": [
     {

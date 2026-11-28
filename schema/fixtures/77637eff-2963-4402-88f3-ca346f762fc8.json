@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "77637eff-2963-4402-88f3-ca346f762fc8",
  "name": "Capsize",
- "card_hash": "ef5a9a717d434a5b0dc69b25130a70ad",
+ "card_hash": "f94cc6048c63ddd53fed1d62643fbda3",
  "card": {
   "$": "CardDef",
   "oracle_id": "77637eff-2963-4402-88f3-ca346f762fc8",
@@ -50,7 +50,7 @@
   "mana_value": 3,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 5422,
+  "edhrec_rank": 5292,
   "scryfall_uri": "https://scryfall.com/card/tpr/42/capsize?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Capsize",
    "face": 0,
    "face_name": "Capsize",
-   "card_hash": "ef5a9a717d434a5b0dc69b25130a70ad",
+   "card_hash": "f94cc6048c63ddd53fed1d62643fbda3",
    "fully_read": true,
    "abilities": [
     {

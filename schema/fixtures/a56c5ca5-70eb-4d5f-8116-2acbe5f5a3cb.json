@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a56c5ca5-70eb-4d5f-8116-2acbe5f5a3cb",
  "name": "Jaya Ballard",
- "card_hash": "5dbdaedf458b52a55ec4f119f20ef61c",
+ "card_hash": "fd1225ab825f682296edbd042a917fa2",
  "card": {
   "$": "CardDef",
   "oracle_id": "a56c5ca5-70eb-4d5f-8116-2acbe5f5a3cb",
@@ -61,7 +61,7 @@
   "mana_value": 5,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 9441,
+  "edhrec_rank": 9176,
   "scryfall_uri": "https://scryfall.com/card/c21/175/jaya-ballard?utm_source=api"
  },
  "faces": [
@@ -71,7 +71,7 @@
    "name": "Jaya Ballard",
    "face": 0,
    "face_name": "Jaya Ballard",
-   "card_hash": "5dbdaedf458b52a55ec4f119f20ef61c",
+   "card_hash": "fd1225ab825f682296edbd042a917fa2",
    "fully_read": false,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
  "name": "Lightning Bolt",
- "card_hash": "1aae90aa638b8d1060f42588743c44a9",
+ "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
  "card": {
   "$": "CardDef",
   "oracle_id": "4457ed35-7c10-48c8-9776-456485fdf070",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 159,
+  "edhrec_rank": 158,
   "scryfall_uri": "https://scryfall.com/card/msc/806/lightning-bolt?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Lightning Bolt",
    "face": 0,
    "face_name": "Lightning Bolt",
-   "card_hash": "1aae90aa638b8d1060f42588743c44a9",
+   "card_hash": "cbd8799e266d1b8182a241ba7be078e6",
    "fully_read": true,
    "abilities": [
     {

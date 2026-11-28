@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "54b3ccdc-e5b0-44d9-bc81-a296fc5dc005",
  "name": "Rosemane Centaur",
- "card_hash": "3efbc57b9cd75f75cd388225b78e8308",
+ "card_hash": "cbd43451c91f973e7eafcb19cfb4bc57",
  "card": {
   "$": "CardDef",
   "oracle_id": "54b3ccdc-e5b0-44d9-bc81-a296fc5dc005",
@@ -57,7 +57,7 @@
   "mana_value": 5,
   "color_identity": 17,
   "commander_legal": true,
-  "edhrec_rank": 30102,
+  "edhrec_rank": 29516,
   "scryfall_uri": "https://scryfall.com/card/grn/197/rosemane-centaur?utm_source=api"
  },
  "faces": [
@@ -67,7 +67,7 @@
    "name": "Rosemane Centaur",
    "face": 0,
    "face_name": "Rosemane Centaur",
-   "card_hash": "3efbc57b9cd75f75cd388225b78e8308",
+   "card_hash": "cbd43451c91f973e7eafcb19cfb4bc57",
    "fully_read": true,
    "abilities": [
     {

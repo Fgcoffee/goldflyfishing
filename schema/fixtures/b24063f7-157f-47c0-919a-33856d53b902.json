@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b24063f7-157f-47c0-919a-33856d53b902",
  "name": "Worthy Cause",
- "card_hash": "1b920f9f0cf2ca4604aba5832b91a349",
+ "card_hash": "ab7b094ce6d492c0a725f4291e595088",
  "card": {
   "$": "CardDef",
   "oracle_id": "b24063f7-157f-47c0-919a-33856d53b902",
@@ -38,7 +38,7 @@
   "mana_value": 1,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 22513,
+  "edhrec_rank": 22219,
   "scryfall_uri": "https://scryfall.com/card/tmp/53/worthy-cause?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Worthy Cause",
    "face": 0,
    "face_name": "Worthy Cause",
-   "card_hash": "1b920f9f0cf2ca4604aba5832b91a349",
+   "card_hash": "ab7b094ce6d492c0a725f4291e595088",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e05abb6b-e9f4-4d9e-ad1e-7805ebc09914",
  "name": "Fists of Flame",
- "card_hash": "39e1c965bd2dd25d1f4bea0e4b95d2c8",
+ "card_hash": "27655a7719ec6f1a63f9d9c58b96a5d9",
  "card": {
   "$": "CardDef",
   "oracle_id": "e05abb6b-e9f4-4d9e-ad1e-7805ebc09914",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1880,
+  "edhrec_rank": 1864,
   "scryfall_uri": "https://scryfall.com/card/tle/166/fists-of-flame?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Fists of Flame",
    "face": 0,
    "face_name": "Fists of Flame",
-   "card_hash": "39e1c965bd2dd25d1f4bea0e4b95d2c8",
+   "card_hash": "27655a7719ec6f1a63f9d9c58b96a5d9",
    "fully_read": true,
    "abilities": [
     {

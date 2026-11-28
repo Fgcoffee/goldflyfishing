@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "1b5e6560-ff2e-4475-96cb-63f64c8a86db",
  "name": "Soul-Guide Lantern",
- "card_hash": "591db8b56820ecf2f9100f6ab3926982",
+ "card_hash": "57c1c240b4a7e45cd3d4fcd7c5bdf868",
  "card": {
   "$": "CardDef",
   "oracle_id": "1b5e6560-ff2e-4475-96cb-63f64c8a86db",
@@ -34,7 +34,7 @@
   "mana_value": 1,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 1331,
+  "edhrec_rank": 1352,
   "scryfall_uri": "https://scryfall.com/card/eoc/143/soul-guide-lantern?utm_source=api"
  },
  "faces": [
@@ -44,7 +44,7 @@
    "name": "Soul-Guide Lantern",
    "face": 0,
    "face_name": "Soul-Guide Lantern",
-   "card_hash": "591db8b56820ecf2f9100f6ab3926982",
+   "card_hash": "57c1c240b4a7e45cd3d4fcd7c5bdf868",
    "fully_read": true,
    "abilities": [
     {

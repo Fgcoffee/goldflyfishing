@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ddb021df-ae4a-4ac1-8353-d0b375761714",
  "name": "White Knight",
- "card_hash": "1d6a06ae127b2ddb17fb7d09207691df",
+ "card_hash": "2c28d402b379a9a762c4e4b388ee9f60",
  "card": {
   "$": "CardDef",
   "oracle_id": "ddb021df-ae4a-4ac1-8353-d0b375761714",
@@ -51,7 +51,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 18505,
+  "edhrec_rank": 18214,
   "scryfall_uri": "https://scryfall.com/card/ddg/9/white-knight?utm_source=api"
  },
  "faces": [
@@ -61,7 +61,7 @@
    "name": "White Knight",
    "face": 0,
    "face_name": "White Knight",
-   "card_hash": "1d6a06ae127b2ddb17fb7d09207691df",
+   "card_hash": "2c28d402b379a9a762c4e4b388ee9f60",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6a5ce1b0-ac78-4a74-9eb7-4064e1687bf1",
  "name": "Momentous Fall",
- "card_hash": "f6be470ea94da1f35a2351822ff97476",
+ "card_hash": "af178debcf3857c160720af80b2565c9",
  "card": {
   "$": "CardDef",
   "oracle_id": "6a5ce1b0-ac78-4a74-9eb7-4064e1687bf1",
@@ -47,7 +47,7 @@
   "mana_value": 4,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 2614,
+  "edhrec_rank": 2579,
   "scryfall_uri": "https://scryfall.com/card/jmp/411/momentous-fall?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Momentous Fall",
    "face": 0,
    "face_name": "Momentous Fall",
-   "card_hash": "f6be470ea94da1f35a2351822ff97476",
+   "card_hash": "af178debcf3857c160720af80b2565c9",
    "fully_read": true,
    "abilities": [
     {

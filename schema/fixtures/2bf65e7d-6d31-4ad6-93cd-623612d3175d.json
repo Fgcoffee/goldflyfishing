@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "2bf65e7d-6d31-4ad6-93cd-623612d3175d",
  "name": "Sudden Impact",
- "card_hash": "bc7ac2dfbfc7a81af10c70b2e0de6a80",
+ "card_hash": "880e5bf04aa88797c2cb782de0acb369",
  "card": {
   "$": "CardDef",
   "oracle_id": "2bf65e7d-6d31-4ad6-93cd-623612d3175d",
@@ -41,7 +41,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 19236,
+  "edhrec_rank": 19018,
   "scryfall_uri": "https://scryfall.com/card/10e/241/sudden-impact?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Sudden Impact",
    "face": 0,
    "face_name": "Sudden Impact",
-   "card_hash": "bc7ac2dfbfc7a81af10c70b2e0de6a80",
+   "card_hash": "880e5bf04aa88797c2cb782de0acb369",
    "fully_read": true,
    "abilities": [
     {

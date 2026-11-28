@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "15feb59b-bbbe-462a-8d38-d20735bbc2f3",
  "name": "Beacon of Destruction",
- "card_hash": "f2e7d7f926bf0cc6ea0d72eb5e7e4bcb",
+ "card_hash": "5d4b570ccb85dad940ca47e6ef3937af",
  "card": {
   "$": "CardDef",
   "oracle_id": "15feb59b-bbbe-462a-8d38-d20735bbc2f3",
@@ -47,7 +47,7 @@
   "mana_value": 5,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 18749,
+  "edhrec_rank": 18428,
   "scryfall_uri": "https://scryfall.com/card/dds/35/beacon-of-destruction?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Beacon of Destruction",
    "face": 0,
    "face_name": "Beacon of Destruction",
-   "card_hash": "f2e7d7f926bf0cc6ea0d72eb5e7e4bcb",
+   "card_hash": "5d4b570ccb85dad940ca47e6ef3937af",
    "fully_read": true,
    "abilities": [
     {

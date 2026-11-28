@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "39e21a5a-b278-478a-854c-17695c0f6246",
  "name": "Wicked Pact",
- "card_hash": "0c5092f0ed5483e484cb62540fa474e5",
+ "card_hash": "6cd98fdc4845fc38d7155bd7920bd122",
  "card": {
   "$": "CardDef",
   "oracle_id": "39e21a5a-b278-478a-854c-17695c0f6246",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 26833,
+  "edhrec_rank": 26443,
   "scryfall_uri": "https://scryfall.com/card/me4/102/wicked-pact?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Wicked Pact",
    "face": 0,
    "face_name": "Wicked Pact",
-   "card_hash": "0c5092f0ed5483e484cb62540fa474e5",
+   "card_hash": "6cd98fdc4845fc38d7155bd7920bd122",
    "fully_read": true,
    "abilities": [
     {

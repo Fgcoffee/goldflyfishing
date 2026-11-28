@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
  "name": "Cultivator's Caravan",
- "card_hash": "d92e8caeb116269cd3524c007fcd831f",
+ "card_hash": "3ff1d6ca4a1a2dbed3fc7af5e97fd7b0",
  "card": {
   "$": "CardDef",
   "oracle_id": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
@@ -49,7 +49,7 @@
   "mana_value": 3,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 3002,
+  "edhrec_rank": 2918,
   "scryfall_uri": "https://scryfall.com/card/fdn/670/cultivators-caravan?utm_source=api"
  },
  "faces": [
@@ -59,7 +59,7 @@
    "name": "Cultivator's Caravan",
    "face": 0,
    "face_name": "Cultivator's Caravan",
-   "card_hash": "d92e8caeb116269cd3524c007fcd831f",
+   "card_hash": "3ff1d6ca4a1a2dbed3fc7af5e97fd7b0",
    "fully_read": true,
    "abilities": [
     {

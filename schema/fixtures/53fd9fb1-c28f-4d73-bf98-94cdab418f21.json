@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "53fd9fb1-c28f-4d73-bf98-94cdab418f21",
  "name": "Consume Strength",
- "card_hash": "ea853e7410acd282b0ef3553a582e6ca",
+ "card_hash": "fbb9fddce992a272c3b0165e55399f97",
  "card": {
   "$": "CardDef",
   "oracle_id": "53fd9fb1-c28f-4d73-bf98-94cdab418f21",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 20,
   "commander_legal": true,
-  "edhrec_rank": 27953,
+  "edhrec_rank": 27430,
   "scryfall_uri": "https://scryfall.com/card/ddm/74/consume-strength?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Consume Strength",
    "face": 0,
    "face_name": "Consume Strength",
-   "card_hash": "ea853e7410acd282b0ef3553a582e6ca",
+   "card_hash": "fbb9fddce992a272c3b0165e55399f97",
    "fully_read": true,
    "abilities": [
     {

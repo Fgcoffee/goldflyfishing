@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "758dd2fd-d3ec-4782-9a60-12b0d79719da",
  "name": "Kor Duelist",
- "card_hash": "395e6edfef4117cad9d220cccd3f4579",
+ "card_hash": "90fcb41aecdd6fdbd5097a0263e4fdd3",
  "card": {
   "$": "CardDef",
   "oracle_id": "758dd2fd-d3ec-4782-9a60-12b0d79719da",
@@ -41,7 +41,7 @@
   "mana_value": 1,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 21342,
+  "edhrec_rank": 21076,
   "scryfall_uri": "https://scryfall.com/card/mm2/22/kor-duelist?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Kor Duelist",
    "face": 0,
    "face_name": "Kor Duelist",
-   "card_hash": "395e6edfef4117cad9d220cccd3f4579",
+   "card_hash": "90fcb41aecdd6fdbd5097a0263e4fdd3",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
  "name": "Plains",
- "card_hash": "0bbe99ccdb497638347a782f294414f8",
+ "card_hash": "b0688a1fe08e7db6c7588be104159a7e",
  "card": {
   "$": "CardDef",
   "oracle_id": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
@@ -33,7 +33,7 @@
   "mana_value": 0,
   "color_identity": 1,
   "commander_legal": true,
-  "scryfall_uri": "https://scryfall.com/card/mdd/292/plains?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trk/317/plains?utm_source=api"
  },
  "faces": [
   {
@@ -42,7 +42,7 @@
    "name": "Plains",
    "face": 0,
    "face_name": "Plains",
-   "card_hash": "0bbe99ccdb497638347a782f294414f8",
+   "card_hash": "b0688a1fe08e7db6c7588be104159a7e",
    "fully_read": true,
    "abilities": [],
    "failures": []

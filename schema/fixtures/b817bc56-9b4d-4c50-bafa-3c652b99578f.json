@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b817bc56-9b4d-4c50-bafa-3c652b99578f",
  "name": "Ulamog, the Infinite Gyre",
- "card_hash": "b4f3bbd4e3a43e97f3f7c5a57452261c",
+ "card_hash": "9c18838cacbbc57261ff077d656ef4e1",
  "card": {
   "$": "CardDef",
   "oracle_id": "b817bc56-9b4d-4c50-bafa-3c652b99578f",
@@ -44,7 +44,7 @@
   "mana_value": 11,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 1382,
+  "edhrec_rank": 1387,
   "scryfall_uri": "https://scryfall.com/card/2x2/3/ulamog-the-infinite-gyre?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Ulamog, the Infinite Gyre",
    "face": 0,
    "face_name": "Ulamog, the Infinite Gyre",
-   "card_hash": "b4f3bbd4e3a43e97f3f7c5a57452261c",
+   "card_hash": "9c18838cacbbc57261ff077d656ef4e1",
    "fully_read": false,
    "abilities": [
     {

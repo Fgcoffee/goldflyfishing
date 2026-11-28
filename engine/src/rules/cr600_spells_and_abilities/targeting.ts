@@ -118,14 +118,18 @@ export function enchantableScope(quality: PlayerFilter): number {
 }
 
 /** Everything one targeting node could legally point at: objects, then players (CR 115.4). */
-export function candidatesFor(game: Game, source: GameObject, effect: Effect, playerId: PlayerId): number[] {
+export function candidatesFor(game: Game, source: GameObject, effect: Effect, playerId: PlayerId, boundPlayer: PlayerId = NO_PLAYER): number[] {
   if (targetsAPlayer(effect)) {
     return targetablePlayers(game, effect.players ?? null, playerId)
       .filter((pid) => !playerShieldedFrom(game, pid, source, playerId))
       .map(playerTarget);
   }
+  // "Destroy target artifact that player controls": on a trigger, "that
+  // player" is its event's (CR 603.3d: targets are chosen as it goes on the
+  // stack), passed in by the trigger code or read off a stack object.
+  const thatPlayer = boundPlayer !== NO_PLAYER ? boundPlayer : ((source.triggerEvent as { player?: PlayerId } | null)?.player ?? NO_PLAYER);
   const out = matchHooks()
-    .find(game, effect.targets!, { source: source.id, controller: playerId })
+    .find(game, effect.targets!, { source: source.id, controller: playerId, thatPlayer })
     .filter((c) => !hasProtectionFrom(game, c, source))
     .map((c) => c.id);
   if (includesPlayers(effect.targets)) {

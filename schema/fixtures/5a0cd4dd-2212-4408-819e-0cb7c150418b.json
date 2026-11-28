@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5a0cd4dd-2212-4408-819e-0cb7c150418b",
  "name": "True Believer",
- "card_hash": "a79db73fafbf8758f38bf512a6317445",
+ "card_hash": "ab2f1f5c55666592ba3ffcd6b660b698",
  "card": {
   "$": "CardDef",
   "oracle_id": "5a0cd4dd-2212-4408-819e-0cb7c150418b",
@@ -47,7 +47,7 @@
   "mana_value": 2,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 21774,
+  "edhrec_rank": 21471,
   "scryfall_uri": "https://scryfall.com/card/10e/53/true-believer?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "True Believer",
    "face": 0,
    "face_name": "True Believer",
-   "card_hash": "a79db73fafbf8758f38bf512a6317445",
+   "card_hash": "ab2f1f5c55666592ba3ffcd6b660b698",
    "fully_read": true,
    "abilities": [
     {

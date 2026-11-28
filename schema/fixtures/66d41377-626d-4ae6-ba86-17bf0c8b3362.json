@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
  "name": "Nim Deathmantle",
- "card_hash": "1d38de879e7d6d737b7af441978c9fde",
+ "card_hash": "1769cf56730f95adbad08739596ce83b",
  "card": {
   "$": "CardDef",
   "oracle_id": "66d41377-626d-4ae6-ba86-17bf0c8b3362",
@@ -40,7 +40,7 @@
   "mana_value": 2,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 3564,
+  "edhrec_rank": 3513,
   "scryfall_uri": "https://scryfall.com/card/2x2/309/nim-deathmantle?utm_source=api"
  },
  "faces": [
@@ -50,7 +50,7 @@
    "name": "Nim Deathmantle",
    "face": 0,
    "face_name": "Nim Deathmantle",
-   "card_hash": "1d38de879e7d6d737b7af441978c9fde",
+   "card_hash": "1769cf56730f95adbad08739596ce83b",
    "fully_read": false,
    "abilities": [
     {

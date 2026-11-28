@@ -325,7 +325,7 @@ export function isPerPlayerSacrifice(effect: Effect): boolean {
 export function objectsOf(resolution: Resolution, effect: Effect, chosen: readonly number[] | null = null): GameObject[] {
   const game = resolution.game;
   const spec = effect.targets;
-  const scope = { source: resolution.source, controller: resolution.controller };
+  const scope = { source: resolution.source, controller: resolution.controller, thatPlayer: boundPlayer(resolution) };
   if (spec != null && flag(spec.from_pile)) return fromPile(resolution, effect);
   if (spec != null && flag(spec.remembered)) {
     const found: GameObject[] = [];
@@ -403,7 +403,7 @@ function fromPile(resolution: Resolution, effect: Effect): GameObject[] {
     const obj = game.objects.get(id);
     if (obj === undefined || !isLive(obj)) continue;
     const spec = { ...loose, zones: { $set: [obj.zone] } };
-    if (matchHooks().matches(game, obj, spec, { source: resolution.source, controller: resolution.controller })) candidates.push(obj);
+    if (matchHooks().matches(game, obj, spec, { source: resolution.source, controller: resolution.controller, thatPlayer: boundPlayer(resolution) })) candidates.push(obj);
   }
   return narrowedToCount(resolution, effect, candidates);
 }
@@ -566,7 +566,55 @@ function evaluateContext(resolution: Resolution) {
     dieResults: resolution.dieResults,
     remembered: resolution.remembered.slice(),
     thisWay: resolution.thisWay,
+    thatPlayer: boundPlayer(resolution),
   };
+}
+
+/**
+ * Who "that player" / "they" is for an object filter that names no player
+ * (owner or controller SPECIFIC, none given): the player the instruction is
+ * being carried out for (`thatPlayer`, set while an executor goes player by
+ * player), else the one player chosen earlier in the resolution, else the
+ * trigger event's player ("deals combat damage to a player ... that
+ * player's library"). Python bound none of them, so such a filter matched
+ * nothing (audit/unbound_that_player.md; fixed in TS).
+ */
+export function boundPlayer(resolution: Resolution): PlayerId {
+  if (resolution.thatPlayer !== NO_PLAYER) return resolution.thatPlayer;
+  const chosen = living(resolution.game, resolution.chosenPlayers);
+  if (chosen.length === 1) return chosen[0]!;
+  const e = triggerEventOf(resolution);
+  return e !== null && e.player !== NO_PLAYER ? e.player : NO_PLAYER;
+}
+
+const SPECIFIC_RELATION = ir("ControllerRelation.SPECIFIC") as number;
+
+/** Whether an IR value or filter has an object filter whose player is "that player" (named by no one). */
+export function readsThatPlayer(node: unknown): boolean {
+  if (node === null || typeof node !== "object") return false;
+  if (Array.isArray(node)) return node.some(readsThatPlayer);
+  const o = node as Record<string, unknown>;
+  if (o.$ === "ObjectFilter" && (num(o.controller) === SPECIFIC_RELATION || num(o.owner) === SPECIFIC_RELATION) && o.controller_specific == null) {
+    return true;
+  }
+  for (const [k, v] of Object.entries(o)) if (k !== "$" && typeof v === "object" && readsThatPlayer(v)) return true;
+  return false;
+}
+
+/** `fn` with "that player" bound to `pid` (an executor going player by player). */
+function asThatPlayer<T>(resolution: Resolution, pid: PlayerId, fn: () => T): T {
+  const before = resolution.thatPlayer;
+  resolution.thatPlayer = pid;
+  try {
+    return fn();
+  } finally {
+    resolution.thatPlayer = before;
+  }
+}
+
+/** The amount for one player: "for each creature they control" counts that player's. */
+function amountFor(resolution: Resolution, effect: Effect, pid: PlayerId, once: number): number {
+  return readsThatPlayer(effect.amount) ? asThatPlayer(resolution, pid, () => amountOf(resolution, effect)) : once;
 }
 
 /** The effect's amount (or second amount), evaluated against the game. */
@@ -1028,10 +1076,13 @@ registerExecutor(EK.SACRIFICE, (resolution, effect) => {
     return;
   }
   // CR 701.21a, 608.2d: each player sacrifices their own, their choice.
-  const everything = matchHooks().find(game, effect.targets!, { source: resolution.source, controller: resolution.controller });
+  const scope = { source: resolution.source, controller: resolution.controller };
+  const perPlayer = readsThatPlayer(effect.targets);
+  const everything = perPlayer ? [] : matchHooks().find(game, effect.targets!, scope);
   const sacrificed: ObjectId[] = [];
   for (const pid of playersOf(resolution, effect)) {
-    const theirs = everything.filter((o) => o.controller === pid);
+    // "Each player sacrifices all permanents they control": "they" is each in turn.
+    const theirs = (perPlayer ? matchHooks().find(game, effect.targets!, { ...scope, thatPlayer: pid }) : everything).filter((o) => o.controller === pid);
     for (const obj of sacrificeChoice(resolution, effect, theirs, pid)) {
       sacrificed.push(obj.id);
       sacrifice(game, obj, { source: resolution.source });
@@ -1296,17 +1347,19 @@ registerExecutor(EK.DAMAGE, (resolution, effect) => {
   let recipients = targetedPlayers(chosen);
   if (recipients.length > 0) resolution.chosenPlayers = recipients.slice(); // "that player"
   if (recipients.length === 0 && effect.players != null && !isTargeted(effect)) recipients = playersOf(resolution, effect);
-  for (const pid of recipients) dealDamage(game, pid, amount, { source: dealer, sourceController: dealerController, lifelink });
+  for (const pid of recipients) {
+    dealDamage(game, pid, amountFor(resolution, effect, pid, amount), { source: dealer, sourceController: dealerController, lifelink });
+  }
 });
 
 registerExecutor(EK.GAIN_LIFE, (resolution, effect) => {
   const amount = amountOf(resolution, effect);
-  for (const pid of playersOf(resolution, effect)) gainLife(resolution.game, pid, amount, { source: resolution.source });
+  for (const pid of playersOf(resolution, effect)) gainLife(resolution.game, pid, amountFor(resolution, effect, pid, amount), { source: resolution.source });
 });
 
 registerExecutor(EK.LOSE_LIFE, (resolution, effect) => {
   const amount = amountOf(resolution, effect);
-  for (const pid of playersOf(resolution, effect)) loseLife(resolution.game, pid, amount, { source: resolution.source });
+  for (const pid of playersOf(resolution, effect)) loseLife(resolution.game, pid, amountFor(resolution, effect, pid, amount), { source: resolution.source });
 });
 
 registerExecutor(ir("EffectKind.SET_LIFE"), (resolution, effect) => {

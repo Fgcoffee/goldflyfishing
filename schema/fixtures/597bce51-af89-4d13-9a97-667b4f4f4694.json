@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "597bce51-af89-4d13-9a97-667b4f4f4694",
  "name": "Ulamog's Crusher",
- "card_hash": "c31fd4ea66c516f413b2d8f88e8fd046",
+ "card_hash": "22f9986bd41ec10d1be7f6cf7d35f810",
  "card": {
   "$": "CardDef",
   "oracle_id": "597bce51-af89-4d13-9a97-667b4f4f4694",
@@ -42,7 +42,7 @@
   "mana_value": 8,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 3472,
+  "edhrec_rank": 3458,
   "scryfall_uri": "https://scryfall.com/card/cmm/6/ulamogs-crusher?utm_source=api"
  },
  "faces": [
@@ -52,7 +52,7 @@
    "name": "Ulamog's Crusher",
    "face": 0,
    "face_name": "Ulamog's Crusher",
-   "card_hash": "c31fd4ea66c516f413b2d8f88e8fd046",
+   "card_hash": "22f9986bd41ec10d1be7f6cf7d35f810",
    "fully_read": false,
    "abilities": [
     {

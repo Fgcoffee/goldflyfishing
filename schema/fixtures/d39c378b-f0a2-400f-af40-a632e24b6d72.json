@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d39c378b-f0a2-400f-af40-a632e24b6d72",
  "name": "Relentless Pursuit",
- "card_hash": "3f969d63e44bd74bd20ef63a3a82cd3e",
+ "card_hash": "89a7852a592267d038671149fdc270ec",
  "card": {
   "$": "CardDef",
   "oracle_id": "d39c378b-f0a2-400f-af40-a632e24b6d72",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 20032,
+  "edhrec_rank": 19580,
   "scryfall_uri": "https://scryfall.com/card/thb/195/relentless-pursuit?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Relentless Pursuit",
    "face": 0,
    "face_name": "Relentless Pursuit",
-   "card_hash": "3f969d63e44bd74bd20ef63a3a82cd3e",
+   "card_hash": "89a7852a592267d038671149fdc270ec",
    "fully_read": true,
    "abilities": [
     {

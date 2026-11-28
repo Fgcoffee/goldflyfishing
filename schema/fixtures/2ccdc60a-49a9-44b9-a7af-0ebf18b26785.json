@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "2ccdc60a-49a9-44b9-a7af-0ebf18b26785",
  "name": "Sword of Fire and Ice",
- "card_hash": "18ee78b5ae15fe09ab7c2e4812832f58",
+ "card_hash": "07f2a93f513039a0715eaf323217070b",
  "card": {
   "$": "CardDef",
   "oracle_id": "2ccdc60a-49a9-44b9-a7af-0ebf18b26785",
@@ -40,7 +40,7 @@
   "mana_value": 3,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 1339,
+  "edhrec_rank": 1331,
   "scryfall_uri": "https://scryfall.com/card/2xm/297/sword-of-fire-and-ice?utm_source=api"
  },
  "faces": [
@@ -50,7 +50,7 @@
    "name": "Sword of Fire and Ice",
    "face": 0,
    "face_name": "Sword of Fire and Ice",
-   "card_hash": "18ee78b5ae15fe09ab7c2e4812832f58",
+   "card_hash": "07f2a93f513039a0715eaf323217070b",
    "fully_read": true,
    "abilities": [
     {

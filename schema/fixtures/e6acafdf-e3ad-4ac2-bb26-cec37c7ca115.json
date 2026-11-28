@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "e6acafdf-e3ad-4ac2-bb26-cec37c7ca115",
  "name": "Insufferable Balladeer",
- "card_hash": "1cdf59b3913899ec36f83f384f8328da",
+ "card_hash": "4fd807c454fc9fc33860bfe6f1cca387",
  "card": {
   "$": "CardDef",
   "oracle_id": "e6acafdf-e3ad-4ac2-bb26-cec37c7ca115",
@@ -51,7 +51,7 @@
   "mana_value": 2,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 13678,
+  "edhrec_rank": 13440,
   "scryfall_uri": "https://scryfall.com/card/clb/184/insufferable-balladeer?utm_source=api"
  },
  "faces": [
@@ -61,7 +61,7 @@
    "name": "Insufferable Balladeer",
    "face": 0,
    "face_name": "Insufferable Balladeer",
-   "card_hash": "1cdf59b3913899ec36f83f384f8328da",
+   "card_hash": "4fd807c454fc9fc33860bfe6f1cca387",
    "fully_read": true,
    "abilities": [
     {

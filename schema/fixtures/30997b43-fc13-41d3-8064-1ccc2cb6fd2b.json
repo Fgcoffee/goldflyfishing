@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "30997b43-fc13-41d3-8064-1ccc2cb6fd2b",
  "name": "Raging Goblin",
- "card_hash": "e024d46861d2eddc924c58fc6c8a3163",
+ "card_hash": "051a7dda59980ae41a668d1b0ce2742f",
  "card": {
   "$": "CardDef",
   "oracle_id": "30997b43-fc13-41d3-8064-1ccc2cb6fd2b",
@@ -44,7 +44,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 16405,
+  "edhrec_rank": 16126,
   "scryfall_uri": "https://scryfall.com/card/oana/43/raging-goblin?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Raging Goblin",
    "face": 0,
    "face_name": "Raging Goblin",
-   "card_hash": "e024d46861d2eddc924c58fc6c8a3163",
+   "card_hash": "051a7dda59980ae41a668d1b0ce2742f",
    "fully_read": true,
    "abilities": [
     {

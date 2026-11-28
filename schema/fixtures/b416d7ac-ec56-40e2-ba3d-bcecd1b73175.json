@@ -1,0 +1,79 @@
+{
+ "ir_version": 2,
+ "oracle_id": "b416d7ac-ec56-40e2-ba3d-bcecd1b73175",
+ "name": "Primeval Light",
+ "card_hash": "eb9e7aaf825134a0787f364be82d53fd",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "b416d7ac-ec56-40e2-ba3d-bcecd1b73175",
+  "name": "Primeval Light",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Primeval Light",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 3,
+       "text": "{3}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 128
+    },
+    "oracle_text": "Destroy all enchantments target player controls.",
+    "colors": 16
+   }
+  ],
+  "mana_value": 4,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 22676,
+  "scryfall_uri": "https://scryfall.com/card/gpt/93/primeval-light?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "b416d7ac-ec56-40e2-ba3d-bcecd1b73175",
+   "name": "Primeval Light",
+   "face": 0,
+   "face_name": "Primeval Light",
+   "card_hash": "eb9e7aaf825134a0787f364be82d53fd",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 29,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 8,
+        "controller": 4
+       },
+       "text": "destroy"
+      }
+     ],
+     "text": "Destroy all enchantments target player controls."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

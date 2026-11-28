@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ae120613-97d6-4393-b39d-c3e6c076f5d6",
  "name": "Deflecting Swat",
- "card_hash": "d053c21c63af8be78fc9dd3acbcc34fa",
+ "card_hash": "89a17b2a7225bfe53816da93389d2e0b",
  "card": {
   "$": "CardDef",
   "oracle_id": "ae120613-97d6-4393-b39d-c3e6c076f5d6",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 74,
+  "edhrec_rank": 75,
   "scryfall_uri": "https://scryfall.com/card/cmm/214/deflecting-swat?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Deflecting Swat",
    "face": 0,
    "face_name": "Deflecting Swat",
-   "card_hash": "d053c21c63af8be78fc9dd3acbcc34fa",
+   "card_hash": "89a17b2a7225bfe53816da93389d2e0b",
    "fully_read": true,
    "abilities": [
     {

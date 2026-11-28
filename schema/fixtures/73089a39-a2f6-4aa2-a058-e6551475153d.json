@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
  "name": "Sanguine Bond",
- "card_hash": "45cb514ebe4fcf74af227bcee533c935",
+ "card_hash": "d7155414321cf552098ddd1f1b543f4e",
  "card": {
   "$": "CardDef",
   "oracle_id": "73089a39-a2f6-4aa2-a058-e6551475153d",
@@ -47,7 +47,7 @@
   "mana_value": 5,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 507,
+  "edhrec_rank": 506,
   "scryfall_uri": "https://scryfall.com/card/c21/153/sanguine-bond?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Sanguine Bond",
    "face": 0,
    "face_name": "Sanguine Bond",
-   "card_hash": "45cb514ebe4fcf74af227bcee533c935",
+   "card_hash": "d7155414321cf552098ddd1f1b543f4e",
    "fully_read": true,
    "abilities": [
     {

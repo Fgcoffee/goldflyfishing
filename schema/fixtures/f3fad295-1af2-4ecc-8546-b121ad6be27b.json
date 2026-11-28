@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f3fad295-1af2-4ecc-8546-b121ad6be27b",
  "name": "Soul Warden",
- "card_hash": "56f2849742cf1d173c47111f432e6680",
+ "card_hash": "2b24ff872594eb1a1585c422b385e9a2",
  "card": {
   "$": "CardDef",
   "oracle_id": "f3fad295-1af2-4ecc-8546-b121ad6be27b",
@@ -41,7 +41,7 @@
   "mana_value": 1,
   "color_identity": 1,
   "commander_legal": true,
-  "edhrec_rank": 453,
+  "edhrec_rank": 486,
   "scryfall_uri": "https://scryfall.com/card/mm3/24/soul-warden?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Soul Warden",
    "face": 0,
    "face_name": "Soul Warden",
-   "card_hash": "56f2849742cf1d173c47111f432e6680",
+   "card_hash": "2b24ff872594eb1a1585c422b385e9a2",
    "fully_read": true,
    "abilities": [
     {

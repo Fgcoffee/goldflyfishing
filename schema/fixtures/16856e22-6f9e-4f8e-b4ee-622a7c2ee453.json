@@ -1,0 +1,211 @@
+{
+ "ir_version": 2,
+ "oracle_id": "16856e22-6f9e-4f8e-b4ee-622a7c2ee453",
+ "name": "Mistblade Shinobi",
+ "card_hash": "25a7022cbe6495ece5131d6a2852ee6a",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "16856e22-6f9e-4f8e-b4ee-622a7c2ee453",
+  "name": "Mistblade Shinobi",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Mistblade Shinobi",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 2,
+       "text": "{U}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 4,
+     "subtypes": [
+      "Human",
+      "Ninja"
+     ]
+    },
+    "oracle_text": "Ninjutsu {U} ({U}, Return an unblocked attacker you control to hand: Put this card onto the battlefield from your hand tapped and attacking.)\nWhenever this creature deals combat damage to a player, you may return target creature that player controls to its owner's hand.",
+    "power": "1",
+    "toughness": "1",
+    "colors": 2,
+    "keywords": [
+     "Ninjutsu"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 2,
+  "commander_legal": true,
+  "edhrec_rank": 3260,
+  "scryfall_uri": "https://scryfall.com/card/pca/20/mistblade-shinobi?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "16856e22-6f9e-4f8e-b4ee-622a7c2ee453",
+   "name": "Mistblade Shinobi",
+   "face": 0,
+   "face_name": "Mistblade Shinobi",
+   "card_hash": "25a7022cbe6495ece5131d6a2852ee6a",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 33,
+       "targets": {
+        "$": "ObjectFilter",
+        "source_only": true,
+        "zones": {
+         "$set": [
+          1
+         ]
+        }
+       },
+       "keywords": [
+        "tapped",
+        "attacking"
+       ],
+       "text": "put this onto the battlefield tapped and attacking"
+      }
+     ],
+     "text": "Ninjutsu {U}",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 2,
+           "text": "{U}"
+          }
+         ]
+        }
+       },
+       {
+        "$": "CostComponent",
+        "kind": 15,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "types_all": 4,
+         "controller": 1,
+         "attacking": true,
+         "blocked": false
+        },
+        "text": "return an unblocked attacking creature you control to its owner's hand"
+       }
+      ]
+     },
+     "activation_condition": {
+      "$": "Condition",
+      "kind": 20,
+      "operands": [
+       {
+        "$": "Condition",
+        "kind": 13,
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 5,
+         "value": {
+          "$": "Value",
+          "constant": 6
+         }
+        }
+       },
+       {
+        "$": "Condition",
+        "kind": 13,
+        "constraint": {
+         "$": "NumericConstraint",
+         "comparison": 3,
+         "value": {
+          "$": "Value",
+          "constant": 9
+         }
+        }
+       }
+      ],
+      "text": "only once blockers have been declared"
+     },
+     "functions_in": {
+      "$set": [
+       1
+      ]
+     },
+     "keyword": "Ninjutsu"
+    },
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 4,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 32,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4,
+          "controller": 4
+         },
+         "is_targeted": true,
+         "text": "return to hand"
+        }
+       ],
+       "text": "may"
+      }
+     ],
+     "text": "Whenever this creature deals combat damage to a player, you may return target creature that player controls to its owner's hand.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        61
+       ]
+      },
+      "source": {
+       "$": "ObjectFilter",
+       "source_only": true
+      },
+      "to_player": true,
+      "text": "when this deals combat damage to a player"
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

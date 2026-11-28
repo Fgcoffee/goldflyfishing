@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9ddc5a06-b4e1-459a-9e39-7cd1aa994fe1",
  "name": "Helix Pinnacle",
- "card_hash": "61d9ab7ce9ce018515f1b2e9a8beebfa",
+ "card_hash": "71024eaa224d08c91426ed8266dbc505",
  "card": {
   "$": "CardDef",
   "oracle_id": "9ddc5a06-b4e1-459a-9e39-7cd1aa994fe1",
@@ -38,7 +38,7 @@
   "mana_value": 1,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 4477,
+  "edhrec_rank": 4486,
   "scryfall_uri": "https://scryfall.com/card/eve/68/helix-pinnacle?utm_source=api"
  },
  "faces": [
@@ -48,7 +48,7 @@
    "name": "Helix Pinnacle",
    "face": 0,
    "face_name": "Helix Pinnacle",
-   "card_hash": "61d9ab7ce9ce018515f1b2e9a8beebfa",
+   "card_hash": "71024eaa224d08c91426ed8266dbc505",
    "fully_read": false,
    "abilities": [
     {

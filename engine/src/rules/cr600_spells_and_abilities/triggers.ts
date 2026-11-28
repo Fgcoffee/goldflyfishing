@@ -724,11 +724,13 @@ function chooseTriggerTargets(game: Game, stackObject: GameObject, controller: P
   const source = game.objects.get(stackObject.source);
   const hooks = matchHooks();
 
+  // "That player" in a target's filter: the trigger event's player.
+  const thatPlayer = (stackObject.triggerEvent as { player?: PlayerId } | null)?.player ?? NO_PLAYER;
   const candidatesOf = (effect: Effect): number[] => {
-    if (source !== undefined) return candidatesFor(game, source, effect, controller);
+    if (source !== undefined) return candidatesFor(game, source, effect, controller, thatPlayer);
     // The source is gone: the filters alone decide.
     if (targetsAPlayer(effect)) return targetablePlayers(game, effect.players ?? null, controller).map(playerTarget);
-    const found = hooks.find(game, effect.targets!, { source: stackObject.source, controller }).map((o) => o.id);
+    const found = hooks.find(game, effect.targets!, { source: stackObject.source, controller, thatPlayer }).map((o) => o.id);
     if (includesPlayers(effect.targets!)) for (const p of livingPlayers(game)) found.push(playerTarget(p.id));
     return found;
   };

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6789a170-f2c5-4fc0-8a45-2b2361e67410",
  "name": "Chord of Calling",
- "card_hash": "9c7472144bb5ae971716e2cd5f3ca08e",
+ "card_hash": "7c1bbbbc7d699c7cedeb8d020bb6b451",
  "card": {
   "$": "CardDef",
   "oracle_id": "6789a170-f2c5-4fc0-8a45-2b2361e67410",
@@ -55,7 +55,7 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 520,
+  "edhrec_rank": 521,
   "scryfall_uri": "https://scryfall.com/card/rvr/134/chord-of-calling?utm_source=api"
  },
  "faces": [
@@ -65,7 +65,7 @@
    "name": "Chord of Calling",
    "face": 0,
    "face_name": "Chord of Calling",
-   "card_hash": "9c7472144bb5ae971716e2cd5f3ca08e",
+   "card_hash": "7c1bbbbc7d699c7cedeb8d020bb6b451",
    "fully_read": true,
    "abilities": [
     {
