@@ -148,13 +148,15 @@ export function board(game: Game): Board {
 }
 
 /**
- * The incremental board, behind a switch. "off" (the default): every board
- * is computed in full, as always. "check": a partial recompute is tried
- * where it may be, and compared with a full one, throwing on any
- * difference (the full one is used). "on": the partial one is used.
+ * The incremental board, behind a switch. "on" (the default, since check
+ * mode found no difference on the 200 bench games, the user's 1,000 and the
+ * Vitest suite): a partial recompute is used where it may be. "off": every
+ * board is computed in full. "check": a partial recompute is tried and
+ * compared with a full one, throwing on any difference (the full one is
+ * used).
  */
 export type IncrementalMode = "off" | "check" | "on";
-let incrementalMode: IncrementalMode = "off";
+let incrementalMode: IncrementalMode = "on";
 
 export function setIncrementalBoard(mode: IncrementalMode): void {
   incrementalMode = mode;
