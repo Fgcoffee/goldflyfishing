@@ -440,6 +440,31 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Dummy abilities carried out (28 Nov): cbfb1b9, ff7df0e
+
+`engine/src/rules/dummies.ts` gives behaviour to the parser's DUMMY effects
+by `rule`, and exports **`IMPLEMENTED_DUMMIES`**:
+- `untap-during-others-untap-step` (Seedborn Muse, Unwinding Clock): in
+  each other player's untap step, the controller untaps what it names,
+  under the usual "doesn't untap" restrictions (CR 502.3).
+- `activation-cost-change` (Boseiju, Otawara and the other channel lands):
+  `activationManaCost` applies the ability's own amount to the generic part
+  (CR 601.2f), so Boseiju's channel costs {G} with a legendary creature.
+- `begin-game-on-battlefield` (the Leylines, CR 103.6): after the opening
+  hands, starting player first, each may put them onto the battlefield; no
+  "enters" triggers. Gemstone Caverns' version for a player who isn't
+  starting: a luck counter, and the last card in hand is exiled (fixed
+  choice, no agent decides it yet).
+- Tests: `engine/test/rules/dummies_real.test.ts` (real cards).
+- **For the parser:** these three can report as read (`IMPLEMENTED_DUMMIES`,
+  e.g. `parseStatus` treating them as ok, or switch the readings off DUMMY:
+  your call). For untap-during-others, the engine reads the dummy's
+  `targets` when you give one; without it, it reads the words for "this
+  creature/artifact/permanent" and "all permanents/artifacts/creatures/
+  lands you control" only. Next on your list: next-spell-rider,
+  mana-spent-trigger, mana-not-lost (1 to 2 top-1,000 cards each); say
+  which you want first, or send the next ranking.
+
 ## Resumed 28 Nov: "that player" in object filters (17bf183)
 
 - Matching takes `thatPlayer`: a filter whose owner or controller is
