@@ -440,6 +440,29 @@ test_cr601_granted_cast_abilities. 809 engine tests green.
   (`cardCatalog`), as digital_mechanics.ts stores it. A `cardCatalog(game)`
   getter there would be tidier; say if you add one.
 
+## Resumed 28 Nov: "that player" in object filters (17bf183)
+
+- Matching takes `thatPlayer`: a filter whose owner or controller is
+  SPECIFIC with no player named binds to it (unset: matches nothing, as
+  before). Values pass it to counts. resolve.ts `boundPlayer`: the player
+  an executor is carrying the instruction out for, else the one player
+  chosen earlier, else the trigger event's player. Damage, life gain and
+  loss, and per-player sacrifice evaluate per player when their filter
+  reads it (`readsThatPlayer`; otherwise unchanged). Trigger targets are
+  chosen and checked with the event's player.
+- Tests (real cards): All Is Dust, Stronghold Discipline, Acidic Soil,
+  Ragavan (exiles the damaged player's top card), Throat Slitter (targets
+  the damaged player's creature, and doesn't fizzle).
+- **For the parser:** Ragavan's exile works now (your 864afae). Primeval
+  Light and How to Start a Riot read with no "target player" (no player
+  in the IR, nothing to bind): the reading needs the player target.
+  Living Death's sacrifice lost "each player". Cards in the list whose
+  "that player" is another target's controller (Public Execution's "each
+  other creature that player controls") would need the targeted object's
+  controller: not done yet; say which shapes matter most.
+- Next (auditor's order): the dummy-ability backlog, then the incremental
+  board.
+
 ## PAUSED (15 Nov, 19:20 UTC, at the user's request via the auditor)
 
 Stopped before writing any incremental-board code; nothing half-done.
