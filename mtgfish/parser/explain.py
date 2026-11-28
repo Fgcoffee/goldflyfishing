@@ -469,6 +469,10 @@ def _control_flow(effect: Effect) -> str | None:
         return f"for each time {cost} was paid: {_effects(effect.children)}"
     if kind is EffectKind.DUMMY:
         # Recognised, not implemented yet (mtgfish.parser.dummies).
+        from .dummies import ENGINE_IMPLEMENTED
+
+        if effect.rule in ENGINE_IMPLEMENTED:
+            return f"(recognised, done by the engine: {effect.rule})"
         return f"(recognised, not implemented yet: {effect.rule})"
     if kind is EffectKind.UNPARSED:
         return "(NOT UNDERSTOOD - inert)"

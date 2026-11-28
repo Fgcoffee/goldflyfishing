@@ -258,7 +258,7 @@
   },
   {
    "oracle": "{1}{G}, Discard this card: Destroy target artifact, enchantment, or nonbasic land an opponent controls. That player may search their library for a land card with a basic land type, put it onto the battlefield, then shuffle. This ability costs {1} less to activate for each legendary creature you control.",
-   "understood": "Pay {1}{G}, discard this card (from hand): destroy target nonbasic artifact or enchantment or land an opponent controls, then the controller of that object may you searches their library for 1 Plains or Island or Swamp or Mountain or Forest land and puts it into battlefield, then (recognised, not implemented yet: activation-cost-change)."
+   "understood": "Pay {1}{G}, discard this card (from hand): destroy target nonbasic artifact or enchantment or land an opponent controls, then the controller of that object may you searches their library for 1 Plains or Island or Swamp or Mountain or Forest land and puts it into battlefield, then (recognised, done by the engine: activation-cost-change)."
   }
  ],
  "Bountiful Promenade": [
@@ -1336,7 +1336,7 @@
   },
   {
    "oracle": "{3}{U}, Discard this card: Return target artifact, creature, enchantment, or planeswalker to its owner's hand. This ability costs {1} less to activate for each legendary creature you control.",
-   "understood": "Pay {3}{U}, discard this card (from hand): return to hand target artifact or creature or enchantment or planeswalker, then (recognised, not implemented yet: activation-cost-change)."
+   "understood": "Pay {3}{U}, discard this card (from hand): return to hand target artifact or creature or enchantment or planeswalker, then (recognised, done by the engine: activation-cost-change)."
   }
  ],
  "Overgrown Farmland": [
@@ -1936,7 +1936,7 @@
   },
   {
    "oracle": "{3}{B}, Discard this card: Mill three cards, then return a creature or planeswalker card from your graveyard to your hand. This ability costs {1} less to activate for each legendary creature you control.",
-   "understood": "Pay {3}{B}, discard this card (from hand): you mills 3 card(s), then return to hand 1 creature or planeswalker you own in graveyard, then (recognised, not implemented yet: activation-cost-change)."
+   "understood": "Pay {3}{B}, discard this card (from hand): you mills 3 card(s), then return to hand 1 creature or planeswalker you own in graveyard, then (recognised, done by the engine: activation-cost-change)."
   }
  ],
  "Talisman of Conviction": [

@@ -69,4 +69,11 @@ describe("parseStatus", () => {
     ] }] } as unknown as CardDocument;
     expect(parseStatus(doc)).toEqual({ status: "ok", unread: [], recognised: ["mana-spent-trigger"] });
   });
+
+  it("a dummy the engine carries out (IMPLEMENTED_DUMMIES) isn't listed", () => {
+    const doc = { faces: [{ abilities: [
+      { $: "Ability", effects: [{ $: "Effect", kind: 998, rule: "untap-during-others-untap-step" }] },
+    ] }] } as unknown as CardDocument;
+    expect(parseStatus(doc)).toEqual({ status: "ok", unread: [], recognised: [] });
+  });
 });

@@ -20,7 +20,7 @@ from collections import defaultdict
 
 from ..parser.dummies import DUMMIES
 
-_MARK = re.compile(r"\(recognised, not implemented yet: ([a-z0-9-]+)\)")
+_MARK = re.compile(r"\(recognised, (?:not implemented yet|done by the engine): ([a-z0-9-]+)\)")
 
 
 def tally(path: str) -> dict[str, dict]:

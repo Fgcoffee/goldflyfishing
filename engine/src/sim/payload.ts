@@ -11,6 +11,7 @@
 import type { CardDocument } from "../ir";
 import { DETAIL_LEVELS, KEY_KINDS, NOISE_KINDS, type ReplayView } from "./replay_view";
 import type { BoardCard, BoardSnapshot } from "./board";
+import { IMPLEMENTED_DUMMIES } from "../rules/dummies";
 
 /** Every ability on every face of a card document. */
 function abilitiesOf(doc: CardDocument | undefined): readonly { unparsed?: boolean; text?: string }[] {
@@ -79,7 +80,8 @@ export function parseStatus(doc: CardDocument | undefined): { status: string; un
   const unread = abilities.filter(unreadAbility).map((a) => a.text ?? "");
   // Recognised, not implemented yet (mtgfish/parser/dummies.py): read, but
   // the engine can't do it. Their names, for the site to say so.
-  const recognised = abilities.flatMap((a) => dummyRules(a));
+  // Those the engine now carries out (rules/dummies.ts) aren't gaps at all.
+  const recognised = abilities.flatMap((a) => dummyRules(a)).filter((r) => !IMPLEMENTED_DUMMIES.has(r));
   // A vanilla creature or a basic land is not a gap.
   if (abilities.length === 0) return { status: "ok", unread, recognised };
   if (unread.length === abilities.length) return { status: "blank", unread, recognised };

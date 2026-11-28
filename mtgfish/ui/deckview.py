@@ -93,6 +93,8 @@ def parse_status(card: CardDef, verdicts=None) -> dict:
     # knows the shape, the engine skips it. Counted as read, so a card whose
     # only gaps are these is "ok"; the site says so separately. The same
     # list the browser engine's parseStatus gives (engine/src/sim/payload.ts).
+    from ..parser.dummies import ENGINE_IMPLEMENTED
+
     recognised = sorted(
         {
             node.rule
@@ -100,7 +102,7 @@ def parse_status(card: CardDef, verdicts=None) -> dict:
             for ability in face.abilities
             for effect in ability.effects
             for node in effect.walk()
-            if node.kind is EffectKind.DUMMY and node.rule
+            if node.kind is EffectKind.DUMMY and node.rule and node.rule not in ENGINE_IMPLEMENTED
         }
     )
     if total == 0:

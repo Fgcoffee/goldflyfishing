@@ -77,3 +77,14 @@ def test_this_ability_costs_less_is_not_an_effect_on_resolution(card_db):
     marker = channel.effects[-1]
     assert marker.kind is EffectKind.DUMMY and marker.rule == "activation-cost-change"
     assert marker.amount.operands[0].constant == -1
+
+
+def test_engine_implemented_matches_the_browser_engine():
+    """dummies.ENGINE_IMPLEMENTED is engine/src/rules/dummies.ts's IMPLEMENTED_DUMMIES."""
+    import re
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parents[2] / "engine/src/rules/dummies.ts").read_text(encoding="utf-8")
+    line = next(l for l in source.splitlines() if "IMPLEMENTED_DUMMIES" in l and "new Set" in l)
+    assert set(re.findall(r'"([a-z0-9-]+)"', line)) == set(dummies.ENGINE_IMPLEMENTED)
+    assert dummies.ENGINE_IMPLEMENTED <= {d.name for d in dummies.DUMMIES}

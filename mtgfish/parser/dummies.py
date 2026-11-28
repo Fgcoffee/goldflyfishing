@@ -112,6 +112,15 @@ _WHOLE = [(d, re.compile(p)) for d in DUMMIES for p in d.whole]
 _RIDER = [(d, re.compile(p)) for d in DUMMIES for p in d.rider]
 
 
+#: Dummy shapes the browser engine now carries out (engine/src/rules/
+#: dummies.ts ``IMPLEMENTED_DUMMIES``; a test keeps the two equal). The IR
+#: is unchanged - the engine reads the dummy by its ``rule`` - but the site
+#: no longer calls them "not implemented yet".
+ENGINE_IMPLEMENTED: frozenset[str] = frozenset(
+    {"untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield"}
+)
+
+
 def whole(text: str) -> Dummy | None:
     """The dummy the whole ability is, if it is one."""
     norm = _norm(text)
