@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "56f782b7-d46c-4aa1-ae16-66d6401c72ae",
  "name": "Throat Slitter",
- "card_hash": "d044b311df3c24d9fc6ecaaddaed0c0c",
+ "card_hash": "213cc88f0a53b5c78b15e05137ecd8ca",
  "card": {
   "$": "CardDef",
   "oracle_id": "56f782b7-d46c-4aa1-ae16-66d6401c72ae",
@@ -50,7 +50,7 @@
   "mana_value": 5,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 4248,
+  "edhrec_rank": 4345,
   "scryfall_uri": "https://scryfall.com/card/pca/37/throat-slitter?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Throat Slitter",
    "face": 0,
    "face_name": "Throat Slitter",
-   "card_hash": "d044b311df3c24d9fc6ecaaddaed0c0c",
+   "card_hash": "213cc88f0a53b5c78b15e05137ecd8ca",
    "fully_read": true,
    "abilities": [
     {

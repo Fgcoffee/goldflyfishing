@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
  "name": "Forest",
- "card_hash": "ee8410f58f83ffd7380ee8e25d4ea147",
+ "card_hash": "cbf0ee412cc74a3dbb4497ce1efc439c",
  "card": {
   "$": "CardDef",
   "oracle_id": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
@@ -33,7 +33,7 @@
   "mana_value": 0,
   "color_identity": 16,
   "commander_legal": true,
-  "scryfall_uri": "https://scryfall.com/card/trk/325/forest?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/mdd/301/forest?utm_source=api"
  },
  "faces": [
   {
@@ -42,7 +42,7 @@
    "name": "Forest",
    "face": 0,
    "face_name": "Forest",
-   "card_hash": "ee8410f58f83ffd7380ee8e25d4ea147",
+   "card_hash": "cbf0ee412cc74a3dbb4497ce1efc439c",
    "fully_read": true,
    "abilities": [],
    "failures": []

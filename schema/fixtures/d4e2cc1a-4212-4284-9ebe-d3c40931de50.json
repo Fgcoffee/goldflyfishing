@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d4e2cc1a-4212-4284-9ebe-d3c40931de50",
  "name": "Icy Prison",
- "card_hash": "aad654b6f36154e05254400236617c89",
+ "card_hash": "2e5ad3a7426cf855d6d5978a62189a5f",
  "card": {
   "$": "CardDef",
   "oracle_id": "d4e2cc1a-4212-4284-9ebe-d3c40931de50",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 28232,
+  "edhrec_rank": 28829,
   "scryfall_uri": "https://scryfall.com/card/me2/50/icy-prison?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Icy Prison",
    "face": 0,
    "face_name": "Icy Prison",
-   "card_hash": "aad654b6f36154e05254400236617c89",
+   "card_hash": "2e5ad3a7426cf855d6d5978a62189a5f",
    "fully_read": false,
    "abilities": [
     {

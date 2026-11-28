@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
  "name": "Brainstorm",
- "card_hash": "f84ee890bd15c9e674b4ede47711395d",
+ "card_hash": "5d48e2211ac590a5c370235f28bbd4a2",
  "card": {
   "$": "CardDef",
   "oracle_id": "36cd2364-d113-47d1-b2c4-b088d9eb88dd",
@@ -36,7 +36,7 @@
   "color_identity": 2,
   "commander_legal": true,
   "edhrec_rank": 72,
-  "scryfall_uri": "https://scryfall.com/card/tle/155/brainstorm?utm_source=api"
+  "scryfall_uri": "https://scryfall.com/card/trc/434/brainstorm?utm_source=api"
  },
  "faces": [
   {
@@ -45,7 +45,7 @@
    "name": "Brainstorm",
    "face": 0,
    "face_name": "Brainstorm",
-   "card_hash": "f84ee890bd15c9e674b4ede47711395d",
+   "card_hash": "5d48e2211ac590a5c370235f28bbd4a2",
    "fully_read": true,
    "abilities": [
     {

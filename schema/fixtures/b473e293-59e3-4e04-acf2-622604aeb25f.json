@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b473e293-59e3-4e04-acf2-622604aeb25f",
  "name": "Path of Ancestry",
- "card_hash": "f0124264e1a89ca454783bdd3e74eac1",
+ "card_hash": "dbc311d1720bcc0341060b04110ba3b9",
  "card": {
   "$": "CardDef",
   "oracle_id": "b473e293-59e3-4e04-acf2-622604aeb25f",
@@ -36,8 +36,8 @@
   "mana_value": 0,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 14,
-  "scryfall_uri": "https://scryfall.com/card/mbc/80/path-of-ancestry?utm_source=api"
+  "edhrec_rank": 15,
+  "scryfall_uri": "https://scryfall.com/card/trc/545/path-of-ancestry?utm_source=api"
  },
  "faces": [
   {
@@ -46,7 +46,7 @@
    "name": "Path of Ancestry",
    "face": 0,
    "face_name": "Path of Ancestry",
-   "card_hash": "f0124264e1a89ca454783bdd3e74eac1",
+   "card_hash": "dbc311d1720bcc0341060b04110ba3b9",
    "fully_read": true,
    "abilities": [
     {

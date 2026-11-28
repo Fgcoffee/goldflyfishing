@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "ab8d5f5c-1976-4f77-8ed2-8d28ee666741",
  "name": "Tireless Provisioner",
- "card_hash": "397f00238ee6a7124f04e1803eb44d47",
+ "card_hash": "c03f1ef904f9c4e530853a1dcbd51be9",
  "card": {
   "$": "CardDef",
   "oracle_id": "ab8d5f5c-1976-4f77-8ed2-8d28ee666741",
@@ -59,8 +59,8 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 184,
-  "scryfall_uri": "https://scryfall.com/card/moc/313/tireless-provisioner?utm_source=api"
+  "edhrec_rank": 189,
+  "scryfall_uri": "https://scryfall.com/card/j25/728/tireless-provisioner?utm_source=api"
  },
  "faces": [
   {
@@ -69,7 +69,7 @@
    "name": "Tireless Provisioner",
    "face": 0,
    "face_name": "Tireless Provisioner",
-   "card_hash": "397f00238ee6a7124f04e1803eb44d47",
+   "card_hash": "c03f1ef904f9c4e530853a1dcbd51be9",
    "fully_read": true,
    "abilities": [
     {

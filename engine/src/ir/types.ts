@@ -465,6 +465,8 @@ export interface FaceDocument {
   fully_read: boolean;
   abilities: Array<Ability>;
   failures: Array<ParseFailure>;
+  /** A reviewed, hand-written reading (mtgfish/ir/authored), not the parser's. */
+  authored?: boolean;
 }
 
 export interface CardDocument {

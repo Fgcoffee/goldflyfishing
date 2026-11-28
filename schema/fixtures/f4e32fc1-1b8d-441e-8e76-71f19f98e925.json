@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "f4e32fc1-1b8d-441e-8e76-71f19f98e925",
  "name": "Leyline of the Void",
- "card_hash": "d99d051e10744dd4ba63e9427394f609",
+ "card_hash": "3efc46a84691068bd65fc134584fd5e4",
  "card": {
   "$": "CardDef",
   "oracle_id": "f4e32fc1-1b8d-441e-8e76-71f19f98e925",
@@ -47,7 +47,7 @@
   "mana_value": 4,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 3464,
+  "edhrec_rank": 3574,
   "scryfall_uri": "https://scryfall.com/card/dsk/106/leyline-of-the-void?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Leyline of the Void",
    "face": 0,
    "face_name": "Leyline of the Void",
-   "card_hash": "d99d051e10744dd4ba63e9427394f609",
+   "card_hash": "3efc46a84691068bd65fc134584fd5e4",
    "fully_read": false,
    "abilities": [
     {

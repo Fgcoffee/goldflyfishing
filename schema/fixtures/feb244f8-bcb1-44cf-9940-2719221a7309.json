@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "feb244f8-bcb1-44cf-9940-2719221a7309",
  "name": "Vampire Nighthawk",
- "card_hash": "8f4763ffa28c79c45a252be0881c88dd",
+ "card_hash": "80ea20056e43b0f58537d7f5e91709d3",
  "card": {
   "$": "CardDef",
   "oracle_id": "feb244f8-bcb1-44cf-9940-2719221a7309",
@@ -58,7 +58,7 @@
   "mana_value": 3,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 1743,
+  "edhrec_rank": 1759,
   "scryfall_uri": "https://scryfall.com/card/fdn/757/vampire-nighthawk?utm_source=api"
  },
  "faces": [
@@ -68,7 +68,7 @@
    "name": "Vampire Nighthawk",
    "face": 0,
    "face_name": "Vampire Nighthawk",
-   "card_hash": "8f4763ffa28c79c45a252be0881c88dd",
+   "card_hash": "80ea20056e43b0f58537d7f5e91709d3",
    "fully_read": true,
    "abilities": [
     {

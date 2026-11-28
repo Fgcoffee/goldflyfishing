@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "aedcd2fb-813a-4915-b7b9-ac7479863462",
  "name": "Boon Satyr",
- "card_hash": "f438e2bfaffbb469ea78b428aeba4f2e",
+ "card_hash": "c86d38b586cebf5b4b6d9e5a02f9cc84",
  "card": {
   "$": "CardDef",
   "oracle_id": "aedcd2fb-813a-4915-b7b9-ac7479863462",
@@ -56,7 +56,7 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 16775,
+  "edhrec_rank": 17085,
   "scryfall_uri": "https://scryfall.com/card/c18/132/boon-satyr?utm_source=api"
  },
  "faces": [
@@ -66,7 +66,7 @@
    "name": "Boon Satyr",
    "face": 0,
    "face_name": "Boon Satyr",
-   "card_hash": "f438e2bfaffbb469ea78b428aeba4f2e",
+   "card_hash": "c86d38b586cebf5b4b6d9e5a02f9cc84",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "4ccc1ac5-db90-4fc9-9795-7afaf7466c3e",
  "name": "Acidic Soil",
- "card_hash": "7643fb5936bbb428c3038d1ab5cb5f49",
+ "card_hash": "a7e7f2c1e3983b0f0fae0691ed645549",
  "card": {
   "$": "CardDef",
   "oracle_id": "4ccc1ac5-db90-4fc9-9795-7afaf7466c3e",
@@ -41,7 +41,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 8057,
+  "edhrec_rank": 8212,
   "scryfall_uri": "https://scryfall.com/card/usg/172/acidic-soil?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Acidic Soil",
    "face": 0,
    "face_name": "Acidic Soil",
-   "card_hash": "7643fb5936bbb428c3038d1ab5cb5f49",
+   "card_hash": "a7e7f2c1e3983b0f0fae0691ed645549",
    "fully_read": true,
    "abilities": [
     {

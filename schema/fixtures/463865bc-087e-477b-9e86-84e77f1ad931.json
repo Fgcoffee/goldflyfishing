@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "463865bc-087e-477b-9e86-84e77f1ad931",
  "name": "Seedborn Muse",
- "card_hash": "57101438f3ceb435e824da6d82904f09",
+ "card_hash": "274798d5894b9abd410c676a63793090",
  "card": {
   "$": "CardDef",
   "oracle_id": "463865bc-087e-477b-9e86-84e77f1ad931",
@@ -52,7 +52,7 @@
   "mana_value": 5,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 285,
+  "edhrec_rank": 289,
   "scryfall_uri": "https://scryfall.com/card/tdc/268/seedborn-muse?utm_source=api"
  },
  "faces": [
@@ -62,7 +62,7 @@
    "name": "Seedborn Muse",
    "face": 0,
    "face_name": "Seedborn Muse",
-   "card_hash": "57101438f3ceb435e824da6d82904f09",
+   "card_hash": "274798d5894b9abd410c676a63793090",
    "fully_read": true,
    "abilities": [
     {

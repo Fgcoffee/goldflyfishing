@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "83d0c4bc-aab9-4c14-a7dc-a344fcce4fea",
  "name": "Wretched Gryff",
- "card_hash": "64a9f32665e708877ef4065d0b7a0250",
+ "card_hash": "34b603e063d32de6ee0d16033945d328",
  "card": {
   "$": "CardDef",
   "oracle_id": "83d0c4bc-aab9-4c14-a7dc-a344fcce4fea",
@@ -44,7 +44,7 @@
   "mana_value": 7,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 21211,
+  "edhrec_rank": 21443,
   "scryfall_uri": "https://scryfall.com/card/inr/7/wretched-gryff?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "Wretched Gryff",
    "face": 0,
    "face_name": "Wretched Gryff",
-   "card_hash": "64a9f32665e708877ef4065d0b7a0250",
+   "card_hash": "34b603e063d32de6ee0d16033945d328",
    "fully_read": true,
    "abilities": [
     {

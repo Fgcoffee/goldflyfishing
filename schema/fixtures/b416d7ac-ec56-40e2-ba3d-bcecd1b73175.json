@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "b416d7ac-ec56-40e2-ba3d-bcecd1b73175",
  "name": "Primeval Light",
- "card_hash": "eb9e7aaf825134a0787f364be82d53fd",
+ "card_hash": "df8f40bfc6646af4e29d10c8ae98e0fb",
  "card": {
   "$": "CardDef",
   "oracle_id": "b416d7ac-ec56-40e2-ba3d-bcecd1b73175",
@@ -41,7 +41,7 @@
   "mana_value": 4,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 22676,
+  "edhrec_rank": 23066,
   "scryfall_uri": "https://scryfall.com/card/gpt/93/primeval-light?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Primeval Light",
    "face": 0,
    "face_name": "Primeval Light",
-   "card_hash": "eb9e7aaf825134a0787f364be82d53fd",
+   "card_hash": "df8f40bfc6646af4e29d10c8ae98e0fb",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "78427103-9543-41fb-b6d4-72963fe87275",
  "name": "The Great Henge",
- "card_hash": "5374c7ae639613289793c10a8a1f3042",
+ "card_hash": "e25f797d9170e857a2c37127309f7db6",
  "card": {
   "$": "CardDef",
   "oracle_id": "78427103-9543-41fb-b6d4-72963fe87275",
@@ -51,7 +51,7 @@
   "mana_value": 9,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 227,
+  "edhrec_rank": 230,
   "scryfall_uri": "https://scryfall.com/card/cmm/294/the-great-henge?utm_source=api"
  },
  "faces": [
@@ -61,7 +61,7 @@
    "name": "The Great Henge",
    "face": 0,
    "face_name": "The Great Henge",
-   "card_hash": "5374c7ae639613289793c10a8a1f3042",
+   "card_hash": "e25f797d9170e857a2c37127309f7db6",
    "fully_read": true,
    "abilities": [
     {

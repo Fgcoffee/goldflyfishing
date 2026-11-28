@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "153fac93-5d2b-4348-a468-a5eef6a12da3",
  "name": "Unwinding Clock",
- "card_hash": "7229fc8a095cf4a3f3a846f00be4a9eb",
+ "card_hash": "c256ef1f9e22f124c94ba762ce267e01",
  "card": {
   "$": "CardDef",
   "oracle_id": "153fac93-5d2b-4348-a468-a5eef6a12da3",
@@ -34,8 +34,8 @@
   "mana_value": 4,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 547,
-  "scryfall_uri": "https://scryfall.com/card/c18/228/unwinding-clock?utm_source=api"
+  "edhrec_rank": 540,
+  "scryfall_uri": "https://scryfall.com/card/trc/510/unwinding-clock?utm_source=api"
  },
  "faces": [
   {
@@ -44,7 +44,7 @@
    "name": "Unwinding Clock",
    "face": 0,
    "face_name": "Unwinding Clock",
-   "card_hash": "7229fc8a095cf4a3f3a846f00be4a9eb",
+   "card_hash": "c256ef1f9e22f124c94ba762ce267e01",
    "fully_read": true,
    "abilities": [
     {

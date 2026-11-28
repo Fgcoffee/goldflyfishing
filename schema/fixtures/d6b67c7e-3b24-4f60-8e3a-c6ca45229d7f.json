@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "d6b67c7e-3b24-4f60-8e3a-c6ca45229d7f",
  "name": "Wort, the Raidmother",
- "card_hash": "254cd1fae6277e8fc301ae032419f3ff",
+ "card_hash": "f875785ce0d731953ac43203605a6121",
  "card": {
   "$": "CardDef",
   "oracle_id": "d6b67c7e-3b24-4f60-8e3a-c6ca45229d7f",
@@ -54,7 +54,7 @@
   "mana_value": 6,
   "color_identity": 24,
   "commander_legal": true,
-  "edhrec_rank": 12994,
+  "edhrec_rank": 13395,
   "scryfall_uri": "https://scryfall.com/card/c20/234/wort-the-raidmother?utm_source=api"
  },
  "faces": [
@@ -64,7 +64,7 @@
    "name": "Wort, the Raidmother",
    "face": 0,
    "face_name": "Wort, the Raidmother",
-   "card_hash": "254cd1fae6277e8fc301ae032419f3ff",
+   "card_hash": "f875785ce0d731953ac43203605a6121",
    "fully_read": true,
    "abilities": [
     {

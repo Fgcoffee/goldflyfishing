@@ -10,7 +10,8 @@ by oracle id:
     <oracle_id> TAB <state> TAB <hash> TAB <name>
 
 ``state`` is ``read`` (every ability fully read), ``partial`` (something on
-the card isn't) or ``notext``. ``hash`` is a digest of the abilities in the
+the card isn't), ``authored`` (a hand-written reading, ``mtgfish.ir.authored``)
+or ``notext``. ``hash`` is a digest of the abilities in the
 card's IR document, the JSON the engine plays (``mtgfish.ir.store
 .card_document``), so a reading that changes in any way the engine could see
 changes its line. Plain text, so a git diff of the lock names every card
@@ -59,7 +60,9 @@ def reading(card) -> tuple[str, str]:
     document = card_document(card)
     faces = document["faces"]
     abilities = [face["abilities"] for face in faces]
-    if not any(abilities) and not any(face["failures"] for face in faces):
+    if any(face.get("authored") for face in faces):
+        state = "authored"
+    elif not any(abilities) and not any(face["failures"] for face in faces):
         state = "notext"
     elif all(face["fully_read"] for face in faces):
         state = "read"

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "14693689-d087-43b6-9c3f-63ab0648fc20",
  "name": "All Is Dust",
- "card_hash": "a32e5f1d2be85bd6cf3dd8f7ebbe6efe",
+ "card_hash": "e4bb1091d29845e7d1cd5637f0d03960",
  "card": {
   "$": "CardDef",
   "oracle_id": "14693689-d087-43b6-9c3f-63ab0648fc20",
@@ -37,7 +37,7 @@
   "mana_value": 7,
   "color_identity": 0,
   "commander_legal": true,
-  "edhrec_rank": 1002,
+  "edhrec_rank": 971,
   "scryfall_uri": "https://scryfall.com/card/cmm/800/all-is-dust?utm_source=api"
  },
  "faces": [
@@ -47,7 +47,7 @@
    "name": "All Is Dust",
    "face": 0,
    "face_name": "All Is Dust",
-   "card_hash": "a32e5f1d2be85bd6cf3dd8f7ebbe6efe",
+   "card_hash": "e4bb1091d29845e7d1cd5637f0d03960",
    "fully_read": true,
    "abilities": [
     {

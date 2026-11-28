@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "c180ed02-07f4-4538-9bea-8c249234a8e2",
  "name": "Drudge Skeletons",
- "card_hash": "07976fb0170946b25e4ca0e075e24bcc",
+ "card_hash": "1be30625dc6e55fc72ef02dfc59bdc0b",
  "card": {
   "$": "CardDef",
   "oracle_id": "c180ed02-07f4-4538-9bea-8c249234a8e2",
@@ -50,7 +50,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 18336,
+  "edhrec_rank": 18711,
   "scryfall_uri": "https://scryfall.com/card/gvl/36/drudge-skeletons?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Drudge Skeletons",
    "face": 0,
    "face_name": "Drudge Skeletons",
-   "card_hash": "07976fb0170946b25e4ca0e075e24bcc",
+   "card_hash": "1be30625dc6e55fc72ef02dfc59bdc0b",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5d27c63e-d1ef-48af-b51d-01ebc6daeac9",
  "name": "Mikaeus, the Unhallowed",
- "card_hash": "56be68c4cecdbb5e9534c144a3c3de72",
+ "card_hash": "c4443fef89e05cc0588a6db1d28ff3a4",
  "card": {
   "$": "CardDef",
   "oracle_id": "5d27c63e-d1ef-48af-b51d-01ebc6daeac9",
@@ -63,7 +63,7 @@
   "mana_value": 6,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 1311,
+  "edhrec_rank": 1333,
   "scryfall_uri": "https://scryfall.com/card/cmm/173/mikaeus-the-unhallowed?utm_source=api"
  },
  "faces": [
@@ -73,7 +73,7 @@
    "name": "Mikaeus, the Unhallowed",
    "face": 0,
    "face_name": "Mikaeus, the Unhallowed",
-   "card_hash": "56be68c4cecdbb5e9534c144a3c3de72",
+   "card_hash": "c4443fef89e05cc0588a6db1d28ff3a4",
    "fully_read": true,
    "abilities": [
     {

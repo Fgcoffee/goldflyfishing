@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "16856e22-6f9e-4f8e-b4ee-622a7c2ee453",
  "name": "Mistblade Shinobi",
- "card_hash": "25a7022cbe6495ece5131d6a2852ee6a",
+ "card_hash": "e4c796ed951c9e7baa51dc302cffaa1b",
  "card": {
   "$": "CardDef",
   "oracle_id": "16856e22-6f9e-4f8e-b4ee-622a7c2ee453",
@@ -50,7 +50,7 @@
   "mana_value": 3,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 3260,
+  "edhrec_rank": 3362,
   "scryfall_uri": "https://scryfall.com/card/pca/20/mistblade-shinobi?utm_source=api"
  },
  "faces": [
@@ -60,7 +60,7 @@
    "name": "Mistblade Shinobi",
    "face": 0,
    "face_name": "Mistblade Shinobi",
-   "card_hash": "25a7022cbe6495ece5131d6a2852ee6a",
+   "card_hash": "e4c796ed951c9e7baa51dc302cffaa1b",
    "fully_read": true,
    "abilities": [
     {

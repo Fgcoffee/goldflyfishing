@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "bd912666-f37f-4767-af6f-9e6d0fcccacf",
  "name": "Karplusan Forest",
- "card_hash": "3e631a0cac08bd29dacbe9a736eb346a",
+ "card_hash": "e2142cf79c47b203c674a9b69ae18e26",
  "card": {
   "$": "CardDef",
   "oracle_id": "bd912666-f37f-4767-af6f-9e6d0fcccacf",
@@ -31,7 +31,7 @@
   "mana_value": 0,
   "color_identity": 24,
   "commander_legal": true,
-  "edhrec_rank": 222,
+  "edhrec_rank": 214,
   "scryfall_uri": "https://scryfall.com/card/eoc/164/karplusan-forest?utm_source=api"
  },
  "faces": [
@@ -41,7 +41,7 @@
    "name": "Karplusan Forest",
    "face": 0,
    "face_name": "Karplusan Forest",
-   "card_hash": "3e631a0cac08bd29dacbe9a736eb346a",
+   "card_hash": "e2142cf79c47b203c674a9b69ae18e26",
    "fully_read": true,
    "abilities": [
     {

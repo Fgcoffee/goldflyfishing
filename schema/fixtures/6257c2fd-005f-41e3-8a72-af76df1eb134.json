@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "6257c2fd-005f-41e3-8a72-af76df1eb134",
  "name": "Terminate",
- "card_hash": "455263f6ec959f5b606a270f0849fe3c",
+ "card_hash": "001cab9036cc54d63d7cb35c1f93a9a6",
  "card": {
   "$": "CardDef",
   "oracle_id": "6257c2fd-005f-41e3-8a72-af76df1eb134",
@@ -41,8 +41,8 @@
   "mana_value": 2,
   "color_identity": 12,
   "commander_legal": true,
-  "edhrec_rank": 224,
-  "scryfall_uri": "https://scryfall.com/card/msc/189/terminate?utm_source=api"
+  "edhrec_rank": 228,
+  "scryfall_uri": "https://scryfall.com/card/trc/481/terminate?utm_source=api"
  },
  "faces": [
   {
@@ -51,7 +51,7 @@
    "name": "Terminate",
    "face": 0,
    "face_name": "Terminate",
-   "card_hash": "455263f6ec959f5b606a270f0849fe3c",
+   "card_hash": "001cab9036cc54d63d7cb35c1f93a9a6",
    "fully_read": true,
    "abilities": [
     {

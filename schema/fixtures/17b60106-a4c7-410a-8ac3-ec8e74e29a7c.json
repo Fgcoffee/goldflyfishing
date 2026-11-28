@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "17b60106-a4c7-410a-8ac3-ec8e74e29a7c",
  "name": "Mystic Sanctuary",
- "card_hash": "30204f19cdc2f7bb41cc355c4f70ef33",
+ "card_hash": "e3ae5c792e14665c3bacdc16c4b2ea84",
  "card": {
   "$": "CardDef",
   "oracle_id": "17b60106-a4c7-410a-8ac3-ec8e74e29a7c",
@@ -32,7 +32,7 @@
   "mana_value": 0,
   "color_identity": 2,
   "commander_legal": true,
-  "edhrec_rank": 174,
+  "edhrec_rank": 176,
   "scryfall_uri": "https://scryfall.com/card/soc/388/mystic-sanctuary?utm_source=api"
  },
  "faces": [
@@ -42,7 +42,7 @@
    "name": "Mystic Sanctuary",
    "face": 0,
    "face_name": "Mystic Sanctuary",
-   "card_hash": "30204f19cdc2f7bb41cc355c4f70ef33",
+   "card_hash": "e3ae5c792e14665c3bacdc16c4b2ea84",
    "fully_read": true,
    "abilities": [
     {

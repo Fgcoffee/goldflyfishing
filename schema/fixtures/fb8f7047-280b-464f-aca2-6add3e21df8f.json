@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "fb8f7047-280b-464f-aca2-6add3e21df8f",
  "name": "Harnesser of Storms",
- "card_hash": "162f8229b9d47253cff332b119498420",
+ "card_hash": "bd59628210540650bdc3bd238d4475e9",
  "card": {
   "$": "CardDef",
   "oracle_id": "fb8f7047-280b-464f-aca2-6add3e21df8f",
@@ -47,7 +47,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 8219,
+  "edhrec_rank": 8480,
   "scryfall_uri": "https://scryfall.com/card/blb/137/harnesser-of-storms?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Harnesser of Storms",
    "face": 0,
    "face_name": "Harnesser of Storms",
-   "card_hash": "162f8229b9d47253cff332b119498420",
+   "card_hash": "bd59628210540650bdc3bd238d4475e9",
    "fully_read": false,
    "abilities": [
     {

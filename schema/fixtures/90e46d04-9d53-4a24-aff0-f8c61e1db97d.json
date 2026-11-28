@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "90e46d04-9d53-4a24-aff0-f8c61e1db97d",
  "name": "Stronghold Discipline",
- "card_hash": "b8fd3e9002280f68b2c6c8295baeec7e",
+ "card_hash": "3cf8a4d8391d8ab6112e37816d201581",
  "card": {
   "$": "CardDef",
   "oracle_id": "90e46d04-9d53-4a24-aff0-f8c61e1db97d",
@@ -47,7 +47,7 @@
   "mana_value": 4,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 23237,
+  "edhrec_rank": 23424,
   "scryfall_uri": "https://scryfall.com/card/cns/126/stronghold-discipline?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Stronghold Discipline",
    "face": 0,
    "face_name": "Stronghold Discipline",
-   "card_hash": "b8fd3e9002280f68b2c6c8295baeec7e",
+   "card_hash": "3cf8a4d8391d8ab6112e37816d201581",
    "fully_read": true,
    "abilities": [
     {

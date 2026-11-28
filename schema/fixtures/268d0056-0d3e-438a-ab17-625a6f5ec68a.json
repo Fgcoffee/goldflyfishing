@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "268d0056-0d3e-438a-ab17-625a6f5ec68a",
  "name": "How to Start a Riot",
- "card_hash": "0c98869229f12d0659609569043fa9cd",
+ "card_hash": "68e202191907b96781ee49f55c3e0157",
  "card": {
   "$": "CardDef",
   "oracle_id": "268d0056-0d3e-438a-ab17-625a6f5ec68a",
@@ -44,7 +44,7 @@
   "mana_value": 3,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 7197,
+  "edhrec_rank": 7093,
   "scryfall_uri": "https://scryfall.com/card/tla/140/how-to-start-a-riot?utm_source=api"
  },
  "faces": [
@@ -54,7 +54,7 @@
    "name": "How to Start a Riot",
    "face": 0,
    "face_name": "How to Start a Riot",
-   "card_hash": "0c98869229f12d0659609569043fa9cd",
+   "card_hash": "68e202191907b96781ee49f55c3e0157",
    "fully_read": true,
    "abilities": [
     {

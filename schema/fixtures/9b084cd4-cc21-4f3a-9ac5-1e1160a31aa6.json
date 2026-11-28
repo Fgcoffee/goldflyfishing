@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9b084cd4-cc21-4f3a-9ac5-1e1160a31aa6",
  "name": "Disrupt Decorum",
- "card_hash": "bfe4d610cf47e266c58a8830778acec2",
+ "card_hash": "f8f82baba5e9932b29d40bfed57813c4",
  "card": {
   "$": "CardDef",
   "oracle_id": "9b084cd4-cc21-4f3a-9ac5-1e1160a31aa6",
@@ -50,8 +50,8 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 888,
-  "scryfall_uri": "https://scryfall.com/card/mkc/151/disrupt-decorum?utm_source=api"
+  "edhrec_rank": 898,
+  "scryfall_uri": "https://scryfall.com/card/trc/452/disrupt-decorum?utm_source=api"
  },
  "faces": [
   {
@@ -60,7 +60,7 @@
    "name": "Disrupt Decorum",
    "face": 0,
    "face_name": "Disrupt Decorum",
-   "card_hash": "bfe4d610cf47e266c58a8830778acec2",
+   "card_hash": "f8f82baba5e9932b29d40bfed57813c4",
    "fully_read": true,
    "abilities": [
     {

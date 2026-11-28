@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "a0324f33-3f25-4374-affa-c7b5b54bc8d7",
  "name": "Chainwhip Cyclops",
- "card_hash": "2c1b270842f7304825a2f3f7ce0915fd",
+ "card_hash": "fcc958ee4ff0c932e8ef5dadbd7b96db",
  "card": {
   "$": "CardDef",
   "oracle_id": "a0324f33-3f25-4374-affa-c7b5b54bc8d7",
@@ -47,7 +47,7 @@
   "mana_value": 5,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 29184,
+  "edhrec_rank": 29851,
   "scryfall_uri": "https://scryfall.com/card/clu/127/chainwhip-cyclops?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Chainwhip Cyclops",
    "face": 0,
    "face_name": "Chainwhip Cyclops",
-   "card_hash": "2c1b270842f7304825a2f3f7ce0915fd",
+   "card_hash": "fcc958ee4ff0c932e8ef5dadbd7b96db",
    "fully_read": true,
    "abilities": [
     {

@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "edbf1b87-2d1e-47e6-a04e-a2b1646af7d9",
  "name": "Abnormal Endurance",
- "card_hash": "ff965c2fd244d53a04632cc8c05b5492",
+ "card_hash": "7459cc436bcb11e82d82df58e39be82c",
  "card": {
   "$": "CardDef",
   "oracle_id": "edbf1b87-2d1e-47e6-a04e-a2b1646af7d9",
@@ -41,7 +41,7 @@
   "mana_value": 2,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 9219,
+  "edhrec_rank": 9265,
   "scryfall_uri": "https://scryfall.com/card/m19/85/abnormal-endurance?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Abnormal Endurance",
    "face": 0,
    "face_name": "Abnormal Endurance",
-   "card_hash": "ff965c2fd244d53a04632cc8c05b5492",
+   "card_hash": "7459cc436bcb11e82d82df58e39be82c",
    "fully_read": true,
    "abilities": [
     {

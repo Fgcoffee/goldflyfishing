@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "5748ebf1-24e3-499d-ab7c-c2cebd462a24",
  "name": "Giant Growth",
- "card_hash": "1bf9a2abbf6f5299df816c3e79af9523",
+ "card_hash": "707fe58a268f2d468e70da8e364744ab",
  "card": {
   "$": "CardDef",
   "oracle_id": "5748ebf1-24e3-499d-ab7c-c2cebd462a24",
@@ -35,7 +35,7 @@
   "mana_value": 1,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 3331,
+  "edhrec_rank": 3297,
   "scryfall_uri": "https://scryfall.com/card/msh/167/giant-growth?utm_source=api"
  },
  "faces": [
@@ -45,7 +45,7 @@
    "name": "Giant Growth",
    "face": 0,
    "face_name": "Giant Growth",
-   "card_hash": "1bf9a2abbf6f5299df816c3e79af9523",
+   "card_hash": "707fe58a268f2d468e70da8e364744ab",
    "fully_read": true,
    "abilities": [
     {

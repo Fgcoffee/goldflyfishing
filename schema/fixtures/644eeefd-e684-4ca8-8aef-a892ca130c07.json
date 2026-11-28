@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "644eeefd-e684-4ca8-8aef-a892ca130c07",
  "name": "Teysa Karlov",
- "card_hash": "09683545443b2e9df6abdce4468c5da8",
+ "card_hash": "04217546831bcf416964f71b2ddc5ced",
  "card": {
   "$": "CardDef",
   "oracle_id": "644eeefd-e684-4ca8-8aef-a892ca130c07",
@@ -54,7 +54,7 @@
   "mana_value": 4,
   "color_identity": 5,
   "commander_legal": true,
-  "edhrec_rank": 1314,
+  "edhrec_rank": 1350,
   "scryfall_uri": "https://scryfall.com/card/cmm/359/teysa-karlov?utm_source=api"
  },
  "faces": [
@@ -64,7 +64,7 @@
    "name": "Teysa Karlov",
    "face": 0,
    "face_name": "Teysa Karlov",
-   "card_hash": "09683545443b2e9df6abdce4468c5da8",
+   "card_hash": "04217546831bcf416964f71b2ddc5ced",
    "fully_read": true,
    "abilities": [
     {

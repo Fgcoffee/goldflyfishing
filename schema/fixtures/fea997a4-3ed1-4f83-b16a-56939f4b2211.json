@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "fea997a4-3ed1-4f83-b16a-56939f4b2211",
  "name": "Caustic Wasps",
- "card_hash": "14a2b863d686e5e541ecf095d59140a2",
+ "card_hash": "e9504b0e40ebd3eb0f3b91048e27ad82",
  "card": {
   "$": "CardDef",
   "oracle_id": "fea997a4-3ed1-4f83-b16a-56939f4b2211",
@@ -49,7 +49,7 @@
   "mana_value": 3,
   "color_identity": 16,
   "commander_legal": true,
-  "edhrec_rank": 14899,
+  "edhrec_rank": 15385,
   "scryfall_uri": "https://scryfall.com/card/mmq/234/caustic-wasps?utm_source=api"
  },
  "faces": [
@@ -59,7 +59,7 @@
    "name": "Caustic Wasps",
    "face": 0,
    "face_name": "Caustic Wasps",
-   "card_hash": "14a2b863d686e5e541ecf095d59140a2",
+   "card_hash": "e9504b0e40ebd3eb0f3b91048e27ad82",
    "fully_read": true,
    "abilities": [
     {

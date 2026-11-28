@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "711c10cb-7a85-417d-be24-79d4e4a89993",
  "name": "Deadshot",
- "card_hash": "b6ebb8a03d6ca5cb3a89959317837fa2",
+ "card_hash": "c62a9a258499d1571f2215538a510742",
  "card": {
   "$": "CardDef",
   "oracle_id": "711c10cb-7a85-417d-be24-79d4e4a89993",
@@ -41,7 +41,7 @@
   "mana_value": 4,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 29498,
+  "edhrec_rank": 29976,
   "scryfall_uri": "https://scryfall.com/card/tpr/129/deadshot?utm_source=api"
  },
  "faces": [
@@ -51,7 +51,7 @@
    "name": "Deadshot",
    "face": 0,
    "face_name": "Deadshot",
-   "card_hash": "b6ebb8a03d6ca5cb3a89959317837fa2",
+   "card_hash": "c62a9a258499d1571f2215538a510742",
    "fully_read": true,
    "abilities": [
     {

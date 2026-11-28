@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "37108cd4-bbab-4ce3-9ed6-f60e8422e703",
  "name": "Ragavan, Nimble Pilferer",
- "card_hash": "eb828d5d7b31cfecbbaf61e0ac1dff33",
+ "card_hash": "d9ce38cd19d150f37dbebbfd2d03c205",
  "card": {
   "$": "CardDef",
   "oracle_id": "37108cd4-bbab-4ce3-9ed6-f60e8422e703",
@@ -46,7 +46,7 @@
   "mana_value": 1,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 280,
+  "edhrec_rank": 284,
   "scryfall_uri": "https://scryfall.com/card/mh2/138/ragavan-nimble-pilferer?utm_source=api"
  },
  "faces": [
@@ -56,7 +56,7 @@
    "name": "Ragavan, Nimble Pilferer",
    "face": 0,
    "face_name": "Ragavan, Nimble Pilferer",
-   "card_hash": "eb828d5d7b31cfecbbaf61e0ac1dff33",
+   "card_hash": "d9ce38cd19d150f37dbebbfd2d03c205",
    "fully_read": true,
    "abilities": [
     {

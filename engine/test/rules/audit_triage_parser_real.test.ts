@@ -18,6 +18,7 @@ import { computeTotalCost } from "../../src/rules/cr600_spells_and_abilities/tot
 import { characteristicsOf } from "../../src/rules/cr600_spells_and_abilities/layers";
 import { resolveTop } from "../../src/rules/cr600_spells_and_abilities/stack";
 import { legalActions } from "../../src/rules/legality";
+import { amountOfColor } from "../../src/rules/mana/pool";
 import { moveObject } from "../../src/rules/zones";
 import { RealBoard, REAL_ABILITIES, realCard, realDocument as doc } from "./real_cards";
 
@@ -533,5 +534,28 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     b.game.epoch += 1;
     invalidateAllCharacteristics(b.game);
     expect(isCreature(god)).toBe(true);
+  });
+
+  it("Cabal Ritual (an authored reading, mtgfish/ir/authored): {B}{B}{B}, or five with seven cards in the graveyard", () => {
+    const blackAfter = (graveyard: number) => {
+      const b = new RealBoard();
+      b.game.activePlayer = 0;
+      b.game.phase = Phase.PRECOMBAT_MAIN;
+      b.game.step = Step.MAIN;
+      for (let i = 0; i < graveyard; i += 1) b.graveyard("Grizzly Bears");
+      const ritual = b.hand("Cabal Ritual");
+      addMana(player(b.game, 0).manaPool, manaKind(Color.BLACK), 1);
+      addMana(player(b.game, 0).manaPool, manaKind(Color.NONE), 1);
+      const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === ritual.id)!;
+      expect(perform(b.game, 0, cast)).toBe(true);
+      settle(b.game);
+      while (b.game.stack.length > 0) {
+        resolveTop(b.game);
+        settle(b.game);
+      }
+      return amountOfColor(player(b.game, 0).manaPool, Color.BLACK);
+    };
+    expect(blackAfter(0)).toBe(3);
+    expect(blackAfter(7)).toBe(5);
   });
 });

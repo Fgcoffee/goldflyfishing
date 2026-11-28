@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "3d783beb-9ca6-4681-9276-fc3ad13b993f",
  "name": "Balefire Dragon",
- "card_hash": "8c85cf391328a2435974b8d5355b02e2",
+ "card_hash": "84f2f2d5882d2e3088642b9c8bfcb166",
  "card": {
   "$": "CardDef",
   "oracle_id": "3d783beb-9ca6-4681-9276-fc3ad13b993f",
@@ -55,7 +55,7 @@
   "mana_value": 7,
   "color_identity": 8,
   "commander_legal": true,
-  "edhrec_rank": 1267,
+  "edhrec_rank": 1292,
   "scryfall_uri": "https://scryfall.com/card/inr/479/balefire-dragon?utm_source=api"
  },
  "faces": [
@@ -65,7 +65,7 @@
    "name": "Balefire Dragon",
    "face": 0,
    "face_name": "Balefire Dragon",
-   "card_hash": "8c85cf391328a2435974b8d5355b02e2",
+   "card_hash": "84f2f2d5882d2e3088642b9c8bfcb166",
    "fully_read": true,
    "abilities": [
     {

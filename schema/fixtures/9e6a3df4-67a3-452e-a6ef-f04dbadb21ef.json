@@ -2,7 +2,7 @@
  "ir_version": 2,
  "oracle_id": "9e6a3df4-67a3-452e-a6ef-f04dbadb21ef",
  "name": "Living Death",
- "card_hash": "164725ed0f26ef7191d7db5cd87c79ce",
+ "card_hash": "2c1b448cbfc0d83aebb1a61414aeed34",
  "card": {
   "$": "CardDef",
   "oracle_id": "9e6a3df4-67a3-452e-a6ef-f04dbadb21ef",
@@ -47,7 +47,7 @@
   "mana_value": 5,
   "color_identity": 4,
   "commander_legal": true,
-  "edhrec_rank": 457,
+  "edhrec_rank": 449,
   "scryfall_uri": "https://scryfall.com/card/tdc/185/living-death?utm_source=api"
  },
  "faces": [
@@ -57,7 +57,7 @@
    "name": "Living Death",
    "face": 0,
    "face_name": "Living Death",
-   "card_hash": "164725ed0f26ef7191d7db5cd87c79ce",
+   "card_hash": "2c1b448cbfc0d83aebb1a61414aeed34",
    "fully_read": true,
    "abilities": [
     {
