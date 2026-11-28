@@ -31,6 +31,22 @@ Rerun `export` after the parser or the card data changes. It writes every
 card, about 75 seconds on four cores. To serve one deck, look up its cards
 in `index.json` and send their card files.
 
+## The readings lock
+
+`schema/readings.lock` records every format-pool card's reading: one line per
+card, `oracle_id`, state (`read`, `partial`, `notext`), a hash of the
+abilities in its IR document, and the name. `tests/ir/test_readings_lock.py`
+fails while the parser and the lock disagree, so the card database changes
+only on purpose:
+
+```bash
+python -m mtgfish.tools.readings_lock check   # which cards' readings moved
+python -m mtgfish.tools.readings_lock write   # accept them (commit with the change)
+```
+
+The lock's git diff is the list of cards whose reading moved. It is a record
+checked against the parser, never read in its place.
+
 ## Serving a deck from Python
 
 ```python
