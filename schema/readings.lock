@@ -1982,7 +1982,7 @@
 0f5401c2-0189-4a07-8e7b-a765ccd7c954	read	5492df5e3900f298	Daring Thunder-Thief
 0f575f18-4606-4b85-9a90-07f8d8d46d06	read	b5cf025efb26aebb	Geth's Verdict
 0f58f791-469a-4a22-996e-4906c0914858	read	bb4e6abe36710032	Monstrify
-0f5a3a09-2f07-4774-9e0f-e99d9a444166	read	671b347f5787574d	Aurelia, the Warleader
+0f5a3a09-2f07-4774-9e0f-e99d9a444166	read	9b9d58ac4f9cc273	Aurelia, the Warleader
 0f5ac364-447b-4c43-9aed-6098dc0bab82	partial	0c02a228afa5ef9f	Daybreak Coronet
 0f5b0c77-1e3d-46a1-ae0e-03ed79196cd9	read	0117a4121a31de57	Al-abara's Carpet
 0f5b79ca-9f80-420b-a6c5-bb2a9a95c7e7	read	792a68c5073b6bd8	Soul Summons
@@ -4188,7 +4188,7 @@
 200bbf1d-835d-4d61-a6ab-a0b2abfbed79	read	57b33fbd0dec40a9	Cobbled Lancer
 200ce414-8583-4bbd-88a6-ca30babb613d	read	c1d29a5d442f1bd2	Tuktuk Grunts
 201269a1-8f11-485a-a9be-6447b189b4df	partial	c78e450bc8786828	Merciful Mandate
-20129459-a386-41eb-899d-1aede3427300	read	d8f0f92081a89f0c	Aggravated Assault
+20129459-a386-41eb-899d-1aede3427300	read	7e027a07a03940aa	Aggravated Assault
 2013a774-e6ab-4f2d-a84f-fd277a637d7e	read	b5ad5e0b00de8f4f	Alms of the Vein
 2013df0b-9e8c-4dbf-87b2-0dec983266fa	partial	df420891410d5bb9	Glittering Frost
 20150b58-a442-472c-8191-b44581322eeb	read	b4d04a824d0a1be8	Mass Production
@@ -5444,7 +5444,7 @@
 2a62b226-d317-4212-9781-9c1d72056f11	read	41c9af4a4287dc44	Blisterpod
 2a64cee5-04e2-4cbf-8fa9-d55c854f9500	partial	add89111f922129e	Genestealer Locus
 2a6a1e58-85a9-436e-b1a0-373baa44d6f2	read	a1c87468b869e14c	Retrieval Agent
-2a6abd59-e448-46f1-9af8-bb9040645971	read	9c8d4a8503e49325	Seize the Day
+2a6abd59-e448-46f1-9af8-bb9040645971	read	c6315a1057f18850	Seize the Day
 2a6b32cd-a0f5-4e3e-9069-b525d485f84f	read	91a4841567480b4b	Soul-Strike Technique
 2a6c7826-dcfe-4029-894e-6c82c4dd84b7	partial	fa69a38051469ca8	Piercing Light
 2a70f3d7-9b5c-455e-8c4b-55870d77bd7d	read	6d8357f6de2c938f	Kingfisher
@@ -7784,7 +7784,7 @@
 3c2b9bb2-8201-47e8-84d5-f3518cac03cb	read	adea09b06de9631d	Kree Sentinel
 3c2de008-5747-49c0-89c1-83331cb55896	partial	18ed16aaa637950b	Silence the Believers
 3c2e2e69-cd44-458f-a5b0-8591baa24e65	partial	0ae88220ad155a61	Gelatinous Cube
-3c2f87eb-b0f4-4578-b143-6fba313a82ec	partial	6377a944394567f7	Full Throttle
+3c2f87eb-b0f4-4578-b143-6fba313a82ec	partial	3d589745b4b5f7ec	Full Throttle
 3c3067c4-0ae0-4c6a-9174-e3c981a20235	read	b4e29aa3bdf3f5b8	Cephalid Illusionist
 3c307122-bc18-41f1-87d5-ae6b3ca9b8b9	partial	53cd54bebb8da9f1	Timeline Culler
 3c322d99-2bc4-4618-aeb3-5583fce54f1b	read	c9804b6f6b1f4246	Spider-Mobile
@@ -9693,7 +9693,7 @@
 4ad870b2-133c-4229-84a8-f91e4c62fcd0	partial	7bafea808fb012d6	Reef Shaman
 4ad9c550-5605-4ffe-8e27-e9f2d9ada000	partial	2b5376c445413054	Stormplain Detainment
 4adc39dd-8de1-4298-947c-ff666ec3adeb	read	0f7715e15045dd62	Seaside Haven
-4adcd967-9ff7-4940-b8b9-0c4215bbcb75	partial	81dd51147737321d	Anzrag, the Quake-Mole
+4adcd967-9ff7-4940-b8b9-0c4215bbcb75	partial	f1eaf42707a149c1	Anzrag, the Quake-Mole
 4add809e-9caa-45ae-bb0d-4760a360b8e2	read	9d02fed8c9f1b0a0	Starfield Vocalist
 4ade4e30-4008-4931-b88e-605776a96b58	partial	2ec93a45f652da8a	Rivals' Duel
 4adf959b-2e09-47ff-a1b1-b889348735b8	read	a66e3bb7dde9ba1f	Battering Sliver
@@ -11894,7 +11894,7 @@
 5bd19c93-4b1b-45d7-9764-1327fffe94ca	partial	0cb148178596667c	Squid Fire Knight
 5bd66394-6e1e-4b13-8824-e83768fb533e	read	a8441e52ff08ac6b	Voldaren Stinger
 5bd806e7-3f9b-4bb4-9708-f87a578f531e	read	84aa0a0088807543	Fire Imp
-5bd81d2f-46a1-4536-92e7-28c7e1892735	read	d9a54c4c9bda2ff9	Akki Battle Squad
+5bd81d2f-46a1-4536-92e7-28c7e1892735	read	33fe4faf7ddd8f02	Akki Battle Squad
 5be3243a-6840-4601-96c8-ffb756041d49	read	13c7ab51e34ea57f	Spider-Man, Peter Parker
 5be6f245-31cf-4294-ace0-ca6ce3463fed	read	97610f861024440d	Raucous Audience
 5be7a4d5-33b7-464b-8851-d4ad35302e62	read	68ef1dfc13fe1624	Dragon-Cursed Halls
@@ -13087,7 +13087,7 @@
 6536f72e-ff4e-4cda-bc7d-909145adf829	read	8e13c590ee30a7d2	Elite Instructor
 65385311-1158-4e94-892a-683997706ca8	read	6e3a8f23229af830	Sabotender
 653de668-beb0-4be7-bb05-30de5f52a3f1	read	21ddd0aaef5008d3	Conclave Cavalier
-653e4b68-3184-4352-ac91-127f7e6d7c12	partial	177f93cfad428efd	Port Razer
+653e4b68-3184-4352-ac91-127f7e6d7c12	partial	f178086f9ab3733c	Port Razer
 653f0452-5802-4639-86c2-1500c3964fcb	partial	e9f97b5109a5e4be	Cloud, Ex-SOLDIER
 65410f7a-c749-4b23-ad61-8a7136efcad2	read	f802318b12c86a55	Blur of Blades
 65424bea-fd53-4f85-9757-0b91a6d40ba4	read	4602aea0a482f309	Cabaretti Courtyard
@@ -17935,7 +17935,7 @@
 89c89499-23a8-412d-9406-1a7ffc88c64d	read	b993df498210233c	Wreck Remover
 89ca686a-7c72-4d8f-9290-e89635624a83	read	4647e5f29a68b2f9	Cavern of Souls
 89cf4d99-64e9-4e5c-9edc-ea077a193332	read	f5f4545775b14f0c	Herd Gnarr
-89d1cd45-8148-4396-a9b8-e0f495e94b5b	partial	0c5f7d5c71d1f13d	Savage Beating
+89d1cd45-8148-4396-a9b8-e0f495e94b5b	partial	00797e2287a4e486	Savage Beating
 89d9641c-84a4-41df-af1f-5b552305e895	read	42797b476cb775c3	Plated Sliver
 89e17ccf-cde7-428d-bd64-47e2f79b40d7	partial	b50d8e46e8462b38	Siona, Captain of the Pyleas
 89e209f3-c474-453f-9659-ccebfc88bc0f	partial	23e24f73ba7b69eb	Ride's End
@@ -22676,7 +22676,7 @@ ae90daea-6644-4235-bca6-b94ee9925f63	read	bb9684b34087ff49	Arno Dorian
 ae91c16c-5267-4957-b36c-5aa787fa6b5e	read	e8b517318e8e7923	Doc Ock's Henchmen
 ae92942b-919c-4ea9-b693-85fcef765d5a	partial	d2a73a35e10358cd	Fire // Ice
 ae93292a-458a-441b-a7de-4b10f0d20cc0	read	cf6a732d78714f9f	Goblin Sledder
-ae93854b-c808-44cb-b0be-7d1035c597d7	partial	03fcb45266cd8848	Response // Resurgence
+ae93854b-c808-44cb-b0be-7d1035c597d7	partial	47ef018a80ec860d	Response // Resurgence
 ae96fe7e-8d89-4f44-9cc4-3c9b124fdc4b	partial	3363d54c2706fd4b	Dig Up
 ae997fee-2c1f-43c8-9dba-8b409d8e449e	partial	5c8aa373d0232c14	Elven Warhounds
 ae9a398e-f3a7-4878-a14d-0f6c2dac3d83	read	e43e9ad6f84f115d	Essence Harvest
@@ -23247,7 +23247,7 @@ b2d597f4-162f-4adc-9dc9-6d44815b7a68	read	f61588bbfb66672b	Stonecloaker
 b2d5ba45-8674-4428-89db-c2bbbf0bf5c5	read	b67212bb4ccfd9b0	Khalni Garden
 b2d7251e-2848-4b85-8d99-7c43be163dfb	read	b8df1707c71a1733	Crash of Rhinos
 b2d74afb-90bf-49fd-8280-7fddf8700174	partial	4c806cf41679496e	Wyll, Pact-Bound Duelist
-b2d95950-18b3-463f-94f4-299e420751dc	read	1e38259a30147a0a	Éomer, Marshal of Rohan
+b2d95950-18b3-463f-94f4-299e420751dc	read	e88bfcc432715a7c	Éomer, Marshal of Rohan
 b2da7acb-d80c-414c-9f7d-753a5d6ccad9	read	bf218267d5b3fd0b	Logic Knot
 b2e1a1c4-9147-4dfc-b202-c3d3f9c2d3dc	read	34d5b30ca4671c60	Horror of Horrors
 b2e31c0f-8914-4a18-bc05-44efb7e0f18c	read	4087f25a237d5655	Aspiring Aeronaut
@@ -27722,7 +27722,7 @@ d4ec0df9-a4a3-48cf-a0aa-b1aea5c49142	read	b3de2d377cd94084	Clever Impersonator
 d4ecee6d-b23f-48e7-b7e5-347027225709	partial	8e7374dc6be37862	Selesnya Keyrune
 d4ed4260-5f38-4b55-ba6e-9f54f04d2360	read	9724ad6dbfe7b27a	Commune with Nature
 d4f0dd14-bc2a-4c6d-bfd5-bc5838ab18a5	read	7b449981959e0d13	Coral Sword
-d4f28a4b-d821-4132-bdec-4c528318f8e2	read	5e74d6e0a8cb8840	Hellkite Charger
+d4f28a4b-d821-4132-bdec-4c528318f8e2	read	cff8750179269ed6	Hellkite Charger
 d4f2e305-bec0-48c8-8040-f85618c71cc9	read	5424ca1f7d043393	Barbarian General
 d4f3d013-d9e3-47bc-a615-b25f2c932b7c	partial	f0dad7d636e37fd5	Non-Human Cannonball
 d4f5748f-bb0e-4c48-8802-45a7ad5a80a4	partial	e45175f552ef0df7	Teysa, Opulent Oligarch
@@ -30396,7 +30396,7 @@ e96b0560-1d91-48df-b42f-3b7d9c6d94bd	partial	b7bd54dd9b41243a	Tariff
 e96ce18e-b002-4b5b-9560-c1634320e164	read	5be6369ea46dd4fb	Glacian, Powerstone Engineer
 e96e68b4-cb32-4b75-a885-e1781f4b74ab	partial	c37c94a450a3b6f6	Nightscape Battlemage
 e970f2df-90cb-45b8-8ae5-71b762908925	partial	ea7f1aad7be5e7b9	Smokebraider
-e971249a-64a3-4a9b-9a0c-e9d858ca8a55	partial	23be7ffbabe356c2	Bloodthirster
+e971249a-64a3-4a9b-9a0c-e9d858ca8a55	partial	20ed6d02b9806c45	Bloodthirster
 e975a8b3-f817-42f3-84da-b03ebf95cf25	partial	078976698efcbe60	Branded Brawlers
 e9774695-b2f1-4014-8504-04b2339be568	partial	edc09e7f23471caf	Molten Rain
 e9784eb4-96f2-409e-a7b5-eb6478644943	partial	cf0e80e8af0f6c09	Cauldron Dance
@@ -33099,7 +33099,7 @@ fda10ef2-f431-4d9b-96a4-4db4c98d2b0c	read	146147dd70378034	Jeskai Banner
 fda3c312-1a76-425c-8b23-0196452c4a5e	read	7d4eecc481e7b8da	Vorosh, the Hunter
 fda61506-ed79-47fd-badd-639185297913	partial	be83860512a71043	Smokestack
 fda76032-7e6f-416f-8874-2a0642837522	read	4dcb7b6880ec5edd	Jirina, Dauntless General
-fdaa0faf-e7ee-48b3-9330-de0fc3792ad3	read	dde41c088ef379fe	Breath of Fury
+fdaa0faf-e7ee-48b3-9330-de0fc3792ad3	read	339eda177952690e	Breath of Fury
 fdac480b-03b5-4ece-b42a-e6928b609419	partial	fbe38c45bd1ac25c	Lullmage's Domination
 fdb10291-b5e0-4da8-a103-8e7ac7f8177b	partial	26229a2e1bed985e	Psychic Intrusion
 fdb109f6-d185-4d1e-92b9-768e77562f55	partial	1e0d773e70bdf08e	Outland Boar

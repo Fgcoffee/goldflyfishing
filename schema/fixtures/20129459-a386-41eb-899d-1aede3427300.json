@@ -1,0 +1,147 @@
+{
+ "ir_version": 2,
+ "oracle_id": "20129459-a386-41eb-899d-1aede3427300",
+ "name": "Aggravated Assault",
+ "card_hash": "fd68508b27240ada09f118f76446ce62",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "20129459-a386-41eb-899d-1aede3427300",
+  "name": "Aggravated Assault",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Aggravated Assault",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 8
+    },
+    "oracle_text": "{3}{R}{R}: Untap all creatures you control. After this main phase, there is an additional combat phase followed by an additional main phase. Activate only as a sorcery.",
+    "colors": 8
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 697,
+  "scryfall_uri": "https://scryfall.com/card/ons/185/aggravated-assault?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "20129459-a386-41eb-899d-1aede3427300",
+   "name": "Aggravated Assault",
+   "face": 0,
+   "face_name": "Aggravated Assault",
+   "card_hash": "fd68508b27240ada09f118f76446ce62",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 71,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4,
+        "controller": 1
+       },
+       "text": "tap/untap"
+      },
+      {
+       "$": "Effect",
+       "kind": 0,
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 171,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 3
+         },
+         "text": "an additional phase"
+        },
+        {
+         "$": "Effect",
+         "kind": 171,
+         "players": {
+          "$": "PlayerFilter"
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "text": "an additional phase"
+        }
+       ],
+       "text": "additional phases"
+      },
+      {
+       "$": "Effect",
+       "text": "activate only ..."
+      }
+     ],
+     "text": "{3}{R}{R}: Untap all creatures you control. After this main phase, there is an additional combat phase followed by an additional main phase. Activate only as a sorcery.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 0,
+        "mana": {
+         "$": "ManaCost",
+         "symbols": [
+          {
+           "$": "ManaSymbol",
+           "kind": 0,
+           "generic": 3,
+           "text": "{3}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          },
+          {
+           "$": "ManaSymbol",
+           "kind": 2,
+           "colors": 8,
+           "text": "{R}"
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "timing": 0
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

@@ -631,3 +631,18 @@ def test_land_auras_that_add_an_additional_mana(card_db, name):
     trigger = next(a for a in parsed.faces[0].abilities if "tapped for mana" in a.text)
     add = trigger.effects[0]
     assert add.kind is EffectKind.ADD_MANA and add.players.scope.name != "YOU"
+
+
+@pytest.mark.parametrize("name, phases", [
+    ("Hellkite Charger", [2]),  # an additional combat phase
+    ("Aggravated Assault", [3, 2]),  # combat followed by main, listed last phase first
+])
+def test_an_additional_phase_names_the_phase(card_db, name, phases):
+    """The extra-phase effect's amount is the phase the engine adds (CR 500.8).
+    It was the number of phases: "an additional combat phase" added a main
+    phase, and "combat followed by main" only the combat."""
+    from mtgfish.parser.compile import parse_card
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    found = [n.amount.constant for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.EXTRA_PHASE]
+    assert found == phases

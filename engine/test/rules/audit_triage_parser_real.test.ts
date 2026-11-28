@@ -606,4 +606,24 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(powerAfter(false)).toBe(4);
     expect(powerAfter(true)).toBe(7);
   });
+
+  it("Aggravated Assault: an additional combat phase, then an additional main phase (CR 500.8)", () => {
+    // Read as one extra phase whose amount was a count: "combat followed by main" (2) added only a combat.
+    const b = new RealBoard();
+    b.game.activePlayer = 0;
+    b.game.phase = Phase.PRECOMBAT_MAIN;
+    b.game.step = Step.MAIN;
+    const assault = b.play("Aggravated Assault");
+    addMana(player(b.game, 0).manaPool, manaKind(Color.RED), 2);
+    addMana(player(b.game, 0).manaPool, manaKind(Color.NONE), 3);
+    const activate = legalActions(b.game, 0).find((a) => a.kind === ActionKind.ACTIVATE_ABILITY && a.source === assault.id)!;
+    expect(perform(b.game, 0, activate)).toBe(true);
+    settle(b.game);
+    while (b.game.stack.length > 0) {
+      resolveTop(b.game);
+      settle(b.game);
+    }
+    // Popped last first: the combat runs, then the main phase.
+    expect([...b.game.extraPhases].reverse()).toEqual([Phase.COMBAT, Phase.POSTCOMBAT_MAIN]);
+  });
 });

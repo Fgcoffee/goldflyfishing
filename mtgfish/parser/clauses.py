@@ -8992,9 +8992,16 @@ def _extra_phase(stream: Stream) -> Effect | None:
     """"After this phase, there is an additional combat phase."
 
     And "after this main phase, there is an additional combat phase followed
-    by an additional main phase" - the extra-combat family, whose whole point
-    is the phase and which the grammar could not say at all.
+    by an additional main phase", "there are two additional combat phases".
+    One EXTRA_PHASE per phase, its ``amount`` the phase (CR 500.8; the
+    engines read it as the phase to add). They were one effect whose amount
+    was the *number* of phases, so "an additional combat phase" (1) added a
+    main phase and "combat followed by main" (2) only the combat. The engine
+    runs the most recently added extra phase first, so they're listed last
+    phase first.
     """
+    from ..rules.kernel.enums import Phase
+
     mark = stream.mark()
     stream.accept("after")
     stream.accept("this")
@@ -9003,21 +9010,30 @@ def _extra_phase(stream: Stream) -> Effect | None:
     stream.skip_punct(",")
 
     if not (
-        stream.accept_phrase("there is") or stream.accept_phrase("there's")
+        stream.accept_phrase("there is") or stream.accept_phrase("there's") or stream.accept_phrase("there are")
     ):
         stream.reset(mark)
         return None
-    stream.accept("an", "a")
+    repeat = 1
+    look = stream.mark()
+    count = stream.accept_number()
+    if count is not None and stream.at("additional"):
+        repeat = count
+    else:
+        stream.reset(look)
+        stream.accept("an", "a")
     if not stream.accept("additional"):
         stream.reset(mark)
         return None
 
-    phases = 0
+    phases: list = []
     while True:
-        if not stream.accept("combat", "main"):
+        word = stream.peek().lower
+        if word not in ("combat", "main"):
             break
-        stream.accept("phase")
-        phases += 1
+        stream.next()
+        stream.accept("phase", "phases")
+        phases.append(Phase.COMBAT if word == "combat" else Phase.POSTCOMBAT_MAIN)
         look = stream.mark()
         if stream.accept_phrase("followed by"):
             stream.accept("an", "a")
@@ -9026,20 +9042,22 @@ def _extra_phase(stream: Stream) -> Effect | None:
         stream.reset(look)
         break
 
-    if not phases:
+    if not phases or (repeat != 1 and len(phases) != 1):
         stream.reset(mark)
         return None
+    phases = phases * repeat
     # "after this phase" and "after this main phase" say when; the engine
     # inserts the phase after the current one either way.
     stream.accept_phrase("after this phase")
     stream.accept_phrase("after this main phase")
 
-    return Effect(
-        EffectKind.EXTRA_PHASE,
-        players=YOU,
-        amount=Value.of(phases),
-        text="an additional phase",
+    effects = tuple(
+        Effect(EffectKind.EXTRA_PHASE, players=YOU, amount=Value.of(int(phase)), text="an additional phase")
+        for phase in reversed(phases)
     )
+    if len(effects) == 1:
+        return effects[0]
+    return Effect(EffectKind.SEQUENCE, children=effects, text="additional phases")
 
 
 @clause("who-cant")
