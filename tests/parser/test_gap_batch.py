@@ -617,3 +617,17 @@ def test_a_replacement_with_its_own_target_stays_unread(card_db):
     from mtgfish.parser.compile import parse_card
 
     assert not parse_card(card_db.lookup("Tear Asunder")).fully_parsed
+
+
+@pytest.mark.parametrize("name", ["Fertile Ground", "Utopia Sprawl", "Dawn's Reflection"])
+def test_land_auras_that_add_an_additional_mana(card_db, name):
+    """"Whenever enchanted Forest is tapped for mana, its controller adds an
+    additional one mana of ..." - the maker, "additional", and a subtype as
+    the enchanted noun all read now."""
+    from mtgfish.parser.compile import parse_card
+
+    parsed = parse_card(card_db.lookup(name))
+    assert parsed.fully_parsed
+    trigger = next(a for a in parsed.faces[0].abilities if "tapped for mana" in a.text)
+    add = trigger.effects[0]
+    assert add.kind is EffectKind.ADD_MANA and add.players.scope.name != "YOU"

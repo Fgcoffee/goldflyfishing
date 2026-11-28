@@ -428,7 +428,15 @@ def _self_or_attached(stream: Stream) -> ObjectFilter | None:
         # static ability on every Aura and Equipment in the format was inert
         # - the text was read, the opcode was right, and it applied to no
         # object at all.
-        stream.accept(*_SELF_NOUNS)
+        if not stream.accept(*_SELF_NOUNS):
+            # "enchanted Forest" (Utopia Sprawl): a subtype as the noun. It
+            # names what the Aura can enchant, which the attachment already
+            # settles, so it narrows nothing here.
+            from ..rules.cr200_parts_of_a_card.cr205_typeline import active_registry
+
+            word = stream.peek()
+            if word.kind is TokenKind.WORD and word.text[:1].isupper() and active_registry().types_for(word.text):
+                stream.next()
         return ObjectFilter(has_attached=ObjectFilter(source_only=True))
 
     stream.reset(mark)

@@ -113,7 +113,7 @@
 00d11662-9d10-4915-b80c-c1ad54b4e71b	read	fc3e4006d035d233	Half-Elf Monk
 00d1596a-c3e2-4109-86da-388934a0c652	read	48b80091e7fb3697	Coeurl
 00d3fcdf-6959-4437-9bad-93a8625510a1	read	66d0b3ba6cd29e8f	Guul Draz Vampire
-00d8efa6-a2d9-4249-8da7-b45173675329	partial	ee6c8190320e02ed	Utopia Sprawl
+00d8efa6-a2d9-4249-8da7-b45173675329	read	f049720118021fc8	Utopia Sprawl
 00de57d2-7cb6-4337-9bc6-f6711e4dfabf	read	dd9c4d69523e4a88	Game Trail
 00e0b103-892c-49b3-836d-867fff197bbd	partial	14b51f715a71b916	Puppeteer Clique
 00e25126-b807-4753-ba63-9a533755e5ce	partial	f962189381081213	Lantern of Revealing
@@ -1211,7 +1211,7 @@
 0935377b-384f-4e4c-9fbb-8d2a7d5dc280	read	89679093470e1435	Dwarven Miner
 0935faa2-fb90-48db-8a92-906ba0f374c7	partial	2336edb8cb394920	Restless Vinestalk
 09373283-a5c1-4d8e-ad25-19cd55b1e869	read	93d4665237d2a726	Metallurgeon
-09381494-393d-4ddf-b79f-7c0ae5dce912	partial	2c429296856d5b86	Verdant Haven
+09381494-393d-4ddf-b79f-7c0ae5dce912	read	c0ebc21bd9a4958c	Verdant Haven
 09386931-59bd-481f-bccc-32e8a8abc0f9	read	32de40f349cb8190	Elephant Ambush
 093a20e5-ff14-41c7-b16c-1f745ddf6942	read	febf564eca6e3304	Robe of Mirrors
 093b1d8d-c836-4e9b-855b-4020361aa6ac	partial	1f6640f7f70d9097	Ghostfire Blade
@@ -2850,7 +2850,7 @@
 15b9b0cc-47ef-4147-aba7-a7adae41921b	partial	c63f6bf95e9936d8	Ydwen Efreet
 15bd8fa1-0858-4029-9973-e24c86e45af3	read	8dd40cf4cea2680c	Shapers' Sanctuary
 15c4a13e-33ae-4d08-bb1a-535d8b82ca07	partial	37e35b0a674b32a8	Spiritualize
-15c63f9b-d071-4522-b9f0-a1f441a61b81	partial	976f796bfaadf53d	Market Festival
+15c63f9b-d071-4522-b9f0-a1f441a61b81	read	a8ffa330bace3766	Market Festival
 15c6837c-775b-4b4a-a2f7-9fd79215fa05	read	1faad4850abe41a8	Gravkill
 15c994b9-901a-46d6-804b-24560a14a481	read	2ff6e8e9772d6c8d	Seedship Broodtender
 15cc068c-f424-433e-b165-8457c62a4b35	read	d73eab0617a1601f	Azure Drake
@@ -4190,7 +4190,7 @@
 201269a1-8f11-485a-a9be-6447b189b4df	partial	c78e450bc8786828	Merciful Mandate
 20129459-a386-41eb-899d-1aede3427300	read	d8f0f92081a89f0c	Aggravated Assault
 2013a774-e6ab-4f2d-a84f-fd277a637d7e	read	b5ad5e0b00de8f4f	Alms of the Vein
-2013df0b-9e8c-4dbf-87b2-0dec983266fa	partial	b2c7f38e77245223	Glittering Frost
+2013df0b-9e8c-4dbf-87b2-0dec983266fa	partial	df420891410d5bb9	Glittering Frost
 20150b58-a442-472c-8191-b44581322eeb	read	b4d04a824d0a1be8	Mass Production
 2015f455-988e-444c-93df-23fab179ef87	partial	5387b8f28b99cd37	Water Whip
 2017d355-403a-4408-9779-94d1125e373f	partial	766be00f86c9f414	Lazotep Sliver
@@ -6217,7 +6217,7 @@
 307421ed-aa59-4518-a0eb-689c60d7b709	read	475bbce7fb77fd07	Dawn Elemental
 3075dadd-240f-4455-9286-9f1d48f53a3f	partial	78966e9ec1462d35	Jar of Eyeballs
 307813c5-c3a8-46c5-8ed4-3b244dd169dc	partial	3bd1e368ecd20159	Season of the Witch
-307be184-176a-40a8-944c-48aa00cfdd29	partial	136b5d1eb663f9a4	Radiant Lotus
+307be184-176a-40a8-944c-48aa00cfdd29	read	61caac9dfb510ef4	Radiant Lotus
 307d20fd-a9c9-4da9-b990-26c653054640	read	891abe14c4d2b080	Savage Gorger
 307e68e0-5095-474c-af02-bfcb2e463763	partial	fb455679bfbfae63	Spelltwine
 30812870-87c0-469c-95a5-811d5a181e72	partial	29800e6c4a644222	Biogenic Upgrade
@@ -6959,7 +6959,7 @@
 36215513-1c21-415f-b3bd-fb2eac14895b	read	273754814c6317e6	Impose Hierarchy
 3621bd8c-c883-462f-ad56-c01deecb2720	read	aad5f223502150e7	Tar Snare
 36282c29-a44b-4156-9441-03aa4bf386a8	partial	7a7620bd5f25fe9e	Thran Temporal Gateway
-362b7838-3b70-4a00-8c26-1c8b8a3b6acf	partial	976f796bfaadf53d	Dawn's Reflection
+362b7838-3b70-4a00-8c26-1c8b8a3b6acf	read	a8ffa330bace3766	Dawn's Reflection
 362f25a6-01ff-4c53-be52-c6346a9b0065	read	e5842212c12bd2be	Untaidake, the Cloud Keeper
 362fc643-ab76-4160-a73e-73397464db40	read	6f142435039cb4f6	Deliberate
 36330947-5ef9-4bff-b541-bfbddd9715a3	partial	e7849e9d36943328	Murdock's Crusade
@@ -10744,7 +10744,7 @@
 52fd9309-b849-419a-8d19-5882c00a72b4	read	6ab83ca4debf0dcf	Beluna's Gatekeeper // Entry Denied
 52fdfe4b-10a7-421d-80ea-f6c39013062b	partial	56a188cb0ffeb722	Gigantoplasm
 52fe8101-82af-4aed-a395-54e7b7639bd2	read	3918b3b5da792e89	Curious Inquiry
-530140f1-e992-4b5e-882c-c15bacc328fa	partial	64cda6d7a102b0d0	Trace of Abundance
+530140f1-e992-4b5e-882c-c15bacc328fa	read	4979e8a073252bc0	Trace of Abundance
 53015c41-af2d-43e2-a690-d8877537b8dd	read	7f6c3551ada9c342	Sapphire Dragon // Psionic Pulse
 53029460-50a0-4934-8fa9-0271517cd5d0	partial	a5cb2b4b5135ad8b	Grolnok, the Omnivore
 53032819-917e-4777-b37f-7cc1ac196940	partial	ff6393042d4d1c7c	Storybook Ride
@@ -12011,7 +12011,7 @@
 5cd064b9-1277-4edc-bf2c-82eb5e62f9d7	read	e8935a777e86d807	Primal Bellow
 5cd17347-5558-46f9-b8bb-ae5deeb1f229	read	bbf9e7754bf0b1e2	Sram's Expertise
 5cd2fd32-4da2-40eb-b003-c0b9a9ec91c1	partial	79f634422ee8c660	Cloudstone Curio
-5cd35d18-115b-4d7c-8d05-3d4c8303f46e	partial	eb627d29eb8f22be	Genju of the Fields
+5cd35d18-115b-4d7c-8d05-3d4c8303f46e	partial	3985f20f5f7853c7	Genju of the Fields
 5cd51d39-aebc-4367-9157-da70b8d9b1a3	partial	676d847aee0810c0	Berserker's Frenzy
 5cd96cf2-c1c6-4982-8cf8-70c16704e387	read	a50f59d621ddbdd8	Zombie Trailblazer
 5cd99378-e8e2-43fe-80fc-13d680746a4a	partial	3058a3117019c87f	Flunk
@@ -12153,7 +12153,7 @@
 5e0e5060-2be0-476b-8108-c8c7cd76942f	partial	62ca57c37d7fce98	Cleon, Merry Champion
 5e0f0fd8-fdeb-44d9-b5e7-e3948f2dd10b	partial	3acce32529c6b979	Simic Basilisk
 5e0fea29-0fd5-4535-b1df-cd66e50662cc	read	5c0844e72da8f31a	Deadapult
-5e10fd35-9768-48e4-8cdb-95224ad33b9b	partial	be0387cd7c6d6ac5	Blighted Burgeoning
+5e10fd35-9768-48e4-8cdb-95224ad33b9b	read	c15d8530707dc27a	Blighted Burgeoning
 5e11386f-4667-47f7-b280-eabd927e4a46	partial	9f2bc645ead0afd9	Waterspout Warden
 5e113f0f-4469-4276-82e1-0a804f3de444	read	dc932231b31da144	Earthbending Lesson
 5e15ff93-99a0-4000-918e-4bd2c257188d	partial	7dbac4dfe7168a61	Combat Celebrant
@@ -22552,7 +22552,7 @@ ad9b7fbc-61c8-43ee-a65c-99206fd1e4df	read	c17ae4d1341d9a9d	Maelstrom Wanderer
 ad9d969e-def5-45a3-b65b-0c776f62ef0e	read	f3c3e08ed45ad128	Into the Time Vortex
 ada2f380-bca7-4d64-9587-bab11c776ba8	partial	ec2315aef4f9ec71	Pemmin's Aura
 ada3247e-ec5e-499d-bc15-1d9dd80a59ae	partial	00c3732a4f7f7e85	Goblin Rock Sled
-ada3c285-3449-4037-8b44-42e128456a65	partial	9e49a2f0a1de2b9d	Genju of the Cedars
+ada3c285-3449-4037-8b44-42e128456a65	partial	fcf3d549d247125f	Genju of the Cedars
 ada48353-4c86-44d6-83a5-e7e3c703b948	read	b10d45eeb18eb625	Redcap Gutter-Dweller
 ada82f93-dc93-4a95-a13f-42b5942b3413	read	5983e327bc4ff1f3	Magic Damper
 adac526d-1a85-431a-a302-0a4b8f4a0c44	read	bb7e514ba99ed1e6	Elvish Regrower
@@ -24977,7 +24977,7 @@ c03ae426-2536-4c20-a73a-a24e816f76b0	partial	d15510ff8aa7b618	Akiri, Fearless Vo
 c03ca2e6-fcce-4018-952f-1c451ab92cfd	partial	840c0f88e0f6c233	Dragon Man, Reformed Robot
 c03d073e-ea59-4873-952a-bcf2730f1115	partial	3a28f3345fb2896f	Ahn-Crop Champion
 c0406e70-8131-4e13-b1d5-4e943ad296b8	read	218c6c9c85fe3405	Stand Firm
-c040882e-48ba-469e-9fc6-02e8b68dd58c	partial	99c92145d70d4519	Genju of the Spires
+c040882e-48ba-469e-9fc6-02e8b68dd58c	partial	b69c936f9db4e4c9	Genju of the Spires
 c04197ad-d2f3-499f-b863-bed0c869519c	read	9e2a9453a9919a8c	The Echoverse Fulcrum
 c04b4323-db6a-4ab1-99b7-eef3acad3c4f	read	85997395a3fad63f	Soliton
 c04d4fd4-e5aa-431d-824b-8bc94245f103	partial	d454ba2a9a80182e	Fugitive Droid
@@ -25604,7 +25604,7 @@ c53c75a0-c248-4e76-8d28-f7e53b2dcc49	partial	2cdee626f7b1e86a	Deadly Complicatio
 c53d6d3e-64e3-48b9-afab-3bde3164888f	read	7ab66ea2af713b27	Lab Rats
 c53d958a-f660-4d2e-87cd-87702f973b3a	partial	dea23a2eb56a88d6	Ghostly Dancers
 c53f2d1c-5a53-4020-aace-a1d9f75e47c7	partial	43472100d68bd3e2	Cliffside Rescuer
-c546747a-1935-4c59-a45f-cad7da41fe38	partial	beb6d0528992710b	Genju of the Falls
+c546747a-1935-4c59-a45f-cad7da41fe38	partial	42b9e7a1060b3281	Genju of the Falls
 c547c9ab-a303-48fb-9579-37f9de9a558b	read	b719c9ca55205884	Depose // Deploy
 c54879da-0f1d-4ad0-b082-95f0e4d35685	read	f08e6a2af654b7a7	Sparring Golem
 c549b0fd-1e08-4873-952e-a14dc45a0fd2	partial	b4058a09a6532731	Champion of Lambholt
@@ -25722,7 +25722,7 @@ c62c8006-5650-43cb-8247-da097aa42376	partial	1b14a4acb8014b2a	Magnetic Web
 c631887c-e157-4a95-8a59-08a44854d07f	read	4c71bde6fe7d0488	Metathran Zombie
 c6321de2-80b0-4679-93cf-97df75344e97	partial	2dccd8ebaa8a1da7	Relic Ward
 c6331ce3-21f7-4784-80fe-df1f541a4c46	read	b0939f7a094510cb	Sword of Forge and Frontier
-c63402b2-1f8c-4004-82d8-48ea26bfe3fc	partial	3193e698582de701	Shimmerwilds Growth
+c63402b2-1f8c-4004-82d8-48ea26bfe3fc	partial	15c03e9b79ceaea4	Shimmerwilds Growth
 c637fedc-b7b9-4da8-bab4-0488e7c1fac1	partial	8e37e86d538c35dc	Noggin Whack
 c638957f-88bf-40c2-834c-2be39d73bf41	partial	2606e2feb8a07f13	Ob Nixilis's Cruelty
 c63a17b8-d183-48c7-bb04-edbfffba1e03	partial	30cd033e92191d86	Greenbelt Rampager
@@ -26900,7 +26900,7 @@ cf0dcb27-f02e-4065-81dc-75fbbb09ea3f	partial	fc58bdf01c93087e	Oath of Druids
 cf0f3aee-78b6-4a98-8e09-8861b73c2e74	read	32e533d291b5683b	Conscripted Infantry
 cf113674-f809-4b97-9e8d-e22385446ddb	partial	0a70c7de7efca0c2	Goldwardens' Gambit
 cf127842-5fb1-44df-8d91-8cc0f48c559a	read	99511dd9a14c55bb	Sakashima's Protege
-cf14d4e5-5965-45ad-97f7-26facf2884b5	partial	a6f37add6706ff1c	Fertile Ground
+cf14d4e5-5965-45ad-97f7-26facf2884b5	read	7602eb31b7b6552a	Fertile Ground
 cf16702d-9a0e-4e4c-82cb-d9b0b1e23f15	read	a890b1406db7a8a4	HYDRA Disintegrator
 cf17889e-9201-4af7-bc2a-9539b04fea15	read	c30670332ab8ca13	General's Kabuto
 cf188dd3-1927-481b-b8c0-93b1222dbf53	partial	427f40684f0effb0	Quicken
@@ -31551,7 +31551,7 @@ f1eb489d-104c-4801-b6d2-3f1a7ee73a75	partial	a84a433096cdcab9	Mechtitan Core
 f1ebccc2-d12a-4440-8a73-86c1bc901feb	read	700c488091f50ad9	Wolfhunter's Quiver
 f1ecb3d7-5ea0-45b2-b1b0-d7ae304db2a1	read	bf16182dcc1d4996	Archmage of Echoes
 f1ef5698-14bd-42bf-aae5-2870699e4186	read	9af07563fbc6ce83	Sapphire Medallion
-f1f0eab3-681b-4c2d-b590-555951920880	partial	363ad9f26747c3ce	Buried in the Garden
+f1f0eab3-681b-4c2d-b590-555951920880	partial	929f42f0cab1c416	Buried in the Garden
 f1f3df1c-5c51-445a-b66d-eee4aab23691	partial	d409e9d29d6b7fd4	Desperate Measures
 f1f45310-d665-400d-934f-e48e7858ce8c	partial	95ae8ef9a7709293	Heavy Mattock
 f1f77fb4-2c83-4cbf-894e-624abe6cd95f	read	a5de795afb2a9994	Perils of the Past
@@ -32161,7 +32161,7 @@ f6bd2902-7f8b-419e-bbc7-bcab0c1b7e01	read	cef27cba3550e741	Impulse
 f6c079cd-69c2-4da4-ba41-91844a4d2f06	partial	52a13358ca893444	Command Performance
 f6c325e8-b9bd-44ab-9370-196a40c71e1f	read	e85bda3c20be10f7	Merrow Wavebreakers
 f6c3b420-9aca-4fab-b7bb-1814bd2d93f6	read	82dcdd5916d8d79c	Boros Cluestone
-f6c9c0e6-b851-4ede-8d7a-190c7cfd9051	partial	9cb9901c3d387fc3	Genju of the Fens
+f6c9c0e6-b851-4ede-8d7a-190c7cfd9051	partial	7deae8735c40ce0c	Genju of the Fens
 f6cb9c5a-601e-4580-9fab-903e9b00e35e	partial	293b71e56eb8bdf5	Redtooth Genealogist
 f6cd939e-6b45-4d47-b251-7a09a149dedd	partial	94c8494f9db236c7	Saddle of the Cavalier
 f6cf359a-91cb-4b3c-8837-be53e4ed9c93	read	dd7274b86413c89d	Teval, Arbiter of Virtue

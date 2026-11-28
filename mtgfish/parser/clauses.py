@@ -6945,8 +6945,18 @@ def _add_any_colour(stream: Stream) -> Effect | None:
     payment is solved.
     """
 
+    # "its controller adds an additional one mana of any color" (Fertile
+    # Ground and the other aura land-enchantments): the maker is whoever the
+    # trigger names, and "additional" says when, as in the symbol reader.
+    mark = stream.mark()
+    maker, maker_targeted = parse_player_filter(stream)
     if not stream.accept("add", "adds"):
+        stream.reset(mark)
         return None
+    look = stream.mark()
+    if not (stream.accept("an", "a") and stream.accept("additional")):
+        stream.reset(look)
+        stream.accept("additional")
 
     # "Add *an amount of* mana of that color equal to your devotion" puts the
     # quantity after the colour instead of before it. Checked first, because
@@ -6981,7 +6991,10 @@ def _add_any_colour(stream: Stream) -> Effect | None:
 
     return Effect(
         EffectKind.ADD_MANA,
-        players=YOU,
+        players=maker or YOU,
+        # "Target player adds three mana ..." (Radiant Lotus): the player is
+        # the target (CR 115.1).
+        is_targeted=bool(maker_targeted),
         amount=amount,
         colors=colours,
         colors_in_commander_identity=in_identity,
