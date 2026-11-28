@@ -472,7 +472,7 @@
  "Dark Apostle": [
   {
    "oracle": "Gift of Chaos - {3}, {T}: The next noncreature spell you cast this turn has cascade.",
-   "understood": "Pay {3}, {T}: (recognised, not implemented yet: next-spell-rider)."
+   "understood": "Pay {3}, {T}: (recognised, done by the engine: next-spell-rider)."
   }
  ],
  "Dark Ritual": [
@@ -1196,7 +1196,7 @@
   },
   {
    "oracle": "{U}, {T}: The next spell you cast this turn can't be countered.",
-   "understood": "Pay {U}, {T}: (recognised, not implemented yet: next-spell-rider)."
+   "understood": "Pay {U}, {T}: (recognised, done by the engine: next-spell-rider)."
   }
  ],
  "Misty Rainforest": [
@@ -1736,7 +1736,7 @@
  "Sloppity Bilepiper": [
   {
    "oracle": "{2}, {T}, Sacrifice a creature: The next creature spell you cast this turn has cascade.",
-   "understood": "Pay {2}, {T}, sacrifice 1 creature: (recognised, not implemented yet: next-spell-rider)."
+   "understood": "Pay {2}, {T}, sacrifice 1 creature: (recognised, done by the engine: next-spell-rider)."
   }
  ],
  "Smoldering Marsh": [
@@ -2287,7 +2287,7 @@
   },
   {
    "oracle": "{T}: The next spell you cast this turn has convoke.",
-   "understood": "Pay {T}: (recognised, not implemented yet: next-spell-rider)."
+   "understood": "Pay {T}: (recognised, done by the engine: next-spell-rider)."
   }
  ],
  "War Room": [

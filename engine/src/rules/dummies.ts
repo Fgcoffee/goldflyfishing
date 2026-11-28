@@ -24,12 +24,7 @@ import { hasType } from "./cr200_parts_of_a_card/characteristics";
 import { flag, ir, list, num } from "./ir_read";
 
 /** The dummy shapes the engine carries out; the parser can report their cards as read. */
-export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set([
-  "untap-during-others-untap-step",
-  "activation-cost-change",
-  "begin-game-on-battlefield",
-  "next-spell-rider",
-]);
+export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield", "next-spell-rider"]);
 
 const DUMMY = ir("EffectKind.DUMMY") as number;
 const STATIC = ir("AbilityKind.STATIC") as number;
