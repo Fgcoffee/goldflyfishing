@@ -728,3 +728,18 @@ Rules fixes in the TypeScript engine (Python frozen). One line each: finding, co
   - Docker image built (base images from mirror.gcr.io, because of Docker Hub 429s);
   - in headless Chromium: a browser run uploaded; Replay loaded and requested art; "Report this reading" present; step and generic reports stored (201).
 - Unbound "that player" / "they" in object filters (audit/unbound_that_player.md): 17bf183, `engine/test/rules/that_player_real.test.ts` (All Is Dust, Stronghold Discipline, Acidic Soil, Ragavan's exile, Throat Slitter's target). Bound to the player an instruction is carried out for, else the one chosen earlier in the resolution, else the trigger event's player; trigger targets and their legality use the event's player. Not engine-fixable, for the parser: Primeval Light and How to Start a Riot read with no "target player" at all (the IR names no player, so there is nothing to bind); Living Death's "then sacrifices all creatures they control" lost its "each player" (players: you).
+
+## New set, dummies, readings lock (2026-11-28): PR #44, shared branch @ ded34bb, merged as e8e093a
+
+- Contents:
+  - the Scryfall snapshot of 15 Nov (709 new cards);
+  - dummy abilities, with three carried out by the engine;
+  - the readings lock; authored readings; golden readings (285);
+  - the 'that player' binding;
+  - the incremental board (check mode: zero differences).
+- Checks:
+  - Python 3758 passed; engine 972; webapp 44;
+  - Docker built on 0f96c02 (39,293 cards);
+  - in headless Chromium, 120 games of the user's decks in 56 s; Replay and reports OK.
+- The first pytest run errored on sqlite: xdist workers rebuilt the local card DB for the new snapshot at once. It passed after one rebuild.
+- The CR drift check was not run (magic.wizards.com is blocked).
