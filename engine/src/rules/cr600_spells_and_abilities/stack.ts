@@ -56,14 +56,17 @@ export function resolveTop(game: Game): boolean {
     popDepth(game.log);
   }
   // The catch-all after a resolution. An ability made only of effects that
-  // note their own changes (P/T, grants, tokens) needs no more than that.
+  // note their own changes (P/T, grants, tokens, life, damage) needs no more.
   if (obj.kind === ObjectKind.ABILITY && notesItsOwnChanges(obj.ability as Ability | null)) invalidateObjects(game, []);
   else invalidateAllCharacteristics(game);
   return true;
 }
 
+// Life totals and damage never change characteristics; damage that does
+// something to an object (wither, infect, loyalty) goes through counters,
+// which invalidate everything themselves.
 const SELF_NOTING: ReadonlySet<number> = new Set(
-  ["SEQUENCE", "MODIFY_PT", "GRANT_ABILITY", "CREATE_TOKEN"].map((n) => ir(`EffectKind.${n}` as never) as number),
+  ["SEQUENCE", "MODIFY_PT", "GRANT_ABILITY", "CREATE_TOKEN", "GAIN_LIFE", "LOSE_LIFE", "DAMAGE"].map((n) => ir(`EffectKind.${n}` as never) as number),
 );
 
 /** Whether every instruction of an ability is one that notes its own changes (rules/layers). */
