@@ -4917,14 +4917,66 @@ def _fold_instead(effects: list[Effect]) -> bool:
         # "If that creature is a Human, put two counters on it instead": "that
         # creature" is the target the first effect chose, and with the first
         # effect moved into the otherwise branch nothing has been referred to
-        # when the condition holds. Likewise a replacement with a target of
-        # its own ("exile target nonland permanent instead") changes what
-        # was targeted as the spell was cast. Left unread.
-        return False
+        # when the condition holds. When the first effect's target is the
+        # only thing referred to, the target is chosen once, by the
+        # conditional itself, and both branches act on it
+        # (``_target_then_branch``). A replacement with a target of its own
+        # ("exile target nonland permanent instead") changes what was
+        # targeted as the spell was cast: left unread.
+        folded = _target_then_branch(before, last)
+        if folded is None:
+            return False
+        effects[-2:] = [folded]
+        return True
     effects[-2:] = [
         replace(last, keywords=(), otherwise=(before,), text="if ... instead")
     ]
     return True
+
+
+def _target_then_branch(before: Effect, last: Effect) -> Effect | None:
+    """"Target creature gets +2/+2 until end of turn. If this spell was
+    kicked, that creature gets +5/+5 until end of turn instead." (Explosive
+    Growth and its family; CR 601.2c, 608.2c.)
+
+    One target, chosen as the spell is cast, and the branch chosen as it
+    resolves. The conditional holds the target (``is_targeted``, the first
+    effect's filter); the otherwise branch is the first effect acting on it
+    (``same_target``), and the replacement acts on it too in place of "that
+    creature". The engine makes the target "that creature" for the
+    condition (resolve.ts, the CONDITIONAL executor). ``None`` when anything
+    else is referred to or targeted.
+    """
+    replacement = last.children[0]
+    if not before.is_targeted or before.same_target or before.targets is None or before.players is not None:
+        return None
+    if any(node.is_targeted for node in before.walk() if node is not before):
+        return None
+    referred = []
+    for node in replacement.walk():
+        if node.is_targeted or (node.players is not None and node.players.scope in (
+            PlayerScope.TARGET_PLAYER, PlayerScope.TARGET_OPPONENT,
+        )):
+            return None
+        for spec in (node.targets, node.damage_source):
+            if spec is not None and ControllerRelation.SPECIFIC in (spec.controller, spec.owner):
+                return None
+        if node.damage_source is not None and node.damage_source.remembered:
+            return None
+        if node.targets is not None and node.targets.remembered:
+            referred.append(node)
+    if len(referred) != 1 or referred[0] is not replacement:
+        return None
+    acting = replace(replacement, targets=before.targets, is_targeted=True, same_target=True)
+    return replace(
+        last,
+        keywords=(),
+        targets=before.targets,
+        is_targeted=True,
+        children=(acting,),
+        otherwise=(replace(before, same_target=True),),
+        text="target, then if ... instead",
+    )
 
 
 def parse_condition_text(stream: Stream):

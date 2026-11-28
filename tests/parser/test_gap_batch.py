@@ -380,9 +380,8 @@ def test_if_instead_replaces_the_effect_before_it():
 
 
 @pytest.mark.parametrize("text", [
-    # "that creature" is the first effect's target: unread, not misread.
-    "Target creature gets +2/+2 until end of turn. If this spell was kicked, "
-    "that creature gets +5/+5 until end of turn instead.",
+    # ("that creature" as the first effect's target reads now: the
+    # conditional holds the target, test_choose_the_target_then_the_branch.)
     # A different target in the replacement.
     "Exile target artifact or enchantment. If this spell was kicked, exile target nonland permanent instead.",
     # Different kinds of effect: what "instead" replaces isn't plain.
@@ -595,3 +594,26 @@ def test_target_player_exiles_targets_the_player(card_db):
 
     effect = parse_card(card_db.lookup("Tombfire")).faces[0].abilities[0].effects[0]
     assert effect.is_targeted and effect.players.scope.name == "TARGET_PLAYER"
+
+
+@pytest.mark.parametrize("name", ["Explosive Growth", "Electrostatic Bolt", "Elder Cathar"])
+def test_choose_the_target_then_the_branch(card_db, name):
+    """"Target creature gets +2/+2. If this spell was kicked, that creature
+    gets +5/+5 instead" (decided yes, 28 Nov): the conditional holds the one
+    target; both branches act on it (same_target)."""
+    from mtgfish.parser.compile import parse_card
+
+    parsed = parse_card(card_db.lookup(name))
+    assert parsed.fully_parsed
+    line = next(a for a in parsed.faces[0].abilities if "instead" in a.text)
+    branch = next(n for e in line.effects for n in e.walk() if n.kind is EffectKind.CONDITIONAL)
+    assert branch.is_targeted and not branch.same_target
+    assert all(child.same_target for child in (*branch.children, *branch.otherwise))
+
+
+def test_a_replacement_with_its_own_target_stays_unread(card_db):
+    """Tear Asunder's kicked half exiles "target nonland permanent": a second
+    target chosen on cast only if kicked, not this shape."""
+    from mtgfish.parser.compile import parse_card
+
+    assert not parse_card(card_db.lookup("Tear Asunder")).fully_parsed

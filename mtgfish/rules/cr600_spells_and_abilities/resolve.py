@@ -782,6 +782,13 @@ def _do_sequence(resolution: Resolution, effect: Effect) -> None:
 
 
 def _do_conditional(resolution: Resolution, effect: Effect) -> None:
+    if effect.is_targeted and not effect.same_target:
+        # "Target creature gets +2/+2. If this spell was kicked, that creature
+        # gets +5/+5 instead": one target (CR 601.2c), the branch at
+        # resolution (CR 608.2c). The conditional holds the slot; each branch
+        # acts on it (same_target), and "that creature" is it.
+        chosen = [i for i in resolution.targets_for(effect) if i >= 0]
+        resolution.remembered = chosen
     if _condition_holds(resolution, effect):
         execute(resolution, effect.children)
     else:

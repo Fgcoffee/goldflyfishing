@@ -784,6 +784,18 @@ interface ResolutionAgent {
 const agentOf = (game: Game, playerId: PlayerId) => agentFor(game, playerId) as ResolutionAgent | null;
 
 registerExecutor(ir("EffectKind.CONDITIONAL"), (resolution, effect) => {
+  if (isTargeted(effect) && !flag(effect.same_target)) {
+    // "Target creature gets +2/+2. If this spell was kicked, that creature gets
+    // +5/+5 instead": one target, chosen as the spell is cast (CR 601.2c), and
+    // the branch chosen as it resolves (CR 608.2c). The conditional holds the
+    // slot; each branch acts on it (same_target), and "that creature" in the
+    // condition is it.
+    const chosen = targetsFor(resolution, effect).filter((id) => id >= 0) as ObjectId[];
+    resolution.remembered = chosen.filter((id) => {
+      const obj = resolution.game.objects.get(id);
+      return obj !== undefined && (effect.targets == null || matchHooks().matches(resolution.game, obj, effect.targets, { source: resolution.source, controller: resolution.controller }));
+    });
+  }
   execute(resolution, conditionHolds(resolution, effect) ? list(effect.children) : list(effect.otherwise));
 });
 

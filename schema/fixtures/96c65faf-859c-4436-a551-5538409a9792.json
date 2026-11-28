@@ -1,0 +1,163 @@
+{
+ "ir_version": 2,
+ "oracle_id": "96c65faf-859c-4436-a551-5538409a9792",
+ "name": "Explosive Growth",
+ "card_hash": "9561775b11daaf4d489a470c4dd7f49f",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "96c65faf-859c-4436-a551-5538409a9792",
+  "name": "Explosive Growth",
+  "layout": 0,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Explosive Growth",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 16,
+       "text": "{G}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "types": 64
+    },
+    "oracle_text": "Kicker {5} (You may pay an additional {5} as you cast this spell.)\nTarget creature gets +2/+2 until end of turn. If this spell was kicked, that creature gets +5/+5 until end of turn instead.",
+    "colors": 16,
+    "keywords": [
+     "Kicker"
+    ]
+   }
+  ],
+  "mana_value": 1,
+  "color_identity": 16,
+  "commander_legal": true,
+  "edhrec_rank": 26876,
+  "scryfall_uri": "https://scryfall.com/card/inv/187/explosive-growth?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "96c65faf-859c-4436-a551-5538409a9792",
+   "name": "Explosive Growth",
+   "face": 0,
+   "face_name": "Explosive Growth",
+   "card_hash": "9561775b11daaf4d489a470c4dd7f49f",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 3,
+     "text": "Kicker {5}",
+     "functions_in": {
+      "$set": [
+       1,
+       4
+      ]
+     },
+     "keyword": "Kicker",
+     "additional_cost": {
+      "$": "AdditionalCost",
+      "cost": {
+       "$": "Cost",
+       "components": [
+        {
+         "$": "CostComponent",
+         "kind": 0,
+         "mana": {
+          "$": "ManaCost",
+          "symbols": [
+           {
+            "$": "ManaSymbol",
+            "kind": 0,
+            "generic": 5,
+            "text": "{5}"
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "optional": true,
+      "keyword": "Kicker",
+      "text": "Kicker {5}"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 0,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 1,
+       "targets": {
+        "$": "ObjectFilter",
+        "types_all": 4
+       },
+       "is_targeted": true,
+       "condition": {
+        "$": "Condition",
+        "kind": 14,
+        "text": "it was kicked"
+       },
+       "children": [
+        {
+         "$": "Effect",
+         "kind": 140,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 5
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 5
+         },
+         "is_targeted": true,
+         "same_target": true,
+         "duration": 1,
+         "text": "gets +5/+5"
+        }
+       ],
+       "otherwise": [
+        {
+         "$": "Effect",
+         "kind": 140,
+         "targets": {
+          "$": "ObjectFilter",
+          "types_all": 4
+         },
+         "amount": {
+          "$": "Value",
+          "constant": 2
+         },
+         "amount2": {
+          "$": "Value",
+          "constant": 2
+         },
+         "is_targeted": true,
+         "same_target": true,
+         "duration": 1,
+         "text": "gets +2/+2"
+        }
+       ],
+       "text": "target, then if ... instead"
+      }
+     ],
+     "text": "Target creature gets +2/+2 until end of turn. If this spell was kicked, that creature gets +5/+5 until end of turn instead."
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": []
+}

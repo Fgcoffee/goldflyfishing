@@ -2104,7 +2104,7 @@
 10172c40-7169-4098-9452-b35797d27065	partial	7f3db911e6e2118d	Vastwood Zendikon
 10177654-c342-4537-a141-887a3fef13e8	read	837c974ebf218b81	Mardu Roughrider
 10180e2f-90c5-4d41-ba44-16b14948f923	partial	227337d4c5234e45	Protean Hulk
-10185447-a13f-40d8-a8b6-39ce801f2fc0	partial	ba52332f15060fba	Stomped by the Foot
+10185447-a13f-40d8-a8b6-39ce801f2fc0	read	19d49899cc85f71e	Stomped by the Foot
 101a5c2d-b0b4-45a7-b236-df474ac47356	read	4e46e137a0b24f69	Mnemonic Sliver
 101b2387-58a1-4ef9-8395-0024713e217b	partial	6362d41f5509bce7	Test of Courage
 101f06f8-7980-41d1-98fa-3cb959380737	partial	522c749c2b0747c2	Rootcoil Creeper
@@ -9697,7 +9697,7 @@
 4add809e-9caa-45ae-bb0d-4760a360b8e2	read	9d02fed8c9f1b0a0	Starfield Vocalist
 4ade4e30-4008-4931-b88e-605776a96b58	partial	2ec93a45f652da8a	Rivals' Duel
 4adf959b-2e09-47ff-a1b1-b889348735b8	read	a66e3bb7dde9ba1f	Battering Sliver
-4ae15bd1-e0ea-4c1a-a311-dae421381ebc	partial	a4b469161f94db09	Wakandan Royal Guard
+4ae15bd1-e0ea-4c1a-a311-dae421381ebc	read	72b8851a5ae57b19	Wakandan Royal Guard
 4ae19803-23a7-4724-a4cd-dc6f3c16fb24	read	40fe5bd3bb67d1cc	Ampryn Tactician
 4ae2750e-3650-42df-a539-ea4cb72fa136	partial	ad04c60137015b8e	Start // Finish
 4ae7f959-9f44-4769-8bd3-49ca18928aba	partial	a4e65ffd105ab2a5	Rubblebelt Braggart
@@ -12880,7 +12880,7 @@
 63a19c7c-49d7-4b75-aac8-d0ff36c45fb8	read	e18f9b224838c6c3	Sowing Mycospawn
 63a37c08-7e38-4fe2-9a71-cc4604c4f831	read	bf8fa63abaea1e20	Ulvenwald Tracker
 63a509ea-cedc-40e9-b4e8-0ff4fc356485	partial	c8f18c870f2b9cd9	Wrenn and Seven
-63a85361-56bc-4209-aea8-b49319bc7b92	partial	f7a37d9627c8d576	Final Flourish
+63a85361-56bc-4209-aea8-b49319bc7b92	read	f74862132d33c1ea	Final Flourish
 63afc3d1-7653-476e-838f-fc18d4a62a21	read	4cf6d876e7df88f8	Mishra's Bauble
 63b0538e-aa94-4e23-adf1-704cbf5bc3e5	read	419f1c87333bcdda	Brass's Bounty
 63bc0a02-0d6c-4a00-8b17-1b024f830219	partial	b9bc2259376d2e3b	Stone Spirit
@@ -12987,7 +12987,7 @@
 647c1339-9508-4bb9-8e77-ebc3dfdf4069	read	91d214bc5edfdd28	Predator, Flagship
 647ca69e-cc01-4b2b-b376-bee2a98331e8	read	45457f7b400c38f2	Phyrexian Reclamation
 647d7988-9a5d-4700-9238-938d0d5fae12	read	4dcdd448d5dc05de	Karlov of the Ghost Council
-647e5639-6339-48af-af96-e48729e1cad3	partial	ef325bca80a6303a	Ray of Enfeeblement
+647e5639-6339-48af-af96-e48729e1cad3	read	251ae1fb6bf5b3fe	Ray of Enfeeblement
 647feda9-2876-4430-902f-10dc1f4f99a9	partial	110862f3fb20f72e	Ursine Monstrosity
 6480ab32-3a29-4449-8ff7-c8e43c320ed3	partial	f9ab49d2cc5b4405	Din of the Fireherd
 648100cd-d44a-48f8-87e4-a1d5467f348c	partial	650675bb82c88d1d	Cosima, God of the Voyage // The Omenkeel
@@ -14487,7 +14487,7 @@
 6fbaa853-48d4-4a3b-b22d-27415cc266d7	read	bc8c6c15bc70d17e	Quaketusk Boar
 6fbaac3b-37ec-4815-a4ea-544c547e90b1	partial	5dba6fbc9505adc1	Hour of Eternity
 6fbade4d-502d-45d7-a79e-3fd9e3e7ccdf	read	515b6cb96357288a	Yellow Scarves General
-6fc26faa-94a8-433f-8863-126c2d2e73b0	partial	a3468ef105f0e018	Electrostatic Bolt
+6fc26faa-94a8-433f-8863-126c2d2e73b0	read	5fd6545318fe88df	Electrostatic Bolt
 6fc7401f-66fe-4d17-be2f-afcf892be740	read	e9afde6636ecc136	Federation Probe
 6fcdb870-a1b6-49fe-8b5c-cdde074a7f7d	read	4fa264b1d453bce5	Spring of Eternal Peace
 6fd37ff3-e75d-459a-8717-8f6a9865fb32	read	f32d4f5907f670f8	Clockwork Hydra
@@ -18189,7 +18189,7 @@
 8bb2ac6c-20aa-46dd-883f-b629855cabb0	notext	cf1cbb66a638b486	Durkwood Boars
 8bb51dd2-cc62-48ea-ae8e-52351073a8c9	read	dfac83ca1cf6ee75	Blatant Thievery
 8bb63574-6e8e-499b-8e61-843f06b19313	notext	cf1cbb66a638b486	Treetop Warden
-8bba7c7d-6110-4d7f-8b28-3c5b9d3448df	partial	927077ca289a52e2	Huatli's Spurring
+8bba7c7d-6110-4d7f-8b28-3c5b9d3448df	read	928b49509e64a6c4	Huatli's Spurring
 8bbc9f21-2b4d-4d03-aef1-f5bf0b79257c	read	3d9d6580ff410145	Word of Binding
 8bbe3f0d-41d0-4c58-ad65-6675a234cad3	read	0e5fd4210f46c7b3	Blood Ogre
 8bc17c50-f4c9-46dd-9294-3036ed46de91	read	e97c5340aad66209	Escaped Null
@@ -18753,7 +18753,7 @@
 902a7588-602c-456f-8250-c94f35e56d3a	partial	5a6b28136e189699	Norwood Priestess
 902b82fd-bb18-4833-b427-af8c9751f870	partial	c48575b7e6ed441e	Searing Blood
 902e7d4b-7ab4-40b5-b3a5-c83ef604989a	partial	eaa5660d8ee8f033	Primal Boost
-902eb71f-62b3-40cb-816b-f6b7e92e91e7	partial	5e2dd4756e8a8dd1	Might of Murasa
+902eb71f-62b3-40cb-816b-f6b7e92e91e7	read	c90727c8ecaa2a76	Might of Murasa
 9030d508-5cfe-46ed-954b-21d970bc3b5a	read	23f0d31d273fe250	Folio of Fancies
 90379825-1894-4b79-bf72-445175e97ffb	read	d98f53f03b1e9bda	Ulvenwald Oddity // Ulvenwald Behemoth
 9038a457-ce01-4f6d-9e2b-5220f08b4290	partial	4f1e74cd311734b4	Call a Surprise Witness
@@ -19240,7 +19240,7 @@
 93a476c0-c77e-43b0-8695-ada40368a002	partial	69d14b5a5de7be0e	Sharkey, Tyrant of the Shire
 93a9423c-2b1b-41ce-80f4-157140c684ad	partial	62461b07aac38f0f	Cautery Sliver
 93ab7462-ceef-4bc7-a9fe-8af8ceb78e1c	partial	8a01ec799b7f643f	Skeletal Swarming
-93af8f9d-6877-4cb8-a744-c89186db22e1	partial	f7a37d9627c8d576	Vayne's Treachery
+93af8f9d-6877-4cb8-a744-c89186db22e1	read	f74862132d33c1ea	Vayne's Treachery
 93b0185c-b86f-4137-bc6d-96212eee1708	read	0d5df15830bd42ce	Sun Ce, Young Conquerer
 93b0bd0e-414b-45bd-9d3d-7323140ef0c0	read	758bc182ef03ab31	Runaway Trash-Bot
 93b139a5-2678-46a5-b8eb-45344ee3290a	read	e5de3ea9129231b1	Sultai Banner
@@ -19476,7 +19476,7 @@
 958628af-243c-4eb0-8620-5d483b6da768	read	833190b51c9d3dda	Phyresis
 9587bdb3-fb6a-47c0-898d-404bf60fcb6b	partial	7efd443b8085ec0c	Indoctrination Attendant
 95886816-e0b7-40a6-a631-6ba62ccc54cb	partial	69e97fb6782c5884	Veteran Ghoulcaller
-9588a7fd-bbe5-4a81-9a7e-d8e8f6c0537d	partial	4386a2d3ffa4ddd6	Candy Grapple
+9588a7fd-bbe5-4a81-9a7e-d8e8f6c0537d	read	e617c8c3e846a85d	Candy Grapple
 95892392-2ed3-4c1a-bbaa-4083f526769c	read	603e120e46fafa99	Shay Cormac
 958c2a27-9fb1-42b4-a0ef-296584763a98	partial	f74e394962ced567	Stiltzkin, Moogle Merchant
 958d71ff-c9f7-46f0-96ca-79e7f4d65a16	read	f9744230d0198f73	Elesh Norn, Grand Cenobite
@@ -19622,7 +19622,7 @@
 96c12c12-140a-462d-bff0-0554d192b1f4	read	c3f088e15d2e82e1	Callous Bloodmage
 96c2d71e-0fc9-42aa-bc6b-6d0ae3f66f8b	read	c800b5e4ff187bcf	Hexing Squelcher
 96c4b51c-8a10-428c-a948-e1ba9c652bfd	read	3a1c6744f80678d8	Stoic Grove-Guide
-96c65faf-859c-4436-a551-5538409a9792	partial	10065fbc103762af	Explosive Growth
+96c65faf-859c-4436-a551-5538409a9792	read	df06fc96abc3a518	Explosive Growth
 96c67950-df59-430c-94fd-234086c6c8f2	read	36148e202220b69f	Armory Guard
 96c96842-42c2-4aa3-95e2-6186d4ab5693	partial	34f0104df7b45535	Old Man Willow
 96cb97ca-4ce0-4d33-86fb-4db4ce1956be	partial	fda7b26bd04f2a00	Edgar, Charmed Groom // Edgar Markov's Coffin
@@ -20224,7 +20224,7 @@
 9b3ddd31-c058-4846-8784-25c7a9bbcb31	partial	ac63a72d997d9cf3	Kellan Joins Up
 9b3f6b29-675a-4153-9582-03318851b20e	partial	37d75168d5e562cb	Rune of Protection: Red
 9b40faad-1b96-4461-89d8-9a207b58e832	partial	c1a1f61fd9edd745	Voice of Many
-9b44c005-6799-47fd-8b0d-7179b5281d78	partial	3a32a7a6253c57c3	Galvanize
+9b44c005-6799-47fd-8b0d-7179b5281d78	read	5186b28b4aee86ef	Galvanize
 9b44cc9e-6ef0-4fee-b79a-3e34cb0a3407	read	7f97ffdc3311ef5a	Gruesome Deformity
 9b515bb8-6e37-4b2d-8d56-bb517c3b267c	partial	4dad5c232b7c5753	Moonhold
 9b544415-841d-4038-841b-efb0cede5c24	partial	840b11f8025d76da	Battle of Wits
@@ -20535,7 +20535,7 @@
 9db71b76-eda7-49dd-af5a-3de18acb8ccb	read	8e46894fc2e06a6b	Sultai Monument
 9db7cb7f-1309-4f1d-9c9d-423c91c0896c	partial	a5db1ff72a334730	Vizkopa Confessor
 9db7d8f0-0712-4e32-825c-1339e7a8d768	read	3f607ce37397f93f	Viridian Acolyte
-9dbc2fc8-ed42-4534-9676-bf0695cd518c	partial	13e1dfbc920ac599	You're Not Alone
+9dbc2fc8-ed42-4534-9676-bf0695cd518c	read	08151437972d2b1c	You're Not Alone
 9dbc3530-b278-4c8d-b2cc-a09dfac9d5e5	read	fc713eae02784ed1	Reassembling Skeleton
 9dbccdc5-61f7-4a7d-bbbc-5cab393e24f7	partial	6362d41f5509bce7	Rith's Charm
 9dbfa01b-ce7e-4dd1-9257-0c89b831f477	partial	ffbcef99d20f44ed	Knights of the Black Rose
@@ -21371,7 +21371,7 @@ a44e8d98-3bc8-42ce-b09f-a3b947d9ce53	partial	c3c72f10c52b1cd3	Blow Your House Do
 a45065e9-951a-4c6d-80b6-bd86a49f7439	partial	d32166804717a3d8	Dire Downdraft
 a450ef56-8511-43e0-bdca-0c25f54ba338	partial	b7ff5f8d5c89f060	Wild-Magic Sorcerer
 a4555bd2-be42-442a-8ead-3398318e91c5	read	2b909b0056bb8d03	Citanul Woodreaders
-a45762af-4aac-40b3-a983-ea441b04c5ee	partial	6f5f341e59c283ca	Purifying Dragon
+a45762af-4aac-40b3-a983-ea441b04c5ee	read	6a7c345beea1f9bc	Purifying Dragon
 a4580a1d-141e-449b-9018-e0258130634b	read	043899878414c39f	Mikokoro, Center of the Sea
 a45b3934-1c9b-4cff-98b1-c9ac2f7759ea	read	bca0478e21fff2a0	Rustspore Ram
 a45bb088-16fd-4d91-8fd6-3c52f1c24748	partial	3855deccede0026b	Ancestral Communion
@@ -22565,7 +22565,7 @@ adbef171-3640-4f77-8c92-b50c109ca303	read	6bf8d4334d854f88	Geordi La Forge, Inno
 adc03c37-33c7-4b92-b9fd-4608e6c372c4	read	e58f4aea4f91811e	Collar the Culprit
 adc18cdb-fe35-4ca3-82c1-a723b17f8c6f	read	32b8dd3138aec260	Wingsteed Trainer
 adc1f3b4-cce7-42c9-a208-dbab1d1924f5	read	02bafe80a4fc99d9	Cloud of Faeries
-adc1f850-9217-4a90-8e6a-02ed226ef8df	partial	c53c2c0a17c77457	Urdnan, Dromoka Warrior
+adc1f850-9217-4a90-8e6a-02ed226ef8df	read	54e8bb36697c43a2	Urdnan, Dromoka Warrior
 adc47a25-daab-49c7-93a5-5bbf2bc20cf9	partial	eb6c744f91955679	Wolfbat
 adc8976a-0871-4fd6-9c4c-822ba9549b4b	partial	a7c93fbe7b513d37	Longstalk Brawl
 adc8c55c-8fbe-4e07-b1be-8cb796db3d8a	read	7587a911332d232a	Cackling Imp
@@ -24234,7 +24234,7 @@ ba961e01-315a-4195-a6d5-694a97a70b5a	read	fb6f02d8074dddf5	Mentor's Guidance
 ba968a1e-c946-4cbe-9727-160c73cde3f4	partial	5a7e3a96b95f18aa	Silverwing Squadron
 ba995901-bb32-45ed-8af8-f98784b5a9b0	read	0f4788715a52d39d	One with Nothing
 ba997e44-fc80-4463-ad3f-6497be26df0f	read	cd308addf583f2c1	Cunning Breezedancer
-ba9ac0a9-735d-4bca-9d24-586aca963872	partial	99d048dc6b3498d1	Elder Cathar
+ba9ac0a9-735d-4bca-9d24-586aca963872	read	4a091a610ed22402	Elder Cathar
 ba9cd7bc-846f-4b5c-a1dc-9763a60dafc9	read	cf0b9e4bfbd74ea0	Nissa's Revelation
 ba9e129d-a3cf-431c-93af-f2e4902d40a0	partial	e85d5b102ff7a45a	Whirlwind Denial
 ba9f3c5d-556f-48d1-8d87-723f7893cfcd	partial	235eff68e543cbfa	Flayer of the Hatebound
@@ -24832,7 +24832,7 @@ bf30b8ae-0125-4a00-bae8-ac1aa7703a08	partial	16a3bb56851f601c	Vernal Sovereign
 bf325b3a-0b28-4660-8b51-4334b59a9034	read	a6d7ac85e0a9edb4	Steelshaper Apprentice
 bf3811b3-f3d2-4ffb-8019-e403a2cc1d81	read	ca0a7d7cc664f143	Supply-Line Cranes
 bf39d0f7-f689-45fd-b37b-12d1618fd6e7	partial	a7d2bd2add9efe69	Tidal Flats
-bf3a0585-3976-4078-8beb-6afa79f97027	partial	a53e0c521ae82283	Genemorph Imago
+bf3a0585-3976-4078-8beb-6afa79f97027	read	4cced18f880c8814	Genemorph Imago
 bf3b7489-e9d6-4b3c-9fb8-3bb727584db9	read	0577d00885d7221c	Dross Ripper
 bf3e3004-4133-4542-9ee3-2fb98e759ffa	read	5e398fee25ba920f	Sprite Noble
 bf3ff6ff-eb0e-4d0a-99cb-c377622ae640	read	356d06def66d7da6	Rampaging Classmate
@@ -24996,7 +24996,7 @@ c0636d16-671c-4e80-af8c-67d80d2cd979	read	680878a5aa1c46eb	Irregular Cohort
 c065a7c0-272b-4b7e-a41c-7164352cd189	read	5e0aca03e5908f15	Jedit Ojanen of Efrava
 c066f921-e349-45d1-8ec3-0955d10bbf19	partial	a20b52c6286d733b	Lae'zel, Vlaakith's Champion
 c06b993b-a36a-412a-a732-d678a4179791	read	202d83f8eb1f3658	Phyrexian Tribute
-c06c17c2-203c-4b4a-8564-f29bc41c9eb5	partial	f7a37d9627c8d576	Eject the Warp Core
+c06c17c2-203c-4b4a-8564-f29bc41c9eb5	read	f74862132d33c1ea	Eject the Warp Core
 c06d1127-a269-453f-9c06-e9c424998eb7	partial	a2c16427cfe396dd	Nanogene Conversion
 c071257a-63e7-48d0-a677-0b396a09b624	partial	e533fb7217f55e71	Restless Prairie
 c071be90-0531-40cc-af46-0cbe80c4ddd4	notext	cf1cbb66a638b486	Pearled Unicorn
@@ -25790,7 +25790,7 @@ c6a67820-5066-462f-a621-1ecab8bf4f97	partial	8703eca75f4124f9	Jaya's Phoenix
 c6aa6091-5503-4c22-91af-f999112b0081	read	8791ab89e838902b	Stalker Hag
 c6aadaf0-eb47-4228-95e2-48e3ff7b6e2f	partial	bca83fbc89894682	Sower of Discord
 c6ad434b-6e34-439b-8046-f0047c06e371	partial	881da1e3ccb1357f	Skyshroud War Beast
-c6adfaa7-d9cf-4501-8e7d-e035369390d2	partial	c28547a823fd765e	Vicious Offering
+c6adfaa7-d9cf-4501-8e7d-e035369390d2	read	5f431aacd131f14b	Vicious Offering
 c6b26c1f-121f-4b7c-921e-429b623ca934	partial	c0934924de194c17	Breakthrough
 c6b3f924-806d-47d3-b044-72b48470196c	partial	ec2c9e8c6a9adf75	Pirate Ship
 c6b5ca62-e5ee-4636-b12e-7c1d455e8384	partial	1b89583c9e1e0eb3	Legate Lanius, Caesar's Ace
@@ -27028,7 +27028,7 @@ cfdae813-7241-4f6c-99f0-c772af34af91	read	fd02e85246a4f19b	Spell Snip
 cfdd5dc6-593e-495a-8cfe-3a56b3c4c7df	read	63dcce2d9c257e02	Temple of the False God
 cfdef803-6f7a-4055-8d51-8e8c60953928	read	235869c3d3cb29b1	Cha'DIch Investigator
 cfdfdcfa-af0f-44d9-938e-395de3e6cbd1	partial	6b7e113a8b8bc842	Quintorius, Fate Splitter
-cfe4d707-41b3-4897-b13a-dcae8f1f3350	partial	219f30dd332f3a06	Bring Low
+cfe4d707-41b3-4897-b13a-dcae8f1f3350	read	20d13274281ab22d	Bring Low
 cfe82e0f-7ac0-4de3-b1b3-a2d519b00bbd	partial	fb898d5434f015cf	Blast of Genius
 cfec9d17-2d11-4b89-8b30-84bd25a38466	read	3ad368abd2926bac	Goblin Masons
 cfee4ba9-3cf2-4e8b-a4a7-21974828cd54	read	602ba999cf5332fa	Select for Inspection
@@ -32151,7 +32151,7 @@ f6a4298c-3d9d-43e1-b32c-b168c02ad503	partial	338e23995ee8a042	Atreus, Impulsive 
 f6a6da20-52c8-4921-9884-29d3a3051b0d	partial	bbfa75c5017482b2	Martyrdom
 f6a74582-62b6-48d1-89d6-e26059229840	read	942c2f69e30e7752	Migratory Route
 f6a7838d-380f-4752-a647-c55c2a0eb6e2	partial	281a1e3e63c93243	Donatello, Mutant Mechanic
-f6abd7e5-8c52-4b36-98c5-a4df8b5b6863	partial	db7edbba820c6995	For the Family
+f6abd7e5-8c52-4b36-98c5-a4df8b5b6863	read	d5b6c6a725e6ae3a	For the Family
 f6abdf34-cfdc-465c-b067-cdebb659406e	read	e1f46be53ed2cb00	Elfsworn Giant
 f6adfb5f-a21c-4e86-bd16-a9c1e355af34	read	3ba750ebe7f12822	Shrieking Specter
 f6aebd42-0150-4741-84c2-4c85893640e9	read	99023d94bb9d5321	Merchant of Secrets

@@ -583,4 +583,27 @@ describe("cards that didn't read (roadmap: cards that don't read yet)", () => {
     expect(onBattlefield.map((o) => o.controller).sort()).toEqual([0, 1]);
     expect(onBattlefield.some((o) => o.id === mine.id || o.id === theirs.id)).toBe(false);
   });
+
+  it("Explosive Growth: one target chosen on cast, the branch on resolution (CR 601.2c, 608.2c)", () => {
+    const powerAfter = (kicked: boolean) => {
+      const b = new RealBoard();
+      b.game.activePlayer = 0;
+      b.game.phase = Phase.PRECOMBAT_MAIN;
+      b.game.step = Step.MAIN;
+      const bears = b.play("Grizzly Bears");
+      const growth = b.hand("Explosive Growth");
+      addMana(player(b.game, 0).manaPool, manaKind(Color.GREEN), 1);
+      addMana(player(b.game, 0).manaPool, manaKind(Color.NONE), 5);
+      const cast = legalActions(b.game, 0).find((a) => a.kind === ActionKind.CAST_SPELL && a.source === growth.id)!;
+      expect(perform(b.game, 0, { ...cast, targets: [[bears.id]], additionalCosts: kicked ? [0] : [] })).toBe(true);
+      settle(b.game);
+      while (b.game.stack.length > 0) {
+        resolveTop(b.game);
+        settle(b.game);
+      }
+      return b.chars(bears).power;
+    };
+    expect(powerAfter(false)).toBe(4);
+    expect(powerAfter(true)).toBe(7);
+  });
 });

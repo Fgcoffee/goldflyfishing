@@ -13,5 +13,5 @@ from the top. Status: `recognised` (engine skips it), `implemented` (`IMPLEMENTE
 | `untap-during-others-untap-step` | implemented | 3 | 6 | 8 | Seedborn Muse, Bender's Waterskin, Unwinding Clock | untap permanents during each other player's untap step (Seedborn Muse) (CR 502.3) |
 | `begin-game-on-battlefield` | implemented | 2 | 8 | 18 | Gemstone Caverns, Leyline of Anticipation, Leyline Axe | a card in the opening hand may start the game on the battlefield (the Leylines) (CR 103.6) |
 | `next-spell-rider` | implemented | 2 | 3 | 8 | Mistrise Village, Archway of Innovation, Overmaster | a rider on the next spell cast this turn (can't be countered, gains a keyword) |
-| `mana-spent-trigger` | recognised | 1 | 6 | 8 | Path of Ancestry, Primal Amulet // Primal Wellspring, Carnelian Orb of Dragonkind | a trigger or rider on spending the mana an ability made (Path of Ancestry) (CR 106.12) |
+| `mana-spent-trigger` | implemented | 1 | 6 | 8 | Path of Ancestry, Primal Amulet // Primal Wellspring, Carnelian Orb of Dragonkind | a trigger or rider on spending the mana an ability made (Path of Ancestry) (CR 106.12) |
 | `mana-not-lost` | implemented | 1 | 3 | 13 | Birgi, God of Storytelling // Harnfel, Horn of Bounty, Savage Ventmaw, Klauth, Unrivaled Ancient | mana that isn't lost as steps and phases end (Birgi) (CR 500.4) |
