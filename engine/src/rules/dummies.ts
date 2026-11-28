@@ -8,8 +8,8 @@
  */
 
 import type { Ability, Effect, ObjectFilter } from "../ir";
-import { CardType, Zone } from "../kernel/enums";
-import { logRecord, permanents, player, type Game } from "../kernel/game";
+import { CardType, Duration, Zone } from "../kernel/enums";
+import { invalidateAllCharacteristics, invalidateObjects, logRecord, permanents, player, type Game, type SpellRider } from "../kernel/game";
 import { addCounters } from "../kernel/gameobject";
 import { exile } from "./cr100_game_concepts/actions";
 import { moveObject } from "./zones";
@@ -18,11 +18,18 @@ import type { GameObject } from "../kernel/gameobject";
 import { matchHooks } from "../kernel/hooks";
 import type { PlayerId } from "../kernel/ids";
 import { Act, prohibited } from "./cr500_turn_structure/restrictions";
-import { characteristicsOf } from "./cr600_spells_and_abilities/layers";
+import { characteristicsOf, layerFor } from "./cr600_spells_and_abilities/layers";
+import { allocateTimestamp } from "../kernel/ids";
+import { hasType } from "./cr200_parts_of_a_card/characteristics";
 import { flag, ir, list, num } from "./ir_read";
 
 /** The dummy shapes the engine carries out; the parser can report their cards as read. */
-export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set(["untap-during-others-untap-step", "activation-cost-change", "begin-game-on-battlefield"]);
+export const IMPLEMENTED_DUMMIES: ReadonlySet<string> = new Set([
+  "untap-during-others-untap-step",
+  "activation-cost-change",
+  "begin-game-on-battlefield",
+  "next-spell-rider",
+]);
 
 const DUMMY = ir("EffectKind.DUMMY") as number;
 const STATIC = ir("AbilityKind.STATIC") as number;
@@ -152,4 +159,101 @@ export function beginGameOnBattlefield(game: Game): void {
   } finally {
     game.suppressTriggers = before;
   }
+}
+
+// -- next-spell-rider ---------------------------------------------------------------------
+
+const RIDER_WORDS =
+  /^the next (?:(instant or sorcery|creature|noncreature) )?spell you cast this turn (?:(can't be countered)|has (improvise|convoke|cascade))\.?$/;
+
+/** A next-spell-rider dummy's words, read: which spells and what rider. Null for any other wording. */
+export function spellRiderOf(effect: Effect): { spells: string; rider: string } | null {
+  const m = RIDER_WORDS.exec(String(effect.text ?? "").toLowerCase().trim());
+  if (m === null) return null;
+  return { spells: m[1] ?? "", rider: m[2] ?? m[3]! };
+}
+
+/**
+ * Carries out a dummy effect as it resolves; false when its shape isn't one
+ * done at resolution. next-spell-rider (Mistrise Village, Archway of
+ * Innovation): the controller's next spell this turn that fits gets the
+ * rider, when it is cast (rules/casting.ts takes it).
+ */
+export function resolveDummy(game: Game, controller: PlayerId, effect: Effect): boolean {
+  if (effect.rule !== "next-spell-rider") return false;
+  const read = spellRiderOf(effect);
+  if (read === null) return false;
+  game.spellRiders.push({ player: controller, spells: read.spells, rider: read.rider, turn: game.turn });
+  logRecord(game, `${player(game, controller).name}'s next ${read.spells ? read.spells + " " : ""}spell this turn: ${read.rider}`, {
+    kind: "effect",
+    player: controller,
+  });
+  return true;
+}
+
+function riderFits(game: Game, card: GameObject, spells: string): boolean {
+  if (spells === "") return true;
+  const c = characteristicsOf(game, card);
+  if (spells === "creature") return hasType(c, CardType.CREATURE);
+  if (spells === "noncreature") return !hasType(c, CardType.CREATURE);
+  return hasType(c, CardType.INSTANT) || hasType(c, CardType.SORCERY);
+}
+
+/** The riders this card would get if this player cast it now (this turn's, fitting it). */
+export function waitingRiders(game: Game, playerId: PlayerId, card: GameObject): SpellRider[] {
+  return game.spellRiders.filter((r) => r.player === playerId && r.turn === game.turn && riderFits(game, card, r.spells));
+}
+
+/** A rider as the keyword ability the spell has; cascade is a cast trigger instead (riderCascades). */
+export function riderAbility(rider: SpellRider): Ability | null {
+  if (rider.rider === "cascade") return null;
+  const word = rider.rider === "can't be countered" ? "Can't be countered" : rider.rider.charAt(0).toUpperCase() + rider.rider.slice(1);
+  return { $: "Ability", kind: STATIC as never, keyword: word, text: word };
+}
+
+/**
+ * CR 601.2a: as the spell goes on the stack, it takes every waiting rider
+ * that fits ("the next spell": all of them, on the one spell), and has
+ * their keywords while it is a spell. Stale riders (an earlier turn's) go
+ * too. Returns the riders taken, and how to put things back on a rewind.
+ */
+export function takeSpellRiders(game: Game, playerId: PlayerId, spell: GameObject): { taken: SpellRider[]; undo: () => void } {
+  const before = game.spellRiders;
+  const effectsBefore = game.continuousEffects.length;
+  const taken = waitingRiders(game, playerId, spell);
+  game.spellRiders = before.filter((r) => r.turn === game.turn && !taken.includes(r));
+  const abilities = taken.map(riderAbility).filter((a): a is Ability => a !== null);
+  if (abilities.length > 0) {
+    const grant = {
+      $: "Effect",
+      kind: ir("EffectKind.GRANT_ABILITY"),
+      targets: { $: "ObjectFilter", specific: [spell.id], zones: { $set: [Zone.STACK] } },
+      granted_abilities: abilities,
+      text: "the next spell you cast this turn",
+    } as unknown as Effect;
+    game.continuousEffects.push({
+      effect: grant,
+      source: spell.id,
+      controller: playerId,
+      timestamp: allocateTimestamp(game.ids),
+      layer: layerFor(grant),
+      duration: Duration.END_OF_TURN,
+      createdTurn: game.turn,
+      ability: null,
+      fromStaticAbility: false,
+      isCda: false,
+      expired: false,
+    } as never);
+    invalidateObjects(game, [spell.id]);
+  }
+  return {
+    taken,
+    undo: () => {
+      game.spellRiders = before;
+      if (game.continuousEffects.length > effectsBefore) {
+        game.continuousEffects.splice(effectsBefore);
+        invalidateAllCharacteristics(game);
+      }
+    },
+  };
 }

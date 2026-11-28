@@ -7,6 +7,7 @@
  */
 
 import type { Ability, AdditionalCost, AlternativeCost, Cost, Effect } from "../../ir";
+import { riderAbility, waitingRiders } from "../dummies";
 import { Zone } from "../../kernel/enums";
 import { permanents, player, type Game } from "../../kernel/game";
 import type { GameObject } from "../../kernel/gameobject";
@@ -232,6 +233,11 @@ export function asItWouldBeCast(game: Game, card: GameObject, chars: Characteris
         for (const word of list(effect.keywords)) granted.push({ $: "Ability", kind: STATIC as never, keyword: word, text: word });
       }
     }
+  }
+  // "The next spell you cast this turn has improvise" (rules/dummies.ts).
+  for (const rider of waitingRiders(game, card.controller, card)) {
+    const ability = riderAbility(rider);
+    if (ability !== null) granted.push(ability);
   }
   return granted.length === 0 ? chars : replaceCharacteristics(chars, { abilities: [...chars.abilities, ...granted] });
 }

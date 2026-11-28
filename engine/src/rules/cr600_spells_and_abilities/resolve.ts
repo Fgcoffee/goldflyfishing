@@ -89,6 +89,7 @@ import {
 import { moveObject, removeFromZone } from "../zones";
 import { chooseNewTargets, copyPermanent, copySpell, MAY_CHOOSE_NEW_TARGETS, transform } from "../cr700_additional_rules/faces";
 import { canPayCost, payCost } from "./paying";
+import { resolveDummy } from "../dummies";
 import { Act, registerStandingRequirement, requirement } from "../cr500_turn_structure/restrictions";
 import { commanderColorIdentity } from "../cr903_commander/color_identity";
 import { emit } from "../emit";
@@ -1543,6 +1544,15 @@ registerExecutor(ir("EffectKind.GOAD"), (resolution, effect) => {
     obj.goadedBy.add(resolution.controller);
     logRecord(resolution.game, `#${obj.id} is goaded`, { kind: "effect" });
   }
+});
+
+/** A dummy whose shape is carried out at resolution (rules/dummies.ts); any other does nothing, loudly. */
+registerExecutor(ir("EffectKind.DUMMY"), (resolution, effect) => {
+  if (resolveDummy(resolution.game, resolution.controller, effect)) return;
+  logRecord(resolution.game, `Effect not executed (${num(effect.kind)}): ${str(effect.text) || "effect"}`, {
+    kind: "unimplemented",
+    player: resolution.controller,
+  });
 });
 
 /** CR 701.5: off the stack and into its owner's graveyard; an ability simply ceases. */

@@ -512,8 +512,20 @@ by `rule`, and exports **`IMPLEMENTED_DUMMIES`**:
   "enters" triggers. Gemstone Caverns' version for a player who isn't
   starting: a luck counter, and the last card in hand is exiled (fixed
   choice, no agent decides it yet).
+- `next-spell-rider` (Mistrise Village, Archway of Innovation, Overmaster,
+  Insist, Wand of the Worldsoul, Dark Apostle; 28 Nov): read from the
+  dummy's words, "the next [instant or sorcery | creature | noncreature]
+  spell you cast this turn can't be countered / has improvise | convoke |
+  cascade". The rider waits in `game.spellRiders` (this turn only); the
+  controller's next spell that fits takes every waiting rider as it goes on
+  the stack (CR 601.2a), so improvise and convoke count when paying, and
+  the cost check before casting sees them too. A rewound cast gives them
+  back. Cascade becomes a cast trigger. Another wording stays a no-op
+  (`spellRiderOf` returns null): **for the parser**, a `spells` filter and
+  a `keywords` list on the dummy would let me drop the regex.
+  Test: `engine/test/rules/next_spell_rider_real.test.ts`.
 - Tests: `engine/test/rules/dummies_real.test.ts` (real cards).
-- **For the parser:** these three can report as read (`IMPLEMENTED_DUMMIES`,
+- **For the parser:** these four can report as read (`IMPLEMENTED_DUMMIES`,
   e.g. `parseStatus` treating them as ok, or switch the readings off DUMMY:
   your call). For untap-during-others, the engine reads the dummy's
   `targets` when you give one; without it, it reads the words for "this

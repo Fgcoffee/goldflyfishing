@@ -1,0 +1,266 @@
+{
+ "ir_version": 2,
+ "oracle_id": "fb81e4d3-1d8c-4779-be62-87cf49277e51",
+ "name": "Birgi, God of Storytelling // Harnfel, Horn of Bounty",
+ "card_hash": "b983dc27c76273856740653ea0475909",
+ "card": {
+  "$": "CardDef",
+  "oracle_id": "fb81e4d3-1d8c-4779-be62-87cf49277e51",
+  "name": "Birgi, God of Storytelling // Harnfel, Horn of Bounty",
+  "layout": 4,
+  "faces": [
+   {
+    "$": "FaceDef",
+    "name": "Birgi, God of Storytelling",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 2,
+       "text": "{2}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 4,
+     "subtypes": [
+      "God"
+     ]
+    },
+    "oracle_text": "Whenever you cast a spell, add {R}. Until end of turn, you don't lose this mana as steps and phases end.\nCreatures you control can boast twice during each of your turns rather than once.",
+    "power": "3",
+    "toughness": "3",
+    "colors": 8,
+    "produced_mana": [
+     "R"
+    ]
+   },
+   {
+    "$": "FaceDef",
+    "name": "Harnfel, Horn of Bounty",
+    "mana_cost": {
+     "$": "ManaCost",
+     "symbols": [
+      {
+       "$": "ManaSymbol",
+       "kind": 0,
+       "generic": 4,
+       "text": "{4}"
+      },
+      {
+       "$": "ManaSymbol",
+       "kind": 2,
+       "colors": 8,
+       "text": "{R}"
+      }
+     ]
+    },
+    "has_mana_cost": true,
+    "type_line": {
+     "$": "TypeLine",
+     "supertypes": 2,
+     "types": 1
+    },
+    "oracle_text": "Discard a card: Exile the top two cards of your library. You may play those cards this turn.",
+    "colors": 8,
+    "produced_mana": [
+     "R"
+    ]
+   }
+  ],
+  "mana_value": 3,
+  "color_identity": 8,
+  "commander_legal": true,
+  "edhrec_rank": 505,
+  "scryfall_uri": "https://scryfall.com/card/khm/123/birgi-god-of-storytelling-harnfel-horn-of-bounty?utm_source=api"
+ },
+ "faces": [
+  {
+   "ir_version": 2,
+   "oracle_id": "fb81e4d3-1d8c-4779-be62-87cf49277e51",
+   "name": "Birgi, God of Storytelling // Harnfel, Horn of Bounty",
+   "face": 0,
+   "face_name": "Birgi, God of Storytelling",
+   "card_hash": "b983dc27c76273856740653ea0475909",
+   "fully_read": false,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 2,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 120,
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "amount": {
+        "$": "Value",
+        "constant": 1
+       },
+       "mana_produced": [
+        "{R}"
+       ],
+       "colors": 8,
+       "text": "add {R}"
+      },
+      {
+       "$": "Effect",
+       "kind": 998,
+       "rule": "mana-not-lost",
+       "text": "Until end of turn, you don't lose this mana as steps and phases end."
+      }
+     ],
+     "text": "Whenever you cast a spell, add {R}. Until end of turn, you don't lose this mana as steps and phases end.",
+     "trigger": {
+      "$": "TriggerCondition",
+      "event_kinds": {
+       "$set": [
+        20
+       ]
+      },
+      "subject": {
+       "$": "ObjectFilter",
+       "zones": {
+        "$set": [
+         4
+        ]
+       },
+       "is_ability": false,
+       "count": {
+        "$": "Value",
+        "constant": 1
+       }
+      },
+      "players": {
+       "$": "PlayerFilter"
+      },
+      "text": "whenever a player casts a spell"
+     }
+    },
+    {
+     "$": "Ability",
+     "kind": 3,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 999,
+       "text": "Creatures you control can boast twice during each of your turns rather than once."
+      }
+     ],
+     "text": "Creatures you control can boast twice during each of your turns rather than once.",
+     "unparsed": true
+    }
+   ],
+   "failures": [
+    {
+     "$": "ParseFailure",
+     "text": "Creatures you control can boast twice during each of your turns rather than once.",
+     "reason": "not fully consumed",
+     "remaining": [
+      "Creatures",
+      "you",
+      "control",
+      "can",
+      "boast",
+      "twice",
+      "during",
+      "each",
+      "of",
+      "your",
+      "turns",
+      "rather",
+      "than",
+      "once",
+      "."
+     ],
+     "rule": "plain"
+    }
+   ]
+  },
+  {
+   "ir_version": 2,
+   "oracle_id": "fb81e4d3-1d8c-4779-be62-87cf49277e51",
+   "name": "Birgi, God of Storytelling // Harnfel, Horn of Bounty",
+   "face": 1,
+   "face_name": "Harnfel, Horn of Bounty",
+   "card_hash": "b983dc27c76273856740653ea0475909",
+   "fully_read": true,
+   "abilities": [
+    {
+     "$": "Ability",
+     "kind": 1,
+     "effects": [
+      {
+       "$": "Effect",
+       "kind": 30,
+       "targets": {
+        "$": "ObjectFilter",
+        "zones": {
+         "$set": [
+          0
+         ]
+        },
+        "from_top": 2,
+        "owner": 1,
+        "count": {
+         "$": "Value",
+         "constant": 2
+        }
+       },
+       "text": "exile"
+      },
+      {
+       "$": "Effect",
+       "kind": 104,
+       "targets": {
+        "$": "ObjectFilter",
+        "remembered": true
+       },
+       "players": {
+        "$": "PlayerFilter"
+       },
+       "text": "you may play it"
+      }
+     ],
+     "text": "Discard a card: Exile the top two cards of your library. You may play those cards this turn.",
+     "cost": {
+      "$": "Cost",
+      "components": [
+       {
+        "$": "CostComponent",
+        "kind": 11,
+        "amount": {
+         "$": "Value",
+         "constant": 1
+        },
+        "filter": {
+         "$": "ObjectFilter",
+         "zones": {
+          "$set": []
+         }
+        },
+        "text": "discard"
+       }
+      ]
+     }
+    }
+   ],
+   "failures": []
+  }
+ ],
+ "bracket": [
+  "unread"
+ ]
+}

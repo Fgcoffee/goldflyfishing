@@ -65,6 +65,16 @@ export interface ContinuousEffect {
   expired: boolean;
 }
 
+/** A rider on the next spell a player casts this turn (Mistrise Village): which spells, and what it gives. */
+export interface SpellRider {
+  player: PlayerId;
+  /** "" any spell; else "instant or sorcery", "creature", "noncreature". */
+  spells: string;
+  /** "can't be countered", "improvise", "convoke" or "cascade". */
+  rider: string;
+  turn: number;
+}
+
 export interface Game {
   players: Player[];
   objects: Map<ObjectId, GameObject>;
@@ -171,6 +181,8 @@ export interface Game {
   permissionsEpoch: number;
   controlledPlayers: Map<PlayerId, PlayerId>;
   preparedPermanents: Set<ObjectId>;
+  /** "The next spell you cast this turn ..." riders waiting for that spell (rules/dummies.ts). */
+  spellRiders: SpellRider[];
   classLevels: Map<ObjectId, number>;
   solvedPermanents: Set<ObjectId>;
   /** Who decides for each seat. Not game state: a clone shares them. */
@@ -265,6 +277,7 @@ export function newGame(players: Player[], options: NewGameOptions = {}): Game {
     permissionsEpoch: -1,
     controlledPlayers: new Map(),
     preparedPermanents: new Set(),
+    spellRiders: [],
     classLevels: new Map(),
     solvedPermanents: new Set(),
     agents: new Map(),
@@ -353,6 +366,7 @@ export function cloneGame(game: Game): Game {
     permissionsEpoch: -1,
     controlledPlayers: new Map(game.controlledPlayers),
     preparedPermanents: new Set(game.preparedPermanents),
+    spellRiders: game.spellRiders.map((r) => ({ ...r })),
     classLevels: new Map(game.classLevels),
     solvedPermanents: new Set(game.solvedPermanents),
   };

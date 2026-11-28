@@ -53,7 +53,8 @@ import {
 } from "./targeting";
 import { chosenAlternativeCost, computeTotalCost, recordAlternativeCost, recordedPayments } from "./total_cost";
 import { targetOptional } from "./effect_props";
-import { resolveManaTriggers } from "./triggers";
+import { pendingTrigger, resolveManaTriggers } from "./triggers";
+import { takeSpellRiders } from "../dummies";
 
 export { CastError } from "./cast_error";
 export { activationManaCost, canPayActivation, payActivation } from "./paying";
@@ -118,6 +119,8 @@ export function castSpell(game: Game, playerId: PlayerId, act: Action): GameObje
   spell.castMode = castModeForFace(spell, act.faceIndex); // CR 715.3, 718.3, 720.3
   invalidateCharacteristics(spell);
   invalidateAllCharacteristics(game);
+  // "The next spell you cast this turn has ..." (rules/dummies.ts): from now, before its cost.
+  const riders = takeSpellRiders(game, playerId, spell);
   // CR 702.36a, 708.2: a morph spell is face down from the moment it is on the stack.
   if (isFaceDownCast(game, spell, act)) {
     spell.faceDown = true;
@@ -158,6 +161,7 @@ export function castSpell(game: Game, playerId: PlayerId, act: Action): GameObje
   } catch (e) {
     if (!(e instanceof CastError)) throw e;
     restoreManaCheckpoint(game, playerId, checkpoint);
+    riders.undo();
     logRecord(game, "Cast rewound; the game state is unchanged", { kind: "rewind" });
     moveObject(game, spell, originZone, { toPlayer: cardObject.owner });
     throw e;
@@ -174,7 +178,21 @@ export function castSpell(game: Game, playerId: PlayerId, act: Action): GameObje
   // CR 601.2i: only now do cast triggers fire.
   emit(game, event(EventKind.CAST_SPELL, { objectId: spell.id, player: playerId }));
   putCastTriggers(game, spell); // CR 702.56a, 702.78a
+  for (const rider of riders.taken) if (rider.rider === "cascade") putRiderCascade(game, spell);
   return spell;
+}
+
+/** CR 702.85a: a cascade a rider gave the spell triggers as it is cast. */
+function putRiderCascade(game: Game, spell: GameObject): void {
+  const ability: Ability = {
+    $: "Ability",
+    kind: ir("AbilityKind.TRIGGERED") as never,
+    trigger: { $: "TriggerCondition", event_kinds: { $set: [EventKind.CAST_SPELL] }, functions_in: { $set: [Zone.STACK] }, text: "when you cast this spell" },
+    effects: [{ $: "Effect", kind: ir("EffectKind.CASCADE") as never, text: "cascade" }],
+    keyword: "Cascade",
+    text: "Cascade",
+  } as unknown as Ability;
+  game.pendingTriggers.push(pendingTrigger(spell.id, ability, event(EventKind.CAST_SPELL, { objectId: spell.id, player: spell.controller }), spell.controller));
 }
 
 /** Activate an ability (CR 602.2); a mana ability resolves at once (CR 605.3). */
