@@ -104,6 +104,13 @@ DUMMIES: tuple[Dummy, ...] = (
         grammar=True,
     ),
     Dummy(
+        "protection-chosen-colour",
+        "the targets (or the objects targets names, if not targeted) gain protection from a colour"
+        " chosen as it resolves, for the effect's duration (Mother of Runes)",
+        "702.16",
+        grammar=True,
+    ),
+    Dummy(
         "mana-not-lost",
         "mana that isn't lost as steps and phases end (Birgi)",
         "500.4",

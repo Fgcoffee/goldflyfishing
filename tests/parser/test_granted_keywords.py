@@ -52,9 +52,10 @@ def test_protection_from_everything_is_a_quality_everything_matches():
 
 
 def test_protection_from_a_choice_is_not_read():
-    assert _read(
-        "Target creature you control gains protection from the color of your choice until end of turn."
-    ) is None
+    # The colour of your choice is a dummy (protection-chosen-colour), never a
+    # protection grant with a made-up quality.
+    read = _read("Target creature you control gains protection from the color of your choice until end of turn.")
+    assert read is not None and [e.kind.name for e in read] == ["DUMMY"]
     assert _read("Creatures you control gain protection from the chosen color until end of turn.") is None
 
 

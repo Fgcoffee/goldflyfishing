@@ -120,3 +120,17 @@ def test_an_unlimited_colour_choice_has_no_limit(card_db):
     for name in ("Birds of Paradise", "Command Tower"):
         face = parse_card(card_db.lookup(name)).faces[0]
         assert not [n for a in face.abilities for e in a.effects for n in e.walk() if n.kind is EffectKind.DUMMY]
+
+
+@pytest.mark.parametrize("name, targeted", [("Mother of Runes", True), ("Cartel Aristocrat", False)])
+def test_protection_from_the_colour_of_your_choice_carries_its_target(card_db, name, targeted):
+    """A dummy carrying what the engine needs: who gains it, whether that's a
+    target, and for how long."""
+    from mtgfish.parser.compile import parse_card
+    from mtgfish.rules.kernel.enums import Duration
+
+    face = parse_card(card_db.lookup(name)).faces[0]
+    dummy = next(e for a in face.abilities for e in a.effects if e.kind is EffectKind.DUMMY)
+    assert dummy.rule == "protection-chosen-colour"
+    assert dummy.is_targeted is targeted and dummy.targets is not None
+    assert dummy.duration is Duration.END_OF_TURN

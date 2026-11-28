@@ -7473,6 +7473,41 @@ def _play_from_zone(stream: Stream) -> Effect | None:
     )
 
 
+@clause("protection-chosen-colour")
+def _protection_chosen_colour(stream: Stream) -> Effect | None:
+    """"Target creature you control gains protection from the color of your
+    choice until end of turn." (Mother of Runes, Giver of Runes, Gods
+    Willing; CR 702.16.)
+
+    The colour is chosen as the instruction resolves, which the engine can't
+    do yet: a ``protection-chosen-colour`` dummy carrying what it needs - who
+    (``targets``, ``is_targeted``) and for how long (``duration``).
+    """
+    mark = stream.mark()
+    targets, targeted = parse_target(stream)
+    if targets is None:
+        stream.reset(mark)
+        return None
+    if not stream.accept("gains", "gain", "has", "have"):
+        stream.reset(mark)
+        return None
+    if not (
+        stream.accept_phrase("protection from the color of your choice")
+        or stream.accept_phrase("protection from the colour of your choice")
+    ):
+        stream.reset(mark)
+        return None
+    duration = _duration(stream)
+    return Effect(
+        EffectKind.DUMMY,
+        rule="protection-chosen-colour",
+        targets=targets,
+        is_targeted=targeted,
+        duration=duration,
+        text="gains protection from the color of your choice",
+    )
+
+
 @clause("isnt-a-type")
 def _isnt_a_type(stream: Stream) -> Effect | None:
     """"As long as your devotion to red is less than five, this isn't a
