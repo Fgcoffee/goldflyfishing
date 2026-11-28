@@ -139,6 +139,9 @@ The user's plan: the parser reads every card into the static database (the IR ex
   - Census before and after: no reading changes except the intended ones.
   - Re-export the IR and refresh the samples. Repeat.
   - Similar shapes (e.g. "when" read, but "whenever their first noncreature spell each turn" not, as on Esper Sentinel) are handled as one pattern.
+- [ ] **A static, locked database** (28 Nov, the user's question: "is the parser switching over to static?"):
+  - **A readings lock:** a committed census of every card's reading. A test fails when any reading differs, so the database changes only deliberately, in a reviewed commit that names every card whose reading moved.
+  - **Per-card authored readings** for one-off wordings among the most-played cards: a committed store the export uses in place of the parser's reading. Schema-validated, a test per card, and reviewed by the correctness agent. Grammar rules stay first for any wording shared by several cards.
 - [ ] **Correctness, measured separately from coverage** (read is not the same as read right):
   - golden snapshot tests for the 300 most-played cards, each checked against its Oracle text;
   - a random spot check of fully read cards in every batch;
